@@ -1,12 +1,20 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
 import {
+  stepCorlissEngine,
+  stepDaimlerEngine,
   stepDavenportMotor,
   stepEdisonBulb,
   stepEinsteinRefrigerator,
   stepMarconiRadio,
+  stepOttoEngine,
   stepParsonsTurbine,
+  stepPeltonWheel,
   stepThomsonWelding,
 } from "./catalogKernels";
+
+/** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
+const MECHANICAL_HORSEPOWER_W = 745.7;
+
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
@@ -165,6 +173,42 @@ export function energyChannelsFor(
       clampPressureMpa: params.clampPressureMpa,
     });
     return [{ name: "I²R nugget", watts: weld.jouleWatts, tone: "in" }];
+  }
+  if (patentId === "us-194047-otto-engine") {
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm,
+      compressionRatio: params.compressionRatio,
+    });
+    return [
+      { name: "Brake", watts: otto.brakeHorsepower * MECHANICAL_HORSEPOWER_W, tone: "useful" },
+    ];
+  }
+  if (patentId === "us-6162-corliss-steam-engine") {
+    const corliss = stepCorlissEngine({
+      steamPressurePsi: params.steamPressurePsi,
+      engineRpm: params.engineRpm,
+      cutoffPct: params.cutoffPct,
+    });
+    return [
+      { name: "Indicated", watts: corliss.indicatedHp * MECHANICAL_HORSEPOWER_W, tone: "useful" },
+    ];
+  }
+  if (patentId === "us-361931-daimler-engine") {
+    const daimler = stepDaimlerEngine({
+      engineRpm: params.engineRpm,
+      hotTubeTempC: params.hotTubeTemp,
+      differentialSlipAngleDeg: params.turnAngle,
+    });
+    return [
+      { name: "Brake", watts: daimler.brakeHorsepower * MECHANICAL_HORSEPOWER_W, tone: "useful" },
+    ];
+  }
+  if (patentId === "us-233692-pelton-water-wheel") {
+    const pelton = stepPeltonWheel({
+      headMeters: params.headMeters,
+      runnerRpm: params.runnerRpm,
+    });
+    return [{ name: "Shaft", watts: pelton.shaftPowerKw * 1000, tone: "useful" }];
   }
   return [];
 }
