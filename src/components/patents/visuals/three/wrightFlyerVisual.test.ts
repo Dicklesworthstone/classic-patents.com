@@ -20,6 +20,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(modelSource).toContain("buildWrightFlyerAirframe");
     expect(modelSource).toContain("updateWrightFlyerKinematics");
     expect(threeSource).not.toContain("useGLTF");
+    expect(threeSource).not.toContain("/ 1100");
+    expect(threeSource).not.toContain("/ 400");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -58,6 +60,10 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
     expect(si.rudderYawNm).toBeDefined();
     expect(si.propDisplayOmegaRadPerS).toBeGreaterThan(0);
     expect(si.streamFlowSpeed).toBeGreaterThan(0);
+    expect(si.liftVectorLength).toBeGreaterThan(0.5);
+    expect(si.dragVectorLength).toBeGreaterThan(0.3);
+    expect(si.leftLiftN + si.rightLiftN).toBeGreaterThan(0);
+    expect(si.leftWingLiftPct).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural biplane wings, flexible rib warp, forward elevator, and twin rudders correctly", () => {

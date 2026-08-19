@@ -67,6 +67,8 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
       inletPressurePsi: 180,
     });
     expect(result.shaftPowerKw).toBeGreaterThan(100);
+    expect(result.shaftPowerMw).toBeCloseTo(result.shaftPowerKw / 1000, 1);
+    expect(result.inletBar).toBeCloseTo(180 / 14.5038, 2);
     expect(result.enthalpyKjKg).toBeGreaterThan(300);
     expect(result.stageCount).toBe(48);
     expect(result.inletMpa).toBeGreaterThan(1.0);

@@ -74,8 +74,8 @@ export function WrightFlyer3D() {
     showVectors,
     isAutoFlying,
     isCutaway,
-    liftNewtons: si.liftNewtons,
-    dragNewtons: si.totalDragNewtons,
+    liftVectorLength: si.liftVectorLength,
+    dragVectorLength: si.dragVectorLength,
     netYawNm: si.netYawNm,
     coupled: isCoupled ? 1 : 0,
     cl: si.cl,
@@ -289,8 +289,8 @@ export function WrightFlyer3D() {
       vectorsGroup.visible = p.showVectors;
 
       // Update Force Vector Scales
-      liftVector.setLength(Math.max(0.5, p.liftNewtons / 1100), 0.4, 0.25);
-      dragVector.setLength(Math.max(0.3, p.dragNewtons / 400), 0.3, 0.2);
+      liftVector.setLength(p.liftVectorLength, 0.4, 0.25);
+      dragVector.setLength(p.dragVectorLength, 0.3, 0.2);
 
       controls.update();
       renderer.render(scene, camera);

@@ -225,7 +225,7 @@ export function GoddardRocket3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Chamber P:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {chamberPressurePsi} psi ({(chamberPressurePsi / 14.696).toFixed(1)} atm)
+                    {chamberPressurePsi} psi ({rocketPhysics.chamberPressureAtm} atm)
                   </span>
                 </div>
               </div>

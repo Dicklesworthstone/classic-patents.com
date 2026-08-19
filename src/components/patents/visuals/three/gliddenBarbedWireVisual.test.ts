@@ -75,6 +75,7 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
     expect(result.barbSlipThresholdN).toBeGreaterThan(50);
     expect(result.isLocked).toBe(true);
     expect(result.tensileStrengthLbs).toBeGreaterThan(500);
+    expect(result.twistWaveAmpPx).toBeCloseTo(10, 2);
   });
 
   test("builds and articulates procedural bench, flyer arbor, twisted wire strands, coiled barbs, and take-up reel correctly", () => {

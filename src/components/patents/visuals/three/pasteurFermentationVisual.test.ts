@@ -74,6 +74,7 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
     expect(result.yeastActivityPct).toBeGreaterThan(80);
     expect(result.alcoholAbvPct).toBeGreaterThan(3.5);
     expect(result.co2PressureBar).toBeGreaterThan(1.0);
+    expect(result.bathGlowOpacity).toBeCloseTo(58 / 120, 3);
   });
 
   test("builds and articulates procedural tripod, copper vat, gooseneck airlock, and cooling coils correctly", () => {

@@ -40,6 +40,7 @@ export function RenoEscalator3D() {
 
   const live = useLiveSimParams({
     beltSpeedMps,
+    sheaveOmegaRadPerS: renoIdle.sheaveOmegaRadPerS,
     passengerCount,
     inclineAngleDeg,
     cutawayMode,
@@ -127,7 +128,7 @@ export function RenoEscalator3D() {
         escalatorModel.materials,
         delta,
         cleatDisplacement,
-        p.beltSpeedMps,
+        p.sheaveOmegaRadPerS,
         p.cutawayMode,
       );
 

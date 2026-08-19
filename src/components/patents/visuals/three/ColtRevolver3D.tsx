@@ -246,7 +246,7 @@ export function ColtRevolver3D() {
 
         const kick = p.recoilKick;
         model.group.rotation.z = Math.min(0.24, model.group.rotation.z + kick);
-        model.group.position.x = Math.max(-0.4, model.group.position.x - kick * 0.8);
+        model.group.position.x = Math.max(-0.4, model.group.position.x - kick);
       } else {
         smokePuffScale = 1.0;
         model.smokeMesh.scale.set(1, 1, 1);

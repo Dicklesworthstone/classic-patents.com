@@ -64,6 +64,7 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
     expect(semiState.holeDiffusionCoefficientCm2ps).toBeGreaterThan(0);
     expect(semiState.holeDriftSpeed).toBeGreaterThan(0);
     expect(semiState.gapStudioUnits).toBeCloseTo(0.6, 3);
+    expect(semiState.pointGapSvgPx).toBeCloseTo(40, 2);
   });
 
   test("builds and articulates procedural copper platen, germanium crystal, polystyrene wedge, gold foil ribbons, and minority hole drift correctly", () => {

@@ -68,6 +68,8 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
     expect(severed.pawlEngagementMs).toBe(38);
     expect(severed.peakArrestForceKn).toBeGreaterThan(15.0);
     expect(severed.stoppingDistanceCm).toBe(4.5);
+    expect(severed.cabFallPx).toBeCloseTo(12, 2);
+    expect(intact.cabFallPx).toBe(0);
   });
 
   test("builds and articulates procedural hoistway frame and safety pawls correctly", () => {

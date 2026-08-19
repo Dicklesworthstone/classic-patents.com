@@ -121,14 +121,14 @@ export function TeslaCoil3D() {
   // Audio synthesis
   useEffect(() => {
     if (isPlayingAudio) {
-      soundEngine.playContinuousTone(resonantFreqKhz * 2.0, "sawtooth", 0.035);
+      soundEngine.playContinuousTone(coilPhysics.toneHz, "sawtooth", 0.035);
     } else {
       soundEngine.stopContinuousTone();
     }
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, resonantFreqKhz]);
+  }, [isPlayingAudio, coilPhysics.toneHz]);
 
   useEffect(() => {
     const container = containerRef.current;

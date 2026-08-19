@@ -68,6 +68,7 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(result.isOscillating).toBe(true);
     expect(result.microwaveFreqMhz).toBeGreaterThan(2000);
     expect(result.dielectricLossWattsPerDm3).toBeGreaterThan(100);
+    expect(result.anodeKv).toBe(2.2);
   });
 
   test("builds and articulates procedural copper anode block, resonant cavities, cathode rod, and electron spokes correctly", () => {

@@ -94,14 +94,14 @@ export const NoycePlanarIC3D = memo(() => {
 
   useEffect(() => {
     if (isPlayingAudio) {
-      soundEngine.playContinuousTone(200 + clockFrequencyMhz * 15, "square", 0.02);
+      soundEngine.playContinuousTone(noyce.toneHz, "square", 0.02);
     } else {
       soundEngine.stopContinuousTone();
     }
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, clockFrequencyMhz]);
+  }, [isPlayingAudio, noyce.toneHz]);
 
   useEffect(() => {
     const container = containerRef.current;

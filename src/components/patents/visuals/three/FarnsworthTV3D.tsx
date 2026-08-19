@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
+import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -33,7 +34,7 @@ export function FarnsworthTV3D() {
   const { params, updateParam: _updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const acceleratingVoltageKv = (params.anodeVoltage ?? 1500) / 1000;
+  const acceleratingVoltageKv = voltsToKv(params.anodeVoltage ?? 1500);
   const coilCurrentA = params.coilCurrent ?? 0.42;
   const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrentA);
   const horizontalFreqKhz = params.horizontalFreqKhz ?? 15.75;
@@ -51,7 +52,7 @@ export function FarnsworthTV3D() {
     lightIntensityLux,
   );
   const velocityMps = beamState.electronVelocityMps;
-  const velocityFractionC = (beamState.relativisticBeta * 100).toFixed(1);
+  const velocityFractionC = beamState.relativisticPct.toFixed(1);
   const photocathodeCurrentUa = beamState.photocathodeCurrentUa.toFixed(1);
 
   useFrankenSimPhysics("us-1773980-farnsworth-tv", {
@@ -197,7 +198,7 @@ export function FarnsworthTV3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Beam Velocity:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {(velocityMps / 1e6).toFixed(1)}M m/s ({velocityFractionC}% c)
+                    {beamState.electronVelocityMegaMps}M m/s ({velocityFractionC}% c)
                   </span>
                 </div>
                 <div>

@@ -65,6 +65,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     });
     expect(result.coolingWatts).toBeGreaterThan(30);
     expect(result.evapTempC).toBeLessThan(5);
+    expect(result.evapTempF).toBe(Math.round((result.evapTempC * 9) / 5 + 32));
     expect(result.cop).toBeGreaterThan(0.1);
     expect(result.fluidDisplaySpeed).toBeCloseTo(result.coolingWatts / 45 + 0.8, 2);
   });

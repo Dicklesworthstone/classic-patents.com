@@ -73,6 +73,7 @@ describe("US 2,981,877 Robert N. Noyce Monolithic Planar IC visual & microelectr
     expect(result.junctionCapPfPerMm2).toBeGreaterThan(0);
     expect(result.maxClockGhz).toBeGreaterThan(0.1);
     expect(result.signalDisplaySpeed).toBeCloseTo(4.5, 3);
+    expect(result.toneHz).toBeCloseTo(350, 1);
   });
 
   test("builds and articulates procedural ceramic package, gold leads, silicon substrate, 9 diffused wells, oxide layer, and metal interconnects correctly", () => {

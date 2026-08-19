@@ -28,11 +28,11 @@ export function ParsonsTurbine3D() {
   // Steam Turbomachinery Parameters
   const { params } = usePatentPhysics("us-608969-parsons-turbine");
   const turbineRpm = params.rotorRpm ?? 3000;
-  const steamPressureBar = params.steamPressureBar ?? (params.inletPressurePsi ?? 180) / 14.5038;
   const parsons = stepParsonsTurbine({
     rotorRpm: turbineRpm,
-    inletPressurePsi: params.inletPressurePsi ?? steamPressureBar * 14.5038,
+    inletPressurePsi: params.inletPressurePsi ?? 180,
   });
+  const steamPressureBar = params.steamPressureBar ?? parsons.inletBar;
   const powerKw = parsons.shaftPowerKw;
   const stageCount = parsons.stageCount;
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);

@@ -470,7 +470,7 @@ export function updateMaximMachineGunKinematics(
   _dt: number,
   timeSec: number,
   fireOmegaRadPerS: number,
-  recoilStrokeM: number,
+  recoilStudioStroke: number,
   barrelTempC: number,
   steamOpacity: number,
   showMuzzleFlash: boolean,
@@ -480,8 +480,7 @@ export function updateMaximMachineGunKinematics(
   const isFiring = Math.sin(cycleTime);
 
   // 1. Barrel and barrel extension recoil rearward
-  const strokeScene = Math.max(0.06, recoilStrokeM * 5.0);
-  const recoilDist = isFiring > 0 ? isFiring * strokeScene : 0;
+  const recoilDist = isFiring > 0 ? isFiring * recoilStudioStroke : 0;
   model.recoilingBarrelGroup.position.x = -recoilDist;
 
   // 2. Toggle lock joint breaks upward out of battery

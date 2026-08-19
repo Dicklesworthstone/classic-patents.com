@@ -71,6 +71,8 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
     expect(result.speedFpm).toBeGreaterThan(80);
     expect(result.throughputPerHour).toBeGreaterThan(2000);
     expect(result.motorPowerKw).toBeGreaterThan(1.0);
+    expect(result.sheaveOmegaRadPerS).toBeCloseTo(1, 3);
+    expect(result.treadSvgAdvancePerS).toBeCloseTo(18, 3);
   });
 
   test("builds and articulates procedural cleated deck and balustrades correctly", () => {
@@ -80,7 +82,12 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
 
     // Cleat progression under velocity
     const initialCleatX = nodes.cleats[0].position.x;
-    updateRenoEscalatorKinematics(nodes, materials, 0.1, 0.5, 0.45, true);
+    const reno = stepRenoEscalator({
+      passengerCount: 30,
+      inclineAngleDeg: 25,
+      velocityMps: 0.45,
+    });
+    updateRenoEscalatorKinematics(nodes, materials, 0.1, 0.5, reno.sheaveOmegaRadPerS, true);
     const updatedCleatX = nodes.cleats[0].position.x;
 
     expect(updatedCleatX).not.toBe(initialCleatX);

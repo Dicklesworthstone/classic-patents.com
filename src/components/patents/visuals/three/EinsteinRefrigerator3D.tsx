@@ -180,8 +180,7 @@ export function EinsteinRefrigerator3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Evaporator Temp:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {evaporatorTemperatureCelsius}°C (
-                    {Math.round((evaporatorTemperatureCelsius * 9) / 5 + 32)}°F)
+                    {evaporatorTemperatureCelsius}°C ({frige.evapTempF}°F)
                   </span>
                 </div>
                 <div>

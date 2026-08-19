@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -41,7 +42,7 @@ export function SpencerMicrowave3D() {
   const { params } = usePatentPhysics("us-2495429-spencer-microwave");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const anodeVoltageKv = (params.anodeVoltage ?? 2200) / 1000;
+  const anodeVoltageKv = voltsToKv(params.anodeVoltage ?? 2200);
   const magneticFieldGauss = params.magneticFieldGauss ?? 1450;
   const rfPowerWatts = params.rfPowerSetting ?? 800;
   const [showSpokeWheel, _setShowSpokeWheel] = useState<boolean>(true);

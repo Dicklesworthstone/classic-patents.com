@@ -42,6 +42,8 @@ describe("US 593,138 Nikola Tesla High-Frequency Electrical Transformer visual &
     expect(result.secondaryPotentialMv).toBeGreaterThan(0.1);
     expect(result.streamerLengthMeters).toBeGreaterThan(0.1);
     expect(result.streamerStudioLength).toBeCloseTo(result.streamerLengthMeters / 1.5, 2);
+    expect(result.toneEnergy).toBeCloseTo(Math.min(1, result.secondaryPotentialKv / 1500), 3);
+    expect(result.toneHz).toBeCloseTo(result.resonantFreqKhz * 2, 1);
   });
 
   test("builds and articulates procedural mahogany base, secondary resonator, spiral primary, topload toroid, and spark gap correctly", () => {

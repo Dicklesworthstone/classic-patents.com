@@ -70,6 +70,7 @@ describe("US 1,102,653 Robert H. Goddard Rocket visual & propulsion boundary", (
     expect(result.specificImpulseSec).toBeGreaterThan(150);
     expect(result.expansionRatio).toBe(3.5);
     expect(result.plumeAdvancePerS).toBeCloseTo((result.exhaustVelocityMps / 2000) * 35, 2);
+    expect(result.chamberPressureAtm).toBeCloseTo(350 / 14.696, 1);
     const cold = FrankenSimEngine.stepGoddardRocket(50, 0.1, 4.2, 3.5);
     if (cold.exhaustVelocityMps < 800) {
       expect(cold.plumeAdvancePerS).toBe(0);

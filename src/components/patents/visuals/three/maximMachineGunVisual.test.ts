@@ -68,6 +68,8 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
       recoilStrokeMm: 19,
     });
     expect(result.recoilStrokeMm).toBe(19);
+    expect(result.recoilStrokeM).toBeCloseTo(0.019, 5);
+    expect(result.recoilStudioStroke).toBeCloseTo(Math.max(0.06, 0.019 * 5), 4);
     expect(result.recoilMomentumNs).toBeGreaterThan(5);
     expect(result.toggleUnlockForceN).toBeGreaterThan(100);
     expect(result.muzzleEnergyJoules).toBeGreaterThan(2000);
@@ -92,7 +94,7 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
       0.016,
       0.5,
       maxim.fireOmegaRadPerS,
-      maxim.recoilStrokeMm / 1000,
+      maxim.recoilStudioStroke,
       maxim.barrelTempC,
       maxim.steamOpacity,
       true,

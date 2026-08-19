@@ -34,7 +34,6 @@ export function MaximMachineGun3D() {
     waterJacketLiters: waterLevelLiters,
     recoilStrokeMm,
   });
-  const recoilStrokeM = maxim.recoilStrokeMm / 1000;
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
@@ -44,7 +43,7 @@ export function MaximMachineGun3D() {
     showMuzzleFlash,
     isAudioMuted,
     isCutaway,
-    recoilStrokeM,
+    recoilStudioStroke: maxim.recoilStudioStroke,
     barrelTempC: maxim.barrelTempC,
     waterEvapRateGs: maxim.waterEvapRateGs,
     recoilMomentumNs: maxim.recoilMomentumNs,
@@ -139,7 +138,7 @@ export function MaximMachineGun3D() {
         dt,
         timeSec,
         p.fireOmegaRadPerS,
-        p.recoilStrokeM,
+        p.recoilStudioStroke,
         p.barrelTempC,
         p.steamOpacity,
         p.showMuzzleFlash,
@@ -251,7 +250,7 @@ export function MaximMachineGun3D() {
         title="Maxim recoil ballistics"
         chips={[
           { label: "Cyclic Rate", value: String(Math.round(fireRateRpm)), unit: "rds/min" },
-          { label: "Recoil Stroke", value: String(Math.round(recoilStrokeM * 1000)), unit: "mm" },
+          { label: "Recoil Stroke", value: String(Math.round(maxim.recoilStrokeMm)), unit: "mm" },
           { label: "Toggle Unlock", value: String(maxim.toggleUnlockForceN), unit: "N" },
           { label: "Recoil p", value: String(maxim.recoilMomentumNs), unit: "N·s" },
           {

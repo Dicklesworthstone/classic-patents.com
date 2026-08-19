@@ -56,6 +56,8 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
     expect(result.bellowsFlarePx).toBeCloseTo(32, 2);
     expect(result.bellowsMidPx).toBeCloseTo(28, 2);
     expect(result.bellowsDropPx).toBeCloseTo(36, 2);
+    expect(result.sandbarShoulderY).toBeCloseTo(186, 1);
+    expect(result.hullStudioY).toBeLessThan(150);
   });
 
   test("builds and articulates procedural steamboat hull, expandable air bellows, and sandbar shelf correctly", () => {

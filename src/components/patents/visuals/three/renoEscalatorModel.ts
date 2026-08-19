@@ -364,7 +364,7 @@ export function updateRenoEscalatorKinematics(
   _materials: RenoEscalatorMaterials,
   dt: number,
   cleatDisplacementM: number,
-  beltSpeedMps: number,
+  sheaveOmegaRadPerS: number,
   cutawayMode: boolean,
 ) {
   // 1. Endless Cleat Conveyor Loop
@@ -380,12 +380,11 @@ export function updateRenoEscalatorKinematics(
   });
 
   // 2. Head & Tail Sheaves Rotation
-  const sheaveOmega = beltSpeedMps / 0.45; // rad/s for 0.45m radius sheave
   nodes.headSheaves.forEach((s) => {
-    s.rotation.y -= sheaveOmega * dt;
+    s.rotation.y -= sheaveOmegaRadPerS * dt;
   });
   nodes.tailSheaves.forEach((s) => {
-    s.rotation.y -= sheaveOmega * dt;
+    s.rotation.y -= sheaveOmegaRadPerS * dt;
   });
 
   // 3. Cutaway Balustrades Visibility
