@@ -308,6 +308,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.215 Wright wrightHoverY / hoverOmegaRadPerS / hoverAmpM. 3D no longer converts leftover sin(elapsed×1.4)×0.04 privately.
 - [x] P5.216 schematicCalloutSvg. Schematic reticle no longer converts leftover callout×4 / ×3 privately.
 - [x] P5.217 Ericsson schematicForward/Aft radii. Schematic no longer converts leftover 14/50/46 privately.
+- [x] P5.218 Fermi fermiSchematicSlug. Schematic no longer converts leftover 110+col×60 / 90+row×80 privately.
+- [x] P5.219 Noyce noyceSchematicJunction / ContactX. Schematic no longer converts leftover 90+i×80 / 115+i×80 privately.
+- [x] P5.220 Ericsson 2D shroud/hub/blade-tip seats. 2D no longer converts leftover 14/60/55/10/8 or tip 15/6 privately.
+- [x] P5.221 CCD ccdPacketGateIndex / packetCount / packet SVG. 2D no longer converts leftover i×3 or 16×8 privately.
+- [x] P5.222 Tesla coil schematicToploadRx/Ry. Schematic no longer converts leftover 50/18 privately.
 
 ## Explicitly out of scope
 

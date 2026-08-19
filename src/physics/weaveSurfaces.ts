@@ -124,6 +124,16 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    return {
+      part: calloutLabel,
+      material: "Continuous matrix-bars, adjusting-pins, stop-pins, clamp, and mold",
+      qty: "Claim 1 and specification relation",
+      value: "matrix-bars → temporary matrix → printing-bar",
+      unit: "source guide",
+      note: "The source describes independently adjustable bars with intaglio characters, then a separate mold-and-casting mechanism. The held edition supplies no later magazine, binary distributor, alloy recipe, temperature, pressure, material, rate, or cycle-time value.",
+    };
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return {
       part: calloutLabel,
@@ -957,6 +967,17 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    return [
+      {
+        label: "Source group",
+        min: 1,
+        max: 3,
+        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
+        unit: "facsimile guide",
+      },
+    ];
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return [];
   }
@@ -1352,6 +1373,15 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    return {
+      part: "Source-bound matrix-bar printing-form relation",
+      model: "not computed",
+      reference: "complete manual edition withheld",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return {
       part: "Source-bound Claim 1 contour relation",
@@ -1639,6 +1669,16 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    return [
+      {
+        id: "mergenthaler-filing-1884",
+        date: "1884-08-30",
+        name: "Filed Machine for Producing Printing-Bars",
+        writes: { sourceFocus: 1 },
+      },
+    ];
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return [];
   }
@@ -1973,6 +2013,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    return [];
+  }
   if (patentId === "us-2708656-fermi-reactor") {
     return [];
   }

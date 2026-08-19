@@ -25,6 +25,8 @@ import {
   mccormickSchematicSickleX,
   nobelKieselguhrSvg,
   nobelSchematicKieselguhr,
+  noyceSchematicContactX,
+  noyceSchematicJunction,
   pasteurMicrobeSvg,
   pasteurSchematicBubbleX,
   peltonSchematicBucket,
@@ -156,6 +158,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.bladePitchDeg).toBe(60);
     expect(res.schematicForwardRy).toBe(50);
     expect(res.schematicAftRy).toBe(46);
+    expect(res.shroudSvgRx).toBe(14);
+    expect(res.forwardShroudSvgRy).toBe(60);
+    expect(res.aftHubSvgR).toBe(8);
   });
 
   test("DeLaval centrifugal separator computes radial g-force and separation efficiency", () => {
@@ -341,6 +346,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepNoyceIC({ reverseBias: 5.0, oxideThickness: 0.5, clockFrequencyMhz: 10 });
     expect(res.breakdownMarginV).toBeGreaterThan(10);
     expect(res.depletionWidthUm).toBeGreaterThan(0);
+    expect(res.schematicJunctionCount).toBe(3);
+    expect(noyceSchematicJunction(0).x).toBe(90);
+    expect(noyceSchematicContactX(2)).toBe(275);
   });
 
   test("Edison incandescent bulb computes Stefan-Boltzmann radiation, filament temperature, and lumen output", () => {

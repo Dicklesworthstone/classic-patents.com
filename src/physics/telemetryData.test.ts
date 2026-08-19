@@ -273,4 +273,25 @@ describe("Physics Telemetry Data Registry", () => {
     ]);
     expect(JSON.stringify(engelbart).toLowerCase()).not.toContain("wheel radius");
   });
+
+  test("keeps Mergenthaler US 313,224 at its held matrix-bar source boundary", () => {
+    const mergenthaler = PATENT_PHYSICS_REGISTRY["us-313224-mergenthaler-linotype"];
+    expect(mergenthaler.engineMethod).toContain("No printing-form performance engine");
+    expect(mergenthaler.controls.map((control) => control.unit)).toEqual([
+      "source drawing group",
+    ]);
+    expect(mergenthaler.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 18–34: stops, keys, spacing, and mold arrangements",
+      },
+      { label: "Printed Figures", value: "51 on 17 sheets" },
+      { label: "Printed Claims", value: "70" },
+      { label: "Visual Status", value: "withheld" },
+    ]);
+    const published = JSON.stringify(mergenthaler).toLowerCase();
+    expect(published).not.toContain("90 magazine channels");
+    expect(published).not.toContain("240°c");
+    expect(published).not.toContain("seven-bit");
+  });
 });

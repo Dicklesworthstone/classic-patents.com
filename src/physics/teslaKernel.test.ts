@@ -103,6 +103,8 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(si.inputVoltageVolts).toBe(15000);
     expect(si.secondaryPotentialVolts).toBe(1250000);
     expect(si.secondaryTurnCount).toBe(18);
+    expect(si.schematicToploadRx).toBe(50);
+    expect(si.schematicToploadRy).toBe(18);
     expect(teslaCoilWindingSvg(0).x1).toBe(-25);
   });
 });

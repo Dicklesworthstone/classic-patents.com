@@ -56,6 +56,11 @@ export function energyChannelsFor(
     // energy-flow measurement; leave this optional strip empty while held.
     return [];
   }
+  if (patentId === "us-313224-mergenthaler-linotype") {
+    // The held source specifies component relationships but no source-backed
+    // energy, thermal, pressure, or production-flow values to visualize.
+    return [];
+  }
   if (patentId === "us-3541541-engelbart-mouse") {
     // The grant supplies no source-backed electrical or mechanical energy
     // values. Keep the optional presentation strip empty while its full
