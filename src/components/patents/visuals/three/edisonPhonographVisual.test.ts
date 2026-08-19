@@ -77,6 +77,7 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(result.stylusOmegaRadPerS).toBeGreaterThan(0);
     expect(result.axialDisplayWrapMm).toBeGreaterThan(0);
     expect(result.axialSvgPxPerMm).toBe(2);
+    expect(result.driveIndicatorSvgR).toBe(45);
   });
 
   test("builds a source-linked cylinder and labels unsupported display geometry as illustrative", () => {

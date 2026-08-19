@@ -246,6 +246,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.153 Howe loopSvgControlX. Sholes displayColumnWrap / columnPitchPx. 2D no longer converts leftover loopWidth×1.5 or column×6 privately.
 - [x] P5.154 Ericsson slipPct / propulsiveEfficiencyPct. Bell 3D reads currentBaselineMa. 2D/3D no longer convert leftover slip×100 or amps×1000 privately.
 - [x] P5.155 CCD ctePct / packetOpacity. Goddard expansionEfficiencyPct. 2D/3D/badge/weave no longer convert leftover cte×100, 0.35+cte×0.55, or expansion×100 privately.
+- [x] P5.156 CCD ccdWellSvgDepth / wellSvgDepths. 2D no longer converts leftover 12+min(70, fill×65) privately.
+- [x] P5.157 Edison driveIndicatorSvgR. 2D no longer converts leftover illustrative-drive ×45 privately.
+- [x] P5.158 Gramme torusSvgR / junctionInnerSvgR / junctionOuterSvgR. 2D no longer converts leftover ring ×100/35/48 privately.
+- [x] P5.159 Ericsson bladeSvgRx / forwardBladeSvgRy / aftBladeSvgRy. 2D no longer converts leftover helical ×10/50/45 privately.
+- [x] P5.160 Whitney sawSvgR / sawToothOuterSvgR / brushSvgR / bristleOuterSvgR. 2D no longer converts leftover saw ×65/78 or brush ×55/78 privately.
 
 ## Explicitly out of scope
 
