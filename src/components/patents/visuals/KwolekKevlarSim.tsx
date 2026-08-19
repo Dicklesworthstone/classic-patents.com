@@ -2,7 +2,7 @@
 
 import { Shield, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepKevlarContinuum } from "@/physics/catalogKernels";
+import { kevlarChainBond, stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function KwolekKevlarSim() {
@@ -99,11 +99,18 @@ export function KwolekKevlarSim() {
                   {/* Inter-Chain Hydrogen Bonds (when aligned) */}
                   {polymerAlignment > 60 && idx < 4 && (
                     <g stroke="#38bdf8" strokeWidth="1" strokeDasharray="3 3">
-                      <line x1="80" y1={yBase} x2="80" y2={yBase + 30} />
-                      <line x1="140" y1={yBase} x2="140" y2={yBase + 30} />
-                      <line x1="200" y1={yBase} x2="200" y2={yBase + 30} />
-                      <line x1="260" y1={yBase} x2="260" y2={yBase + 30} />
-                      <line x1="320" y1={yBase} x2="320" y2={yBase + 30} />
+                      {kevlar.chainBondXs.map((_, i) => {
+                        const bond = kevlarChainBond(i, kevlar.chainBondXs);
+                        return (
+                          <line
+                            key={bond.x}
+                            x1={bond.x}
+                            y1={yBase}
+                            x2={bond.x}
+                            y2={yBase + kevlar.chainBondH}
+                          />
+                        );
+                      })}
                     </g>
                   )}
                 </g>

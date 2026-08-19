@@ -3,7 +3,7 @@
 import { Play, Scissors } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
+import { howeStitch, stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function HoweSewingMachineSim() {
@@ -83,16 +83,43 @@ export function HoweSewingMachineSim() {
             </text>
 
             {/* Existing Stitches on Left */}
-            {[100, 140, 180, 220].map((x) => (
-              <g key={x}>
-                {/* Upper Thread Stitches */}
-                <line x1={x} y1="150" x2={x + 40} y2="150" stroke="#f59e0b" strokeWidth="3" />
-                {/* Vertical Interlocking Knot */}
-                <line x1={x} y1="150" x2={x} y2="168" stroke="#10b981" strokeWidth="2.5" />
-                {/* Lower Thread Stitches */}
-                <line x1={x} y1="168" x2={x + 40} y2="168" stroke="#38bdf8" strokeWidth="3" />
-              </g>
-            ))}
+            {sew.stitchXs.map((_, i) => {
+              const stitch = howeStitch(
+                i,
+                sew.stitchXs,
+                sew.stitchLen,
+                sew.stitchUpperY,
+                sew.stitchLowerY,
+              );
+              return (
+                <g key={stitch.x}>
+                  <line
+                    x1={stitch.x}
+                    y1={stitch.upperY}
+                    x2={stitch.x2}
+                    y2={stitch.upperY}
+                    stroke="#f59e0b"
+                    strokeWidth="3"
+                  />
+                  <line
+                    x1={stitch.x}
+                    y1={stitch.upperY}
+                    x2={stitch.x}
+                    y2={stitch.lowerY}
+                    stroke="#10b981"
+                    strokeWidth="2.5"
+                  />
+                  <line
+                    x1={stitch.x}
+                    y1={stitch.lowerY}
+                    x2={stitch.x2}
+                    y2={stitch.lowerY}
+                    stroke="#38bdf8"
+                    strokeWidth="3"
+                  />
+                </g>
+              );
+            })}
 
             {/* Sewing Machine Arm Casting */}
             <path d="M 260 20 L 320 20 L 320 100 L 280 100 L 280 40 L 260 40 Z" fill="#334155" />

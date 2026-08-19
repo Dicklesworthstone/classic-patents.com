@@ -127,9 +127,9 @@ export function EdisonPhonographSim() {
               <line
                 key={`thread-${i}`}
                 x1={x}
-                y1="165"
-                x2={x + 6}
-                y2="175"
+                y1={phono.leadScrewThreadY0}
+                x2={x + phono.leadScrewThreadDx}
+                y2={phono.leadScrewThreadY1}
                 stroke="#718096"
                 strokeWidth="1"
               />

@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { parsonsStageHeight } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -172,15 +173,22 @@ export function ParsonsTurbineSim() {
           {Array.from({ length: parsons.stageRingSvgCount }).map((_, i) => {
             const xPos = parsons.stageSvgOriginX + i * parsons.stageSvgPitch;
             const isRotor = i % 2 === 1;
-            const height = xPos < 240 ? 30 : xPos < 380 ? 45 : 65;
+            const height = parsonsStageHeight(
+              xPos,
+              parsons.stageSplitX0,
+              parsons.stageSplitX1,
+              parsons.stageHeightNear,
+              parsons.stageHeightMid,
+              parsons.stageHeightFar,
+            );
             return (
               <g key={`stage-ring-${xPos}`}>
                 {/* Upper Blades */}
                 <line
                   x1={xPos}
-                  y1={170 - height}
-                  x2={xPos + (isRotor ? 4 : -4)}
-                  y2={170 - 10}
+                  y1={parsons.bladeMidY - height}
+                  x2={xPos + (isRotor ? parsons.bladeLean : -parsons.bladeLean)}
+                  y2={parsons.bladeMidY - parsons.bladeGap}
                   stroke={isRotor ? "#D4AF37" : "#CBD5E0"}
                   strokeWidth="2.5"
                   strokeLinecap="round"
@@ -188,9 +196,9 @@ export function ParsonsTurbineSim() {
                 {/* Lower Blades */}
                 <line
                   x1={xPos}
-                  y1={170 + 10}
-                  x2={xPos + (isRotor ? 4 : -4)}
-                  y2={170 + height}
+                  y1={parsons.bladeMidY + parsons.bladeGap}
+                  x2={xPos + (isRotor ? parsons.bladeLean : -parsons.bladeLean)}
+                  y2={parsons.bladeMidY + height}
                   stroke={isRotor ? "#D4AF37" : "#CBD5E0"}
                   strokeWidth="2.5"
                   strokeLinecap="round"

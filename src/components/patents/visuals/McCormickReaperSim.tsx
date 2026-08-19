@@ -81,7 +81,7 @@ export function McCormickReaperSim() {
             {Array.from({ length: reaper.grainStemCount }).map((_, i) => (
               <path
                 key={`stem-${i}`}
-                d={`M ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX)} 280 Q ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) + 5} 200, ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) - 2} 120`}
+                d={`M ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX)} ${reaper.grainStemY0} Q ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) + reaper.grainStemQdx} ${reaper.grainStemQy}, ${mccormickGrainStemX(i, reaper.grainStemOriginX, reaper.grainStemPitchX) + reaper.grainStemEndDx} ${reaper.grainStemY1}`}
                 stroke="#D4AF37"
                 strokeWidth="2.5"
                 fill="none"
@@ -110,7 +110,7 @@ export function McCormickReaperSim() {
             {Array.from({ length: reaper.guardCount }).map((_, i) => (
               <polygon
                 key={`guard-${i}`}
-                points={`${mccormickGuardX(i, reaper.guardPitchX)},0 ${mccormickGuardX(i, reaper.guardPitchX) + 12},-35 ${mccormickGuardX(i, reaper.guardPitchX) + 24},0`}
+                points={`${mccormickGuardX(i, reaper.guardPitchX)},0 ${mccormickGuardX(i, reaper.guardPitchX) + reaper.guardTipDx},${reaper.guardTipDy} ${mccormickGuardX(i, reaper.guardPitchX) + reaper.guardEndDx},0`}
                 fill="#3A3A3A"
                 stroke="#1A1A1A"
                 strokeWidth="1.5"
@@ -124,7 +124,7 @@ export function McCormickReaperSim() {
             {Array.from({ length: reaper.sickleToothCount }).map((_, i) => (
               <polygon
                 key={`sickle-tooth-${i}`}
-                points={`${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX)},0 ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + 11},-26 ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + 22},0`}
+                points={`${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX)},0 ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + reaper.faceSickleTipDx},${reaper.faceSickleTipDy} ${mccormickFaceSickleX(i, reaper.sickleToothOriginX, reaper.sickleToothPitchX) + reaper.faceSickleEndDx},0`}
                 fill="#E5E4E2"
                 stroke="#4A4A4A"
                 strokeWidth="1"
@@ -149,10 +149,10 @@ export function McCormickReaperSim() {
                     strokeWidth="3.5"
                   />
                   <rect
-                    x="85"
-                    y="-12"
-                    width="22"
-                    height="24"
+                    x={reaper.reelSlatX}
+                    y={reaper.reelSlatY}
+                    width={reaper.reelSlatW}
+                    height={reaper.reelSlatH}
                     rx="2"
                     fill="#D4AF37"
                     stroke="#8B5A2B"
@@ -168,7 +168,7 @@ export function McCormickReaperSim() {
             <line
               x1="-50"
               y1="0"
-              x2={cutterX + 50}
+              x2={cutterX + reaper.pitmanCutterPad}
               y2="0"
               stroke="#333333"
               strokeWidth="4"
