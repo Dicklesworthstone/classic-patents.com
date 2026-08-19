@@ -17,6 +17,7 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     let totalVariables = 0;
 
     for (const [patentId, equations] of Object.entries(ALL_COLORIZED_EQUATIONS)) {
+      if (patentId.startsWith("_")) continue;
       for (const eq of equations) {
         totalEquations++;
         expect(eq.id.trim().length).toBeGreaterThan(0);

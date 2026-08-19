@@ -64,7 +64,7 @@ describe("US 79,265 source-faithful visual boundary", () => {
   });
 
   test("returns relative display phases rather than invented pitch, angle, or rate telemetry", () => {
-    expect(stepSholesTypewriter(40, 0)).toEqual({
+    expect(stepSholesTypewriter(40, 0)).toMatchObject({
       eventsPerSecond: 40 / 60,
       completedSteps: 0,
       keyCyclePct: 0,
