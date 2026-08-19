@@ -19,15 +19,18 @@ const figure = (
     label: `Open the source-faithful ${label} crop from US 31,128`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-31128-otis-elevator/figure-${number}-oriented-cw.png`,
+        src:
+          number === "3"
+            ? "/patents/figures/us-31128-otis-elevator/figure-3-oriented-cw-v3.png"
+            : `/patents/figures/us-31128-otis-elevator/figure-${number}-oriented-cw.png`,
         alt:
           number === "1"
             ? "Figure 1 from US 31,128: vertical section of the hoisting apparatus."
             : number === "2"
               ? "Figure 2 from US 31,128: front view of the hoisting apparatus."
               : "Figure 3 from US 31,128: detached side view of the stop mechanism.",
-        width: number === "1" ? 1050 : number === "2" ? 1400 : 360,
-        height: 1750,
+        width: number === "1" ? 1050 : number === "2" ? 1400 : 160,
+        height: number === "3" ? 1300 : 1750,
       },
     ],
   };

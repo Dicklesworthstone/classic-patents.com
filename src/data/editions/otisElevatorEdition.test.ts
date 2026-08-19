@@ -36,6 +36,32 @@ describe("otisElevatorArchivalEdition", () => {
     }
   });
 
+  test("uses the tightly framed, upright source crop for the detached Fig. 3 stop mechanism", () => {
+    const fig3 = otisElevatorArchivalEdition.blocks
+      .flatMap((block) =>
+        block.kind === "paragraph"
+          ? block.inlines.filter(
+              (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
+                inline.kind === "reference" && inline.referenceType === "figure",
+            )
+          : [],
+      )
+      .find((inline) => inline.text === "Fig. 3");
+
+    expect(fig3).toBeDefined();
+    if (fig3?.kind !== "reference") {
+      throw new Error("Otis Fig. 3 must remain an authored source-figure reference.");
+    }
+
+    expect(fig3.figurePreviews).toEqual([
+      expect.objectContaining({
+        src: "/patents/figures/us-31128-otis-elevator/figure-3-oriented-cw-v3.png",
+        width: 160,
+        height: 1300,
+      }),
+    ]);
+  });
+
   test("keeps the catalogue record in parity with the four-claim source edition", () => {
     expect(otisElevatorPatent.archivalEdition).toBe(otisElevatorArchivalEdition);
     expect(otisElevatorPatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3, 4]);

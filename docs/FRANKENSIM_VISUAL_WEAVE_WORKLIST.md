@@ -474,6 +474,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.378 Spec-clause captions on Tesla Fig. 9 print generator / pole-shift / disk rpm from the same step. 2D and 3D read `teslaMotorPhaseHz` so leftover `frequencyHz` aliases the registry `frequency`.
 - [x] P5.379 Energy strips only where the kernel already owns a watt: Davenport electrical/shaft/copper, Thomson I²R nugget. Tesla motor, Tesla coil, Diesel, Lamarr, Linotype, Hollerith, Engelbart, Kevlar stay empty.
 - [x] P5.380 Tesla coil `coupleLinks` no longer prints invented `(inputVoltageKv ?? 15) * 20` W. The coil step owns kV and streamer length, not a watt.
+- [x] P5.381 Tesla 3D HUD title is Fig. 9 motor-generator, not Source Guide. Overlay prints generator / pole-shift / disk rpm and B intensity from `stepTeslaMotorFig9`.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

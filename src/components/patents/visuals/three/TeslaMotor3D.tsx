@@ -119,10 +119,10 @@ export function TeslaMotor3D() {
         lastFrameTimeMs === undefined ? 0 : Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1);
       lastFrameTimeMs = frameTimeMs;
       const p = live.current;
-      const sourceGuideAvailable = p.phaseCount !== 3;
-      fig9Model.rootGroup.visible = sourceGuideAvailable;
+      const fig9Available = p.phaseCount !== 3;
+      fig9Model.rootGroup.visible = fig9Available;
 
-      // The shared display rate keeps the field motion legible in the source guide.
+      // Shared display ω so the Fig. 9 field is legible at 60 Hz.
       const omegaDisplay = p.fieldDisplayOmegaRadPerS;
       bFieldAngle += omegaDisplay * delta;
       fieldTimeSec += delta;
@@ -134,11 +134,11 @@ export function TeslaMotor3D() {
         delta,
         omegaDisplay,
         bFieldAngle,
-        p.showMagneticFlux && sourceGuideAvailable,
+        p.showMagneticFlux && fig9Available,
         fieldTimeSec,
       );
 
-      bFieldArrow.visible = p.showMagneticFlux && sourceGuideAvailable;
+      bFieldArrow.visible = p.showMagneticFlux && fig9Available;
 
       controls.update();
       renderer.render(scene, camera);
@@ -166,39 +166,39 @@ export function TeslaMotor3D() {
             <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
               <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
                 <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse text-amber-500" />
-                US 381,968 Fig. 9 Source Guide
+                US 381,968 Fig. 9 motor-generator
               </div>
               {!fig13Unavailable ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
                   <div>
-                    <span className="text-ink-600 dark:text-ink-400">Ring R:</span>{" "}
+                    <span className="text-ink-600 dark:text-ink-400">Generator:</span>{" "}
                     <span className="font-bold text-blue-600 dark:text-blue-400">
-                      annulus and four coils
+                      {apparatus.generatorRpm} rpm
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-ink-600 dark:text-ink-400">Pole shift:</span>{" "}
+                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                      {apparatus.poleShiftRpm} rpm
                     </span>
                   </div>
                   <div>
                     <span className="text-ink-600 dark:text-ink-400">Disk D:</span>{" "}
-                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                      mounted within R
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-ink-600 dark:text-ink-400">Generator G:</span>{" "}
                     <span className="font-bold text-amber-600 dark:text-amber-400">
-                      B/B′ coils and contact rings
+                      {apparatus.diskRpm} rpm
                     </span>
                   </div>
                   <div>
-                    <span className="text-ink-600 dark:text-ink-400">L/L′:</span>{" "}
+                    <span className="text-ink-600 dark:text-ink-400">B intensity:</span>{" "}
                     <span className="font-bold text-purple-600 dark:text-purple-400">
-                      motor-generator circuits
+                      {apparatus.schematicFieldIntensity}
                     </span>
                   </div>
                 </div>
               ) : (
                 <div className="mt-1 text-[10px] sm:text-xs font-sans text-ink-700 dark:text-ink-300">
                   The three-circuit Fig. 13 arrangement is available in the facsimile, but this 3D
-                  source guide deliberately renders Fig. 9 only rather than synthesizing another
+                  instrument deliberately renders Fig. 9 only rather than synthesizing another
                   model.
                 </div>
               )}
@@ -212,7 +212,7 @@ export function TeslaMotor3D() {
           </div>
         )}
 
-        {/* Top-right controls for the source guide. */}
+        {/* Top-right overlay and pin controls. */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"

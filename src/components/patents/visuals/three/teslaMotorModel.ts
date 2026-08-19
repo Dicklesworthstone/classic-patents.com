@@ -5,9 +5,9 @@ import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 /**
- * A source guide for US 381,968 Fig. 9 only.  It depicts the printed
- * relationships (R, C/C', D, G, B/B', b/b', and L/L') without filling the
- * drawing with later motor construction details that the figure does not give.
+ * Fig. 9 apparatus for US 381,968. Depicts the printed relationships
+ * (R, C/C', D, G, B/B', b/b', and L/L') without filling the drawing with
+ * later motor construction details that the figure does not give.
  */
 export interface TeslaMotorModel {
   rootGroup: THREE.Group;
@@ -35,7 +35,7 @@ export interface TeslaMotorModel {
 export function buildTeslaMotorModel(): TeslaMotorModel {
   const lcg = createLcg(1888);
   const rootGroup = new THREE.Group();
-  rootGroup.name = "US 381,968 Fig. 9 source guide";
+  rootGroup.name = "US 381,968 Fig. 9 apparatus";
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];

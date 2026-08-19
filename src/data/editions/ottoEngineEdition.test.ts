@@ -92,6 +92,29 @@ describe("US 194,047 manual source edition", () => {
     }
   });
 
+  test("uses an upright source-faithful Fig. 10 crop from the rotated drawing sheet", () => {
+    const fig10 = ottoEngineArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "reference" }> =>
+          inline.kind === "reference" &&
+          inline.referenceType === "figure" &&
+          inline.text === "Fig. 10",
+      );
+    });
+
+    expect(fig10.length).toBeGreaterThan(0);
+    for (const reference of fig10) {
+      expect(reference.figurePreviews).toContainEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-194047-otto-engine/fig-10-source-crop-v2.png",
+          width: 750,
+          height: 320,
+        }),
+      );
+    }
+  });
+
   test("removes the invented generic Otto-cycle account from visitor-facing data", () => {
     const visibleData = JSON.stringify({
       filingDate: ottoEnginePatent.filingDate,

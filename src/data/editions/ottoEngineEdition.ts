@@ -35,7 +35,10 @@ const FIGURES = {
   "Fig. 7": crop(7, 450, 420, "-v2"),
   "Fig. 8": crop(8, 520, 500, "-v2"),
   "Fig. 9": crop(9, 300, 220),
-  "Fig. 10": crop(10, 320, 750),
+  // The source sheet is scanned quarter-turned. This source-faithful crop is
+  // rotated upright so the preview is readable without asking the visitor to
+  // rotate their device.
+  "Fig. 10": crop(10, 750, 320, "-v2"),
   "Fig. 11": crop(11, 330, 750),
   "Fig. 12": crop(12, 470, 320),
   "Fig. 13": crop(13, 450, 320),
