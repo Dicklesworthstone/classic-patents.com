@@ -14,15 +14,25 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   edisonSchematicGlowFill,
   edisonSchematicGlowOpacity,
+  kevlarSchematicLattice,
   stepColtRevolver,
+  stepKevlarContinuum,
+  stepZeppelinAirship,
+  zeppelinSchematicCell,
 } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepFermiKinetics } from "@/physics/fermiKinetics";
-import { stepOtisElevator } from "@/physics/machineKernels";
+import {
+  ccdSchematicGateX,
+  renoSchematicCleat,
+  stepCcdWells,
+  stepOtisElevator,
+  stepRenoEscalator,
+} from "@/physics/machineKernels";
 import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
-import { wrightSchematicPose } from "@/physics/wrightKernel";
+import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
 
 interface InteractiveDiagramViewerProps {
@@ -666,30 +676,44 @@ function renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "kwolek-kevlar":
+    case "kwolek-kevlar": {
+      const kevlar = stepKevlarContinuum();
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {Array.from({ length: 5 }, (_, row) => (
-            <g key={row}>
-              <line
-                x1="60"
-                y1={80 + row * 30}
-                x2="340"
-                y2={80 + row * 30}
-                stroke="#f59e0b"
-                strokeWidth="3"
-              />
-              {Array.from({ length: 7 }, (_, col) => (
-                <circle
-                  key={col}
-                  cx={80 + col * 40}
-                  cy={80 + row * 30}
-                  r="5"
-                  fill={row % 2 === 0 ? "#38bdf8" : "#34d399"}
-                />
-              ))}
-            </g>
-          ))}
+          {Array.from({ length: kevlar.schematicLatticeRows }, (_, row) => {
+            const rowY = kevlarSchematicLattice(
+              row,
+              0,
+              kevlar.schematicLatticeOriginX,
+              kevlar.schematicLatticeOriginY,
+              kevlar.schematicLatticePitchX,
+              kevlar.schematicLatticePitchY,
+            ).cy;
+            return (
+              <g key={row}>
+                <line x1="60" y1={rowY} x2="340" y2={rowY} stroke="#f59e0b" strokeWidth="3" />
+                {Array.from({ length: kevlar.schematicLatticeCols }, (_, col) => {
+                  const node = kevlarSchematicLattice(
+                    row,
+                    col,
+                    kevlar.schematicLatticeOriginX,
+                    kevlar.schematicLatticeOriginY,
+                    kevlar.schematicLatticePitchX,
+                    kevlar.schematicLatticePitchY,
+                  );
+                  return (
+                    <circle
+                      key={col}
+                      cx={node.cx}
+                      cy={node.cy}
+                      r="5"
+                      fill={row % 2 === 0 ? "#38bdf8" : "#34d399"}
+                    />
+                  );
+                })}
+              </g>
+            );
+          })}
           <line x1="120" y1="80" x2="120" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
           <line x1="200" y1="80" x2="200" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
           <line x1="280" y1="80" x2="280" y2="200" stroke="#67e8f9" strokeDasharray="3 3" />
@@ -698,6 +722,7 @@ function renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "bell-phone":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -858,7 +883,8 @@ function renderHistoricalSchematic(
           </text>
         </g>
       );
-    case "boyle-smith-ccd":
+    case "boyle-smith-ccd": {
+      const ccd = stepCcdWells(1, 850, 2.5, 8);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -879,12 +905,12 @@ function renderHistoricalSchematic(
             fillOpacity="0.5"
             stroke="#94a3b8"
           />
-          {Array.from({ length: 6 }, (_, i) => (
+          {Array.from({ length: ccd.schematicGateCount }, (_, i) => (
             <rect
               key={i}
-              x={70 + i * 45}
+              x={ccdSchematicGateX(i, ccd.schematicGateOriginX, ccd.schematicGatePitch)}
               y="100"
-              width="36"
+              width={ccd.schematicGateWidth}
               height="40"
               fill={i % 3 === 0 ? "#f59e0b" : i % 3 === 1 ? "#38bdf8" : "#34d399"}
               fillOpacity="0.35"
@@ -897,6 +923,7 @@ function renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "morse-telegraph":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -1597,9 +1624,8 @@ function renderHistoricalSchematic(
             strokeLinecap="round"
           />
           {/* Moving Grooved Cleats */}
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-            const x = 60 + i * 42;
-            const y = 200 - i * 20;
+          {Array.from({ length: stepRenoEscalator({}).schematicCleatCount }, (_, i) => {
+            const { x, y } = renoSchematicCleat(i);
             return (
               <rect
                 key={i}
@@ -1721,11 +1747,11 @@ function renderHistoricalSchematic(
             fill="#1e293b"
             fillOpacity="0.2"
           />
-          {/* 17 Internal Gas Cells */}
-          {Array.from({ length: 9 }).map((_, i) => (
+          {/* Internal gas cells */}
+          {Array.from({ length: stepZeppelinAirship({}).schematicCellCount }, (_, i) => (
             <ellipse
               key={i}
-              cx={70 + i * 32}
+              cx={zeppelinSchematicCell(i).cx}
               cy="140"
               rx="12"
               ry="42"
@@ -2935,7 +2961,7 @@ export function InteractiveDiagramViewer({
                 if (!patentId?.includes("wright")) return;
                 const rect = e.currentTarget.getBoundingClientRect();
                 const nx = (e.clientX - rect.left) / rect.width;
-                updateParam("wingWarp", Math.max(-15, Math.min(15, (nx - 0.5) * 30)));
+                updateParam("wingWarp", wrightWarpFromPointerNx(nx));
               }}
             >
               {/* Outer drawing border */}
