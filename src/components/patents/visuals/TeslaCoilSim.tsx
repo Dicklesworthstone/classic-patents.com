@@ -101,17 +101,18 @@ export function TeslaCoilSim() {
                   res.windingHalfW,
                 );
                 return (
-                <line
-                  key={i}
-                  x1={turn.x1}
-                  y1={turn.y1}
-                  x2={turn.x2}
-                  y2={turn.y2}
-                  stroke="#a855f7"
-                  strokeWidth="1.5"
-                  opacity="0.85"
-                />
-              ))}
+                  <line
+                    key={i}
+                    x1={turn.x1}
+                    y1={turn.y1}
+                    x2={turn.x2}
+                    y2={turn.y2}
+                    stroke="#a855f7"
+                    strokeWidth="1.5"
+                    opacity="0.85"
+                  />
+                );
+              })}
             </g>
 
             {/* Topload Toroid Terminal (High Voltage Sphere) */}
