@@ -37,4 +37,19 @@ describe("root editorial publication holds", () => {
       expect(archivalEditionForPublication(patent)).toBeUndefined();
     }
   });
+
+  test("keeps records with known incomplete source ledgers unbound as a second fail-closed layer", () => {
+    for (const patentId of [
+      "us-313224-mergenthaler-linotype",
+      "us-395781-hollerith-tabulating",
+      "us-3541541-engelbart-mouse",
+    ]) {
+      const patent = allPatents.find((candidate) => candidate.id === patentId);
+      expect(patent, `missing catalog record ${patentId}`).toBeDefined();
+      if (!patent) continue;
+
+      expect(patent.archivalEdition).toBeUndefined();
+      expect(patent.originalTextAsset).toBeUndefined();
+    }
+  });
 });
