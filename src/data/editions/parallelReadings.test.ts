@@ -117,9 +117,9 @@ describe("manual archival parallel-reading registry", () => {
       Object.keys(ARCHIVAL_PARALLEL_READINGS).filter((patentId) =>
         isArchivalEditionExplicitlyWithheld(patentId),
       ),
-    ).toEqual([]);
-    expect([...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].sort()).toEqual(
-      [...EXPECTED_ROOT_QA_WITHHOLDS].sort(),
+    ).toEqual([] as string[]);
+    expect([...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].map(String).sort()).toEqual(
+      [...EXPECTED_ROOT_QA_WITHHOLDS].map(String).sort(),
     );
   });
 });
