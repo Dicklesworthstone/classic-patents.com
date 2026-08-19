@@ -75,6 +75,7 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
     expect(energyChannelsFor("us-2708656-fermi-reactor", {})).toEqual([]);
     expect(energyChannelsFor("us-313224-mergenthaler-linotype", {})).toEqual([]);
+    expect(energyChannelsFor("us-395781-hollerith-tabulating", {})).toEqual([]);
     expect(energyChannelsFor("us-3541541-engelbart-mouse", {})).toEqual([]);
   });
 
