@@ -456,7 +456,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           value: `${match.optimalEpsilon}:1`,
           unit: "ε*",
           badgeColor: "cyan",
-          progressPct: clampProgress(match.expansionEfficiency * 100),
+          progressPct: clampProgress(match.expansionEfficiencyPct),
         },
         {
           label: "Optimum Ae/At",
@@ -1932,7 +1932,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const lux = p.incidentLux ?? 850;
       const wells = stepCcdWells(1, lux, f, vGate);
       const wellCap = wells.fullWellElectrons;
-      const cte = (wells.cte * 100).toFixed(4);
+      const cte = wells.ctePct.toFixed(4);
 
       return [
         {

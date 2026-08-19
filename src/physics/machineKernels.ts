@@ -14,6 +14,8 @@ export function stepCcdWells(
   photoElectrons: number;
   fullWellElectrons: number;
   cte: number;
+  ctePct: number;
+  packetOpacity: number;
   outputSignalMv: number;
   phasePeriodNs: number;
   phaseDisplayMs: number;
@@ -34,6 +36,8 @@ export function stepCcdWells(
     photoElectrons,
     fullWellElectrons,
     cte,
+    ctePct: Number((cte * 100).toFixed(4)),
+    packetOpacity: Number((0.35 + cte * 0.55).toFixed(4)),
     outputSignalMv,
     // Real 3-phase gate step: T = 1/(3f).
     phasePeriodNs: Number((1000 / (f * 3)).toFixed(1)),
@@ -71,6 +75,7 @@ export function stepHoweLockstitch(crankDeg: number): {
   shuttleX: number;
   loopOpen: boolean;
   loopWidth: number;
+  loopSvgControlX: number;
   needleStudioRotZ: number;
   needleStudioY: number;
   shuttleStudioZ: number;
@@ -79,11 +84,13 @@ export function stepHoweLockstitch(crankDeg: number): {
   const loopOpen = crankDeg > 80 && crankDeg < 220;
   const sinR = Math.sin(rad);
   const cosR = Math.cos(rad);
+  const loopWidth = loopOpen ? Math.sin((crankDeg - 80) * (Math.PI / 140)) * 24 : 0;
   return {
     needleY: sinR * 45,
     shuttleX: cosR * 60,
     loopOpen,
-    loopWidth: loopOpen ? Math.sin((crankDeg - 80) * (Math.PI / 140)) * 24 : 0,
+    loopWidth,
+    loopSvgControlX: Number((loopWidth * 1.5).toFixed(2)),
     needleStudioRotZ: Number((sinR * 0.45).toFixed(4)),
     needleStudioY: Number((1.8 + sinR * 0.5).toFixed(4)),
     shuttleStudioZ: Number((cosR * 1.2).toFixed(4)),
@@ -127,6 +134,8 @@ export function stepSholesTypewriter(
   keyCyclePct: number;
   ratchetReleasePct: number;
   displayTypebarIndex: number;
+  displayColumnWrap: number;
+  columnPitchPx: number;
 } {
   const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
   const eventsPerSecond = cadence / 60;
@@ -141,6 +150,8 @@ export function stepSholesTypewriter(
     // This indexes only diagrammatic bars in the presentation, never a
     // claim about how many bars the source machine used.
     displayTypebarIndex: completedSteps % 12,
+    displayColumnWrap: 12,
+    columnPitchPx: 6,
   };
 }
 

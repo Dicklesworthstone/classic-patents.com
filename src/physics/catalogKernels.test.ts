@@ -87,6 +87,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.brakeHorsepower).toBeGreaterThan(0);
     expect(res.thermalEfficiencyPct).toBeGreaterThan(40);
     expect(res.peakFiringBar).toBeGreaterThan(res.peakCompressionBar);
+    expect(res.flywheelSvgR).toBe(80);
   });
 
   test("Parsons steam turbine computes multi-stage expansion enthalpy", () => {
@@ -101,6 +102,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.thrustKn).toBeGreaterThan(0);
     expect(res.slipFraction).toBeGreaterThanOrEqual(0);
     expect(res.slipFraction).toBeLessThanOrEqual(1);
+    expect(res.slipPct).toBeCloseTo(res.slipFraction * 100, 5);
+    expect(res.propulsiveEfficiencyPct).toBeCloseTo((1 - res.slipFraction) * 100, 5);
   });
 
   test("DeLaval centrifugal separator computes radial g-force and separation efficiency", () => {

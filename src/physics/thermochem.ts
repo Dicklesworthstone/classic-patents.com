@@ -39,7 +39,11 @@ export function goddardNozzleMatch(altitudeMiles: number, expansionRatio: number
   const expansionEfficiency = Number(
     Math.max(0.6, 1 - Math.abs(eps - optimalEpsilon) / (optimalEpsilon * 2)).toFixed(2),
   );
-  return { optimalEpsilon, expansionEfficiency };
+  return {
+    optimalEpsilon,
+    expansionEfficiency,
+    expansionEfficiencyPct: Number((expansionEfficiency * 100).toFixed(0)),
+  };
 }
 
 /** Chamber → sonic throat → exit meridian for a lathe nozzle. Radii in metres of the 3D stage. */

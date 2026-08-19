@@ -256,7 +256,7 @@ export function materialProbe(
       part: calloutLabel,
       material: "Three-phase MOS polysilicon gates on p-Si",
       qty: "CTE",
-      value: (wells.cte * 100).toFixed(4),
+      value: wells.ctePct.toFixed(4),
       unit: "%",
       note: `${wells.photoElectrons.toLocaleString()} e⁻ in a ${wells.fullWellElectrons.toLocaleString()} e⁻ well. φ ${wells.phasePeriodNs} ns.`,
     };

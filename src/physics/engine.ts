@@ -330,7 +330,7 @@ export const FrankenSimEngine = {
       biasVoltageVolts: clockVoltageV,
       currentGainAlpha: 1.0,
       holeDiffusionCoefficientCm2ps: 35.0,
-      chargeTransferEfficiencyPct: Number((wells.cte * 100).toFixed(4)),
+      chargeTransferEfficiencyPct: wells.ctePct,
       clockPeriodNs: wells.phasePeriodNs,
       busBandwidthMbps: 10,
       electronVelocityMps: wells.photoElectrons,

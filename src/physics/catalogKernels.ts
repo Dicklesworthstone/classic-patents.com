@@ -105,6 +105,7 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     govDisplayOmegaRadPerS: Number(((rpm / 180) * 9).toFixed(3)),
     flyballRadius: Number((0.18 + Math.min(0.15, (rpm / 300) * 0.14)).toFixed(4)),
     pistonStrokePx: 35,
+    flywheelSvgR: 80,
   };
 }
 
@@ -166,6 +167,8 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     pitchMeters,
     theoreticalSpeedKnots,
     slipFraction,
+    slipPct: Number((slipFraction * 100).toFixed(1)),
+    propulsiveEfficiencyPct: Number(((1 - slipFraction) * 100).toFixed(1)),
     shaftOmegaRadPerS: Number(shaftOmegaRadPerS.toFixed(3)),
     shaftOmegaDegPerS: Number((rpm * 6).toFixed(1)),
     wakeSwirlScale: 0.4,
@@ -477,6 +480,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     stylusAmp: Number(((((vol / 75) * 25) / 1000) * 0.05).toFixed(5)),
     stylusOmegaRadPerS: 45,
     axialDisplayWrapMm: 40,
+    axialSvgPxPerMm: 2,
   };
 }
 

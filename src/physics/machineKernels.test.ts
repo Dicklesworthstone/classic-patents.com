@@ -16,6 +16,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     const res1 = stepCcdWells(1, 800, 10, 8);
     expect(res1.wells[0]).toBeGreaterThan(0);
     expect(res1.cte).toBeGreaterThan(0.999);
+    expect(res1.ctePct).toBeCloseTo(res1.cte * 100, 4);
+    expect(res1.packetOpacity).toBeCloseTo(0.35 + res1.cte * 0.55, 4);
     expect(res1.fullWellElectrons).toBeGreaterThan(50000);
     expect(res1.phasePeriodNs).toBeCloseTo(33.3, 1);
 
@@ -37,6 +39,7 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(atTdc.needleY).toBeCloseTo(45, 1);
     expect(atTdc.loopOpen).toBe(true);
     expect(atTdc.loopWidth).toBeGreaterThan(0);
+    expect(atTdc.loopSvgControlX).toBeCloseTo(atTdc.loopWidth * 1.5, 2);
 
     // Needle Bottom Dead Center (crankDeg = 270)
     const atBdc = stepHoweLockstitch(270);
@@ -58,6 +61,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(cycle.completedSteps).toBe(2);
     expect(cycle.keyCyclePct).toBe(0.5);
     expect(cycle.displayTypebarIndex).toBe(2);
+    expect(cycle.displayColumnWrap).toBe(12);
+    expect(cycle.columnPitchPx).toBe(6);
   });
 
   test("stepMergenthalerLinotype computes matrix justification, lead pot solidification, and slug ejection", () => {
