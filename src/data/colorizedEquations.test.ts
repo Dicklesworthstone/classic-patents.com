@@ -73,4 +73,116 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(publicCards).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Goddard US 1,102,653 on its printed solid-charge tapered-tube limitation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-1102653-goddard-rocket"];
+    expect(cards.map((card) => card.id)).toEqual(["goddard-source-tapered-tube-minimum"]);
+    expect(cards[0]?.rawLatex).toBe("L \\ge 3D");
+    expect(cards[0]?.claimRef).toBe(2);
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "turbopump",
+      "apollo",
+      "space launch vehicle",
+      "new york times",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Noyce US 2,981,877 on its printed oxide-supported crossing relation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-2981877-noyce-ic"];
+    expect(cards.map((card) => card.id)).toEqual(["noyce-source-oxide-crossing-lead"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("retained oxide layer");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "35 v planar oxide",
+      "gigahertz switching",
+      "11.7",
+      "10^-8",
+      "microprocessors, ram, and gpus",
+      "silicon valley",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Carrier US 808,897 on its printed wet-plate separator relation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-808897-carrier-air-conditioner"];
+    expect(cards.map((card) => card.id)).toEqual(["carrier-source-wet-plate-separator"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("unobstructed wet front plates");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "constant enthalpy air conditioning",
+      "saturation dew-point humidity",
+      "20\\text{ to }150\\text{ kw}",
+      "10^\\circ\\text{c} to 13^\\circ\\text{c}",
+      "foggy train platform",
+      "pittsburgh",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Parsons US 608,969 on its printed marine-routing relation", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-608969-parsons-turbine"];
+    expect(cards.map((card) => card.id)).toEqual(["parsons-source-selectable-turbine-routing"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("plural screw-shafts");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "multistage reaction enthalpy",
+      "40,000 rpm",
+      "50% degree of reaction",
+      "80% of the world's electricity",
+      "\u0394h_{\\text{stage}}",
+      "u_{\\text{blade}}",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Boyle-Smith US 3,858,232 on its source-review boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-3858232-boyle-smith-ccd"];
+    expect(cards.map((card) => card.id)).toEqual(["boyle-smith-source-adjacent-storage-minima"]);
+    expect(cards[0]?.claimRef).toBe(2);
+    expect(cards[0]?.rawLatex).toContain("stored minority carriers");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "3-phase mos",
+      "0.99999",
+      "dark current",
+      "hubble",
+      "megapixel",
+      "camera performance",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
+  test("keeps Kwolek US 3,671,542 on its checked-claim boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-3671542-kwolek-kevlar"];
+    expect(cards.map((card) => card.id)).toEqual(["kwolek-source-anisotropic-dope"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("optically anisotropic dope");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "130 gpa",
+      "3,600 mpa",
+      "9,500",
+      "ballistic",
+      "body armor",
+      "dry-jet geometry",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });

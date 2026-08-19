@@ -2816,8 +2816,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 10. Willard Boyle & George Smith Charge-Coupled Device (US 3,858,232)
-  "us-3858232-boyle-smith-ccd": [
+  // Retained source-mismatch witness. These inherited sensor-performance cards
+  // are not a reviewed treatment of US 3,858,232's information-storage grant.
+  "_legacy-unpublished-us-3858232-boyle-smith-ccd": [
     {
       id: "ccd-potential-well-transfer",
       patentId: "us-3858232-boyle-smith-ccd",
@@ -3096,6 +3097,117 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "Enabled high-speed electronic video framing and high-resolution CCD line scanners.",
+    },
+  ],
+
+  "us-3858232-boyle-smith-ccd": [
+    {
+      id: "boyle-smith-source-adjacent-storage-minima",
+      patentId: "us-3858232-boyle-smith-ccd",
+      title: "Claim 2: Sequential Transfer Between Storage Minima",
+      category: "Source-Bound Semiconductor Information Storage",
+      rawLatex:
+        "\\text{stored minority carriers} + \\text{next established potential-energy minimum} \\rightarrow \\text{sequential transfer}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\text{stored minority carriers}} + \\textcolor{#2563eb}{\\text{next established potential-energy minimum}} \\rightarrow \\textcolor{#d97706}{\\text{sequential transfer}}",
+      plainEnglishSentence: [
+        { text: "Claim 2 treats " },
+        { text: "minority charge carriers", variableId: "minority_carriers" },
+        { text: " as stored information. A sequential electrode field establishes a " },
+        { text: "neighboring potential-energy minimum", variableId: "next_minimum" },
+        { text: " so the stored charge can transfer before the earlier minimum is removed." },
+      ],
+      variables: [
+        {
+          id: "minority_carriers",
+          symbol: "minority carriers",
+          name: "Stored minority charge carriers",
+          color: "emerald",
+          role: "The minority carriers identified by the source as the information-bearing charge stored in a semiconductor medium.",
+          unit: "Claim 2 information-bearing element",
+          dimension: "localized semiconductor charge",
+          explanation:
+            "The source describes charge storage and transfer in a semiconductor medium. It does not supply a full-well capacity, quantum efficiency, sensor-noise value, or image-resolution measurement.",
+        },
+        {
+          id: "next_minimum",
+          symbol: "adjacent minimum",
+          name: "Sequentially established potential-energy minimum",
+          color: "sapphire",
+          role: "The neighboring storage location established before the prior potential-energy minimum is removed, allowing transfer of the stored charge.",
+          unit: "Claim 2 transfer relation",
+          dimension: "electrostatic storage geometry",
+          explanation:
+            "This source relation describes the order of transfer between potential-energy minima. It is not a claim of a particular clock frequency, gate geometry, transfer efficiency, or transit time.",
+        },
+      ],
+      pedagogicalNote:
+        "This card is limited to the Claim 2 storage-and-transfer relation. The complete original-text face is still withheld while the manual literal ledger and non-lossy companions are completed, so the site does not present a quantitative CCD, camera, or later-product model for US 3,858,232.",
+      claimRef: 2,
+      historicalSignificance:
+        "The card identifies the source's stated information-storage move without recasting this grant as the separate later CCD patent formerly attached to the route.",
+    },
+  ],
+
+  "us-3671542-kwolek-kevlar": [
+    {
+      id: "kwolek-source-anisotropic-dope",
+      patentId: "us-3671542-kwolek-kevlar",
+      title: "Claim 1: Optically Anisotropic Aromatic-Polyamide Dope",
+      category: "Source-Bound Polymer Composition",
+      rawLatex:
+        "\\text{carbocyclic aromatic polyamide} + \\text{selected liquid medium} \\rightarrow \\text{optically anisotropic dope}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\text{carbocyclic aromatic polyamide}} + \\textcolor{#2563eb}{\\text{selected liquid medium}} \\rightarrow \\textcolor{#d97706}{\\text{optically anisotropic dope}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 requires a " },
+        { text: "carbocyclic aromatic polyamide", variableId: "aromatic_polyamide" },
+        { text: " in a " },
+        { text: "selected liquid medium", variableId: "liquid_medium" },
+        { text: " at a concentration above the stated " },
+        { text: "viscosity-discontinuity threshold", variableId: "viscosity_threshold" },
+        { text: ", producing an optically anisotropic dope without a solid phase." },
+      ],
+      variables: [
+        {
+          id: "aromatic_polyamide",
+          symbol: "aromatic polyamide",
+          name: "Carbocyclic aromatic homo- or copolyamide",
+          color: "emerald",
+          role: "The polymer class recited in Claim 1, with the stated coaxial or parallel and oppositely directed chain-extending bonds.",
+          unit: "Claim 1 composition element",
+          dimension: "polymer composition",
+          explanation:
+            "This card identifies the claim's named polymer element. It does not infer a particular commercial polymer grade, molecular weight, fiber construction, or finished-product performance.",
+        },
+        {
+          id: "liquid_medium",
+          symbol: "liquid medium",
+          name: "Selected liquid medium",
+          color: "sapphire",
+          role: "One of the amide/urea-with-salt, sulfuric-acid, hydrofluoric-acid, or sulfonic-acid media enumerated in Claim 1.",
+          unit: "Claim 1 liquid-medium family",
+          dimension: "solution composition",
+          explanation:
+            "Claim 1 lists several media, and Claim 2 narrows one option to concentrated sulfuric acid. The incomplete source edition does not support publishing a processing recipe or operating condition here.",
+        },
+        {
+          id: "viscosity_threshold",
+          symbol: "viscosity discontinuity",
+          name: "Claimed concentration boundary",
+          color: "amber",
+          role: "The concentration above which Claim 1 specifies a sharp change in the slope of dope viscosity versus polymer concentration, without solid-phase formation.",
+          unit: "Claim 1 qualitative condition",
+          dimension: "composition-dependent behavior",
+          explanation:
+            "The claim states a qualitative boundary. This card intentionally gives no numerical concentration, viscosity, strength, orientation, or spinning-rate value while the full specification and examples remain under manual review.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a claim-bound reading aid, not a performance model. The public source edition is withheld because most of the 58-page facsimile, including its specification, examples, tables, and correction certificates, has not yet been manually transcribed and reconciled.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card records the verified composition relation in the grant without substituting later Kevlar properties, uses, or manufacturing claims for the incomplete historical source edition.",
     },
   ],
 
@@ -3517,7 +3629,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  "us-2981877-noyce-ic": [
+  // Retained only as non-serving research comparison material. These cards
+  // asserted a numerical device model that the 1961 grant does not provide.
+  "_legacy-unpublished-us-2981877-noyce-ic": [
     {
       id: "noyce-pn-depletion",
       patentId: "us-2981877-noyce-ic",
@@ -3726,6 +3840,68 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 2,
       historicalSignificance:
         "Established the p-n junction isolation technique that made monolithic silicon ICs physically and commercially viable.",
+    },
+  ],
+
+  "us-2981877-noyce-ic": [
+    {
+      id: "noyce-source-oxide-crossing-lead",
+      patentId: "us-2981877-noyce-ic",
+      title: "Claim 1: Oxide-Supported Junction Crossing",
+      category: "Source-Bound Semiconductor Geometry",
+      rawLatex:
+        "\\text{retained oxide layer} + \\text{adherent metal strip} \\rightarrow \\text{insulated junction crossing}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\text{retained oxide layer}} + \\textcolor{#2563eb}{\\text{adherent metal strip}} \\rightarrow \\textcolor{#d97706}{\\text{insulated junction crossing}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 keeps a " },
+        { text: "retained oxide layer", variableId: "oxide_layer" },
+        { text: " across part of a surface-reaching P-N junction so an " },
+        { text: "adherent metal strip", variableId: "metal_strip" },
+        { text: " can make an " },
+        { text: "insulated crossing", variableId: "junction_crossing" },
+        { text: " to one selected contact without joining the other side of the junction." },
+      ],
+      variables: [
+        {
+          id: "oxide_layer",
+          symbol: "oxide",
+          name: "Retained semiconductor oxide",
+          color: "emerald",
+          role: "The oxide of the semiconductor that remains adherent to the surface and crosses the relevant junction portion in Claim 1.",
+          unit: "source construction element",
+          dimension: "insulating surface layer",
+          explanation:
+            "The source uses the oxide as the insulating support under the crossing part of the lead. In the illustrated transistor example it says the oxide may be about one or two microns thick; it supplies no general electrical-performance value.",
+        },
+        {
+          id: "metal_strip",
+          symbol: "strip",
+          name: "Adherent metal strip",
+          color: "sapphire",
+          role: "The deposited conductor that adheres to the oxide and reaches a selected contact after crossing the insulated junction portion.",
+          unit: "source construction element",
+          dimension: "planar electrical connection",
+          explanation:
+            "The specification permits metal deposition through a mask or broader deposition followed by photoengraving. The legal point is the strip's relation to the oxide and junction, not a stated resistivity, width, clock rate, or delay.",
+        },
+        {
+          id: "junction_crossing",
+          symbol: "crossing",
+          name: "Insulated junction crossing",
+          color: "amber",
+          role: "The contact-routing relation that lets a conductor pass over a P-N junction without shorting the regions on its opposite sides.",
+          unit: "Claim 1 relation",
+          dimension: "surface layout constraint",
+          explanation:
+            "This card states the geometry and insulation relationship the grant actually describes. It is not a depletion-width, capacitance, breakdown, or semiconductor-speed calculation.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a Claim 1 construction relation, not a quantitative device law. US 2,981,877 does not print a bias voltage, dopant concentration, depletion width, capacitance, clock frequency, delay, breakdown limit, package, or switching-performance measurement for the illustrated structures.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card directs the reader to the source's actual legal relation: retained oxide separates a crossing metal strip from a surface-reaching P-N junction while contact windows reach selected regions.",
     },
   ],
 
@@ -3978,8 +4154,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 14. Stephanie Kwolek Kevlar Aramid Fibers (US 3,671,542)
-  "us-3671542-kwolek-kevlar": [
+  "_legacy-unpublished-us-3671542-kwolek-kevlar": [
     {
       id: "kwolek-aramid-tensile",
       patentId: "us-3671542-kwolek-kevlar",
@@ -4594,8 +4769,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 16. Robert Goddard Liquid-Fuel Rocket (US 1,102,653)
-  "us-1102653-goddard-rocket": [
+  // Retained research cards from an unrelated liquid-rocket treatment. They are intentionally
+  // non-serving: US 1,102,653 is a solid-charge apparatus, not the document these cards describe.
+  "_legacy-unpublished-us-1102653-goddard-rocket": [
     {
       id: "goddard-tsiolkovsky-rocket-equation",
       patentId: "us-1102653-goddard-rocket",
@@ -4986,6 +5162,53 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 1155986 proved liquid propulsion, multi-stage rocketry, and supersonic de Laval expansion, laying the foundation for Apollo 11 and modern space exploration.",
+    },
+  ],
+
+  "us-1102653-goddard-rocket": [
+    {
+      id: "goddard-source-tapered-tube-minimum",
+      patentId: "us-1102653-goddard-rocket",
+      title: "Claim 2: Tapered-Tube Minimum Geometry",
+      category: "Source-Bound Rocket Geometry",
+      rawLatex: "L \\ge 3D",
+      colorizedLatex: "\\textcolor{#059669}{L} \\ge 3\\,\\textcolor{#2563eb}{D}",
+      plainEnglishSentence: [
+        { text: "Claim 2 requires the tapered tube's " },
+        { text: "length", variableId: "tube_length" },
+        { text: " to be at least three times its " },
+        { text: "longest diameter", variableId: "tube_diameter" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "tube_length",
+          symbol: "L",
+          name: "Tapered Tube Length",
+          color: "emerald",
+          role: "The length of the slightly tapered truncated-cone discharge tube specified in Claim 2.",
+          unit: "multiples of the longest diameter",
+          dimension: "[L]",
+          explanation:
+            "The claim sets only a lower bound: the tube length must be not less than three times its longest diameter. The specification says a greater ratio can be needed and that the best proportion is determined experimentally.",
+        },
+        {
+          id: "tube_diameter",
+          symbol: "D",
+          name: "Longest Tube Diameter",
+          color: "sapphire",
+          role: "The larger diameter used by the patent to state the minimum tube-length relation.",
+          unit: "source geometry reference",
+          dimension: "[L]",
+          explanation:
+            "The facsimile does not supply a numerical diameter, pressure, mass flow, exhaust speed, or thrust. It uses the longest diameter only to express the Claim 2 ratio.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a legal geometry limit from Claim 2, not a calculated nozzle-performance law. US 1,102,653 describes explosive disks and a long tapered tube; it does not specify a liquid propellant, a de Laval throat, a Mach number, or a numerical thrust.",
+      claimRef: 2,
+      historicalSignificance:
+        "The card keeps the reader on a directly stated limitation of the 1914 grant: a slightly tapered truncated-cone tube with a stated minimum proportion.",
     },
   ],
 
@@ -6017,8 +6240,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 21. Willis Carrier Air Conditioner (US 808,897)
-  "us-808897-carrier-air-conditioner": [
+  // Retained source-mismatch witness. US 808,897 is an air-washer and separator grant,
+  // not the chilled-dew-point system described by these inherited cards.
+  "_legacy-unpublished-us-808897-carrier-air-conditioner": [
     {
       id: "carrier-latent-dehumidification-rate",
       patentId: "us-808897-carrier-air-conditioner",
@@ -6267,6 +6491,68 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 808897 established modern psychrometrics, air conditioning, and climate control for semiconductors, pharmaceuticals, skyscrapers, and modern cities.",
+    },
+  ],
+
+  "us-808897-carrier-air-conditioner": [
+    {
+      id: "carrier-source-wet-plate-separator",
+      patentId: "us-808897-carrier-air-conditioner",
+      title: "Claim 1: Wet Front Plates and Rear Liquid-Separation Projections",
+      category: "Source-Bound Air-Washer Geometry",
+      rawLatex:
+        "\\text{fine spray} + \\text{unobstructed wet front plates} + \\text{rear projections and gutters} \\rightarrow \\text{air purified of liquid and captured material}",
+      colorizedLatex:
+        "\\textcolor{#0891b2}{\\text{fine spray}} + \\textcolor{#059669}{\\text{unobstructed wet front plates}} + \\textcolor{#d97706}{\\text{rear projections and gutters}} \\rightarrow \\textcolor{#2563eb}{\\text{air purified of liquid and captured material}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 puts a " },
+        { text: "fine spray", variableId: "spray" },
+        { text: " ahead of " },
+        { text: "unobstructed wet front plate faces", variableId: "wet_front" },
+        { text: ". Their rear portions use " },
+        { text: "projections and gutters", variableId: "rear_gutters" },
+        { text: " to interrupt liquid travel and promote separation from the air." },
+      ],
+      variables: [
+        {
+          id: "spray",
+          symbol: "spray H",
+          name: "Fine treating-liquid spray",
+          color: "cyan",
+          role: "The finely divided water or other suitable treating liquid introduced by the source's spray device H.",
+          unit: "source construction element",
+          dimension: "air-washer input",
+          explanation:
+            "The printed grant names water or another suitable treating liquid and describes whirling nozzles. It does not give a liquid temperature, pressure, droplet-size distribution, or refrigeration system.",
+        },
+        {
+          id: "wet_front",
+          symbol: "faces i",
+          name: "Unobstructed wet front plate faces",
+          color: "emerald",
+          role: "The smooth front portions that distribute liquid and keep a wetted area exposed to the sinuous airstream.",
+          unit: "Claim 1 construction element",
+          dimension: "particle-capture surface",
+          explanation:
+            "The specification says suspended material is thrown against these liquid films by inertia and centrifugal action in the turning passages. It provides no removal-rate calculation or humidity performance value.",
+        },
+        {
+          id: "rear_gutters",
+          symbol: "flanges b, c; gutter a",
+          name: "Rear projections and gutters",
+          color: "amber",
+          role: "The rear plate features that obstruct liquid travel across successive bends and collect it for separation from outgoing air.",
+          unit: "Claim 1 construction element",
+          dimension: "liquid-separation geometry",
+          explanation:
+            "The claims distinguish the unobstructed front plate portion from the projected rear portion. That geometry, not a dew-point-control process, is the legal relation presented here.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a Claim 1 construction relation, not a quantitative psychrometric law. US 808,897 prints no chilled-water temperature, dew point, humidity ratio, enthalpy equation, refrigeration capacity, reheat temperature, air-flow rate, or automatic setpoint for the apparatus.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card directs readers to the grant's actual separation mechanism: wet front plate faces capture material, while rear projections and gutters promote removal of free liquid from the air stream.",
     },
   ],
 
@@ -6848,8 +7134,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 24. Charles Parsons Multi-Stage Reaction Steam Turbine (US 608,969)
-  "us-608969-parsons-turbine": [
+  // Retained source-mismatch witness. These inherited reaction-turbine cards
+  // describe another Parsons patent, not US 608,969's marine piping system.
+  "_legacy-unpublished-us-608969-parsons-turbine": [
     {
       id: "parsons-multistage-enthalpy-drop",
       patentId: "us-608969-parsons-turbine",
@@ -7079,8 +7366,145 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
+  "us-608969-parsons-turbine": [
+    {
+      id: "parsons-source-selectable-turbine-routing",
+      patentId: "us-608969-parsons-turbine",
+      title: "Claim 1: Selectable Series and Parallel Turbine Connections",
+      category: "Source-Bound Marine Turbine Plumbing",
+      rawLatex:
+        "\\text{plural screw-shafts} + \\text{turbines} + \\text{pipes and valves} \\rightarrow \\text{series, simple-parallel, or compound-parallel connection}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\text{plural screw-shafts}} + \\textcolor{#059669}{\\text{turbines}} + \\textcolor{#d97706}{\\text{pipes and valves}} \\rightarrow \\textcolor{#0891b2}{\\text{selectable connection}}",
+      plainEnglishSentence: [
+        { text: "Claim 1 combines " },
+        { text: "multiple screw-shafts", variableId: "shafts" },
+        { text: " and " },
+        { text: "multiple turbines", variableId: "turbines" },
+        { text: ". The " },
+        { text: "pipes and valves", variableId: "routing" },
+        { text: " select series, simple-parallel, or compound-parallel steam routes." },
+      ],
+      variables: [
+        {
+          id: "shafts",
+          symbol: "shafts 1–4",
+          name: "Plural screw-shafts",
+          color: "sapphire",
+          role: "The propeller shafts named in the marine combinations of the source's three claims.",
+          unit: "Claim 1 construction element",
+          dimension: "marine propulsion shaft set",
+          explanation:
+            "Figure 1 shows four shafts with two turbines on each, while Figure 3 shows three shafts with two turbines on each. The legal focus is their connection to the turbine system.",
+        },
+        {
+          id: "turbines",
+          symbol: "A…D′; X, Y",
+          name: "Turbine sets and reversing turbines",
+          color: "emerald",
+          role: "The multiple turbine motors whose capacities and admitted steam paths vary with the selected operating arrangement.",
+          unit: "source apparatus element",
+          dimension: "turbine connection set",
+          explanation:
+            "The specification discusses graduated capacity and different flow paths. It does not provide a blade-section drawing or enough operating data for a numerical rotor-performance calculation.",
+        },
+        {
+          id: "routing",
+          symbol: "P, Q, S, U; R, T, V, W",
+          name: "Pipe-and-valve routing",
+          color: "amber",
+          role: "The named pipes and valves that couple selected turbines in series, simple parallel, or compound parallel.",
+          unit: "Claim 1 construction element",
+          dimension: "steam-path selection",
+          explanation:
+            "Claims 2 and 3 add a reversing turbine on a shaft, running in condenser vacuum when the forward turbines operate. The source claims routing and connection, not a stated pressure, power, or speed value.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a Claim 1 connection relation, not a turbine performance law. US 608,969 does not print a rotor speed, inlet pressure, stage count, enthalpy drop, blade velocity, shaft-power value, efficiency, Turbinia speed, or electric-generator output for this display.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card directs the reader to the patent's actual subject: selectable marine steam routing among several turbine motors and screw-shafts, including a separate reversing arrangement.",
+    },
+  ],
+
   // 25. Samuel Colt Revolver (US X9430)
   "us-x9430-colt-revolver": [
+    {
+      id: "colt-revolver-muzzle-velocity-energy",
+      patentId: "us-x9430-colt-revolver",
+      title: "Muzzle Kinetic Energy & Ballistic Work",
+      category: "Ballistics & Mechanics",
+      rawLatex: "E_{\\text{kinetic}} = \\frac{1}{2} m_{\\text{bullet}} v_{\\text{muzzle}}^2",
+      colorizedLatex:
+        "\\textcolor{#059669}{E_{\\text{kinetic}}} = \\frac{1}{2}\\,\\textcolor{#2563eb}{m_{\\text{bullet}}}\\,\\textcolor{#dc2626}{v_{\\text{muzzle}}}^2",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "kinetic energy delivered by the fired ball",
+          variableId: "energy_e",
+        },
+        {
+          text: " equals half the ",
+        },
+        {
+          text: "lead projectile mass",
+          variableId: "mass_m",
+        },
+        {
+          text: " multiplied by the square of its ",
+        },
+        {
+          text: "muzzle exit velocity",
+          variableId: "velocity_v",
+        },
+        {
+          text: ", demonstrating the stopping power produced by Colt's sealed rotating chambers.",
+        },
+      ],
+      variables: [
+        {
+          id: "energy_e",
+          symbol: "E_{\\text{kinetic}}",
+          name: "Muzzle Kinetic Energy",
+          color: "emerald",
+          role: "Translational kinetic energy of the bullet upon clearing the rifled barrel muzzle.",
+          unit: "J (Joules)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "For a .36 caliber round lead ball (~80 grains / 5.2 grams) accelerated to ~260 m/s (850 ft/s) by black powder, muzzle kinetic energy is approximately 175 Joules.",
+        },
+        {
+          id: "mass_m",
+          symbol: "m_{\\text{bullet}}",
+          name: "Projectile Mass",
+          color: "sapphire",
+          role: "Mass of the cast lead ball or conical bullet seated into the cylinder chamber.",
+          unit: "kg",
+          dimension: "[M]",
+          explanation:
+            "In Colt's Paterson and Navy revolvers, pure soft lead balls were rammed tightly over black powder charges using the integral lever rammer.",
+        },
+        {
+          id: "velocity_v",
+          symbol: "v_{\\text{muzzle}}",
+          name: "Muzzle Velocity",
+          color: "crimson",
+          role: "Velocity of the projectile as it exits the barrel bore after expanding powder deflagration.",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Muzzle velocity depends on powder charge, barrel length, cylinder gap seal, and friction in the rifled gain-twist bore.",
+        },
+      ],
+      pedagogicalNote:
+        "Colt's multi-chamber design aligned each rotating chamber with a single rigid barrel, allowing repeated high-velocity shots without reloading between discharges.",
+      claimRef: 1,
+      historicalSignificance:
+        "US X9430 proved that a rotating multi-chamber cylinder could safely channel repeating ballistic energy down a single barrel, creating the modern firearm industry.",
+    },
     {
       id: "colt-revolver-indexing-kinematics",
       patentId: "us-x9430-colt-revolver",
@@ -7938,6 +8362,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 28. Thomas Edison Phonograph (US 200,521)
   "us-200521-edison-phonograph": [
+    {
+      id: "edison-acoustic-stylus-groove-velocity",
+      patentId: "us-200521-edison-phonograph",
+      title: "Cylinder Surface Groove Velocity & Audio Resolution",
+      category: "Acoustics & Mechanics",
+      rawLatex:
+        "v_{\\text{groove}} = \\pi \\cdot D_{\\text{cylinder}} \\cdot \\left(\\frac{N_{\\text{rpm}}}{60}\\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{v_{\\text{groove}}} = \\pi\\,\\textcolor{#2563eb}{D_{\\text{cylinder}}}\\,\\left(\\frac{\\textcolor{#dc2626}{N_{\\text{rpm}}}}{60}\\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "tangential surface velocity of the tinfoil groove beneath the stylus",
+          variableId: "groove_v",
+        },
+        {
+          text: " equals pi times the ",
+        },
+        {
+          text: "grooved brass cylinder diameter",
+          variableId: "cyl_diam",
+        },
+        {
+          text: " multiplied by the ",
+        },
+        {
+          text: "rotational shaft speed in revolutions per minute",
+          variableId: "rpm_n",
+        },
+        {
+          text: ", establishing the spatial wavelength of recorded sound vibrations.",
+        },
+      ],
+      variables: [
+        {
+          id: "groove_v",
+          symbol: "v_{\\text{groove}}",
+          name: "Groove Surface Velocity",
+          color: "emerald",
+          role: "Linear velocity of the rotating foil surface passing under the indenter stylus point.",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation:
+            "Higher surface speeds lengthen the spatial wavelength $\\lambda = v/f$ of acoustic impressions, preventing high-frequency sound waves from crowding or distorting.",
+        },
+        {
+          id: "cyl_diam",
+          symbol: "D_{\\text{cylinder}}",
+          name: "Cylinder Diameter",
+          color: "sapphire",
+          role: "Outer diameter of the spiral-grooved brass drum carrying the sheet of tinfoil.",
+          unit: "m (meters)",
+          dimension: "[L]",
+          explanation:
+            "Edison's 1877 prototype cylinder measured approximately 4 inches (0.1016 m) in diameter, giving a circumference of ~0.319 m per revolution.",
+        },
+        {
+          id: "rpm_n",
+          symbol: "N_{\\text{rpm}}",
+          name: "Cylinder Rotation Speed",
+          color: "crimson",
+          role: "Crank or governor-regulated angular rotation rate of the threaded leadscrew shaft.",
+          unit: "RPM",
+          dimension: "[T^-1]",
+          explanation:
+            "Hand cranking at ~60 RPM yielded a groove surface speed of ~0.32 m/s (12.5 in/s), sufficient for clear speech reproduction (100 Hz to 3,000 Hz).",
+        },
+      ],
+      pedagogicalNote:
+        "Sound waves entering the mouthpiece vibrate a mica diaphragm, causing a steel stylus to indent vertical depth variations ('hill-and-dale') into the compliant tinfoil sheet.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 200,521 proved that mechanical sound vibrations could be captured on a physical medium and played back identically, creating the sound recording industry.",
+    },
     {
       id: "edison-acoustic-indentation-groove",
       patentId: "us-200521-edison-phonograph",
@@ -11122,6 +11622,82 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 41. Christopher Sholes Typewriter (US 79,265)
   "us-79265-sholes-typewriter": [
     {
+      id: "sholes-escapement-carriage-advance-pitch",
+      patentId: "us-79265-sholes-typewriter",
+      title: "Escapement Carriage Advance & Character Pitch",
+      category: "Kinematics & Machine Design",
+      rawLatex:
+        "\\Delta x_{\\text{step}} = \\frac{\\pi D_{\\text{pinion}}}{N_{\\text{teeth}}} = p_{\\text{char}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta x_{\\text{step}}} = \\frac{\\pi\\,\\textcolor{#2563eb}{D_{\\text{pinion}}}}{\\textcolor{#d97706}{N_{\\text{teeth}}}} = \\textcolor{#059669}{p_{\\text{char}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "linear step distance of carriage advance",
+          variableId: "step_pitch",
+        },
+        {
+          text: " equals the pitch circumference of the ",
+        },
+        {
+          text: "escapement drive pinion",
+          variableId: "pinion_diam",
+        },
+        {
+          text: " divided by the ",
+        },
+        {
+          text: "number of ratchet wheel teeth",
+          variableId: "tooth_count",
+        },
+        {
+          text: ", establishing uniform typographic character spacing across the page.",
+        },
+      ],
+      variables: [
+        {
+          id: "step_pitch",
+          symbol: "\\Delta x_{\\text{step}}",
+          name: "Character Pitch Advance",
+          color: "emerald",
+          role: "Horizontal displacement of the paper carriage for each keystroke or spacebar press.",
+          unit: "m (meters)",
+          dimension: "[L]",
+          explanation:
+            "Standard typewriter escapements provide 10 characters per inch (pica pitch, 2.54 mm) or 12 characters per inch (elite pitch, 2.12 mm).",
+        },
+        {
+          id: "pinion_diam",
+          symbol: "D_{\\text{pinion}}",
+          name: "Pinion Pitch Diameter",
+          color: "sapphire",
+          role: "Pitch circle diameter of the pinion gear meshing with the carriage rack.",
+          unit: "m (meters)",
+          dimension: "[L]",
+          explanation:
+            "The pinion meshes directly with the linear gear rack fastened along the underside of the sliding platen carriage.",
+        },
+        {
+          id: "tooth_count",
+          symbol: "N_{\\text{teeth}}",
+          name: "Ratchet Tooth Count",
+          color: "amber",
+          role: "Total number of ratchet teeth around the escapement wheel perimeter.",
+          unit: "teeth",
+          dimension: "[]",
+          explanation:
+            "A bifurcated pallet oscillates with each keypress, catching and releasing one tooth at a time under spring barrel tension.",
+        },
+      ],
+      pedagogicalNote:
+        "Sholes' escapement mechanism decoupled key striking speed from paper carriage advance, guaranteeing crisp character spacing regardless of operator typing cadence.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 79,265 established the mechanical typewriter architecture, introducing the QWERTY keyboard, type basket, and escapement advance that standardized text creation for over a century.",
+    },
+    {
       id: "sholes-typewriter-escapement-kinematics",
       patentId: "us-79265-sholes-typewriter",
       title: "Radial Typebar Striking Kinematics & Escapement Ratchet Pitch",
@@ -12075,6 +12651,81 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 45. Abraham Lincoln Vessel Buoyancy Chamber (US 6,469)
   "us-6469-lincoln-buoy": [
     {
+      id: "lincoln-buoyant-draft-reduction",
+      patentId: "us-6469-lincoln-buoy",
+      title: "Buoyant Chamber Draft Reduction Law",
+      category: "Hydrostatics & Marine Architecture",
+      rawLatex: "\\Delta d = \\frac{V_{\\text{bellows}}}{A_{\\text{waterplane}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta d} = \\frac{\\textcolor{#2563eb}{V_{\\text{bellows}}}}{\\textcolor{#d97706}{A_{\\text{waterplane}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "vertical reduction in vessel draft",
+          variableId: "draft_reduction",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "total expanded volume of the submerged bellows",
+          variableId: "bellows_volume",
+        },
+        {
+          text: " divided by the ",
+        },
+        {
+          text: "steamboat hull waterplane area",
+          variableId: "waterplane_area",
+        },
+        {
+          text: ", allowing the vessel to float over shallow sandbars and shoals.",
+        },
+      ],
+      variables: [
+        {
+          id: "draft_reduction",
+          symbol: "\\Delta d",
+          name: "Draft Reduction",
+          color: "emerald",
+          role: "Vertical distance the boat's keel is lifted out of the water when bellows expand.",
+          unit: "m (meters)",
+          dimension: "[L]",
+          explanation:
+            "By expanding waterproof bellows on both sides of the hull below the waterline, the vessel displaces extra water, decreasing its draft by 1 to 2 feet to clear river shoals.",
+        },
+        {
+          id: "bellows_volume",
+          symbol: "V_{\\text{bellows}}",
+          name: "Expanded Bellows Volume",
+          color: "sapphire",
+          role: "Total volume of air pumped into the expandable side air chambers.",
+          unit: "m^3",
+          dimension: "[L^3]",
+          explanation:
+            "Lincoln's patent specified air chambers made of waterproof india-rubber cloth or leather, inflated via vertical shafts and ropes from the steam engine.",
+        },
+        {
+          id: "waterplane_area",
+          symbol: "A_{\\text{waterplane}}",
+          name: "Hull Waterplane Area",
+          color: "amber",
+          role: "Horizontal cross-sectional area of the boat hull at the static waterline.",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "For a typical 19th-century western river steamboat with a 150 ft x 30 ft flat bottom, the waterplane area is approximately 350 to 400 square meters.",
+        },
+      ],
+      pedagogicalNote:
+        "Lincoln observed steamboats grounded on Mississippi River sandbars and conceived expansible buoyant chambers that increase displacement on demand without increasing structural weight during normal transit.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 6,469 is the only patent ever granted to a United States President (Abraham Lincoln, granted May 22, 1849).",
+    },
+    {
       id: "lincoln-buoy-hydrostatic-lift",
       patentId: "us-6469-lincoln-buoy",
       title: "Hydrostatic Buoyant Lift Displacement & Shallow-Water Draft Reduction",
@@ -12166,6 +12817,100 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 46. John Wesley Hyatt Celluloid Plastic (US 105,338)
   "us-105338-hyatt-celluloid": [
+    {
+      id: "hyatt-molding-hydrostatic-pressure-consolidation",
+      patentId: "us-105338-hyatt-celluloid",
+      title: "Hydrostatic Plastic Consolidation Pressure",
+      category: "Materials Science & Thermodynamics",
+      rawLatex:
+        "P_{\\text{consolidation}} = \\frac{F_{\\text{ram}}}{A_{\\text{die}}} \\ge P_{\\text{flow}}(T)",
+      colorizedLatex:
+        "\\textcolor{#059669}{P_{\\text{consolidation}}} = \\frac{\\textcolor{#dc2626}{F_{\\text{ram}}}}{\\textcolor{#2563eb}{A_{\\text{die}}}} \\ge \\textcolor{#9333ea}{P_{\\text{flow}}(T)}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "hydrostatic consolidation pressure",
+          variableId: "pressure_p",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "hydraulic press ram force",
+          variableId: "force_f",
+        },
+        {
+          text: " divided by the ",
+        },
+        {
+          text: "mold die cross-sectional area",
+          variableId: "area_a",
+        },
+        {
+          text: ", which must exceed the ",
+        },
+        {
+          text: "temperature-dependent polymer flow threshold",
+          variableId: "flow_p",
+        },
+        {
+          text: " to fuse solid pyroxyline without solvent evaporation bubbles.",
+        },
+      ],
+      variables: [
+        {
+          id: "pressure_p",
+          symbol: "P_{\\text{consolidation}}",
+          name: "Consolidation Pressure",
+          color: "emerald",
+          role: "Hydrostatic compressive stress applied to the camphor-pyroxyline mixture inside the heated mold.",
+          unit: "Pa (Pascals / MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Pressures between 10 MPa and 35 MPa (1,500 to 5,000 psi) at 80°C–120°C cause the camphor to liquefy and dissolve nitrocellulose into a homogeneous plastic mass.",
+        },
+        {
+          id: "force_f",
+          symbol: "F_{\\text{ram}}",
+          name: "Hydraulic Ram Force",
+          color: "crimson",
+          role: "Total compressive force delivered by the steam or hydraulic ram platen.",
+          unit: "N (Newtons)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Heavy hydraulic cylinders deliver tens of tons of continuous force during heating and subsequent cooling under pressure.",
+        },
+        {
+          id: "area_a",
+          symbol: "A_{\\text{die}}",
+          name: "Die Cavity Area",
+          color: "sapphire",
+          role: "Projected cross-sectional surface area of the molding chamber or extrusion die.",
+          unit: "m^2",
+          dimension: "[L^2]",
+          explanation:
+            "The mold cross-section determines the specific pressure transmitted to the raw plastic billet.",
+        },
+        {
+          id: "flow_p",
+          symbol: "P_{\\text{flow}}(T)",
+          name: "Polymer Yield Flow Threshold",
+          color: "amethyst",
+          role: "Minimum compressive yield stress required for plastic deformation at temperature T.",
+          unit: "Pa (Pascals)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Camphor plasticization dramatically lowers the glass transition temperature ($T_g$) and yield stress of nitrocellulose, enabling molding below its decomposition temperature.",
+        },
+      ],
+      pedagogicalNote:
+        "Hyatt eliminated the need for large quantities of volatile solvents by discovering that solid camphor acts as a powerful latent plasticizer when heated under intense pressure.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 105,338 created Celluloid, the world's first commercially viable synthetic thermoplastic, launching the modern plastics and photographic film industries.",
+    },
     {
       id: "hyatt-celluloid-plasticized-compounding",
       patentId: "us-105338-hyatt-celluloid",
@@ -12284,6 +13029,116 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 47. Louis Pasteur Fermentation & Microbial Control (US 135,245)
   "us-135245-pasteur-fermentation": [
+    {
+      id: "pasteur-arrhenius-microbial-inactivation-rate",
+      patentId: "us-135245-pasteur-fermentation",
+      title: "Arrhenius Thermal Microbial Inactivation Rate",
+      category: "Microbiology & Thermodynamics",
+      rawLatex: "k_{\\text{kill}} = A \\cdot \\exp\\left(-\\frac{E_a}{R \\cdot T}\\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{k_{\\text{kill}}} = \\textcolor{#2563eb}{A}\\,\\exp\\left(-\\frac{\\textcolor{#dc2626}{E_a}}{\\textcolor{#d97706}{R}\\,\\textcolor{#0891b2}{T}}\\right)",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "specific thermal inactivation rate of wild contaminant microbes",
+          variableId: "rate_k",
+        },
+        {
+          text: " increases exponentially with temperature according to the ",
+        },
+        {
+          text: "frequency collision factor",
+          variableId: "factor_a",
+        },
+        {
+          text: ", the ",
+        },
+        {
+          text: "protein denaturation activation energy",
+          variableId: "act_energy",
+        },
+        {
+          text: ", the ",
+        },
+        {
+          text: "universal gas constant",
+          variableId: "gas_const",
+        },
+        {
+          text: ", and the ",
+        },
+        {
+          text: "absolute wort temperature",
+          variableId: "temp_t",
+        },
+        {
+          text: ", ensuring pure yeast cultures without spoilage.",
+        },
+      ],
+      variables: [
+        {
+          id: "rate_k",
+          symbol: "k_{\\text{kill}}",
+          name: "Microbial Inactivation Rate",
+          color: "emerald",
+          role: "Rate constant governing the first-order destruction kinetics of spoilage organisms.",
+          unit: "s^-1",
+          dimension: "[T^-1]",
+          explanation:
+            "At Pasteurisation temperatures (60°C–65°C), $k_{\\text{kill}}$ increases by orders of magnitude compared to ambient cellar temperatures, killing wild yeasts and bacteria in minutes.",
+        },
+        {
+          id: "factor_a",
+          symbol: "A",
+          name: "Arrhenius Pre-exponential Factor",
+          color: "sapphire",
+          role: "Frequency factor representing the collision and vibration frequency of cellular proteins.",
+          unit: "s^-1",
+          dimension: "[T^-1]",
+          explanation:
+            "For vegetative bacterial cells and wild yeasts, $A$ ranges between $10^{30}\\text{ s}^{-1}$ and $10^{40}\\text{ s}^{-1}$.",
+        },
+        {
+          id: "act_energy",
+          symbol: "E_a",
+          name: "Thermal Denaturation Activation Energy",
+          color: "crimson",
+          role: "Energy barrier required to denature critical microbial enzymes and cell membranes.",
+          unit: "J/mol",
+          dimension: "[M L^2 T^-2 N^-1]",
+          explanation:
+            "Thermal denaturation of vital bacterial enzymes exhibits high activation energies ($E_a \\approx 200\\text{ to }300\\text{ kJ/mol}$), making kill rates exceptionally sensitive to temperature.",
+        },
+        {
+          id: "gas_const",
+          symbol: "R",
+          name: "Universal Gas Constant",
+          color: "amber",
+          role: "Fundamental physical constant relating thermal kinetic energy to temperature.",
+          unit: "J/(mol·K)",
+          dimension: "[M L^2 T^-2 N^-1 \\Theta^-1]",
+          explanation: "Standard molar gas constant $R = 8.314462\\text{ J/(mol}\\cdot\\text{K)}$.",
+        },
+        {
+          id: "temp_t",
+          symbol: "T",
+          name: "Absolute Wort Temperature",
+          color: "cyan",
+          role: "Absolute thermodynamic temperature of the boiling wort and closed cooling chamber.",
+          unit: "K (Kelvin)",
+          dimension: "[\\Theta]",
+          explanation:
+            "Pasteur's closed cooling apparatus chills wort from 373 K (100°C) down to pitching temperature (285 K / 12°C) under a sterile carbonic acid atmosphere.",
+        },
+      ],
+      pedagogicalNote:
+        "Pasteur demonstrated that beer spoilage was not spontaneous but caused by foreign microorganisms that could be eliminated by thermal treatment and isolated fermenters.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 135,245 introduced pasteurization and pure yeast culture methodology to industrial fermentation, fundamentally transforming biotechnology and public health.",
+    },
     {
       id: "pasteur-fermentation-glycolysis-kinetics",
       patentId: "us-135245-pasteur-fermentation",
@@ -13089,6 +13944,81 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 50. George Eastman Kodak Camera (US 388,850)
   "us-388850-eastman-kodak": [
     {
+      id: "eastman-lens-focal-ratio-aperture",
+      patentId: "us-388850-eastman-kodak",
+      title: "Photographic Lens Relative Aperture & F-Number",
+      category: "Optics & Photography",
+      rawLatex: "N = \\frac{f}{D_{\\text{aperture}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{N} = \\frac{\\textcolor{#2563eb}{f}}{\\textcolor{#dc2626}{D_{\\text{aperture}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "optical f-number",
+          variableId: "f_number",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "lens focal length",
+          variableId: "focal_len",
+        },
+        {
+          text: " divided by the ",
+        },
+        {
+          text: "effective entrance pupil aperture diameter",
+          variableId: "pupil_diam",
+        },
+        {
+          text: ", determining both scene illumination on the roll film and the depth of field.",
+        },
+      ],
+      variables: [
+        {
+          id: "f_number",
+          symbol: "N",
+          name: "Lens F-Number",
+          color: "emerald",
+          role: "Dimensionless ratio expressing the relative light-gathering power of the camera lens.",
+          unit: "dimensionless (f/N)",
+          dimension: "[]",
+          explanation:
+            "The original 1888 Kodak camera featured a fixed f/9 doublet lens that provided sharp focus from 8 feet to infinity without requiring manual focusing.",
+        },
+        {
+          id: "focal_len",
+          symbol: "f",
+          name: "Lens Focal Length",
+          color: "sapphire",
+          role: "Distance from the lens optical center to the film plane when focused at infinity.",
+          unit: "m (meters / mm)",
+          dimension: "[L]",
+          explanation:
+            "The 1888 Kodak used a 57 mm (2.25 inch) focal length rapid rectilinear lens projecting a 2.5-inch circular image onto paper-backed stripping roll film.",
+        },
+        {
+          id: "pupil_diam",
+          symbol: "D_{\\text{aperture}}",
+          name: "Entrance Pupil Diameter",
+          color: "crimson",
+          role: "Clear optical diameter of the fixed circular aperture stop.",
+          unit: "m (meters / mm)",
+          dimension: "[L]",
+          explanation:
+            "For an f/9 lens with $f = 57\\text{ mm}$, the clear aperture diameter is $D = 57/9 \\approx 6.33\\text{ mm}$.",
+        },
+      ],
+      pedagogicalNote:
+        "Eastman combined a simple fixed-focus lens with a rotating barrel shutter and 100-exposure roll film holder, democratizing photography with the slogan 'You press the button, we do the rest.'",
+      claimRef: 1,
+      historicalSignificance:
+        "US 388,850 transformed photography from a specialized chemical craft into a universal consumer medium by introducing portable roll-film cameras and centralized photofinishing.",
+    },
+    {
       id: "eastman-kodak-shutter-optics",
       patentId: "us-388850-eastman-kodak",
       title: "Rotating Barrel Shutter Exposure Duration & Continuous Roll-Film Capacity",
@@ -13887,6 +14817,153 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
 
   // 53. Nikola Tesla Teleautomaton Radio-Controlled Boat (US 613,809)
   "us-613809-tesla-teleautomaton": [
+    {
+      id: "tesla-teleautomaton-free-space-path-loss",
+      patentId: "us-613809-tesla-teleautomaton",
+      title: "Radio Frequency Friis Transmission & Free-Space Path Loss",
+      category: "Electromagnetics & Wireless",
+      rawLatex:
+        "P_{\\text{rx}} = P_{\\text{tx}} \\cdot G_{\\text{tx}} \\cdot G_{\\text{rx}} \\cdot \\left(\\frac{c}{4\\pi \\cdot d \\cdot f}\\right)^2",
+      colorizedLatex:
+        "\\textcolor{#059669}{P_{\\text{rx}}} = \\textcolor{#dc2626}{P_{\\text{tx}}}\\,\\textcolor{#2563eb}{G_{\\text{tx}}}\\,\\textcolor{#d97706}{G_{\\text{rx}}}\\,\\left(\\frac{\\textcolor{#ea580c}{c}}{4\\pi\\,\\textcolor{#0891b2}{d}\\,\\textcolor{#9333ea}{f}}\\right)^2",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "radio signal power received by the boat's coherer antenna",
+          variableId: "p_rx",
+        },
+        {
+          text: " equals the ",
+        },
+        {
+          text: "transmitter spark pulse power",
+          variableId: "p_tx",
+        },
+        {
+          text: " multiplied by the ",
+        },
+        {
+          text: "transmitting antenna gain",
+          variableId: "g_tx",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "receiving antenna gain",
+          variableId: "g_rx",
+        },
+        {
+          text: ", divided by the square of the transmission distance ",
+        },
+        {
+          text: "d",
+          variableId: "distance_d",
+        },
+        {
+          text: " and carrier frequency ",
+        },
+        {
+          text: "f",
+          variableId: "freq_f",
+        },
+        {
+          text: " relative to the speed of light ",
+        },
+        {
+          text: "c",
+          variableId: "c_light",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "p_rx",
+          symbol: "P_{\\text{rx}}",
+          name: "Received Signal Power",
+          color: "emerald",
+          role: "High-frequency electromagnetic power coupled into the teleautomaton antenna.",
+          unit: "W (Watts / dBm)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "When received power induces voltage exceeding the coherer's breakdown threshold (~0.5 V to 2 V), the metal granules fuse, completing the steering relay circuit.",
+        },
+        {
+          id: "p_tx",
+          symbol: "P_{\\text{tx}}",
+          name: "Transmitter Peak Power",
+          color: "crimson",
+          role: "Peak electromagnetic power radiated by the shore control station spark gap.",
+          unit: "W (Watts)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Tesla used high-voltage oscillatory transformer discharges reaching megawatts of peak pulse power.",
+        },
+        {
+          id: "g_tx",
+          symbol: "G_{\\text{tx}}",
+          name: "Transmitter Antenna Gain",
+          color: "sapphire",
+          role: "Directional radiation gain of the control station vertical mast antenna.",
+          unit: "dimensionless",
+          dimension: "[]",
+          explanation:
+            "Monopole vertical antennas radiate omnidirectionally in azimuth with $G \\approx 1.5$ (1.76 dBi).",
+        },
+        {
+          id: "g_rx",
+          symbol: "G_{\\text{rx}}",
+          name: "Receiver Antenna Gain",
+          color: "amber",
+          role: "Effective aperture gain of the boat's elevated brass receiving mast.",
+          unit: "dimensionless",
+          dimension: "[]",
+          explanation:
+            "A short elevated vertical pole antenna tuned with series loading inductance.",
+        },
+        {
+          id: "distance_d",
+          symbol: "d",
+          name: "Control Distance",
+          color: "cyan",
+          role: "Distance separating the shore transmitter from the remote-controlled vessel.",
+          unit: "m (meters)",
+          dimension: "[L]",
+          explanation:
+            "Tesla demonstrated reliable wireless teleoperation across the Madison Square Garden basin (~100 meters) and envisioned naval ranges of several miles.",
+        },
+        {
+          id: "freq_f",
+          symbol: "f",
+          name: "Oscillation Frequency",
+          color: "amethyst",
+          role: "Resonant carrier frequency of the spark transmitter and tuned receiving LC circuit.",
+          unit: "Hz",
+          dimension: "[T^-1]",
+          explanation:
+            "Tesla's tuned high-frequency circuits operated at ~1 MHz to 5 MHz, rejecting unsynchronized electrical interference.",
+        },
+        {
+          id: "c_light",
+          symbol: "c",
+          name: "Speed of Light",
+          color: "coral",
+          role: "Fundamental speed of electromagnetic wave propagation in free space.",
+          unit: "m/s",
+          dimension: "[L T^-1]",
+          explanation: "Constant $c = 2.99792458 \\times 10^8\\text{ m/s}$.",
+        },
+      ],
+      pedagogicalNote:
+        "Tesla constructed a sequential stepping-drum discriminator that translated bursts of synchronized radio pulses into discrete rudder steering, electric motor throttle, and running light actions.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 613,809 is the foundational patent of wireless remote control, robotics, and radio-guided vehicles (demonstrated in 1898).",
+    },
     {
       id: "tesla-teleautomaton-coherer-tuning",
       patentId: "us-613809-tesla-teleautomaton",
