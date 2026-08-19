@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepTeslaMotorFig9 } from "@/physics/teslaKernel";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -221,13 +222,14 @@ export function updateTeslaMotorKinematics(
   bFieldAngle: number,
   showMagneticFlux: boolean,
 ): void {
+  const tesla = stepTeslaMotorFig9(60);
   model.rotorGroup.rotation.y += omegaDisplay * delta;
   for (const item of model.coilMeshes) {
-    const phaseOffset = item.phaseIdx * (Math.PI / 2);
+    const phaseOffset = item.phaseIdx * tesla.coilPhaseOffsetRad;
     const current = Math.sin(bFieldAngle + phaseOffset);
     const material = item.mesh.material as THREE.MeshStandardMaterial;
-    material.emissive = new THREE.Color(0xf59e0b);
-    material.emissiveIntensity = Math.abs(current) * 0.9;
+    material.emissive = new THREE.Color(tesla.coilEmissiveHex);
+    material.emissiveIntensity = Math.abs(current) * tesla.coilEmissiveAmp;
   }
   for (let index = 0; index < model.fluxCount; index++) {
     const offset = index * 3;

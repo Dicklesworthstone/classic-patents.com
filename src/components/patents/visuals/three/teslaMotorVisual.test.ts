@@ -67,6 +67,8 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(result.schematicStrobeStroke).toBe(1.2);
     expect(result.statorRingOuterSvgR).toBe(110);
     expect(result.twoPhaseVectorOpacity).toBe(0.55);
+    expect(result.coilPhaseOffsetRad).toBeCloseTo(Math.PI / 2, 10);
+    expect(result.coilEmissiveAmp).toBe(0.9);
     expect(result.schematicStatorOuterR).toBe(95);
     expect(result.schematicRotorR).toBe(42);
     expect(result.schematicPoleCount).toBe(4);

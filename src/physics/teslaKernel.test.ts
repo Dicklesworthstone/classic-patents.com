@@ -52,6 +52,8 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(state60Hz.schematicHubR).toBe(8);
     expect(state60Hz.schematicPoleCount).toBe(4);
     expect(state60Hz.displayWrapDeg).toBe(360);
+    expect(state60Hz.coilPhaseOffsetRad).toBeCloseTo(Math.PI / 2, 10);
+    expect(state60Hz.coilEmissiveAmp).toBe(0.9);
     expect(teslaSchematicPoleRect(0).w).toBe(40);
     expect(teslaSchematicPoleRect(1).h).toBe(40);
     const coil0 = teslaPoleCurrent(0, 2, 0);

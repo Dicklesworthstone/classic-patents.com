@@ -118,6 +118,9 @@ export interface TeslaFig9State {
   threePhaseVectorSvgR: number;
   statorCenterX: number;
   statorCenterY: number;
+  coilPhaseOffsetRad: number;
+  coilEmissiveAmp: number;
+  coilEmissiveHex: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
 }
@@ -161,6 +164,9 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,
     statorCenterX: TESLA_STATOR_CENTER_X,
     statorCenterY: TESLA_STATOR_CENTER_Y,
+    coilPhaseOffsetRad: Math.PI / 2,
+    coilEmissiveAmp: 0.9,
+    coilEmissiveHex: 0xf59e0b,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
   };

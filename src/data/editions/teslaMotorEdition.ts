@@ -24,16 +24,78 @@ const crop = (file: string, width: number, height: number, label: string) => ({
   height,
 });
 
+// Every source figure gets its own source-derived preview. Plural references below
+// deliberately present the constituent figures rather than a generic sheet crop.
+const FIGURE_1 = crop("fig-1-source-crop-v2", 700, 230, "Fig. 1");
+const FIGURE_2 = crop("fig-2-source-crop-v2", 700, 230, "Fig. 2");
+const FIGURE_3 = crop("fig-3-source-crop-v2", 700, 230, "Fig. 3");
+const FIGURE_4 = crop("fig-4-source-crop-v2", 700, 230, "Fig. 4");
+const FIGURE_5 = crop("fig-5-source-crop-v2", 700, 230, "Fig. 5");
+const FIGURE_6 = crop("fig-6-source-crop-v2", 700, 200, "Fig. 6");
+const FIGURE_7 = crop("fig-7-source-crop-v2", 700, 230, "Fig. 7");
+const FIGURE_8 = crop("fig-8-source-crop-v2", 700, 230, "Fig. 8");
+const FIGURE_1A = crop("fig-1a-source-crop-v2", 900, 220, "Fig. 1a");
+const FIGURE_2A = crop("fig-2a-source-crop-v2", 900, 220, "Fig. 2a");
+const FIGURE_3A = crop("fig-3a-source-crop-v2", 900, 220, "Fig. 3a");
+const FIGURE_4A = crop("fig-4a-source-crop-v2", 900, 220, "Fig. 4a");
+const FIGURE_5A = crop("fig-5a-source-crop-v2", 900, 220, "Fig. 5a");
+const FIGURE_6A = crop("fig-6a-source-crop-v2", 900, 150, "Fig. 6a");
+const FIGURE_7A = crop("fig-7a-source-crop-v2", 900, 190, "Fig. 7a");
+const FIGURE_8A = crop("fig-8a-source-crop-v2", 900, 160, "Fig. 8a");
+const FIGURE_9 = crop("fig-9-source-crop-v1", 1120, 800, "Fig. 9");
+const FIGURE_10 = crop("fig-10-source-crop-v2", 930, 650, "Fig. 10");
+const FIGURE_11 = crop("fig-11-source-crop-v2", 900, 600, "Fig. 11");
+const FIGURE_12 = crop("fig-12-source-crop-v2", 1950, 600, "Fig. 12");
+const FIGURE_13 = crop("fig-13-source-crop-v2", 1800, 650, "Fig. 13");
+const FIGURE_14 = crop("fig-14-source-crop-v2", 650, 550, "Fig. 14");
+const FIGURE_15 = crop("fig-15-source-crop-v2", 1850, 830, "Fig. 15");
+const FIGURE_16 = crop("fig-16-source-crop-v2", 700, 350, "Fig. 16");
+const FIGURE_17 = crop("fig-17-source-crop-v1", 650, 750, "Fig. 17");
+const FIGURE_18 = crop("fig-18-source-crop-v1", 570, 500, "Fig. 18");
+const FIGURE_19 = crop("fig-19-source-crop-v1", 1060, 700, "Fig. 19");
+
 const FIGURES = {
-  "Figs. 1 to 8": [crop("figs-1-to-8-source-crop-v1", 600, 1370, "Figs. 1 to 8")],
-  "Figs. 1a to 8a": [crop("figs-1a-to-8a-source-crop-v1", 650, 1370, "Figs. 1a to 8a")],
-  "Fig. 9": [crop("fig-9-source-crop-v1", 1120, 800, "Fig. 9")],
-  "Figs. 10 to 12": [crop("figs-10-to-12-source-crop-v1", 1180, 900, "Figs. 10 to 12")],
-  "Figs. 13 and 14": [crop("figs-13-to-14-source-crop-v1", 1100, 690, "Figs. 13 and 14")],
-  "Figs. 15 and 16": [crop("figs-15-to-16-source-crop-v1", 1030, 620, "Figs. 15 and 16")],
-  "Fig. 17": [crop("fig-17-source-crop-v1", 650, 750, "Fig. 17")],
-  "Fig. 18": [crop("fig-18-source-crop-v1", 570, 500, "Fig. 18")],
-  "Fig. 19": [crop("fig-19-source-crop-v1", 1060, 700, "Fig. 19")],
+  "Fig. 1": [FIGURE_1],
+  "Fig. 2": [FIGURE_2],
+  "Fig. 3": [FIGURE_3],
+  "Fig. 4": [FIGURE_4],
+  "Fig. 5": [FIGURE_5],
+  "Fig. 6": [FIGURE_6],
+  "Fig. 7": [FIGURE_7],
+  "Fig. 8": [FIGURE_8],
+  "Fig. 1a": [FIGURE_1A],
+  "Fig. 2a": [FIGURE_2A],
+  "Fig. 3a": [FIGURE_3A],
+  "Fig. 4a": [FIGURE_4A],
+  "Fig. 5a": [FIGURE_5A],
+  "Fig. 6a": [FIGURE_6A],
+  "Fig. 7a": [FIGURE_7A],
+  "Fig. 8a": [FIGURE_8A],
+  "Fig. 9": [FIGURE_9],
+  "Fig. 10": [FIGURE_10],
+  "Fig. 11": [FIGURE_11],
+  "Fig. 12": [FIGURE_12],
+  "Fig. 13": [FIGURE_13],
+  "Fig. 14": [FIGURE_14],
+  "Fig. 15": [FIGURE_15],
+  "Fig. 16": [FIGURE_16],
+  "Fig. 17": [FIGURE_17],
+  "Fig. 18": [FIGURE_18],
+  "Fig. 19": [FIGURE_19],
+  "Figs. 1 to 8": [FIGURE_1, FIGURE_2, FIGURE_3, FIGURE_4, FIGURE_5, FIGURE_6, FIGURE_7, FIGURE_8],
+  "Figs. 1a to 8a": [
+    FIGURE_1A,
+    FIGURE_2A,
+    FIGURE_3A,
+    FIGURE_4A,
+    FIGURE_5A,
+    FIGURE_6A,
+    FIGURE_7A,
+    FIGURE_8A,
+  ],
+  "Figs. 10 to 12": [FIGURE_10, FIGURE_11, FIGURE_12],
+  "Figs. 13 and 14": [FIGURE_13, FIGURE_14],
+  "Figs. 15 and 16": [FIGURE_15, FIGURE_16],
 } as const;
 
 const figure = (
@@ -213,7 +275,7 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the position of the coils indicated in ",
       },
-      figure("Figs. 1 to 8", "Fig. 1"),
+      figure("Fig. 1"),
       {
         kind: "text",
         text: " the current in the coil B is practically nil, whereas the coil B′ at the same time is developing its maximum current, and by the means indicated in the description of ",
@@ -223,12 +285,12 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: " the circuit including this coil B′ may also include, say, the coils C C of the motor, ",
       },
-      figure("Figs. 1a to 8a", "Fig. 1a"),
+      figure("Fig. 1a"),
       {
         kind: "text",
         text: ". The result, with the proper connections, would be the magnetization of the ring R, the poles being on the line N S. The same order of connections being observed between the coil B and the coils C′, the latter, when traversed by a current, tend to fix the poles at right angles to the line N S of ",
       },
-      figure("Figs. 1a to 8a", "Fig. 1a"),
+      figure("Fig. 1a"),
       { kind: "text", text: "." },
     ]),
     p([
@@ -236,67 +298,67 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "It results, therefore, that when the generator-coils have made one eighth of a revolution, reaching the position shown in ",
       },
-      figure("Figs. 1 to 8", "Fig. 2"),
+      figure("Fig. 2"),
       {
         kind: "text",
         text: ", both pairs of coils C and C′ will be traversed by currents and act in opposition, in so far as the location of the poles is concerned. The position of the poles will therefore be the resultant of the magnetizing forces of the coils—that is to say, it will advance along the ring to a position corresponding to one-eighth of the revolution of the armature of the generator. In ",
       },
-      figure("Figs. 1 to 8", "Fig. 3"),
+      figure("Fig. 3"),
       {
         kind: "text",
         text: " the armature of the generator has progressed to one-quarter of a revolution. At the point indicated the current in the coil B is maximum, while in B′ it is nil, the latter coil being in its neutral position. The poles of the ring R in ",
       },
-      figure("Figs. 1a to 8a", "Fig. 3a"),
+      figure("Fig. 3a"),
       {
         kind: "text",
         text: " will, in consequence, be shifted to a position ninety degrees from that at the start, as shown. I have in like manner shown the conditions existing at each successive eighth of one revolution in the remaining figures. A short reference to these figures will suffice for an understanding of their significance.",
       },
     ]),
     p([
-      figure("Figs. 1 to 8", "Figs. 4"),
+      figure("Fig. 4", "Figs. 4"),
       { kind: "text", text: " and " },
-      figure("Figs. 1a to 8a", "4a"),
+      figure("Fig. 4a", "4a"),
       {
         kind: "text",
         text: " illustrate the conditions which exist when the generator-armature has completed three eighths of a revolution. Here both coils are generating current; but the coil B′, having now entered the opposite field, is generating a current in the opposite direction, having the opposite magnetizing effect; hence the resultant pole will be on the line N S, as shown. In ",
       },
-      figure("Figs. 1 to 8", "Fig. 5"),
+      figure("Fig. 5"),
       {
         kind: "text",
         text: " one-half of one revolution of the armature of the generator has been completed, and the resulting magnetic condition of the ring is shown in ",
       },
-      figure("Figs. 1a to 8a", "Fig. 5a"),
+      figure("Fig. 5a"),
       {
         kind: "text",
         text: ". In this phase coil B is in the neutral position while coil B′ is generating its maximum current, which is in the same direction as in ",
       },
-      figure("Figs. 1 to 8", "Fig. 4"),
+      figure("Fig. 4"),
       {
         kind: "text",
         text: ". The poles will consequently be shifted through one half of the ring. In ",
       },
-      figure("Figs. 1 to 8", "Fig. 6"),
+      figure("Fig. 6"),
       {
         kind: "text",
         text: " the armature has completed five-eighths of a revolution. In this position coil B′ develops a less powerful current, but in the same direction as before. The coil B, on the other hand, having entered a field of opposite polarity, generates a current of opposite direction. The resultant poles will therefore be in the line N S, ",
       },
-      figure("Figs. 1a to 8a", "Fig. 6a"),
+      figure("Fig. 6a"),
       {
         kind: "text",
         text: ", or, in other words, the poles of the ring will be shifted along five-eighths of its periphery.",
       },
     ]),
     p([
-      figure("Figs. 1 to 8", "Figs. 7"),
+      figure("Fig. 7", "Figs. 7"),
       { kind: "text", text: " and " },
-      figure("Figs. 1a to 8a", "7a"),
+      figure("Fig. 7a", "7a"),
       {
         kind: "text",
         text: " in the same manner illustrate the phases of the generator and ring at three-quarters of a revolution, and ",
       },
-      figure("Figs. 1 to 8", "Figs. 8"),
+      figure("Fig. 8", "Figs. 8"),
       { kind: "text", text: " and " },
-      figure("Figs. 1a to 8a", "8a"),
+      figure("Fig. 8a", "8a"),
       {
         kind: "text",
         text: " the same at seven-eighths of a revolution of the generator-armature. These figures will be readily understood from the foregoing. When a complete revolution is accomplished, the conditions existing at the start are re-established and the same action is repeated for the next and all subsequent revolutions, and, in general, it will now be seen that every revolution of the armature of the generator produces a corresponding shifting of the poles or lines of force around the ring. This effect I utilize in producing the rotation of a body or armature in a variety of ways—for example, applying the principle above described to the apparatus shown in ",
@@ -320,14 +382,14 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In illustration of other forms of my invention, I shall now describe the remaining figures of the drawings. ",
       },
-      figure("Figs. 10 to 12", "Fig. 10"),
+      figure("Fig. 10"),
       { kind: "text", text: " is a view in elevation and part vertical section of a motor. " },
-      figure("Figs. 10 to 12", "Fig. 12"),
+      figure("Fig. 12"),
       {
         kind: "text",
         text: " is a top view of the same with the field in section and a diagram of connections. ",
       },
-      figure("Figs. 10 to 12", "Fig. 11"),
+      figure("Fig. 11"),
       {
         kind: "text",
         text: " is an end or side view of a generator with the fields in section. This form of motor may be used in place of that shown above.",
@@ -344,12 +406,12 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "As a generator for driving this motor I may use the device shown in ",
       },
-      figure("Figs. 10 to 12", "Fig. 11"),
+      figure("Fig. 11"),
       {
         kind: "text",
         text: ". This represents an annular or ring armature, A, surrounded by four coils, F F F′ F′, of which those diametrically opposite are connected in series, so that four free ends are left, which are connected to the insulated contact-rings b b b′ b′. The ring is suitably mounted on a shaft, a′, between the poles N S. The contact-rings of each pair of generator-coils are connected to those of the motor, respectively, by means of contact-brushes and the two pairs of conductors L L and L′ L′, as indicated diagrammatically in ",
       },
-      figure("Figs. 10 to 12", "Fig. 12"),
+      figure("Fig. 12"),
       {
         kind: "text",
         text: ". Now it is obvious from a consideration of the preceding figures that the rotation of the generator-ring produces currents in the coils F F′, which, being transmitted to the motor-coils, impart to the core of the latter magnetic poles constantly shifting or whirling around the core. This effect sets up a rotation of the armature owing to the attractive force between the shell and the poles of the armature, but inasmuch as the coils in this case move relative to the shell or field-magnet the movement of the coils is in the opposite direction to the progressive shifting of the poles.",
@@ -361,12 +423,12 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     p([
-      figure("Figs. 13 and 14", "Fig. 13"),
+      figure("Fig. 13"),
       {
         kind: "text",
         text: " is a diagrammatic illustration of a motor and a generator constructed and connected in accordance with my invention. ",
       },
-      figure("Figs. 13 and 14", "Fig. 14"),
+      figure("Fig. 14"),
       {
         kind: "text",
         text: " is an end view of the generator with its field-magnets in section. The field of the motor M is produced by six magnetic poles, G′ G′, secured to or projecting from a ring or frame, H. These magnets or poles are wound with insulated coils, those diametrically opposite to each other being connected in pairs so as to produce opposite poles in each pair. This leaves six free ends, which are connected to the terminals T T T′ T′ T″ T″. The armature, which is mounted to rotate between the poles, is a cylinder or disk, D, of wrought-iron, mounted on the shaft a. Two segments of the same are cut away, as shown. The generator for this motor has in this instance an armature, A, wound with three coils, K K′ K″, at sixty degrees apart. The ends of these coils are connected, respectively, to insulated contact-rings e e e′ e′ e″ e″. These rings are connected to those of the motor in proper order by means of collecting-brushes and six wires, forming three independent circuits. The variations in the strength and direction of the currents transmitted through these circuits and traversing the coils of the motor produce a steadily-progressive shifting of the resultant attractive force exerted by the poles G′ upon the armature D, and consequently keep the armature rapidly rotating. The peculiar advantage of this disposition is in obtaining a more concentrated and powerful field. The application of this principle to systems involving multiple circuits generally will be understood from this apparatus.",
@@ -379,17 +441,17 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: ", ",
       },
-      figure("Figs. 15 and 16", "Fig. 15"),
+      figure("Fig. 15"),
       {
         kind: "text",
         text: " is a diagrammatic representation of a modified disposition of my invention. ",
       },
-      figure("Figs. 15 and 16", "Fig. 16"),
+      figure("Fig. 16"),
       {
         kind: "text",
         text: " is a horizontal cross-section of the motor. In this case a disk, D, of magnetic metal, preferably cut away at opposite edges, as shown in dotted lines in ",
       },
-      figure("Figs. 15 and 16", "Fig. 15"),
+      figure("Fig. 15"),
       {
         kind: "text",
         text: ", is mounted so as to turn freely inside two stationary coils, N′ N″, placed at right angles to one another. The coils are preferably wound on a frame, O, of insulating material, and their ends are connected to the fixed terminals T T T′ T′. The generator G is a representative of that class of alternating-current machines in which a stationary induced element is employed. That shown consists of a revolving permanent or electro magnet, A, and four independent stationary magnets, P P′, wound with coils, those diametrically opposite to each other being connected in series and having their ends secured to the terminals t t t′ t′. From these terminals the currents are led to the terminals of the motor, as shown in the drawings. The mode of operation is substantially the same as in the previous cases, the currents traversing the coils of the motor having the effect to turn the disk D. This mode of carrying out the invention has the advantage of dispensing with the sliding contacts in the system.",
@@ -483,7 +545,7 @@ export const teslaMotorArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the particular construction shown in ",
       },
-      figure("Figs. 15 and 16", "Fig. 15"),
+      figure("Fig. 15"),
       {
         kind: "text",
         text: ", or in others constructed on a similar plan, the number of alternating impulses resulting from one revolution of the generator armature is double as compared with the preceding cases, and the polarities in the motor are shifted around twice by one revolution of the generator-armature. The speed of the motor will, therefore, be twice that of the generator. The same result is evidently obtained by such a disposition as that shown in ",
