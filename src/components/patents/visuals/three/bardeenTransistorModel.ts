@@ -6,7 +6,7 @@
  *
  * Reconstructs the Bell Labs point-contact germanium transistor:
  * 1. Heavy copper grounding base platen providing ohmic base connection.
- * 2. High-purity n-type etched germanium crystal slab (Claim 1).
+ * 2. High-purity n-type etched germanium crystal slab with crystalline grain (Claim 1).
  * 3. Triangular polystyrene plastic wedge with razor-slit gold foil ribbon (Claim 2).
  * 4. Microscopic point contacts (~50 µm spacing) forming emitter and collector electrodes.
  * 5. Phosphor-bronze cantilever spring and brass knurled adjustment micrometer screw.
@@ -55,6 +55,59 @@ export interface BardeenTransistorModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural texture generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Etched N-Type Germanium Crystal Texture
+ */
+function createGermaniumTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Dark slate-gray metallic semiconductor base
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Crystal cleavage striations & chemical etch pits
+  for (let i = 0; i < 70; i++) {
+    const y = i * 7.5 + (deterministicUnit(i, 0) - 0.5) * 5;
+    const alpha = 0.08 + (i % 3 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(148, 163, 184, ${alpha})`;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y + (deterministicUnit(i, 1) - 0.5) * 15);
+    ctx.stroke();
+  }
+
+  // Microscopic etch pits & grain boundaries
+  for (let p = 0; p < 220; p++) {
+    const px = deterministicUnit(p, 2) * 512;
+    const py = deterministicUnit(p, 3) * 512;
+    ctx.fillStyle = "rgba(15, 23, 42, 0.35)";
+    ctx.beginPath();
+    ctx.arc(px, py, 1.5 + deterministicUnit(p, 4) * 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 const HOLE_COUNT = 120;
 
 export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
@@ -72,6 +125,9 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     return mat;
   };
 
+  const geTex = createGermaniumTexture();
+  if (geTex) texturesToDispose.push(geTex);
+
   const glowTex = createGlowPointTexture();
   texturesToDispose.push(glowTex);
 
@@ -79,6 +135,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   const materials: BardeenTransistorMaterials = {
     germaniumCrystal: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(geTex ? { map: geTex } : {}),
         color: 0x475569,
         roughness: 0.15,
         metalness: 0.85,
@@ -135,7 +192,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     ),
   };
 
-  // 1. Heavy Copper Grounding Base Platen
+  // 1. Heavy Copper Grounding Base Platen with Screw Terminals
   const basePlaten = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(8.2, 0.5, 6.8)),
     materials.copperPlaten,
@@ -153,7 +210,22 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   baseLug.castShadow = true;
   rootGroup.add(baseLug);
 
-  // 2. Germanium Crystal Slab
+  // Platen Corner Fastener Screws
+  [
+    [-3.6, -2.9],
+    [3.6, -2.9],
+    [-3.6, 2.9],
+    [3.6, 2.9],
+  ].forEach(([sx, sz]) => {
+    const screw = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 0.15, 16)),
+      materials.brass,
+    );
+    screw.position.set(sx, -1.05, sz);
+    rootGroup.add(screw);
+  });
+
+  // 2. Germanium Crystal Slab (US 2,524,035 Claim 1)
   const geBlock = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(6.2, 1.1, 5.2)),
     materials.germaniumCrystal,
@@ -162,7 +234,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   geBlock.castShadow = true;
   rootGroup.add(geBlock);
 
-  // 3. Polystyrene Wedge
+  // 3. Polystyrene Wedge with Razor Slit Apex
   const wedgeShape = new THREE.Shape();
   wedgeShape.moveTo(-0.9, 2.2);
   wedgeShape.lineTo(0.9, 2.2);

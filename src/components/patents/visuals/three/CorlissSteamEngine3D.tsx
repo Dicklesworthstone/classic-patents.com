@@ -3,7 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { stepCorlissEngine } from "@/physics/catalogKernels";
+import { stepCorlissEngine, wrapCycleRad } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
@@ -43,6 +43,7 @@ export function CorlissSteamEngine3D() {
     governorOmegaRadPerS: corliss.governorOmegaRadPerS,
     govSpread: corliss.govSpread,
     wristAmp: corliss.wristAmp,
+    crankWrapRad: corliss.crankWrapRad,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -116,7 +117,7 @@ export function CorlissSteamEngine3D() {
       const p = live.current;
 
       const omegaRadPerSec = p.crankOmegaRadPerS;
-      crankAngle = (crankAngle + omegaRadPerSec * delta) % (Math.PI * 2);
+      crankAngle = wrapCycleRad(crankAngle + omegaRadPerSec * delta, p.crankWrapRad);
 
       updateCorlissEngineKinematics(model, crankAngle, p.govSpread, p.wristAmp, p.isCutaway);
 

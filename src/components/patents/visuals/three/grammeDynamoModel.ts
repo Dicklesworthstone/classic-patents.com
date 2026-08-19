@@ -14,6 +14,7 @@
  */
 
 import * as THREE from "three";
+import { grammeFluxRadius, stepGrammeDynamo } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface GrammeDynamoModelNodes {
@@ -297,14 +298,21 @@ export function updateGrammeDynamoKinematics(
   showMagneticFlux: boolean,
   isCutaway: boolean,
 ) {
-  const radiansPerSec = displayRadPerFrame * 60;
+  const gramme = stepGrammeDynamo({});
+  const radiansPerSec = displayRadPerFrame * gramme.displayFps;
   nodes.armatureGroup.rotation.x += radiansPerSec * dt;
 
   const pos = nodes.fluxPositions;
   for (let i = 0; i < nodes.fluxCount; i++) {
     const idx = i * 3;
-    const angle = (i * Math.PI * 2) / nodes.fluxCount + timeSec * radiansPerSec * 0.3;
-    const radius = 1.42 + (i % 6) * 0.14;
+    const angle =
+      (i * Math.PI * 2) / nodes.fluxCount + timeSec * radiansPerSec * gramme.fluxOrbitCoupling;
+    const radius = grammeFluxRadius(
+      i,
+      gramme.fluxRadiusBase,
+      gramme.fluxRadiusPitch,
+      gramme.fluxRadiusWrap,
+    );
     pos[idx + 1] = Math.cos(angle) * radius;
     pos[idx + 2] = Math.sin(angle) * radius;
   }

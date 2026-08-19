@@ -72,6 +72,9 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     expect(result.bristleOuterSvgR).toBe(78);
     expect(result.sawToothCount).toBe(16);
     expect(result.bristleCount).toBe(24);
+    expect(result.fiberSawCoupling).toBe(0.12);
+    expect(result.fiberCarrySpeed).toBe(1.8);
+    expect(result.fiberWrapZ).toBe(3.2);
   });
 
   test("builds and articulates procedural timber frame, breastwork grate, saw cylinder, and brush cylinder correctly", () => {

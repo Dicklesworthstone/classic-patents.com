@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { einsteinFluidSign, stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -24,6 +25,7 @@ export interface EinsteinRefrigeratorModel {
     fluidMat: THREE.PointsMaterial;
     insulationMat?: THREE.MeshStandardMaterial;
     frostMat?: THREE.MeshStandardMaterial;
+    weldSeamMat?: THREE.MeshStandardMaterial;
   };
   dispose: () => void;
 }
@@ -99,9 +101,26 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   });
   materialsToDispose.push(frostMat);
 
+  const weldSeamMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.45,
+    metalness: 0.95,
+  });
+  materialsToDispose.push(weldSeamMat);
+
   // --- 2. HERMETIC VESSEL HIERARCHY ---
   const fridgeGroup = new THREE.Group();
   rootGroup.add(fridgeGroup);
+
+  // Structural Mounting Chassis / Base Legs
+  [-3.2, 3.2].forEach((lx) => {
+    const legGeo = new THREE.BoxGeometry(0.3, 0.4, 3.4);
+    geometriesToDispose.push(legGeo);
+    const leg = new THREE.Mesh(legGeo, weldedSteel);
+    leg.position.set(lx, -3.3, 0);
+    leg.castShadow = true;
+    fridgeGroup.add(leg);
+  });
 
   // A. Boiler Generator (Bottom Right: drives ammonia vapor out of water)
   const genGeo = new THREE.CylinderGeometry(0.95, 0.95, 3.6, 24);
@@ -110,6 +129,16 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   generatorMesh.position.set(3.4, -1.2, 0);
   generatorMesh.castShadow = true;
   fridgeGroup.add(generatorMesh);
+
+  // Generator Circumferential Weld Seam Rings
+  [-2.8, 0.4].forEach((wy) => {
+    const weldGeo = new THREE.TorusGeometry(0.98, 0.04, 8, 24);
+    geometriesToDispose.push(weldGeo);
+    const weld = new THREE.Mesh(weldGeo, weldSeamMat);
+    weld.rotation.x = Math.PI / 2;
+    weld.position.set(3.4, wy, 0);
+    fridgeGroup.add(weld);
+  });
 
   // Gas Burner / Electrical Heating Well
   const heaterGeo = new THREE.CylinderGeometry(1.1, 1.1, 0.85, 24);
@@ -124,6 +153,7 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   geometriesToDispose.push(riserGeo);
   const riser = new THREE.Mesh(riserGeo, condenserFins);
   riser.position.set(3.4, 1.5, 0);
+  riser.castShadow = true;
   fridgeGroup.add(riser);
 
   // B. Air-Cooled Serpentine Condenser Coil (Top Right)
@@ -153,6 +183,7 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
     geometriesToDispose.push(finGeo);
     const fin = new THREE.Mesh(finGeo, condenserFins);
     fin.position.set(-1.0 + f * 0.28, 0, 0);
+    fin.castShadow = true;
     condenserGroup.add(fin);
   }
 
@@ -214,6 +245,7 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
   const gasReturnGeo = new THREE.TubeGeometry(gasReturnCurve, 36, 0.1, 8, false);
   geometriesToDispose.push(gasReturnGeo);
   const gasReturn = new THREE.Mesh(gasReturnGeo, weldedSteel);
+  gasReturn.castShadow = true;
   fridgeGroup.add(gasReturn);
 
   // --- 3. CONVECTION THERMOSIPHON PARTICLES ---
@@ -301,11 +333,12 @@ export function updateEinsteinRefrigeratorKinematics(
   // Convection thermosiphon circulation
   const pos = model.fluidPositions;
   const speed = fluidDisplaySpeed * delta;
+  const wrapY = stepEinsteinRefrigerator({}).fluidWrapY;
   for (let i = 0; i < model.fluidCount; i++) {
     const idx = i * 3;
-    pos[idx + 1] += (i % 2 === 0 ? 1 : -1) * speed;
-    if (pos[idx + 1] > 2.8) pos[idx + 1] = -2.8;
-    if (pos[idx + 1] < -2.8) pos[idx + 1] = 2.8;
+    pos[idx + 1] += einsteinFluidSign(i) * speed;
+    if (pos[idx + 1] > wrapY) pos[idx + 1] = -wrapY;
+    if (pos[idx + 1] < -wrapY) pos[idx + 1] = wrapY;
   }
   model.fluidPoints.geometry.attributes.position.needsUpdate = true;
 

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { bellWaveProgress, stepBellTelephone } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface BellTelephoneModel {
@@ -509,6 +510,7 @@ export function updateBellTelephoneKinematics(
   showAcousticWaves: boolean,
   isCutaway: boolean,
 ) {
+  const bell = stepBellTelephone({});
   const acousticVibe = Math.sin(timeSec * acousticDisplayOmegaRadPerS);
   const displScale = diaphragmStudioScale;
 
@@ -516,19 +518,25 @@ export function updateBellTelephoneKinematics(
   model.diaphragmMesh.position.x = -1.35 + acousticVibe * displScale;
 
   // Platinum Rod in Liquid Transmitter
-  model.rodGroup.position.y = acousticVibe * displScale * 0.6;
+  model.rodGroup.position.y = acousticVibe * displScale * bell.rodStudioCoupling;
 
   // Acoustic Wave Rings Propagation
   for (let i = 0; i < model.waveRings.length; i++) {
     const ring = model.waveRings[i];
     if (showAcousticWaves) {
       ring.visible = true;
-      const progress = (timeSec * 3 + i * 0.33) % 1.0;
-      ring.position.x = -5.0 + progress * 3.4;
-      const scale = 0.5 + progress * 0.8;
+      const progress = bellWaveProgress(
+        timeSec,
+        i,
+        bell.waveProgressOmega,
+        bell.waveProgressPitch,
+        bell.waveProgressWrap,
+      );
+      ring.position.x = bell.waveOriginX + progress * bell.waveTravelX;
+      const scale = bell.waveScale0 + progress * bell.waveScaleAmp;
       ring.scale.set(scale, scale, scale);
       const ringMat = ring.material as THREE.MeshBasicMaterial;
-      ringMat.opacity = (1 - progress) * 0.65;
+      ringMat.opacity = (1 - progress) * bell.waveOpacity0;
     } else {
       ring.visible = false;
     }
@@ -540,8 +548,8 @@ export function updateBellTelephoneKinematics(
   for (let i = 0; i < model.electronCount; i++) {
     const idx = i * 3;
     ePos[idx] += drift;
-    if (ePos[idx] > 2.0) {
-      ePos[idx] = -1.5;
+    if (ePos[idx] > bell.electronWrapX) {
+      ePos[idx] = bell.electronResetX;
     }
   }
   model.electronPoints.geometry.attributes.position.needsUpdate = true;

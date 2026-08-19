@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -26,6 +27,57 @@ export interface WhitneyCottonGinModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural 18th-Century Hand-Hewn American Walnut/Chestnut Timber Texture
+ */
+function createTimberTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Rustic dark walnut timber brown
+  ctx.fillStyle = "#4e2712";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Longitudinal coarse wood grain & growth rings
+  for (let i = 0; i < 90; i++) {
+    const x = i * 5.8 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.15 : 0.04);
+    ctx.strokeStyle = `rgba(35, 12, 4, ${alpha})`;
+    ctx.lineWidth = 1.4 + (i % 3) * 0.6;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 16, 160, x - 14, 360, x + 8, 512);
+    ctx.stroke();
+  }
+
+  // Hand-adze plane marks & wood pores
+  for (let p = 0; p < 260; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(20, 6, 2, 0.32)";
+    ctx.fillRect(px, py, 2.0, 6 + deterministicUnit(p, 3) * 8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const lcg = createLcg(1794);
   const rootGroup = new THREE.Group();
@@ -33,8 +85,12 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const timberTex = createTimberTexture();
+  if (timberTex) texturesToDispose.push(timberTex);
+
   // --- 1. PBR MATERIALS ---
   const walnutWood = new THREE.MeshStandardMaterial({
+    ...(timberTex ? { map: timberTex } : {}),
     color: 0x5c3218,
     roughness: 0.72,
     metalness: 0.05,
@@ -131,6 +187,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const hopperBack = new THREE.Mesh(hopperBackGeo, walnutWood);
   hopperBack.position.set(0, 2.2, 1.7);
   hopperBack.rotation.x = -Math.PI / 4;
+  hopperBack.castShadow = true;
   frameGroup.add(hopperBack);
 
   // --- 3. SLOTTED IRON BREASTWORK GRATE (CLAIM 1) ---
@@ -236,6 +293,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const crankHandle = new THREE.Mesh(crankHandleGeo, walnutWood);
   crankHandle.rotation.z = Math.PI / 2;
   crankHandle.position.set(0.6, 1.6, 0);
+  crankHandle.castShadow = true;
   crankGroup.add(crankHandle);
 
   // Step-Up Belt Pulley Assembly
@@ -247,6 +305,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   geometriesToDispose.push(drivePulleyGeo);
   const drivePulley = new THREE.Mesh(drivePulleyGeo, ironSaw);
   drivePulley.rotation.z = Math.PI / 2;
+  drivePulley.castShadow = true;
   drivePulleyGroup.add(drivePulley);
 
   // Small Pinion Pulley on Brush Shaft
@@ -255,6 +314,7 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
   const brushPulley = new THREE.Mesh(brushPulleyGeo, ironSaw);
   brushPulley.rotation.z = Math.PI / 2;
   brushPulley.position.set(-4.5, 0.2, 1.2);
+  brushPulley.castShadow = true;
   rootGroup.add(brushPulley);
 
   // Crossed Leather Transmission Belt (Saw Shaft -> Brush Shaft Speed Step-Up)
@@ -395,15 +455,16 @@ export function updateWhitneyCottonGinKinematics(
   // Animate cotton fibers through the gin grate and doffing chamber
   if (showFibers) {
     model.fiberPoints.visible = true;
+    const whitney = stepWhitneyCottonGin({});
     const pos = model.fiberPositions;
     for (let i = 0; i < model.fiberCount; i++) {
       const idx = i * 3;
-      pos[idx + 2] += (sawOmegaRadPerS * 0.12 + 1.8) * dt; // Flow toward rear (+Z)
-      pos[idx + 1] -= 0.6 * dt; // Gravity descent
+      pos[idx + 2] += (sawOmegaRadPerS * whitney.fiberSawCoupling + whitney.fiberCarrySpeed) * dt;
+      pos[idx + 1] -= whitney.fiberGravity * dt;
 
-      if (pos[idx + 2] > 3.2) {
-        pos[idx + 2] = -0.6;
-        pos[idx + 1] = 0.8;
+      if (pos[idx + 2] > whitney.fiberWrapZ) {
+        pos[idx + 2] = whitney.fiberResetZ;
+        pos[idx + 1] = whitney.fiberResetY;
       }
     }
     model.fiberPoints.geometry.attributes.position.needsUpdate = true;

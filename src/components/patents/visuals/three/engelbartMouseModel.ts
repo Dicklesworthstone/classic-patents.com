@@ -5,8 +5,8 @@
  * (US Patent 3,541,541 - "X-Y Position Indicator for a Display System").
  *
  * Reconstructs the Stanford Research Institute (SRI) NLS wooden prototype mouse:
- * 1. Hand-carved walnut wooden block casing.
- * 2. Stamped metal base plate with wheel apertures.
+ * 1. Hand-carved walnut wooden block casing with authentic grain.
+ * 2. Stamped metal base plate with wheel apertures and fastener screws.
  * 3. Spring-loaded red tactile microswitch button on front corner (Claim 1).
  * 4. Orthogonal brass knife-edge tracking wheels:
  *    - X-wheel rolling on X-axis and skidding on Y-axis (Claim 2).
@@ -34,6 +34,7 @@ export interface EngelbartMouseModelNodes {
   yPotWiper: THREE.Mesh;
   boot: THREE.Mesh;
   cord: THREE.Mesh;
+  bearingBlocks?: THREE.Mesh[];
 }
 
 export interface EngelbartMouseMaterials {
@@ -46,6 +47,7 @@ export interface EngelbartMouseMaterials {
   baseMetal: THREE.MeshStandardMaterial;
   rubberBoot: THREE.MeshStandardMaterial;
   cable: THREE.MeshStandardMaterial;
+  steelPivot?: THREE.MeshStandardMaterial;
 }
 
 export interface EngelbartMouseModelResult {
@@ -53,6 +55,57 @@ export interface EngelbartMouseModelResult {
   nodes: EngelbartMouseModelNodes;
   materials: EngelbartMouseMaterials;
   dispose: () => void;
+}
+
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Hand-Carved American Walnut Texture
+ */
+function createWalnutTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Warm hand-oiled walnut brown
+  ctx.fillStyle = "#8a3010";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Walnut longitudinal grain & subtle wood swirl
+  for (let i = 0; i < 90; i++) {
+    const x = i * 5.8 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.15 : 0.04);
+    ctx.strokeStyle = `rgba(50, 16, 6, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 14, 160, x - 12, 360, x + 6, 512);
+    ctx.stroke();
+  }
+
+  // Wood pores & light hand-sanded highlights
+  for (let p = 0; p < 280; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(30, 8, 4, 0.28)";
+    ctx.fillRect(px, py, 1.8, 5 + deterministicUnit(p, 3) * 7);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
@@ -70,10 +123,14 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
     return mat;
   };
 
+  const walnutTex = createWalnutTexture();
+  if (walnutTex) texturesToDispose.push(walnutTex);
+
   // Materials
   const materials: EngelbartMouseMaterials = {
     woodHousing: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(walnutTex ? { map: walnutTex } : {}),
         color: 0x9a3412,
         roughness: 0.35,
         metalness: 0.05,
@@ -136,6 +193,13 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
         roughness: 0.5,
       }),
     ),
+    steelPivot: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0xe2e8f0,
+        roughness: 0.12,
+        metalness: 0.96,
+      }),
+    ),
   };
 
   const mouseGroup = new THREE.Group();
@@ -149,7 +213,7 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
   body.receiveShadow = true;
   mouseGroup.add(body);
 
-  // 2. Stamped Metal Base Plate
+  // 2. Stamped Metal Base Plate with Fastener Screws
   const basePlate = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(4.38, 0.12, 5.98)),
     materials.baseMetal,
@@ -157,6 +221,21 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
   basePlate.position.y = 0.12;
   basePlate.receiveShadow = true;
   mouseGroup.add(basePlate);
+
+  // Base Plate Corner Fastener Screws
+  [
+    [-1.8, -2.5],
+    [1.8, -2.5],
+    [-1.8, 2.5],
+    [1.8, 2.5],
+  ].forEach(([sx, sz]) => {
+    const screw = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 0.08, 12)),
+      materials.baseMetal,
+    );
+    screw.position.set(sx, 0.06, sz);
+    mouseGroup.add(screw);
+  });
 
   // 3. Tactile Button & Microswitch
   const buttonBezel = new THREE.Mesh(
@@ -212,6 +291,7 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
   const xWheelGroup = new THREE.Group();
   xWheelGroup.position.set(-1.1, 0.25, -0.6);
 
+  // Tapered Knife-Edge Brass Wheel Profile
   const xWheelRim = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.85, 0.85, 0.15, 32)),
     materials.brassWheel,
@@ -222,7 +302,8 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
 
   const xAxle = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 1.8, 16)),
-    trackMat(new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })),
+    materials.steelPivot ||
+      trackMat(new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })),
   );
   xAxle.rotation.z = Math.PI / 2;
   xWheelGroup.add(xAxle);
@@ -258,7 +339,8 @@ export function buildEngelbartMouseModel(): EngelbartMouseModelResult {
 
   const yAxle = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 1.8, 16)),
-    trackMat(new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })),
+    materials.steelPivot ||
+      trackMat(new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.9 })),
   );
   yAxle.rotation.x = Math.PI / 2;
   yWheelGroup.add(yAxle);

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { fourStrokeCycle } from "@/physics/catalogKernels";
+import { fourStrokeCycle, stepOttoEngine } from "@/physics/catalogKernels";
 
 export interface OttoEngineModelNodes {
   root: THREE.Group;
@@ -703,32 +703,33 @@ export function updateOttoEngineKinematics(
   nodes.connectingRod.rotation.z = rodAngle;
 
   // 4. 2:1 Lay Shaft (Camshaft) Half-Speed Rotation
+  const otto = stepOttoEngine({});
   const cycle = fourStrokeCycle(crankAngle);
   const camAngle = cycle.camAngleRad;
   nodes.sideShaftGroup.rotation.x = camAngle;
 
   // 5. Slide Valve Reciprocation (Driven by Lay Shaft Eccentric)
-  const slideStroke = 0.22;
-  const slideOffset = Math.sin(camAngle) * slideStroke;
-  nodes.slideValvePlate.position.x = -3.45 + slideOffset;
-  nodes.slideValveEccentricRod.rotation.x = Math.sin(camAngle) * 0.25;
+  const slideOffset = Math.sin(camAngle) * otto.slideStroke;
+  nodes.slideValvePlate.position.x = otto.slideHomeX + slideOffset;
+  nodes.slideValveEccentricRod.rotation.x = Math.sin(camAngle) * otto.eccentricRodAmp;
 
   // 6. Exhaust Valve & Rocker Arm (Opens during Exhaust Stroke 540-720 deg)
   const cyclePhase = cycle.cyclePhaseRad;
   const isExhaustStroke = cycle.strokeIndex === 3;
   const exhaustLift = isExhaustStroke
-    ? Math.sin(cyclePhase - cycle.exhaustStartRad) * 0.12
+    ? Math.sin(cyclePhase - cycle.exhaustStartRad) * otto.exhaustLiftAmp
     : 0;
 
-  nodes.exhaustValveStem.position.y = -0.35 - exhaustLift;
-  nodes.exhaustRockerArm.rotation.z = exhaustLift * 1.8;
+  nodes.exhaustValveStem.position.y = otto.exhaustValveHomeY - exhaustLift;
+  nodes.exhaustRockerArm.rotation.z = exhaustLift * otto.exhaustRockerCoupling;
 
   // 7. Centrifugal Flyball Governor Kinematics
   if (running) {
     nodes.governorSpindle.rotation.y += govDisplayOmegaRadPerS * dt;
     nodes.governorBallLeft.position.x = -flyballRadius;
     nodes.governorBallRight.position.x = flyballRadius;
-    nodes.governorSleeve.position.y = 0.35 + (flyballRadius - 0.18) * 0.8;
+    nodes.governorSleeve.position.y =
+      otto.sleeveHomeY + (flyballRadius - otto.sleeveRadius0) * otto.sleeveCoupling;
   }
 
   // 8. Cutaway Visibility
@@ -736,36 +737,41 @@ export function updateOttoEngineKinematics(
   nodes.cylinderCutawayMesh.visible = cutawayMode;
 
   // 9. Thermodynamic 4-Stroke Gas Volume Color & Luminance
-  const gasLength = Math.max(0.3, pistonWristX - -3.25);
-  nodes.combustionVolumeMesh.scale.set(1, gasLength / 1.8, 1);
-  nodes.combustionVolumeMesh.position.x = -3.25 + gasLength / 2;
+  const gasLength = Math.max(otto.gasMinLength, pistonWristX - otto.cylinderTdcX);
+  nodes.combustionVolumeMesh.scale.set(1, gasLength / otto.combustionLengthRef, 1);
+  nodes.combustionVolumeMesh.position.x = otto.cylinderTdcX + gasLength / 2;
 
   if (cycle.strokeIndex === 0) {
     // INTAKE
-    materials.combustionGas.color.setHex(0x38bdf8);
-    materials.combustionGas.emissive.setHex(0x0284c7);
-    materials.combustionGas.emissiveIntensity = 0.25;
-    materials.combustionGas.opacity = 0.35;
+    materials.combustionGas.color.setHex(otto.intakeGasColor);
+    materials.combustionGas.emissive.setHex(otto.intakeGasEmissive);
+    materials.combustionGas.emissiveIntensity = otto.intakeEmissive;
+    materials.combustionGas.opacity = otto.intakeOpacity;
   } else if (cycle.strokeIndex === 1) {
     // COMPRESSION
     const compFraction = (cyclePhase - cycle.strokeRad) / cycle.strokeRad;
-    materials.combustionGas.color.setHex(0xf59e0b);
-    materials.combustionGas.emissive.setHex(0xd97706);
-    materials.combustionGas.emissiveIntensity = 0.3 + compFraction * 0.5;
-    materials.combustionGas.opacity = 0.4 + compFraction * 0.3;
+    materials.combustionGas.color.setHex(otto.compressionGasColor);
+    materials.combustionGas.emissive.setHex(otto.compressionGasEmissive);
+    materials.combustionGas.emissiveIntensity =
+      otto.compressionEmissive0 + compFraction * otto.compressionEmissiveAmp;
+    materials.combustionGas.opacity =
+      otto.compressionOpacity0 + compFraction * otto.compressionOpacityAmp;
   } else if (cycle.strokeIndex === 2) {
     // POWER (Expansion & Combustion)
     const expFraction = (cyclePhase - cycle.powerStartRad) / cycle.strokeRad;
-    const intensity = Math.max(0.1, 1.0 - expFraction * 0.7);
-    materials.combustionGas.color.setHex(0xffffff);
-    materials.combustionGas.emissive.setHex(0xff5500);
-    materials.combustionGas.emissiveIntensity = 0.9 * intensity;
-    materials.combustionGas.opacity = 0.75 * intensity;
+    const intensity = Math.max(
+      otto.expansionMin,
+      otto.expansionEmissive0 / otto.expansionEmissive0 - expFraction * otto.expansionFade,
+    );
+    materials.combustionGas.color.setHex(otto.powerGasColor);
+    materials.combustionGas.emissive.setHex(otto.powerGasEmissive);
+    materials.combustionGas.emissiveIntensity = otto.expansionEmissive0 * intensity;
+    materials.combustionGas.opacity = otto.expansionOpacity0 * intensity;
   } else {
     // EXHAUST
-    materials.combustionGas.color.setHex(0x64748b);
-    materials.combustionGas.emissive.setHex(0x475569);
-    materials.combustionGas.emissiveIntensity = 0.15;
-    materials.combustionGas.opacity = 0.28;
+    materials.combustionGas.color.setHex(otto.exhaustGasColor);
+    materials.combustionGas.emissive.setHex(otto.exhaustGasEmissive);
+    materials.combustionGas.emissiveIntensity = otto.exhaustEmissive;
+    materials.combustionGas.opacity = otto.exhaustOpacity;
   }
 }

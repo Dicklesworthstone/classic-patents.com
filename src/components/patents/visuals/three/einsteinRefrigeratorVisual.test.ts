@@ -68,6 +68,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(result.evapTempF).toBe(Math.round((result.evapTempC * 9) / 5 + 32));
     expect(result.cop).toBeGreaterThan(0.1);
     expect(result.fluidDisplaySpeed).toBeCloseTo(result.coolingWatts / 45 + 0.8, 2);
+    expect(result.fluidWrapY).toBe(2.8);
   });
 
   test("builds and articulates procedural boiler generator, condenser coil, and evaporator correctly", () => {

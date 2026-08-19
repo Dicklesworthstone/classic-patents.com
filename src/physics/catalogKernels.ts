@@ -73,6 +73,36 @@ export function dieselCamWindows(
     intakeLiftAmp: 0.15,
     injectionLiftAmp: 0.12,
     exhaustLiftAmp: 0.15,
+    intakeRockerCoupling: 1.5,
+    injectorRockerCoupling: 1.8,
+    exhaustRockerCoupling: 1.5,
+    flameScale0: 0.7,
+    flameScaleAmp: 0.6,
+    flameEmissive0: 3,
+    flameEmissiveAmp: 3,
+    compressorSwingAmp: 0.18,
+    flyballOmegaRatio: 2,
+    fuelPumpStrokeAmp: 0.08,
+    fuelPumpOmegaRatio: 2,
+    gasTopY: 3.4,
+    gasMinHeight: 0.18,
+    pistonCrownOffset: 0.5,
+    gasIntakeColor: 0x38bdf8,
+    gasIntakeEmissive: 0x0284c7,
+    gasCompressionCold: 0x38bdf8,
+    gasCompressionHot: 0xf97316,
+    gasInjectionColor: 0xfef08a,
+    gasInjectionEmissive: 0xf97316,
+    gasExhaustColor: 0x64748b,
+    gasExhaustEmissive: 0x334155,
+    compressionEmissive0: 0.2,
+    compressionEmissiveAmp: 1.8,
+    injectionEmissive: 2.5,
+    exhaustEmissive: 0.1,
+    intakeEmissive: 0.3,
+    compressionBarAmp: 2.2,
+    injectionBar: 45,
+    idleBar: 1.5,
   };
 }
 
@@ -139,6 +169,12 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     schematicJetX1: 100,
     schematicJetX2: 200,
     schematicJetY: 190,
+    jetYOverX: 0.7,
+    jetWrapX: 0,
+    jetResetX: -3.2,
+    jetResetY: -2.25,
+    sprayFloorY: -3.8,
+    sprayResetY: -1.0,
   };
 }
 
@@ -207,7 +243,18 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     schematicBrushY0: 112,
     schematicBrushY1: 182,
     schematicBrushCount: 2,
+    fluxOrbitCoupling: 0.3,
+    fluxRadiusBase: 1.42,
+    fluxRadiusPitch: 0.14,
+    fluxRadiusWrap: 6,
+    displayFps: 60,
   };
+}
+
+/** Toroidal flux-sample radius on the 3D ring. Shared by 3D. */
+export function grammeFluxRadius(index: number, base = 1.42, pitch = 0.14, wrap = 6) {
+  const w = Math.max(1, wrap);
+  return base + (((index % w) + w) % w) * pitch;
 }
 
 /** Commutator-brush seat on the schematic. Shared by the schematic. */
@@ -292,6 +339,37 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     strokeRad: Math.PI,
     camRatio: 0.5,
     exhaustLiftAmp: 0.12,
+    slideStroke: 0.22,
+    slideHomeX: -3.45,
+    eccentricRodAmp: 0.25,
+    exhaustValveHomeY: -0.35,
+    exhaustRockerCoupling: 1.8,
+    sleeveHomeY: 0.35,
+    sleeveRadius0: 0.18,
+    sleeveCoupling: 0.8,
+    gasMinLength: 0.3,
+    cylinderTdcX: -3.25,
+    combustionLengthRef: 1.8,
+    intakeGasColor: 0x38bdf8,
+    intakeGasEmissive: 0x0284c7,
+    intakeEmissive: 0.25,
+    intakeOpacity: 0.35,
+    compressionGasColor: 0xf59e0b,
+    compressionGasEmissive: 0xd97706,
+    compressionEmissive0: 0.3,
+    compressionEmissiveAmp: 0.5,
+    compressionOpacity0: 0.4,
+    compressionOpacityAmp: 0.3,
+    powerGasColor: 0xffffff,
+    powerGasEmissive: 0xff5500,
+    expansionMin: 0.1,
+    expansionFade: 0.7,
+    expansionEmissive0: 0.9,
+    expansionOpacity0: 0.75,
+    exhaustGasColor: 0x64748b,
+    exhaustGasEmissive: 0x475569,
+    exhaustEmissive: 0.15,
+    exhaustOpacity: 0.28,
     spokeCount: 6,
     spokePitchDeg: 60,
     schematicFlywheelCx: 280,
@@ -676,6 +754,12 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     schematicGrateD1: "M 165 80 C 185 120, 185 170, 165 210",
     schematicSawR: 48,
     schematicBrushR: 36,
+    fiberSawCoupling: 0.12,
+    fiberCarrySpeed: 1.8,
+    fiberGravity: 0.6,
+    fiberWrapZ: 3.2,
+    fiberResetZ: -0.6,
+    fiberResetY: 0.8,
   };
 }
 
@@ -911,6 +995,13 @@ export function stepCorlissEngine(params: {
     intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
     intakeCycleDeg: 180,
     displayWrapDeg: 360,
+    crankWrapRad: Math.PI * 2,
+    govOmegaRatio: 2.5,
+    wristLeadRad: Math.PI * 0.25,
+    intakeValveCoupling: 0.9,
+    exhaustValveCoupling: 0.7,
+    dashpotDropAmp: 1.2,
+    dashpotHomeY: 1.5,
     spokeCount: 6,
     spokePitchDeg: 60,
     schematicValveR: 16,
@@ -1095,6 +1186,14 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     schematicRamLabelY: 170,
     schematicMoldLabelX: 325,
     schematicMoldLabelY: 100,
+    ramHomeX: 1.8,
+    ramCycleTau: Math.PI * 2,
+    flowMax: 1.4,
+    flowViscosityRef: 1800,
+    flowViscosityFloor: 80,
+    solidFlow: 0.08,
+    meltedOpacity: 0.88,
+    solidOpacity: 0.22,
   };
 }
 
@@ -1322,6 +1421,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     schematicDiaphragmR: 16,
     schematicStylusY: 114,
     schematicHornPoints: "190,80 150,30 230,30",
+    stylusHomeY: -0.55,
     leadScrewThreadCount: 40,
     leadScrewThreadOriginX: 90,
     leadScrewThreadPitchX: 10,
@@ -1404,6 +1504,8 @@ export function stepThomsonWelding(params: {
     schematicUpsetLeftX2: 135,
     schematicUpsetRightX1: 280,
     schematicUpsetRightX2: 265,
+    sparkGoldenAngleRad: 2.399963229728653,
+    sparkWrapRad: Math.PI * 2,
   };
 }
 
@@ -1522,6 +1624,7 @@ export function stepDaimlerEngine(params: {
     cycleWrapDeg: 720,
     crankWrapDeg: 360,
     cycleWrapRad: Math.PI * 4,
+    crankWrapRad: Math.PI * 2,
     strokeRad: Math.PI,
     intakeLiftAmp: 0.08,
     exhaustLiftAmp: 0.12,
@@ -1553,6 +1656,17 @@ export function stepDaimlerEngine(params: {
     schematicRodX: 200,
     schematicRodY0: 115,
     schematicRodY1: 210,
+    valveHomeY: 2.5,
+    exhaustPushrodHomeY: 0.2,
+    exhaustRockerCoupling: 1.5,
+    flamePistonOffset: 0.35,
+    flameScale0: 0.6,
+    flameScaleAmp: 0.4,
+    hotTubeBrightC: 800,
+    hotTubeWarmC: 600,
+    hotTubeBrightHex: 0xf97316,
+    hotTubeWarmHex: 0xb45309,
+    hotTubeColdHex: 0x334155,
   };
 }
 
@@ -1773,6 +1887,10 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
       (Math.min(1, Math.max(0.1, lowResistanceWatts / 150)) * 0.25).toFixed(3),
     ),
     bulbLightScale: 18,
+    glowThreshold: 0.05,
+    gasPhaseOmega: 2,
+    gasYOmega: 1.3,
+    gasZOmega: 0.7,
     schematicEnvelopeD:
       "M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z",
     schematicBaseD: "M 170 210 L 170 235 L 230 235 L 230 210 Z",
@@ -1854,7 +1972,30 @@ export function stepBellTelephone(params: {
     scopeSamplePitchPx: 5,
     scopeTScale: 0.2,
     scopeBaselineY: 50,
+    rodStudioCoupling: 0.6,
+    waveProgressOmega: 3,
+    waveProgressPitch: 0.33,
+    waveProgressWrap: 1,
+    waveOriginX: -5.0,
+    waveTravelX: 3.4,
+    waveScale0: 0.5,
+    waveScaleAmp: 0.8,
+    waveOpacity0: 0.65,
+    electronWrapX: 2.0,
+    electronResetX: -1.5,
   };
+}
+
+/** Acoustic-ring progress on the 3D horn. Shared by 3D. */
+export function bellWaveProgress(
+  timeSec: number,
+  index: number,
+  omega = 3,
+  pitch = 0.33,
+  wrap = 1,
+) {
+  const w = wrap === 0 ? 1 : wrap;
+  return (((timeSec * omega + index * pitch) % w) + w) % w;
 }
 
 /** Oscilloscope sample for the liquid-transmitter face. Shared by 2D. */
@@ -1921,6 +2062,15 @@ export function stepMorseTelegraph(params: {
     keyOscillationRadPerS: Number(((wpm / 4) * Math.PI).toFixed(3)),
     armatureStrikeM: Number(Math.min(0.2, 0.08 + (forceN / 10) * 0.1).toFixed(4)),
     electronDisplaySpeed: 8,
+    electronLaneZ: 0.3,
+    electronOriginX: -3.6,
+    electronWrapX: 3.6,
+    electronSpanX: 7.2,
+    keySinThreshold: 0.2,
+    keyTiltRad: 0.08,
+    armatureHomeY: 2.1,
+    governorRatio: 6,
+    gearRatio: 2,
     schematicKeyX: 50,
     schematicKeyY: 150,
     schematicKeyW: 70,
@@ -1962,6 +2112,27 @@ export function morseSchematicInstrument(
     labelX: seat.x + seat.w / 2,
     labelY: Math.round(seat.y + seat.h / 2 + labelLift),
   };
+}
+
+/** Twin-wire electron lane Z on the 3D circuit. Shared by 3D. */
+export function morseElectronLaneZ(index: number, laneZ = 0.3) {
+  return index % 2 === 0 ? laneZ : -laneZ;
+}
+
+/** Image-dissector beam path fraction from photocathode to anode. Shared by 3D. */
+export function farnsworthBeamFrac(x: number, originX = -4.5, spanX = 8) {
+  const span = spanX === 0 ? 8 : spanX;
+  return Math.max(0, Math.min(1, (x - originX) / span));
+}
+
+/** Near/far spark X on a Westinghouse wheelset pair. Shared by 3D. */
+export function westinghouseSparkWheelX(wheelIndex: number, near = -1.4, far = 1.4) {
+  return wheelIndex < 2 ? near : far;
+}
+
+/** Near/far spark Z on a Westinghouse axle. Shared by 3D. */
+export function westinghouseSparkWheelZ(wheelIndex: number, near = -1.02, far = 1.02) {
+  return wheelIndex % 2 === 0 ? near : far;
 }
 
 export function stepEngelbartMouse(params: {
@@ -2061,6 +2232,7 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     phi2DisplayHz: 4,
     busDisplaySpeed: Number((cpuMhz * 4).toFixed(2)),
     videoPhaseDivisor: 2,
+    videoPacketParity: 0,
     dramBaseAddr: 0x0400,
     dramAddrSpan: 0x0400,
     dramAddrStride: 0x31,
@@ -2116,6 +2288,11 @@ export function wozniakBusCycle(
       .toUpperCase()
       .padStart(4, "0")}`,
   };
+}
+
+/** Φ1 video packet vs Φ2 CPU packet on the 3D bus. Shared by 3D. */
+export function wozniakIsVideoPacket(index: number, divisor = 2, videoParity = 0) {
+  return index % Math.max(1, divisor) === videoParity;
 }
 
 export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, rfWatts?: number) {
@@ -2590,7 +2767,16 @@ export function stepGoodyearRubber(
     schematicLinkXs: [88, 155, 235, 315],
     schematicLinkY0s: [120, 170, 110],
     schematicLinkY1s: [125, 165, 120],
+    thermalWobbleOmega: 4,
+    thermalWobblePhasePitch: 1.5,
+    gaugeNeedleRadPerStretch: Number((Math.PI * 1.5).toFixed(6)),
+    uncoilMin: 0.12,
   };
+}
+
+/** Poisson thinning of a stretched polyisoprene chain. Shared by 3D. */
+export function goodyearUncoilFactor(stretch: number, uncoilMin = 0.12) {
+  return Math.max(uncoilMin, 1 / Math.sqrt(Math.max(1e-6, stretch)));
 }
 
 /** 2D sulfur-post seat between gum chains. Shared by 2D. */
@@ -2671,7 +2857,13 @@ export function stepEinsteinRefrigerator(params: {
     schematicAbsGenX: 115,
     schematicAbsGenY1: 170,
     schematicAbsGenY2: 110,
+    fluidWrapY: 2.8,
   };
+}
+
+/** Thermosyphon rise/fall sign on the 3D loop. Shared by 3D. */
+export function einsteinFluidSign(index: number) {
+  return index % 2 === 0 ? 1 : -1;
 }
 
 /** Generator / condenser / evaporator / absorber seat on the schematic. Shared by the schematic. */
@@ -2736,7 +2928,23 @@ export function stepLincolnBuoy(params: {
     schematicWaterY: 190,
     schematicTieY0: 80,
     schematicTieY1: 140,
+    inflationNormDivisor: 100,
+    bellowsScaleY0: 0.25,
+    bellowsScaleYAmp: 0.95,
+    bellowsScaleZ0: 0.35,
+    bellowsScaleZAmp: 0.85,
+    lowerFrameHomeY: -0.7,
+    lowerFrameDropAmp: 0.65,
+    boatLiftPerFt: 0.45,
+    sandbarHomeY: -1.0,
+    sandbarDepthPerFt: 0.45,
   };
+}
+
+/** Bellows inflation 0–1 from the percent control. Shared by 3D. */
+export function lincolnInflationNorm(inflationPct: number, divisor = 100) {
+  const d = divisor === 0 ? 100 : divisor;
+  return Math.max(0, Math.min(1, inflationPct / d));
 }
 
 /** Air-chamber seat on the schematic. Shared by the schematic. */
@@ -2779,6 +2987,14 @@ export function stepMaximMachineGun(params: {
     recoilSvgAmp: Number((stroke / 2).toFixed(2)),
     fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
     fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
+    fireCycleWrapRad: Math.PI * 2,
+    firingWindowRad: 0.6,
+    muzzleFlashSinThreshold: 0.82,
+    toggleLiftAmp: 0.32,
+    toggleHomeY: 0.12,
+    toggleHomeX: -0.8,
+    toggleRecoilCoupling: 1.8,
+    crankThrowAmp: 0.75,
     steamOpacity:
       barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
     schematicToggleCx: 280,

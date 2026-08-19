@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { blackbodyRgb } from "@/physics/blackbody";
+import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -24,12 +25,63 @@ export interface EdisonBulbModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Turned Mahogany Display Stand Texture
+ */
+function createMahoganyTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#4a1e0d";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 85; i++) {
+    const x = i * 6.0 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.14 : 0.04);
+    ctx.strokeStyle = `rgba(120, 42, 14, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 14, 160, x - 12, 360, x + 6, 512);
+    ctx.stroke();
+  }
+
+  for (let p = 0; p < 280; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(25, 8, 3, 0.28)";
+    ctx.fillRect(px, py, 1.8, 5 + deterministicUnit(p, 3) * 7);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildEdisonBulbModel(): EdisonBulbModel {
   const lcg = createLcg(1880);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
+
+  const mahoganyTex = createMahoganyTexture();
+  if (mahoganyTex) texturesToDispose.push(mahoganyTex);
 
   // --- 1. PBR MATERIALS ---
   const glassMat = new THREE.MeshPhysicalMaterial({
@@ -74,6 +126,7 @@ export function buildEdisonBulbModel(): EdisonBulbModel {
   materialsToDispose.push(plasterInsulatorMat);
 
   const woodMountMat = new THREE.MeshStandardMaterial({
+    ...(mahoganyTex ? { map: mahoganyTex } : {}),
     color: 0x5c2b0c,
     roughness: 0.35,
     metalness: 0.05,
@@ -287,7 +340,8 @@ export function updateEdisonBulbKinematics(
   showGasMolecules: boolean,
   isCutaway: boolean,
 ): { incandescenceIntensity: number; glowColor: THREE.Color } {
-  const isGlowing = incandescenceIntensity > 0.05;
+  const edison = stepEdisonBulb({});
+  const isGlowing = incandescenceIntensity > edison.glowThreshold;
   const glowColor = new THREE.Color(blackbodyRgb(filamentTempKelvin));
 
   if (isGlowing) {
@@ -308,10 +362,10 @@ export function updateEdisonBulbKinematics(
     const thermalJitter = thermalJitterPerS * dt;
     for (let i = 0; i < model.gasCount; i++) {
       const idx = i * 3;
-      const phase = timeSec * 2.0 + i;
+      const phase = timeSec * edison.gasPhaseOmega + i;
       gPos[idx] += Math.sin(phase) * thermalJitter;
-      gPos[idx + 1] += Math.cos(phase * 1.3) * thermalJitter;
-      gPos[idx + 2] += Math.sin(phase * 0.7) * thermalJitter;
+      gPos[idx + 1] += Math.cos(phase * edison.gasYOmega) * thermalJitter;
+      gPos[idx + 2] += Math.sin(phase * edison.gasZOmega) * thermalJitter;
     }
     model.gasPoints.geometry.attributes.position.needsUpdate = true;
   } else {

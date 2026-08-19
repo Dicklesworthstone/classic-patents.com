@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { stepThomsonWelding, wrapCycleRad } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1458);
@@ -353,11 +354,12 @@ export function updateThomsonWeldingKinematics(
     const geo = nodes.sparkPoints.geometry as THREE.BufferGeometry;
     const pos = geo.attributes.position.array as Float32Array;
 
+    const weld = stepThomsonWelding({});
     for (let i = 0; i < SPARK_COUNT; i++) {
       const idx = i * 3;
       const seed = (i * 1.37 + timeSec * 4.5) % 1.0;
       const radius = seed * 1.8;
-      const angle = (i * 2.399963) % (Math.PI * 2);
+      const angle = wrapCycleRad(i * weld.sparkGoldenAngleRad, weld.sparkWrapRad);
       pos[idx] = Math.cos(angle) * radius;
       pos[idx + 1] = 0.4 + Math.sin(seed * Math.PI) * 1.2 - seed ** 2 * 1.4;
       pos[idx + 2] = Math.sin(angle) * radius;

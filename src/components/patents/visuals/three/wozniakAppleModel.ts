@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { wozniakIsVideoPacket } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -42,10 +43,81 @@ export interface WozniakAppleModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural PCB generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Green FR-4 Epoxy Motherboard Texture with Copper Traces & Silkscreen
+ */
+function createPcbTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Deep Apple II Rev 0 PCB green
+  ctx.fillStyle = "#14532d";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Copper bus tracks
+  ctx.strokeStyle = "rgba(34, 197, 94, 0.35)";
+  ctx.lineWidth = 1.2;
+  for (let b = 0; b < 32; b++) {
+    const y = 30 + b * 14;
+    ctx.beginPath();
+    ctx.moveTo(20, y);
+    ctx.lineTo(240, y);
+    ctx.lineTo(280, y + 20);
+    ctx.lineTo(490, y + 20);
+    ctx.stroke();
+  }
+
+  // IC Component silkscreen boxes & reference designators
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.45)";
+  ctx.lineWidth = 1.0;
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 8; c++) {
+      const rx = 140 + c * 40;
+      const ry = 80 + r * 60;
+      ctx.strokeRect(rx, ry, 30, 45);
+    }
+  }
+
+  // CPU Silkscreen outline
+  ctx.strokeRect(40, 200, 70, 150);
+
+  // Solder vias & contact pads
+  ctx.fillStyle = "rgba(234, 179, 8, 0.6)";
+  for (let v = 0; v < 180; v++) {
+    const vx = deterministicUnit(v, 0) * 480 + 16;
+    const vy = deterministicUnit(v, 1) * 480 + 16;
+    ctx.beginPath();
+    ctx.arc(vx, vy, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 1);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildWozniakAppleModel(): WozniakAppleModel {
   const root = new THREE.Group();
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(19790123);
+
+  const pcbTex = createPcbTexture();
+  if (pcbTex) disposables.push(pcbTex);
 
   // --- Museum-Grade Materials ---
   const caseBeigeMat = new THREE.MeshStandardMaterial({
@@ -56,6 +128,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
   disposables.push(caseBeigeMat);
 
   const pcbGreenMat = new THREE.MeshStandardMaterial({
+    ...(pcbTex ? { map: pcbTex } : {}),
     color: 0x14532d,
     roughness: 0.32,
     metalness: 0.25,
@@ -234,7 +307,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
 
   for (let i = 0; i < busPacketCount; i++) {
     const idx = i * 3;
-    const isPhi1Video = i % 2 === 0;
+    const isPhi1Video = wozniakIsVideoPacket(i);
 
     busPos[idx] = -2.8 + lcg() * 5.5;
     busPos[idx + 1] = -0.85 + lcg() * 0.2;
@@ -282,7 +355,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
 
     for (let i = 0; i < busPacketCount; i++) {
       const idx = i * 3;
-      const isPhi1Video = i % 2 === 0;
+      const isPhi1Video = wozniakIsVideoPacket(i);
 
       if (isPhi1Video) {
         bPos[idx] += speed * 1.5;

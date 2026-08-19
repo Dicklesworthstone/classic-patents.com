@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { lincolnInflationNorm, stepLincolnBuoy } from "@/physics/catalogKernels";
 
 export interface LincolnBuoyModel {
   rootGroup: THREE.Group;
@@ -26,14 +27,66 @@ export interface LincolnBuoyModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Steamboat Hull Plank Texture
+ */
+function createHullTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#5c3a21";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 80; i++) {
+    const y = i * 6.4 + (deterministicUnit(i, 0) - 0.5) * 3;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(35, 18, 8, ${alpha})`;
+    ctx.lineWidth = 1.4 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(160, y + 10, 340, y - 10, 512, y + 5);
+    ctx.stroke();
+  }
+
+  for (let p = 0; p < 200; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(20, 10, 4, 0.28)";
+    ctx.fillRect(px, py, 4 + deterministicUnit(p, 3) * 6, 1.8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildLincolnBuoyModel(): LincolnBuoyModel {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const hullTex = createHullTexture();
+  if (hullTex) texturesToDispose.push(hullTex);
+
   // --- 1. AUTHENTIC MATERIALS ---
   const hullWood = new THREE.MeshStandardMaterial({
+    ...(hullTex ? { map: hullTex } : {}),
     color: 0x5c3a21,
     roughness: 0.55,
     metalness: 0.08,
@@ -320,25 +373,25 @@ export function updateLincolnBuoyKinematics(
   paddleDisplayOmegaRadPerS: number,
   isCutaway = false,
 ): void {
-  // Bellows extension/inflation scaling
-  const infl = Math.max(0, Math.min(100, bellowsInflationPct)) / 100;
-  const bellowsScaleY = 0.25 + infl * 0.95;
-  const bellowsScaleZ = 0.35 + infl * 0.85;
+  const lincoln = stepLincolnBuoy({});
+  const infl = lincolnInflationNorm(bellowsInflationPct, lincoln.inflationNormDivisor);
+  const bellowsScaleY = lincoln.bellowsScaleY0 + infl * lincoln.bellowsScaleYAmp;
+  const bellowsScaleZ = lincoln.bellowsScaleZ0 + infl * lincoln.bellowsScaleZAmp;
 
   model.portBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);
   model.stbdBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);
 
-  const frameY = -0.7 - infl * 0.65;
+  const frameY = lincoln.lowerFrameHomeY - infl * lincoln.lowerFrameDropAmp;
   model.portLowerFrame.position.y = frameY;
   model.stbdLowerFrame.position.y = frameY;
 
   // Hull waterline displacement based on draft change
   const draftReductionFt = baseDraftFt - effectiveDraftFt;
-  const boatY = draftReductionFt * 0.45;
+  const boatY = draftReductionFt * lincoln.boatLiftPerFt;
   model.boatGroup.position.y = boatY;
 
   // River sandbar shoal height
-  const sandbarY = -1.0 - riverShoalDepthFt * 0.45;
+  const sandbarY = lincoln.sandbarHomeY - riverShoalDepthFt * lincoln.sandbarDepthPerFt;
   model.sandbarMesh.position.y = sandbarY;
 
   // Paddlewheel rotation

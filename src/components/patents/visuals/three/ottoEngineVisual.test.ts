@@ -63,6 +63,9 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(otto.flywheelSvgR).toBe(80);
     expect(otto.spokeCount).toBe(6);
     expect(otto.spokePitchDeg).toBe(60);
+    expect(otto.slideStroke).toBe(0.22);
+    expect(otto.exhaustLiftAmp).toBe(0.12);
+    expect(otto.sleeveHomeY).toBe(0.35);
 
     const twoDSource = readFileSync(join(VISUALS_DIRECTORY, "OttoEngineSim.tsx"), "utf8");
     expect(twoDSource).toContain("otto.flywheelSvgR");

@@ -4,6 +4,7 @@ import {
   bardeenLoadLine,
   bardeenSchematicDie,
   bellScopeSample,
+  bellWaveProgress,
   coltNextChamber,
   coltSchematicTrigger,
   corlissConnectingRod,
@@ -18,8 +19,10 @@ import {
   edisonSchematicGlowOpacity,
   edisonSchematicGrooveX,
   edisonSchematicTerminal,
+  einsteinFluidSign,
   einsteinSchematicVessel,
   engelbartSchematicWheel,
+  farnsworthBeamFrac,
   fourStrokeCycle,
   fourStrokeIndexFromRad,
   gatlingMuzzleFlash,
@@ -30,7 +33,9 @@ import {
   goodyearSchematicCrosslink,
   goodyearSchematicLink,
   goodyearSchematicStrand,
+  goodyearUncoilFactor,
   grammeCoil,
+  grammeFluxRadius,
   grammeJunctionRod,
   grammeSchematicBrush,
   grammeSchematicJunction,
@@ -44,6 +49,7 @@ import {
   kevlarChainPath,
   kevlarSchematicBond,
   kevlarSchematicLattice,
+  lincolnInflationNorm,
   lincolnSchematicChamber,
   marconiMastHeightFromHz,
   mccormickCrankPinSvg,
@@ -53,6 +59,7 @@ import {
   mccormickReelAngleDeg,
   mccormickSchematicReelArm,
   mccormickSchematicSickleX,
+  morseElectronLaneZ,
   morseSchematicInstrument,
   nobelKieselguhrSvg,
   nobelSchematicKieselguhr,
@@ -110,8 +117,11 @@ import {
   thomsonSchematicJawX,
   verticalConnectingRod,
   voltsToKv,
+  westinghouseSparkWheelX,
+  westinghouseSparkWheelZ,
   whitneySchematicRay,
   wozniakBusCycle,
+  wozniakIsVideoPacket,
   wozniakSchematicChip,
   zeppelinSchematicCell,
   zeppelinSchematicGondola,
@@ -132,6 +142,12 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(fourStrokeCycle(Math.PI * 4.1).cyclePhaseRad).toBeCloseTo(Math.PI * 0.1, 10);
     expect(dieselCamWindows().intakeCamEndRad).toBeCloseTo(Math.PI / 2, 10);
     expect(dieselCamWindows().injectionCamStartRad).toBeCloseTo(degToRad(355 * 0.5), 10);
+    expect(dieselCamWindows().injectorRockerCoupling).toBe(1.8);
+    expect(dieselCamWindows().compressorSwingAmp).toBe(0.18);
+    expect(dieselCamWindows().fuelPumpStrokeAmp).toBe(0.08);
+    expect(farnsworthBeamFrac(-4.5)).toBe(0);
+    expect(farnsworthBeamFrac(-0.5)).toBe(0.5);
+    expect(farnsworthBeamFrac(3.5)).toBe(1);
 
     // Piston displacement: 0 at 0 deg, 2*stroke at 180 deg
     expect(pistonSvgDisplacement(0, 50)).toBe(0);
@@ -144,6 +160,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     // Edison schematic glow bounded in [0.2, 0.9]
     expect(edisonSchematicGlowOpacity(1500)).toBe(0.2);
     expect(edisonSchematicGlowOpacity(2700)).toBe(0.9);
+
+    expect(westinghouseSparkWheelX(0)).toBe(-1.4);
+    expect(westinghouseSparkWheelX(2)).toBe(1.4);
+    expect(westinghouseSparkWheelZ(0)).toBe(-1.02);
+    expect(westinghouseSparkWheelZ(1)).toBe(1.02);
   });
 
   test("Pelton wheel computes jet velocity and turbine efficiency", () => {
@@ -160,6 +181,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicJetX1).toBe(100);
     expect(peltonSchematicBucket(0).x).toBe(260);
     expect(peltonSchematicBucket(90).y).toBe(190);
+    expect(res.jetYOverX).toBe(0.7);
+    expect(res.jetResetX).toBe(-3.2);
+    expect(res.sprayFloorY).toBe(-3.8);
   });
 
   test("Gramme dynamo computes 36-junction continuous EMF index", () => {
@@ -181,6 +205,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(grammeCoil(0).x).toBe(94);
     expect(grammeJunctionRod(0).x2).toBe(48);
     expect(res.torusCx).toBe(300);
+    expect(res.fluxOrbitCoupling).toBe(0.3);
+    expect(res.displayFps).toBe(60);
+    expect(grammeFluxRadius(0)).toBeCloseTo(1.42, 10);
+    expect(grammeFluxRadius(6)).toBeCloseTo(1.42, 10);
+    expect(grammeFluxRadius(1)).toBeCloseTo(1.56, 10);
   });
 
   test("Otto four-stroke engine computes thermodynamic air-standard cycle", () => {
@@ -208,6 +237,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicFlywheelR).toBe(45);
     expect(res.schematicCylinderW).toBe(160);
     expect(res.schematicValveW).toBe(30);
+    expect(res.slideStroke).toBe(0.22);
+    expect(res.slideHomeX).toBe(-3.45);
+    expect(res.exhaustRockerCoupling).toBe(1.8);
+    expect(res.sleeveCoupling).toBe(0.8);
   });
 
   test("Parsons steam turbine computes multi-stage expansion enthalpy", () => {
@@ -290,6 +323,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicSawToothCount).toBe(12);
     expect(res.schematicSawR).toBe(48);
     expect(res.schematicHopperPoints).toContain("60,40");
+    expect(res.fiberSawCoupling).toBe(0.12);
+    expect(res.fiberCarrySpeed).toBe(1.8);
+    expect(res.fiberWrapZ).toBe(3.2);
     const saw0 = whitneySchematicRay(
       0,
       res.schematicSawCx,
@@ -362,6 +398,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(corlissSchematicValve(3).cy).toBe(215);
     expect(res.intakeCycleDeg).toBe(180);
     expect(res.displayWrapDeg).toBe(360);
+    expect(res.crankWrapRad).toBeCloseTo(Math.PI * 2, 10);
   });
 
   test("Gatling gun computes cyclic fire rate and barrel cluster rotation", () => {
@@ -390,6 +427,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.polymerMeltR).toBe(8);
     expect(hyattSchematicRam().x).toBe(40);
     expect(hyattSchematicMold().x).toBe(295);
+    expect(res.ramHomeX).toBe(1.8);
+    expect(res.ramCycleTau).toBeCloseTo(Math.PI * 2, 10);
+    expect(res.flowMax).toBe(1.4);
     expect(goddardSchematicStack().schematicNoseCx).toBe(200);
     expect(goddardSchematicStack().schematicChamberH).toBe(70);
   });
@@ -455,6 +495,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicCoreW).toBe(60);
     expect(thomsonSchematicJawX(1)).toBe(220);
     expect(res.schematicWeldR).toBe(6);
+    expect(res.sparkGoldenAngleRad).toBeCloseTo(2.399963229728653, 10);
+    expect(res.sparkWrapRad).toBeCloseTo(Math.PI * 2, 10);
   });
 
   test("Zeppelin airship computes aerostatic lift, compartmental displacement, and trim moments", () => {
@@ -518,6 +560,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicTerminalR).toBe(4);
     expect(edisonSchematicTerminal(0).cx).toBe(185);
     expect(edisonSchematicTerminal(1).cx).toBe(215);
+    expect(res.glowThreshold).toBe(0.05);
+    expect(res.gasPhaseOmega).toBe(2);
+    expect(res.gasYOmega).toBe(1.3);
   });
 
   test("Bell telephone computes liquid transmitter resistance modulation and acoustic current", () => {
@@ -545,6 +590,12 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
       ).x,
     ).toBe(0);
     expect(res.currentBaselineMa).toBeGreaterThan(0);
+    expect(res.rodStudioCoupling).toBe(0.6);
+    expect(res.waveProgressOmega).toBe(3);
+    expect(res.electronWrapX).toBe(2.0);
+    expect(bellWaveProgress(0, 0)).toBe(0);
+    expect(bellWaveProgress(0.1, 0)).toBeCloseTo(0.3, 10);
+    expect(bellWaveProgress(0, 1)).toBeCloseTo(0.33, 10);
   });
 
   test("Morse telegraph computes loop line resistance, electromagnet force, and sounder latch", () => {
@@ -559,6 +610,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicKeyX).toBe(50);
     expect(morseSchematicInstrument("relay").x).toBe(160);
     expect(morseSchematicInstrument("sounder").labelX).toBe(315);
+    expect(res.electronLaneZ).toBe(0.3);
+    expect(res.governorRatio).toBe(6);
+    expect(res.gearRatio).toBe(2);
+    expect(morseElectronLaneZ(0)).toBe(0.3);
+    expect(morseElectronLaneZ(1)).toBe(-0.3);
   });
 
   test("Engelbart computer mouse computes dual orthogonal encoder resolution and coordinate travel", () => {
@@ -576,11 +632,14 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.cpuClockMhz).toBeCloseTo(1.02, 2);
     expect(res.cpuDutyPct).toBe(100);
     expect(res.videoPhaseDivisor).toBe(2);
+    expect(res.videoPacketParity).toBe(0);
     expect(wozniakBusCycle(0, 0).dramAddress).toBe("0x0400");
     expect(wozniakBusCycle(1, 0).phase).toBe(1);
     expect(res.rasterLineWrap).toBe(192);
     expect(wozniakSchematicChip("cpu", res.schematicChipSeats).x).toBe(50);
     expect(wozniakSchematicChip("ram", res.schematicChipSeats).labelY).toBe(140);
+    expect(wozniakIsVideoPacket(0, res.videoPhaseDivisor, res.videoPacketParity)).toBe(true);
+    expect(wozniakIsVideoPacket(1, res.videoPhaseDivisor, res.videoPacketParity)).toBe(false);
   });
 
   test("Spencer microwave cavity computes magnetron relativistic gyro-frequency and Poynting vector", () => {
@@ -665,6 +724,12 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(goodyearChainPost(1).x).toBe(180);
     expect(goodyearSchematicStrand(0).x).toBe(70);
     expect(goodyearSchematicCrosslink(0).cx).toBe(122);
+    expect(res.thermalWobbleOmega).toBe(4);
+    expect(res.thermalWobblePhasePitch).toBe(1.5);
+    expect(res.gaugeNeedleRadPerStretch).toBeCloseTo(Math.PI * 1.5, 5);
+    expect(res.uncoilMin).toBe(0.12);
+    expect(goodyearUncoilFactor(1)).toBe(1);
+    expect(goodyearUncoilFactor(4)).toBe(0.5);
   });
 
   test("Einstein-Szilard refrigerator computes three-fluid bubble pump thermosyphon circulation", () => {
@@ -677,6 +742,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(einsteinSchematicVessel("condenser").labelX).toBe(285);
     expect(einsteinSchematicVessel("evaporator").y).toBe(170);
     expect(einsteinSchematicVessel("absorber").labelY).toBe(205);
+    expect(res.fluidWrapY).toBe(2.8);
+    expect(einsteinFluidSign(0)).toBe(1);
+    expect(einsteinFluidSign(1)).toBe(-1);
   });
 
   test("Lincoln buoyant air chambers computes hydrostatic buoyancy lift and draft reduction", () => {
@@ -687,6 +755,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicHullD).toContain("50 110");
     expect(res.schematicWaterY).toBe(190);
     expect(lincolnSchematicChamber(1).x).toBe(250);
+    expect(res.bellowsScaleY0).toBe(0.25);
+    expect(res.boatLiftPerFt).toBe(0.45);
+    expect(lincolnInflationNorm(75)).toBe(0.75);
+    expect(lincolnInflationNorm(150)).toBe(1);
+    expect(lincolnInflationNorm(-10)).toBe(0);
   });
 
   test("Maxim recoil machine gun computes muzzle gas recoil impulse and automatic toggle cycling", () => {
@@ -697,5 +770,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicToggleR).toBe(4);
     expect(res.schematicJacketW).toBe(180);
     expect(res.schematicBreechW).toBe(140);
+    expect(res.fireCycleWrapRad).toBeCloseTo(Math.PI * 2, 10);
+    expect(res.firingWindowRad).toBe(0.6);
+    expect(res.toggleLiftAmp).toBe(0.32);
+    expect(res.toggleHomeY).toBe(0.12);
+    expect(res.toggleRecoilCoupling).toBe(1.8);
+    expect(res.crankThrowAmp).toBe(0.75);
   });
 });

@@ -759,21 +759,19 @@ export function updateDieselEngineKinematics(
     ? Math.sin((cycleAngle / cam.intakeCamEndRad) * Math.PI) * cam.intakeLiftAmp
     : 0;
   nodes.intakeValve.position.y = -intakeLift;
-  nodes.intakeRocker.rotation.z = intakeLift * 1.5;
+  nodes.intakeRocker.rotation.z = intakeLift * cam.intakeRockerCoupling;
 
-  const isCompression =
-    cycleAngle >= cam.intakeCamEndRad && cycleAngle < cam.compressionCamEndRad;
+  const isCompression = cycleAngle >= cam.intakeCamEndRad && cycleAngle < cam.compressionCamEndRad;
   const compProgress = (cycleAngle - cam.intakeCamEndRad) / cam.intakeCamEndRad;
 
   const injectionSpan = cam.injectionCamEndRad - cam.injectionCamStartRad;
-  const isInjection =
-    cycleAngle >= cam.injectionCamStartRad && cycleAngle < cam.injectionCamEndRad;
+  const isInjection = cycleAngle >= cam.injectionCamStartRad && cycleAngle < cam.injectionCamEndRad;
   const injectionLift = isInjection
     ? Math.sin(((cycleAngle - cam.injectionCamStartRad) / injectionSpan) * Math.PI) *
       cam.injectionLiftAmp
     : 0;
   nodes.injectorNeedle.position.y = injectionLift;
-  nodes.injectorRocker.rotation.z = injectionLift * 1.8;
+  nodes.injectorRocker.rotation.z = injectionLift * cam.injectorRockerCoupling;
 
   const isExhaust = cycleAngle >= cam.exhaustCamStartRad && cycleAngle < cam.camWrapRad;
   const exhaustSpan = cam.camWrapRad - cam.exhaustCamStartRad;
@@ -781,55 +779,61 @@ export function updateDieselEngineKinematics(
     ? Math.sin(((cycleAngle - cam.exhaustCamStartRad) / exhaustSpan) * Math.PI) * cam.exhaustLiftAmp
     : 0;
   nodes.exhaustValve.position.y = -exhaustLift;
-  nodes.exhaustRocker.rotation.z = exhaustLift * 1.5;
+  nodes.exhaustRocker.rotation.z = exhaustLift * cam.exhaustRockerCoupling;
 
   if (isInjection && isAutoIgnition) {
     nodes.flameMesh.visible = true;
     const pulse = Math.sin(((cycleAngle - cam.injectionCamStartRad) / injectionSpan) * Math.PI);
-    nodes.flameMesh.scale.setScalar(0.7 + pulse * 0.6);
-    materials.flameMat.emissiveIntensity = 3.0 + pulse * 3.0;
+    nodes.flameMesh.scale.setScalar(cam.flameScale0 + pulse * cam.flameScaleAmp);
+    materials.flameMat.emissiveIntensity = cam.flameEmissive0 + pulse * cam.flameEmissiveAmp;
   } else {
     nodes.flameMesh.visible = false;
   }
 
-  const gasTopY = 3.4;
-  const gasHeight = Math.max(0.18, gasTopY - (pistonY + 0.5));
+  const gasTopY = cam.gasTopY;
+  const gasHeight = Math.max(cam.gasMinHeight, gasTopY - (pistonY + cam.pistonCrownOffset));
   nodes.gasVolumeMesh.scale.set(1.0, gasHeight, 1.0);
   nodes.gasVolumeMesh.position.y = gasTopY - gasHeight * 0.5;
 
   if (isCompression) {
     const heatColor = new THREE.Color().lerpColors(
-      new THREE.Color(0x38bdf8),
-      new THREE.Color(0xf97316),
+      new THREE.Color(cam.gasCompressionCold),
+      new THREE.Color(cam.gasCompressionHot),
       compProgress,
     );
     materials.gasMat.color = heatColor;
     materials.gasMat.emissive = heatColor;
-    materials.gasMat.emissiveIntensity = 0.2 + compProgress * 1.8;
+    materials.gasMat.emissiveIntensity =
+      cam.compressionEmissive0 + compProgress * cam.compressionEmissiveAmp;
   } else if (isInjection) {
-    materials.gasMat.color = new THREE.Color(0xfef08a);
-    materials.gasMat.emissive = new THREE.Color(0xf97316);
-    materials.gasMat.emissiveIntensity = 2.5;
+    materials.gasMat.color = new THREE.Color(cam.gasInjectionColor);
+    materials.gasMat.emissive = new THREE.Color(cam.gasInjectionEmissive);
+    materials.gasMat.emissiveIntensity = cam.injectionEmissive;
   } else if (isExhaust) {
-    materials.gasMat.color = new THREE.Color(0x64748b);
-    materials.gasMat.emissive = new THREE.Color(0x334155);
-    materials.gasMat.emissiveIntensity = 0.1;
+    materials.gasMat.color = new THREE.Color(cam.gasExhaustColor);
+    materials.gasMat.emissive = new THREE.Color(cam.gasExhaustEmissive);
+    materials.gasMat.emissiveIntensity = cam.exhaustEmissive;
   } else {
-    materials.gasMat.color = new THREE.Color(0x38bdf8);
-    materials.gasMat.emissive = new THREE.Color(0x0284c7);
-    materials.gasMat.emissiveIntensity = 0.3;
+    materials.gasMat.color = new THREE.Color(cam.gasIntakeColor);
+    materials.gasMat.emissive = new THREE.Color(cam.gasIntakeEmissive);
+    materials.gasMat.emissiveIntensity = cam.intakeEmissive;
   }
 
   nodes.cylinderJacketMesh.visible = !cutawayMode;
   nodes.cylinderCutawayMesh.visible = cutawayMode;
 
-  nodes.compressorLinkage.rotation.z = Math.sin(crankAngleRad) * 0.18;
+  nodes.compressorLinkage.rotation.z = Math.sin(crankAngleRad) * cam.compressorSwingAmp;
 
-  nodes.flyballGovernor.rotation.y = crankAngleRad * 2.0;
+  nodes.flyballGovernor.rotation.y = crankAngleRad * cam.flyballOmegaRatio;
   nodes.governorBallsGroup.scale.set(governorBallSpread, 1.0, governorBallSpread);
 
-  nodes.fuelPumpPlunger.position.y = Math.sin(cycleAngle * 2) * 0.08;
+  nodes.fuelPumpPlunger.position.y =
+    Math.sin(cycleAngle * cam.fuelPumpOmegaRatio) * cam.fuelPumpStrokeAmp;
 
-  const pBar = isCompression ? 1 + compProgress * (compressionRatio * 2.2) : isInjection ? 45 : 1.5;
+  const pBar = isCompression
+    ? 1 + compProgress * (compressionRatio * cam.compressionBarAmp)
+    : isInjection
+      ? cam.injectionBar
+      : cam.idleBar;
   nodes.pressureNeedle.rotation.z = -(pBar * pressureNeedleRadPerBar);
 }

@@ -3,7 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { stepOttoEngine } from "@/physics/catalogKernels";
+import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -60,6 +60,7 @@ export function OttoEngine3D() {
     crankOmegaRadPerS: otto.crankOmegaRadPerS,
     govDisplayOmegaRadPerS: otto.govDisplayOmegaRadPerS,
     flyballRadius: otto.flyballRadius,
+    cycleWrapRad: otto.cycleWrapRad,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -154,7 +155,7 @@ export function OttoEngine3D() {
       const omega = live.current.isRunning ? live.current.crankOmegaRadPerS : 0;
 
       if (currentRpm > 0) {
-        crankAngle = (crankAngle + omega * delta) % (Math.PI * 4); // 720 deg 4-stroke period
+        crankAngle = wrapCycleRad(crankAngle + omega * delta, live.current.cycleWrapRad);
       }
 
       // Kinematic update

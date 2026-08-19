@@ -15,6 +15,7 @@
  */
 
 import * as THREE from "three";
+import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 
 export interface PeltonWheelModel {
@@ -443,16 +444,17 @@ export function updatePeltonWheelKinematics(
   if (showJet) {
     model.jetPoints.visible = true;
     model.sprayPoints.visible = true;
+    const pelton = stepPeltonWheel({});
 
     // High-speed jet streamline flow
     const jPos = model.jetPoints.geometry.attributes.position.array as Float32Array;
     const jetSpeed = jetDisplaySpeed * dt;
     for (let i = 0; i < jPos.length; i += 3) {
       jPos[i] += jetSpeed;
-      jPos[i + 1] += jetSpeed * 0.7;
-      if (jPos[i] > 0) {
-        jPos[i] = -3.2;
-        jPos[i + 1] = -2.25;
+      jPos[i + 1] += jetSpeed * pelton.jetYOverX;
+      if (jPos[i] > pelton.jetWrapX) {
+        jPos[i] = pelton.jetResetX;
+        jPos[i + 1] = pelton.jetResetY;
       }
     }
     model.jetPoints.geometry.attributes.position.needsUpdate = true;
@@ -462,8 +464,8 @@ export function updatePeltonWheelKinematics(
     const spraySpeed = sprayDisplaySpeed * dt;
     for (let i = 0; i < sPos.length; i += 3) {
       sPos[i + 1] -= spraySpeed;
-      if (sPos[i + 1] < -3.8) {
-        sPos[i + 1] = -1.0;
+      if (sPos[i + 1] < pelton.sprayFloorY) {
+        sPos[i + 1] = pelton.sprayResetY;
       }
     }
     model.sprayPoints.geometry.attributes.position.needsUpdate = true;

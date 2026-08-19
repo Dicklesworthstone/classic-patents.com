@@ -76,6 +76,9 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
     expect(result.tapeAdvanceRadPerS).toBeGreaterThan(0);
     expect(result.keyOscillationRadPerS).toBeCloseTo(5 * Math.PI, 2);
     expect(result.electronDisplaySpeed).toBe(8);
+    expect(result.electronLaneZ).toBe(0.3);
+    expect(result.governorRatio).toBe(6);
+    expect(result.gearRatio).toBe(2);
   });
 
   test("builds and articulates procedural baseboard, key lever, electromagnet sounder, and paper spool correctly", () => {

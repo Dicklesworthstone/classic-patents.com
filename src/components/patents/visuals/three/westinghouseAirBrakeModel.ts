@@ -1,4 +1,6 @@
 import * as THREE from "three";
+import { westinghouseSparkWheelX, westinghouseSparkWheelZ } from "@/physics/catalogKernels";
+import { FrankenSimEngine } from "@/physics/engine";
 
 export interface WestinghouseAirBrakeModelNodes {
   root: THREE.Group;
@@ -549,6 +551,8 @@ export function updateWestinghouseAirBrakeKinematics(
   clampingRatio: number, // 0 (released) to 1 (full emergency clamp)
   wheelSpeedRadPerS: number,
 ) {
+  const wh = FrankenSimEngine.stepWestinghouseAirBrake({});
+
   // 1. Wheelsets Rotation
   nodes.wheelSets.forEach((ws) => {
     ws.rotation.z = wheelAngle;
@@ -556,40 +560,42 @@ export function updateWestinghouseAirBrakeKinematics(
 
   // 2. Triple Valve Piston Shift
   // When clamped, triple valve drops down to connect auxiliary reservoir to cylinder
-  nodes.tripleValvePiston.position.y = 0.1 - clampingRatio * 0.18;
+  nodes.tripleValvePiston.position.y = wh.tripleValveHomeY - clampingRatio * wh.tripleValveStroke;
 
   // 3. Brake Cylinder Piston Stroke
-  const maxPushStroke = 0.35;
-  const currentPush = clampingRatio * maxPushStroke;
-  nodes.pistonPushRod.position.x = 0.9 + currentPush;
+  const currentPush = clampingRatio * wh.maxPushStroke;
+  nodes.pistonPushRod.position.x = wh.pistonHomeX + currentPush;
 
   // 4. Foundation Brake Levers & Rigging
-  const leverAngle = clampingRatio * 0.18;
+  const leverAngle = clampingRatio * wh.leverAngleAmp;
   nodes.liveBrakeLever.rotation.z = -leverAngle;
   nodes.deadBrakeLever.rotation.z = leverAngle;
 
   // 5. Brake Beams & Shoes Clamping Movement
   // Front beam moves +X toward front wheel, rear beam moves -X toward rear wheel
-  const beamClampTravel = clampingRatio * 0.08;
-  nodes.frontBrakeBeam.position.x = -1.4 + beamClampTravel;
-  nodes.rearBrakeBeam.position.x = 1.4 - beamClampTravel;
+  const beamClampTravel = clampingRatio * wh.beamClampTravel;
+  nodes.frontBrakeBeam.position.x = wh.frontBeamHomeX + beamClampTravel;
+  nodes.rearBrakeBeam.position.x = wh.rearBeamHomeX - beamClampTravel;
 
   // 6. Friction Spark Effect
-  const isSparking = clampingRatio > 0.4 && wheelSpeedRadPerS > 0.5;
-  materials.sparkParticle.opacity = isSparking ? Math.min(1.0, clampingRatio * 0.9) : 0;
+  const isSparking =
+    clampingRatio > wh.sparkClampThreshold && wheelSpeedRadPerS > wh.sparkWheelSpeedThreshold;
+  materials.sparkParticle.opacity = isSparking
+    ? Math.min(1.0, clampingRatio * wh.sparkOpacityScale)
+    : 0;
 
   if (isSparking) {
     const pos = nodes.frictionSparkPoints.geometry.attributes.position.array as Float32Array;
     for (let i = 0; i < 30; i++) {
-      const wheelIndex = i % 4;
-      const wx = wheelIndex < 2 ? -1.4 : 1.4;
-      const wz = wheelIndex % 2 === 0 ? -1.02 : 1.02;
+      const wheelIndex = i % wh.sparkWheelCount;
+      const wx = westinghouseSparkWheelX(wheelIndex, wh.sparkWheelXNear, wh.sparkWheelXFar);
+      const wz = westinghouseSparkWheelZ(wheelIndex, wh.sparkWheelZNear, wh.sparkWheelZFar);
       const hash1 = Math.sin(i * 78.233 + wheelAngle * 3.0);
       const hash2 = Math.cos(i * 45.197 + wheelAngle * 2.5);
       const hash3 = Math.sin(i * 12.989 + wheelAngle * 4.0);
-      pos[i * 3 + 0] = wx + hash1 * 0.12;
-      pos[i * 3 + 1] = -1.05 + hash2 * 0.12;
-      pos[i * 3 + 2] = wz + hash3 * 0.08;
+      pos[i * 3 + 0] = wx + hash1 * wh.sparkJitterXY;
+      pos[i * 3 + 1] = wh.sparkY + hash2 * wh.sparkJitterXY;
+      pos[i * 3 + 2] = wz + hash3 * wh.sparkJitterZ;
     }
     nodes.frictionSparkPoints.geometry.attributes.position.needsUpdate = true;
   }

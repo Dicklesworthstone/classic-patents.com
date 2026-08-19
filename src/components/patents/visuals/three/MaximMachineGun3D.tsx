@@ -49,6 +49,8 @@ export function MaximMachineGun3D() {
     recoilMomentumNs: maxim.recoilMomentumNs,
     fireOmegaRadPerS: maxim.fireOmegaRadPerS,
     steamOpacity: maxim.steamOpacity,
+    fireCycleWrapRad: maxim.fireCycleWrapRad,
+    muzzleFlashSinThreshold: maxim.muzzleFlashSinThreshold,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -143,6 +145,8 @@ export function MaximMachineGun3D() {
         p.steamOpacity,
         p.showMuzzleFlash,
         p.isCutaway,
+        p.fireCycleWrapRad,
+        p.muzzleFlashSinThreshold,
       );
 
       flashLight.intensity = isMuzzleFlash ? 4.8 : 0;

@@ -13,6 +13,7 @@
  */
 
 import * as THREE from "three";
+import { stepHyattCelluloid } from "@/physics/catalogKernels";
 
 export interface HyattCelluloidModelNodes {
   rootGroup: THREE.Group;
@@ -392,12 +393,19 @@ export function updateHyattCelluloidKinematics(
   ramStroke: number,
   isCutaway: boolean,
 ) {
-  nodes.ramPiston.position.x = 1.8 + Math.sin(timeSec * ramHz * Math.PI * 2) * ramStroke;
+  const hyatt = stepHyattCelluloid({});
+  nodes.ramPiston.position.x =
+    hyatt.ramHomeX + Math.sin(timeSec * ramHz * hyatt.ramCycleTau) * ramStroke;
 
-  const flow = isMelted ? Math.min(1.4, 1800 / Math.max(80, viscosityPaS)) : 0.08;
+  const flow = isMelted
+    ? Math.min(
+        hyatt.flowMax,
+        hyatt.flowViscosityRef / Math.max(hyatt.flowViscosityFloor, viscosityPaS),
+      )
+    : hyatt.solidFlow;
   nodes.rodMesh.visible = isMelted;
   nodes.rodMesh.scale.x = flow;
-  materials.celluloidAmber.opacity = isMelted ? 0.88 : 0.22;
+  materials.celluloidAmber.opacity = isMelted ? hyatt.meltedOpacity : hyatt.solidOpacity;
   materials.celluloidAmber.color.setHex(processTempC >= 90 ? 0xf59e0b : 0xb45309);
 
   // Cutaway Mode

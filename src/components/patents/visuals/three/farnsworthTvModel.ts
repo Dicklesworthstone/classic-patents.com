@@ -13,6 +13,8 @@
  */
 
 import * as THREE from "three";
+import { farnsworthBeamFrac } from "@/physics/catalogKernels";
+import { FrankenSimEngine } from "@/physics/engine";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -54,10 +56,64 @@ export interface FarnsworthTvModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Polished Mahogany Optical Bench Texture
+ */
+function createMahoganyTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Deep rich mahogany brown
+  ctx.fillStyle = "#5c2410";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Longitudinal wood growth rings & ribbon figure
+  for (let i = 0; i < 90; i++) {
+    const x = i * 5.8 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.14 : 0.04);
+    ctx.strokeStyle = `rgba(45, 14, 5, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 14, 160, x - 12, 360, x + 6, 512);
+    ctx.stroke();
+  }
+
+  // Pores
+  for (let p = 0; p < 300; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(25, 8, 3, 0.28)";
+    ctx.fillRect(px, py, 1.8, 5 + deterministicUnit(p, 3) * 8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildFarnsworthTvModel(): FarnsworthTvModel {
   const root = new THREE.Group();
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(19300826);
+
+  const mahoganyTex = createMahoganyTexture();
+  if (mahoganyTex) disposables.push(mahoganyTex);
 
   // --- AUTHENTIC MATERIALS ---
   const glassEnvelopeMat = new THREE.MeshPhysicalMaterial({
@@ -95,6 +151,7 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   disposables.push(anodeBrassMat);
 
   const mahoganyMat = new THREE.MeshStandardMaterial({
+    ...(mahoganyTex ? { map: mahoganyTex } : {}),
     color: 0x78350f,
     roughness: 0.35,
   });
@@ -126,15 +183,30 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   const tubeGroup = new THREE.Group();
   root.add(tubeGroup);
 
-  // Polished Mahogany Bench
-  const benchGeo = new THREE.BoxGeometry(14.0, 0.6, 5.0);
+  // Polished Mahogany Bench with Beveled Edges
+  const benchGeo = new THREE.BoxGeometry(14.0, 0.65, 5.0);
   disposables.push(benchGeo);
   const bench = new THREE.Mesh(benchGeo, mahoganyMat);
   bench.position.y = -2.8;
+  bench.castShadow = true;
   bench.receiveShadow = true;
   tubeGroup.add(bench);
 
-  // Dual Brass Saddle Clamps
+  // 4 Turned Brass Bun Feet Under Optical Bench
+  [
+    [-6.2, -2.0],
+    [6.2, -2.0],
+    [-6.2, 2.0],
+    [6.2, 2.0],
+  ].forEach(([fx, fz]) => {
+    const footGeo = new THREE.CylinderGeometry(0.35, 0.25, 0.25, 16);
+    disposables.push(footGeo);
+    const foot = new THREE.Mesh(footGeo, anodeBrassMat);
+    foot.position.set(fx, -3.25, fz);
+    tubeGroup.add(foot);
+  });
+
+  // Dual Brass Saddle Clamps with Thumbscrews
   [-3.5, 3.5].forEach((cx) => {
     const clampGeo = new THREE.CylinderGeometry(2.3, 2.3, 0.4, 24, 1, true);
     disposables.push(clampGeo);
@@ -147,10 +219,18 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
     disposables.push(standoffGeo);
     const clampStandoff = new THREE.Mesh(standoffGeo, anodeBrassMat);
     clampStandoff.position.set(cx, -1.4, 0);
+    clampStandoff.castShadow = true;
     tubeGroup.add(clampStandoff);
+
+    // Knurled clamping thumbscrew on top
+    const thumbGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.35, 14);
+    disposables.push(thumbGeo);
+    const thumb = new THREE.Mesh(thumbGeo, anodeBrassMat);
+    thumb.position.set(cx, 2.45, 0);
+    tubeGroup.add(thumb);
   });
 
-  // Blown Glass Envelope
+  // Blown Glass Envelope with Exhaust Tip and Vacuum Neck
   const tubePoints: THREE.Vector2[] = [
     new THREE.Vector2(0, 0),
     new THREE.Vector2(1.9, 0.2),
@@ -165,14 +245,16 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   const glassTube = new THREE.Mesh(tubeGeo, glassEnvelopeMat);
   glassTube.rotation.z = -Math.PI / 2;
   glassTube.position.x = -5.4;
+  glassTube.castShadow = true;
   tubeGroup.add(glassTube);
 
-  // Cesium-Oxide Photocathode Disc
+  // Cesium-Oxide Photocathode Disc (Photoemissive Surface)
   const photoGeo = new THREE.CircleGeometry(1.7, 36);
   disposables.push(photoGeo);
   const photocathode = new THREE.Mesh(photoGeo, photocathodeMat);
   photocathode.rotation.y = Math.PI / 2;
   photocathode.position.x = -4.8;
+  photocathode.castShadow = true;
   tubeGroup.add(photocathode);
 
   // Gold Collector Ring
@@ -370,22 +452,23 @@ export function updateFarnsworthTvKinematics(
     const bPos = model.beamPos;
     const speed = electronDisplaySpeed * delta;
 
+    const tv = FrankenSimEngine.stepFarnsworthTv(1.5, 120);
     const simTimeSec = renderedSteps * (1 / 60);
-    const hScan = Math.sin(simTimeSec * horizontalFreqKhz * 0.4) * 0.9;
-    const vScan = Math.sin(simTimeSec * verticalFreqHz * 0.2) * 0.9;
+    const hScan = Math.sin(simTimeSec * horizontalFreqKhz * tv.scanHCoupling) * tv.scanAmp;
+    const vScan = Math.sin(simTimeSec * verticalFreqHz * tv.scanVCoupling) * tv.scanAmp;
 
     for (let i = 0; i < model.beamPos.length / 3; i++) {
       const idx = i * 3;
       bPos[idx] += speed;
 
       const pX = bPos[idx];
-      const frac = Math.max(0, Math.min(1, (pX + 4.5) / 8.0));
+      const frac = farnsworthBeamFrac(pX, tv.beamPathOriginX, tv.beamPathSpanX);
 
-      bPos[idx + 1] = frac * vScan + model.beamJitter[idx + 1] * 0.05;
-      bPos[idx + 2] = frac * hScan + model.beamJitter[idx + 2] * 0.05;
+      bPos[idx + 1] = frac * vScan + model.beamJitter[idx + 1] * tv.beamJitterAmp;
+      bPos[idx + 2] = frac * hScan + model.beamJitter[idx + 2] * tv.beamJitterAmp;
 
-      if (bPos[idx] > 4.2) {
-        bPos[idx] = -4.5 + model.beamJitter[idx];
+      if (bPos[idx] > tv.beamWrapX) {
+        bPos[idx] = tv.beamPathOriginX + model.beamJitter[idx];
         bPos[idx + 1] = model.beamJitter[idx + 1];
         bPos[idx + 2] = model.beamJitter[idx + 2];
       }

@@ -14,8 +14,11 @@ import {
   otisSchematicPawl,
   otisSchematicRailY,
   renoSchematicCleat,
+  sholesCarriageStudioX,
+  sholesKeyStudioY,
   sholesSchematicTypebar,
   sholesTypebarPose,
+  sholesTypebarYawSign,
   stepCcdWells,
   stepEngelbartResolver,
   stepHoweLockstitch,
@@ -115,6 +118,16 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(sholesSchematicTypebar(0).deg).toBe(20);
     expect(sholesSchematicTypebar(0).x).toBeCloseTo(256.38, 2);
     expect(sholesSchematicTypebar(13).deg).toBe(345);
+    expect(cycle.typebarYawAmp).toBe(0.12);
+    expect(cycle.carriagePitchStudio).toBe(0.18);
+    expect(cycle.keysPerRow).toBe(10);
+    expect(sholesTypebarYawSign(0)).toBe(1);
+    expect(sholesTypebarYawSign(1)).toBe(-1);
+    expect(sholesCarriageStudioX(0)).toBe(0);
+    expect(sholesCarriageStudioX(1)).toBeCloseTo(-0.18, 10);
+    expect(sholesCarriageStudioX(12)).toBe(0);
+    expect(sholesKeyStudioY(0, false)).toBe(0.25);
+    expect(sholesKeyStudioY(10, true)).toBeCloseTo(0.25 - 0.12 - 0.16, 10);
   });
 
   test("stepMergenthalerLinotype computes matrix justification, lead pot solidification, and slug ejection", () => {
@@ -137,6 +150,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res.schematicChuteCount).toBe(3);
     expect(res.schematicMagazinePoints).toContain("120,40");
     expect(res.schematicAssemblerW).toBe(160);
+    expect(res.distributorArmHalf).toBe(0.5);
+    expect(res.starWheelStepRad).toBe(0.05);
     expect(mergenthalerSchematicChuteX(0)).toBe(140);
     expect(res.schematicMoldR).toBe(45);
   });
@@ -183,5 +198,10 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(otisSchematicRailY(5)).toBe(200);
     expect(snapped.peakArrestForceKn).toBeGreaterThan(15);
     expect(snapped.pawlEngagementMs).toBe(38);
+    expect(normal.leafSpringHomeY).toBe(2.35);
+    expect(normal.shackleBowCoupling).toBe(0.8);
+    expect(normal.hoistOmega).toBe(1.5);
+    expect(snapped.cabCaughtY).toBe(-0.15);
+    expect(snapped.pawlDisengagedRotZ).toBe(0.45);
   });
 });

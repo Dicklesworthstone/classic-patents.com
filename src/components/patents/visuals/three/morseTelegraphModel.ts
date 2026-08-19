@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { morseElectronLaneZ, stepMorseTelegraph } from "@/physics/catalogKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface MorseTelegraphModelNodes {
@@ -741,10 +742,12 @@ export function buildMorseTelegraphModel(): MorseTelegraphModelResult {
   // ==========================================
   const electronGeo = trackGeo(new THREE.BufferGeometry());
   const electronPositions = new Float32Array(ELECTRON_COUNT * 3);
+  const morseSeats = stepMorseTelegraph({});
   for (let i = 0; i < ELECTRON_COUNT; i++) {
-    electronPositions[i * 3] = -3.6 + (i / ELECTRON_COUNT) * 7.2;
+    electronPositions[i * 3] =
+      morseSeats.electronOriginX + (i / ELECTRON_COUNT) * morseSeats.electronSpanX;
     electronPositions[i * 3 + 1] = -1.95;
-    electronPositions[i * 3 + 2] = i % 2 === 0 ? 0.3 : -0.3;
+    electronPositions[i * 3 + 2] = morseElectronLaneZ(i, morseSeats.electronLaneZ);
   }
   electronGeo.setAttribute("position", new THREE.BufferAttribute(electronPositions, 3));
   const electronPoints = new THREE.Points(electronGeo, materials.electronMat);
@@ -799,21 +802,23 @@ export function updateMorseTelegraphKinematics(
   isCutaway: boolean,
 ) {
   // 1. Key Action (manual or rhythmic Morse oscillation)
-  const isKeyActive = keyIsDown || Math.sin(timeSec * keyOscillationRadPerS) > 0.2;
-  nodes.keyLeverGroup.rotation.z = isKeyActive ? 0.08 : 0;
+  const morse = stepMorseTelegraph({});
+  const isKeyActive =
+    keyIsDown || Math.sin(timeSec * keyOscillationRadPerS) > morse.keySinThreshold;
+  nodes.keyLeverGroup.rotation.z = isKeyActive ? morse.keyTiltRad : 0;
 
   // 2. Sounder Armature Strike
   const strike = isKeyActive ? -armatureStrikeM : 0;
-  nodes.armatureGroup.position.y = 2.1 + strike;
+  nodes.armatureGroup.position.y = morse.armatureHomeY + strike;
 
   // 3. Paper Tape & Clockwork Governor Advance
   if (isKeyActive) {
     nodes.tapeSpool.rotation.y += dt * tapeAdvanceRadPerS;
     if (nodes.flyGovernor) {
-      nodes.flyGovernor.rotation.z += dt * tapeAdvanceRadPerS * 6.0;
+      nodes.flyGovernor.rotation.z += dt * tapeAdvanceRadPerS * morse.governorRatio;
     }
     if (nodes.gearTrain) {
-      nodes.gearTrain.rotation.x += dt * tapeAdvanceRadPerS * 2.0;
+      nodes.gearTrain.rotation.x += dt * tapeAdvanceRadPerS * morse.gearRatio;
     }
   }
 
@@ -823,8 +828,8 @@ export function updateMorseTelegraphKinematics(
     const idx = i * 3;
     if (isKeyActive) {
       pos[idx] += dt * electronDisplaySpeed;
-      if (pos[idx] > 3.6) {
-        pos[idx] = -3.6;
+      if (pos[idx] > morse.electronWrapX) {
+        pos[idx] = morse.electronOriginX;
       }
     }
   }

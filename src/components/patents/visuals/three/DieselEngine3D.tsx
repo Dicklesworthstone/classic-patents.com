@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -69,6 +70,10 @@ export function DieselEngine3D() {
     crankOmegaRadPerS: diesel.crankOmegaRadPerS,
     governorBallSpread: diesel.governorBallSpread,
     pressureNeedleRadPerBar: diesel.pressureNeedleRadPerBar,
+    cycleWrapRad: diesel.cycleWrapRad,
+    camRatio: diesel.camRatio,
+    camWrapRad: diesel.camWrapRad,
+    injectionCamStartRad: diesel.injectionCamStartRad,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -111,7 +116,7 @@ export function DieselEngine3D() {
 
       if (p.isPlaying) {
         const speed = p.crankOmegaRadPerS;
-        crankAngle = (crankAngle + speed * dt) % (Math.PI * 4);
+        crankAngle = wrapCycleRad(crankAngle + speed * dt, p.cycleWrapRad);
 
         updateDieselEngineKinematics(
           nodes,
@@ -126,8 +131,8 @@ export function DieselEngine3D() {
 
         // Sound cadence on combustion power stroke
         if (!p.isMuted) {
-          const cycleRad = (crankAngle * 0.5) % (Math.PI * 2);
-          if (cycleRad >= Math.PI && lastSoundAngle < Math.PI) {
+          const cycleRad = wrapCycleRad(crankAngle * p.camRatio, p.camWrapRad);
+          if (cycleRad >= p.injectionCamStartRad && lastSoundAngle < p.injectionCamStartRad) {
             soundEngine.playPneumaticPuff();
           }
           lastSoundAngle = cycleRad;

@@ -8,6 +8,7 @@
  */
 
 import * as THREE from "three";
+import { stepMaximMachineGun, wrapCycleRad } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(319596);
@@ -475,8 +476,11 @@ export function updateMaximMachineGunKinematics(
   steamOpacity: number,
   showMuzzleFlash: boolean,
   isCutaway: boolean,
+  fireCycleWrapRad = Math.PI * 2,
+  muzzleFlashSinThreshold = 0.82,
 ): { isMuzzleFlash: boolean } {
-  const cycleTime = (timeSec * fireOmegaRadPerS) % (Math.PI * 2);
+  const maxim = stepMaximMachineGun({});
+  const cycleTime = wrapCycleRad(timeSec * fireOmegaRadPerS, fireCycleWrapRad);
   const isFiring = Math.sin(cycleTime);
 
   // 1. Barrel and barrel extension recoil rearward
@@ -484,15 +488,15 @@ export function updateMaximMachineGunKinematics(
   model.recoilingBarrelGroup.position.x = -recoilDist;
 
   // 2. Toggle lock joint breaks upward out of battery
-  const toggleLift = isFiring > 0 ? Math.sin(isFiring * Math.PI) * 0.32 : 0;
-  model.toggleJointGroup.position.y = 0.12 + toggleLift;
-  model.toggleJointGroup.position.x = -0.8 - recoilDist * 1.8;
+  const toggleLift = isFiring > 0 ? Math.sin(isFiring * Math.PI) * maxim.toggleLiftAmp : 0;
+  model.toggleJointGroup.position.y = maxim.toggleHomeY + toggleLift;
+  model.toggleJointGroup.position.x = maxim.toggleHomeX - recoilDist * maxim.toggleRecoilCoupling;
 
   // 3. External crank handle rotates downward on cam impact
-  model.crankHandle.rotation.z = isFiring > 0 ? isFiring * 0.75 : 0;
+  model.crankHandle.rotation.z = isFiring > 0 ? isFiring * maxim.crankThrowAmp : 0;
 
   // 4. Muzzle flash
-  const isMuzzleFlash = isFiring > 0.82 && showMuzzleFlash;
+  const isMuzzleFlash = isFiring > muzzleFlashSinThreshold && showMuzzleFlash;
   model.muzzleFlashMesh.visible = isMuzzleFlash;
 
   // 5. Water jacket thermal heating & steam emission ($T >= 95 deg C)

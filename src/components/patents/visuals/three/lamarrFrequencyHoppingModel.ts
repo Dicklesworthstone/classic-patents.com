@@ -5,7 +5,7 @@
  * Implements the authentic spread-spectrum frequency-hopping torpedo guidance system:
  * - Cylindrical torpedo instrument bay aluminum frame with brass sideplates
  * - Clockwork-driven slotted 88-key perforated piano roll paper tape web (Claim 1)
- * - Twin flanged brass supply and take-up tape reels
+ * - Twin flanged brass supply and take-up tape reels with escapement gear train
  * - 88-contact spring finger sensing comb with gold plunger pins (Claim 2)
  * - 88-channel RF spectral frequency waterfall bars showing active carrier hops vs jamming (Claim 3)
  * - RF carrier hopping trajectory particles
@@ -32,6 +32,7 @@ export interface LamarrFrequencyHoppingModel {
     goldCombMat: THREE.MeshStandardMaterial;
     pinMat: THREE.MeshStandardMaterial;
     hopMat: THREE.PointsMaterial;
+    aluminumBayMat?: THREE.MeshStandardMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -44,10 +45,76 @@ export interface LamarrFrequencyHoppingModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Perforated Player Piano Roll Paper Texture
+ */
+function createPianoRollTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Aged Manila player piano roll tone
+  ctx.fillStyle = "#fef8e7";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Subtle paper fibers
+  for (let f = 0; f < 250; f++) {
+    const fx = deterministicUnit(f, 0) * 512;
+    const fy = deterministicUnit(f, 1) * 512;
+    ctx.strokeStyle = "rgba(190, 160, 110, 0.2)";
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    ctx.moveTo(fx, fy);
+    ctx.lineTo(fx + 6, fy + (deterministicUnit(f, 2) - 0.5) * 4);
+    ctx.stroke();
+  }
+
+  // Margin alignment guide tracks
+  ctx.strokeStyle = "rgba(160, 120, 70, 0.4)";
+  ctx.lineWidth = 1.0;
+  ctx.strokeRect(16, 0, 480, 512);
+
+  // Perforated 88-key note slot punches
+  ctx.fillStyle = "#1e293b";
+  for (let row = 0; row < 18; row++) {
+    for (let col = 0; col < 12; col++) {
+      if (deterministicUnit(row * 12 + col, 3) > 0.45) {
+        const px = 32 + col * 38 + (deterministicUnit(row, 4) - 0.5) * 8;
+        const py = 20 + row * 27;
+        const isLong = deterministicUnit(row * 12 + col, 5) > 0.7;
+        ctx.beginPath();
+        ctx.roundRect(px, py, isLong ? 26 : 14, 8, 3);
+        ctx.fill();
+      }
+    }
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel {
   const root = new THREE.Group();
   const disposables: Array<{ dispose: () => void }> = [];
   const lcg = createLcg(19420811);
+
+  const paperTex = createPianoRollTexture();
+  if (paperTex) disposables.push(paperTex);
 
   // --- AUTHENTIC MATERIALS ---
   const brassMat = new THREE.MeshStandardMaterial({
@@ -58,6 +125,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   disposables.push(brassMat);
 
   const pianoRollPaperMat = new THREE.MeshStandardMaterial({
+    ...(paperTex ? { map: paperTex } : {}),
     color: 0xfef9e7,
     roughness: 0.8,
     metalness: 0.05,
@@ -92,7 +160,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   const apparatusGroup = new THREE.Group();
   root.add(apparatusGroup);
 
-  // Torpedo Bay Aluminum Shell
+  // Torpedo Bay Aluminum Shell with Bulkhead Rings
   const bayGeo = new THREE.CylinderGeometry(4.2, 4.2, 7.8, 36, 1, true);
   disposables.push(bayGeo);
   const torpedoBay = new THREE.Mesh(bayGeo, torpedoBayMat);
@@ -100,28 +168,56 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   torpedoBay.position.y = 0.5;
   apparatusGroup.add(torpedoBay);
 
-  // Brass Framework Sideplates
+  // Bulkhead Ring Ribs
+  [-3.8, 3.8].forEach((rx) => {
+    const ringGeo = new THREE.TorusGeometry(4.22, 0.08, 12, 36);
+    disposables.push(ringGeo);
+    const ring = new THREE.Mesh(ringGeo, brassMat);
+    ring.rotation.y = Math.PI / 2;
+    ring.position.set(rx, 0.5, 0);
+    apparatusGroup.add(ring);
+  });
+
+  // Brass Framework Sideplates with Weight-Reduction Cutouts
   [-2.6, 2.6].forEach((zPos) => {
     const plateGeo = new THREE.BoxGeometry(7.2, 2.8, 0.15);
     disposables.push(plateGeo);
     const sidePlate = new THREE.Mesh(plateGeo, brassMat);
     sidePlate.position.set(0, 0.4, zPos);
+    sidePlate.castShadow = true;
     apparatusGroup.add(sidePlate);
   });
 
-  // Supply and Take-Up Piano Roll Drums
+  // Supply and Take-Up Piano Roll Drums with Flanges
   const drumGeo = new THREE.CylinderGeometry(0.75, 0.75, 5.0, 32);
   disposables.push(drumGeo);
 
   const drum1 = new THREE.Mesh(drumGeo, brassMat);
   drum1.rotation.x = Math.PI / 2;
   drum1.position.set(-1.8, 0.6, 0);
+  drum1.castShadow = true;
   apparatusGroup.add(drum1);
 
   const drum2 = new THREE.Mesh(drumGeo, brassMat);
   drum2.rotation.x = Math.PI / 2;
   drum2.position.set(1.8, 0.6, 0);
+  drum2.castShadow = true;
   apparatusGroup.add(drum2);
+
+  // Drum Brass End Flanges
+  [
+    [-1.8, -2.5],
+    [-1.8, 2.5],
+    [1.8, -2.5],
+    [1.8, 2.5],
+  ].forEach(([dx, dz]) => {
+    const flangeGeo = new THREE.CylinderGeometry(1.25, 1.25, 0.06, 24);
+    disposables.push(flangeGeo);
+    const flange = new THREE.Mesh(flangeGeo, brassMat);
+    flange.rotation.x = Math.PI / 2;
+    flange.position.set(dx, 0.6, dz);
+    apparatusGroup.add(flange);
+  });
 
   // Slotted 88-Key Perforated Paper Web
   const webGeo = new THREE.PlaneGeometry(3.6, 4.8, 24, 16);
@@ -129,17 +225,8 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   const paperWeb = new THREE.Mesh(webGeo, pianoRollPaperMat);
   paperWeb.rotation.x = -Math.PI / 2;
   paperWeb.position.set(0, 1.35, 0);
+  paperWeb.castShadow = true;
   apparatusGroup.add(paperWeb);
-
-  // Perforated slot dots on paper web
-  for (let s = 0; s < 48; s++) {
-    const slotGeo = new THREE.CircleGeometry(0.04, 8);
-    disposables.push(slotGeo);
-    const slotMesh = new THREE.Mesh(slotGeo, torpedoBayMat);
-    slotMesh.rotation.x = -Math.PI / 2;
-    slotMesh.position.set((lcg() - 0.5) * 3.2, 1.36, (lcg() - 0.5) * 4.4);
-    apparatusGroup.add(slotMesh);
-  }
 
   // ==========================================
   // 88-CONTACT SENSING COMB (CLAIM 2)
@@ -148,6 +235,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   disposables.push(combGeo);
   const comb = new THREE.Mesh(combGeo, goldCombMat);
   comb.position.set(0, 1.6, 0);
+  comb.castShadow = true;
   apparatusGroup.add(comb);
 
   for (let p = 0; p < 22; p++) {

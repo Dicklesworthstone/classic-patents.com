@@ -61,6 +61,9 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(result.etaPct).toBeGreaterThan(85);
     expect(result.jetDisplaySpeed).toBeCloseTo((result.jetVelocityMps / 90) * 12, 2);
     expect(result.sprayDisplaySpeed).toBe(8);
+    expect(result.jetYOverX).toBe(0.7);
+    expect(result.jetResetX).toBe(-3.2);
+    expect(result.sprayFloorY).toBe(-3.8);
   });
 
   test("builds and articulates procedural 18-bucket runner, needle nozzle, and spray particles correctly", () => {

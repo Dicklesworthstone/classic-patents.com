@@ -20,6 +20,12 @@
  */
 
 import * as THREE from "three";
+import {
+  sholesCarriageStudioX,
+  sholesKeyStudioY,
+  sholesTypebarYawSign,
+  stepSholesTypewriter,
+} from "@/physics/machineKernels";
 
 export interface SholesTypewriterModelNodes {
   rootGroup: THREE.Group;
@@ -69,10 +75,65 @@ export interface SholesTypewriterModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Victorian Figured Walnut Worktable Texture
+ */
+function createWalnutTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Rich dark American walnut base
+  ctx.fillStyle = "#382014";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Growth rings & wood grain flow
+  for (let i = 0; i < 80; i++) {
+    const y = i * 6.5 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(20, 10, 5, ${alpha})`;
+    ctx.lineWidth = 1.6 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(160, y + 14, 340, y - 12, 512, y + 8);
+    ctx.stroke();
+  }
+
+  // Medullary ray flecks & varnished pores
+  for (let p = 0; p < 220; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(10, 5, 2, 0.28)";
+    ctx.fillRect(px, py, 5 + deterministicUnit(p, 3) * 8, 1.8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
+
+  const walnutTex = createWalnutTexture();
+  if (walnutTex) texturesToDispose.push(walnutTex);
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -87,6 +148,7 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
   const materials: SholesTypewriterMaterials = {
     caseMat: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(walnutTex ? { map: walnutTex } : {}),
         color: 0x3d271d,
         roughness: 0.55,
         metalness: 0.25,
@@ -638,6 +700,7 @@ export function buildSholesTypewriterModel(): SholesTypewriterModelResult {
   const dispose = () => {
     for (const m of materialsToDispose) m.dispose();
     for (const g of geometriesToDispose) g.dispose();
+    for (const t of texturesToDispose) t.dispose();
   };
 
   return { rootGroup, nodes, materials, dispose };
@@ -653,35 +716,47 @@ export function updateSholesTypewriterKinematics(
   displayTypebarIndex: number,
   isCutaway: boolean,
 ) {
-  nodes.activeHammer.rotation.x = -ratchetReleasePct * 0.5;
+  const sholes = stepSholesTypewriter(0, 0);
+  nodes.activeHammer.rotation.x = -ratchetReleasePct * sholes.hammerPitchAmp;
 
   nodes.typeBars.forEach((bar, i) => {
     const targetGroup = bar.parent || bar;
     const rest = nodes.restBarRot[i] || { x: 0, z: 0 };
     const striking = i === displayTypebarIndex && ratchetReleasePct > 0;
-    targetGroup.rotation.x = rest.x + (striking ? -ratchetReleasePct * 0.65 : 0);
+    targetGroup.rotation.x = rest.x + (striking ? -ratchetReleasePct * sholes.typebarPitchAmp : 0);
     targetGroup.rotation.z =
-      rest.z + (striking ? (i % 2 === 0 ? 0.12 : -0.12) * ratchetReleasePct : 0);
+      rest.z + (striking ? sholesTypebarYawSign(i) * sholes.typebarYawAmp * ratchetReleasePct : 0);
   });
 
   nodes.keys.forEach((key, kIndex) => {
     const keyActive = kIndex === displayTypebarIndex && ratchetReleasePct > 0;
-    key.position.y = 0.25 - Math.floor(kIndex / 10) * 0.12 - (keyActive ? 0.16 : 0);
+    key.position.y = sholesKeyStudioY(
+      kIndex,
+      keyActive,
+      sholes.keyHomeY,
+      sholes.keyRowPitch,
+      sholes.keysPerRow,
+      sholes.keyDip,
+    );
   });
 
   if (nodes.spaceBar) {
-    const spaceActive = displayTypebarIndex === 0 && ratchetReleasePct > 0.8;
-    nodes.spaceBar.position.y = spaceActive ? -0.38 : -0.32;
+    const spaceActive = displayTypebarIndex === 0 && ratchetReleasePct > sholes.spaceBarThreshold;
+    nodes.spaceBar.position.y = spaceActive ? sholes.spaceBarActiveY : sholes.spaceBarHomeY;
   }
 
   // Stepped carriage motion and escapement wheel rotation
-  nodes.escapement.rotation.x += ratchetReleasePct * 0.06;
+  nodes.escapement.rotation.x += ratchetReleasePct * sholes.escapementStepRad;
   if (nodes.ribbonSpoolLeft && nodes.ribbonSpoolRight) {
-    nodes.ribbonSpoolLeft.rotation.y += ratchetReleasePct * 0.02;
-    nodes.ribbonSpoolRight.rotation.y += ratchetReleasePct * 0.02;
+    nodes.ribbonSpoolLeft.rotation.y += ratchetReleasePct * sholes.ribbonStepRad;
+    nodes.ribbonSpoolRight.rotation.y += ratchetReleasePct * sholes.ribbonStepRad;
   }
 
-  nodes.carriageGroup.position.x = -((displayTypebarIndex % 12) * 0.18);
+  nodes.carriageGroup.position.x = sholesCarriageStudioX(
+    displayTypebarIndex,
+    sholes.displayColumnWrap,
+    sholes.carriagePitchStudio,
+  );
 
   // Cutaway & X-Ray Mode
   materials.caseMat.opacity = isCutaway ? 0.35 : 1.0;

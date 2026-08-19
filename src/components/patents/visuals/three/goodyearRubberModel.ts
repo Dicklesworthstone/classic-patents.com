@@ -14,6 +14,7 @@
  */
 
 import * as THREE from "three";
+import { goodyearUncoilFactor, stepGoodyearRubber } from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1436);
@@ -409,18 +410,23 @@ export function updateGoodyearRubberKinematics(
   nodes.leftArrow.scale.set(stressScale, stressScale, stressScale);
   nodes.rightArrow.scale.set(stressScale, stressScale, stressScale);
 
+  const rubber = stepGoodyearRubber();
   if (nodes.gaugeNeedle) {
-    nodes.gaugeNeedle.rotation.x = -(stretch - 1.0) * Math.PI * 1.5;
+    nodes.gaugeNeedle.rotation.x = -(stretch - 1.0) * rubber.gaugeNeedleRadPerStretch;
   }
 
   // Deform polymer chains: Affine extension and transverse Poisson thinning
-  const uncoilFactor = Math.max(0.12, 1.0 / Math.sqrt(stretch));
+  const uncoilFactor = goodyearUncoilFactor(stretch, rubber.uncoilMin);
   for (let c = 0; c < nodes.chains.length; c++) {
     const item = nodes.chains[c];
     item.mesh.scale.set(stretch, uncoilFactor, uncoilFactor);
 
-    item.mesh.position.y = Math.sin(timeSec * 4.0 + c * 1.5) * thermalAmplitude;
-    item.mesh.position.z = Math.cos(timeSec * 4.0 + c * 1.5) * thermalAmplitude;
+    item.mesh.position.y =
+      Math.sin(timeSec * rubber.thermalWobbleOmega + c * rubber.thermalWobblePhasePitch) *
+      thermalAmplitude;
+    item.mesh.position.z =
+      Math.cos(timeSec * rubber.thermalWobbleOmega + c * rubber.thermalWobblePhasePitch) *
+      thermalAmplitude;
   }
 
   // Sulfur bridges distribution

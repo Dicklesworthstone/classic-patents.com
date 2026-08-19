@@ -180,6 +180,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const cathodeGeo = new THREE.CylinderGeometry(0.42, 0.42, 4.4, 24);
   disposables.push(cathodeGeo);
   const cathodeMesh = new THREE.Mesh(cathodeGeo, cathodeMat);
+  cathodeMesh.castShadow = true;
   magnetronGroup.add(cathodeMesh);
 
   // Ceramic High-Voltage Insulator Bushings at tube ends
@@ -188,6 +189,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     disposables.push(insGeo);
     const insulator = new THREE.Mesh(insGeo, ceramicInsulator);
     insulator.position.y = iy;
+    insulator.castShadow = true;
     magnetronGroup.add(insulator);
   });
 
@@ -207,6 +209,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(flangeGeo);
   const flange = new THREE.Mesh(flangeGeo, steelMat);
   flange.position.x = 3.5;
+  flange.castShadow = true;
   waveguideGroup.add(flange);
 
   const loopGeo = new THREE.TorusGeometry(0.55, 0.06, 8, 24);

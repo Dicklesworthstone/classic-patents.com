@@ -61,6 +61,9 @@ describe("US 120,057 Zénobe Gramme Ring Armature Dynamo visual & electromagneti
     expect(result.displayRadPerFrame).toBeGreaterThan(0);
     expect(result.inducedEmfIndex).toBeGreaterThan(0);
     expect(result.fluxOpacity).toBeCloseTo(0.688, 2);
+    expect(result.fluxOrbitCoupling).toBe(0.3);
+    expect(result.fluxRadiusBase).toBe(1.42);
+    expect(result.displayFps).toBe(60);
   });
 
   test("builds and articulates procedural cast-iron bedplate, ring armature, 36 wound bobbins, brass junction rods, and flux points correctly", () => {

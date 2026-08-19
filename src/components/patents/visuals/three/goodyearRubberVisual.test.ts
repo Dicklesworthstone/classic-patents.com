@@ -63,6 +63,8 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
     expect(result.stressScale).toBeGreaterThan(0.3);
     expect(result.clampStudioX).toBeCloseTo(8.1, 3);
     expect(result.chainStretchPx).toBeCloseTo(64, 2);
+    expect(result.thermalWobbleOmega).toBe(4);
+    expect(result.gaugeNeedleRadPerStretch).toBeCloseTo(Math.PI * 1.5, 5);
   });
 
   test("builds and articulates procedural grip clamps, 6 polyisoprene chains, and 14 sulfur crosslink bridges correctly", () => {

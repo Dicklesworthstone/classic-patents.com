@@ -430,6 +430,28 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.337 Kevlar kevlarChainPath / chainOffsetYs. 2D no longer converts leftover idx%2 waviness or M 30 Q 100 privately.
 - [x] P5.338 Lamarr hopSoundStride. 3D no longer converts leftover rollStep%3 privately.
 - [x] P5.339 fourStrokeCycle / fourStrokeIndexFromRad / dieselCamWindows. Otto / Daimler / Diesel 3D no longer convert leftover 4π wraps, strokeIndex / π % 4, or cam 0.5 × 2π privately. Diesel injection now uses the same 355–390° crank seats as 2D.
+- [x] P5.340 Corliss crankWrapRad. 3D no longer wraps leftover 2π privately.
+- [x] P5.341 Maxim fireCycleWrapRad / firingWindowRad. 2D/3D no longer wrap leftover 2π or fire on leftover 0.6 privately.
+- [x] P5.342 Wozniak wozniakIsVideoPacket. 3D no longer converts leftover i%2 Φ1 privately.
+- [x] P5.343 Mergenthaler distributorArmHalf/Amp / star and screw steps. 3D no longer converts leftover mold×0.5, +0.05, +0.08 privately.
+- [x] P5.344 Thomson sparkGoldenAngleRad / sparkWrapRad. 3D no longer converts leftover i×2.399963 % 2π privately.
+- [x] P5.345 Sholes typebarYawAmp / carriagePitchStudio / keyRowPitch / sholesTypebarYawSign / sholesCarriageStudioX / sholesKeyStudioY. 3D no longer converts leftover i%2 yaw, %12×0.18 carriage, or key-row /10×0.12 privately.
+- [x] P5.346 Morse electronLaneZ / governorRatio / gearRatio / morseElectronLaneZ. 3D no longer converts leftover i%2 lane Z, tape×6 governor, or tape×2 gear privately.
+- [x] P5.347 Einstein fluidWrapY / einsteinFluidSign. 3D no longer converts leftover i%2 convection sign or wrap 2.8 privately.
+- [x] P5.348 Goodyear thermalWobbleOmega / thermalWobblePhasePitch / gaugeNeedleRadPerStretch / goodyearUncoilFactor. 3D no longer converts leftover timeSec×4 + c×1.5, gauge π×1.5, or 1/√λ Poisson privately. stepGoodyearRubber is hoisted out of the chain loop.
+- [x] P5.349 Gramme fluxOrbitCoupling / fluxRadiusBase / fluxRadiusPitch / fluxRadiusWrap / displayFps / grammeFluxRadius. 3D no longer converts leftover i%6×0.14 radius or frame×60 privately.
+- [x] P5.350 Pelton jetYOverX / jetWrapX / jetResetX / jetResetY / sprayFloorY / sprayResetY. 3D no longer converts leftover jet×0.7 or wrap −3.2/−2.25/−3.8 privately.
+- [x] P5.351 Westinghouse tripleValveStroke / maxPushStroke / leverAngleAmp / beamClampTravel / spark seats / westinghouseSparkWheelX/Z. 3D no longer converts leftover 0.18/0.35/0.08 or wheel i%2 spark privately.
+- [x] P5.352 Lincoln lincolnInflationNorm / bellowsScale / boatLiftPerFt / sandbarDepthPerFt. 3D no longer converts leftover /100, 0.25+infl×0.95, or draft×0.45 privately.
+- [x] P5.353 Bell rodStudioCoupling / bellWaveProgress / waveOriginX / electronWrapX. 3D no longer converts leftover rod×0.6, (t×3+i×0.33)%1, or electron wrap 2.0 privately.
+- [x] P5.354 Otis leafSpringHomeY / shackleBowCoupling / hoistOmega / cabCaughtY / pawlLerpPerS. 3D no longer converts leftover 2.35+bow, shackle×0.8, sin(t×1.5)×0.25, or pawl dt×25 privately.
+- [x] P5.355 Farnsworth scanHCoupling / scanVCoupling / scanAmp / farnsworthBeamFrac. 3D no longer converts leftover freq×0.4/0.2, (x+4.5)/8, or wrap 4.2 privately.
+- [x] P5.356 Diesel intake/injector/exhaust rocker couplings, compressorSwingAmp, fuelPumpStrokeAmp, flyballOmegaRatio. 3D no longer converts leftover ×1.5/1.8, sin(crank)×0.18, or pump ×0.08 privately.
+- [x] P5.357 Otto slideStroke / slideHomeX / eccentricRodAmp / exhaustValveHomeY / sleeveCoupling. 3D no longer converts leftover slide 0.22/−3.45, exhaust 0.12, or sleeve ×0.8 privately.
+- [x] P5.358 Whitney fiberSawCoupling / fiberCarrySpeed / fiberGravity / fiberWrapZ. 3D no longer converts leftover ω×0.12+1.8 or wrap 3.2 privately.
+- [x] P5.359 Hyatt ramHomeX / ramCycleTau / flowMax / flowViscosityRef. 3D no longer converts leftover ram 1.8+sin(2π f t) or 1800/η privately.
+- [x] P5.360 Maxim toggleLiftAmp / toggleHomeY / toggleRecoilCoupling / crankThrowAmp. 3D no longer converts leftover 0.32, −0.8, recoil×1.8, or crank 0.75 privately.
+- [x] P5.361 Edison glowThreshold / gasPhaseOmega / gasYOmega / gasZOmega. 3D no longer converts leftover 0.05 glow or gas t×2 / ×1.3 / ×0.7 privately.
 
 ## Explicitly out of scope
 

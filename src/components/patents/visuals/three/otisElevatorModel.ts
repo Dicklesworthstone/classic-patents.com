@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepOtisElevator } from "@/physics/machineKernels";
 
 export interface OtisElevatorModelNodes {
   root: THREE.Group;
@@ -48,12 +49,64 @@ export interface OtisElevatorModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Heavy American Yellow Pine Timber Texture
+ */
+function createPineTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#543d2b";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 85; i++) {
+    const y = i * 6.0 + (deterministicUnit(i, 0) - 0.5) * 3;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.14 : 0.03);
+    ctx.strokeStyle = `rgba(35, 20, 10, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(160, y + 12, 340, y - 10, 512, y + 6);
+    ctx.stroke();
+  }
+
+  for (let p = 0; p < 220; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(20, 10, 4, 0.28)";
+    ctx.fillRect(px, py, 4 + deterministicUnit(p, 3) * 6, 1.8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 const RACK_TOOTH_COUNT = 32;
 
 export function buildOtisElevatorModel(): OtisElevatorModelResult {
   const root = new THREE.Group();
   const disposableGeometries: THREE.BufferGeometry[] = [];
   const disposableMaterials: THREE.Material[] = [];
+  const disposableTextures: THREE.Texture[] = [];
+
+  const pineTex = createPineTexture();
+  if (pineTex) disposableTextures.push(pineTex);
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     disposableGeometries.push(geo);
@@ -68,6 +121,7 @@ export function buildOtisElevatorModel(): OtisElevatorModelResult {
   const materials: OtisElevatorMaterials = {
     agedTimberWood: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(pineTex ? { map: pineTex } : {}),
         color: 0x543d2b, // Heavy American yellow pine
         roughness: 0.8,
         metalness: 0.05,
@@ -381,6 +435,9 @@ export function buildOtisElevatorModel(): OtisElevatorModelResult {
     for (const m of disposableMaterials) {
       m.dispose();
     }
+    for (const t of disposableTextures) {
+      t.dispose();
+    }
   };
 
   return { root, nodes, materials, dispose };
@@ -403,33 +460,34 @@ export function updateOtisElevatorKinematics(
   nodes.severedCableTop.visible = isRopeSevered;
   nodes.severedCableBottom.visible = isRopeSevered;
 
+  const otis = stepOtisElevator({});
+
   // 2. Leaf Spring Elastic Deflection
   // Under tension (100%), spring bows upward in the center (+0.25m)
   // When severed (0%), spring flattens and pushes ends outwards
   const springBowY = isRopeSevered ? 0.0 : springBowStudioY;
-  nodes.leafSpringGroup.position.y = 2.35 + springBowY;
-  nodes.springShackle.position.y = 0.35 + springBowY * 0.8;
+  nodes.leafSpringGroup.position.y = otis.leafSpringHomeY + springBowY;
+  nodes.springShackle.position.y = otis.shackleHomeY + springBowY * otis.shackleBowCoupling;
 
   // 3. Pawl Engagement Kinematics
   // Disengaged: pawls tilted upward/inward (clear of teeth by ~35mm)
   // Engaged: pawls rotated horizontally outward into the rack notches
-  const targetPawlRotZ = isPawlEngaged ? 0.0 : 0.45;
-  nodes.leftPawlGroup.rotation.z +=
-    (targetPawlRotZ - nodes.leftPawlGroup.rotation.z) * Math.min(1.0, dt * 25.0);
-  nodes.rightPawlGroup.rotation.z +=
-    (-targetPawlRotZ - nodes.rightPawlGroup.rotation.z) * Math.min(1.0, dt * 25.0);
+  const targetPawlRotZ = isPawlEngaged ? 0.0 : otis.pawlDisengagedRotZ;
+  const pawlLerp = Math.min(1.0, dt * otis.pawlLerpPerS);
+  nodes.leftPawlGroup.rotation.z += (targetPawlRotZ - nodes.leftPawlGroup.rotation.z) * pawlLerp;
+  nodes.rightPawlGroup.rotation.z += (-targetPawlRotZ - nodes.rightPawlGroup.rotation.z) * pawlLerp;
 
   // 4. Cab Hoist Motion / Catch Settling
   if (isRopeSevered) {
     // Stopped / locked on safety rack tooth with slight damped settle
-    nodes.cabGroup.position.y = -0.15;
+    nodes.cabGroup.position.y = otis.cabCaughtY;
   } else {
     // Gentle hoisting float oscillation
-    nodes.cabGroup.position.y = Math.sin(timeSec * 1.5) * 0.25;
+    nodes.cabGroup.position.y = Math.sin(timeSec * otis.hoistOmega) * otis.hoistAmp;
   }
 
   // Rotate crown sheave with cable motion
   if (!isRopeSevered) {
-    nodes.crownSheave.rotation.z = Math.sin(timeSec * 1.5) * 0.3;
+    nodes.crownSheave.rotation.z = Math.sin(timeSec * otis.hoistOmega) * otis.sheaveAmp;
   }
 }

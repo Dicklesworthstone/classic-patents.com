@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -33,7 +34,9 @@ export function MaximMachineGunSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setRecoilPhase((prev) => (prev + maxim.fireOmegaRadPerS * dt) % (2 * Math.PI));
+      setRecoilPhase((prev) =>
+        wrapCycleRad(prev + maxim.fireOmegaRadPerS * dt, maxim.fireCycleWrapRad),
+      );
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,11 +44,11 @@ export function MaximMachineGunSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, maxim.fireOmegaRadPerS]);
+  }, [isPlaying, maxim.fireOmegaRadPerS, maxim.fireCycleWrapRad]);
 
   // Recoil displacement of barrel & breech
   const recoilX = (Math.cos(recoilPhase) + 1) * maxim.recoilSvgAmp;
-  const isMuzzleFiring = recoilPhase < 0.6;
+  const isMuzzleFiring = recoilPhase < maxim.firingWindowRad;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

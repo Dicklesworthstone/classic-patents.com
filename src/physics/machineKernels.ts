@@ -296,6 +296,19 @@ export function stepSholesTypewriter(
   schematicPlatenH: number;
   ratchetToothCount: number;
   ratchetToothPitchDeg: number;
+  typebarYawAmp: number;
+  hammerPitchAmp: number;
+  typebarPitchAmp: number;
+  keyHomeY: number;
+  keyRowPitch: number;
+  keysPerRow: number;
+  keyDip: number;
+  spaceBarHomeY: number;
+  spaceBarActiveY: number;
+  spaceBarThreshold: number;
+  escapementStepRad: number;
+  ribbonStepRad: number;
+  carriagePitchStudio: number;
 } {
   const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
   const eventsPerSecond = cadence / 60;
@@ -334,7 +347,43 @@ export function stepSholesTypewriter(
     schematicPlatenH: 30,
     ratchetToothCount: 12,
     ratchetToothPitchDeg: 30,
+    typebarYawAmp: 0.12,
+    hammerPitchAmp: 0.5,
+    typebarPitchAmp: 0.65,
+    keyHomeY: 0.25,
+    keyRowPitch: 0.12,
+    keysPerRow: 10,
+    keyDip: 0.16,
+    spaceBarHomeY: -0.32,
+    spaceBarActiveY: -0.38,
+    spaceBarThreshold: 0.8,
+    escapementStepRad: 0.06,
+    ribbonStepRad: 0.02,
+    carriagePitchStudio: 0.18,
   };
+}
+
+/** Alternating type-bar yaw sign on the 3D basket. Shared by 3D. */
+export function sholesTypebarYawSign(index: number) {
+  return index % 2 === 0 ? 1 : -1;
+}
+
+/** Escapement carriage X on the 3D platen. Shared by 3D. */
+export function sholesCarriageStudioX(index: number, wrap = 12, pitch = 0.18) {
+  const w = Math.max(1, wrap);
+  return 0 - (((index % w) + w) % w) * pitch;
+}
+
+/** Key-lever studio Y on the 3D keyboard. Shared by 3D. */
+export function sholesKeyStudioY(
+  kIndex: number,
+  active: boolean,
+  homeY = 0.25,
+  rowPitch = 0.12,
+  keysPerRow = 10,
+  dip = 0.16,
+) {
+  return homeY - Math.floor(kIndex / Math.max(1, keysPerRow)) * rowPitch - (active ? dip : 0);
 }
 
 /** Diagrammatic type-bar throw on the US 79,265 2D face. Shared by 2D. */
@@ -433,6 +482,10 @@ export function stepMergenthalerLinotype(params: {
   spacebandSvgFlare: number;
   spacebandSvgY0: number;
   spacebandSvgY1: number;
+  distributorArmHalf: number;
+  distributorArmAmp: number;
+  starWheelStepRad: number;
+  distributorScrewStepRad: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -492,6 +545,10 @@ export function stepMergenthalerLinotype(params: {
     spacebandSvgFlare: 2,
     spacebandSvgY0: 4,
     spacebandSvgY1: 46,
+    distributorArmHalf: 0.5,
+    distributorArmAmp: 0.15,
+    starWheelStepRad: 0.05,
+    distributorScrewStepRad: 0.08,
   };
 }
 
@@ -690,6 +747,15 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   schematicPawlOuterBase1: number;
   schematicPawlY0: number;
   schematicPawlY1: number;
+  leafSpringHomeY: number;
+  shackleHomeY: number;
+  shackleBowCoupling: number;
+  pawlDisengagedRotZ: number;
+  pawlLerpPerS: number;
+  cabCaughtY: number;
+  hoistOmega: number;
+  hoistAmp: number;
+  sheaveAmp: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -744,6 +810,15 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     schematicPawlOuterBase1: 300,
     schematicPawlY0: 100,
     schematicPawlY1: 105,
+    leafSpringHomeY: 2.35,
+    shackleHomeY: 0.35,
+    shackleBowCoupling: 0.8,
+    pawlDisengagedRotZ: 0.45,
+    pawlLerpPerS: 25,
+    cabCaughtY: -0.15,
+    hoistOmega: 1.5,
+    hoistAmp: 0.25,
+    sheaveAmp: 0.3,
   };
 }
 

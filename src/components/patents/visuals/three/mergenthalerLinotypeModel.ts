@@ -21,6 +21,7 @@
  */
 
 import * as THREE from "three";
+import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 
 export interface MergenthalerLinotypeModelNodes {
   rootGroup: THREE.Group;
@@ -582,16 +583,19 @@ export function updateMergenthalerLinotypeKinematics(
     band.position.y = 0.12 + wedgeLift;
   }
 
+  const lino = stepMergenthalerLinotype({});
+
   // 5. Star Wheel & Distributor Screw Articulation
   if (nodes.starWheel) {
-    nodes.starWheel.rotation.z += 0.05;
+    nodes.starWheel.rotation.z += lino.starWheelStepRad;
   }
   if (nodes.distributorScrews) {
     nodes.distributorScrews.forEach((screw) => {
-      screw.rotation.y += 0.08;
+      screw.rotation.y += lino.distributorScrewStepRad;
     });
   }
 
   // 6. Distributor Arm Gentle Lift Motion
-  nodes.distributorArmGroup.rotation.z = Math.sin(moldAngle * 0.5) * 0.15;
+  nodes.distributorArmGroup.rotation.z =
+    Math.sin(moldAngle * lino.distributorArmHalf) * lino.distributorArmAmp;
 }

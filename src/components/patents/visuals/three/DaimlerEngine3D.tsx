@@ -2,6 +2,7 @@
 
 import { Camera, Flame, Layers, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -44,6 +45,8 @@ export function DaimlerEngine3D() {
     runningOmegaRadPerS: daimler.runningOmegaRadPerS,
     isRunning: daimler.isRunning ? 1 : 0,
     hotTubeGlow: daimler.hotTubeGlow,
+    cycleWrapRad: daimler.cycleWrapRad,
+    crankWrapRad: daimler.crankWrapRad,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -82,9 +85,9 @@ export function DaimlerEngine3D() {
 
       if (p.isPlaying && p.isRunning > 0) {
         const speed = p.runningOmegaRadPerS;
-        crankAngle = (crankAngle + speed * dt) % (Math.PI * 4); // 4-stroke cycle = 720° (4π rad)
+        crankAngle = wrapCycleRad(crankAngle + speed * dt, p.cycleWrapRad);
 
-        const cycleAngle = crankAngle % (Math.PI * 2);
+        const cycleAngle = wrapCycleRad(crankAngle, p.crankWrapRad);
 
         const { strokeIndex } = updateDaimlerEngineKinematics(
           model,
