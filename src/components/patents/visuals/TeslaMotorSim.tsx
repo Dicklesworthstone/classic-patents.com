@@ -206,8 +206,8 @@ export function TeslaMotorSim() {
 
             {/* Resultant rotating B-field (constant magnitude for a balanced polyphase set) */}
             <line
-              x1="200"
-              y1="150"
+              x1={apparatus.statorCenterX}
+              y1={apparatus.statorCenterY}
               x2={apparatus.statorCenterX + bVectorX}
               y2={apparatus.statorCenterY + bVectorY}
               stroke="#fbbf24"

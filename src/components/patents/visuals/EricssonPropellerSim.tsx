@@ -44,8 +44,8 @@ export function EricssonPropellerSim() {
             Ericsson Spiral-Plate Reader Aid (US 588)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Illustrative motion for the source's concentric shafts and opposed spiral plates. The grant
-            does not print a shaft rate, vessel speed, thrust, or efficiency.
+            Illustrative motion for the source's concentric shafts and opposed spiral plates. The
+            grant does not print a shaft rate, vessel speed, thrust, or efficiency.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">

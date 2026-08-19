@@ -29,23 +29,19 @@ export function EricssonPropeller3D() {
     shaftRpm,
     bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
   });
-  const shipSpeedKnots = ericson.shipSpeedKnots;
   const [showWake, setShowWake] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const thrustKn = ericson.thrustKn.toFixed(1);
-  const propulsiveEfficiencyPct = ericson.propulsiveEfficiencyPct.toFixed(1);
-
   const live = useLiveSimParams({
     shaftRpm,
-    shipSpeedKnots,
+    shipSpeedKnots: ericson.shipSpeedKnots,
     showWake,
     isCutaway,
     isAudioMuted,
     thrustKn: ericson.thrustKn,
     bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
-    propulsiveEfficiencyPct: Number(propulsiveEfficiencyPct),
+    propulsiveEfficiencyPct: ericson.propulsiveEfficiencyPct,
     shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
     wakeSwirlScale: ericson.wakeSwirlScale,
     wakeFlowSpeed: ericson.wakeFlowSpeed,
@@ -118,9 +114,14 @@ export function EricssonPropeller3D() {
     // Animation Loop
     let reqId: number;
 
-    const animate = () => {
+    let previousFrameTime: number | undefined;
+    const animate = (frameTime: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const delta = Math.min(
+        0.1,
+        Math.max(0, (frameTime - (previousFrameTime ?? frameTime)) / 1000),
+      );
+      previousFrameTime = frameTime;
       const p = live.current;
 
       const omegaRadPerSec = p.shaftOmegaRadPerS;
@@ -143,7 +144,7 @@ export function EricssonPropeller3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -161,7 +162,7 @@ export function EricssonPropeller3D() {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Ericsson Screw Propeller 3D
+            Ericsson Spiral-Plate Reader Aid 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
             US Patent 588 (1838)
@@ -247,19 +248,17 @@ export function EricssonPropeller3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Ericsson marine propulsion"
+        title="Source-bounded reader aid"
         chips={[
-          { label: "Shaft", value: String(Math.round(shaftRpm)), unit: "rpm" },
+          { label: "Source hoops", value: "2", unit: "broad hoops" },
           {
-            label: "Speed",
-            value: shipSpeedKnots.toFixed(1),
-            unit: "knots",
-            tone: shipSpeedKnots > 8 ? "ok" : "warn",
+            label: "Source spiral",
+            value: "3",
+            unit: "diameters / turn",
           },
-          { label: "Thrust", value: thrustKn, unit: "kN" },
-          { label: "Efficiency", value: propulsiveEfficiencyPct, unit: "%" },
-          { label: "Pitch", value: String(ericson.pitchMeters.toFixed(2)), unit: "m/rev" },
-          { label: "Slip", value: String(ericson.slipPct.toFixed(1)), unit: "%" },
+          { label: "Source shafts", value: "b opposite a", unit: "b slower" },
+          { label: "Source casing", value: "about 1/8", unit: "inch clearance" },
+          { label: "Display motion", value: String(Math.round(shaftRpm)), unit: "model rpm" },
         ]}
       />
     </div>
