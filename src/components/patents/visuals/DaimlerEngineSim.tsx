@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepDaimlerEngine } from "@/physics/catalogKernels";
+import { pistonSvgDisplacement, stepDaimlerEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -44,7 +44,7 @@ export function DaimlerEngineSim() {
   }, [isPlaying, daimler.crankOmegaDegPerS]);
 
   const crankRad = ((crankAngleDeg % 360) * Math.PI) / 180;
-  const pistonDisplacement = (1 - Math.cos(crankRad)) * 30;
+  const pistonDisplacement = pistonSvgDisplacement(crankAngleDeg, daimler.pistonStrokePx);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -161,8 +161,8 @@ export function DaimlerEngineSim() {
             <circle cx="0" cy="0" r="12" fill="#111" />
             {/* Crank Pin */}
             <circle
-              cx={Math.cos(crankRad) * 30}
-              cy={Math.sin(crankRad) * 30}
+              cx={Math.cos(crankRad) * daimler.pistonStrokePx}
+              cy={Math.sin(crankRad) * daimler.pistonStrokePx}
               r="6"
               fill="#D4AF37"
             />
@@ -172,8 +172,8 @@ export function DaimlerEngineSim() {
           <line
             x1={300}
             y1={92 + pistonDisplacement}
-            x2={300 + Math.cos(crankRad) * 30}
-            y2={250 + Math.sin(crankRad) * 30}
+            x2={300 + Math.cos(crankRad) * daimler.pistonStrokePx}
+            y2={250 + Math.sin(crankRad) * daimler.pistonStrokePx}
             stroke="#1A202C"
             strokeWidth="6"
             strokeLinecap="round"

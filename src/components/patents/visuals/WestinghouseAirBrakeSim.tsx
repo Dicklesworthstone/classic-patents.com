@@ -23,8 +23,8 @@ export function WestinghouseAirBrakeSim() {
   const isRelease = wh.valveState === "RELEASE";
 
   const cylPressurePsi = wh.brakeCylinderPressurePsi;
-  const pistonStrokePx = Math.round(wh.pistonStrokeRatio * 18);
-  const shoeDistancePx = Math.max(0, 18 - pistonStrokePx);
+  const pistonStrokePx = wh.pistonStrokePx;
+  const shoeDistancePx = wh.shoeDistancePx;
 
   const pistonThrustKn = wh.shoeClampingForceKn.toFixed(1);
 

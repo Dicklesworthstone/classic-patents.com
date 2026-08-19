@@ -41,11 +41,6 @@ export function EdisonBulbSim() {
     return blackbodyRgb(tempKelvin);
   };
 
-  const getGlowOpacity = () => {
-    if (isBurnedOut) return 0;
-    return resistanceMode === "high-resistance" ? bulb.glowOpacity : bulb.lowResistanceGlowOpacity;
-  };
-
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
       {/* Header */}
@@ -97,12 +92,24 @@ export function EdisonBulbSim() {
                 <stop
                   offset="0%"
                   stopColor={getFilamentColor()}
-                  stopOpacity={getGlowOpacity() * 0.8}
+                  stopOpacity={
+                    isBurnedOut
+                      ? 0
+                      : resistanceMode === "high-resistance"
+                        ? bulb.glowStopInner
+                        : bulb.lowResistanceGlowStopInner
+                  }
                 />
                 <stop
                   offset="60%"
                   stopColor={getFilamentColor()}
-                  stopOpacity={getGlowOpacity() * 0.25}
+                  stopOpacity={
+                    isBurnedOut
+                      ? 0
+                      : resistanceMode === "high-resistance"
+                        ? bulb.glowStopOuter
+                        : bulb.lowResistanceGlowStopOuter
+                  }
                 />
                 <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
               </radialGradient>

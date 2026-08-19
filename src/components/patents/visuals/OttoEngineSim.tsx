@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepOttoEngine } from "@/physics/catalogKernels";
+import { pistonSvgDisplacement, stepOttoEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -53,8 +53,7 @@ export function OttoEngineSim() {
   }, [isPlaying, otto.crankOmegaDegPerS]);
 
   // Piston linear displacement x(theta)
-  const crankRad = ((cycleAngleDeg % 360) * Math.PI) / 180;
-  const pistonDisplacement = (1 - Math.cos(crankRad)) * 35; // 0 to 70 px stroke
+  const pistonDisplacement = pistonSvgDisplacement(cycleAngleDeg, otto.pistonStrokePx);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -179,8 +178,8 @@ export function OttoEngineSim() {
             })}
             {/* Crank Pin */}
             <circle
-              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * 35}
-              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * 35}
+              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
+              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
               r="7"
               fill="#D4AF37"
             />
@@ -190,8 +189,8 @@ export function OttoEngineSim() {
           <line
             x1={167 + pistonDisplacement}
             y1="170"
-            x2={460 + Math.cos((crankAngleDeg * Math.PI) / 180) * 35}
-            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * 35}
+            x2={460 + Math.cos((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
+            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
             stroke="#1A202C"
             strokeWidth="6"
             strokeLinecap="round"

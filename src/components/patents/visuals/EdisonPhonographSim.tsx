@@ -89,7 +89,7 @@ export function EdisonPhonographSim() {
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
-          {/* Wooden Baseboard Stand */}
+          {/* Illustrative support stand. US 200,521 does not specify its material or dimensions. */}
           <rect
             x="40"
             y="270"
@@ -240,7 +240,7 @@ export function EdisonPhonographSim() {
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Model turn setting
+            Illustrative turn setting
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
             {mandrelRpm} RPM
@@ -267,8 +267,8 @@ export function EdisonPhonographSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Spoken Voice Intensity</span>
-            <span className="font-mono">{voiceVolumeDb} dB</span>
+            <span>Illustrative diaphragm-excitation level</span>
+            <span className="font-mono">{voiceVolumeDb} / 100 model units</span>
           </div>
           <input
             type="range"
@@ -284,9 +284,9 @@ export function EdisonPhonographSim() {
       <p className="mt-4 text-xs leading-relaxed text-ink-600 dark:text-ink-300">
         The patent specifies cylinder A, metallic foil or another yielding material, a
         ten-groove-per-inch helix, a matching ten-thread-per-inch shaft, a diaphragm, and clock-work
-        M or another source of power. This animation deliberately does not claim the displayed
-        profile, dimensions, drive, rate, indentation depth, or acoustic bandwidth as historical
-        measurements.
+        M or another source of power. The excitation slider and all displayed animation geometry,
+        rate, travel range, indentation motion, and sound character are model-only reader aids, not
+        historical measurements or additional patent claims.
       </p>
     </div>
   );

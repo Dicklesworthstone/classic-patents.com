@@ -2,6 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { pistonSvgDisplacement } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -50,7 +51,7 @@ export function DieselEngineSim() {
   const cycleAngleDeg = crankAngleDeg % 720;
   const isInjectingFuel = cycleAngleDeg >= 355 && cycleAngleDeg <= 390;
   const crankRad = ((cycleAngleDeg % 360) * Math.PI) / 180;
-  const pistonDisplacement = (1 - Math.cos(crankRad)) * 35;
+  const pistonDisplacement = pistonSvgDisplacement(cycleAngleDeg, diesel.pistonStrokePx);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -185,8 +186,8 @@ export function DieselEngineSim() {
             <circle cx="0" cy="0" r="14" fill="#111" />
             {/* Crank Pin */}
             <circle
-              cx={Math.cos(crankRad) * 35}
-              cy={Math.sin(crankRad) * 35}
+              cx={Math.cos(crankRad) * diesel.pistonStrokePx}
+              cy={Math.sin(crankRad) * diesel.pistonStrokePx}
               r="7"
               fill="#D4AF37"
             />
@@ -196,8 +197,8 @@ export function DieselEngineSim() {
           <line
             x1={300}
             y1={103 + pistonDisplacement}
-            x2={300 + Math.cos(crankRad) * 35}
-            y2={260 + Math.sin(crankRad) * 35}
+            x2={300 + Math.cos(crankRad) * diesel.pistonStrokePx}
+            y2={260 + Math.sin(crankRad) * diesel.pistonStrokePx}
             stroke="#1A202C"
             strokeWidth="7"
             strokeLinecap="round"

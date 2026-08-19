@@ -31,7 +31,7 @@ export function McCormickReaperSim() {
     };
   }, [isPlaying, reaper.cutterOmegaRadPerS]);
 
-  const cutterX = Math.sin(phase) * 18;
+  const cutterX = Math.sin(phase) * reaper.cutterSvgAmp;
   const reelAngleDeg =
     (phase *
       (reaper.reelOmegaRadPerS / Math.max(1e-6, reaper.cutterOmegaRadPerS)) *

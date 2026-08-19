@@ -14,7 +14,7 @@ export function WrightFlyerSim() {
   const { params, updateParam } = usePatentPhysics(WRIGHT_PATENT_ID);
   const controls = readWrightControls(params);
   const si = stepWrightFlyerSi(controls);
-  const wingWarpAngle = controls.wingWarpDeg;
+  const _wingWarpAngle = controls.wingWarpDeg;
   const rudderAngle = controls.rudderDeg;
   const canardAngle = controls.elevatorDeg;
   const isCoupled = controls.coupled;
@@ -22,8 +22,6 @@ export function WrightFlyerSim() {
 
   const leftLiftN = si.leftLiftN;
   const rightLiftN = si.rightLiftN;
-  const leftWingLift = si.leftWingLiftPct;
-  const rightWingLift = si.rightWingLiftPct;
   const leftInducedDrag = si.leftInducedDragNewtons;
   const rightInducedDrag = si.rightInducedDragNewtons;
   const netYawMoment = si.netYawNm;
@@ -182,7 +180,7 @@ export function WrightFlyerSim() {
 
           {/* Aircraft Group with 3-Axis Rotation */}
           <g
-            transform={`translate(250, 120) rotate(${wingWarpAngle * 0.9}) translate(0, ${canardAngle * -1.2})`}
+            transform={`translate(250, 120) rotate(${si.airframeRollDeg}) translate(0, ${si.canardSvgY})`}
             className="transition-transform duration-150 ease-out"
           >
             {/* Forward Elevator / Canard */}
@@ -326,14 +324,14 @@ export function WrightFlyerSim() {
                 x1="0"
                 y1="0"
                 x2="0"
-                y2={-leftWingLift * 0.4}
+                y2={-si.leftLiftSvgY}
                 stroke="#10b981"
                 strokeWidth="3"
                 markerEnd="url(#wright-lift-arrow)"
               />
               <text
                 x="-8"
-                y={-leftWingLift * 0.4 - 6}
+                y={-si.leftLiftSvgY - 6}
                 fill="#34d399"
                 fontSize="10"
                 fontFamily="monospace"
@@ -341,16 +339,9 @@ export function WrightFlyerSim() {
               >
                 Lift: {Math.round(leftLiftN)} N
               </text>
-              <line
-                x1="0"
-                y1="0"
-                x2={-leftInducedDrag * 2}
-                y2="0"
-                stroke="#f43f5e"
-                strokeWidth="2"
-              />
+              <line x1="0" y1="0" x2={-si.leftDragSvgX} y2="0" stroke="#f43f5e" strokeWidth="2" />
               <text
-                x={-leftInducedDrag * 2 - 8}
+                x={-si.leftDragSvgX - 8}
                 y="14"
                 fill="#fb7185"
                 fontSize="8"
@@ -366,14 +357,14 @@ export function WrightFlyerSim() {
                 x1="0"
                 y1="0"
                 x2="0"
-                y2={-rightWingLift * 0.4}
+                y2={-si.rightLiftSvgY}
                 stroke="#10b981"
                 strokeWidth="3"
                 markerEnd="url(#wright-lift-arrow)"
               />
               <text
                 x="-8"
-                y={-rightWingLift * 0.4 - 6}
+                y={-si.rightLiftSvgY - 6}
                 fill="#34d399"
                 fontSize="10"
                 fontFamily="monospace"
@@ -381,16 +372,9 @@ export function WrightFlyerSim() {
               >
                 Lift: {Math.round(rightLiftN)} N
               </text>
-              <line
-                x1="0"
-                y1="0"
-                x2={rightInducedDrag * 2}
-                y2="0"
-                stroke="#f43f5e"
-                strokeWidth="2"
-              />
+              <line x1="0" y1="0" x2={si.rightDragSvgX} y2="0" stroke="#f43f5e" strokeWidth="2" />
               <text
-                x={rightInducedDrag * 2 + 8}
+                x={si.rightDragSvgX + 8}
                 y="14"
                 fill="#fb7185"
                 fontSize="8"

@@ -2,7 +2,11 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import { stepHollerithTabulating } from "@/physics/catalogKernels";
+import {
+  hollerithDialNeedle,
+  hollerithPocketSvgX,
+  stepHollerithTabulating,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -191,29 +195,36 @@ export function HollerithTabulatingSim() {
               { label: "FEMALE", val: 210, x: 135, y: 65 },
               { label: "AGE 20+", val: 315, x: 45, y: 115 },
               { label: "NATIVE", val: 390, x: 135, y: 115 },
-            ].map((d) => (
-              <g key={d.label} transform={`translate(${d.x}, ${d.y})`}>
-                <circle cx="0" cy="0" r="20" fill="#FFFFFF" stroke="#1A202C" strokeWidth="2" />
-                <line
-                  x1="0"
-                  y1="0"
-                  x2={Math.cos((d.val / 100) * 2 * Math.PI) * 14}
-                  y2={Math.sin((d.val / 100) * 2 * Math.PI) * 14}
-                  stroke="#E53E3E"
-                  strokeWidth="2"
-                />
-                <text
-                  x="-15"
-                  y="-24"
-                  fill="#D4AF37"
-                  fontSize="8"
-                  fontWeight="bold"
-                  fontFamily="sans-serif"
-                >
-                  {d.label}
-                </text>
-              </g>
-            ))}
+            ].map((d) => {
+              const needle = hollerithDialNeedle(
+                d.val,
+                hol.dialNeedleRadiusPx,
+                hol.dialUnitsPerRev,
+              );
+              return (
+                <g key={d.label} transform={`translate(${d.x}, ${d.y})`}>
+                  <circle cx="0" cy="0" r="20" fill="#FFFFFF" stroke="#1A202C" strokeWidth="2" />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={needle.x}
+                    y2={needle.y}
+                    stroke="#E53E3E"
+                    strokeWidth="2"
+                  />
+                  <text
+                    x="-15"
+                    y="-24"
+                    fill="#D4AF37"
+                    fontSize="8"
+                    fontWeight="bold"
+                    fontFamily="sans-serif"
+                  >
+                    {d.label}
+                  </text>
+                </g>
+              );
+            })}
           </g>
 
           {/* Sorting Box Door Opening */}
@@ -232,7 +243,7 @@ export function HollerithTabulatingSim() {
               Electromagnetic Sorting Box: Pocket #{sortingPocketOpen} OPEN
             </text>
             <rect
-              x={15 + sortingPocketOpen * 18}
+              x={hollerithPocketSvgX(sortingPocketOpen, hol.pocketSvgOriginX, hol.pocketSvgPitch)}
               y="35"
               width="16"
               height="15"

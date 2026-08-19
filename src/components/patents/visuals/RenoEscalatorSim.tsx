@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepRenoEscalator } from "@/physics/machineKernels";
+import { renoCleatSvg, stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -143,11 +143,21 @@ export function RenoEscalatorSim() {
           {/* Moving 25-degree Incline Endless Cleated Belt */}
           <g id="moving-cleats">
             {Array.from({ length: 14 }).map((_, i) => {
-              const basePos = (i * 35 + treadOffset) % 490;
-              const xPos = 80 + basePos * 0.85;
-              const yPos = 275 - basePos * 0.38;
+              const { x: xPos, y: yPos } = renoCleatSvg(
+                i,
+                treadOffset,
+                reno.cleatSvgPitchPx,
+                reno.cleatSvgWrapPx,
+                reno.cleatSvgOriginX,
+                reno.cleatSvgOriginY,
+                reno.cleatSvgXScale,
+                reno.cleatSvgYScale,
+              );
               return (
-                <g key={`cleat-${i * 35}`} transform={`translate(${xPos}, ${yPos}) rotate(-25)`}>
+                <g
+                  key={`cleat-${i * reno.cleatSvgPitchPx}`}
+                  transform={`translate(${xPos}, ${yPos}) rotate(${reno.cleatSvgRotateDeg})`}
+                >
                   {/* Longitudinal wooden ridge cleats */}
                   <rect
                     x="0"

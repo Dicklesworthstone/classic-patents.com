@@ -54,14 +54,12 @@ export function BellTelephoneSim() {
   const points = Array.from({ length: 60 })
     .map((_, i) => {
       const x = i * 5;
-      const tVal = (i + time) * 0.2 * (acousticFrequency / 440);
+      const tVal = (i + time) * 0.2 * bell.scopeNorm;
       let y = 50;
       if (signalType === "continuous-undulating") {
-        // Harmonic undulating wave
-        y = 50 + Math.sin(tVal) * voiceAmplitude * 0.4 + Math.sin(tVal * 2) * voiceAmplitude * 0.15;
+        y = 50 + Math.sin(tVal) * bell.scopeSineAmp + Math.sin(tVal * 2) * bell.scopeHarmonicAmp;
       } else {
-        // Binary make-and-break square wave (Reis telegraph)
-        y = Math.sin(tVal) > 0 ? 50 - voiceAmplitude * 0.5 : 50 + voiceAmplitude * 0.5;
+        y = Math.sin(tVal) > 0 ? 50 - bell.scopeSquareAmp : 50 + bell.scopeSquareAmp;
       }
       return `${x},${y}`;
     })

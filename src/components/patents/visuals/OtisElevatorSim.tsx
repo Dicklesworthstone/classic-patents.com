@@ -18,8 +18,8 @@ export function OtisElevatorSim() {
     cableTensionPct: isCableCut ? 0 : (params.cableTension ?? 100),
   });
   const hangingMassKg = otis.hangingMassKg;
-  const springBowedHeight = isCableCut ? 0 : 18;
-  const pawlExtensionX = isCableCut ? 18 : 4;
+  const springBowedHeight = otis.springBowSvgH;
+  const pawlExtensionX = otis.pawlSvgX;
   const arrestForceKn = otis.peakArrestForceKn.toFixed(1);
 
   const timerRef = useRef<number | null>(null);
@@ -274,7 +274,7 @@ export function OtisElevatorSim() {
               <g transform={`translate(0, 5)`}>
                 <line
                   x1="15"
-                  y1={-springBowedHeight * 0.4}
+                  y1={-otis.pawlSvgY}
                   x2={-pawlExtensionX}
                   y2="10"
                   stroke={isArrested ? "#10b981" : "#38bdf8"}
@@ -291,7 +291,7 @@ export function OtisElevatorSim() {
               <g transform={`translate(260, 5)`}>
                 <line
                   x1="-15"
-                  y1={-springBowedHeight * 0.4}
+                  y1={-otis.pawlSvgY}
                   x2={pawlExtensionX}
                   y2="10"
                   stroke={isArrested ? "#10b981" : "#38bdf8"}

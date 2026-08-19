@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepGatlingGun } from "@/physics/catalogKernels";
+import { gatlingBoltSvgX, stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -124,9 +124,9 @@ export function GatlingGunSim() {
           <g transform="translate(260, 170)">
             {/* 6 Barrels in Longitudinal Profile */}
             {Array.from({ length: barrelCount }).map((_, i) => {
-              const bAngle = (i * (360 / barrelCount) + clusterAngleDeg) % 360;
-              const yPos = Math.sin((bAngle * Math.PI) / 180) * 32;
-              const isFiring = Math.abs(bAngle - 180) < 180 / barrelCount;
+              const bAngle = (i * gatling.barrelSpacingDeg + clusterAngleDeg) % 360;
+              const yPos = Math.sin((bAngle * Math.PI) / 180) * gatling.clusterRadiusPx;
+              const isFiring = Math.abs(bAngle - 180) < gatling.firingWindowDeg;
               return (
                 <g key={`barrel-${bAngle}`}>
                   {/* Gun Barrel Tube */}
@@ -175,10 +175,9 @@ export function GatlingGunSim() {
           {/* Internal Helical Cam Reciprocating Bolts */}
           <g transform="translate(130, 170)">
             {Array.from({ length: barrelCount }).map((_, i) => {
-              const bAngle = (i * (360 / barrelCount) + clusterAngleDeg) % 360;
-              const yPos = Math.sin((bAngle * Math.PI) / 180) * 32;
-              // Cam displacement x(theta): 0 at top, 100 forward at bottom
-              const xPos = ((1 - Math.cos((bAngle * Math.PI) / 180)) / 2) * 90;
+              const bAngle = (i * gatling.barrelSpacingDeg + clusterAngleDeg) % 360;
+              const yPos = Math.sin((bAngle * Math.PI) / 180) * gatling.clusterRadiusPx;
+              const xPos = gatlingBoltSvgX(bAngle, gatling.boltStrokePx);
               return (
                 <g key={`bolt-${bAngle}`}>
                   <rect
@@ -230,15 +229,15 @@ export function GatlingGunSim() {
             <line
               x1="0"
               y1="0"
-              x2={Math.cos((clusterAngleDeg * Math.PI) / 180) * 28}
-              y2={Math.sin((clusterAngleDeg * Math.PI) / 180) * 28}
+              x2={Math.cos((clusterAngleDeg * Math.PI) / 180) * gatling.crankPinRadiusPx}
+              y2={Math.sin((clusterAngleDeg * Math.PI) / 180) * gatling.crankPinRadiusPx}
               stroke="#2D3748"
               strokeWidth="5"
               strokeLinecap="round"
             />
             <circle
-              cx={Math.cos((clusterAngleDeg * Math.PI) / 180) * 28}
-              cy={Math.sin((clusterAngleDeg * Math.PI) / 180) * 28}
+              cx={Math.cos((clusterAngleDeg * Math.PI) / 180) * gatling.crankPinRadiusPx}
+              cy={Math.sin((clusterAngleDeg * Math.PI) / 180) * gatling.crankPinRadiusPx}
               r="6"
               fill="#8B5A2B"
             />

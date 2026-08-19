@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepCorlissEngine } from "@/physics/catalogKernels";
+import { sliderStrokeSvg, stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -46,9 +46,9 @@ export function CorlissEngineSim() {
   }, [isPlaying, corliss.crankOmegaDegPerS]);
 
   // Kinematic calculations for piston & wrist-plate
-  const pistonStroke = Math.sin((crankAngleDeg * Math.PI) / 180) * 45;
-  const wristPlateAngle = Math.sin(((crankAngleDeg + 90) * Math.PI) / 180) * 22;
-  const isIntakeOpen = crankAngleDeg % 180 < (cutoffFractionPct / 100) * 180;
+  const pistonStroke = sliderStrokeSvg(crankAngleDeg, corliss.pistonStrokePx);
+  const wristPlateAngle = sliderStrokeSvg(crankAngleDeg + 90, corliss.wristPlateAmpPx);
+  const isIntakeOpen = crankAngleDeg % 180 < corliss.intakeOpenWindowDeg;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -231,8 +231,8 @@ export function CorlissEngineSim() {
             })}
             {/* Crank Pin */}
             <circle
-              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * 45}
-              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * 45}
+              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
+              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
               r="7"
               fill="#D4AF37"
             />
@@ -242,8 +242,8 @@ export function CorlissEngineSim() {
           <line
             x1={358 + pistonStroke}
             y1="170"
-            x2={480 + Math.cos((crankAngleDeg * Math.PI) / 180) * 45}
-            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * 45}
+            x2={480 + Math.cos((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
+            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
             stroke="#2D3748"
             strokeWidth="6"
             strokeLinecap="round"

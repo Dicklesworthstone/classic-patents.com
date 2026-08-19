@@ -28,7 +28,7 @@ export function TeslaMotorSim() {
       setAngle((prev) => (prev + degPerTick) % 360);
     }, TESLA_FIELD_DISPLAY_TICK_MS);
     return () => clearInterval(interval);
-  }, [apparatus.fieldDisplayOmegaDegPerS]);
+  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.fieldDisplayTickS]);
 
   // Audio AC Hum feedback
   useEffect(() => {
