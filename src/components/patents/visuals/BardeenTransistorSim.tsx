@@ -2,7 +2,7 @@
 
 import { Cpu } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { stepBardeenTransistor } from "@/physics/catalogKernels";
+import { bardeenHoleStream, stepBardeenTransistor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BardeenTransistorSim() {
@@ -149,12 +149,15 @@ export function BardeenTransistorSim() {
 
             {/* Minority Carrier Hole Injection Stream (Red moving to Collector) */}
             <g transform="translate(150, 160)">
-              {Array.from({ length: 12 }).map((_, i) => {
-                const startX = 130 - semi.pointGapSvgPx;
-                const endX = 130 + semi.pointGapSvgPx;
-                const frac = i / 12;
-                const cx = startX + frac * (endX - startX);
-                const cy = 4 + Math.sin(frac * Math.PI) * 10;
+              {Array.from({ length: semi.holeStreamCount }).map((_, i) => {
+                const { cx, cy } = bardeenHoleStream(
+                  i,
+                  semi.pointGapSvgPx,
+                  semi.holeStreamCount,
+                  semi.holeStreamHubX,
+                  semi.holeStreamBaseY,
+                  semi.holeStreamArcAmpPx,
+                );
                 return (
                   <g key={i}>
                     <circle cx={cx} cy={cy} r="3" fill="#ef4444" />

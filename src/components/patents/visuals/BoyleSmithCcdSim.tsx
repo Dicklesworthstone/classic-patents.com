@@ -3,7 +3,7 @@
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { stepCcdWells } from "@/physics/machineKernels";
+import { ccdGateSvgX, stepCcdWells } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BoyleSmithCcdSim() {
@@ -93,17 +93,17 @@ export function BoyleSmithCcdSim() {
 
             {/* 3-Phase Gate Electrodes (Poly-Silicon Gates) */}
             <g transform="translate(60, 70)">
-              {Array.from({ length: 9 }).map((_, i) => {
+              {Array.from({ length: ccd.gateSvgCount }).map((_, i) => {
                 const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
                 const isHigh = phaseNum === clockPhase;
-                const gx = i * 50;
+                const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
                 return (
                   <g key={i}>
                     {/* Gate Metal Bar */}
                     <rect
                       x={gx}
                       y="0"
-                      width="45"
+                      width={ccd.gateSvgWidth}
                       height="18"
                       fill={isHigh ? "#0284c7" : "#334155"}
                       stroke={isHigh ? "#38bdf8" : "#475569"}
@@ -164,12 +164,12 @@ export function BoyleSmithCcdSim() {
             {/* 3-Phase Surface Potential Energy Wells */}
             <g transform="translate(60, 100)">
               <path
-                d={`M 0 0 ${Array.from({ length: 9 })
+                d={`M 0 0 ${Array.from({ length: ccd.gateSvgCount })
                   .map((_, i) => {
                     const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
                     const depth = ccd.wellSvgDepths[phaseNum - 1];
-                    const gx = i * 50;
-                    return `L ${gx} 0 L ${gx} ${depth} L ${gx + 45} ${depth} L ${gx + 45} 0`;
+                    const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
+                    return `L ${gx} 0 L ${gx} ${depth} L ${gx + ccd.gateSvgWidth} ${depth} L ${gx + ccd.gateSvgWidth} 0`;
                   })
                   .join(" ")} L 460 0`}
                 fill="#0369a1"
@@ -181,7 +181,7 @@ export function BoyleSmithCcdSim() {
               {/* Trapped Electron Charge Packets in Potential Wells */}
               {Array.from({ length: 3 }).map((_, i) => {
                 const wellGateIndex = i * 3 + (clockPhase - 1);
-                const px = wellGateIndex * 50 + 22;
+                const px = ccdGateSvgX(wellGateIndex, ccd.gateSvgPitch) + ccd.gateSvgWidth / 2;
                 const py = 50;
                 return (
                   <g key={i}>

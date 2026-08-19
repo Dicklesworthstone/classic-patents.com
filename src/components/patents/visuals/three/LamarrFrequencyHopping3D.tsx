@@ -14,7 +14,14 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { FrankenSimEngine } from "@/physics/engine";
+import {
+  FrankenSimEngine,
+  lamarrChannelFrequencyMhz,
+  lamarrDefaultJamChannel,
+  lamarrPianoKeyHz,
+  lamarrPianoRollChannel,
+  lamarrRadioChannel,
+} from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -55,7 +62,7 @@ export function LamarrFrequencyHopping3D() {
     timeStepDt: 0.016,
     refusal: { isRefused: false },
     em: {
-      frequencyHz: fhPhysics.spreadSpectrumBandwidthMhz * 1e6,
+      frequencyHz: fhPhysics.spreadSpectrumBandwidthHz,
       magneticFluxDensityTesla: 0,
       electricFieldVpm: 0,
       phaseAngleRad: 0,
@@ -74,10 +81,9 @@ export function LamarrFrequencyHopping3D() {
   });
   const processingGainDb = fhPhysics.processingGainDb.toFixed(1);
   const antiJamMarginDb = fhPhysics.antiJammingMarginDb.toFixed(1);
-  const channelDenom = Math.max(1, carrierChannelsCount - 1);
-  const activeFrequencyMhz = (
-    302 +
-    ((Math.max(1, currentChannel) - 1) * (520 - 302)) / channelDenom
+  const activeFrequencyMhz = lamarrChannelFrequencyMhz(
+    currentChannel,
+    carrierChannelsCount,
   ).toFixed(1);
 
   const live = useLiveSimParams({
@@ -85,7 +91,7 @@ export function LamarrFrequencyHopping3D() {
     isJammingActive,
     carrierChannelsCount,
     isCutaway,
-    jamChannel: params.jamChannel ?? Math.floor(carrierChannelsCount * 0.3),
+    jamChannel: params.jamChannel ?? fhPhysics.defaultJamChannel,
     isAudioMuted,
   });
 
@@ -154,8 +160,6 @@ export function LamarrFrequencyHopping3D() {
     let hopTimer = 0;
     let activeChan = 22;
     let rollStep = 0;
-    const PIANO_KEYS = 88;
-    const PIANO_ROLL_STEP = 37;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
@@ -168,21 +172,20 @@ export function LamarrFrequencyHopping3D() {
       if (hopTimer >= hopInterval) {
         hopTimer = 0;
         rollStep += 1;
-        const pianoKey = ((rollStep * PIANO_ROLL_STEP) % PIANO_KEYS) + 1;
+        const pianoKey = lamarrPianoRollChannel(rollStep);
         const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
-        activeChan = Math.floor(((pianoKey - 1) / PIANO_KEYS) * liveChannels);
+        activeChan = lamarrRadioChannel(pianoKey, liveChannels) - 1;
         setCurrentChannel(activeChan + 1);
 
         if (!p.isAudioMuted && rollStep % 3 === 0) {
-          const freq = 220 + (pianoKey / PIANO_KEYS) * 660;
-          soundEngine.playPianoKeyHop(freq);
+          soundEngine.playPianoKeyHop(lamarrPianoKeyHz(pianoKey));
         }
       }
 
       const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
       const jamCenter = Math.min(
         liveChannels - 1,
-        Math.max(0, Math.round(p.jamChannel ?? liveChannels * 0.3) - 1),
+        Math.max(0, Math.round(p.jamChannel ?? lamarrDefaultJamChannel(liveChannels)) - 1),
       );
 
       updateLamarrFrequencyHoppingKinematics(

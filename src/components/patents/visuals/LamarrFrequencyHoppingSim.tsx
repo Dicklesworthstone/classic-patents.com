@@ -2,22 +2,14 @@
 
 import { Radio } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { FrankenSimEngine } from "@/physics/engine";
+import {
+  FrankenSimEngine,
+  lamarrChannelFrequencyMhz,
+  lamarrDefaultJamChannel,
+  lamarrPianoRollChannel,
+  lamarrRadioChannel,
+} from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-
-/** 88 piano-roll slots: 37 is coprime with 88, so one revolution visits every key once. */
-const PIANO_KEYS = 88;
-const PIANO_ROLL_STEP = 37;
-
-function pianoRollChannel(step: number): number {
-  return ((step * PIANO_ROLL_STEP) % PIANO_KEYS) + 1;
-}
-
-/** US 2,292,387 88-key span as labeled on the spectrum axis: 302–520 MHz. */
-function channelFrequencyMhz(channel: number, channelCount: number = PIANO_KEYS): number {
-  const denom = Math.max(1, channelCount - 1);
-  return 302 + ((Math.max(1, channel) - 1) * (520 - 302)) / denom;
-}
 
 export function LamarrFrequencyHoppingSim() {
   const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
@@ -27,11 +19,11 @@ export function LamarrFrequencyHoppingSim() {
   const isEnemyJamming = params.isJammingActive !== 0;
   const jammingFrequencyChannel = Math.min(
     liveChannels,
-    Math.max(1, Math.round(params.jamChannel ?? Math.floor(liveChannels * 0.3))),
+    Math.max(1, Math.round(params.jamChannel ?? lamarrDefaultJamChannel(liveChannels))),
   );
-  const [currentChannel, setCurrentChannel] = useState<number>(() => pianoRollChannel(0));
+  const [currentChannel, setCurrentChannel] = useState<number>(() => lamarrPianoRollChannel(0));
   const [historyChannels, setHistoryChannels] = useState<number[]>(() =>
-    [0, 1, 2, 3, 4, 5].map(pianoRollChannel),
+    [0, 1, 2, 3, 4, 5].map((step) => lamarrPianoRollChannel(step)),
   );
   const rollStepRef = useRef(0);
 
@@ -45,7 +37,7 @@ export function LamarrFrequencyHoppingSim() {
     ).hopIntervalMs;
     const interval = setInterval(() => {
       rollStepRef.current += 1;
-      const nextChannel = pianoRollChannel(rollStepRef.current);
+      const nextChannel = lamarrPianoRollChannel(rollStepRef.current);
       setCurrentChannel(nextChannel);
       setHistoryChannels((hist) => [nextChannel, ...hist.slice(0, 15)]);
     }, intervalMs);
@@ -54,8 +46,7 @@ export function LamarrFrequencyHoppingSim() {
   }, [isHoppingActive, hopsPerSec, liveChannels]);
 
   // Is current carrier jammed?
-  const radioChannel =
-    Math.floor(((Math.max(1, currentChannel) - 1) / PIANO_KEYS) * liveChannels) + 1;
+  const radioChannel = lamarrRadioChannel(currentChannel, liveChannels);
   const isJammedThisInstant = isEnemyJamming && radioChannel === jammingFrequencyChannel;
   const fh = FrankenSimEngine.stepLamarrFrequencyHopping(liveChannels, hopsPerSec);
   const jammingInterferencePercent = isEnemyJamming ? fh.jamOccupancyPct : 0;
@@ -116,21 +107,22 @@ export function LamarrFrequencyHoppingSim() {
             ) : (
               <span className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 rounded-lg">
                 ✓ SIGNAL CLEAR: Active on Carrier Channel #{currentChannel} (
-                {channelFrequencyMhz(radioChannel, liveChannels).toFixed(1)} MHz)
+                {lamarrChannelFrequencyMhz(radioChannel, liveChannels).toFixed(1)} MHz)
               </span>
             )}
 
             <div className="text-purple-400 font-bold">
-              Processing Gain: <span className="text-amber-400 font-bold">+19.4 dB</span>
+              Processing Gain:{" "}
+              <span className="text-amber-400 font-bold">+{fh.processingGainDb} dB</span>
             </div>
           </div>
 
           {/* 88 Piano Key RF Channel Spectrum Analyzer SVG */}
           <svg viewBox="0 0 440 180" className="w-full max-w-md h-auto select-none">
             {/* 88 Channel Frequency Bars */}
-            {Array.from({ length: 88 }).map((_, i) => {
+            {Array.from({ length: fh.pianoKeys }).map((_, i) => {
               const channelNum = i + 1;
-              const xPos = 20 + i * 4.5;
+              const xPos = fh.spectrumBarOriginX + i * fh.spectrumBarPitchPx;
               const isCurrent = channelNum === currentChannel;
               const isJammer = isEnemyJamming && channelNum === jammingFrequencyChannel;
               const wasRecent = recentHopSet.has(channelNum);
@@ -165,7 +157,7 @@ export function LamarrFrequencyHoppingSim() {
             {/* Base Frequency Axis Line */}
             <line x1="15" y1="140" x2="425" y2="140" stroke="#475569" strokeWidth="1.5" />
             <text x="20" y="160" fill="#94a3b8" fontSize="8" fontFamily="monospace">
-              Channel 1 (302 MHz)
+              Channel 1 ({fh.bandMinMhz} MHz)
             </text>
             <text
               x="420"
@@ -175,7 +167,7 @@ export function LamarrFrequencyHoppingSim() {
               textAnchor="end"
               fontFamily="monospace"
             >
-              Channel 88 (520 MHz)
+              Channel {fh.pianoKeys} ({fh.bandMaxMhz} MHz)
             </text>
           </svg>
 

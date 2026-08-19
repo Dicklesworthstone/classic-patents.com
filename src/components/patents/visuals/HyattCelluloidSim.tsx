@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { stepHyattCelluloid } from "@/physics/catalogKernels";
+import { hyattPolymerSvg, stepHyattCelluloid } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -139,9 +139,15 @@ export function HyattCelluloidSim() {
 
           {/* Molecular Polymer Chains / Camphor particles */}
           <g id="polymer-chains">
-            {Array.from({ length: 16 }).map((_, i) => {
-              const xPos = 220 + (i % 4) * 45;
-              const yPos = 150 + Math.floor(i / 4) * 25;
+            {Array.from({ length: hyatt.polymerCount }).map((_, i) => {
+              const { xPos, yPos } = hyattPolymerSvg(
+                i,
+                hyatt.polymerOriginX,
+                hyatt.polymerOriginY,
+                hyatt.polymerPitchX,
+                hyatt.polymerPitchY,
+                hyatt.polymerCols,
+              );
               return (
                 <g key={`polymer-node-${xPos}-${yPos}`}>
                   <circle cx={xPos} cy={yPos} r={isMelted ? 8 : 5} fill="#D69E2E" opacity="0.8" />

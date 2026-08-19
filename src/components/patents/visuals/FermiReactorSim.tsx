@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
+import { fermiLatticeCell } from "@/physics/fermiKinetics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -98,10 +99,16 @@ export function FermiReactorSim() {
             />
 
             {/* Graphite Blocks Lattice */}
-            {Array.from({ length: 5 }).map((_, r) =>
-              Array.from({ length: 7 }).map((_, c) => {
-                const cx = 80 + c * 40;
-                const cy = 60 + r * 38;
+            {Array.from({ length: kinetics.latticeRows }).map((_, r) =>
+              Array.from({ length: kinetics.latticeCols }).map((_, c) => {
+                const { cx, cy } = fermiLatticeCell(
+                  r,
+                  c,
+                  kinetics.latticeOriginX,
+                  kinetics.latticeOriginY,
+                  kinetics.latticePitchX,
+                  kinetics.latticePitchY,
+                );
                 return (
                   <g key={`cell-${r}-${c}`}>
                     <rect

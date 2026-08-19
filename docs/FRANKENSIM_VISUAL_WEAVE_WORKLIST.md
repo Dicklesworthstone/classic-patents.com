@@ -255,6 +255,14 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.162 Farnsworth acceleratingVoltageVolts. 3D no longer converts leftover anode kV×1000 privately.
 - [x] P5.163 Tesla motor teslaStatorPole / teslaPhaseVectors / statorPoleSvgR / twoPhaseVectorSvgR / threePhaseVectorSvgR. 2D no longer converts leftover pole ×108 or phase ×52/42 privately.
 - [x] P5.164 Sholes sholesTypebarPose / typebarOuterRx/Ry / typebarRestRx/Ry / ratchetSvgR. 2D no longer converts leftover type-bar ×140/70/25/15 or ratchet ×18 privately.
+- [x] P5.165 Lamarr spreadSpectrumBandwidthHz / bandMinMhz / bandMaxMhz / pianoKeys / pianoRollStep / defaultJamChannel plus lamarrPianoRollChannel / lamarrChannelFrequencyMhz / lamarrRadioChannel / lamarrPianoKeyHz / lamarrDefaultJamChannel. 2D/3D no longer convert leftover 302–520 MHz, jam×0.3, MHz×1e6, or 220+(key/88)×660 privately. 2D HUD reads processingGainDb instead of a leftover +19.4 dB sticker.
+- [x] P5.166 Pelton runnerSvgR / hubSvgR / bucketCount. 2D no longer converts leftover runner ×75 or 12-bucket ring privately.
+- [x] P5.167 Parsons stageRingSvgCount / stageSvgOriginX / stageSvgPitch. 2D no longer converts leftover 22-ring ×135/16 privately.
+- [x] P5.168 Zeppelin gasCellCount / gasCellSvgOriginX / gasCellSvgPitch. 2D no longer converts leftover 17-cell ×−215/27 privately.
+- [x] P5.169 Pasteur pasteurMicrobeSvg / microbeWobbleOmega / Amp / grid. 2D no longer converts leftover sin(t×3)×3 or 230+(i%5)×32 privately.
+- [x] P5.170 Fermi fermiLatticeCell / latticeRows/Cols / origin / pitch. 2D no longer converts leftover 80+c×40 or 60+r×38 privately.
+- [x] P5.171 Whitney sawToothCount / bristleCount. 2D no longer converts leftover 16-tooth / 24-bristle rings privately.
+- [x] P5.172 McCormick reelToCutterRatio / mccormickReelAngleDeg. 2D no longer converts leftover phase×(ω_reel/ω_cutter)×180/π privately.
 
 ## Explicitly out of scope
 

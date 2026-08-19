@@ -3,6 +3,7 @@
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import {
+  hollerithCupSvg,
   hollerithDialNeedle,
   hollerithPocketSvgX,
   stepHollerithTabulating,
@@ -108,17 +109,27 @@ export function HollerithTabulatingSim() {
             </text>
 
             {/* Mercury Cups (Liquid Metal Pools) */}
-            {Array.from({ length: hol.sensingPinCount }).map((_, i) => (
-              <circle
-                key={`mercury-cup-${i * 12}`}
-                cx={20 + (i % 8) * 25}
-                cy={100 + Math.floor(i / 8) * 30}
-                r="7"
-                fill="#CBD5E0"
-                stroke="#718096"
-                strokeWidth="1.5"
-              />
-            ))}
+            {Array.from({ length: hol.sensingPinCount }).map((_, i) => {
+              const cup = hollerithCupSvg(
+                i,
+                hol.cupSvgOriginX,
+                hol.cupSvgOriginY,
+                hol.cupSvgPitchX,
+                hol.cupSvgPitchY,
+                hol.cupCols,
+              );
+              return (
+                <circle
+                  key={`mercury-cup-${i * 12}`}
+                  cx={cup.cx}
+                  cy={cup.cy}
+                  r="7"
+                  fill="#CBD5E0"
+                  stroke="#718096"
+                  strokeWidth="1.5"
+                />
+              );
+            })}
 
             {/* Non-Conducting Punched Card inserted between */}
             <rect

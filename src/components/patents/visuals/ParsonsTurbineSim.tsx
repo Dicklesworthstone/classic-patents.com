@@ -169,8 +169,8 @@ export function ParsonsTurbineSim() {
           />
 
           {/* Alternating Fixed Stator Blades & Moving Rotor Blade Rings */}
-          {Array.from({ length: 22 }).map((_, i) => {
-            const xPos = 135 + i * 16;
+          {Array.from({ length: parsons.stageRingSvgCount }).map((_, i) => {
+            const xPos = parsons.stageSvgOriginX + i * parsons.stageSvgPitch;
             const isRotor = i % 2 === 1;
             const height = xPos < 240 ? 30 : xPos < 380 ? 45 : 65;
             return (

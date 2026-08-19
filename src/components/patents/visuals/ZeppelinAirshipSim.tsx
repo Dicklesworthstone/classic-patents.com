@@ -93,8 +93,8 @@ export function ZeppelinAirshipSim() {
             />
 
             {/* Internal 17 Separate Gas Cell Partitions */}
-            {Array.from({ length: 17 }).map((_, i) => {
-              const xPos = -215 + i * 27;
+            {Array.from({ length: zep.gasCellCount }).map((_, i) => {
+              const xPos = zep.gasCellSvgOriginX + i * zep.gasCellSvgPitch;
               return (
                 <line
                   key={`gas-cell-ring-${xPos}`}

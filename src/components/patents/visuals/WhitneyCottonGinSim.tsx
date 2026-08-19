@@ -155,8 +155,8 @@ export function WhitneyCottonGinSim() {
           <g transform={`translate(260, 170) rotate(${angle * gin.sawToCrankRatio})`}>
             <circle cx="0" cy="0" r={gin.sawSvgR} fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
             {/* Saw teeth */}
-            {Array.from({ length: 16 }).map((_, i) => {
-              const toothAngle = (i * 360) / 16;
+            {Array.from({ length: gin.sawToothCount }).map((_, i) => {
+              const toothAngle = (i * 360) / gin.sawToothCount;
               return (
                 <path
                   key={`saw-tooth-${toothAngle}`}
@@ -180,8 +180,8 @@ export function WhitneyCottonGinSim() {
               strokeWidth="2"
             />
             {/* Bristles */}
-            {Array.from({ length: 24 }).map((_, i) => {
-              const bristleAngle = (i * 360) / 24;
+            {Array.from({ length: gin.bristleCount }).map((_, i) => {
+              const bristleAngle = (i * 360) / gin.bristleCount;
               return (
                 <line
                   key={`bristle-${bristleAngle}`}

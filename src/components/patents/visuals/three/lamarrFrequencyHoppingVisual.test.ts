@@ -1,7 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { FrankenSimEngine } from "@/physics/engine";
+import {
+  FrankenSimEngine,
+  lamarrChannelFrequencyMhz,
+  lamarrDefaultJamChannel,
+  lamarrPianoKeyHz,
+  lamarrPianoRollChannel,
+  lamarrRadioChannel,
+} from "@/physics/engine";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
@@ -61,6 +68,26 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(result.antiJammingMarginDb).toBeGreaterThan(10);
     expect(result.spreadSpectrumBandwidthMhz).toBeGreaterThan(5);
     expect(result.spreadSpectrumBandwidthMhz).toBeLessThan(50);
+    expect(result.spreadSpectrumBandwidthHz).toBe(result.spreadSpectrumBandwidthMhz * 1e6);
+    expect(result.bandMinMhz).toBe(302);
+    expect(result.bandMaxMhz).toBe(520);
+    expect(result.defaultJamChannel).toBe(26);
+    expect(result.pianoKeys).toBe(88);
+    expect(result.pianoRollStep).toBe(37);
+    expect(lamarrPianoRollChannel(0)).toBe(1);
+    expect(lamarrChannelFrequencyMhz(1)).toBe(302);
+    expect(lamarrChannelFrequencyMhz(88)).toBe(520);
+    expect(lamarrDefaultJamChannel(88)).toBe(26);
+    expect(lamarrRadioChannel(1, 88)).toBe(1);
+    expect(lamarrPianoKeyHz(88)).toBeCloseTo(880, 5);
+
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "LamarrFrequencyHopping3D.tsx"),
+      "utf8",
+    );
+    expect(threeSource).toContain("spreadSpectrumBandwidthHz");
+    expect(threeSource).not.toContain("* 1e6");
+    expect(threeSource).not.toContain("liveChannels * 0.3");
   });
 
   test("builds and articulates procedural torpedo bay, twin reels, paper roll web, sensing comb, and waterfall correctly", () => {

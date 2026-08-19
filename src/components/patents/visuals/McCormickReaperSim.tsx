@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepMcCormickReaper } from "@/physics/catalogKernels";
+import { mccormickReelAngleDeg, stepMcCormickReaper } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function McCormickReaperSim() {
@@ -32,11 +32,7 @@ export function McCormickReaperSim() {
   }, [isPlaying, reaper.cutterOmegaRadPerS]);
 
   const cutterX = Math.sin(phase) * reaper.cutterSvgAmp;
-  const reelAngleDeg =
-    (phase *
-      (reaper.reelOmegaRadPerS / Math.max(1e-6, reaper.cutterOmegaRadPerS)) *
-      (180 / Math.PI)) %
-    360;
+  const reelAngleDeg = mccormickReelAngleDeg(phase, reaper.reelToCutterRatio);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

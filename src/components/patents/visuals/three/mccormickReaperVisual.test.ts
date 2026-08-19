@@ -62,6 +62,10 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(result.cutterHz).toBeGreaterThan(5);
     expect(result.reelBarPct).toBeCloseTo(Math.min(100, (result.reelRpm / 80) * 100), 1);
     expect(result.cutterSvgAmp).toBe(18);
+    expect(result.reelToCutterRatio).toBeCloseTo(
+      result.reelOmegaRadPerS / result.cutterOmegaRadPerS,
+      5,
+    );
   });
 
   test("builds and articulates procedural platform, bull drive wheel, guard fingers, sickle bar, and reel correctly", () => {

@@ -128,14 +128,24 @@ export function PeltonWheelSim() {
           {/* Pelton Turbine Runner Disk (Center) */}
           <g transform={`translate(360, 150) rotate(${wheelAngleDeg})`}>
             {/* Center Hub */}
-            <circle cx="0" cy="0" r="75" fill="#2D3748" stroke="#1A202C" strokeWidth="4" />
-            <circle cx="0" cy="0" r="18" fill="#1A1A1A" />
+            <circle
+              cx="0"
+              cy="0"
+              r={pelton.runnerSvgR}
+              fill="#2D3748"
+              stroke="#1A202C"
+              strokeWidth="4"
+            />
+            <circle cx="0" cy="0" r={pelton.hubSvgR} fill="#1A1A1A" />
 
             {/* Perimeter Split Buckets */}
-            {Array.from({ length: 12 }).map((_, i) => {
-              const bAngle = (i * 360) / 12;
+            {Array.from({ length: pelton.bucketCount }).map((_, i) => {
+              const bAngle = (i * 360) / pelton.bucketCount;
               return (
-                <g key={`pelton-bucket-${bAngle}`} transform={`rotate(${bAngle}) translate(0, 75)`}>
+                <g
+                  key={`pelton-bucket-${bAngle}`}
+                  transform={`rotate(${bAngle}) translate(0, ${pelton.runnerSvgR})`}
+                >
                   {/* Double-cup bucket profile */}
                   <path
                     d="M -14 0 Q -18 22, -8 30 Q 0 15, 0 5 Q 0 15, 8 30 Q 18 22, 14 0 Z"

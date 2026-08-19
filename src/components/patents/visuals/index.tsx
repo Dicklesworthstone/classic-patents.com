@@ -8,7 +8,6 @@ import { useState } from "react";
 import { BardeenTransistorSim } from "./BardeenTransistorSim";
 import { BellTelephoneSim } from "./BellTelephoneSim";
 import { BoyleSmithCcdSim } from "./BoyleSmithCcdSim";
-import { CarrierAirConditionerSim } from "./CarrierAirConditionerSim";
 import { ColtRevolverSim } from "./ColtRevolverSim";
 import { CorlissEngineSim } from "./CorlissEngineSim";
 import { DaimlerEngineSim } from "./DaimlerEngineSim";
@@ -25,13 +24,12 @@ import { FarnsworthTVSim } from "./FarnsworthTVSim";
 import { FermiReactorSim } from "./FermiReactorSim";
 import { GatlingGunSim } from "./GatlingGunSim";
 import { GliddenBarbedWireSim } from "./GliddenBarbedWireSim";
-import { GoddardRocketSim } from "./GoddardRocketSim";
+import { GoddardRocketSourceVisual } from "./GoddardRocketSourceVisual";
 import { GoodyearRubberSim } from "./GoodyearRubberSim";
 import { GrammeDynamoSim } from "./GrammeDynamoSim";
 import { HollerithTabulatingSim } from "./HollerithTabulatingSim";
 import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { HyattCelluloidSim } from "./HyattCelluloidSim";
-import { KwolekKevlarSim } from "./KwolekKevlarSim";
 import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
@@ -41,14 +39,14 @@ import { McCormickReaperSim } from "./McCormickReaperSim";
 import { MergenthalerLinotypeSim } from "./MergenthalerLinotypeSim";
 import { MorseTelegraphSim } from "./MorseTelegraphSim";
 import { NobelDynamiteSim } from "./NobelDynamiteSim";
-import { NoycePlanarICSim } from "./NoycePlanarICSim";
+import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
 import { OtisElevatorSim } from "./OtisElevatorSim";
 import { OttoEngineSim } from "./OttoEngineSim";
-import { ParsonsTurbineSim } from "./ParsonsTurbineSim";
 import { PasteurFermentationSim } from "./PasteurFermentationSim";
 import { PeltonWheelSim } from "./PeltonWheelSim";
 import { RenoEscalatorSim } from "./RenoEscalatorSim";
 import { SholesTypewriterSim } from "./SholesTypewriterSim";
+import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
 import { SpencerMicrowaveSim } from "./SpencerMicrowaveSim";
 import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
@@ -79,10 +77,6 @@ const BellTelephone3D = dynamic(
 );
 const BoyleSmithCcd3D = dynamic(
   () => import("./three/BoyleSmithCcd3D").then((mod) => mod.BoyleSmithCcd3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const CarrierAirConditioner3D = dynamic(
-  () => import("./three/CarrierAirConditioner3D").then((mod) => mod.CarrierAirConditioner3D),
   { ssr: false, loading: ThreeLoading },
 );
 const ColtRevolver3D = dynamic(
@@ -149,10 +143,6 @@ const GliddenBarbedWire3D = dynamic(
   () => import("./three/GliddenBarbedWire3D").then((mod) => mod.GliddenBarbedWire3D),
   { ssr: false, loading: ThreeLoading },
 );
-const GoddardRocket3D = dynamic(
-  () => import("./three/GoddardRocket3D").then((mod) => mod.GoddardRocket3D),
-  { ssr: false, loading: ThreeLoading },
-);
 const GoodyearRubber3D = dynamic(
   () => import("./three/GoodyearRubber3D").then((mod) => mod.GoodyearRubber3D),
   { ssr: false, loading: ThreeLoading },
@@ -171,10 +161,6 @@ const HoweSewingMachine3D = dynamic(
 );
 const HyattCelluloid3D = dynamic(
   () => import("./three/HyattCelluloid3D").then((mod) => mod.HyattCelluloid3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const KwolekKevlar3D = dynamic(
-  () => import("./three/KwolekKevlar3D").then((mod) => mod.KwolekKevlar3D),
   { ssr: false, loading: ThreeLoading },
 );
 const LamarrFrequencyHopping3D = dynamic(
@@ -213,10 +199,6 @@ const NobelDynamite3D = dynamic(
   () => import("./three/NobelDynamite3D").then((mod) => mod.NobelDynamite3D),
   { ssr: false, loading: ThreeLoading },
 );
-const NoycePlanarIC3D = dynamic(
-  () => import("./three/NoycePlanarIC3D").then((mod) => mod.NoycePlanarIC3D),
-  { ssr: false, loading: ThreeLoading },
-);
 const OtisElevator3D = dynamic(
   () => import("./three/OtisElevator3D").then((mod) => mod.OtisElevator3D),
   { ssr: false, loading: ThreeLoading },
@@ -225,10 +207,6 @@ const OttoEngine3D = dynamic(() => import("./three/OttoEngine3D").then((mod) => 
   ssr: false,
   loading: ThreeLoading,
 });
-const ParsonsTurbine3D = dynamic(
-  () => import("./three/ParsonsTurbine3D").then((mod) => mod.ParsonsTurbine3D),
-  { ssr: false, loading: ThreeLoading },
-);
 const PasteurFermentation3D = dynamic(
   () => import("./three/PasteurFermentation3D").then((mod) => mod.PasteurFermentation3D),
   { ssr: false, loading: ThreeLoading },
@@ -292,7 +270,16 @@ interface PatentVisualDispatcherProps {
 
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
   const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">("3d-physics");
-  const hasVerifiedVisual = true;
+  // These grants have verified source-drawing guides, not computational 2D/3D pairs.
+  // Do not offer a mode switch whose former path invented unprinted performance data.
+  const hasVerifiedVisual = ![
+    "us-608969-parsons-turbine",
+    "us-1102653-goddard-rocket",
+    "us-2981877-noyce-ic",
+    "us-808897-carrier-air-conditioner",
+    "us-3671542-kwolek-kevlar",
+    "us-3858232-boyle-smith-ccd",
+  ].includes(patentId);
 
   return (
     <div className="space-y-4">
@@ -424,7 +411,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-586193-marconi-radio":
             return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
           case "us-608969-parsons-turbine":
-            return renderMode === "3d-physics" ? <ParsonsTurbine3D /> : <ParsonsTurbineSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="The pinned US 608,969 grant is a Marine Steam-Turbine arrangement involving screw shafts and a reversing turbine. The inherited axial reaction-turbine model describes a different Parsons patent and is withheld until a source-specific visual is authored."
+                title="Marine steam-turbine visual under source review"
+              />
+            );
           case "us-613809-tesla-teleautomaton":
             return renderMode === "3d-physics" ? (
               <TeslaTeleautomaton3D />
@@ -440,15 +432,16 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
               <LindeAirLiquefactionSim />
             );
           case "us-808897-carrier-air-conditioner":
-            return renderMode === "3d-physics" ? (
-              <CarrierAirConditioner3D />
-            ) : (
-              <CarrierAirConditionerSim />
+            return (
+              <SourceVisualUnavailable
+                detail="US 808,897 is an air washer with a spray H and wet, sinuous separator plates. The inherited chilled-dew-point air-conditioning model describes a different Carrier project and is withheld until a source-specific visual is authored."
+                title="Air-washer and separator visual under source review"
+              />
             );
           case "us-821393-wright-flyer":
             return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
           case "us-1102653-goddard-rocket":
-            return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
+            return <GoddardRocketSourceVisual />;
           case "us-1773980-farnsworth-tv":
             return renderMode === "3d-physics" ? <FarnsworthTV3D /> : <FarnsworthTVSim />;
           case "us-1781541-einstein-refrigerator":
@@ -470,14 +463,25 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-2708656-fermi-reactor":
             return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
           case "us-2981877-noyce-ic":
-            return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
+            return <NoycePlanarSourceVisual />;
           case "us-3541541-engelbart-mouse":
             return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
           case "us-3671542-kwolek-kevlar":
-            return renderMode === "3d-physics" ? <KwolekKevlar3D /> : <KwolekKevlarSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="The inherited material visual has not yet been reconciled with the pinned US 3,671,542 facsimile and its still-withheld manual source edition. It is not shown as evidence for this patent."
+                title="Source-specific material visual in preparation"
+              />
+            );
           case "us-3923554-boyle-smith-ccd":
-          case "us-3858232-boyle-smith-ccd":
             return renderMode === "3d-physics" ? <BoyleSmithCcd3D /> : <BoyleSmithCcdSim />;
+          case "us-3858232-boyle-smith-ccd":
+            return (
+              <SourceVisualUnavailable
+                detail="The pinned US 3,858,232 facsimile is titled Information Storage Devices. The inherited CCD model is not a source-specific treatment of that patent and is withheld until the manual edition and a matching visual are complete."
+                title="Information-storage visual in preparation"
+              />
+            );
           case "us-4136359-wozniak-apple":
             return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
 

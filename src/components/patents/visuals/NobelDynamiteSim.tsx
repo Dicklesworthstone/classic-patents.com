@@ -2,7 +2,7 @@
 
 import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
-import { stepNobelDynamite } from "@/physics/catalogKernels";
+import { nobelKieselguhrSvg, stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -102,16 +102,25 @@ export function NobelDynamiteSim() {
 
           {/* Microscopic Kieselguhr Silica Sponges & Nitroglycerin Drops */}
           <g opacity="0.45">
-            {Array.from({ length: 24 }).map((_, i) => (
-              <circle
-                key={`kieselguhr-${i * 15}`}
-                cx={200 + (i % 8) * 32}
-                cy={135 + Math.floor(i / 8) * 32}
-                r="6"
-                fill="#EDF2F7"
-                stroke="#A0AEC0"
-              />
-            ))}
+            {Array.from({ length: nobel.kieselguhrCount }).map((_, i) => {
+              const grain = nobelKieselguhrSvg(
+                i,
+                nobel.kieselguhrOriginX,
+                nobel.kieselguhrOriginY,
+                nobel.kieselguhrPitch,
+                nobel.kieselguhrCols,
+              );
+              return (
+                <circle
+                  key={`kieselguhr-${i * 15}`}
+                  cx={grain.cx}
+                  cy={grain.cy}
+                  r="6"
+                  fill="#EDF2F7"
+                  stroke="#A0AEC0"
+                />
+              );
+            })}
           </g>
 
           {/* Copper Blasting Cap inserted into end */}

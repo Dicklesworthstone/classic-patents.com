@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepPasteurFermentation } from "@/physics/catalogKernels";
+import { pasteurMicrobeSvg, stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -143,10 +143,18 @@ export function PasteurFermentationSim() {
 
           {/* Microscopic Spoilage Microbes vs Yeast Cells */}
           <g id="microbial-view">
-            {Array.from({ length: 14 }).map((_, i) => {
-              const xPos = 230 + (i % 5) * 32;
-              const yOffset = Math.sin(timerSeconds * 3 + i) * 3;
-              const yPos = 140 + Math.floor(i / 5) * 28 + yOffset;
+            {Array.from({ length: pasteur.microbeCount }).map((_, i) => {
+              const { xPos, yPos } = pasteurMicrobeSvg(
+                i,
+                timerSeconds,
+                pasteur.microbeWobbleOmega,
+                pasteur.microbeWobbleAmpPx,
+                pasteur.microbeSvgOriginX,
+                pasteur.microbeSvgOriginY,
+                pasteur.microbeSvgPitchX,
+                pasteur.microbeSvgPitchY,
+                pasteur.microbeCols,
+              );
               const isAlive = !isMicrobesKilled;
               return (
                 <g key={`microbe-${xPos}-${i}`}>

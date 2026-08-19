@@ -71,6 +71,8 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(result.inletBar).toBeCloseTo(180 / 14.5038, 2);
     expect(result.enthalpyKjKg).toBeGreaterThan(300);
     expect(result.stageCount).toBe(48);
+    expect(result.stageRingSvgCount).toBe(22);
+    expect(result.stageSvgPitch).toBe(16);
     expect(result.inletMpa).toBeGreaterThan(1.0);
     expect(result.bladeSpeedMps).toBeGreaterThan(40);
     expect(result.steamAdvancePerS).toBeCloseTo(12, 3);
