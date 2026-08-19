@@ -28,7 +28,7 @@ export function McCormickReaperSim() {
     const loop = () => {
       // Fixed presentation steps make the visual reproducible from the same
       // shared control state. They do not claim to be a physical time solver.
-      setPhase((prev) => (prev + reaper.cutterOmegaRadPerS / 60) % (2 * Math.PI));
+      setPhase((prev) => (prev + reaper.cutterDisplayRadPerFrame) % reaper.phaseWrapRad);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -36,7 +36,7 @@ export function McCormickReaperSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, reaper.cutterOmegaRadPerS]);
+  }, [isPlaying, reaper.cutterDisplayRadPerFrame, reaper.phaseWrapRad]);
 
   const cutterX = Math.sin(phase) * reaper.cutterSvgAmp;
   const reelAngleDeg = mccormickReelAngleDeg(phase, reaper.reelToCutterRatio);

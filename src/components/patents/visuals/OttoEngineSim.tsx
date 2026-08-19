@@ -2,7 +2,12 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { pistonSvgDisplacement, stepOttoEngine } from "@/physics/catalogKernels";
+import {
+  ottoConnectingRod,
+  ottoStrokePhase,
+  pistonSvgDisplacement,
+  stepOttoEngine,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -17,20 +22,28 @@ export function OttoEngineSim() {
   const animRef = useRef<number | null>(null);
 
   // 4-Stroke Thermodynamics (720-degree cycle)
-  const cycleAngleDeg = crankAngleDeg % 720;
+  const cycleAngleDeg = crankAngleDeg % otto.cycleWrapDeg;
+  const strokePhase = ottoStrokePhase(
+    cycleAngleDeg,
+    otto.stroke1EndDeg,
+    otto.stroke2EndDeg,
+    otto.stroke3EndDeg,
+  );
   const currentStroke =
-    cycleAngleDeg < 180
+    strokePhase === 1
       ? "1. INTAKE (Fuel-Air Induction)"
-      : cycleAngleDeg < 360
+      : strokePhase === 2
         ? "2. COMPRESSION (Charge Squeeze)"
-        : cycleAngleDeg < 540
+        : strokePhase === 3
           ? "3. POWER (Combustion Expansion)"
           : "4. EXHAUST (Scavenging Stroke)";
 
-  const isSparkFiring = cycleAngleDeg >= 350 && cycleAngleDeg <= 370;
+  const isSparkFiring = cycleAngleDeg >= otto.sparkStartDeg && cycleAngleDeg <= otto.sparkEndDeg;
   const thermalEfficiencyPct = otto.thermalEfficiencyPct;
   const peakPressureBar =
-    cycleAngleDeg >= 360 && cycleAngleDeg < 450 ? otto.peakFiringBar : otto.peakCompressionBar;
+    cycleAngleDeg >= otto.firingStartDeg && cycleAngleDeg < otto.firingEndDeg
+      ? otto.peakFiringBar
+      : otto.peakCompressionBar;
   const indicatedHorsepower = otto.brakeHorsepower;
 
   useEffect(() => {
@@ -42,7 +55,7 @@ export function OttoEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + otto.crankOmegaDegPerS * dt) % 720);
+      setCrankAngleDeg((prev) => (prev + otto.crankOmegaDegPerS * dt) % otto.cycleWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -50,10 +63,18 @@ export function OttoEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, otto.crankOmegaDegPerS]);
+  }, [isPlaying, otto.crankOmegaDegPerS, otto.cycleWrapDeg]);
 
   // Piston linear displacement x(theta)
   const pistonDisplacement = pistonSvgDisplacement(cycleAngleDeg, otto.pistonStrokePx);
+  const connectingRod = ottoConnectingRod(
+    crankAngleDeg,
+    pistonDisplacement,
+    otto.pistonStrokePx,
+    otto.crankCx,
+    otto.crankCy,
+    otto.rodOriginX,
+  );
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -121,16 +142,16 @@ export function OttoEngineSim() {
           <rect
             x="95"
             y="115"
-            width={50 + pistonDisplacement}
+            width={otto.gasChargeW0 + pistonDisplacement}
             height="110"
             fill={
               isSparkFiring
                 ? "#ECC94B"
-                : cycleAngleDeg < 180
+                : strokePhase === 1
                   ? "#63B3ED" // Intake (Blue air)
-                  : cycleAngleDeg < 360
+                  : strokePhase === 2
                     ? "#D69E2E" // Compression (Gold)
-                    : cycleAngleDeg < 540
+                    : strokePhase === 3
                       ? "#E53E3E" // Power (Fire Red)
                       : "#718096" // Exhaust (Grey smoke)
             }
@@ -143,7 +164,7 @@ export function OttoEngineSim() {
           )}
 
           {/* Reciprocating Piston Head */}
-          <g transform={`translate(${145 + pistonDisplacement}, 170)`}>
+          <g transform={`translate(${otto.pistonSvgX + pistonDisplacement}, ${otto.pistonSvgY})`}>
             <rect
               x="0"
               y="-50"
@@ -158,12 +179,20 @@ export function OttoEngineSim() {
           </g>
 
           {/* Crankshaft & Heavy Flywheel */}
-          <g transform="translate(460, 170)">
-            <circle cx="0" cy="0" r="90" fill="none" stroke="#2D3748" strokeWidth="16" />
-            <circle cx="0" cy="0" r="15" fill="#111" />
+          <g transform={`translate(${otto.crankCx}, ${otto.crankCy})`}>
+            <circle
+              cx="0"
+              cy="0"
+              r={otto.flywheelRimR}
+              fill="none"
+              stroke="#2D3748"
+              strokeWidth="16"
+            />
+            <circle cx="0" cy="0" r={otto.flywheelHubR} fill="#111" />
             {/* Flywheel Spokes */}
             {Array.from({ length: otto.spokeCount }).map((_, i) => {
-              const spkAngle = (i * otto.spokePitchDeg + (crankAngleDeg % 360)) % 360;
+              const spkAngle =
+                (i * otto.spokePitchDeg + (crankAngleDeg % otto.crankWrapDeg)) % otto.crankWrapDeg;
               return (
                 <line
                   key={`otto-spoke-${spkAngle}`}
@@ -178,19 +207,19 @@ export function OttoEngineSim() {
             })}
             {/* Crank Pin */}
             <circle
-              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
-              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
-              r="7"
+              cx={connectingRod.x2 - otto.crankCx}
+              cy={connectingRod.y2 - otto.crankCy}
+              r={otto.crankPinR}
               fill="#D4AF37"
             />
           </g>
 
           {/* Connecting Rod */}
           <line
-            x1={167 + pistonDisplacement}
-            y1="170"
-            x2={460 + Math.cos((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
-            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * otto.pistonStrokePx}
+            x1={connectingRod.x1}
+            y1={connectingRod.y1}
+            x2={connectingRod.x2}
+            y2={connectingRod.y2}
             stroke="#1A202C"
             strokeWidth="6"
             strokeLinecap="round"
@@ -207,7 +236,7 @@ export function OttoEngineSim() {
             textAnchor="middle"
             fontFamily="sans-serif"
           >
-            {currentStroke} ({Math.round(cycleAngleDeg)}° / 720°)
+            {currentStroke} ({Math.round(cycleAngleDeg)}° / {otto.cycleWrapDeg}°)
           </text>
         </svg>
       </div>

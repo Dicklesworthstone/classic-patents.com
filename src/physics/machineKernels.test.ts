@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
+  ccdGatePhase,
   ccdGateSvgX,
+  ccdNextPhase,
   ccdPacketGateIndex,
   ccdSchematicGateX,
   ccdWellSvgDepth,
@@ -8,6 +10,7 @@ import {
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
   mergenthalerSchematicChuteX,
+  mergenthalerSpaceband,
   otisSchematicPawl,
   otisSchematicRailY,
   renoSchematicCleat,
@@ -33,6 +36,12 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res1.wellSvgDepths[0]).toBe(ccdWellSvgDepth(res1.wells[0], res1.fullWellElectrons));
     expect(res1.gateSvgCount).toBe(9);
     expect(ccdGateSvgX(2, res1.gateSvgPitch)).toBe(100);
+    expect(res1.gateSvgH).toBe(18);
+    expect(ccdGatePhase(0)).toBe(1);
+    expect(ccdGatePhase(2)).toBe(3);
+    expect(ccdGatePhase(3)).toBe(1);
+    expect(ccdNextPhase(1)).toBe(2);
+    expect(ccdNextPhase(3)).toBe(1);
     expect(res1.schematicGateCount).toBe(6);
     expect(res1.schematicSubstrateW).toBe(280);
     expect(res1.schematicPacketD).toContain("88 180");
@@ -56,6 +65,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(machine.stitchFrequencyHz).toBe(5);
     expect(machine.clothFeedMmPerS).toBe(17.5);
     expect(machine.schematicShuttleR).toBe(32);
+    expect(machine.displayWrapDeg).toBe(360);
+    expect(machine.clothStudioWrap).toBe(2);
     expect(machine.schematicNeedleX).toBe(220);
     expect(machine.schematicBedW).toBe(260);
     expect(machine.schematicShuttleArmDx).toBe(22);
@@ -120,6 +131,9 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res.slugSvgWidth).toBeGreaterThan(250);
     expect(res.matrixCount).toBe(8);
     expect(mergenthalerMatrixSvgX(0, res.matrixSvgOriginX, res.matrixSvgPitch)).toBe(5);
+    expect(res.spacebandSvgXs).toEqual([50, 105]);
+    expect(mergenthalerSpaceband(0).points).toBe("50,4 56,4 58,46 48,46");
+    expect(mergenthalerSpaceband(1).points).toBe("105,4 111,4 113,46 103,46");
     expect(res.schematicChuteCount).toBe(3);
     expect(res.schematicMagazinePoints).toContain("120,40");
     expect(res.schematicAssemblerW).toBe(160);

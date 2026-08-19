@@ -101,21 +101,26 @@ export function FermiReactorSim() {
             {/* Graphite Blocks Lattice */}
             {Array.from({ length: kinetics.latticeRows }).map((_, r) =>
               Array.from({ length: kinetics.latticeCols }).map((_, c) => {
-                const { cx, cy } = fermiLatticeCell(
+                const cell = fermiLatticeCell(
                   r,
                   c,
                   kinetics.latticeOriginX,
                   kinetics.latticeOriginY,
                   kinetics.latticePitchX,
                   kinetics.latticePitchY,
+                  kinetics.latticeCellPadX,
+                  kinetics.latticeCellPadY,
+                  kinetics.latticeCellW,
+                  kinetics.latticeCellH,
+                  kinetics.latticeSlugR,
                 );
                 return (
                   <g key={`cell-${r}-${c}`}>
                     <rect
-                      x={cx - 15}
-                      y={cy - 14}
-                      width="30"
-                      height="28"
+                      x={cell.x}
+                      y={cell.y}
+                      width={cell.w}
+                      height={cell.h}
                       rx="3"
                       fill="rgba(255,255,255,0.05)"
                       stroke="rgba(255,255,255,0.15)"
@@ -123,9 +128,9 @@ export function FermiReactorSim() {
                     />
                     {/* Uranium Fuel Lump */}
                     <circle
-                      cx={cx}
-                      cy={cy}
-                      r="5"
+                      cx={cell.cx}
+                      cy={cell.cy}
+                      r={cell.slugR}
                       className={
                         isSupercritical
                           ? "fill-red-500 animate-pulse"

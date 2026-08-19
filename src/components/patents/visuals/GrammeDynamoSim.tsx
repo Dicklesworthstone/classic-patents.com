@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepGrammeDynamo } from "@/physics/catalogKernels";
+import { grammeCoil, grammeJunctionRod, stepGrammeDynamo } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -21,7 +21,7 @@ export function GrammeDynamoSim() {
     const loop = () => {
       // The animation is a visual cue, not a historical speed measurement.
       // Fixed per-frame steps avoid deriving state from a private wall clock.
-      setAngleDeg((prev) => (prev + gramme.displayDegPerFrame) % 360);
+      setAngleDeg((prev) => (prev + gramme.displayDegPerFrame) % gramme.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -29,7 +29,7 @@ export function GrammeDynamoSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gramme.displayDegPerFrame]);
+  }, [isPlaying, gramme.displayDegPerFrame, gramme.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -114,7 +114,7 @@ export function GrammeDynamoSim() {
           </text>
 
           {/* Toroidal Soft-Iron Ring Armature */}
-          <g transform={`translate(300, 170) rotate(${angleDeg})`}>
+          <g transform={`translate(${gramme.torusCx}, ${gramme.torusCy}) rotate(${angleDeg})`}>
             {/* Laminated Soft-Iron Torus */}
             <circle
               cx="0"
@@ -127,22 +127,27 @@ export function GrammeDynamoSim() {
 
             {/* Distributed Endless Helical Coils around Ring */}
             {Array.from({ length: printedJunctionCount }).map((_, i) => {
-              const cAngle = (i * 360) / printedJunctionCount;
-              const rad = (cAngle * Math.PI) / 180;
-              const xPos = Math.cos(rad) * gramme.torusSvgR;
-              const yPos = Math.sin(rad) * gramme.torusSvgR;
+              const coil = grammeCoil(
+                i,
+                gramme.torusSvgR,
+                gramme.junctionPitchDeg,
+                gramme.coilPadX,
+                gramme.coilPadY,
+                gramme.coilSvgW,
+                gramme.coilSvgH,
+              );
               return (
                 <rect
-                  key={`gramme-coil-${cAngle}`}
-                  x={xPos - 6}
-                  y={yPos - 16}
-                  width="12"
-                  height="32"
+                  key={`gramme-coil-${coil.deg}`}
+                  x={coil.x}
+                  y={coil.y}
+                  width={coil.w}
+                  height={coil.h}
                   rx="3"
                   fill="#D4AF37"
                   stroke="#8B5A2B"
                   strokeWidth="1"
-                  transform={`rotate(${cAngle}, ${xPos}, ${yPos})`}
+                  transform={`rotate(${coil.deg}, ${coil.cx}, ${coil.cy})`}
                 />
               );
             })}
@@ -156,34 +161,42 @@ export function GrammeDynamoSim() {
               stroke="#1A202C"
               strokeWidth="2"
             />
-            {Array.from({ length: printedJunctionCount }).map((_, i) => (
-              <line
-                key={`junction-${i * (360 / printedJunctionCount)}`}
-                x1={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionInnerSvgR}
-                y1={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionInnerSvgR}
-                x2={Math.cos((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionOuterSvgR}
-                y2={Math.sin((i * 2 * Math.PI) / printedJunctionCount) * gramme.junctionOuterSvgR}
-                stroke="#C5A059"
-                strokeWidth="2"
-              />
-            ))}
+            {Array.from({ length: printedJunctionCount }).map((_, i) => {
+              const rod = grammeJunctionRod(
+                i,
+                gramme.junctionPitchDeg,
+                gramme.junctionInnerSvgR,
+                gramme.junctionOuterSvgR,
+              );
+              return (
+                <line
+                  key={`junction-${i}`}
+                  x1={rod.x1}
+                  y1={rod.y1}
+                  x2={rod.x2}
+                  y2={rod.y2}
+                  stroke="#C5A059"
+                  strokeWidth="2"
+                />
+              );
+            })}
           </g>
 
           {/* Stationary collecting rubbers S engage the rotating junction conductors. */}
           <rect
-            x="294"
-            y="125"
-            width="12"
-            height="15"
+            x={gramme.brushSvgX}
+            y={gramme.brushSvgY0}
+            width={gramme.brushSvgW}
+            height={gramme.brushSvgH}
             fill="#1A202C"
             stroke="#2D3748"
             strokeWidth="1.5"
           />
           <rect
-            x="294"
-            y="200"
-            width="12"
-            height="15"
+            x={gramme.brushSvgX}
+            y={gramme.brushSvgY1}
+            width={gramme.brushSvgW}
+            height={gramme.brushSvgH}
             fill="#1A202C"
             stroke="#2D3748"
             strokeWidth="1.5"

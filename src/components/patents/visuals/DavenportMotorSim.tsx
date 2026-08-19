@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepDavenportMotor } from "@/physics/catalogKernels";
+import { davenportPolarityReversed, stepDavenportMotor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -30,7 +30,7 @@ export function DavenportMotorSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setRotorAngleDeg((prev) => (prev + motor.shaftOmegaDegPerS * dt) % 360);
+      setRotorAngleDeg((prev) => (prev + motor.shaftOmegaDegPerS * dt) % motor.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -38,10 +38,13 @@ export function DavenportMotorSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, actualRpm, motor.shaftOmegaDegPerS]);
+  }, [isPlaying, actualRpm, motor.shaftOmegaDegPerS, motor.displayWrapDeg]);
 
-  // Commutator polarity flip condition: every 180 degrees
-  const isPolarityReversed = rotorAngleDeg % 180 > 90;
+  const isPolarityReversed = davenportPolarityReversed(
+    rotorAngleDeg,
+    motor.commutatorPoleDeg,
+    motor.commutatorFlipDeg,
+  );
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">

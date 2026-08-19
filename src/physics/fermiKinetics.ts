@@ -71,6 +71,11 @@ export function stepFermiKinetics(
     latticeOriginY: 60,
     latticePitchX: 40,
     latticePitchY: 38,
+    latticeCellPadX: 15,
+    latticeCellPadY: 14,
+    latticeCellW: 30,
+    latticeCellH: 28,
+    latticeSlugR: 5,
     schematicSlugOriginX: 110,
     schematicSlugOriginY: 90,
     schematicSlugPitchX: 60,
@@ -115,9 +120,21 @@ export function fermiLatticeCell(
   originY = 60,
   pitchX = 40,
   pitchY = 38,
+  padX = 15,
+  padY = 14,
+  w = 30,
+  h = 28,
+  slugR = 5,
 ) {
+  const cx = originX + col * pitchX;
+  const cy = originY + row * pitchY;
   return {
-    cx: originX + col * pitchX,
-    cy: originY + row * pitchY,
+    cx,
+    cy,
+    x: cx - padX,
+    y: cy - padY,
+    w,
+    h,
+    slugR,
   };
 }

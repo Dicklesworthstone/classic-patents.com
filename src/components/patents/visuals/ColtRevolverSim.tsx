@@ -2,6 +2,7 @@
 
 import { Activity, Flame, RotateCcw, Sparkles, Target, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { coltNextChamber } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -25,7 +26,8 @@ export function ColtRevolverSim() {
   const isFullCock = colt.isLocked;
   const cylinderRotationAngle = colt.indexAngleDeg;
   const isBoltLocked = colt.isLocked || cockingAngleDeg <= 2;
-  const boltRetractionY = cockingAngleDeg > 2 && !colt.isLocked ? 12 : 0;
+  const boltRetractionY =
+    cockingAngleDeg > colt.lockReleaseDeg && !colt.isLocked ? colt.boltRetractY : colt.boltHomeY;
   const hoopStressMpa = colt.hoopStressMpa.toFixed(1);
   const muzzleVelocityMps = colt.muzzleVelocityMps;
   const muzzleEnergyJoules = colt.muzzleEnergyJoules;
@@ -57,7 +59,7 @@ export function ColtRevolverSim() {
     fireTimerRef.current = window.setTimeout(() => {
       setIsFiring(false);
       setBulletFired(false);
-      setCurrentChamberIndex((prev) => (prev % 5) + 1);
+      setCurrentChamberIndex((prev) => coltNextChamber(prev, colt.chamberCount));
     }, colt.cycleDisplayMs);
   };
 

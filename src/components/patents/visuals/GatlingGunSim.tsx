@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gatlingBoltSvgX, stepGatlingGun } from "@/physics/catalogKernels";
+import { gatlingBoltSvgX, gatlingMuzzleFlash, stepGatlingGun } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -30,7 +30,9 @@ export function GatlingGunSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setClusterAngleDeg((prev) => (prev + gatling.crankOmegaDegPerS * dt) % 360);
+      setClusterAngleDeg(
+        (prev) => (prev + gatling.crankOmegaDegPerS * dt) % gatling.displayWrapDeg,
+      );
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -38,7 +40,7 @@ export function GatlingGunSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gatling.crankOmegaDegPerS]);
+  }, [isPlaying, gatling.crankOmegaDegPerS, gatling.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -121,20 +123,21 @@ export function GatlingGunSim() {
           </text>
 
           {/* Central Mainshaft & Rotating Barrel Cluster */}
-          <g transform="translate(260, 170)">
+          <g transform={`translate(${gatling.clusterCx}, ${gatling.clusterCy})`}>
             {/* 6 Barrels in Longitudinal Profile */}
             {Array.from({ length: barrelCount }).map((_, i) => {
-              const bAngle = (i * gatling.barrelSpacingDeg + clusterAngleDeg) % 360;
+              const bAngle =
+                (i * gatling.barrelSpacingDeg + clusterAngleDeg) % gatling.displayWrapDeg;
               const yPos = Math.sin((bAngle * Math.PI) / 180) * gatling.clusterRadiusPx;
-              const isFiring = Math.abs(bAngle - 180) < gatling.firingWindowDeg;
+              const isFiring = Math.abs(bAngle - gatling.firingBottomDeg) < gatling.firingWindowDeg;
               return (
                 <g key={`barrel-${bAngle}`}>
                   {/* Gun Barrel Tube */}
                   <rect
                     x="0"
-                    y={yPos - 3}
-                    width="260"
-                    height="6"
+                    y={yPos - gatling.barrelSvgHalfH}
+                    width={gatling.barrelSvgW}
+                    height={gatling.barrelSvgH}
                     fill={isFiring ? "#E53E3E" : "#4A5568"}
                     stroke="#1A202C"
                     strokeWidth="1"
@@ -142,7 +145,12 @@ export function GatlingGunSim() {
                   {/* Muzzle Flash if at firing bottom */}
                   {isFiring && (
                     <polygon
-                      points={`260,${yPos} 290,${yPos - 10} 275,${yPos} 300,${yPos + 2} 275,${yPos + 5} 290,${yPos + 10}`}
+                      points={gatlingMuzzleFlash(
+                        yPos,
+                        gatling.muzzleFlashX0,
+                        gatling.muzzleFlashTipX,
+                        gatling.muzzleFlashFlare,
+                      )}
                       fill="#ECC94B"
                       stroke="#DD6B20"
                       strokeWidth="1"
@@ -154,18 +162,18 @@ export function GatlingGunSim() {
             {/* Front & Rear Bronze Cluster Plates */}
             <line
               x1="0"
-              y1="-42"
+              y1={-gatling.clusterPlateSpan}
               x2="0"
-              y2="42"
+              y2={gatling.clusterPlateSpan}
               stroke="#D4AF37"
               strokeWidth="6"
               strokeLinecap="round"
             />
             <line
               x1="240"
-              y1="-42"
+              y1={-gatling.clusterPlateSpan}
               x2="240"
-              y2="42"
+              y2={gatling.clusterPlateSpan}
               stroke="#D4AF37"
               strokeWidth="6"
               strokeLinecap="round"
@@ -173,18 +181,19 @@ export function GatlingGunSim() {
           </g>
 
           {/* Internal Helical Cam Reciprocating Bolts */}
-          <g transform="translate(130, 170)">
+          <g transform={`translate(${gatling.boltOriginX}, ${gatling.boltOriginY})`}>
             {Array.from({ length: barrelCount }).map((_, i) => {
-              const bAngle = (i * gatling.barrelSpacingDeg + clusterAngleDeg) % 360;
+              const bAngle =
+                (i * gatling.barrelSpacingDeg + clusterAngleDeg) % gatling.displayWrapDeg;
               const yPos = Math.sin((bAngle * Math.PI) / 180) * gatling.clusterRadiusPx;
               const xPos = gatlingBoltSvgX(bAngle, gatling.boltStrokePx);
               return (
                 <g key={`bolt-${bAngle}`}>
                   <rect
                     x={xPos}
-                    y={yPos - 2.5}
-                    width="35"
-                    height="5"
+                    y={yPos - gatling.boltSvgHalfH}
+                    width={gatling.boltSvgW}
+                    height={gatling.boltSvgH}
                     rx="1.5"
                     fill="#E2E8F0"
                     stroke="#4A5568"

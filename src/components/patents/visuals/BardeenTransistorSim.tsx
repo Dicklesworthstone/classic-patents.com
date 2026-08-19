@@ -160,8 +160,14 @@ export function BardeenTransistorSim() {
                 );
                 return (
                   <g key={i}>
-                    <circle cx={cx} cy={cy} r="3" fill="#ef4444" />
-                    <text x={cx - 2} y={cy + 3} fill="#ffffff" fontSize="7" fontWeight="bold">
+                    <circle cx={cx} cy={cy} r={semi.holeSvgR} fill="#ef4444" />
+                    <text
+                      x={cx - semi.holeLabelDx}
+                      y={cy + semi.holeLabelDy}
+                      fill="#ffffff"
+                      fontSize="7"
+                      fontWeight="bold"
+                    >
                       +
                     </text>
                   </g>

@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { pistonSvgDisplacement } from "@/physics/catalogKernels";
+import { pistonSvgDisplacement, verticalConnectingRod } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -38,7 +38,7 @@ export function DieselEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + diesel.crankOmegaDegPerS * dt) % 720);
+      setCrankAngleDeg((prev) => (prev + diesel.crankOmegaDegPerS * dt) % diesel.cycleWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -46,12 +46,20 @@ export function DieselEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, diesel.crankOmegaDegPerS]);
+  }, [isPlaying, diesel.crankOmegaDegPerS, diesel.cycleWrapDeg]);
 
-  const cycleAngleDeg = crankAngleDeg % 720;
-  const isInjectingFuel = cycleAngleDeg >= 355 && cycleAngleDeg <= 390;
-  const crankRad = ((cycleAngleDeg % 360) * Math.PI) / 180;
+  const cycleAngleDeg = crankAngleDeg % diesel.cycleWrapDeg;
+  const isInjectingFuel =
+    cycleAngleDeg >= diesel.injectionStartDeg && cycleAngleDeg <= diesel.injectionEndDeg;
   const pistonDisplacement = pistonSvgDisplacement(cycleAngleDeg, diesel.pistonStrokePx);
+  const connectingRod = verticalConnectingRod(
+    cycleAngleDeg,
+    pistonDisplacement,
+    diesel.pistonStrokePx,
+    diesel.crankCx,
+    diesel.crankCy,
+    diesel.rodOriginY0,
+  );
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -120,11 +128,12 @@ export function DieselEngineSim() {
             x="235"
             y="65"
             width="130"
-            height={20 + pistonDisplacement}
+            height={diesel.gasChargeH0 + pistonDisplacement}
             fill={
               isInjectingFuel
                 ? "#E53E3E"
-                : cycleAngleDeg > 270 && cycleAngleDeg < 450
+                : cycleAngleDeg > diesel.compressionGlowStartDeg &&
+                    cycleAngleDeg < diesel.compressionGlowEndDeg
                   ? "#DD6B20"
                   : "#4299E1"
             }
@@ -162,7 +171,9 @@ export function DieselEngineSim() {
           </g>
 
           {/* Trunk Piston Head with Pressure Rings */}
-          <g transform={`translate(235, ${75 + pistonDisplacement})`}>
+          <g
+            transform={`translate(${diesel.pistonSvgX}, ${diesel.pistonSvgY0 + pistonDisplacement})`}
+          >
             <rect
               x="0"
               y="0"
@@ -181,24 +192,31 @@ export function DieselEngineSim() {
           </g>
 
           {/* Massive Flywheel & Crankshaft */}
-          <g transform="translate(300, 260)">
-            <circle cx="0" cy="0" r="65" fill="none" stroke="#2D3748" strokeWidth="14" />
-            <circle cx="0" cy="0" r="14" fill="#111" />
+          <g transform={`translate(${diesel.crankCx}, ${diesel.crankCy})`}>
+            <circle
+              cx="0"
+              cy="0"
+              r={diesel.flywheelRimR}
+              fill="none"
+              stroke="#2D3748"
+              strokeWidth="14"
+            />
+            <circle cx="0" cy="0" r={diesel.flywheelHubR} fill="#111" />
             {/* Crank Pin */}
             <circle
-              cx={Math.cos(crankRad) * diesel.pistonStrokePx}
-              cy={Math.sin(crankRad) * diesel.pistonStrokePx}
-              r="7"
+              cx={connectingRod.x2 - diesel.crankCx}
+              cy={connectingRod.y2 - diesel.crankCy}
+              r={diesel.crankPinR}
               fill="#D4AF37"
             />
           </g>
 
           {/* Connecting Rod */}
           <line
-            x1={300}
-            y1={103 + pistonDisplacement}
-            x2={300 + Math.cos(crankRad) * diesel.pistonStrokePx}
-            y2={260 + Math.sin(crankRad) * diesel.pistonStrokePx}
+            x1={connectingRod.x1}
+            y1={connectingRod.y1}
+            x2={connectingRod.x2}
+            y2={connectingRod.y2}
             stroke="#1A202C"
             strokeWidth="7"
             strokeLinecap="round"

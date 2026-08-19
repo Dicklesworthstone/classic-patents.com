@@ -27,6 +27,9 @@ export function stepCcdWells(
   gateSvgCount: number;
   gateSvgPitch: number;
   gateSvgWidth: number;
+  gateSvgH: number;
+  gateLabelDx: number;
+  gatePhaseCount: number;
   schematicGateCount: number;
   schematicGateOriginX: number;
   schematicGatePitch: number;
@@ -80,6 +83,9 @@ export function stepCcdWells(
     gateSvgCount: 9,
     gateSvgPitch: 50,
     gateSvgWidth: 45,
+    gateSvgH: 18,
+    gateLabelDx: 12,
+    gatePhaseCount: 3,
     schematicGateCount: 6,
     schematicGateOriginX: 70,
     schematicGatePitch: 45,
@@ -116,6 +122,17 @@ export function ccdGateSvgX(index: number, pitch = 50) {
   return index * pitch;
 }
 
+/** 3-phase gate clock index (1, 2, 3) on the 2D CCD face. Shared by 2D. */
+export function ccdGatePhase(index: number, phaseCount = 3): 1 | 2 | 3 {
+  const count = Math.max(1, Math.floor(phaseCount));
+  return ((((index % count) + count) % count) + 1) as 1 | 2 | 3;
+}
+
+/** Next 3-phase clock (1→2→3→1). Shared by 2D and 3D. */
+export function ccdNextPhase(phase: 1 | 2 | 3, phaseCount = 3): 1 | 2 | 3 {
+  return ccdGatePhase(phase, phaseCount);
+}
+
 /** Potential-well SVG depth from packet fill. Shared by 2D. */
 export function ccdWellSvgDepth(
   charge: number,
@@ -150,7 +167,9 @@ export function stepHoweSewingMachine(
     crankOmegaDegPerS: Number((stitchFrequencyHz * 360).toFixed(1)),
     crankDisplayTickMs: 30,
     crankDisplayTickS: 0.03,
+    displayWrapDeg: 360,
     clothStudioAdvancePerS: Number((stitchFrequencyHz * pitch * 0.1).toFixed(3)),
+    clothStudioWrap: 2,
     schematicShuttleCx: 300,
     schematicShuttleCy: 150,
     schematicShuttleR: 32,
@@ -409,6 +428,11 @@ export function stepMergenthalerLinotype(params: {
   schematicDistributorX1: number;
   schematicDistributorX2: number;
   schematicDistributorY: number;
+  spacebandSvgXs: number[];
+  spacebandSvgTopW: number;
+  spacebandSvgFlare: number;
+  spacebandSvgY0: number;
+  spacebandSvgY1: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -463,6 +487,11 @@ export function stepMergenthalerLinotype(params: {
     schematicDistributorX1: 80,
     schematicDistributorX2: 320,
     schematicDistributorY: 20,
+    spacebandSvgXs: [50, 105],
+    spacebandSvgTopW: 6,
+    spacebandSvgFlare: 2,
+    spacebandSvgY0: 4,
+    spacebandSvgY1: 46,
   };
 }
 
@@ -474,6 +503,22 @@ export function mergenthalerSchematicChuteX(index: number, originX = 140, pitchX
 /** Brass matrix seat on the 2D slug face. Shared by 2D. */
 export function mergenthalerMatrixSvgX(index: number, originX = 5, pitch = 18) {
   return originX + index * pitch;
+}
+
+/** Expanding spaceband wedge on the 2D assembler. Shared by 2D. */
+export function mergenthalerSpaceband(
+  index: number,
+  xs = [50, 105],
+  topW = 6,
+  flare = 2,
+  y0 = 4,
+  y1 = 46,
+) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  const x = xs[i];
+  return {
+    points: `${x},${y0} ${x + topW},${y0} ${x + topW + flare},${y1} ${x - flare},${y1}`,
+  };
 }
 
 export function stepRenoEscalator(params: {

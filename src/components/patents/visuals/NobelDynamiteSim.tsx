@@ -112,10 +112,10 @@ export function NobelDynamiteSim() {
               );
               return (
                 <circle
-                  key={`kieselguhr-${i * 15}`}
+                  key={`kieselguhr-${i}`}
                   cx={grain.cx}
                   cy={grain.cy}
-                  r="6"
+                  r={nobel.kieselguhrR}
                   fill="#EDF2F7"
                   stroke="#A0AEC0"
                 />

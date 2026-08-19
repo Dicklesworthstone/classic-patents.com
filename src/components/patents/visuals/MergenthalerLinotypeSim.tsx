@@ -2,7 +2,11 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-import { mergenthalerMatrixSvgX, stepMergenthalerLinotype } from "@/physics/machineKernels";
+import {
+  mergenthalerMatrixSvgX,
+  mergenthalerSpaceband,
+  stepMergenthalerLinotype,
+} from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -116,7 +120,7 @@ export function MergenthalerLinotypeSim() {
             {/* Individual Brass Matrices */}
             {Array.from({ length: lino.matrixCount }).map((_, i) => (
               <rect
-                key={`matrix-${i * 14}`}
+                key={`matrix-${i}`}
                 x={mergenthalerMatrixSvgX(i, lino.matrixSvgOriginX, lino.matrixSvgPitch)}
                 y="4"
                 width={lino.matrixSvgWidth}
@@ -128,18 +132,24 @@ export function MergenthalerLinotypeSim() {
               />
             ))}
             {/* Wedge Spacebands Expanding Line */}
-            <polygon
-              points="50,4 56,4 58,46 48,46"
-              fill="#CBD5E0"
-              stroke="#718096"
-              strokeWidth="1"
-            />
-            <polygon
-              points="105,4 111,4 113,46 103,46"
-              fill="#CBD5E0"
-              stroke="#718096"
-              strokeWidth="1"
-            />
+            {lino.spacebandSvgXs.map((_, i) => (
+              <polygon
+                key={`spaceband-${i}`}
+                points={
+                  mergenthalerSpaceband(
+                    i,
+                    lino.spacebandSvgXs,
+                    lino.spacebandSvgTopW,
+                    lino.spacebandSvgFlare,
+                    lino.spacebandSvgY0,
+                    lino.spacebandSvgY1,
+                  ).points
+                }
+                fill="#CBD5E0"
+                stroke="#718096"
+                strokeWidth="1"
+              />
+            ))}
             <text
               x="15"
               y="-8"

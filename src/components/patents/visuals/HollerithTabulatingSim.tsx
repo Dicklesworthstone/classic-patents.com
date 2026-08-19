@@ -120,10 +120,10 @@ export function HollerithTabulatingSim() {
               );
               return (
                 <circle
-                  key={`mercury-cup-${i * 12}`}
+                  key={`mercury-cup-${i}`}
                   cx={cup.cx}
                   cy={cup.cy}
-                  r="7"
+                  r={hol.cupSvgR}
                   fill="#CBD5E0"
                   stroke="#718096"
                   strokeWidth="1.5"

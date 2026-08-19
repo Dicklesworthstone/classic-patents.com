@@ -2,7 +2,7 @@
 
 import { Shield, ShieldAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { kevlarChainBond, stepKevlarContinuum } from "@/physics/catalogKernels";
+import { kevlarChainBond, kevlarChainPath, stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function KwolekKevlarSim() {
@@ -81,15 +81,23 @@ export function KwolekKevlarSim() {
 
           <svg viewBox="0 0 380 200" className="w-full max-w-md h-auto select-none">
             {/* Molecular polymer chains */}
-            {[-60, -30, 0, 30, 60].map((offsetY, idx) => {
-              const waviness = kevlar.chainWaviness;
-              const yBase = 100 + offsetY;
-              const xEnd = kevlar.chainEndX;
+            {kevlar.chainOffsetYs.map((offsetY, idx) => {
+              const chain = kevlarChainPath(
+                idx,
+                kevlar.chainWaviness,
+                kevlar.chainEndX,
+                kevlar.chainOffsetYs,
+                kevlar.chainMidY,
+                kevlar.chainPathX0,
+                kevlar.chainQuadX,
+                kevlar.chainMidX,
+              );
+              const yBase = chain.yBase;
               return (
-                <g key={idx}>
+                <g key={offsetY}>
                   {/* PPTA Polymer Backbone — tension lengthens and straightens the chain */}
                   <path
-                    d={`M 30,${yBase} Q 100,${yBase + (idx % 2 === 0 ? waviness : -waviness)} 200,${yBase} T ${xEnd},${yBase}`}
+                    d={chain.d}
                     fill="none"
                     stroke="#f59e0b"
                     strokeWidth="3.5"

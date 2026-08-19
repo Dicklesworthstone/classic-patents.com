@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { sliderStrokeSvg, stepCorlissEngine } from "@/physics/catalogKernels";
+import { corlissConnectingRod, sliderStrokeSvg, stepCorlissEngine } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -35,7 +35,7 @@ export function CorlissEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + corliss.crankOmegaDegPerS * dt) % 360);
+      setCrankAngleDeg((prev) => (prev + corliss.crankOmegaDegPerS * dt) % corliss.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -43,12 +43,23 @@ export function CorlissEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, corliss.crankOmegaDegPerS]);
+  }, [isPlaying, corliss.crankOmegaDegPerS, corliss.displayWrapDeg]);
 
   // Kinematic calculations for piston & wrist-plate
   const pistonStroke = sliderStrokeSvg(crankAngleDeg, corliss.pistonStrokePx);
-  const wristPlateAngle = sliderStrokeSvg(crankAngleDeg + 90, corliss.wristPlateAmpPx);
-  const isIntakeOpen = crankAngleDeg % 180 < corliss.intakeOpenWindowDeg;
+  const wristPlateAngle = sliderStrokeSvg(
+    crankAngleDeg + corliss.wristLeadDeg,
+    corliss.wristPlateAmpPx,
+  );
+  const connectingRod = corlissConnectingRod(
+    crankAngleDeg,
+    pistonStroke,
+    corliss.pistonStrokePx,
+    corliss.crankCx,
+    corliss.crankCy,
+    corliss.rodOriginX,
+  );
+  const isIntakeOpen = crankAngleDeg % corliss.intakeCycleDeg < corliss.intakeOpenWindowDeg;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -161,7 +172,7 @@ export function CorlissEngineSim() {
           </g>
 
           {/* Reciprocating Steam Piston & Rod */}
-          <g transform={`translate(${170 + pistonStroke}, 170)`}>
+          <g transform={`translate(${corliss.pistonSvgX + pistonStroke}, ${corliss.pistonSvgY})`}>
             <rect
               x="-18"
               y="-55"
@@ -184,7 +195,9 @@ export function CorlissEngineSim() {
           </g>
 
           {/* Central Oscillating Wrist-Plate (Corliss Valve Hub) */}
-          <g transform={`translate(170, 170) rotate(${wristPlateAngle})`}>
+          <g
+            transform={`translate(${corliss.wristPlateCx}, ${corliss.wristPlateCy}) rotate(${wristPlateAngle})`}
+          >
             <circle cx="0" cy="0" r="32" fill="#C5A059" stroke="#5C4033" strokeWidth="2" />
             <circle cx="0" cy="0" r="8" fill="#222" />
             {/* 4 Connecting Valve Linkage Pins */}
@@ -211,12 +224,19 @@ export function CorlissEngineSim() {
           <line x1="188" y1="188" x2="255" y2="240" stroke="#8B5A2B" strokeWidth="2.5" />
 
           {/* Connecting Rod & Giant Flywheel */}
-          <g transform="translate(480, 170)">
-            <circle cx="0" cy="0" r="95" fill="none" stroke="#4A5568" strokeWidth="16" />
-            <circle cx="0" cy="0" r="14" fill="#222" />
+          <g transform={`translate(${corliss.crankCx}, ${corliss.crankCy})`}>
+            <circle
+              cx="0"
+              cy="0"
+              r={corliss.flywheelRimR}
+              fill="none"
+              stroke="#4A5568"
+              strokeWidth="16"
+            />
+            <circle cx="0" cy="0" r={corliss.flywheelHubR} fill="#222" />
             {/* Flywheel Spokes */}
             {Array.from({ length: corliss.spokeCount }).map((_, i) => {
-              const spkAngle = (i * corliss.spokePitchDeg + crankAngleDeg) % 360;
+              const spkAngle = (i * corliss.spokePitchDeg + crankAngleDeg) % corliss.displayWrapDeg;
               return (
                 <line
                   key={`spoke-${spkAngle}`}
@@ -231,19 +251,19 @@ export function CorlissEngineSim() {
             })}
             {/* Crank Pin */}
             <circle
-              cx={Math.cos((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
-              cy={Math.sin((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
-              r="7"
+              cx={connectingRod.x2 - corliss.crankCx}
+              cy={connectingRod.y2 - corliss.crankCy}
+              r={corliss.crankPinR}
               fill="#D4AF37"
             />
           </g>
 
           {/* Main Connecting Rod */}
           <line
-            x1={358 + pistonStroke}
-            y1="170"
-            x2={480 + Math.cos((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
-            y2={170 + Math.sin((crankAngleDeg * Math.PI) / 180) * corliss.pistonStrokePx}
+            x1={connectingRod.x1}
+            y1={connectingRod.y1}
+            x2={connectingRod.x2}
+            y2={connectingRod.y2}
             stroke="#2D3748"
             strokeWidth="6"
             strokeLinecap="round"

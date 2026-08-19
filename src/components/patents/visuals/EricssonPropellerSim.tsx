@@ -26,7 +26,7 @@ export function EricssonPropellerSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setAngleDeg((prev) => (prev + screw.shaftOmegaDegPerS * dt) % 360);
+      setAngleDeg((prev) => (prev + screw.shaftOmegaDegPerS * dt) % screw.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -34,7 +34,7 @@ export function EricssonPropellerSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, screw.shaftOmegaDegPerS]);
+  }, [isPlaying, screw.shaftOmegaDegPerS, screw.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -150,7 +150,7 @@ export function EricssonPropellerSim() {
             />
             {/* Helical Blades */}
             {Array.from({ length: screw.bladeCount }).map((_, i) => {
-              const bladeAngle = (i * screw.bladePitchDeg + angleDeg) % 360;
+              const bladeAngle = (i * screw.bladePitchDeg + angleDeg) % screw.displayWrapDeg;
               const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * screw.forwardBladeSvgRy;
               const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * screw.bladeSvgRx;
               return (
@@ -182,7 +182,7 @@ export function EricssonPropellerSim() {
             />
             {/* Helical Blades Counter-Rotating */}
             {Array.from({ length: screw.bladeCount }).map((_, i) => {
-              const bladeAngle = (i * screw.bladePitchDeg - angleDeg) % 360;
+              const bladeAngle = (i * screw.bladePitchDeg - angleDeg) % screw.displayWrapDeg;
               const yOffset = Math.sin((bladeAngle * Math.PI) / 180) * screw.aftBladeSvgRy;
               const xOffset = Math.cos((bladeAngle * Math.PI) / 180) * screw.bladeSvgRx;
               return (

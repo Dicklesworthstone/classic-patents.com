@@ -2,7 +2,7 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { parsonsStageHeight } from "@/physics/catalogKernels";
+import { parsonsIsRotor, parsonsStageHeight } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -33,7 +33,7 @@ export function ParsonsTurbineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setAngleDeg((prev) => (prev + parsons.displayOmegaDegPerS * dt) % 360);
+      setAngleDeg((prev) => (prev + parsons.displayOmegaDegPerS * dt) % parsons.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,7 +41,7 @@ export function ParsonsTurbineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, parsons.displayOmegaDegPerS]);
+  }, [isPlaying, parsons.displayOmegaDegPerS, parsons.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -172,7 +172,7 @@ export function ParsonsTurbineSim() {
           {/* Alternating Fixed Stator Blades & Moving Rotor Blade Rings */}
           {Array.from({ length: parsons.stageRingSvgCount }).map((_, i) => {
             const xPos = parsons.stageSvgOriginX + i * parsons.stageSvgPitch;
-            const isRotor = i % 2 === 1;
+            const isRotor = parsonsIsRotor(i, parsons.rotorStageParity);
             const height = parsonsStageHeight(
               xPos,
               parsons.stageSplitX0,

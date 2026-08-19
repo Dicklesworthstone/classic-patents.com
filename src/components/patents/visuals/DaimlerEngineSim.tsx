@@ -2,7 +2,11 @@
 
 import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { pistonSvgDisplacement, stepDaimlerEngine } from "@/physics/catalogKernels";
+import {
+  pistonSvgDisplacement,
+  stepDaimlerEngine,
+  verticalConnectingRod,
+} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -33,7 +37,7 @@ export function DaimlerEngineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setCrankAngleDeg((prev) => (prev + daimler.crankOmegaDegPerS * dt) % 720);
+      setCrankAngleDeg((prev) => (prev + daimler.crankOmegaDegPerS * dt) % daimler.cycleWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -41,10 +45,17 @@ export function DaimlerEngineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, daimler.crankOmegaDegPerS]);
+  }, [isPlaying, daimler.crankOmegaDegPerS, daimler.cycleWrapDeg]);
 
-  const crankRad = ((crankAngleDeg % 360) * Math.PI) / 180;
   const pistonDisplacement = pistonSvgDisplacement(crankAngleDeg, daimler.pistonStrokePx);
+  const connectingRod = verticalConnectingRod(
+    crankAngleDeg,
+    pistonDisplacement,
+    daimler.pistonStrokePx,
+    daimler.crankCx,
+    daimler.crankCy,
+    daimler.rodOriginY0,
+  );
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -130,7 +141,9 @@ export function DaimlerEngineSim() {
           </g>
 
           {/* Reciprocating Piston Head */}
-          <g transform={`translate(245, ${70 + pistonDisplacement})`}>
+          <g
+            transform={`translate(${daimler.pistonSvgX}, ${daimler.pistonSvgY0 + pistonDisplacement})`}
+          >
             <rect
               x="0"
               y="0"
@@ -156,24 +169,31 @@ export function DaimlerEngineSim() {
           />
 
           {/* Internal Twin Flywheels on Crankshaft */}
-          <g transform="translate(300, 250)">
-            <circle cx="0" cy="0" r="55" fill="#4A5568" stroke="#1A202C" strokeWidth="2" />
-            <circle cx="0" cy="0" r="12" fill="#111" />
+          <g transform={`translate(${daimler.crankCx}, ${daimler.crankCy})`}>
+            <circle
+              cx="0"
+              cy="0"
+              r={daimler.flywheelRimR}
+              fill="#4A5568"
+              stroke="#1A202C"
+              strokeWidth="2"
+            />
+            <circle cx="0" cy="0" r={daimler.flywheelHubR} fill="#111" />
             {/* Crank Pin */}
             <circle
-              cx={Math.cos(crankRad) * daimler.pistonStrokePx}
-              cy={Math.sin(crankRad) * daimler.pistonStrokePx}
-              r="6"
+              cx={connectingRod.x2 - daimler.crankCx}
+              cy={connectingRod.y2 - daimler.crankCy}
+              r={daimler.crankPinR}
               fill="#D4AF37"
             />
           </g>
 
           {/* Connecting Rod */}
           <line
-            x1={300}
-            y1={92 + pistonDisplacement}
-            x2={300 + Math.cos(crankRad) * daimler.pistonStrokePx}
-            y2={250 + Math.sin(crankRad) * daimler.pistonStrokePx}
+            x1={connectingRod.x1}
+            y1={connectingRod.y1}
+            x2={connectingRod.x2}
+            y2={connectingRod.y2}
             stroke="#1A202C"
             strokeWidth="6"
             strokeLinecap="round"

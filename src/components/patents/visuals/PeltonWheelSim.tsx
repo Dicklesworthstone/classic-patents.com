@@ -30,7 +30,7 @@ export function PeltonWheelSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setWheelAngleDeg((prev) => (prev + pelton.runnerOmegaDegPerS * dt) % 360);
+      setWheelAngleDeg((prev) => (prev + pelton.runnerOmegaDegPerS * dt) % pelton.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -38,7 +38,7 @@ export function PeltonWheelSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, pelton.runnerOmegaDegPerS]);
+  }, [isPlaying, pelton.runnerOmegaDegPerS, pelton.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -140,7 +140,7 @@ export function PeltonWheelSim() {
 
             {/* Perimeter Split Buckets */}
             {Array.from({ length: pelton.bucketCount }).map((_, i) => {
-              const bAngle = (i * 360) / pelton.bucketCount;
+              const bAngle = i * pelton.bucketPitchDeg;
               return (
                 <g
                   key={`pelton-bucket-${bAngle}`}

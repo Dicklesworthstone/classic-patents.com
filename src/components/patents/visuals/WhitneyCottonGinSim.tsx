@@ -31,7 +31,7 @@ export function WhitneyCottonGinSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setAngle((prev) => (prev + gin.crankOmegaDegPerS * dt) % 360);
+      setAngle((prev) => (prev + gin.crankOmegaDegPerS * dt) % gin.displayWrapDeg);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -39,7 +39,7 @@ export function WhitneyCottonGinSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gin.crankOmegaDegPerS]);
+  }, [isPlaying, gin.crankOmegaDegPerS, gin.displayWrapDeg]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -156,7 +156,7 @@ export function WhitneyCottonGinSim() {
             <circle cx="0" cy="0" r={gin.sawSvgR} fill="#2A2A2A" stroke="#C5A059" strokeWidth="3" />
             {/* Saw teeth */}
             {Array.from({ length: gin.sawToothCount }).map((_, i) => {
-              const toothAngle = (i * 360) / gin.sawToothCount;
+              const toothAngle = i * gin.sawToothPitchDeg;
               return (
                 <path
                   key={`saw-tooth-${toothAngle}`}
@@ -181,7 +181,7 @@ export function WhitneyCottonGinSim() {
             />
             {/* Bristles */}
             {Array.from({ length: gin.bristleCount }).map((_, i) => {
-              const bristleAngle = (i * 360) / gin.bristleCount;
+              const bristleAngle = i * gin.bristlePitchDeg;
               return (
                 <line
                   key={`bristle-${bristleAngle}`}

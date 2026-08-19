@@ -90,6 +90,7 @@ export interface TeslaFig9State {
   fieldDisplayOmegaRadPerS: number;
   fieldDisplayOmegaDegPerS: number;
   fieldDisplayTickS: number;
+  displayWrapDeg: number;
   bVectorSvgScale: number;
   schematicFieldIntensity: number;
   schematicFillOpacity: number;
@@ -132,6 +133,7 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     fieldDisplayOmegaRadPerS: teslaFieldDisplayOmegaRadPerS(boundedHz),
     fieldDisplayOmegaDegPerS: teslaFieldDisplayOmegaDegPerS(boundedHz),
     fieldDisplayTickS: TESLA_FIELD_DISPLAY_TICK_S,
+    displayWrapDeg: 360,
     bVectorSvgScale: TESLA_B_VECTOR_SVG_SCALE,
     schematicFieldIntensity: Number(Math.min(1, Math.max(0.3, boundedHz / 60)).toFixed(3)),
     schematicFillOpacity: Number((0.1 * Math.min(1, Math.max(0.3, boundedHz / 60))).toFixed(4)),

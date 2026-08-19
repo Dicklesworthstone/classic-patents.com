@@ -17,6 +17,65 @@ export function voltsToKv(volts: number) {
   return Number((Math.max(0, volts) / 1000).toFixed(3));
 }
 
+export function degToRad(deg: number) {
+  return (deg * Math.PI) / 180;
+}
+
+/** Wrap a crank or cam angle onto one cycle. Shared by 2D and 3D. */
+export function wrapCycleRad(angleRad: number, wrapRad = Math.PI * 4) {
+  const wrap = wrapRad === 0 ? Math.PI * 4 : wrapRad;
+  return ((angleRad % wrap) + wrap) % wrap;
+}
+
+/** 0-based four-stroke index on a wrapped cycle. Shared by 3D. */
+export function fourStrokeIndexFromRad(
+  cyclePhaseRad: number,
+  strokeRad = Math.PI,
+  strokeCount = 4,
+) {
+  return Math.floor(wrapCycleRad(cyclePhaseRad, strokeRad * strokeCount) / strokeRad) % strokeCount;
+}
+
+/** 720° crank cycle, 2:1 cam, and 0-based stroke. Shared by Otto / Daimler / Diesel 3D. */
+export function fourStrokeCycle(
+  crankAngleRad: number,
+  cycleWrapRad = Math.PI * 4,
+  strokeRad = Math.PI,
+  camRatio = 0.5,
+) {
+  const cyclePhaseRad = wrapCycleRad(crankAngleRad, cycleWrapRad);
+  return {
+    cyclePhaseRad,
+    strokeIndex: fourStrokeIndexFromRad(cyclePhaseRad, strokeRad),
+    strokeRad,
+    powerStartRad: strokeRad * 2,
+    exhaustStartRad: strokeRad * 3,
+    camAngleRad: crankAngleRad * camRatio,
+    camEventAngleRad: wrapCycleRad(crankAngleRad * camRatio, cycleWrapRad * camRatio),
+  };
+}
+
+/** Diesel 2:1 cam windows from the 720° crank seats. Shared by 3D. */
+export function dieselCamWindows(
+  injectionStartDeg = 355,
+  injectionEndDeg = 390,
+  cycleWrapDeg = 720,
+  camRatio = 0.5,
+) {
+  return {
+    camRatio,
+    camWrapRad: degToRad(cycleWrapDeg * camRatio),
+    intakeCamEndRad: degToRad(180 * camRatio),
+    compressionCamEndRad: degToRad(360 * camRatio),
+    injectionCamStartRad: degToRad(injectionStartDeg * camRatio),
+    injectionCamEndRad: degToRad(injectionEndDeg * camRatio),
+    exhaustCamStartRad: degToRad(540 * camRatio),
+    intakeLiftAmp: 0.15,
+    injectionLiftAmp: 0.12,
+    exhaustLiftAmp: 0.15,
+  };
+}
+
 /** Slider-crank studio displacement: 0 at TDC, 2×strokePx at BDC. */
 export function pistonSvgDisplacement(crankAngleDeg: number, strokePx: number) {
   const crankRad = ((crankAngleDeg % 360) * Math.PI) / 180;
@@ -66,6 +125,8 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     runnerSvgR: 75,
     hubSvgR: 18,
     bucketCount: 12,
+    bucketPitchDeg: 30,
+    displayWrapDeg: 360,
     schematicRunnerCx: 200,
     schematicRunnerCy: 130,
     schematicRunnerR: 60,
@@ -106,12 +167,25 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
   return {
     shaftRate,
     printedJunctionCount,
+    junctionPitchDeg: 360 / printedJunctionCount,
     inducedEmfIndex,
     collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
     displayDegPerFrame,
     displayRadPerFrame: Number(((displayDegPerFrame * Math.PI) / 180).toFixed(6)),
     fluxOpacity: Number(Math.min(0.95, 0.25 + (inducedEmfIndex / 160) * 0.7).toFixed(3)),
     torusSvgR: 100,
+    torusCx: 300,
+    torusCy: 170,
+    displayWrapDeg: 360,
+    coilPadX: 6,
+    coilPadY: 16,
+    coilSvgW: 12,
+    coilSvgH: 32,
+    brushSvgX: 294,
+    brushSvgW: 12,
+    brushSvgH: 15,
+    brushSvgY0: 125,
+    brushSvgY1: 200,
     junctionInnerSvgR: 35,
     junctionOuterSvgR: 48,
     schematicCenterX: 200,
@@ -141,6 +215,34 @@ export function grammeSchematicBrush(index: number, x = 194, y0 = 112, y1 = 182,
   return { x, y: index === 0 ? y0 : y1, w, h };
 }
 
+/** 2D coil seat on the rotating ring. Shared by 2D. */
+export function grammeCoil(
+  index: number,
+  torusR = 100,
+  pitchDeg = 10,
+  padX = 6,
+  padY = 16,
+  w = 12,
+  h = 32,
+) {
+  const deg = index * pitchDeg;
+  const rad = (deg * Math.PI) / 180;
+  const cx = Math.cos(rad) * torusR;
+  const cy = Math.sin(rad) * torusR;
+  return { deg, cx, cy, x: cx - padX, y: cy - padY, w, h };
+}
+
+/** 2D junction-rod on the rotating ring. Shared by 2D. */
+export function grammeJunctionRod(index: number, pitchDeg = 10, innerR = 35, outerR = 48) {
+  const rad = (index * pitchDeg * Math.PI) / 180;
+  return {
+    x1: Math.cos(rad) * innerR,
+    y1: Math.sin(rad) * innerR,
+    x2: Math.cos(rad) * outerR,
+    y2: Math.sin(rad) * outerR,
+  };
+}
+
 /** Schematic junction-rod seat. Shared by the schematic. */
 export function grammeSchematicJunction(deg: number, cx = 200, cy = 150, innerR = 22, outerR = 32) {
   const rad = (deg * Math.PI) / 180;
@@ -167,7 +269,29 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     govDisplayOmegaRadPerS: Number(((rpm / 180) * 9).toFixed(3)),
     flyballRadius: Number((0.18 + Math.min(0.15, (rpm / 300) * 0.14)).toFixed(4)),
     pistonStrokePx: 35,
+    cycleWrapDeg: 720,
+    crankWrapDeg: 360,
     flywheelSvgR: 80,
+    flywheelRimR: 90,
+    flywheelHubR: 15,
+    crankPinR: 7,
+    crankCx: 460,
+    crankCy: 170,
+    rodOriginX: 167,
+    pistonSvgX: 145,
+    pistonSvgY: 170,
+    gasChargeW0: 50,
+    stroke1EndDeg: 180,
+    stroke2EndDeg: 360,
+    stroke3EndDeg: 540,
+    sparkStartDeg: 350,
+    sparkEndDeg: 370,
+    firingStartDeg: 360,
+    firingEndDeg: 450,
+    cycleWrapRad: Math.PI * 4,
+    strokeRad: Math.PI,
+    camRatio: 0.5,
+    exhaustLiftAmp: 0.12,
     spokeCount: 6,
     spokePitchDeg: 60,
     schematicFlywheelCx: 280,
@@ -190,6 +314,37 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     schematicRodX2: 280,
     schematicRodY: 130,
   };
+}
+
+/** Connecting-rod SVG endpoints on the 2D four-stroke bench. Shared by 2D. */
+export function ottoConnectingRod(
+  crankAngleDeg: number,
+  pistonDisplacement: number,
+  pistonStrokePx: number,
+  crankCx = 460,
+  crankCy = 170,
+  rodOriginX = 167,
+) {
+  const rad = (crankAngleDeg * Math.PI) / 180;
+  return {
+    x1: rodOriginX + pistonDisplacement,
+    y1: crankCy,
+    x2: crankCx + Math.cos(rad) * pistonStrokePx,
+    y2: crankCy + Math.sin(rad) * pistonStrokePx,
+  };
+}
+
+/** Four-stroke window (1 intake … 4 exhaust) on the 720° cycle. Shared by 2D. */
+export function ottoStrokePhase(
+  cycleAngleDeg: number,
+  stroke1EndDeg = 180,
+  stroke2EndDeg = 360,
+  stroke3EndDeg = 540,
+) {
+  if (cycleAngleDeg < stroke1EndDeg) return 1 as const;
+  if (cycleAngleDeg < stroke2EndDeg) return 2 as const;
+  if (cycleAngleDeg < stroke3EndDeg) return 3 as const;
+  return 4 as const;
 }
 
 export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi?: number }) {
@@ -234,6 +389,8 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     stageHeightFar: 65,
     stageSplitX0: 240,
     stageSplitX1: 380,
+    rotorStageParity: 1,
+    displayWrapDeg: 360,
     schematicStageXs: [100, 120, 140, 170, 190, 210, 230, 260, 280, 300],
     schematicRotorPoints:
       "80,120 150,120 150,110 240,110 240,95 320,95 320,185 240,185 240,170 150,170 150,160 80,160",
@@ -249,6 +406,11 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     schematicInletX2: 75,
     schematicInletY: 140,
   };
+}
+
+/** Alternating rotor ring on the 2D expansion face. Shared by 2D. */
+export function parsonsIsRotor(index: number, rotorParity = 1) {
+  return index % 2 === rotorParity;
 }
 
 /** Rotor/stator blade height on the 2D expansion face. Shared by 2D. */
@@ -303,6 +465,7 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     aftBladeSvgRy: 45,
     bladeCount: 6,
     bladePitchDeg: 60,
+    displayWrapDeg: 360,
     schematicForwardCx: 210,
     schematicForwardCy: 150,
     schematicForwardRx: 14,
@@ -346,6 +509,7 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     displaySlowdown,
     displayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown).toFixed(3)),
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
+    displayWrapDeg: 360,
     pulleyDisplayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown * 0.25).toFixed(3)),
     skimDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * 0.85).toFixed(3)),
     creamDropOriginY: 0.35,
@@ -412,6 +576,7 @@ export function stepNobelDynamite(params: {
     kieselguhrOriginX: 200,
     kieselguhrOriginY: 135,
     kieselguhrPitch: 32,
+    kieselguhrR: 6,
     schematicKieselguhrOriginX: 90,
     schematicKieselguhrOriginY: 125,
     schematicKieselguhrPitchX: 30,
@@ -489,7 +654,10 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     brushSvgR: 55,
     bristleOuterSvgR: 78,
     sawToothCount: 16,
+    sawToothPitchDeg: 22.5,
     bristleCount: 24,
+    bristlePitchDeg: 15,
+    displayWrapDeg: 360,
     schematicSawCx: 210,
     schematicSawCy: 145,
     schematicSawInnerR: 44,
@@ -552,6 +720,8 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     reelOmegaRadPerS: reel.omegaRadPerS,
     cutterOmegaRadPerS: cutter.omegaRadPerS,
     cutterOmegaDegPerS: cutter.omegaDegPerS,
+    cutterDisplayRadPerFrame: Number((cutter.omegaRadPerS / 60).toFixed(6)),
+    phaseWrapRad: Number((2 * Math.PI).toFixed(6)),
     reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),
     cutterSvgAmp: 18,
     reelArmCount: 4,
@@ -687,7 +857,15 @@ export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque
     schematicBrushY: 150,
     schematicArmatureLabelY: 120,
     schematicCommutatorLabelY: 190,
+    commutatorPoleDeg: 180,
+    commutatorFlipDeg: 90,
+    displayWrapDeg: 360,
   };
+}
+
+/** Split-ring polarity flip on the 2D armature. Shared by 2D. */
+export function davenportPolarityReversed(rotorAngleDeg: number, poleDeg = 180, flipDeg = 90) {
+  return rotorAngleDeg % poleDeg > flipDeg;
 }
 
 /** Rotating armature seat on the schematic. Shared by the schematic. */
@@ -719,7 +897,20 @@ export function stepCorlissEngine(params: {
     pistonStrokePx: 45,
     wristPlateAmpPx: 22,
     flywheelSvgR: 85,
+    flywheelRimR: 95,
+    flywheelHubR: 14,
+    crankPinR: 7,
+    crankCx: 480,
+    crankCy: 170,
+    rodOriginX: 358,
+    pistonSvgX: 170,
+    pistonSvgY: 170,
+    wristPlateCx: 170,
+    wristPlateCy: 170,
+    wristLeadDeg: 90,
     intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
+    intakeCycleDeg: 180,
+    displayWrapDeg: 360,
     spokeCount: 6,
     spokePitchDeg: 60,
     schematicValveR: 16,
@@ -738,6 +929,24 @@ export function stepCorlissEngine(params: {
     schematicLinkBotY: 170,
     schematicLinkValveTopY: 92,
     schematicLinkValveBotY: 208,
+  };
+}
+
+/** Connecting-rod SVG endpoints on the 2D Corliss bench. Shared by 2D. */
+export function corlissConnectingRod(
+  crankAngleDeg: number,
+  pistonStroke: number,
+  pistonStrokePx: number,
+  crankCx = 480,
+  crankCy = 170,
+  rodOriginX = 358,
+) {
+  const rad = (crankAngleDeg * Math.PI) / 180;
+  return {
+    x1: rodOriginX + pistonStroke,
+    y1: crankCy,
+    x2: crankCx + Math.cos(rad) * pistonStrokePx,
+    y2: crankCy + Math.sin(rad) * pistonStrokePx,
   };
 }
 
@@ -772,6 +981,22 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     fireIntervalS: Number((cycleTimeMs / 1000).toFixed(4)),
     muzzleFlashDecayPerS: 8,
     clusterRadiusPx: 32,
+    firingBottomDeg: 180,
+    barrelSvgW: 260,
+    barrelSvgH: 6,
+    barrelSvgHalfH: 3,
+    boltSvgW: 35,
+    boltSvgH: 5,
+    boltSvgHalfH: 2.5,
+    clusterPlateSpan: 42,
+    clusterCx: 260,
+    clusterCy: 170,
+    boltOriginX: 130,
+    boltOriginY: 170,
+    muzzleFlashX0: 260,
+    muzzleFlashTipX: 300,
+    muzzleFlashFlare: 10,
+    displayWrapDeg: 360,
     boltStrokePx: 90,
     crankPinRadiusPx: 28,
     schematicBarrelAmpY: 28,
@@ -804,6 +1029,11 @@ export function gatlingBoltStudioX(barrelAngleRad: number, homeX = -0.6, stroke 
 
 export function gatlingBoltSvgX(angleDeg: number, strokePx = 90) {
   return ((1 - Math.cos((angleDeg * Math.PI) / 180)) / 2) * strokePx;
+}
+
+/** Muzzle-flash polygon at the firing barrel. Shared by 2D. */
+export function gatlingMuzzleFlash(yPos: number, x0 = 260, tipX = 300, flare = 10) {
+  return `${x0},${yPos} ${x0 + 30},${yPos - flare} ${x0 + 15},${yPos} ${tipX},${yPos + 2} ${x0 + 15},${yPos + 5} ${x0 + 30},${yPos + flare}`;
 }
 
 export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPressureMpa?: number }) {
@@ -948,6 +1178,12 @@ export function stepPasteurFermentation(params: {
     microbeSvgPitchY: 28,
     microbeCols: 5,
     microbeCount: 14,
+    yeastSvgR: 5,
+    rodDx: 10,
+    rodDy: 3,
+    rodSvgW: 10,
+    rodSvgH: 4,
+    timerWrapS: 60,
     schematicBubbleOriginX: 145,
     schematicBubblePitchX: 25,
     schematicBubbleCount: 5,
@@ -1095,6 +1331,10 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     foilGrooveCount: 16,
     foilGrooveOriginX: 15,
     foilGroovePitchX: 11,
+    cylinderSvgX: 160,
+    cylinderSvgY: 130,
+    cylinderSvgW: 200,
+    cylinderSvgH: 80,
   };
 }
 
@@ -1279,6 +1519,21 @@ export function stepDaimlerEngine(params: {
       (tubeTemp >= 800 ? 2.8 : Math.max(0.15, (tubeTemp / 800) * 2.2)).toFixed(3),
     ),
     pistonStrokePx: 30,
+    cycleWrapDeg: 720,
+    crankWrapDeg: 360,
+    cycleWrapRad: Math.PI * 4,
+    strokeRad: Math.PI,
+    intakeLiftAmp: 0.08,
+    exhaustLiftAmp: 0.12,
+    powerFlashWindowRad: Math.PI * 0.4,
+    crankCx: 300,
+    crankCy: 250,
+    rodOriginY0: 92,
+    pistonSvgX: 245,
+    pistonSvgY0: 70,
+    flywheelRimR: 55,
+    flywheelHubR: 12,
+    crankPinR: 6,
     schematicFlywheelCx: 200,
     schematicFlywheelCy: 220,
     schematicFlywheelR: 50,
@@ -1298,6 +1553,24 @@ export function stepDaimlerEngine(params: {
     schematicRodX: 200,
     schematicRodY0: 115,
     schematicRodY1: 210,
+  };
+}
+
+/** Vertical connecting-rod SVG endpoints. Shared by Diesel and Daimler 2D. */
+export function verticalConnectingRod(
+  crankAngleDeg: number,
+  pistonDisplacement: number,
+  pistonStrokePx: number,
+  crankCx: number,
+  crankCy: number,
+  rodOriginY0: number,
+) {
+  const rad = ((crankAngleDeg % 360) * Math.PI) / 180;
+  return {
+    x1: crankCx,
+    y1: rodOriginY0 + pistonDisplacement,
+    x2: crankCx + Math.cos(rad) * pistonStrokePx,
+    y2: crankCy + Math.sin(rad) * pistonStrokePx,
   };
 }
 
@@ -1337,6 +1610,7 @@ export function stepHollerithTabulating(params: {
     cupSvgPitchX: 25,
     cupSvgPitchY: 30,
     cupCols: 8,
+    cupSvgR: 7,
     schematicPinOriginX: 80,
     schematicPinPitchX: 30,
     schematicPinCount: 9,
@@ -1799,6 +2073,7 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     schematicBusCpuMux: { x1: 130, y1: 90, x2: 170, y2: 90 },
     schematicBusVideoMux: { x1: 130, y1: 180, x2: 170, y2: 105 },
     schematicBusMuxRam: { x1: 230, y1: 90, x2: 270, y2: 90 },
+    rasterLineWrap: 192,
   };
 }
 
@@ -1976,6 +2251,11 @@ export function stepKevlarContinuum(
     schematicBondY1: 200,
     chainBondXs: [80, 140, 200, 260, 320],
     chainBondH: 30,
+    chainOffsetYs: [-60, -30, 0, 30, 60],
+    chainMidY: 100,
+    chainPathX0: 30,
+    chainQuadX: 100,
+    chainMidX: 200,
   };
 }
 
@@ -2004,6 +2284,26 @@ export function kevlarSchematicBond(index: number, xs = [120, 200, 280]) {
 export function kevlarChainBond(index: number, xs = [80, 140, 200, 260, 320]) {
   const i = ((index % xs.length) + xs.length) % xs.length;
   return { x: xs[i] };
+}
+
+/** PPTA backbone path on the 2D face. Shared by 2D. */
+export function kevlarChainPath(
+  index: number,
+  waviness: number,
+  xEnd: number,
+  offsets = [-60, -30, 0, 30, 60],
+  midY = 100,
+  x0 = 30,
+  quadX = 100,
+  midX = 200,
+) {
+  const i = ((index % offsets.length) + offsets.length) % offsets.length;
+  const yBase = midY + offsets[i];
+  const wave = i % 2 === 0 ? waviness : -waviness;
+  return {
+    yBase,
+    d: `M ${x0},${yBase} Q ${quadX},${yBase + wave} ${midX},${yBase} T ${xEnd},${yBase}`,
+  };
 }
 
 export function stepBardeenTransistor(
@@ -2036,6 +2336,9 @@ export function stepBardeenTransistor(
     holeStreamHubX: 130,
     holeStreamArcAmpPx: 10,
     holeStreamBaseY: 4,
+    holeSvgR: 3,
+    holeLabelDx: 2,
+    holeLabelDy: 3,
     schematicDieX: 110,
     schematicDieY: 150,
     schematicDieW: 180,
@@ -2111,6 +2414,7 @@ export function stepMarconiRadio(
     waveOpacityBase: Number((0.35 + (peakRfPowerKw / 80) * 0.5).toFixed(3)),
     wavePhaseRate: Number((Math.max(0.2, resonantFreqMhz) / 0.85).toFixed(3)),
     waveAdvancePx: Number(((Math.max(0.2, resonantFreqMhz) / 0.85) * 4).toFixed(3)),
+    waveRingWrapPx: 120,
     mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
     toneEnergy: Number(Math.min(1, peakRfPowerKw / 80).toFixed(3)),
     schematicGapX0: 230,
@@ -2155,6 +2459,10 @@ export function stepColtRevolver(params: {
     muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
     powderGrains: Math.round((pMpa - 40) / 1.5 + 15),
     cycleDisplayMs: 800,
+    chamberCount: 5,
+    boltRetractY: 12,
+    boltHomeY: 0,
+    lockReleaseDeg: 2,
     recoilKick: Number((0.05 + (muzzleVelocityMps / 400) * 0.1).toFixed(4)),
     recoilKickX: Number(((0.05 + (muzzleVelocityMps / 400) * 0.1) * 0.8).toFixed(4)),
     schematicArborX1: 80,
@@ -2204,6 +2512,13 @@ export function stepColtRevolver(params: {
     schematicTriggerCockH: 20,
     schematicTriggerRestH: 8,
   };
+}
+
+/** 1-based cylinder index after one ratchet step. Shared by 2D. */
+export function coltNextChamber(prev: number, chamberCount = 5) {
+  const count = Math.max(1, Math.floor(chamberCount));
+  const current = Math.max(1, Math.floor(prev));
+  return (current % count) + 1;
 }
 
 /** Folding-trigger seat on the schematic. Shared by the schematic. */

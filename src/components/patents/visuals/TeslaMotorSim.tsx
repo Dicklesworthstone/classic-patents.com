@@ -28,10 +28,10 @@ export function TeslaMotorSim() {
   useEffect(() => {
     const degPerTick = apparatus.fieldDisplayOmegaDegPerS * apparatus.fieldDisplayTickS;
     const interval = setInterval(() => {
-      setAngle((prev) => (prev + degPerTick) % 360);
+      setAngle((prev) => (prev + degPerTick) % apparatus.displayWrapDeg);
     }, TESLA_FIELD_DISPLAY_TICK_MS);
     return () => clearInterval(interval);
-  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.fieldDisplayTickS]);
+  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.fieldDisplayTickS, apparatus.displayWrapDeg]);
 
   // Audio AC Hum feedback
   useEffect(() => {

@@ -33,6 +33,7 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
+  dieselCamWindows,
   stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
@@ -442,7 +443,12 @@ export const FrankenSimEngine = {
     return (coilCurrentA ?? 0.42) * (120 / 0.42);
   },
 
-  stepFarnsworthTv(anodeKv: number, magneticDeflectionGauss: number, incidentLux: number = 500) {
+  stepFarnsworthTv(
+    anodeKv: number,
+    magneticDeflectionGauss: number,
+    incidentLux: number = 500,
+    scanLines: number = 60,
+  ) {
     const electronMassKg = 9.1093837e-31;
     const electronChargeC = 1.60217663e-19;
     const speedOfLightMps = 299792458;
@@ -466,6 +472,8 @@ export const FrankenSimEngine = {
       gyroRadiusMm: Number(gyroRadiusMm.toFixed(1)),
       photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
       rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
+      rasterLinePct: 100 / Math.max(1, scanLines),
+      rasterLineWrapPct: 100,
       electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
       electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
       relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
@@ -655,6 +663,7 @@ export const FrankenSimEngine = {
       processingGainDb,
       antiJammingMarginDb,
       hopIntervalMs: Math.round(1000 / Math.max(1, hopRateHopsPerSec)),
+      hopSoundStride: 3,
       jamOccupancyPct: Number((100 / Math.max(1, channelsCount)).toFixed(2)),
       bandMinMhz: LAMARR_BAND_MIN_MHZ,
       bandMaxMhz: LAMARR_BAND_MAX_MHZ,
@@ -700,6 +709,10 @@ export const FrankenSimEngine = {
       recoilKick: cat.recoilKick,
       recoilKickX: cat.recoilKickX,
       schematicBoltRetractY: cat.schematicBoltRetractY,
+      chamberCount: cat.chamberCount,
+      boltRetractY: cat.boltRetractY,
+      boltHomeY: cat.boltHomeY,
+      lockReleaseDeg: cat.lockReleaseDeg,
     };
   },
 
@@ -759,6 +772,7 @@ export const FrankenSimEngine = {
       approachSpeedMps,
       decelerationMps2,
       decelerationMphPerS: Number((decelerationMps2 / 0.44704).toFixed(2)),
+      accelMphPerS: 10,
       stoppingTimeS,
       wheelRadiusM,
       clampRatio,
@@ -767,6 +781,7 @@ export const FrankenSimEngine = {
         ((approachSpeedMps / wheelRadiusM) * (1 - clampRatio * 0.95)).toFixed(3),
       ),
       wheelDisplayDegPerMph: 8,
+      displayWrapDeg: 360,
       flywheelSvgR: 54,
       wheelRimSvgR: 68,
       wheelHubSvgR: 16,
@@ -941,6 +956,22 @@ export const FrankenSimEngine = {
       governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),
       pressureNeedleRadPerBar: Number(((Math.PI * 1.4) / 80).toFixed(5)),
       pistonStrokePx: 35,
+      cycleWrapDeg: 720,
+      crankWrapDeg: 360,
+      injectionStartDeg: 355,
+      injectionEndDeg: 390,
+      ...dieselCamWindows(355, 390, 720, 0.5),
+      compressionGlowStartDeg: 270,
+      compressionGlowEndDeg: 450,
+      crankCx: 300,
+      crankCy: 260,
+      rodOriginY0: 103,
+      pistonSvgX: 235,
+      pistonSvgY0: 75,
+      gasChargeH0: 20,
+      flywheelRimR: 65,
+      flywheelHubR: 14,
+      crankPinR: 7,
       schematicFlywheelCx: 200,
       schematicFlywheelCy: 240,
       schematicFlywheelR: 40,

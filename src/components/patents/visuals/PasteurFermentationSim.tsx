@@ -35,7 +35,7 @@ export function PasteurFermentationSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setTimerSeconds((prev) => (prev + dt) % 60);
+      setTimerSeconds((prev) => (prev + dt) % pasteur.timerWrapS);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -43,7 +43,7 @@ export function PasteurFermentationSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying]);
+  }, [isPlaying, pasteur.timerWrapS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -162,17 +162,17 @@ export function PasteurFermentationSim() {
                   <circle
                     cx={xPos}
                     cy={yPos}
-                    r="5"
+                    r={pasteur.yeastSvgR}
                     fill="#FAF089"
                     stroke="#B7791F"
                     strokeWidth="1.5"
                   />
                   {/* Rod-shaped Lactic/Acetic Bacteria (Killed if hot) */}
                   <rect
-                    x={xPos + 10}
-                    y={yPos - 3}
-                    width="10"
-                    height="4"
+                    x={xPos + pasteur.rodDx}
+                    y={yPos - pasteur.rodDy}
+                    width={pasteur.rodSvgW}
+                    height={pasteur.rodSvgH}
                     rx="2"
                     fill={isAlive ? "#E53E3E" : "#718096"}
                     opacity={isAlive ? 0.9 : 0.25}

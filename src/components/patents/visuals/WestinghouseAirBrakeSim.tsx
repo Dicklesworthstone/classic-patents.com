@@ -42,10 +42,12 @@ export function WestinghouseAirBrakeSim() {
         if (cylPressurePsi > 5) {
           return Math.max(0, prev - wh.decelerationMphPerS * dt);
         }
-        return Math.min(wh.approachSpeedMph, prev + 10 * dt);
+        return Math.min(wh.approachSpeedMph, prev + wh.accelMphPerS * dt);
       });
 
-      setWheelRotation((prev) => (prev + trainSpeedMph * wh.wheelDisplayDegPerMph * dt) % 360);
+      setWheelRotation(
+        (prev) => (prev + trainSpeedMph * wh.wheelDisplayDegPerMph * dt) % wh.displayWrapDeg,
+      );
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -57,8 +59,10 @@ export function WestinghouseAirBrakeSim() {
     cylPressurePsi,
     trainSpeedMph,
     wh.decelerationMphPerS,
+    wh.accelMphPerS,
     wh.approachSpeedMph,
     wh.wheelDisplayDegPerMph,
+    wh.displayWrapDeg,
   ]);
 
   const setPreset = (psi: number, _label?: string) => {

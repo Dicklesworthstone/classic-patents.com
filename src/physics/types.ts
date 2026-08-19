@@ -117,6 +117,11 @@ export interface NuclearKineticsState {
   latticeOriginY: number;
   latticePitchX: number;
   latticePitchY: number;
+  latticeCellPadX: number;
+  latticeCellPadY: number;
+  latticeCellW: number;
+  latticeCellH: number;
+  latticeSlugR: number;
   schematicSlugOriginX: number;
   schematicSlugOriginY: number;
   schematicSlugPitchX: number;

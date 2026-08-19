@@ -39,7 +39,7 @@ export function WozniakAppleSim() {
         apple.dramAddrStride,
       );
       setClockPhase(cycle.phase);
-      if (cycle.advanceRaster) setRasterLine((previous) => (previous + 1) % 192);
+      if (cycle.advanceRaster) setRasterLine((previous) => (previous + 1) % apple.rasterLineWrap);
       setDramAddress(cycle.dramAddress);
     }, intervalMs);
     return () => clearInterval(interval);
@@ -51,6 +51,7 @@ export function WozniakAppleSim() {
     apple.dramBaseAddr,
     apple.dramAddrSpan,
     apple.dramAddrStride,
+    apple.rasterLineWrap,
   ]);
 
   return (

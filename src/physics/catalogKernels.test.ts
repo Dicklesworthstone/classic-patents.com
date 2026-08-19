@@ -4,8 +4,11 @@ import {
   bardeenLoadLine,
   bardeenSchematicDie,
   bellScopeSample,
+  coltNextChamber,
   coltSchematicTrigger,
+  corlissConnectingRod,
   corlissSchematicValve,
+  davenportPolarityReversed,
   davenportSchematicArmature,
   delavalSchematicDiscY,
   edisonFoilGrooveX,
@@ -15,6 +18,7 @@ import {
   edisonSchematicTerminal,
   einsteinSchematicVessel,
   engelbartSchematicWheel,
+  gatlingMuzzleFlash,
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
   goddardSchematicStack,
@@ -22,6 +26,8 @@ import {
   goodyearSchematicCrosslink,
   goodyearSchematicLink,
   goodyearSchematicStrand,
+  grammeCoil,
+  grammeJunctionRod,
   grammeSchematicBrush,
   grammeSchematicJunction,
   hollerithCupSvg,
@@ -31,6 +37,7 @@ import {
   hyattSchematicMold,
   hyattSchematicRam,
   kevlarChainBond,
+  kevlarChainPath,
   kevlarSchematicBond,
   kevlarSchematicLattice,
   lincolnSchematicChamber,
@@ -47,6 +54,9 @@ import {
   nobelSchematicKieselguhr,
   noyceSchematicContactX,
   noyceSchematicJunction,
+  ottoConnectingRod,
+  ottoStrokePhase,
+  parsonsIsRotor,
   parsonsStageHeight,
   pasteurMicrobeSvg,
   pasteurSchematicBubbleX,
@@ -94,6 +104,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
   thomsonSchematicJawX,
+  verticalConnectingRod,
   voltsToKv,
   whitneySchematicRay,
   wozniakBusCycle,
@@ -132,6 +143,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.shaftPowerKw).toBeGreaterThan(0);
     expect(res.runnerSvgR).toBe(75);
     expect(res.bucketCount).toBe(12);
+    expect(res.bucketPitchDeg).toBe(30);
     expect(res.schematicBucketCount).toBe(8);
     expect(res.schematicBucketRx).toBe(8);
     expect(res.schematicJetX1).toBe(100);
@@ -142,6 +154,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
   test("Gramme dynamo computes 36-junction continuous EMF index", () => {
     const res = stepGrammeDynamo({ shaftRate: 1.0 });
     expect(res.printedJunctionCount).toBe(36);
+    expect(res.junctionPitchDeg).toBe(10);
     expect(res.collectionContinuityPct).toBeGreaterThan(95);
     expect(res.inducedEmfIndex).toBe(100);
     expect(res.torusSvgR).toBe(100);
@@ -153,6 +166,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(grammeSchematicJunction(90).y2).toBe(182);
     expect(grammeSchematicBrush(0).y).toBe(112);
     expect(grammeSchematicBrush(1).y).toBe(182);
+    expect(res.coilPadX).toBe(6);
+    expect(grammeCoil(0).x).toBe(94);
+    expect(grammeJunctionRod(0).x2).toBe(48);
+    expect(res.torusCx).toBe(300);
   });
 
   test("Otto four-stroke engine computes thermodynamic air-standard cycle", () => {
@@ -161,6 +178,18 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.thermalEfficiencyPct).toBeGreaterThan(40);
     expect(res.peakFiringBar).toBeGreaterThan(res.peakCompressionBar);
     expect(res.flywheelSvgR).toBe(80);
+    expect(res.cycleWrapDeg).toBe(720);
+    expect(res.flywheelRimR).toBe(90);
+    expect(res.crankCx).toBe(460);
+    expect(res.rodOriginX).toBe(167);
+    expect(ottoConnectingRod(0, 0, res.pistonStrokePx).x1).toBe(167);
+    expect(ottoConnectingRod(0, 0, res.pistonStrokePx).x2).toBe(495);
+    expect(res.stroke1EndDeg).toBe(180);
+    expect(ottoStrokePhase(0)).toBe(1);
+    expect(ottoStrokePhase(200)).toBe(2);
+    expect(ottoStrokePhase(400)).toBe(3);
+    expect(ottoStrokePhase(600)).toBe(4);
+    expect(res.sparkStartDeg).toBe(350);
     expect(res.spokeCount).toBe(6);
     expect(res.spokePitchDeg).toBe(60);
     expect(res.schematicFlywheelR).toBe(45);
@@ -181,6 +210,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(parsonsStageHeight(200, res.stageSplitX0, res.stageSplitX1)).toBe(30);
     expect(parsonsStageHeight(300, res.stageSplitX0, res.stageSplitX1)).toBe(45);
     expect(res.schematicInletX1).toBe(40);
+    expect(res.displayWrapDeg).toBe(360);
+    expect(parsonsIsRotor(1)).toBe(true);
+    expect(parsonsIsRotor(0)).toBe(false);
   });
 
   test("Ericsson screw propeller keeps source facts distinct from its illustrative display model", () => {
@@ -219,6 +251,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.blastOverpressureMpa).toBeGreaterThan(4000);
     expect(res.isInitiated).toBe(true);
     expect(res.kieselguhrCount).toBe(24);
+    expect(res.kieselguhrR).toBe(6);
     expect(nobelKieselguhrSvg(0).cx).toBe(200);
     expect(nobelKieselguhrSvg(8).cy).toBe(167);
     expect(res.schematicKieselguhrCols).toBe(7);
@@ -238,7 +271,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.brushSvgR).toBe(55);
     expect(res.bristleOuterSvgR).toBe(78);
     expect(res.sawToothCount).toBe(16);
+    expect(res.sawToothPitchDeg).toBe(22.5);
     expect(res.bristleCount).toBe(24);
+    expect(res.bristlePitchDeg).toBe(15);
     expect(res.schematicSawToothCount).toBe(12);
     expect(res.schematicSawR).toBe(48);
     expect(res.schematicHopperPoints).toContain("60,40");
@@ -284,6 +319,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(mccormickGuardX(1, res.guardPitchX)).toBe(25);
     expect(mccormickFaceSickleX(0)).toBe(5);
     expect(mccormickCrankPinSvg(0).cx).toBe(-42);
+    expect(res.cutterDisplayRadPerFrame).toBeCloseTo(res.cutterOmegaRadPerS / 60, 5);
   });
 
   test("Davenport electric motor computes torque and rotational speed from battery electromotive force", () => {
@@ -292,6 +328,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.shaftRpm).toBeGreaterThan(0);
     expect(res.schematicCommutatorR).toBe(14);
     expect(davenportSchematicArmature().x).toBe(160);
+    expect(res.commutatorPoleDeg).toBe(180);
+    expect(davenportPolarityReversed(0)).toBe(false);
+    expect(davenportPolarityReversed(100)).toBe(true);
   });
 
   test("Corliss steam engine computes variable cutoff expansion and indicated horsepower", () => {
@@ -299,10 +338,17 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.indicatedHp).toBeGreaterThan(0);
     expect(res.expansionRatio).toBe(4);
     expect(res.schematicValveR).toBe(16);
+    expect(res.flywheelRimR).toBe(95);
+    expect(res.wristLeadDeg).toBe(90);
+    expect(res.crankCx).toBe(480);
+    expect(corlissConnectingRod(0, 0, res.pistonStrokePx).x1).toBe(358);
+    expect(corlissConnectingRod(0, 0, res.pistonStrokePx).x2).toBe(525);
     expect(res.schematicCylinderW).toBe(260);
     expect(res.schematicLinkInnerX).toBe(108);
     expect(corlissSchematicValve(0).cx).toBe(100);
     expect(corlissSchematicValve(3).cy).toBe(215);
+    expect(res.intakeCycleDeg).toBe(180);
+    expect(res.displayWrapDeg).toBe(360);
   });
 
   test("Gatling gun computes cyclic fire rate and barrel cluster rotation", () => {
@@ -314,6 +360,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicBreechW).toBe(110);
     expect(gatlingSchematicBarrelY(0)).toBe(150);
     expect(gatlingSchematicBarrelY(90)).toBe(178);
+    expect(res.barrelSvgHalfH).toBe(3);
+    expect(res.firingBottomDeg).toBe(180);
+    expect(gatlingMuzzleFlash(0)).toContain("260,0");
+    expect(res.displayWrapDeg).toBe(360);
   });
 
   test("Hyatt celluloid computes hydraulic consolidation and camphor plasticization", () => {
@@ -349,6 +399,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(pasteurSchematicBubbleX(0)).toBe(145);
     expect(pasteurSchematicBubbleX(4)).toBe(245);
     expect(pasteurSchematicYeast().x).toBe(130);
+    expect(res.yeastSvgR).toBe(5);
+    expect(res.rodDx).toBe(10);
+    expect(res.timerWrapS).toBe(60);
   });
 
   test("Glidden barbed wire computes tensile yield and barb lock security", () => {
@@ -370,6 +423,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicGrooveCount).toBe(8);
     expect(res.schematicMandrelW).toBe(180);
     expect(res.leadScrewThreadDx).toBe(6);
+    expect(res.cylinderSvgX).toBe(160);
+    expect(res.cylinderSvgW).toBe(200);
     expect(res.schematicDiaphragmR).toBe(16);
     expect(edisonSchematicGrooveX(0)).toBe(120);
     expect(edisonSchematicGrooveX(7)).toBe(260);
@@ -409,6 +464,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicFlywheelR).toBe(50);
     expect(res.schematicCylinderW).toBe(120);
     expect(res.schematicHotTubeW).toBe(50);
+    expect(res.cycleWrapDeg).toBe(720);
+    expect(res.crankCy).toBe(250);
+    expect(
+      verticalConnectingRod(0, 0, res.pistonStrokePx, res.crankCx, res.crankCy, res.rodOriginY0).x2,
+    ).toBe(330);
   });
 
   test("Hollerith tabulating machine computes pin-brush electrical circuit matrix and tally count", () => {
@@ -426,6 +486,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicDialCount).toBe(3);
     expect(hollerithSchematicDialX(0)).toBe(140);
     expect(hollerithSchematicDialX(2)).toBe(260);
+    expect(res.cupSvgR).toBe(7);
   });
 
   test("Noyce planar integrated circuit computes junction isolation and oxide passivation", () => {
@@ -504,6 +565,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.videoPhaseDivisor).toBe(2);
     expect(wozniakBusCycle(0, 0).dramAddress).toBe("0x0400");
     expect(wozniakBusCycle(1, 0).phase).toBe(1);
+    expect(res.rasterLineWrap).toBe(192);
     expect(wozniakSchematicChip("cpu", res.schematicChipSeats).x).toBe(50);
     expect(wozniakSchematicChip("ram", res.schematicChipSeats).labelY).toBe(140);
   });
@@ -528,6 +590,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicNodeR).toBe(5);
     expect(kevlarSchematicBond(1).x).toBe(200);
     expect(kevlarChainBond(0).x).toBe(80);
+    expect(res.chainOffsetYs).toEqual([-60, -30, 0, 30, 60]);
+    expect(kevlarChainPath(0, 10, 350).yBase).toBe(40);
+    expect(kevlarChainPath(0, 10, 350).d).toContain("Q 100,50");
     expect(res.chainBondH).toBe(30);
     expect(kevlarSchematicLattice(0, 1).cx).toBe(120);
     expect(res.tensileStrengthGpa).toBeGreaterThan(2);
@@ -546,6 +611,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(holeLast.cx).toBeCloseTo(130 + res.pointGapSvgPx, 5);
     expect(res.schematicDieW).toBe(180);
     expect(bardeenSchematicDie().labelX).toBe(200);
+    expect(res.holeSvgR).toBe(3);
+    expect(res.holeLabelDx).toBe(2);
   });
 
   test("Marconi radio computes quarter-wave antenna radiation resistance and resonant frequency", () => {
@@ -557,6 +624,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicMastY0).toBe(50);
     expect(res.schematicEarthW).toBe(80);
     expect(res.schematicMastX).toBe(120);
+    expect(res.waveRingWrapPx).toBe(120);
   });
 
   test("Colt revolver computes chamber cylinder index and lock bolt ratchet engagement", () => {
@@ -566,6 +634,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicBarrelW).toBe(150);
     expect(coltSchematicTrigger(true).y).toBe(155);
     expect(coltSchematicTrigger(false).h).toBe(8);
+    expect(res.chamberCount).toBe(5);
+    expect(coltNextChamber(1)).toBe(2);
+    expect(coltNextChamber(5)).toBe(1);
+    expect(res.boltRetractY).toBe(12);
   });
 
   test("Goodyear vulcanized rubber computes crosslink density, tensile modulus, and elastic recovery", () => {

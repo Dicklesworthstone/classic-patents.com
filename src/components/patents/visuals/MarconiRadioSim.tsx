@@ -22,13 +22,13 @@ export function MarconiRadioSim() {
     let timer: any;
     if (isSparking) {
       timer = setInterval(() => {
-        setWaveRingRadius((r) => (r + waveAdvancePx) % 120);
+        setWaveRingRadius((r) => (r + waveAdvancePx) % radio.waveRingWrapPx);
       }, 40);
     } else {
       setWaveRingRadius(0);
     }
     return () => clearInterval(timer);
-  }, [isSparking, waveAdvancePx]);
+  }, [isSparking, waveAdvancePx, radio.waveRingWrapPx]);
 
   const triggerSpark = () => {
     setIsSparking(true);

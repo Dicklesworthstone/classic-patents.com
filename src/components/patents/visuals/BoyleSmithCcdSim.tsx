@@ -3,7 +3,12 @@
 import { Camera, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { ccdGateSvgX, ccdPacketGateIndex, stepCcdWells } from "@/physics/machineKernels";
+import {
+  ccdGatePhase,
+  ccdGateSvgX,
+  ccdPacketGateIndex,
+  stepCcdWells,
+} from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function BoyleSmithCcdSim() {
@@ -94,7 +99,7 @@ export function BoyleSmithCcdSim() {
             {/* 3-Phase Gate Electrodes (Poly-Silicon Gates) */}
             <g transform="translate(60, 70)">
               {Array.from({ length: ccd.gateSvgCount }).map((_, i) => {
-                const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
+                const phaseNum = ccdGatePhase(i, ccd.gatePhaseCount);
                 const isHigh = phaseNum === clockPhase;
                 const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
                 return (
@@ -104,14 +109,14 @@ export function BoyleSmithCcdSim() {
                       x={gx}
                       y="0"
                       width={ccd.gateSvgWidth}
-                      height="18"
+                      height={ccd.gateSvgH}
                       fill={isHigh ? "#0284c7" : "#334155"}
                       stroke={isHigh ? "#38bdf8" : "#475569"}
                       strokeWidth="1.5"
                       rx="2"
                     />
                     <text
-                      x={gx + 12}
+                      x={gx + ccd.gateLabelDx}
                       y="13"
                       fill="#f8fafc"
                       fontSize="10"
@@ -166,7 +171,7 @@ export function BoyleSmithCcdSim() {
               <path
                 d={`M 0 0 ${Array.from({ length: ccd.gateSvgCount })
                   .map((_, i) => {
-                    const phaseNum = ((i % 3) + 1) as 1 | 2 | 3;
+                    const phaseNum = ccdGatePhase(i, ccd.gatePhaseCount);
                     const depth = ccd.wellSvgDepths[phaseNum - 1];
                     const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
                     return `L ${gx} 0 L ${gx} ${depth} L ${gx + ccd.gateSvgWidth} ${depth} L ${gx + ccd.gateSvgWidth} 0`;

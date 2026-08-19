@@ -22,10 +22,16 @@ export function HoweSewingMachineSim() {
     const tickMs = sew.crankDisplayTickMs;
     const degPerTick = sew.crankOmegaDegPerS * sew.crankDisplayTickS;
     const interval = setInterval(() => {
-      setCrankAngleDeg((prev) => (prev + degPerTick) % 360);
+      setCrankAngleDeg((prev) => (prev + degPerTick) % sew.displayWrapDeg);
     }, tickMs);
     return () => clearInterval(interval);
-  }, [isPlaying, sew.crankDisplayTickMs, sew.crankOmegaDegPerS, sew.crankDisplayTickS]);
+  }, [
+    isPlaying,
+    sew.crankDisplayTickMs,
+    sew.crankOmegaDegPerS,
+    sew.crankDisplayTickS,
+    sew.displayWrapDeg,
+  ]);
 
   const {
     needleY,

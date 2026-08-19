@@ -391,6 +391,44 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.298 Kevlar kevlarChainBond / chainBondXs. 2D no longer converts leftover 80/140/200/260/320 H-bond posts privately.
 - [x] P5.299 Parsons parsonsStageHeight / bladeMidY / bladeGap / lean. 2D no longer converts leftover 170±10 or 30/45/65 privately.
 - [x] P5.300 Edison phonograph leadScrewThreadDx / Y0 / Y1. 2D no longer converts leftover +6 thread privately.
+- [x] P5.301 Fermi latticeCell pad / W-H / slugR. 2D no longer converts leftover cx-15/cy-14 30×28 or r=5 privately.
+- [x] P5.302 Westinghouse accelMphPerS. 2D no longer coasts with leftover +10*dt privately.
+- [x] P5.303 Farnsworth rasterLinePct / rasterLineWrapPct. 2D no longer converts leftover 100/scanLines privately.
+- [x] P5.304 Otto ottoConnectingRod / crankCx / rim / gasChargeW0. 2D no longer converts leftover 167+piston or 460+cos privately.
+- [x] P5.305 Corliss corlissConnectingRod / wristLeadDeg / crankCx / rim. 2D no longer converts leftover 358+stroke, crank+90, or r=95 privately.
+- [x] P5.306 Wozniak rasterLineWrap. 2D no longer wraps leftover %192 privately.
+- [x] P5.307 Mergenthaler mergenthalerSpaceband. 2D no longer draws leftover 50,4 56,4 58,46 spacebands or i*14 keys privately.
+- [x] P5.308 Edison cylinderSvgX/Y/W/H. 2D no longer translates leftover 160,130 200×80 privately.
+- [x] P5.309 Otto cycleWrapDeg / crankWrapDeg. 2D no longer wraps leftover %720 / %360 privately.
+- [x] P5.310 Diesel verticalConnectingRod / cycleWrap / injection window / crankCx. 2D no longer converts leftover 103+piston or 300+cos privately.
+- [x] P5.311 Daimler verticalConnectingRod / cycleWrap / pistonSvg / crankCx. 2D no longer converts leftover 92+piston or 300+cos privately.
+- [x] P5.312 Pelton bucketPitchDeg. 2D no longer converts leftover i*360/bucketCount privately.
+- [x] P5.313 Whitney sawToothPitchDeg / bristlePitchDeg. 2D no longer converts leftover i*360/count privately.
+- [x] P5.314 Gramme junctionPitchDeg. 2D no longer converts leftover i*360/36 privately.
+- [x] P5.315 Nobel kieselguhrR. 2D no longer draws leftover r=6 grains or i*15 keys privately.
+- [x] P5.316 Gramme grammeCoil / grammeJunctionRod / torusCx / brushSvg. 2D no longer converts leftover xPos-6, i*2π/N, or 294,125 brushes privately.
+- [x] P5.317 Otto ottoStrokePhase / spark / firing windows. 2D no longer converts leftover 180/360/540 or 350–370 privately.
+- [x] P5.318 Diesel compressionGlowStart/EndDeg. 2D no longer converts leftover 270–450 privately.
+- [x] P5.319 Bardeen holeSvgR / holeLabelDx-Dy. 2D no longer converts leftover cx-2 / cy+3 privately.
+- [x] P5.320 Davenport davenportPolarityReversed / commutatorPoleDeg. 2D no longer converts leftover %180 > 90 privately.
+- [x] P5.321 McCormick cutterDisplayRadPerFrame / phaseWrapRad. 2D no longer converts leftover ω/60 privately.
+- [x] P5.322 Hollerith cupSvgR. 2D no longer draws leftover r=7 cups or i*12 keys privately.
+- [x] P5.323 Corliss intakeCycleDeg / displayWrapDeg. 2D no longer converts leftover %180 or %360 privately.
+- [x] P5.324 Gatling gatlingMuzzleFlash / barrelSvgHalfH / firingBottomDeg. 2D no longer converts leftover yPos-3 or 260,y±10 privately.
+- [x] P5.325 Marconi waveRingWrapPx. 2D no longer wraps leftover %120 privately.
+- [x] P5.326 Pasteur yeastSvgR / rodDx-Dy / timerWrapS. 2D no longer converts leftover yPos-3, +10, r=5, or %60 privately.
+- [x] P5.327 Gatling displayWrapDeg. 2D no longer wraps leftover %360 privately.
+- [x] P5.328 Colt coltNextChamber / chamberCount / boltRetractY. 2D no longer converts leftover (prev%5)+1 or bolt 12 privately.
+- [x] P5.329 CCD ccdGatePhase / gateSvgH / gateLabelDx. 2D no longer converts leftover (i%3)+1 or height 18 privately.
+- [x] P5.330 Parsons parsonsIsRotor / displayWrapDeg. 2D no longer converts leftover i%2 or %360 privately.
+- [x] P5.331 Howe displayWrapDeg. 2D no longer wraps leftover %360 privately.
+- [x] P5.332 Tesla motor displayWrapDeg. 2D no longer wraps leftover %360 privately.
+- [x] P5.333 Gramme / Pelton / De Laval / Whitney / Ericsson / Westinghouse displayWrapDeg. 2D no longer wraps leftover %360 privately.
+- [x] P5.334 Colt 3D coltNextChamber. 3D no longer converts leftover (prev%5)+1 privately.
+- [x] P5.335 CCD ccdNextPhase / ccdGatePhase. 3D no longer converts leftover (phase%3)+1 or (g%3)+1 privately.
+- [x] P5.336 Howe crankOmegaDegPerS / clothStudioWrap / stitchFrequencyHz. 3D no longer converts leftover rad×180/π %360 or cloth %2 privately.
+- [x] P5.337 Kevlar kevlarChainPath / chainOffsetYs. 2D no longer converts leftover idx%2 waviness or M 30 Q 100 privately.
+- [x] P5.338 Lamarr hopSoundStride. 3D no longer converts leftover rollStep%3 privately.
 
 ## Explicitly out of scope
 

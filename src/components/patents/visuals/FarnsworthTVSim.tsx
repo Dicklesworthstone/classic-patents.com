@@ -22,6 +22,7 @@ export function FarnsworthTVSim() {
     voltsToKv(anodeVoltage),
     deflectionGauss,
     params.lightIntensityLux ?? 500,
+    scanLines,
   );
   const speedMultiplier = beam.rasterAdvance;
 
@@ -29,13 +30,13 @@ export function FarnsworthTVSim() {
     if (!isScanning) return;
     const interval = setInterval(() => {
       setBeamPos((pos) => {
-        const nextX = (pos.x + speedMultiplier) % 100;
-        const nextY = nextX < pos.x ? (pos.y + 100 / scanLines) % 100 : pos.y;
+        const nextX = (pos.x + speedMultiplier) % beam.rasterLineWrapPct;
+        const nextY = nextX < pos.x ? (pos.y + beam.rasterLinePct) % beam.rasterLineWrapPct : pos.y;
         return { x: nextX, y: nextY };
       });
     }, 30);
     return () => clearInterval(interval);
-  }, [isScanning, scanLines, speedMultiplier]);
+  }, [isScanning, speedMultiplier, beam.rasterLinePct, beam.rasterLineWrapPct]);
 
   return (
     <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
