@@ -186,6 +186,23 @@ export interface CuratedSpecificationEdition {
 
 export type OriginalTextAssetKind = "reviewed-transcription" | "source-pdf-text-layer";
 
+/**
+ * A literal, page-specific check made while visually reviewing a facsimile.
+ *
+ * The anchor is deliberately editorial evidence, not a value generated from
+ * OCR or a PDF text layer. It makes a shifted ledger detectable: the exact
+ * printed phrase must occur under the reviewed ledger marker for the same PDF
+ * page, while `sourceRelationship` records what that page actually is.
+ */
+export interface ReviewedTranscriptionPageAnchor {
+  /** One-based PDF page number, including drawing sheets and certificates. */
+  page: number;
+  /** Exact printed header or distinctive source phrase seen on that page. */
+  exactSourceText: string;
+  /** Human-authored description such as “printed drawing sheet 1 of 2”. */
+  sourceRelationship: string;
+}
+
 export interface OriginalTextAsset {
   /** Public, cleaned transcription of every page in the source facsimile. */
   url: string;
@@ -203,6 +220,12 @@ export interface OriginalTextAsset {
   reviewedBy?: string;
   reviewedAt?: string;
   sourcePdfSha256?: string;
+  /**
+   * Optional until this legacy catalogue is migrated page by page. Once an
+   * edition declares anchors, the verification gate requires one for every
+   * source page and rejects any ledger-page mismatch.
+   */
+  pageAnchors?: readonly ReviewedTranscriptionPageAnchor[];
 }
 
 export interface Patent {
