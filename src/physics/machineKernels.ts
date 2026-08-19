@@ -195,6 +195,12 @@ export function stepSholesTypewriter(
   typebarHubY: number;
   typebarPlatenY: number;
   ratchetSvgR: number;
+  schematicTypebarHubX: number;
+  schematicTypebarHubY: number;
+  schematicTypebarR: number;
+  schematicTypebarStartDeg: number;
+  schematicTypebarPitchDeg: number;
+  schematicTypebarCount: number;
 } {
   const cadence = Math.min(120, Math.max(0, demonstrationCadencePerMin));
   const eventsPerSecond = cadence / 60;
@@ -219,6 +225,12 @@ export function stepSholesTypewriter(
     typebarHubY: 200,
     typebarPlatenY: 75,
     ratchetSvgR: 18,
+    schematicTypebarHubX: 200,
+    schematicTypebarHubY: 170,
+    schematicTypebarR: 60,
+    schematicTypebarStartDeg: 20,
+    schematicTypebarPitchDeg: 25,
+    schematicTypebarCount: 14,
   };
 }
 
@@ -244,6 +256,24 @@ export function sholesTypebarPose(
     yStart: Number((hubY + Math.sin(rad) * outerRy).toFixed(2)),
     xEnd: Number((isActive ? hubX : hubX + Math.cos(rad) * restRx).toFixed(2)),
     yEnd: Number((isActive ? platenY : hubY + Math.sin(rad) * restRy).toFixed(2)),
+  };
+}
+
+/** Radial type-bar seat on the schematic basket. Shared by the schematic. */
+export function sholesSchematicTypebar(
+  index: number,
+  startDeg = 20,
+  pitchDeg = 25,
+  cx = 200,
+  cy = 170,
+  radius = 60,
+) {
+  const deg = startDeg + index * pitchDeg;
+  const rad = (deg * Math.PI) / 180;
+  return {
+    deg,
+    x: Number((cx + Math.cos(rad) * radius).toFixed(2)),
+    y: Number((cy + Math.sin(rad) * radius).toFixed(2)),
   };
 }
 
@@ -431,6 +461,11 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   pawlSvgX: number;
   pawlSvgY: number;
   railSvgPitch: number;
+  schematicRailOriginY: number;
+  schematicRailPitchY: number;
+  schematicRailCount: number;
+  schematicRailLeftX: number;
+  schematicRailRightX: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -456,5 +491,15 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     pawlSvgX: isSnapped ? 18 : 4,
     pawlSvgY: isSnapped ? 0 : 7.2,
     railSvgPitch: 20,
+    schematicRailOriginY: 50,
+    schematicRailPitchY: 30,
+    schematicRailCount: 6,
+    schematicRailLeftX: 80,
+    schematicRailRightX: 320,
   };
+}
+
+/** Guide-rail ratchet Y on the schematic. Shared by the schematic. */
+export function otisSchematicRailY(index: number, originY = 50, pitchY = 30) {
+  return originY + index * pitchY;
 }

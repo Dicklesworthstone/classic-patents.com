@@ -51,6 +51,11 @@ export function energyChannelsFor(
     // energy values. Keep the visual strip empty while the edition is held.
     return [];
   }
+  if (patentId === "us-2708656-fermi-reactor") {
+    // Claim 1 supplies a construction/contour relation, not a source-backed
+    // energy-flow measurement; leave this optional strip empty while held.
+    return [];
+  }
   if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,

@@ -244,4 +244,17 @@ describe("Physics Telemetry Data Registry", () => {
       "hop rate, RF bandwidth, processing gain, jamming margin",
     );
   });
+
+  test("keeps Fermi US 2,708,656 on the held lattice-claim boundary", () => {
+    const fermi = PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"];
+    expect(fermi.engineMethod).toContain("No reactor-operation engine");
+    const metrics = fermi.computeMetrics({ sourceFocus: 2 });
+    expect(metrics[0]).toMatchObject({
+      label: "Highlighted Source Group",
+      value: "Source sheets 10–18",
+    });
+    expect(metrics[1]).toMatchObject({ label: "Printed Figures", value: "42 on 27 sheets" });
+    expect(metrics[2]).toMatchObject({ label: "Printed Claims", value: "8" });
+    expect(fermi.pedagogicalInsight).toContain("delayed-neutron kinetics, control-rod behavior");
+  });
 });

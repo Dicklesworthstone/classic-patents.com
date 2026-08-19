@@ -5,7 +5,9 @@ import {
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
+  otisSchematicRailY,
   renoSchematicCleat,
+  sholesSchematicTypebar,
   sholesTypebarPose,
   stepCcdWells,
   stepEngelbartResolver,
@@ -79,6 +81,10 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     const bar = sholesTypebarPose(0, 0);
     expect(bar.isActive).toBe(true);
     expect(bar.xEnd).toBe(cycle.typebarHubX);
+    expect(cycle.schematicTypebarCount).toBe(14);
+    expect(sholesSchematicTypebar(0).deg).toBe(20);
+    expect(sholesSchematicTypebar(0).x).toBeCloseTo(256.38, 2);
+    expect(sholesSchematicTypebar(13).deg).toBe(345);
   });
 
   test("stepMergenthalerLinotype computes matrix justification, lead pot solidification, and slug ejection", () => {
@@ -128,6 +134,9 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(snapped.springDeflectionCm).toBe(0);
     expect(snapped.stoppingDistanceCm).toBe(4.5);
     expect(snapped.railSvgPitch).toBe(20);
+    expect(snapped.schematicRailCount).toBe(6);
+    expect(otisSchematicRailY(0)).toBe(50);
+    expect(otisSchematicRailY(5)).toBe(200);
     expect(snapped.peakArrestForceKn).toBeGreaterThan(15);
     expect(snapped.pawlEngagementMs).toBe(38);
   });

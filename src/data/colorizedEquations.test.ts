@@ -225,4 +225,12 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(publicCards).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Fermi US 2,708,656 at its held Claim 1 contour boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"];
+    expect(cards.map((card) => card.id)).toEqual(["fermi-source-claim-one-criticality-contour"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("natural-uranium rods");
+    expect(JSON.stringify(cards).toLowerCase()).not.toContain("delayed neutron fraction");
+  });
 });

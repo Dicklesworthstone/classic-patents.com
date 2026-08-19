@@ -124,6 +124,16 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
+  if (patentId === "us-2708656-fermi-reactor") {
+    return {
+      part: calloutLabel,
+      material: "Graphite moderator, natural-uranium rods, and Fig. 3 criticality contour",
+      qty: "Claim 1",
+      value: "figure-defined lattice relation",
+      unit: "source relation",
+      note: "The 58-page scholarly edition remains under independent publication review. This guide does not compute delayed-neutron kinetics, control-rod motion, reactivity, power, temperature, or Chicago Pile-1 operating data.",
+    };
+  }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
     return {
       part: calloutLabel,
@@ -927,6 +937,9 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
+  if (patentId === "us-2708656-fermi-reactor") {
+    return [];
+  }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
     return [];
   }
@@ -1305,6 +1318,15 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
+  if (patentId === "us-2708656-fermi-reactor") {
+    return {
+      part: "Source-bound Claim 1 contour relation",
+      model: "not computed",
+      reference: "independent publication review pending",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
     return {
       part: "Source-bound matched-record tuning relation",
@@ -1574,6 +1596,9 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
+  if (patentId === "us-2708656-fermi-reactor") {
+    return [];
+  }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
     return [];
   }
@@ -1885,6 +1910,9 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
+  if (patentId === "us-2708656-fermi-reactor") {
+    return [];
+  }
   if (patentId === "us-2292387-lamarr-frequency-hopping") {
     return [];
   }

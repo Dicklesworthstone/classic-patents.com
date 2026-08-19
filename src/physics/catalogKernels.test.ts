@@ -3,19 +3,31 @@ import {
   bardeenHoleStream,
   bardeenLoadLine,
   bellScopeSample,
+  delavalSchematicDiscY,
   edisonSchematicGlowOpacity,
+  edisonSchematicGrooveX,
+  gatlingSchematicBarrelY,
+  gliddenSchematicSpurX,
+  grammeSchematicJunction,
   hollerithCupSvg,
+  hollerithSchematicPinX,
   hyattPolymerSvg,
   kevlarSchematicLattice,
   marconiMastHeightFromHz,
   mccormickReelAngleDeg,
+  mccormickSchematicReelArm,
+  mccormickSchematicSickleX,
   nobelKieselguhrSvg,
+  nobelSchematicKieselguhr,
   pasteurMicrobeSvg,
+  pasteurSchematicBubbleX,
+  peltonSchematicBucket,
   phonographAxialTravelMm,
   pistonSvgDisplacement,
   rpmToOmega,
   sliderStrokeSvg,
   spencerPopcornSvg,
+  spencerSchematicCavity,
   stepBardeenTransistor,
   stepBellTelephone,
   stepColtRevolver,
@@ -52,6 +64,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
   voltsToKv,
+  whitneySchematicRay,
   wozniakBusCycle,
   zeppelinSchematicCell,
 } from "./catalogKernels";
@@ -86,6 +99,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.shaftPowerKw).toBeGreaterThan(0);
     expect(res.runnerSvgR).toBe(75);
     expect(res.bucketCount).toBe(12);
+    expect(res.schematicBucketCount).toBe(8);
+    expect(peltonSchematicBucket(0).x).toBe(260);
+    expect(peltonSchematicBucket(90).y).toBe(190);
   });
 
   test("Gramme dynamo computes 36-junction continuous EMF index", () => {
@@ -96,6 +112,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.torusSvgR).toBe(100);
     expect(res.junctionInnerSvgR).toBe(35);
     expect(res.junctionOuterSvgR).toBe(48);
+    expect(res.schematicJunctionCount).toBe(12);
+    expect(grammeSchematicJunction(0).x2).toBe(232);
+    expect(grammeSchematicJunction(90).y2).toBe(182);
   });
 
   test("Otto four-stroke engine computes thermodynamic air-standard cycle", () => {
@@ -114,6 +133,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.stageRingSvgCount).toBe(22);
     expect(res.stageSvgOriginX).toBe(135);
     expect(res.stageSvgPitch).toBe(16);
+    expect(res.schematicStageXs).toEqual([100, 120, 140, 170, 190, 210, 230, 260, 280, 300]);
   });
 
   test("Ericsson screw propeller keeps source facts distinct from its illustrative display model", () => {
@@ -130,6 +150,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepDeLavalSeparator({ bowlRpm: 6500, rawMilkFlowLph: 300 });
     expect(res.gForce).toBeGreaterThan(1000);
     expect(res.fatYieldPct).toBeGreaterThan(85);
+    expect(res.schematicDiscCount).toBe(5);
+    expect(delavalSchematicDiscY(0)).toBe(100);
+    expect(delavalSchematicDiscY(4)).toBe(180);
   });
 
   test("Nobel dynamite computes detonation velocity and shock impulse", () => {
@@ -140,6 +163,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.kieselguhrCount).toBe(24);
     expect(nobelKieselguhrSvg(0).cx).toBe(200);
     expect(nobelKieselguhrSvg(8).cy).toBe(167);
+    expect(res.schematicKieselguhrCols).toBe(7);
+    expect(nobelSchematicKieselguhr(0, 0).cx).toBe(90);
+    expect(nobelSchematicKieselguhr(1, 1).cy).toBe(150);
   });
 
   test("Whitney cotton gin computes tooth snagging frequency and lint separation rate", () => {
@@ -153,6 +179,24 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.bristleOuterSvgR).toBe(78);
     expect(res.sawToothCount).toBe(16);
     expect(res.bristleCount).toBe(24);
+    expect(res.schematicSawToothCount).toBe(12);
+    const saw0 = whitneySchematicRay(
+      0,
+      res.schematicSawCx,
+      res.schematicSawCy,
+      res.schematicSawInnerR,
+      res.schematicSawOuterR,
+      res.schematicSawTwistRad,
+    );
+    expect(saw0.x1).toBe(254);
+    const brush0 = whitneySchematicRay(
+      0,
+      res.schematicBrushCx,
+      res.schematicBrushCy,
+      res.schematicBrushInnerR,
+      res.schematicBrushOuterR,
+    );
+    expect(brush0.x2).toBe(338);
   });
 
   test("McCormick reaper computes sickle bar reciprocating frequency and harvest rate", () => {
@@ -163,6 +207,12 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(mccormickReelAngleDeg(Math.PI, res.reelToCutterRatio)).toBeGreaterThan(0);
     expect(res.reelArmCount).toBe(4);
     expect(res.reelArmSvgLen).toBe(95);
+    expect(res.schematicReelR).toBe(50);
+    expect(mccormickSchematicReelArm(0).x).toBe(260);
+    expect(mccormickSchematicReelArm(90).y).toBe(150);
+    expect(res.schematicSickleCount).toBe(8);
+    expect(mccormickSchematicSickleX(0)).toBe(170);
+    expect(mccormickSchematicSickleX(7)).toBe(310);
   });
 
   test("Davenport electric motor computes torque and rotational speed from battery electromotive force", () => {
@@ -181,6 +231,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepGatlingGun({ crankRpm: 60, barrelCount: 6 });
     expect(res.roundsPerMin).toBe(360);
     expect(res.muzzleEnergyJoules).toBe(1850);
+    expect(res.schematicBarrelCount).toBe(6);
+    expect(gatlingSchematicBarrelY(0)).toBe(150);
+    expect(gatlingSchematicBarrelY(90)).toBe(178);
   });
 
   test("Hyatt celluloid computes hydraulic consolidation and camphor plasticization", () => {
@@ -205,12 +258,18 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const microbe = pasteurMicrobeSvg(0, 0);
     expect(microbe.xPos).toBe(230);
     expect(microbe.yPos).toBe(140);
+    expect(res.schematicBubbleCount).toBe(5);
+    expect(pasteurSchematicBubbleX(0)).toBe(145);
+    expect(pasteurSchematicBubbleX(4)).toBe(245);
   });
 
   test("Glidden barbed wire computes tensile yield and barb lock security", () => {
     const res = stepGliddenBarbedWire({ wireTensionN: 650, twistsPerFoot: 5 });
     expect(res.tensileStrengthLbs).toBe(950);
     expect(res.isLocked).toBe(true);
+    expect(res.schematicSpurCount).toBe(3);
+    expect(gliddenSchematicSpurX(0)).toBe(110);
+    expect(gliddenSchematicSpurX(2)).toBe(290);
   });
 
   test("Edison phonograph computes groove tracking pitch and diaphragm acoustic amplitude", () => {
@@ -218,6 +277,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.surfaceSpeedMps).toBeGreaterThan(0);
     expect(res.grooveDepthMicrons).toBeGreaterThan(0);
     expect(phonographAxialTravelMm(60, 2)).toBeGreaterThan(0);
+    expect(res.schematicGrooveCount).toBe(8);
+    expect(edisonSchematicGrooveX(0)).toBe(120);
+    expect(edisonSchematicGrooveX(7)).toBe(260);
   });
 
   test("Thomson welding computes secondary current heating, interface temperature, and upset forge", () => {
@@ -250,6 +312,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.cupCols).toBe(8);
     expect(hollerithCupSvg(0).cx).toBe(20);
     expect(hollerithCupSvg(8).cy).toBe(130);
+    expect(res.schematicPinCount).toBe(9);
+    expect(hollerithSchematicPinX(0)).toBe(80);
+    expect(hollerithSchematicPinX(8)).toBe(320);
   });
 
   test("Noyce planar integrated circuit computes junction isolation and oxide passivation", () => {
@@ -319,6 +384,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.isOscillating).toBe(true);
     expect(res.popcornKernelCount).toBe(12);
     expect(spencerPopcornSvg(0, false, res.popcornKernelCount).px).toBeCloseTo(8, 0);
+    expect(res.schematicCavityCount).toBe(8);
+    expect(spencerSchematicCavity(0).cx).toBe(136);
+    expect(spencerSchematicCavity(2).cy).toBe(176);
   });
 
   test("Kwolek Kevlar continuum computes anisotropic liquid crystal alignment and bullet arrest", () => {

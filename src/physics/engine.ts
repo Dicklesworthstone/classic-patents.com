@@ -78,6 +78,12 @@ export const LAMARR_BAND_MAX_MHZ = 520;
 export const LAMARR_PIANO_KEYS = 88;
 export const LAMARR_PIANO_ROLL_STEP = 37;
 export const LAMARR_JAM_CHANNEL_FRACTION = 0.3;
+export const LAMARR_SCHEMATIC_STAFF_COUNT = 11;
+export const LAMARR_SCHEMATIC_STAFF_ORIGIN_Y = 75;
+export const LAMARR_SCHEMATIC_STAFF_PITCH_Y = 13;
+export const LAMARR_SCHEMATIC_HOP_ORIGIN_X = 80;
+export const LAMARR_SCHEMATIC_HOP_PITCH_X = 30;
+export const LAMARR_SCHEMATIC_HOP_SEQUENCE = [0, 3, 1, 7, 4, 9, 2, 6] as const;
 
 export function lamarrPianoRollChannel(
   step: number,
@@ -115,6 +121,30 @@ export function lamarrRadioChannel(
 
 export function lamarrPianoKeyHz(pianoKey: number, pianoKeys = LAMARR_PIANO_KEYS) {
   return Number((220 + (Math.max(1, pianoKey) / pianoKeys) * 660).toFixed(1));
+}
+
+/** Piano-roll staff Y on the schematic. Shared by the schematic. */
+export function lamarrSchematicStaffY(
+  index: number,
+  originY = LAMARR_SCHEMATIC_STAFF_ORIGIN_Y,
+  pitchY = LAMARR_SCHEMATIC_STAFF_PITCH_Y,
+) {
+  return originY + index * pitchY;
+}
+
+/** Hop-slot seat on the schematic piano roll. Shared by the schematic. */
+export function lamarrSchematicHop(
+  index: number,
+  row: number,
+  originX = LAMARR_SCHEMATIC_HOP_ORIGIN_X,
+  originY = LAMARR_SCHEMATIC_STAFF_ORIGIN_Y,
+  pitchX = LAMARR_SCHEMATIC_HOP_PITCH_X,
+  pitchY = LAMARR_SCHEMATIC_STAFF_PITCH_Y,
+) {
+  return {
+    x: originX + index * pitchX,
+    y: originY + row * pitchY,
+  };
 }
 
 export const FrankenSimEngine = {
@@ -605,6 +635,12 @@ export const FrankenSimEngine = {
       defaultJamChannel: lamarrDefaultJamChannel(channelsCount),
       spectrumBarOriginX: 20,
       spectrumBarPitchPx: 4.5,
+      schematicStaffCount: LAMARR_SCHEMATIC_STAFF_COUNT,
+      schematicStaffOriginY: LAMARR_SCHEMATIC_STAFF_ORIGIN_Y,
+      schematicStaffPitchY: LAMARR_SCHEMATIC_STAFF_PITCH_Y,
+      schematicHopOriginX: LAMARR_SCHEMATIC_HOP_ORIGIN_X,
+      schematicHopPitchX: LAMARR_SCHEMATIC_HOP_PITCH_X,
+      schematicHopSequence: LAMARR_SCHEMATIC_HOP_SEQUENCE,
     };
   },
 

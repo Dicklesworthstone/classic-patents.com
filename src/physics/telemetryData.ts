@@ -256,7 +256,9 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "The source's Fig. 9 model routes two generator circuits through collector rings and brushes to corresponding motor-coil pairs. Their changing magnetizing forces progressively shift the ring poles; Tesla says disk D follows the moving points of greatest attraction.",
   },
-  "us-2708656-fermi-reactor": {
+  // Preserved non-public model. The exact route is constrained to a
+  // source-reading guide until its 58-page scholarly edition is accepted.
+  "_legacy-unpublished-us-2708656-fermi-reactor": {
     domain: "nuclear_kinetics",
     domainTitle: "6-Group Delayed Neutron Point Kinetics & Criticality",
     equationName: "Point Kinetics Differential Equation",
@@ -5037,4 +5039,52 @@ PATENT_PHYSICS_REGISTRY["us-2292387-lamarr-frequency-hopping"] = {
   },
   pedagogicalInsight:
     "US 2,292,387 describes a transmitter and receiver whose matched moving records select their tuning states together. The illustrated transmitter has seven tuning condensers, the receiver has four, and the specification says player-piano records could instead have as many as 88 rows. The scholarly edition remains under independent publication review, so this guide does not claim a fixed channel count, hop rate, RF bandwidth, processing gain, jamming margin, or later-network performance.",
+};
+
+PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Neutronic-Reactor Lattice Claims",
+  equationName: "No quantitative reactor-operation model published",
+  governingEquation: "Claim 1: graphite moderator + natural-uranium rods + Fig. 3 k = 1.00 region",
+  engineMethod: "No reactor-operation engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = ["Source sheets 1–9", "Source sheets 10–18", "Source sheets 19–27"][
+      focus - 1
+    ] as string;
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Figures",
+        value: "42 on 27 sheets",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      { label: "Printed Claims", value: "8", unit: "source text", badgeColor: "sapphire" },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 2,708,656 claims graphite or heavy-water lattices with discrete uranium fuel bodies and figure-defined criticality regions. Its 58-page scholarly edition remains under independent review, so this guide does not claim delayed-neutron kinetics, control-rod behavior, reactivity, power, temperature, radiation dose, or Chicago Pile-1 operating data.",
 };

@@ -70,6 +70,7 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     schematicRunnerCy: 130,
     schematicRunnerR: 60,
     schematicBucketCount: 8,
+    schematicBucketPitchDeg: 45,
   };
 }
 
@@ -110,6 +111,8 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     schematicCenterY: 150,
     schematicJunctionInnerR: 22,
     schematicJunctionOuterR: 32,
+    schematicJunctionCount: 12,
+    schematicJunctionPitchDeg: 30,
   };
 }
 
@@ -177,6 +180,7 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     stageRingSvgCount: 22,
     stageSvgOriginX: 135,
     stageSvgPitch: 16,
+    schematicStageXs: [100, 120, 140, 170, 190, 210, 230, 260, 280, 300],
   };
 }
 
@@ -248,7 +252,15 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     skimDropOriginY: -0.15,
     skimDropSpacing: 0.2,
     skimDropWrap: 2.0,
+    schematicDiscOriginY: 100,
+    schematicDiscPitchY: 20,
+    schematicDiscCount: 5,
   };
+}
+
+/** Conical disc-stack Y on the schematic. Shared by the schematic. */
+export function delavalSchematicDiscY(index: number, originY = 100, pitchY = 20) {
+  return originY + index * pitchY;
 }
 
 export function stepNobelDynamite(params: {
@@ -283,6 +295,27 @@ export function stepNobelDynamite(params: {
     kieselguhrOriginX: 200,
     kieselguhrOriginY: 135,
     kieselguhrPitch: 32,
+    schematicKieselguhrOriginX: 90,
+    schematicKieselguhrOriginY: 125,
+    schematicKieselguhrPitchX: 30,
+    schematicKieselguhrPitchY: 25,
+    schematicKieselguhrCols: 7,
+    schematicKieselguhrRows: 3,
+  };
+}
+
+/** Kieselguhr grain seat on the schematic cartridge. Shared by the schematic. */
+export function nobelSchematicKieselguhr(
+  col: number,
+  row: number,
+  originX = 90,
+  originY = 125,
+  pitchX = 30,
+  pitchY = 25,
+) {
+  return {
+    cx: originX + col * pitchX,
+    cy: originY + row * pitchY,
   };
 }
 
@@ -334,10 +367,15 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     schematicSawCy: 145,
     schematicSawInnerR: 44,
     schematicSawOuterR: 52,
+    schematicSawToothCount: 12,
+    schematicSawToothPitchDeg: 30,
+    schematicSawTwistRad: 0.15,
     schematicBrushCx: 300,
     schematicBrushCy: 145,
     schematicBrushInnerR: 15,
     schematicBrushOuterR: 38,
+    schematicBrushRayCount: 8,
+    schematicBrushRayPitchDeg: 45,
   };
 }
 
@@ -389,6 +427,11 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     schematicReelCx: 210,
     schematicReelCy: 100,
     schematicReelR: 50,
+    schematicReelArmPitchDeg: 90,
+    schematicSickleOriginX: 170,
+    schematicSicklePitchX: 20,
+    schematicSickleCount: 8,
+    schematicSickleY: 210,
     reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
 }
@@ -396,6 +439,20 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
 /** Reel pose from the cutter-phase studio clock. Shared by 2D. */
 export function mccormickReelAngleDeg(cutterPhaseRad: number, reelToCutterRatio: number) {
   return Number((((cutterPhaseRad * reelToCutterRatio * 180) / Math.PI) % 360).toFixed(2));
+}
+
+/** Gathering-reel arm tip on the schematic. Shared by the schematic. */
+export function mccormickSchematicReelArm(deg: number, cx = 210, cy = 100, radius = 50) {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    x: Number((cx + Math.cos(rad) * radius).toFixed(2)),
+    y: Number((cy + Math.sin(rad) * radius).toFixed(2)),
+  };
+}
+
+/** Reciprocating sickle tooth X on the schematic. Shared by the schematic. */
+export function mccormickSchematicSickleX(index: number, originX = 170, pitchX = 20) {
+  return originX + index * pitchX;
 }
 
 export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque?: number }) {
@@ -472,6 +529,7 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     crankPinRadiusPx: 28,
     schematicBarrelAmpY: 28,
     schematicBarrelCenterY: 150,
+    schematicBarrelCount: count,
   };
 }
 
@@ -558,7 +616,16 @@ export function stepPasteurFermentation(params: {
     microbeSvgPitchY: 28,
     microbeCols: 5,
     microbeCount: 14,
+    schematicBubbleOriginX: 145,
+    schematicBubblePitchX: 25,
+    schematicBubbleCount: 5,
+    schematicBubbleY: 160,
   };
+}
+
+/** Anaerobic CO₂ bubble X on the schematic. Shared by the schematic. */
+export function pasteurSchematicBubbleX(index: number, originX = 145, pitchX = 25) {
+  return originX + index * pitchX;
 }
 
 /** Vat-face yeast/microbe seat. Shared by 2D. */
@@ -609,7 +676,16 @@ export function stepGliddenBarbedWire(params: {
     flyerOmegaDegPerS: flyer.omegaDegPerS,
     reelOmegaRadPerS: Number((flyer.omegaRadPerS * 0.2).toFixed(3)),
     twistWaveAmpPx: Number((twists * 2).toFixed(2)),
+    schematicSpurOriginX: 110,
+    schematicSpurPitchX: 90,
+    schematicSpurCount: 3,
+    schematicSpurY: 140,
   };
+}
+
+/** Locked spur X on the schematic. Shared by the schematic. */
+export function gliddenSchematicSpurX(index: number, originX = 110, pitchX = 90) {
+  return originX + index * pitchX;
 }
 
 export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeDb?: number }) {
@@ -643,7 +719,17 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     axialDisplayWrapMm: 40,
     axialSvgPxPerMm: 2,
     driveIndicatorSvgR: 45,
+    schematicGrooveOriginX: 120,
+    schematicGroovePitchX: 20,
+    schematicGrooveCount: 8,
+    schematicGrooveY0: 110,
+    schematicGrooveY1: 180,
   };
+}
+
+/** Tinfoil groove X on the schematic cylinder. Shared by the schematic. */
+export function edisonSchematicGrooveX(index: number, originX = 120, pitchX = 20) {
+  return originX + index * pitchX;
 }
 
 /** Cylinder-angle display travel along the US 200,521 lead screw, wrapped to the studio track. */
@@ -802,7 +888,18 @@ export function stepHollerithTabulating(params: {
     cupSvgPitchX: 25,
     cupSvgPitchY: 30,
     cupCols: 8,
+    schematicPinOriginX: 80,
+    schematicPinPitchX: 30,
+    schematicPinCount: 9,
+    schematicPinY0: 70,
+    schematicPinY1: 105,
+    schematicCupY: 142,
   };
+}
+
+/** Press-pin / mercury-cup X on the schematic. Shared by the schematic. */
+export function hollerithSchematicPinX(index: number, originX = 80, pitchX = 30) {
+  return originX + index * pitchX;
 }
 
 /** Mercury-cup seat under the pin press. Shared by 2D. */

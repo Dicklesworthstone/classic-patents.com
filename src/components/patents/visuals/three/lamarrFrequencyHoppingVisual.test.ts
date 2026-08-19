@@ -8,6 +8,8 @@ import {
   lamarrPianoKeyHz,
   lamarrPianoRollChannel,
   lamarrRadioChannel,
+  lamarrSchematicHop,
+  lamarrSchematicStaffY,
 } from "@/physics/engine";
 import {
   buildLamarrFrequencyHoppingModel,
@@ -76,6 +78,12 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(result.pianoRollStep).toBe(37);
     expect(result.spectrumBarOriginX).toBe(20);
     expect(result.spectrumBarPitchPx).toBe(4.5);
+    expect(result.schematicStaffCount).toBe(11);
+    expect(result.schematicHopSequence).toEqual([0, 3, 1, 7, 4, 9, 2, 6]);
+    expect(lamarrSchematicStaffY(0)).toBe(75);
+    expect(lamarrSchematicStaffY(1)).toBe(88);
+    expect(lamarrSchematicHop(0, 0).x).toBe(80);
+    expect(lamarrSchematicHop(1, 3).y).toBe(114);
     expect(lamarrPianoRollChannel(0)).toBe(1);
     expect(lamarrChannelFrequencyMhz(1)).toBe(302);
     expect(lamarrChannelFrequencyMhz(88)).toBe(520);
@@ -90,6 +98,15 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(threeSource).toContain("spreadSpectrumBandwidthHz");
     expect(threeSource).not.toContain("* 1e6");
     expect(threeSource).not.toContain("liveChannels * 0.3");
+
+    const schematicSource = readFileSync(
+      join(process.cwd(), "src", "components", "patents", "InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    expect(schematicSource).toContain("lamarrSchematicStaffY");
+    expect(schematicSource).toContain("lamarrSchematicHop");
+    expect(schematicSource).not.toContain("75 + i * 13");
+    expect(schematicSource).not.toContain("80 + i * 30");
   });
 
   test("builds and articulates procedural torpedo bay, twin reels, paper roll web, sensing comb, and waterfall correctly", () => {

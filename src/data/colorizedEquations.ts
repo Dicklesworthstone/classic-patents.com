@@ -3277,7 +3277,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 11. Enrico Fermi & Leo Szilard Neutronic Reactor (US 2,708,656)
-  "us-2708656-fermi-reactor": [
+  // Preserved non-public model. The public route receives a Claim 1 source
+  // card below while the complete 58-page edition remains under review.
+  "_legacy-unpublished-us-2708656-fermi-reactor": [
     {
       id: "fermi-delayed-neutron-kinetics",
       patentId: "us-2708656-fermi-reactor",
@@ -18145,3 +18147,43 @@ function _convertScientificPrincipleToColorizedEquation(
 export function getColorizedEquationsForPatent(patentId: string): ColorizedEquation[] {
   return ALL_COLORIZED_EQUATIONS[patentId] || [];
 }
+
+// The public Fermi route deliberately renders this direct, claim-bounded card
+// instead of the retained non-serving point-kinetics material above.
+ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"] = [
+  {
+    id: "fermi-source-claim-one-criticality-contour",
+    patentId: "us-2708656-fermi-reactor",
+    title: "Claim 1: Graphite-Uranium Lattice Within Fig. 3's k = 1.00 Region",
+    category: "Source-Bound Reactor Construction",
+    rawLatex:
+      "\\text{graphite moderator} + \\text{natural-uranium rods} + \\text{Fig. 3 } k = 1.00 \\text{ contour}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\text{graphite moderator}} + \\textcolor{#2563eb}{\\text{natural-uranium rods}} + \\textcolor{#d97706}{\\text{Fig. 3 } k = 1.00 \\text{ contour}}",
+    plainEnglishSentence: [
+      {
+        text: "Claim 1 requires a graphite moderator around natural-uranium fuel rods. Their size and graphite-to-uranium volume ratio must fall in the printed ",
+      },
+      { text: "Fig. 3 k = 1.00 region", variableId: "criticality_region" },
+      { text: ", with enough material for a chain reaction." },
+    ],
+    variables: [
+      {
+        id: "criticality_region",
+        symbol: "k = 1.00 contour",
+        name: "Printed Fig. 3 criticality region",
+        color: "amber",
+        role: "The figure-defined size and volume-ratio limitation invoked in Claim 1.",
+        unit: "Claim 1 figure relation",
+        dimension: "source-drawn criticality boundary",
+        explanation:
+          "Claim 1 refers to the Fig. 3 region marked k = 1.00. The held edition does not license a live point-kinetics, control-rod, power, or temperature calculation from that printed contour.",
+      },
+    ],
+    pedagogicalNote:
+      "This card is limited to Claim 1's graphite, natural-uranium rods, and Fig. 3 contour relationship. The 58-page source edition remains under independent review, so the site does not present a delayed-neutron, control-rod, power, temperature, or Chicago Pile-1 performance model as a patent measurement.",
+    claimRef: 1,
+    historicalSignificance:
+      "The card preserves the claim's construction and figure limitation without turning later reactor-engineering models into unreviewed patent measurements.",
+  },
+];

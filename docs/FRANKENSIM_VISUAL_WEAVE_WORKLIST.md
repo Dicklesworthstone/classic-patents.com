@@ -283,6 +283,16 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.190 Goodyear chainSagPx / chainSagBezierScale. 2D no longer converts leftover sag 25 or sag×1.5 privately.
 - [x] P5.191 McCormick reelArmCount / reelArmSvgLen. 2D no longer converts leftover 4×90° or arm×95 privately.
 - [x] P5.192 Wright wrightWarpFromPointerNx. Schematic no longer converts leftover (nx−0.5)×30 privately.
+- [x] P5.193 Schematic leftover radii: Spencer cavities, Gatling barrel Y, Gramme junctions, Whitney saw/brush rays, Pelton buckets, McCormick reel, Sholes typebars, Lamarr piano-roll staff/hop grid. Schematic no longer converts leftover r=26/28/22/32/44/52/50/60 or 75+i×13 privately.
+- [x] P5.194 Nobel nobelSchematicKieselguhr. Schematic no longer converts leftover 90+col×30 / 125+row×25 privately.
+- [x] P5.195 McCormick mccormickSchematicSickleX. Schematic no longer converts leftover 170+i×20 privately.
+- [x] P5.196 Pasteur pasteurSchematicBubbleX. Schematic no longer converts leftover 145+i×25 privately.
+- [x] P5.197 Glidden gliddenSchematicSpurX. Schematic no longer converts leftover 110+i×90 privately.
+- [x] P5.198 Edison phonograph edisonSchematicGrooveX. Schematic no longer converts leftover 120+i×20 privately.
+- [x] P5.199 De Laval delavalSchematicDiscY. Schematic no longer converts leftover 100+i×20 privately.
+- [x] P5.200 Otis otisSchematicRailY. Schematic no longer converts leftover 50+i×30 privately.
+- [x] P5.201 Hollerith hollerithSchematicPinX. Schematic no longer converts leftover 80+i×30 privately.
+- [x] P5.202 Parsons schematicStageXs. Schematic no longer hardcodes leftover expanding-stage Xs privately.
 
 ## Explicitly out of scope
 

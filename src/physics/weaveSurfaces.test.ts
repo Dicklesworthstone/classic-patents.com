@@ -41,9 +41,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       expect(g.unit).toBeDefined();
     }
 
-    const fermiGhosts = intervalGhosts("us-2708656-fermi-reactor", { rodInsertionPct: 40 });
-    expect(fermiGhosts.length).toBeGreaterThan(0);
-    expect(fermiGhosts[0].live).toBeGreaterThan(0);
+    expect(intervalGhosts("us-2708656-fermi-reactor", { rodInsertionPct: 40 })).toEqual([]);
   });
 
   test("computes fidelity fields and discrepancy bounds", () => {
@@ -236,6 +234,21 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);
   });
 
+  test("keeps Fermi US 2,708,656 on its held Claim 1 contour boundary", () => {
+    expect(materialProbe("us-2708656-fermi-reactor", "Lattice", {})).toMatchObject({
+      qty: "Claim 1",
+      value: "figure-defined lattice relation",
+      unit: "source relation",
+    });
+    expect(intervalGhosts("us-2708656-fermi-reactor", {})).toEqual([]);
+    expect(fidelityField("us-2708656-fermi-reactor", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-2708656-fermi-reactor")).toEqual([]);
+    expect(coupleLinks("us-2708656-fermi-reactor", {})).toEqual([]);
+  });
+
   test("computes spectral eigenmodes for resonant patents", () => {
     const teslaCoilModes = spectralModes("us-593138-tesla-coil", { secondaryTurns: 1000 });
     expect(teslaCoilModes.length).toBeGreaterThan(0);
@@ -246,9 +259,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(wrightScenarios.length).toBeGreaterThan(0);
     expect(wrightScenarios[0].date).toContain("1903");
 
-    const fermiScenarios = datedScenarios("us-2708656-fermi-reactor");
-    expect(fermiScenarios.length).toBeGreaterThan(0);
-    expect(fermiScenarios[0].date).toContain("1942");
+    expect(datedScenarios("us-2708656-fermi-reactor")).toEqual([]);
   });
 
   test("evaluates cross-patent Dirac coupling power links", () => {

@@ -39,6 +39,14 @@ interface DualProjectionViewerProps {
   initialView?: string;
 }
 
+export type PatentViewMode =
+  | "plain-english"
+  | "original-spec"
+  | "interactive-sim"
+  | "schematic-sheet"
+  | "pdf-facsimile"
+  | "split-view";
+
 const PATENT_VIEW_MODES: PatentViewMode[] = [
   "plain-english",
   "original-spec",
@@ -126,14 +134,6 @@ function TranscriptUnavailable({
     </div>
   );
 }
-
-export type PatentViewMode =
-  | "plain-english"
-  | "original-spec"
-  | "interactive-sim"
-  | "schematic-sheet"
-  | "pdf-facsimile"
-  | "split-view";
 
 export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);

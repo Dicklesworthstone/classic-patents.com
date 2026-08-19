@@ -21,7 +21,6 @@ import { EinsteinRefrigeratorSim } from "./EinsteinRefrigeratorSim";
 import { EngelbartMouseSim } from "./EngelbartMouseSim";
 import { EricssonPropellerSim } from "./EricssonPropellerSim";
 import { FarnsworthTVSim } from "./FarnsworthTVSim";
-import { FermiReactorSim } from "./FermiReactorSim";
 import { GatlingGunSim } from "./GatlingGunSim";
 import { GliddenBarbedWireSim } from "./GliddenBarbedWireSim";
 import { GoddardRocketSourceVisual } from "./GoddardRocketSourceVisual";
@@ -127,10 +126,6 @@ const EricssonPropeller3D = dynamic(
 );
 const FarnsworthTV3D = dynamic(
   () => import("./three/FarnsworthTV3D").then((mod) => mod.FarnsworthTV3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const FermiReactor3D = dynamic(
-  () => import("./three/FermiReactor3D").then((mod) => mod.FermiReactor3D),
   { ssr: false, loading: ThreeLoading },
 );
 const GatlingGun3D = dynamic(() => import("./three/GatlingGun3D").then((mod) => mod.GatlingGun3D), {
@@ -276,6 +271,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-2981877-noyce-ic",
     "us-586193-marconi-radio",
     "us-2292387-lamarr-frequency-hopping",
+    "us-2708656-fermi-reactor",
     "us-808897-carrier-air-conditioner",
     "us-3671542-kwolek-kevlar",
     "us-3858232-boyle-smith-ccd",
@@ -467,7 +463,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-2524035-bardeen-transistor":
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-2708656-fermi-reactor":
-            return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="US 2,708,656 claims graphite or heavy-water reactor lattices, criticality contours, and eight specific construction combinations. The inherited reactor model adds unreviewed delayed-neutron kinetics, control-rod operation, power, and Chicago Pile-1 history, so it is withheld until the source-specific treatment has passed independent review."
+                title="Neutronic-reactor visual under source review"
+              />
+            );
           case "us-2981877-noyce-ic":
             return <NoycePlanarSourceVisual />;
           case "us-3541541-engelbart-mouse":
