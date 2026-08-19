@@ -51,10 +51,10 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
 
     for (const preset of [
       "iso",
-      "jt_valve",
-      "counter_heat_exchanger",
-      "liquid_dewar",
-      "spindle_handwheel",
+      "regulating_valve",
+      "counter_current_apparatus",
+      "vessel_v_prime",
+      "regulator",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
