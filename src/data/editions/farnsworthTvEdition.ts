@@ -75,6 +75,7 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "PHILO T. FARNSWORTH, OF BERKELEY, CALIFORNIA, ASSIGNOR, BY MESNE ASSIGNMENTS, TO TELEVISION LABORATORIES, INC., OF SAN FRANCISCO, CALIFORNIA, A CORPORATION OF CALIFORNIA.",
         "TELEVISION SYSTEM.",
+        "1,773,980.",
         "Application filed January 7, 1927. Serial No. 159,540. Patented Aug. 26, 1930.",
       ],
     },

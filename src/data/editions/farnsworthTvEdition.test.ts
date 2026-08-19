@@ -18,6 +18,8 @@ describe("US 1,773,980 manual source edition", () => {
       farnsworthTvArchivalEdition.sourcePdfSha256,
     );
     expect(farnsworthTvPatent.filingDate).toBe("1927-01-07");
+    const masthead = farnsworthTvArchivalEdition.blocks.find((block) => block.kind === "masthead");
+    expect(masthead?.kind === "masthead" && masthead.lines).toContain("1,773,980.");
     expect(farnsworthTvPatent.claims.map((claim) => claim.number)).toEqual(
       Array.from({ length: 18 }, (_, index) => index + 1),
     );
