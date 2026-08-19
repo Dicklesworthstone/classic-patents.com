@@ -4,7 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
-import { stepCcdWells } from "@/physics/machineKernels";
+import { ccdNextPhase, stepCcdWells } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -70,6 +70,7 @@ export const BoyleSmithCcd3D = memo(() => {
     phaseDisplayMs: ccdWells.phaseDisplayMs,
     phaseDisplayS: ccdWells.phaseDisplayS,
     phasePeriodNs: ccdWells.phasePeriodNs,
+    gatePhaseCount: ccdWells.gatePhaseCount,
     isCutaway,
   });
 
@@ -151,7 +152,7 @@ export const BoyleSmithCcd3D = memo(() => {
         phaseTimer += delta;
         if (phaseTimer > p.phaseDisplayS) {
           phaseTimer = 0;
-          currentActivePhase = ((currentActivePhase % 3) + 1) as 1 | 2 | 3;
+          currentActivePhase = ccdNextPhase(currentActivePhase, p.gatePhaseCount);
         }
       } else {
         currentActivePhase = p.clockPhase;

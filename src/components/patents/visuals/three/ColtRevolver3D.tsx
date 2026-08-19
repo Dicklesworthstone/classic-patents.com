@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { coltNextChamber } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -135,9 +136,9 @@ export function ColtRevolver3D() {
   }, [updateParam]);
 
   const handleStepChamber = useCallback(() => {
-    setCurrentChamberIndex((prev) => (prev % 5) + 1);
+    setCurrentChamberIndex((prev) => coltNextChamber(prev, coltMech.chamberCount));
     soundEngine.playMicroswitchClick();
-  }, []);
+  }, [coltMech.chamberCount]);
 
   const handlePullTrigger = useCallback(() => {
     if (!isFullCock || isFiring) return;
@@ -152,9 +153,9 @@ export function ColtRevolver3D() {
     }
     fireTimerRef.current = window.setTimeout(() => {
       setIsFiring(false);
-      setCurrentChamberIndex((prev) => (prev % 5) + 1);
+      setCurrentChamberIndex((prev) => coltNextChamber(prev, coltMech.chamberCount));
     }, coltMech.cycleDisplayMs);
-  }, [isFullCock, isFiring, updateParam, coltMech.cycleDisplayMs]);
+  }, [isFullCock, isFiring, updateParam, coltMech.cycleDisplayMs, coltMech.chamberCount]);
 
   useEffect(() => {
     return () => {

@@ -36,6 +36,7 @@ export interface EastmanKodakModelNodes {
   viewfinder?: THREE.Group;
   guideRollers?: THREE.Mesh[];
   shutterCord?: THREE.Mesh;
+  exposureDial?: THREE.Mesh;
 }
 
 export interface EastmanKodakMaterials {
@@ -55,10 +56,90 @@ export interface EastmanKodakModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Pebbled Morocco Leather Texture
+ */
+function createLeatherTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Charcoal-black morocco base
+  ctx.fillStyle = "#18181b";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Pebbled organic grain cells
+  for (let i = 0; i < 600; i++) {
+    const px = deterministicUnit(i, 0) * 512;
+    const py = deterministicUnit(i, 1) * 512;
+    const r = 2.5 + deterministicUnit(i, 2) * 3.5;
+    ctx.fillStyle = "rgba(40, 40, 45, 0.4)";
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(10, 10, 12, 0.6)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(4, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Internal Mahogany Chassis Texture
+ */
+function createMahoganyTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#451a03";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 70; i++) {
+    const x = i * 7.5 + (deterministicUnit(i, 3) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(110, 35, 10, ${alpha})`;
+    ctx.lineWidth = 1.2 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 12, 140, x - 10, 360, x + 6, 512);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildEastmanKodakModel(): EastmanKodakModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -69,10 +150,17 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     return mat;
   };
 
+  const leatherTex = createLeatherTexture();
+  if (leatherTex) texturesToDispose.push(leatherTex);
+
+  const mahoganyTex = createMahoganyTexture();
+  if (mahoganyTex) texturesToDispose.push(mahoganyTex);
+
   // ── Authentic Materials Palette ──────────────────────────────────────────
   const materials: EastmanKodakMaterials = {
     moroccoLeather: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(leatherTex ? { map: leatherTex } : {}),
         color: 0x18181b,
         roughness: 0.72,
         metalness: 0.12,
@@ -80,6 +168,7 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     ),
     mahoganyWood: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(mahoganyTex ? { map: mahoganyTex } : {}),
         color: 0x451a03,
         roughness: 0.52,
         metalness: 0.1,
@@ -150,6 +239,25 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     );
     buckle.position.set(bx, 1.92, 0);
     rootGroup.add(buckle);
+  });
+
+  // Brass Corner Guards on Box Body
+  [
+    [-2.35, 1.85, 1.85],
+    [2.35, 1.85, 1.85],
+    [-2.35, -1.85, 1.85],
+    [2.35, -1.85, 1.85],
+    [-2.35, 1.85, -1.85],
+    [2.35, 1.85, -1.85],
+    [-2.35, -1.85, -1.85],
+    [2.35, -1.85, -1.85],
+  ].forEach(([cx, cy, cz]) => {
+    const corner = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.35, 0.35, 0.35)),
+      materials.burnishedBrass,
+    );
+    corner.position.set(cx, cy, cz);
+    rootGroup.add(corner);
   });
 
   // ── 2. Internal Mahogany Chassis & Light Baffle Cone ─────────────────────
@@ -294,6 +402,14 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   keyStem.position.y = -0.15;
   windingKey.add(keyStem);
 
+  // Exposure Counter Ratchet Dial beside winding key
+  const exposureDial = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.25, 0.25, 0.06, 20)),
+    materials.burnishedBrass,
+  );
+  exposureDial.position.set(-0.8, 1.95, -1.2);
+  rootGroup.add(exposureDial);
+
   // Shutter release button on side/top
   const shutterButton = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.13, 0.13, 0.22, 16)),
@@ -303,7 +419,7 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
   shutterButton.castShadow = true;
   rootGroup.add(shutterButton);
 
-  // Shutter cocking cord pull eyelet
+  // Shutter cocking cord pull eyelet with brass ring
   const cordEyelet = new THREE.Mesh(
     trackGeo(new THREE.TorusGeometry(0.08, 0.02, 6, 12)),
     materials.burnishedBrass,
@@ -328,6 +444,7 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     carryingStrap,
     viewfinder,
     guideRollers,
+    exposureDial,
   };
 
   const dispose = () => {
@@ -336,6 +453,9 @@ export function buildEastmanKodakModel(): EastmanKodakModelResult {
     }
     for (const g of geometriesToDispose) {
       g.dispose();
+    }
+    for (const t of texturesToDispose) {
+      t.dispose();
     }
   };
 
@@ -362,6 +482,10 @@ export function updateEastmanKodakKinematics(
   nodes.windingKey.rotation.y += filmAdvanceSpeedRadPerS * dt;
   nodes.takeupSpool.rotation.y += filmAdvanceSpeedRadPerS * dt;
   nodes.supplySpool.rotation.y += supplySpoolOmegaRadPerS * dt;
+
+  if (nodes.exposureDial) {
+    nodes.exposureDial.rotation.y += filmAdvanceSpeedRadPerS * dt * 0.25;
+  }
 
   // 3. Guide Rollers Rotation
   if (nodes.guideRollers) {

@@ -92,6 +92,7 @@ export function LamarrFrequencyHopping3D() {
     carrierChannelsCount,
     isCutaway,
     jamChannel: params.jamChannel ?? fhPhysics.defaultJamChannel,
+    hopSoundStride: fhPhysics.hopSoundStride,
     isAudioMuted,
   });
 
@@ -177,7 +178,7 @@ export function LamarrFrequencyHopping3D() {
         activeChan = lamarrRadioChannel(pianoKey, liveChannels) - 1;
         setCurrentChannel(activeChan + 1);
 
-        if (!p.isAudioMuted && rollStep % 3 === 0) {
+        if (!p.isAudioMuted && rollStep % p.hopSoundStride === 0) {
           soundEngine.playPianoKeyHop(lamarrPianoKeyHz(pianoKey));
         }
       }

@@ -65,6 +65,11 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(result.electronVelocityMegaMps).toBeCloseTo(result.electronVelocityMps / 1e6, 1);
     expect(result.relativisticPct).toBeCloseTo(result.relativisticBeta * 100, 1);
     expect(result.acceleratingVoltageVolts).toBe(1500);
+    expect(result.rasterLinePct).toBeCloseTo(100 / 60, 5);
+    expect(result.rasterLineWrapPct).toBe(100);
+    expect(
+      FrankenSimEngine.stepFarnsworthTv(1.5, deflectionGauss, 500, 120).rasterLinePct,
+    ).toBeCloseTo(100 / 120, 5);
     expect(result.schematicCathodeR).toBe(28);
     expect(result.schematicEnvelopeW).toBe(290);
     expect(result.schematicDeflectorW).toBe(70);

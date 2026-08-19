@@ -72,6 +72,7 @@ describe("US 124,404 George Westinghouse Air Brake visual & kinematics boundary"
     expect(released.valveState).toBe("RELEASE");
     expect(released.shoeClampingForceKn).toBe(0);
     expect(released.wheelDisplayDegPerMph).toBe(8);
+    expect(released.accelMphPerS).toBe(10);
     expect(released.flywheelSvgR).toBe(54);
     expect(released.spokeCount).toBe(6);
     expect(released.spokePitchDeg).toBe(60);

@@ -72,7 +72,11 @@ export function HoweSewingMachine3D() {
     threadTensionGrams,
     isAudioMuted,
     crankOmegaRadPerS: stitchState.crankOmegaRadPerS,
+    crankOmegaDegPerS: stitchState.crankOmegaDegPerS,
+    displayWrapDeg: stitchState.displayWrapDeg,
     clothStudioAdvancePerS: stitchState.clothStudioAdvancePerS,
+    clothStudioWrap: stitchState.clothStudioWrap,
+    stitchFrequencyHz: stitchState.stitchFrequencyHz,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -144,20 +148,18 @@ export function HoweSewingMachine3D() {
       const elapsed = renderedSteps * (1 / 60);
       const p = live.current;
 
-      const omega = p.crankOmegaRadPerS;
-      const crankAngle = elapsed * omega;
-      const crankDeg = ((crankAngle * 180) / Math.PI) % 360;
+      const crankDeg = (elapsed * p.crankOmegaDegPerS) % p.displayWrapDeg;
       const stitch = stepHoweLockstitch(crankDeg);
 
       if (p.isCranking) {
-        model.flywheelGroup.rotation.x = crankAngle;
+        model.flywheelGroup.rotation.x = elapsed * p.crankOmegaRadPerS;
         model.needleArmGroup.rotation.z = stitch.needleStudioRotZ;
         model.needleArmGroup.position.y = stitch.needleStudioY;
         model.shuttleGroup.position.z = stitch.shuttleStudioZ;
-        model.clothMesh.position.z = -((elapsed * p.clothStudioAdvancePerS) % 2.0);
+        model.clothMesh.position.z = -((elapsed * p.clothStudioAdvancePerS) % p.clothStudioWrap);
 
         // Acoustic clack synthesis on stitch cycle
-        const currentCycle = Math.floor(crankAngle / (2 * Math.PI));
+        const currentCycle = Math.floor(elapsed * p.stitchFrequencyHz);
         if (currentCycle !== prevStitchCycle) {
           prevStitchCycle = currentCycle;
           if (!p.isAudioMuted) {

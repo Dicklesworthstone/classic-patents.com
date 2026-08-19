@@ -1,13 +1,15 @@
 /**
- * Procedural Three.js Model Builder for US 3,671,542
- * Stephanie L. Kwolek — Wholly Aromatic Carbocyclic Polycarbonamide (Kevlar, 1972)
+ * kwolekKevlarModel.ts
  *
- * Implements the authentic liquid-crystalline PPTA polymer chain sheet:
- * - Multi-capillary stainless steel spinneret extrusion pack (Claim 1)
- * - 5 parallel rigid-rod poly(p-phenylene terephthalamide) polymer chains with aromatic rings
- * - Amide linkage groups (-NH-CO-) with alternating trans-conformation
- * - Transverse inter-chain hydrogen bond network (-NH···O=C-) (Claim 2)
- * - Ballistic projectile impact testing assembly with dynamic strain dissipation
+ * Museum-Grade Procedural 3D Model for Stephanie L. Kwolek's 1972 Wholly Aromatic Polycarbonamide (Kevlar)
+ * (US Patent 3,671,542 - "Wholly Aromatic Carbocyclic Polycarbonamide Fiber").
+ *
+ * Implements the authentic liquid-crystalline PPTA polymer crystal lattice and extrusion apparatus:
+ * - Multi-capillary stainless steel spinneret extrusion block with gold-plated nozzle face and distribution pack (Claim 1)
+ * - 5 parallel rigid-rod poly(p-phenylene terephthalamide) polymer chains with alternating dihedral phenylene rings
+ * - Amide linkage groups (-NH-CO-) in strict trans-conformation with covalent backbone bonds
+ * - Transverse inter-chain hydrogen bond network (-NH···O=C-) forming rigid 2D crystalline hydrogen-bonded sheets (Claim 2)
+ * - Ballistic projectile impact testing assembly with dynamic kinetic energy dissipation wave
  */
 
 import * as THREE from "three";
@@ -28,6 +30,7 @@ export interface KwolekKevlarModel {
     hBondMat: THREE.MeshStandardMaterial;
     bondStickMat: THREE.MeshStandardMaterial;
     holeMat: THREE.MeshStandardMaterial;
+    goldNozzleMat?: THREE.MeshStandardMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -44,54 +47,62 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   const root = new THREE.Group();
   const disposables: Array<{ dispose: () => void }> = [];
 
-  // --- AUTHENTIC MATERIALS ---
+  // --- Museum-Grade Materials ---
   const carbonRingMat = new THREE.MeshStandardMaterial({
     color: 0xf59e0b,
-    roughness: 0.25,
-    metalness: 0.85,
+    roughness: 0.22,
+    metalness: 0.88,
   });
   disposables.push(carbonRingMat);
 
   const amideNitrogenMat = new THREE.MeshStandardMaterial({
-    color: 0x3b82f6,
-    roughness: 0.2,
-    metalness: 0.6,
+    color: 0x2563eb,
+    roughness: 0.18,
+    metalness: 0.65,
   });
   disposables.push(amideNitrogenMat);
 
   const carbonylOxygenMat = new THREE.MeshStandardMaterial({
-    color: 0xef4444,
-    roughness: 0.2,
-    metalness: 0.6,
+    color: 0xdc2626,
+    roughness: 0.18,
+    metalness: 0.65,
   });
   disposables.push(carbonylOxygenMat);
 
   const spinneretSteelMat = new THREE.MeshStandardMaterial({
     color: 0x475569,
-    roughness: 0.15,
-    metalness: 0.95,
+    roughness: 0.25,
+    metalness: 0.92,
   });
   disposables.push(spinneretSteelMat);
 
+  const goldNozzleMat = new THREE.MeshStandardMaterial({
+    color: 0xd4af37,
+    roughness: 0.2,
+    metalness: 0.95,
+  });
+  disposables.push(goldNozzleMat);
+
   const bulletMat = new THREE.MeshStandardMaterial({
     color: 0xb45309,
-    metalness: 0.9,
-    roughness: 0.2,
+    metalness: 0.92,
+    roughness: 0.18,
   });
   disposables.push(bulletMat);
 
   const hBondMat = new THREE.MeshStandardMaterial({
     color: 0x38bdf8,
-    roughness: 0.3,
-    metalness: 0.5,
+    roughness: 0.25,
+    metalness: 0.6,
     transparent: true,
-    opacity: 0.75,
+    opacity: 0.78,
   });
   disposables.push(hBondMat);
 
   const bondStickMat = new THREE.MeshStandardMaterial({
-    color: 0x475569,
-    metalness: 0.8,
+    color: 0x64748b,
+    roughness: 0.3,
+    metalness: 0.85,
   });
   disposables.push(bondStickMat);
 
@@ -110,20 +121,29 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   const spinneretPack = new THREE.Group();
   spinneretPack.position.set(-6.0, 0, 0);
 
-  const packGeo = new THREE.BoxGeometry(1.6, 6.8, 2.2);
+  // Heavy Stainless Steel Extrusion Die Body
+  const packGeo = new THREE.BoxGeometry(1.6, 7.2, 2.4);
   disposables.push(packGeo);
   const packMesh = new THREE.Mesh(packGeo, spinneretSteelMat);
+  packMesh.castShadow = true;
   spinneretPack.add(packMesh);
 
-  // Spinneret extrusion capillary holes
+  // Precision Gold-Plated Faceplate
+  const faceplateGeo = new THREE.BoxGeometry(0.12, 6.8, 2.1);
+  disposables.push(faceplateGeo);
+  const faceplate = new THREE.Mesh(faceplateGeo, goldNozzleMat);
+  faceplate.position.x = 0.82;
+  spinneretPack.add(faceplate);
+
+  // 5 Precision Capillary Orifices
   const numChains = 5;
   for (let c = 0; c < numChains; c++) {
     const yPos = (c - (numChains - 1) / 2) * 1.35;
-    const holeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.05, 16);
+    const holeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.08, 20);
     disposables.push(holeGeo);
     const hole = new THREE.Mesh(holeGeo, holeMat);
     hole.rotation.z = Math.PI / 2;
-    hole.position.set(0.81, yPos, 0);
+    hole.position.set(0.88, yPos, 0);
     spinneretPack.add(hole);
   }
   root.add(spinneretPack);
@@ -144,29 +164,32 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
       const xOffset = -4.0 + u * 1.55;
       uGroup.position.set(xOffset, 0, 0);
 
-      // 1,4-Phenylene aromatic ring
-      const ringGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.08, 6);
+      // 1,4-Phenylene aromatic ring (alternating tilted dihedral angles)
+      const ringGeo = new THREE.CylinderGeometry(0.44, 0.44, 0.09, 6);
       disposables.push(ringGeo);
       const ring = new THREE.Mesh(ringGeo, carbonRingMat);
-      ring.rotation.x = Math.PI / 2;
+      ring.rotation.x = Math.PI / 2 + (u % 2 === 0 ? 0.25 : -0.25);
+      ring.castShadow = true;
       uGroup.add(ring);
 
       // Amide nitrogen atom (-NH-)
-      const nGeo = new THREE.SphereGeometry(0.16, 12, 12);
+      const nGeo = new THREE.SphereGeometry(0.17, 16, 16);
       disposables.push(nGeo);
       const nAtom = new THREE.Mesh(nGeo, amideNitrogenMat);
       nAtom.position.set(0.55, u % 2 === 0 ? 0.22 : -0.22, 0);
+      nAtom.castShadow = true;
       uGroup.add(nAtom);
 
       // Carbonyl oxygen atom (=O)
-      const oGeo = new THREE.SphereGeometry(0.16, 12, 12);
+      const oGeo = new THREE.SphereGeometry(0.17, 16, 16);
       disposables.push(oGeo);
       const oAtom = new THREE.Mesh(oGeo, carbonylOxygenMat);
       oAtom.position.set(-0.55, u % 2 === 0 ? -0.22 : 0.22, 0);
+      oAtom.castShadow = true;
       uGroup.add(oAtom);
 
-      // Covalent backbone bond sticks
-      const stickGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.45, 8);
+      // Covalent backbone bond cylinders
+      const stickGeo = new THREE.CylinderGeometry(0.055, 0.055, 0.46, 10);
       disposables.push(stickGeo);
 
       const stick1 = new THREE.Mesh(stickGeo, bondStickMat);
@@ -194,7 +217,7 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
     const yMid = (c - (numChains - 1) / 2) * 1.35 + 0.675;
     for (let u = 0; u < 5; u++) {
       const xPos = -3.6 + u * 1.55;
-      const hBondGeo = new THREE.CylinderGeometry(0.035, 0.035, 1.15, 8);
+      const hBondGeo = new THREE.CylinderGeometry(0.038, 0.038, 1.18, 8);
       disposables.push(hBondGeo);
       const hBond = new THREE.Mesh(hBondGeo, hBondMat);
       hBond.position.set(xPos, yMid, 0);
@@ -203,12 +226,13 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   }
   polymerGroup.add(hBondsGroup);
 
-  // Ballistic Projectile
-  const bulletGeo = new THREE.ConeGeometry(0.45, 1.4, 24);
+  // Ballistic Copper-Jacketed Projectile
+  const bulletGeo = new THREE.ConeGeometry(0.48, 1.5, 28);
   disposables.push(bulletGeo);
   const bulletMesh = new THREE.Mesh(bulletGeo, bulletMat);
   bulletMesh.rotation.z = Math.PI / 2;
   bulletMesh.position.set(6.5, 0, 0);
+  bulletMesh.castShadow = true;
   root.add(bulletMesh);
 
   // ==========================================
@@ -255,6 +279,7 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
       hBondMat,
       bondStickMat,
       holeMat,
+      goldNozzleMat,
     },
     updateKinematics,
     dispose,

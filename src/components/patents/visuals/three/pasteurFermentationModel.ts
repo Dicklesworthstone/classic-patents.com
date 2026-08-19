@@ -4,13 +4,14 @@
  * Museum-Grade Procedural 3D Model for Louis Pasteur's 1873 Pure-Yeast Fermentation & Brewing Apparatus
  * (US Patent 135,245 - "Improvement in the Manufacture of Beer and Yeast").
  *
- * Reconstructs the apparatus that eliminated spoilage microbes and established germ theory in industrial brewing:
- * 1. Cast-iron tripod base support stand.
- * 2. Closed tinned copper cylindrical fermentation vat with hemispherical dome lid (Claim 1).
- * 3. Brass goose-neck airlock tube with sterile cotton microbial filter bulb (Claim 2).
- * 4. Helical cold-water cooling coil jacket around the vat.
- * 5. Glass level sight tube and brass sampling cock.
- * 6. Ascending CO2 effervescence bubble particles tracking yeast kinetics.
+ * Reconstructs the revolutionary apparatus that eliminated microbial spoilage and established germ theory:
+ * 1. Cast-iron tripod base support stand with arched legs and leveling feet.
+ * 2. Closed tinned copper cylindrical fermentation vat with riveted seams, brass reinforcing hoops,
+ *    and hemispherical dome lid secured by perimeter brass clamping dogs (Claim 1).
+ * 3. Iconic swan-neck / gooseneck airlock tube with sterilized calcined cotton microbial filter bulb (Claim 2).
+ * 4. Helical cold-water cooling coil jacket around the vat with brass inlet/outlet control valves.
+ * 5. Calibrated glass level sight tube in brass cage and rotary sampling cock.
+ * 6. Ascending CO2 effervescence bubble particles tracking live yeast metabolism.
  */
 
 import * as THREE from "three";
@@ -33,6 +34,7 @@ export interface PasteurFermentationModelNodes {
   bubblePoints: THREE.Points;
   bubblePositions: Float32Array;
   bubbleCount: number;
+  thermometerWell?: THREE.Mesh;
 }
 
 export interface PasteurFermentationMaterials {
@@ -42,6 +44,7 @@ export interface PasteurFermentationMaterials {
   glass: THREE.MeshStandardMaterial;
   cotton: THREE.MeshStandardMaterial;
   bubbleMat: THREE.PointsMaterial;
+  ironHoop: THREE.MeshStandardMaterial;
 }
 
 export interface PasteurFermentationModelResult {
@@ -71,68 +74,116 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   const bubbleGlowTex = createGlowPointTexture();
   texturesToDispose.push(bubbleGlowTex);
 
-  // Materials
+  // --- Museum Materials ---
+  const tinnedCopper = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xc88238,
+      roughness: 0.28,
+      metalness: 0.9,
+    }),
+  );
+
+  const brassPipes = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xd4af37,
+      roughness: 0.24,
+      metalness: 0.88,
+    }),
+  );
+
+  const castIron = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x22272e,
+      roughness: 0.65,
+      metalness: 0.85,
+    }),
+  );
+
+  const ironHoop = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      roughness: 0.55,
+      metalness: 0.8,
+    }),
+  );
+
+  const glass = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0,
+      roughness: 0.08,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.45,
+    }),
+  );
+
+  const cotton = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xf8fafc,
+      roughness: 0.95,
+      metalness: 0.0,
+    }),
+  );
+
+  const bubbleMat = trackMat(
+    new THREE.PointsMaterial({
+      size: 0.24,
+      map: bubbleGlowTex,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      color: 0xfef08a,
+      depthWrite: false,
+    }),
+  );
+
   const materials: PasteurFermentationMaterials = {
-    tinnedCopper: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xc8963e,
-        roughness: 0.22,
-        metalness: 0.92,
-      }),
-    ),
-    brassPipes: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        roughness: 0.2,
-        metalness: 0.9,
-      }),
-    ),
-    castIron: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        roughness: 0.5,
-        metalness: 0.85,
-      }),
-    ),
-    glass: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,
-        roughness: 0.1,
-        metalness: 0.1,
-        transparent: true,
-        opacity: 0.45,
-      }),
-    ),
-    cotton: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        roughness: 0.9,
-      }),
-    ),
-    bubbleMat: trackMat(
-      new THREE.PointsMaterial({
-        size: 0.22,
-        map: bubbleGlowTex,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        color: 0xfef08a,
-        depthWrite: false,
-      }),
-    ),
+    tinnedCopper,
+    brassPipes,
+    castIron,
+    glass,
+    cotton,
+    bubbleMat,
+    ironHoop,
   };
 
-  // 1. Cast-Iron Tripod Support Stand
-  const tripod = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(2.2, 2.6, 1.2, 16)),
+  // --- 1. Cast-Iron Tripod Support Stand ---
+  const tripodGroup = new THREE.Group();
+  rootGroup.add(tripodGroup);
+
+  const tripodRing = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(2.25, 2.35, 0.4, 28)),
     materials.castIron,
   );
-  tripod.position.y = -2.2;
-  tripod.receiveShadow = true;
-  tripod.castShadow = true;
-  rootGroup.add(tripod);
+  tripodRing.position.y = -1.6;
+  tripodRing.receiveShadow = true;
+  tripodRing.castShadow = true;
+  tripodGroup.add(tripodRing);
 
-  // 2. Closed Tinned Copper Fermentation Vat (Claim 1)
+  // 3 Heavy Arched Cast-Iron Legs
+  for (let l = 0; l < 3; l++) {
+    const angle = (l * Math.PI * 2) / 3;
+    const legCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(Math.cos(angle) * 2.2, -1.6, Math.sin(angle) * 2.2),
+      new THREE.Vector3(Math.cos(angle) * 2.7, -2.4, Math.sin(angle) * 2.7),
+      new THREE.Vector3(Math.cos(angle) * 3.0, -3.2, Math.sin(angle) * 3.0),
+    ]);
+    const legGeo = trackGeo(new THREE.TubeGeometry(legCurve, 16, 0.16, 12, false));
+    const leg = new THREE.Mesh(legGeo, materials.castIron);
+    leg.castShadow = true;
+    tripodGroup.add(leg);
+
+    // Foot pad
+    const pad = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.35, 0.45, 0.15, 16)),
+      materials.castIron,
+    );
+    pad.position.set(Math.cos(angle) * 3.0, -3.25, Math.sin(angle) * 3.0);
+    pad.receiveShadow = true;
+    tripodGroup.add(pad);
+  }
+
+  // --- 2. Closed Tinned Copper Fermentation Vat (Claim 1) ---
   const vatGroup = new THREE.Group();
   rootGroup.add(vatGroup);
 
@@ -140,17 +191,58 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
     trackGeo(new THREE.CylinderGeometry(2.1, 2.1, 3.8, 36)),
     materials.tinnedCopper,
   );
-  tank.position.y = 0.2;
+  tank.position.y = 0.3;
   tank.castShadow = true;
   vatGroup.add(tank);
 
+  // Reinforcing Brass Hoops around Vat Body
+  [-1.0, 0.3, 1.6].forEach((hy) => {
+    const hoop = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(2.14, 2.14, 0.1, 36)),
+      materials.ironHoop,
+    );
+    hoop.position.y = hy;
+    vatGroup.add(hoop);
+  });
+
+  // Hemispherical Dome Lid with Brass Rim Flange
   const domeLid = new THREE.Mesh(
     trackGeo(new THREE.SphereGeometry(2.1, 36, 18, 0, Math.PI * 2, 0, Math.PI / 2)),
     materials.tinnedCopper,
   );
-  domeLid.position.y = 2.1;
+  domeLid.position.y = 2.2;
   domeLid.castShadow = true;
   vatGroup.add(domeLid);
+
+  // 8 Brass Wing-Nut Clamping Dogs securing Lid Flange
+  for (let d = 0; d < 8; d++) {
+    const angle = (d * Math.PI) / 4;
+    const dog = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.15, 0.25, 0.18)),
+      materials.brassPipes,
+    );
+    dog.position.set(Math.cos(angle) * 2.18, 2.2, Math.sin(angle) * 2.18);
+    vatGroup.add(dog);
+  }
+
+  // Inspection Manhole Hatch with Brass Rim & Wingnuts
+  const manholeRim = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.65, 0.65, 0.15, 24)),
+    materials.brassPipes,
+  );
+  manholeRim.position.set(-0.8, 3.1, 0.6);
+  manholeRim.rotation.x = -0.3;
+  vatGroup.add(manholeRim);
+
+  for (let w = 0; w < 4; w++) {
+    const wAngle = (w * Math.PI * 2) / 4;
+    const nut = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.12, 0.08, 0.24)),
+      materials.brassPipes,
+    );
+    nut.position.set(-0.8 + Math.cos(wAngle) * 0.55, 3.18, 0.6 + Math.sin(wAngle) * 0.55);
+    vatGroup.add(nut);
+  }
 
   // 3. Goose-Neck Airlock Tube with Cotton Filter (Claim 2)
   const airlockCurve = new THREE.CatmullRomCurve3([
@@ -196,6 +288,16 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   sightGlass.position.set(2.2, 0.2, 0);
   vatGroup.add(sightGlass);
 
+  // Brass Guard Rods around Sight Glass
+  [-0.12, 0.12].forEach((gz) => {
+    const rod = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.02, 0.02, 3.0, 8)),
+      materials.brassPipes,
+    );
+    rod.position.set(2.25, 0.2, gz);
+    vatGroup.add(rod);
+  });
+
   const samplingCock = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 0.6, 12)),
     materials.brassPipes,
@@ -204,6 +306,23 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   samplingCock.position.set(0, -1.2, 2.2);
   samplingCock.castShadow = true;
   vatGroup.add(samplingCock);
+
+  // Turn Cock Handle
+  const cockHandle = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8)),
+    materials.brassPipes,
+  );
+  cockHandle.position.set(0, -0.9, 2.35);
+  vatGroup.add(cockHandle);
+
+  // Protective Brass Stem Thermometer Well
+  const thermometerWell = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 1.8, 12)),
+    materials.brassPipes,
+  );
+  thermometerWell.position.set(-1.1, 2.4, 1.1);
+  thermometerWell.rotation.z = -Math.PI / 6;
+  vatGroup.add(thermometerWell);
 
   // 6. Fermentation CO2 Gas Bubbles
   const bubbleGeo = trackGeo(new THREE.BufferGeometry());
@@ -222,7 +341,7 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
 
   const nodes: PasteurFermentationModelNodes = {
     rootGroup,
-    tripod,
+    tripod: tripodRing,
     vatGroup,
     tank,
     domeLid,
@@ -234,6 +353,7 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
     bubblePoints,
     bubblePositions,
     bubbleCount: BUBBLE_COUNT,
+    thermometerWell,
   };
 
   const dispose = () => {
