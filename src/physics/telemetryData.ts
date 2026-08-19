@@ -12,7 +12,6 @@ import {
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
-  stepEdisonPhonograph,
   stepEinsteinRefrigerator as stepEinsteinRefrigeratorSi,
   stepEngelbartMouse,
   stepEricssonPropeller,
@@ -4484,78 +4483,58 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-200521-edison-phonograph": {
     domain: "solid_mechanics",
-    domainTitle: "Acoustic Transduction & Micro-Groove Indentation",
-    equationName: "Acoustic Pressure & Diaphragm Displacement",
+    domainTitle: "Source-Bounded Diaphragm Recording and Helical Advance",
+    equationName: "Source-Specified Recording Chain",
     governingEquation:
-      "p(t) = \\rho_0 \\cdot c \\cdot v(t) \\quad \\text{and} \\quad z(t) = \\frac{p(t) \\cdot A}{k_{\\text{mica}}}",
-    engineMethod: "FrankenSimEngine.stepEdisonPhonograph",
+      "sound vibration → diaphragm and hard point → marks on yielding material → recovered diaphragm motion",
+    engineMethod: "FrankenSimEngine.stepEdisonPhonograph (illustrative display motion only)",
     controls: [
       {
         id: "mandrelRpm",
-        label: "Mandrel Rotational Speed",
+        label: "Illustrative Clock-Work Rate",
         min: 40,
         max: 140,
         step: 5,
         defaultValue: 60,
-        unit: "RPM",
+        unit: "model RPM",
       },
       {
         id: "voiceVolumeDb",
-        label: "Acoustic Voice Volume",
+        label: "Illustrative Diaphragm-Excitation Level",
         min: 40,
         max: 100,
         step: 5,
         defaultValue: 75,
-        unit: "dB",
+        unit: "model dB",
       },
     ],
-    computeMetrics: (p) => {
-      const phono = stepEdisonPhonograph({
-        mandrelRpm: p.mandrelRpm,
-        voiceVolumeDb: p.voiceVolumeDb,
-      });
-      const trackSpeed = phono.trackSpeedInPerS.toFixed(1);
-      const depthMicrons = phono.grooveDepthMicrons.toFixed(1);
+    computeMetrics: () => {
       return [
         {
-          label: "Linear Tracking Speed",
-          value: `${trackSpeed} in/s`,
-          unit: "v_track",
+          label: "Source Helical Groove Pitch",
+          value: "10",
+          unit: "grooves/in",
           badgeColor: "amber",
-          progressPct: clampProgress((Number(trackSpeed) / 30) * 100),
-        },
-        {
-          label: "Indentation Depth",
-          value: `${depthMicrons} µm`,
-          unit: "depth",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (Number(depthMicrons) / 35) * 100),
-        },
-        {
-          label: "Lead-Screw Pitch",
-          value: `${phono.leadScrewPitchMm} mm`,
-          unit: "pitch",
-          badgeColor: "emerald",
           progressPct: clampProgress(100),
         },
         {
-          label: "Axial Feed",
-          value: String(phono.axialTravelMmPerS),
-          unit: "mm/s",
-          badgeColor: "indigo",
-          progressPct: Math.min(100, (phono.axialTravelMmPerS / 5) * 100),
+          label: "Source Shaft Thread Pitch",
+          value: "10",
+          unit: "threads/in",
+          badgeColor: "cyan",
+          progressPct: clampProgress(100),
         },
         {
-          label: "Audio Bandwidth",
-          value: `${phono.audioBandwidthHz} Hz`,
-          unit: "BW",
-          badgeColor: "purple",
-          progressPct: clampProgress((phono.audioBandwidthHz / 3000) * 100),
+          label: "Named Drive",
+          value: "Clock-work M or other power",
+          unit: "source text",
+          badgeColor: "emerald",
+          progressPct: clampProgress(100),
         },
       ];
     },
     pedagogicalInsight:
-      "Acoustic sound waves vibrate a thin mica diaphragm, driving a steel stylus into a sheet of tinfoil wrapped around a grooved brass cylinder advancing along a lead-screw mandrel.",
+      "The source describes a diaphragm with a hard indenting point marking metallic foil, paper, or another yielding material on a cylinder. Its ten-groove-per-inch helix and matching ten-thread-per-inch shaft move the cylinder endwise while it turns. The controls animate reader-aid motion only; the grant prints no rate, dimension, diaphragm material, or audio bandwidth.",
   },
   "us-233692-pelton-water-wheel": {
     domain: "aerodynamics_mbd",
