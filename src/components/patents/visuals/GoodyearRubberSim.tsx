@@ -66,11 +66,11 @@ export function GoodyearRubberSim() {
             {[-40, -15, 10, 35].map((yOffset, idx) => {
               const stretch = rubber.chainStretchPx;
               const yBase = 110 + yOffset;
-              const sag = isMelted ? 25 : 0;
+              const sag = isMelted ? rubber.chainSagPx : 0;
               return (
                 <g key={idx}>
                   <path
-                    d={`M 40,${yBase + sag} Q ${220 + stretch},${yBase + sag * 1.5} ${380 + (isElastic ? stretch : 0)},${yBase}`}
+                    d={`M 40,${yBase + sag} Q ${220 + stretch},${yBase + sag * rubber.chainSagBezierScale} ${380 + (isElastic ? stretch : 0)},${yBase}`}
                     fill="none"
                     stroke={isMelted ? "#ef4444" : "#f59e0b"}
                     strokeWidth="4"

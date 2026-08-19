@@ -3,6 +3,7 @@
 import { Zap } from "lucide-react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
+import { teslaCoilWindingSvg } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function TeslaCoilSim() {
@@ -92,13 +93,20 @@ export function TeslaCoilSim() {
                 strokeWidth="2"
               />
               {/* Helical Turn Lines */}
-              {Array.from({ length: 18 }).map((_, i) => (
+              {Array.from({ length: res.secondaryTurnCount }).map((_, i) => {
+                const turn = teslaCoilWindingSvg(
+                  i,
+                  res.windingTaperPx,
+                  res.windingPitchY,
+                  res.windingHalfW,
+                );
+                return (
                 <line
                   key={i}
-                  x1={-25 + i * 0.55}
-                  y1={-i * 7.5}
-                  x2={25 - i * 0.55}
-                  y2={-i * 7.5 - 3}
+                  x1={turn.x1}
+                  y1={turn.y1}
+                  x2={turn.x2}
+                  y2={turn.y2}
                   stroke="#a855f7"
                   strokeWidth="1.5"
                   opacity="0.85"

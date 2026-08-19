@@ -129,11 +129,11 @@ export function McCormickReaperSim() {
           <g transform={`translate(220, 110) rotate(${reelAngleDeg})`}>
             <circle cx="0" cy="0" r="8" fill="#1A1A1A" />
             {/* 4 Reel Arms & Slats */}
-            {Array.from({ length: 4 }).map((_, i) => {
-              const armAngle = i * 90;
+            {Array.from({ length: reaper.reelArmCount }).map((_, i) => {
+              const armAngle = i * (360 / reaper.reelArmCount);
               return (
                 <g key={`reel-arm-${armAngle}`} transform={`rotate(${armAngle})`}>
-                  <line x1="0" y1="0" x2="95" y2="0" stroke="#8B5A2B" strokeWidth="3.5" />
+                  <line x1="0" y1="0" x2={reaper.reelArmSvgLen} y2="0" stroke="#8B5A2B" strokeWidth="3.5" />
                   <rect
                     x="85"
                     y="-12"
