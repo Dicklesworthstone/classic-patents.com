@@ -165,6 +165,7 @@ export function stepMergenthalerLinotype(params: {
   charsPerHour: number;
   linesPerMin: number;
   wedgeLift: number;
+  slugSvgWidth: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -175,8 +176,9 @@ export function stepMergenthalerLinotype(params: {
   const cycleS = 60 / Math.max(0.25, linesPerMin);
   const phase = (elapsedS / cycleS) % 1;
   const solidificationTimeMs = Math.round(450 * (temp / 260));
+  const justificationWidthMm = Number((85 + wedge * 4.2).toFixed(1));
   return {
-    justificationWidthMm: Number((85 + wedge * 4.2).toFixed(1)),
+    justificationWidthMm,
     solidificationTimeMs,
     brinellHardness: isEutecticTemp ? 24 : Math.round(16 + (temp / 260) * 5),
     distributorFreqHz: Number((rate / 60).toFixed(2)),
@@ -192,6 +194,7 @@ export function stepMergenthalerLinotype(params: {
     charsPerHour: Math.round(rate * 60),
     linesPerMin: Number((rate / LINOTYPE_CHARS_PER_LINE).toFixed(2)),
     wedgeLift: Number(((wedge / 10) * 0.15).toFixed(4)),
+    slugSvgWidth: Number((justificationWidthMm * 2.8).toFixed(2)),
   };
 }
 

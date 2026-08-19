@@ -446,11 +446,13 @@ export function stepThomsonWelding(params: {
   const press = params.clampPressureMpa ?? 35;
   const kw = Math.round((i ** 2 * 0.00018) / 1000);
   const tempC = Math.round(25 + (kw / 3.6) * 850);
+  const upsetBurrWidthMm = Number(((press / 35) * 3.8).toFixed(1));
   return {
     jouleKw: kw,
     interfaceTempC: tempC,
     isForged: tempC >= 1150 && press >= 25,
-    upsetBurrWidthMm: Number(((press / 35) * 3.8).toFixed(1)),
+    upsetBurrWidthMm,
+    burrSvgRx: Number((upsetBurrWidthMm * 1.5).toFixed(2)),
     jouleWatts: kw * 1000,
     weldPulseMs: Math.round(Math.max(200, 5.4e6 / Math.max(500, i))),
     weldGlowIntensity: Number((Math.min(1.5, Math.max(0, tempC / 1300)) * 1.8).toFixed(3)),

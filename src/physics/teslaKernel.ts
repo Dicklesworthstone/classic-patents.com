@@ -11,6 +11,9 @@ export const TESLA_FIELD_POLES = 2;
 export const TESLA_FIELD_DISPLAY_SLOWDOWN = 20;
 /** 2D presentation tick that integrates the same display ω as 3D. */
 export const TESLA_FIELD_DISPLAY_TICK_MS = 30;
+export const TESLA_FIELD_DISPLAY_TICK_S = TESLA_FIELD_DISPLAY_TICK_MS / 1000;
+/** SVG length of the unit B-vector on the 2D rotating-field face. */
+export const TESLA_B_VECTOR_SVG_SCALE = 60;
 
 export function teslaFieldDisplayOmegaRadPerS(freqHz: number): number {
   return (2 * Math.PI * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
@@ -73,6 +76,8 @@ export interface TeslaFig9State {
   diskRpm: number;
   fieldDisplayOmegaRadPerS: number;
   fieldDisplayOmegaDegPerS: number;
+  fieldDisplayTickS: number;
+  bVectorSvgScale: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
 }
@@ -87,6 +92,8 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     diskRpm: generatorRpm,
     fieldDisplayOmegaRadPerS: teslaFieldDisplayOmegaRadPerS(boundedHz),
     fieldDisplayOmegaDegPerS: teslaFieldDisplayOmegaDegPerS(boundedHz),
+    fieldDisplayTickS: TESLA_FIELD_DISPLAY_TICK_S,
+    bVectorSvgScale: TESLA_B_VECTOR_SVG_SCALE,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
   };
@@ -95,7 +102,7 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
 export function teslaBAt(
   omegaT: number,
   phaseCount: 2 | 3 = 2,
-): { bx: number; by: number; coilCount: number } {
+): { bx: number; by: number; bxSvg: number; bySvg: number; coilCount: number } {
   const coilCount = phaseCount === 2 ? 4 : 6;
   let fieldX = 0;
   let fieldY = 0;
@@ -108,7 +115,15 @@ export function teslaBAt(
     fieldY += current * Math.sin(a);
   }
   const norm = Math.hypot(fieldX, fieldY) || 1;
-  return { bx: fieldX / norm, by: fieldY / norm, coilCount };
+  const bx = fieldX / norm;
+  const by = fieldY / norm;
+  return {
+    bx,
+    by,
+    bxSvg: bx * TESLA_B_VECTOR_SVG_SCALE,
+    bySvg: by * TESLA_B_VECTOR_SVG_SCALE,
+    coilCount,
+  };
 }
 
 /** Tesla Fig. 4: eight successive rotating-field positions. */
