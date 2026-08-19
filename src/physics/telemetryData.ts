@@ -5076,7 +5076,7 @@ PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"] = {
         unit: "source text",
         badgeColor: "emerald",
       },
-      { label: "Printed Claims", value: "8", unit: "source text", badgeColor: "sapphire" },
+      { label: "Printed Claims", value: "8", unit: "source text", badgeColor: "indigo" },
       {
         label: "Visual Status",
         value: "withheld",
