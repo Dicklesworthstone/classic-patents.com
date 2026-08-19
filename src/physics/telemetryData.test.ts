@@ -199,4 +199,24 @@ describe("Physics Telemetry Data Registry", () => {
     expect(kwolek.pedagogicalInsight).toContain("not yet been manually authored");
     expect(kwolek.pedagogicalInsight).toContain("strength, modulus, density, thermal limit");
   });
+
+  test("keeps Marconi US 586,193 on the held source-review boundary", () => {
+    const marconi = PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"];
+    expect(marconi.engineMethod).toContain("No RF-performance engine");
+    expect(marconi.controls.map((control) => control.unit)).toEqual(["source figure group"]);
+    expect(marconi.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. 4–8: receiver contact, relay, and trembler",
+      },
+      { label: "Printed Claims", value: "56", unit: "source text" },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+      },
+    ]);
+    expect(marconi.pedagogicalInsight).toContain("quarter-wave antenna geometry");
+    expect(marconi.pedagogicalInsight).toContain("operating frequency, spark voltage, power, range");
+  });
 });

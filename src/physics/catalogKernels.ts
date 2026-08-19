@@ -330,6 +330,8 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     cutterOmegaDegPerS: cutter.omegaDegPerS,
     reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),
     cutterSvgAmp: 18,
+    reelArmCount: 4,
+    reelArmSvgLen: 95,
     reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
 }
@@ -652,7 +654,15 @@ export function stepZeppelinAirship(params: {
     gasCellCount: 17,
     gasCellSvgOriginX: -215,
     gasCellSvgPitch: 27,
+    schematicCellCount: 9,
+    schematicCellOriginX: 70,
+    schematicCellPitch: 32,
   };
+}
+
+/** Schematic gas-cell seat. Shared by the schematic. */
+export function zeppelinSchematicCell(index: number, originX = 70, pitch = 32) {
+  return { cx: originX + index * pitch };
 }
 
 export function stepDaimlerEngine(params: {
@@ -1143,6 +1153,20 @@ export function stepKevlarContinuum(
     chainWobbleOmega: 2,
     chainWaviness: Number(((100 - alignmentPct) * 0.25 * (1 - load / 180)).toFixed(3)),
     chainEndX: Number((350 + load * 0.28).toFixed(2)),
+    schematicLatticeRows: 5,
+    schematicLatticeCols: 7,
+    schematicLatticeOriginX: 80,
+    schematicLatticeOriginY: 80,
+    schematicLatticePitchX: 40,
+    schematicLatticePitchY: 30,
+  };
+}
+
+/** Nematic H-bond lattice seat on the schematic. Shared by the schematic. */
+export function kevlarSchematicLattice(row: number, col: number, originX = 80, originY = 80, pitchX = 40, pitchY = 30) {
+  return {
+    cx: originX + col * pitchX,
+    cy: originY + row * pitchY,
   };
 }
 
@@ -1305,6 +1329,8 @@ export function stepGoodyearRubber(
       : Number(((temp / 140) * (isVulcanized ? 0.03 : 0.1)).toFixed(4)),
     clampStudioX: Number((4.5 * lambda).toFixed(4)),
     chainStretchPx: Number(((lambda - 1) * 80).toFixed(2)),
+    chainSagPx: 25,
+    chainSagBezierScale: 1.5,
   };
 }
 

@@ -27,6 +27,10 @@ export function stepCcdWells(
   gateSvgCount: number;
   gateSvgPitch: number;
   gateSvgWidth: number;
+  schematicGateCount: number;
+  schematicGateOriginX: number;
+  schematicGatePitch: number;
+  schematicGateWidth: number;
 } {
   const f = Math.max(0.1, clockMhz);
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
@@ -62,7 +66,16 @@ export function stepCcdWells(
     gateSvgCount: 9,
     gateSvgPitch: 50,
     gateSvgWidth: 45,
+    schematicGateCount: 6,
+    schematicGateOriginX: 70,
+    schematicGatePitch: 45,
+    schematicGateWidth: 36,
   };
+}
+
+/** Schematic poly-silicon gate X on the CCD face. Shared by the schematic. */
+export function ccdSchematicGateX(index: number, originX = 70, pitch = 45) {
+  return originX + index * pitch;
 }
 
 /** Poly-silicon gate bar X on the 2D CCD face. Shared by 2D. */
@@ -325,6 +338,11 @@ export function stepRenoEscalator(params: {
   cleatSvgXScale: number;
   cleatSvgYScale: number;
   cleatSvgRotateDeg: number;
+  schematicCleatCount: number;
+  schematicCleatOriginX: number;
+  schematicCleatOriginY: number;
+  schematicCleatPitchX: number;
+  schematicCleatPitchY: number;
 } {
   const passengers = params.passengerCount ?? 30;
   const angleDeg = params.inclineAngleDeg ?? 25;
@@ -353,6 +371,25 @@ export function stepRenoEscalator(params: {
     cleatSvgXScale: 0.85,
     cleatSvgYScale: 0.38,
     cleatSvgRotateDeg: -25,
+    schematicCleatCount: 7,
+    schematicCleatOriginX: 60,
+    schematicCleatOriginY: 200,
+    schematicCleatPitchX: 42,
+    schematicCleatPitchY: 20,
+  };
+}
+
+/** Fig. schematic cleat seat on the 25° incline. Shared by the schematic. */
+export function renoSchematicCleat(
+  index: number,
+  originX = 60,
+  originY = 200,
+  pitchX = 42,
+  pitchY = 20,
+) {
+  return {
+    x: originX + index * pitchX,
+    y: originY - index * pitchY,
   };
 }
 

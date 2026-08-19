@@ -185,4 +185,24 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(publicCards).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Marconi US 586,193 at its held contact-and-reset claim boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-586193-marconi-radio"];
+    expect(cards.map((card) => card.id)).toEqual(["marconi-source-contact-reset"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("imperfect electrical contact");
+    expect(cards[0]?.rawLatex).toContain("shaking means");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "36.56",
+      "estimated range",
+      "transatlantic",
+      "nickel-silver",
+      "50 kv",
+      "10^5",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });
