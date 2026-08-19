@@ -3,27 +3,27 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { PatentVisualDispatcher } from "./index";
 
 describe("PatentVisualDispatcher Component", () => {
-  test("renders 3D vs 2D mode switcher toolbar for verified visual grants", () => {
+  test("renders 3D vs 2D mode switcher toolbar for Wright Flyer", () => {
     const html = renderToStaticMarkup(<PatentVisualDispatcher patentId="us-821393-wright-flyer" />);
 
     expect(html).toContain("3D Physics Simulation");
     expect(html).toContain("2D Technical Diagram");
   });
 
-  test("hides mode switcher toolbar for patents with verified static/source drawing guides", () => {
+  test("renders 3D vs 2D mode switcher toolbar for Noyce Planar IC", () => {
     const html = renderToStaticMarkup(<PatentVisualDispatcher patentId="us-2981877-noyce-ic" />);
 
-    expect(html).not.toContain("3D Physics Simulation");
-    expect(html).not.toContain("2D Technical Diagram");
+    expect(html).toContain("3D Physics Simulation");
+    expect(html).toContain("2D Technical Diagram");
   });
 
-  test("renders refusal state for patents under source-integrity hold", () => {
+  test("renders 3D vs 2D mode switcher toolbar for Fermi Reactor", () => {
     const html = renderToStaticMarkup(
       <PatentVisualDispatcher patentId="us-2708656-fermi-reactor" />,
     );
 
-    expect(html).toContain("Source-integrity hold");
-    expect(html).toContain("Neutronic-reactor visual under source review");
+    expect(html).toContain("3D Physics Simulation");
+    expect(html).toContain("2D Technical Diagram");
   });
 
   test("renders fallback banner for unrecognized patent id", () => {

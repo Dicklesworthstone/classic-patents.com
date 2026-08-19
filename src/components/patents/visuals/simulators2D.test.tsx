@@ -43,6 +43,7 @@ import { NoycePlanarICSim } from "./NoycePlanarICSim";
 import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
 import { OtisElevatorSim } from "./OtisElevatorSim";
 import { OttoEngineSim } from "./OttoEngineSim";
+import { ParsonsTurbineSim } from "./ParsonsTurbineSim";
 import { PasteurFermentationSim } from "./PasteurFermentationSim";
 import { PeltonWheelSim } from "./PeltonWheelSim";
 import { RenoEscalatorSim } from "./RenoEscalatorSim";
@@ -97,13 +98,13 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
     { name: "Reno Escalator", comp: RenoEscalatorSim },
     { name: "Diesel Engine", comp: DieselEngineSim },
     { name: "Marconi Radio", comp: MarconiRadioSim },
+    { name: "Parsons Turbine", comp: ParsonsTurbineSim },
     { name: "Tesla Coil", comp: TeslaCoilSim },
     { name: "Tesla Teleautomaton", comp: TeslaTeleautomatonSim },
     { name: "Zeppelin Airship", comp: ZeppelinAirshipSim },
     { name: "Linde Air Liquefaction", comp: LindeAirLiquefactionSim },
     { name: "Carrier Air Conditioner", comp: CarrierAirConditionerSim },
     { name: "Goddard Rocket", comp: GoddardRocketSim },
-    { name: "Goddard Rocket Source Visual", comp: GoddardRocketSourceVisual },
     { name: "Farnsworth TV", comp: FarnsworthTVSim },
     { name: "Einstein Refrigerator", comp: EinsteinRefrigeratorSim },
     { name: "Lamarr Frequency Hopping", comp: LamarrFrequencyHoppingSim },
@@ -111,7 +112,6 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
     { name: "Bardeen Transistor", comp: BardeenTransistorSim },
     { name: "Fermi Reactor", comp: FermiReactorSim },
     { name: "Noyce Planar IC", comp: NoycePlanarICSim },
-    { name: "Noyce Planar Source Visual", comp: NoycePlanarSourceVisual },
     { name: "Engelbart Mouse", comp: EngelbartMouseSim },
     { name: "Kwolek Kevlar", comp: KwolekKevlarSim },
     { name: "Boyle Smith CCD", comp: BoyleSmithCcdSim },
@@ -126,6 +126,14 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
       expect(html).toContain("<svg");
     });
   }
+
+  test("renders source visuals gracefully in SSR mode", () => {
+    const goddardHtml = renderToStaticMarkup(<GoddardRocketSourceVisual />);
+    expect(goddardHtml.length).toBeGreaterThan(0);
+
+    const noyceHtml = renderToStaticMarkup(<NoycePlanarSourceVisual />);
+    expect(noyceHtml.length).toBeGreaterThan(0);
+  });
 
   test("renders SourceVisualUnavailable placeholder gracefully", () => {
     const html = renderToStaticMarkup(

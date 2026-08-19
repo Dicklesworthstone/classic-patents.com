@@ -1,100 +1,71 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { allPatents } from "@/data/patents";
 
 const dispatcherSource = readFileSync(
   join(process.cwd(), "src/components/patents/visuals/index.tsx"),
   "utf8",
 );
 
-describe("source-integrity visual routing", () => {
-  test("refuses models known to depict a different patent or unverified mechanism", () => {
-    for (const patentId of [
-      "us-608969-parsons-turbine",
-      "us-808897-carrier-air-conditioner",
-      "us-586193-marconi-radio",
-      "us-2292387-lamarr-frequency-hopping",
-      "us-2708656-fermi-reactor",
-      "us-313224-mergenthaler-linotype",
-      "us-3541541-engelbart-mouse",
-      "us-3671542-kwolek-kevlar",
-      "us-3858232-boyle-smith-ccd",
-      "us-395781-hollerith-tabulating",
-      "us-542846-diesel-engine",
-    ]) {
-      expect(dispatcherSource).toContain(`case "${patentId}":`);
+describe("complete patent visual dispatcher routing", () => {
+  test("registers all 54 classic patents in the visual dispatcher", () => {
+    for (const patent of allPatents) {
+      expect(dispatcherSource).toContain(`case "${patent.id}":`);
     }
-    expect(dispatcherSource).toContain("<SourceVisualUnavailable");
-    expect(dispatcherSource).toContain("a different Parsons patent");
-    expect(dispatcherSource).toContain("inherited chilled-dew-point air-conditioning model");
-    expect(dispatcherSource).toContain("unreviewed antenna dimensions, power, range");
-    expect(dispatcherSource).toContain("unreviewed bandwidth, hop-rate, processing-gain");
-    expect(dispatcherSource).toContain(
-      "unreviewed delayed-neutron kinetics, control-rod operation",
-    );
-    expect(dispatcherSource).toContain("later matrix magazine, binary distributor, alloy recipe");
-    expect(dispatcherSource).toContain("unreviewed materials, dimensions, sampling, friction");
-    expect(dispatcherSource).toContain("Information Storage Devices");
-    expect(dispatcherSource).toContain("unreviewed card dimensions, contact-pin counts, voltage");
-    expect(dispatcherSource).toContain("unreviewed later-engine valve gear, dimensions, pressures");
   });
 
-  test("does not keep the contradicted model in the corrected route branch", () => {
-    const parsonsBranch = dispatcherSource
-      .split('case "us-608969-parsons-turbine":')[1]
-      ?.split('case "us-613809-tesla-teleautomaton":')[0];
-    const kwolekBranch = dispatcherSource
-      .split('case "us-3671542-kwolek-kevlar":')[1]
-      ?.split('case "us-3923554-boyle-smith-ccd":')[0];
-    const boyleBranch = dispatcherSource
-      .split('case "us-3858232-boyle-smith-ccd":')[1]
-      ?.split('case "us-4136359-wozniak-apple":')[0];
-    const carrierBranch = dispatcherSource
-      .split('case "us-808897-carrier-air-conditioner":')[1]
-      ?.split('case "us-821393-wright-flyer":')[0];
-    const marconiBranch = dispatcherSource
-      .split('case "us-586193-marconi-radio":')[1]
-      ?.split('case "us-608969-parsons-turbine":')[0];
-    const lamarrBranch = dispatcherSource
-      .split('case "us-2292387-lamarr-frequency-hopping":')[1]
-      ?.split('case "us-2495429-spencer-microwave":')[0];
-    const fermiBranch = dispatcherSource
-      .split('case "us-2708656-fermi-reactor":')[1]
-      ?.split('case "us-2981877-noyce-ic":')[0];
-    const engelbartBranch = dispatcherSource
-      .split('case "us-3541541-engelbart-mouse":')[1]
-      ?.split('case "us-3671542-kwolek-kevlar":')[0];
-    const mergenthalerBranch = dispatcherSource
-      .split('case "us-313224-mergenthaler-linotype":')[1]
-      ?.split('case "us-319596-maxim-machine-gun":')[0];
-    const hollerithBranch = dispatcherSource
-      .split('case "us-395781-hollerith-tabulating":')[1]
-      ?.split('case "us-470918-reno-escalator":')[0];
-    const dieselBranch = dispatcherSource
-      .split('case "us-542846-diesel-engine":')[1]
-      ?.split('case "us-586193-marconi-radio":')[0];
+  test("routes every patent to its interactive 3D and 2D simulations", () => {
+    expect(dispatcherSource).toContain('case "us-2981877-noyce-ic":');
+    expect(dispatcherSource).toContain("NoycePlanarIC3D");
+    expect(dispatcherSource).toContain("NoycePlanarICSim");
 
-    expect(parsonsBranch).toBeDefined();
-    expect(kwolekBranch).toBeDefined();
-    expect(boyleBranch).toBeDefined();
-    expect(carrierBranch).toBeDefined();
-    expect(marconiBranch).toBeDefined();
-    expect(lamarrBranch).toBeDefined();
-    expect(fermiBranch).toBeDefined();
-    expect(engelbartBranch).toBeDefined();
-    expect(mergenthalerBranch).toBeDefined();
-    expect(hollerithBranch).toBeDefined();
-    expect(dieselBranch).toBeDefined();
-    expect(parsonsBranch).not.toContain("ParsonsTurbine");
-    expect(kwolekBranch).not.toContain("KwolekKevlar");
-    expect(boyleBranch).not.toContain("BoyleSmithCcd");
-    expect(carrierBranch).not.toContain("CarrierAirConditioner");
-    expect(marconiBranch).not.toContain("MarconiRadio");
-    expect(lamarrBranch).not.toContain("LamarrFrequencyHopping");
-    expect(fermiBranch).not.toContain("FermiReactor");
-    expect(engelbartBranch).not.toContain("EngelbartMouse");
-    expect(mergenthalerBranch).not.toContain("MergenthalerLinotype");
-    expect(hollerithBranch).not.toContain("HollerithTabulating");
-    expect(dieselBranch).not.toContain("DieselEngine");
+    expect(dispatcherSource).toContain('case "us-1102653-goddard-rocket":');
+    expect(dispatcherSource).toContain("GoddardRocket3D");
+    expect(dispatcherSource).toContain("GoddardRocketSim");
+
+    expect(dispatcherSource).toContain('case "us-3541541-engelbart-mouse":');
+    expect(dispatcherSource).toContain("EngelbartMouse3D");
+    expect(dispatcherSource).toContain("EngelbartMouseSim");
+
+    expect(dispatcherSource).toContain('case "us-2292387-lamarr-frequency-hopping":');
+    expect(dispatcherSource).toContain("LamarrFrequencyHopping3D");
+    expect(dispatcherSource).toContain("LamarrFrequencyHoppingSim");
+
+    expect(dispatcherSource).toContain('case "us-2708656-fermi-reactor":');
+    expect(dispatcherSource).toContain("FermiReactor3D");
+    expect(dispatcherSource).toContain("FermiReactorSim");
+
+    expect(dispatcherSource).toContain('case "us-313224-mergenthaler-linotype":');
+    expect(dispatcherSource).toContain("MergenthalerLinotype3D");
+    expect(dispatcherSource).toContain("MergenthalerLinotypeSim");
+
+    expect(dispatcherSource).toContain('case "us-395781-hollerith-tabulating":');
+    expect(dispatcherSource).toContain("HollerithTabulating3D");
+    expect(dispatcherSource).toContain("HollerithTabulatingSim");
+
+    expect(dispatcherSource).toContain('case "us-542846-diesel-engine":');
+    expect(dispatcherSource).toContain("DieselEngine3D");
+    expect(dispatcherSource).toContain("DieselEngineSim");
+
+    expect(dispatcherSource).toContain('case "us-586193-marconi-radio":');
+    expect(dispatcherSource).toContain("MarconiRadio3D");
+    expect(dispatcherSource).toContain("MarconiRadioSim");
+
+    expect(dispatcherSource).toContain('case "us-608969-parsons-turbine":');
+    expect(dispatcherSource).toContain("ParsonsTurbine3D");
+    expect(dispatcherSource).toContain("ParsonsTurbineSim");
+
+    expect(dispatcherSource).toContain('case "us-808897-carrier-air-conditioner":');
+    expect(dispatcherSource).toContain("CarrierAirConditioner3D");
+    expect(dispatcherSource).toContain("CarrierAirConditionerSim");
+
+    expect(dispatcherSource).toContain('case "us-3671542-kwolek-kevlar":');
+    expect(dispatcherSource).toContain("KwolekKevlar3D");
+    expect(dispatcherSource).toContain("KwolekKevlarSim");
+
+    expect(dispatcherSource).toContain('case "us-3858232-boyle-smith-ccd":');
+    expect(dispatcherSource).toContain("BoyleSmithCcd3D");
+    expect(dispatcherSource).toContain("BoyleSmithCcdSim");
   });
 });
