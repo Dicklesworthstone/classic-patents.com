@@ -6,37 +6,67 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const FIGURE_SHEETS = {
+const FIGURES = {
   1: {
-    src: "/patents/figures/us-361931-daimler-engine-fig-1.png",
-    alt: "Sheet 1 of the US 361,931 facsimile: Figure 1, a longitudinal vessel section with the marine engine and screw propeller.",
-    width: 1238,
-    height: 1818,
+    src: "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png",
+    alt: "Fig. 1 from the US 361,931 source facsimile: longitudinal section of the vessel installation.",
+    width: 1280,
+    height: 1570,
   },
   2: {
-    src: "/patents/figures/us-361931-daimler-engine-fig-2.png",
-    alt: "Sheet 2 of the US 361,931 facsimile: Figure 2 and detail Figures 4, 4a, 4b, 5, and 6.",
-    width: 1238,
-    height: 1818,
+    src: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v1.png",
+    alt: "Fig. 2 from the US 361,931 source facsimile: cross-section of the vessel installation.",
+    width: 1260,
+    height: 900,
   },
   3: {
-    src: "/patents/figures/us-361931-daimler-engine-fig-3.png",
-    alt: "Sheet 3 of the US 361,931 facsimile: Figure 3, the plan of the vessel installation.",
-    width: 1238,
-    height: 1818,
+    src: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",
+    alt: "Fig. 3 from the US 361,931 source facsimile: plan of the vessel installation.",
+    width: 1280,
+    height: 1650,
+  },
+  4: {
+    src: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
+    alt: "Fig. 4 from the US 361,931 source facsimile: thrust-bearing detail.",
+    width: 420,
+    height: 420,
+  },
+  "4a": {
+    src: "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",
+    alt: "Fig. 4a from the US 361,931 source facsimile: sliding-pin detail of the thrust-bearing.",
+    width: 350,
+    height: 160,
+  },
+  "4b": {
+    src: "/patents/figures/us-361931-daimler-engine/fig-4b-source-crop-v1.png",
+    alt: "Fig. 4b from the US 361,931 source facsimile: crank-handle detail of the thrust-bearing.",
+    width: 240,
+    height: 360,
+  },
+  5: {
+    src: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v1.png",
+    alt: "Fig. 5 from the US 361,931 source facsimile: high-pressure gas-holder section.",
+    width: 1100,
+    height: 380,
+  },
+  6: {
+    src: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",
+    alt: "Fig. 6 from the US 361,931 source facsimile: transverse section of the Fig. 5 gas-holder arrangement.",
+    width: 800,
+    height: 450,
   },
 } as const;
 
 const figure = (
   label: string,
-  sheets: readonly (keyof typeof FIGURE_SHEETS)[],
+  figures: readonly (keyof typeof FIGURES)[],
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text: label,
   href: "#",
   referenceType: "figure",
   label: `Preview ${label} from the US 361,931 source facsimile`,
-  figurePreviews: sheets.map((sheet) => FIGURE_SHEETS[sheet]),
+  figurePreviews: figures.map((number) => FIGURES[number]),
 });
 
 /**
@@ -66,25 +96,31 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "FIG. 1",
       title: "Longitudinal section of vessel installation",
-      description: text(
-        "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 1. Fig. 1.",
-      ),
+      description: [
+        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 1. " },
+        figure("Fig. 1", [1]),
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIGS. 2, 4, 4a, 4b, 5, AND 6",
       title: "Cross-section, thrust-bearing, and gas-holder details",
-      description: text(
-        "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 2. Figs. 2, 4, 4a, 4b, 5, and 6.",
-      ),
+      description: [
+        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 2. " },
+        figure("Figs. 2, 4, 4a, 4b, 5, and 6", [2, 4, "4a", "4b", 5, 6]),
+        { kind: "text", text: "." },
+      ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIG. 3",
       title: "Plan of vessel installation",
-      description: text(
-        "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 3. Fig. 3.",
-      ),
+      description: [
+        { kind: "text", text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 3. " },
+        figure("Fig. 3", [3]),
+        { kind: "text", text: "." },
+      ],
     },
     { kind: "paragraph", inlines: text("To all whom it may concern:") },
     {
@@ -152,16 +188,16 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
         { kind: "text", text: " shows a cross-section. " },
         figure("Fig. 3", [3]),
         { kind: "text", text: " shows a plan; " },
-        figure("Figs. 4, 4a, 4b", [2]),
+        figure("Figs. 4, 4a, 4b", [4, "4a", "4b"]),
         { kind: "text", text: ", detail views of the thrust-bearing for the propeller; " },
-        figure("Fig. 5", [2]),
+        figure("Fig. 5", [5]),
         {
           kind: "text",
           text: ", a broken longitudinal sectional view showing one of the high-pressure gas-holders, and ",
         },
-        figure("Fig. 6", [2]),
+        figure("Fig. 6", [6]),
         { kind: "text", text: " a transverse sectional view of " },
-        figure("Fig. 5", [2]),
+        figure("Fig. 5", [5]),
         { kind: "text", text: "." },
       ],
     },
@@ -218,12 +254,12 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "The thrust of the propeller is taken by the thrust-bearing q on the front side of the motor-engine. This bearing is shown to an enlarged scale at ",
         },
-        figure("Figs. 4, 4a, and 4b", [2]),
+        figure("Figs. 4, 4a, and 4b", [4, "4a", "4b"]),
         {
           kind: "text",
           text: ". It is provided with a crank-handle, r', by means of which the engine can be started. For this purpose the bearing has a sliding pin, r², which can be pushed inward, so as to gear with a stud, r³, on the motor-shaft, so that the rotation of the bearing will also cause the shaft to be rotated, so as to start the engine. The pin r² being formed with an incline, it will be pushed out of gear by the pressure of the stud when the engine is started, as shown at ",
         },
-        figure("Fig. 4a", [2]),
+        figure("Fig. 4a", ["4a"]),
         {
           kind: "text",
           text: ", so that the bearing q and its crank-handle r' will then remain stationary.",
