@@ -49,7 +49,8 @@ export const ericssonPropellerPatent: Patent = {
       },
       {
         title: "Concentric Shafts and Unequal Gearing",
-        summary: "A hollow b shaft contains the a shaft; unequal cog wheels establish the opposed motion.",
+        summary:
+          "A hollow b shaft contains the a shaft; unequal cog wheels establish the opposed motion.",
         technicalDetails:
           "The hoop A is on axis a and hoop B on hollow axis b. Ericsson specifies H and I as meshing cog wheels, with I about one fifth larger than H; he then states that b turns contrary to a and at a less speed. The claim separately calls for a greater speed for the outer series when it moves in the current produced by the other series. The specification does not quantify wake recovery, torque cancellation, or net yaw.",
         archaicTerm: "Cog wheels",
@@ -57,7 +58,8 @@ export const ericssonPropellerPatent: Patent = {
       },
       {
         title: "Stern Penetration and Support",
-        summary: "Bearings, stays, framing, and stuffing boxes support the shafts and keep water outside the hull.",
+        summary:
+          "Bearings, stays, framing, and stuffing boxes support the shafts and keep water outside the hull.",
         technicalDetails:
           "Stay E is bolted to the stern and carries brass bearing e for shaft a. Shaft b works through stuffing box F and is supported by framing G and plumber block g; stuffing box C at the stern post prevents water from entering around b while allowing it to turn. The source names no packing material, thrust load, bearing alloy beyond e, or structural load rating.",
         archaicTerm: "Stuffing box and plumber block",
@@ -65,7 +67,8 @@ export const ericssonPropellerPatent: Patent = {
       },
       {
         title: "Removable Upright Stem",
-        summary: "The second installation suspends or lifts the propeller by a hollow upright stem, stays, keys, and a hoisting eye.",
+        summary:
+          "The second installation suspends or lifts the propeller by a hollow upright stem, stays, keys, and a hoisting eye.",
         technicalDetails:
           "In drawing No. 2, hollow stem A carries the axle system. Bracket K, stay L, fork M, and keys k and m locate it at the stern. Removing keys m, k, and x and pushing down the sliding coupling box detaches the stem, upright shaft, and propeller; tackle at eye n can then lift the apparatus. This removable installation is part of claim 3.",
         archaicTerm: "Hoisting tackle",
@@ -73,7 +76,8 @@ export const ericssonPropellerPatent: Patent = {
       },
       {
         title: "Underwater Gear Casing",
-        summary: "A three-part pointed drum encloses the conical gears while leaving clearance for opposed motion.",
+        summary:
+          "A three-part pointed drum encloses the conical gears while leaving clearance for opposed motion.",
         technicalDetails:
           "Figure 6 uses conical cog wheels b, c, and e to turn axles B and C in contrary directions from upright shaft E. A light-metal drum P P P has a fixed central portion and pointed end caps fixed to the propeller spokes. Ericsson specifies slits and about one eighth of an inch between its three parts so the two propellers can move freely; claim 3 calls this a drum or conical casing that protects the bevel wheels and diminishes water resistance.",
         archaicTerm: "Conical cog wheels",
