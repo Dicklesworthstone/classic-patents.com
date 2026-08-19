@@ -107,14 +107,14 @@ An X-Y position indicator control for movement by the hand over any surface to m
 
       originalText: manualClaimText(1),
       plainEnglish:
-        "The primary apparatus claim: a handheld housing supported on a surface by two mutually perpendicular wheels driving digital transducers, connected to a computer via a flexible cable that allows unrestrained movement.",
+        "Claim 1 covers a computer-controlled display system with a movable position indicator: a housing supported by two wheels on perpendicular axes, transducer means for the wheels, and a flexible conductor to the computer.",
       keyInnovations: [
         "Orthogonal dual-wheel housing support",
         "Digital rotary transducer integration",
         "Flexible tethered computer interface",
       ],
       legalSignificance:
-        "The foundational legal claim covering handheld dual-wheel computer input devices that position a cursor on a display.",
+        "This independent claim states the two-wheel, transducer, flexible-conductor combination in the display-system setting.",
     },
     {
       number: 2,
@@ -122,7 +122,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
       dependsOn: [1],
       originalText: manualClaimText(2),
       plainEnglish:
-        "The incremental pulse encoder specification: an incremental encoder on the first wheel generating forward and reverse pulses per unit angle, coupled to a counter that tallies net rotation.",
+        "Claim 2 narrows Claim 1 to an incremental encoder on the first wheel. It generates first and second directional pulses, and a counter reports the net rotation.",
       keyInnovations: [
         "Directional incremental pulse generation",
         "Up/down rotation counter accumulator",
@@ -135,7 +135,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
       dependsOn: [2],
       originalText: manualClaimText(3),
       plainEnglish:
-        "The quadrature contact disc logic: a disc with conductive track segments engaging stepping and control contacts to evaluate transition states and generate directional stepping pulses.",
+        "Claim 3 narrows Claim 2 to a disc with spaced conductor segments, control and stepping contacts, and logic that distinguishes the directional transitions.",
       keyInnovations: [
         "Two-phase commutator contact disc",
         "Quadrature contact state transition logic",
@@ -148,7 +148,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
       dependsOn: [1],
       originalText: manualClaimText(4),
       plainEnglish:
-        "The absolute shaft encoder variant: a multi-output shaft encoder connected through a multi-conductor cable to constantly report absolute angular position.",
+        "Claim 4 gives another Claim 1 alternative: a shaft-position encoder with several outputs and corresponding conductors that continuously indicate the apparatus position.",
       keyInnovations: [
         "Multi-output absolute shaft encoder",
         "Multi-conductor parallel bus",
@@ -161,7 +161,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
 
       originalText: manualClaimText(5),
       plainEnglish:
-        "The self-contained wheel-transducer combination: a housing resting directly on two perpendicular wheels whose rotation drives digital position signal transducers.",
+        "Claim 5 is a second independent apparatus claim. It requires the housing, first and second perpendicular position wheels that support it on the surface, and transducer means connected to both wheels.",
       keyInnovations: [
         "Direct dual-wheel surface support",
         "Independent X-Y coordinate rotation",
@@ -174,7 +174,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
       dependsOn: [5],
       originalText: manualClaimText(6),
       plainEnglish:
-        "The unrestrained signal coupling: adding a coupling mechanism that connects the wheel transducers to a computer while permitting free two-dimensional translation across the workspace.",
+        "Claim 6 adds coupling means between the transducers and the computer while allowing substantially unrestrained movement of the housing.",
       keyInnovations: [
         "Substantially unrestrained signal coupling",
         "Free planar translation freedom",
@@ -187,7 +187,7 @@ An X-Y position indicator control for movement by the hand over any surface to m
       dependsOn: [5],
       originalText: manualClaimText(7),
       plainEnglish:
-        "The flexible conductor tether: connecting the digital wheel transducers to the computer using a flexible electrical conductor for low-resistance physical movement.",
+        "Claim 7 adds a flexible conductor that carries position signals from the transducers to the computer while allowing the housing to move.",
       keyInnovations: [
         "Low-drag flexible cable tether",
         "Tethered display coordinate transmission",
@@ -200,14 +200,14 @@ An X-Y position indicator control for movement by the hand over any surface to m
 
       originalText: manualClaimText(8),
       plainEnglish:
-        "The complete interactive display workstation system: a CRT display, a computer generating a movable screen cursor, a desk-moved position indicator with wheel transducers controlling cursor position, and a CRT display control switch.",
+        "Claim 8 is an independent display-system claim: a CRT, a computer that defines a variable cursor and can change the display around it, a surface-moved position control, and at least one display-control switch on that control.",
       keyInnovations: [
         "Interactive CRT cursor positioning system",
         "Desk-surface direct manipulation controller",
         "Housing-mounted display control switch",
       ],
       legalSignificance:
-        "Protected the integrated interactive workstation architecture connecting tabletop mouse navigation and click selection to live graphical display editing.",
+        "This independent claim joins the position indicator and switch to the CRT display system described in the grant.",
     },
   ],
   drawings: [
