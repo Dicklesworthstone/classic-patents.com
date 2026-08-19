@@ -327,11 +327,14 @@ This invention relates more particularly to improvements in that class of photog
     scientificPrinciples: [
       {
         principle: "Light exclusion",
+        formula:
+          "\\Phi_{\\text{stray}} \\approx 0 \\implies E_{\\text{film}} = \\frac{\\pi L}{4 N^2}",
         explanation:
           "Photography requires the sensitive film to see light only through the intended lens aperture. The patent repeatedly protects that condition with overlapping covers, chambers, flush controls, and shutters on both sides of the lens.",
       },
       {
         principle: "Rotational energy storage",
+        formula: "U = \\frac{1}{2} k \\theta^2 \\quad \\text{and} \\quad \\tau = k \\theta",
         explanation:
           "A wound spring stores mechanical energy. Ratchets transmit winding torque in one direction and the latch-and-abutment system converts the stored energy into a bounded shutter rotation.",
       },
@@ -349,8 +352,8 @@ This invention relates more particularly to improvements in that class of photog
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Complete camera",
-      caption: "Perspective source drawing of the complete instrument.",
+      title: "Perspective View of Camera",
+      caption: "Exterior perspective of the rectangular camera case with front block and lens.",
       svgType: "eastman-kodak",
       callouts: [
         {
@@ -378,7 +381,10 @@ This invention relates more particularly to improvements in that class of photog
   historicalContext: {
     problemStatement:
       "The source identifies the need for a simple, compact, readily portable camera that can hold prepared film while excluding unwanted light from the exposing chamber.",
-    priorArtLimitations: ["The facsimile does not provide a comparative prior-art narrative."],
+    priorArtLimitations: [
+      "The pinned facsimile focuses directly on the mechanical improvements and does not document an explicit comparative prior-art history in its opening preamble.",
+      "The document omits a detailed survey of competing patent claims from contemporaneous manufacturers, such as those by Scovill or Anthony, which might have defined the technical baseline of the era.",
+    ],
     breakthroughInsight:
       "Eastman combines a removable front lens-and-shutter module with a removable rear roller-holder in a tubular, light-tight case.",
     patentWars: [],

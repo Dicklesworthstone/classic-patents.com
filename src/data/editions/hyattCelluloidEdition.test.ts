@@ -8,7 +8,10 @@ import {
   hyattCelluloidParallelReadings,
 } from "@/data/editions/hyattCelluloidEdition";
 import { hyattCelluloidPatent } from "@/data/patents/hyatt-celluloid";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
 
 describe("hyattCelluloidArchivalEdition", () => {
   test("is a complete manual edition pinned to the reviewed US 105,338 facsimile", () => {
@@ -119,6 +122,11 @@ describe("hyattCelluloidArchivalEdition", () => {
 
     const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(transcript, asset.pageCount, asset.pageAnchors),
+    ).toEqual({
+      valid: true,
+    });
     const sourcePdf = readFileSync(`${process.cwd()}/public${hyattCelluloidPatent.originalPdfUrl}`);
     expect(createHash("sha256").update(sourcePdf).digest("hex")).toBe(asset.sourcePdfSha256);
 

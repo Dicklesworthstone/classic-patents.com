@@ -381,11 +381,15 @@ export const carrierAirConditionerPatent: Patent = {
     scientificPrinciples: [
       {
         principle: "Inertial impaction in a turning flow",
+        formula:
+          "\\text{Stk} = \\frac{\\rho_p d_p^2 u_0}{18 \\mu D} \\quad \\text{and} \\quad \\eta_{\\text{impaction}} = f(\\text{Stk})",
         explanation:
           "The document says that particles are thrown against the wet film by their inertia and by centrifugal force from the sinuous air path. In modern terms, a particle cannot follow every abrupt streamline turn as readily as the carrier gas, so it contacts the wetted surface.",
       },
       {
         principle: "Gravity drainage and liquid-film capture",
+        formula:
+          "q_{\\text{film}} = \\frac{\\rho g \\delta^3}{3 \\mu} \\quad \\text{and} \\quad \\Delta P_{\\text{loss}} = \\zeta \\frac{\\rho v^2}{2}",
         explanation:
           "The front plate surfaces intentionally remain wet. Captured material is washed downward by that film into basin or trap J, while the rear plate geometry seeks to separate free liquid from the outgoing air.",
       },
@@ -462,42 +466,138 @@ export const carrierAirConditionerPatent: Patent = {
       caption:
         "Part elevation and part vertical section of the air-treatment apparatus described in US 808,897.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-m",
+          figureRef: "Fig. 1",
+          label: "M",
+          element: "Air conduit casing",
+          description: "Enclosure housing spray nozzles and separator plates.",
+          x: 50,
+          y: 35,
+        },
+        {
+          id: "c-h",
+          figureRef: "Fig. 1",
+          label: "H",
+          element: "Spray device header",
+          description: "Water header distributing atomized spray across incoming air.",
+          x: 25,
+          y: 40,
+        },
+        {
+          id: "c-i",
+          figureRef: "Fig. 1",
+          label: "I",
+          element: "Sinuous separator plates",
+          description: "Zigzag plates removing particles and free water droplets.",
+          x: 60,
+          y: 40,
+        },
+        {
+          id: "c-k",
+          figureRef: "Fig. 1",
+          label: "K",
+          element: "Exhaust fan",
+          description: "Centrifugal fan drawing conditioned air through the conduit.",
+          x: 85,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 2",
       title: "Separating device in horizontal section",
       caption: "Enlarged fragmentary horizontal section through the separating device.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-pass",
+          figureRef: "Fig. 2",
+          label: "C",
+          element: "Sinuous air passages",
+          description: "Continuous turning channels between adjacent wetted plates.",
+          x: 50,
+          y: 45,
+        },
+        {
+          id: "c-gut",
+          figureRef: "Fig. 2",
+          label: "b, c",
+          element: "Projecting gutters",
+          description: "Flanges arresting liquid film travel across successive faces.",
+          x: 70,
+          y: 55,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 3",
       title: "Separating-device diagram",
       caption: "Diagram of the separating device.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-flow",
+          figureRef: "Fig. 3",
+          label: "F",
+          element: "Turning airflow path",
+          description: "Curved flow lines driving droplets toward wetted plate walls.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 4",
       title: "Separator plate or element",
       caption: "Perspective view of one separator plate or element.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-plate",
+          figureRef: "Fig. 4",
+          label: "A",
+          element: "Separator plate element",
+          description: "Single corrugated sheet with front smooth faces and rear gutter lips.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 5",
       title: "Spray nozzle in section",
       caption: "Enlarged section of one detached spray nozzle.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-noz",
+          figureRef: "Fig. 5",
+          label: "h",
+          element: "Whirling spray nozzle",
+          description: "Atomizing nozzle imparting circular motion to liquid.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 6",
       title: "Spray nozzle in a second plane",
       caption: "Enlarged section in a different plane of the detached spray nozzle.",
       svgType: "carrier-air-conditioner",
-      callouts: [],
+      callouts: [
+        {
+          id: "c-noz2",
+          figureRef: "Fig. 6",
+          label: "h'",
+          element: "Tangential nozzle inlet",
+          description: "Tangential entry port generating liquid vortex.",
+          x: 50,
+          y: 50,
+        },
+      ],
     },
   ],
   historicalContext: {

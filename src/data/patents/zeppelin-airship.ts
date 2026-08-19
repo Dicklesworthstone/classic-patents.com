@@ -169,7 +169,57 @@ This invention relates to a navigable balloon which is characterized essentially
       keyInnovations: ["Articulated airship train", "Aerodynamic inter-module fairings"],
     },
   ],
-  drawings: [],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Side Elevation of Rigid Navigable Balloon",
+      caption:
+        "Side elevation showing rigid aluminum lattice framework, subdivided gas cells, suspended gondolas, and movable trim weight.",
+      svgType: "zeppelin-airship",
+      callouts: [
+        {
+          id: "z-hull",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Rigid framework hull",
+          description:
+            "Longitudinal and transverse lattice ring framework maintaining cylindrical hull shape.",
+          x: 50,
+          y: 35,
+        },
+        {
+          id: "z-gas",
+          figureRef: "Fig. 1",
+          label: "B",
+          element: "Separated gas-bag cells",
+          description:
+            "Plurality of distinct gas-tight cells housed in independent hull compartments.",
+          x: 45,
+          y: 30,
+        },
+        {
+          id: "z-cars",
+          figureRef: "Fig. 1",
+          label: "C, D",
+          element: "Forward and aft engine gondolas",
+          description:
+            "Suspended gondolas housing Daimler internal-combustion engines and prop shafts.",
+          x: 40,
+          y: 70,
+        },
+        {
+          id: "z-trim",
+          figureRef: "Fig. 1",
+          label: "E",
+          element: "Sliding trim weight",
+          description:
+            "Movable ballast weight shifting along longitudinal keel cable for pitch trim.",
+          x: 55,
+          y: 65,
+        },
+      ],
+    },
+  ],
   historicalContext: {
     problemStatement:
       "Late 19th-century ballooning was entirely dependent on wind direction. Early non-rigid dirigibles (blimps) could not carry sufficient fuel or cargo because they relied on internal gas pressure to maintain aerodynamic shape, limiting their size and speed.",

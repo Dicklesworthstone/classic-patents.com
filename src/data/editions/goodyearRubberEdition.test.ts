@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   goodyearRubberArchivalEdition,
   goodyearRubberParallelReadings,
 } from "@/data/editions/goodyearRubberEdition";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 
 describe("goodyearRubberArchivalEdition", () => {
   test("is a complete, continuous manual edition of the pinned two-page facsimile", () => {
@@ -41,7 +44,33 @@ describe("goodyearRubberArchivalEdition", () => {
       kind: "reviewed-transcription",
       sourcePdfSha256: goodyearRubberArchivalEdition.sourcePdfSha256,
     });
+    const asset = goodyearRubberPatent.originalTextAsset;
+    if (asset?.kind !== "reviewed-transcription") {
+      throw new Error("US 3,633 must retain its reviewed transcription asset.");
+    }
+    const ledger = readFileSync(resolve(process.cwd(), `public${asset.url}`), "utf8");
+    expect(
+      validateReviewedTranscriptionPageAnchors(ledger, asset.pageCount, asset.pageAnchors),
+    ).toEqual({ valid: true });
     expect(goodyearRubberPatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3]);
+  });
+
+  test("keeps source-bounded engineering copy free of raw TeX and invented polymer metrics", () => {
+    const visible = JSON.stringify({
+      subtitle: goodyearRubberPatent.subtitle,
+      plainEnglish: goodyearRubberPatent.plainEnglishExplanation,
+      claims: goodyearRubberPatent.claims,
+    });
+
+    expect(visible).not.toContain("$");
+    expect(visible).not.toContain("\\\\");
+    expect(visible).not.toContain("105 kJ/mol");
+    expect(visible).not.toContain("Disulfide and polysulfide bridges");
+    expect(visible).not.toContain("hydrogen sulfide");
+    expect(visible).not.toContain("two billion pneumatic tires");
+    expect(visible).toContain("25 parts India-rubber : 5 parts sulphur : 7 parts white lead");
+    expect(visible).toContain("212°F–350°F; best effect approaching 270°F");
+    expect(visible).toContain("does not state a molecular reaction");
   });
 
   test("exports renderer-ready, non-lossy readings for every authored source paragraph", () => {

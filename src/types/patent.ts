@@ -194,14 +194,27 @@ export type OriginalTextAssetKind = "reviewed-transcription" | "source-pdf-text-
  * printed phrase must occur under the reviewed ledger marker for the same PDF
  * page, while `sourceRelationship` records what that page actually is.
  */
-export interface ReviewedTranscriptionPageAnchor {
-  /** One-based PDF page number, including drawing sheets and certificates. */
-  page: number;
-  /** Exact printed header or distinctive source phrase seen on that page. */
-  exactSourceText: string;
-  /** Human-authored description such as “printed drawing sheet 1 of 2”. */
-  sourceRelationship: string;
-}
+export type ReviewedTranscriptionPageAnchor =
+  | {
+      /** One-based PDF page number, including drawing sheets and certificates. */
+      page: number;
+      /** Exact printed header or distinctive source phrase seen on that page. */
+      exactSourceText: string;
+      /** Human-authored description such as “printed drawing sheet 1 of 2”. */
+      sourceRelationship: string;
+      /** Omitted for a facsimile page with printed content. */
+      isBlank?: false;
+    }
+  | {
+      /** One-based PDF page number that was visually verified as blank. */
+      page: number;
+      /** No printed phrase exists to anchor a truly blank facsimile page. */
+      isBlank: true;
+      /** Human-authored evidence that the scanned page has no printed content. */
+      sourceRelationship: string;
+      /** A blank page must not be made to look like it contains source text. */
+      exactSourceText?: never;
+    };
 
 export interface OriginalTextAsset {
   /** Public, cleaned transcription of every page in the source facsimile. */

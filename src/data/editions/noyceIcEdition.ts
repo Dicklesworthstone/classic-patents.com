@@ -702,11 +702,15 @@ export const noyceIcRecordCorrections: Pick<
     scientificPrinciples: [
       {
         principle: "Electrical insulation across a P-N junction",
+        formula:
+          "R_{\\text{insulation}} = \\rho_{\\text{oxide}} \\frac{t_{\\text{oxide}}}{A_{\\text{lead}}} \\gg R_{\\text{junction}}",
         explanation:
           "A conducting strip can cross the map of a junction only when the strip is kept electrically separate from the semiconductor below it. Here that separation comes from a retained oxide layer. The patent gives geometry and fabrication relationships, not a source equation for capacitance, depletion width, or breakdown voltage.",
       },
       {
         principle: "Reverse-biased junction capacitance",
+        formula:
+          "C_j = \\frac{\\varepsilon A}{W} = A \\sqrt{\\frac{q \\varepsilon N_A N_D}{2 (N_A + N_D) (V_0 + V_R)}}",
         explanation:
           "The specification expressly uses reverse-biased junctions 18 and 22 as capacitances in the illustrated circuit. It explains the effect through charge layers on both sides of the junction and says the value at junction 18 can be varied by changing its area. No numeric capacitance value or bias voltage is printed in the grant.",
       },
@@ -844,7 +848,26 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Greatly enlarged plan view of one transistor-and-lead structure described in the specification.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-lead",
+          figureRef: "Fig. 1",
+          label: "11",
+          element: "Adherent metal lead",
+          description: "Vapor-deposited aluminum lead extending over insulating oxide.",
+          x: 50,
+          y: 35,
+        },
+        {
+          id: "noyce-contact",
+          figureRef: "Fig. 1",
+          label: "12",
+          element: "Central contact",
+          description: "Ohmic contact window to underlying semiconductor region.",
+          x: 50,
+          y: 55,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 2",
@@ -852,7 +875,26 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Section taken along the line 2-2 of Fig. 1, showing the relationship of the semiconductor body, oxide, and leads.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-oxide",
+          figureRef: "Fig. 2",
+          label: "13",
+          element: "Silicon oxide insulating layer",
+          description: "Thermally grown SiO2 layer insulating the lead from the junction.",
+          x: 50,
+          y: 40,
+        },
+        {
+          id: "noyce-junc",
+          figureRef: "Fig. 2",
+          label: "14",
+          element: "Dished P-N junction",
+          description: "Junction extending to the planar surface beneath the protective oxide.",
+          x: 35,
+          y: 60,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 3",
@@ -860,7 +902,26 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Greatly enlarged plan view of a semiconductor body carrying multiple transistor structures and their leads.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-leads",
+          figureRef: "Fig. 3",
+          label: "16, 17",
+          element: "Deposited interconnect strips",
+          description: "Planar metal strips interconnecting multiple circuit components.",
+          x: 45,
+          y: 50,
+        },
+        {
+          id: "noyce-juncs",
+          figureRef: "Fig. 3",
+          label: "18",
+          element: "Reverse-biased junction",
+          description: "Junction operated as a capacitor in the multi-device circuit.",
+          x: 65,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 4",
@@ -868,7 +929,17 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Section taken along the line 4-4 of Fig. 3, showing the depth relationship of the semiconductor regions and contact structure.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-cross",
+          figureRef: "Fig. 4",
+          label: "19",
+          element: "Cross-sectional semiconductor body",
+          description: "Unitary semiconductor wafer supporting multiple active regions.",
+          x: 50,
+          y: 55,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 5",
@@ -876,7 +947,26 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Simplified equivalent circuit corresponding to the multi-device semiconductor structure of Figs. 3 and 4.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-diode",
+          figureRef: "Fig. 5",
+          label: "D1, D2",
+          element: "Equivalent diode junctions",
+          description: "Circuit diagram representation of integrated P-N junctions.",
+          x: 35,
+          y: 50,
+        },
+        {
+          id: "noyce-trans",
+          figureRef: "Fig. 5",
+          label: "T1",
+          element: "Equivalent transistor",
+          description: "Circuit diagram representation of the integrated planar transistor.",
+          x: 65,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 6",
@@ -884,7 +974,26 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Plan view of the alternate transistor-and-lead construction discussed in the specification.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-strip",
+          figureRef: "Fig. 6",
+          label: "26",
+          element: "Parallel contact strips",
+          description: "Elongated metal strip contacts for high-frequency operation.",
+          x: 45,
+          y: 50,
+        },
+        {
+          id: "noyce-bridge",
+          figureRef: "Fig. 6",
+          label: "27",
+          element: "Oxide-crossing lead bridge",
+          description: "Deposited lead extending over oxide to inner contact strip.",
+          x: 60,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 7",
@@ -892,7 +1001,17 @@ export const noyceIcRecordCorrections: Pick<
       caption:
         "Section taken along the line 7-7 of Fig. 6, showing the alternate structure in cross section.",
       svgType: "noyce-ic",
-      callouts: [],
+      callouts: [
+        {
+          id: "noyce-sec7",
+          figureRef: "Fig. 7",
+          label: "28",
+          element: "Elongated junction profile",
+          description: "Cross section through elongated parallel-strip transistor structure.",
+          x: 50,
+          y: 55,
+        },
+      ],
     },
   ],
   historicalContext: {

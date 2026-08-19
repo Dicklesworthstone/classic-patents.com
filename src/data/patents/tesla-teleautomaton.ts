@@ -290,7 +290,35 @@ In a broad sense, then, my invention differs from all of those systems which pro
       caption:
         "The second drawing sheet labels Fig. 2 as a longitudinal section showing interior mechanism in side elevation.",
       svgType: "tesla-teleautomaton",
-      callouts: [],
+      callouts: [
+        {
+          id: "tta-fig2-prop",
+          figureRef: "Fig. 2",
+          label: "D",
+          element: "Propelling motor",
+          description: "Electric motor driving the vessel propeller shaft.",
+          x: 25,
+          y: 55,
+        },
+        {
+          id: "tta-fig2-rud",
+          figureRef: "Fig. 2",
+          label: "F",
+          element: "Steering motor",
+          description: "Motor and gear train actuating the rudder.",
+          x: 80,
+          y: 50,
+        },
+        {
+          id: "tta-fig2-bat",
+          figureRef: "Fig. 2",
+          label: "E",
+          element: "Storage battery",
+          description: "Storage battery supplying propulsion and steering power.",
+          x: 50,
+          y: 60,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 3",
@@ -298,7 +326,35 @@ In a broad sense, then, my invention differs from all of those systems which pro
       caption:
         "The third drawing sheet labels Fig. 3 as a partially diagrammatic plan of vessel, apparatus, and circuit connections.",
       svgType: "tesla-teleautomaton",
-      callouts: [],
+      callouts: [
+        {
+          id: "tta-fig3-ant",
+          figureRef: "Fig. 3",
+          label: "B",
+          element: "Elevated conductor",
+          description: "Antenna capturing transmitted electromagnetic waves.",
+          x: 50,
+          y: 15,
+        },
+        {
+          id: "tta-fig3-sens",
+          figureRef: "Fig. 3",
+          label: "S",
+          element: "Coherer / Sensitive device",
+          description: "Coherer cylinder detecting incoming radio impulses.",
+          x: 45,
+          y: 40,
+        },
+        {
+          id: "tta-fig3-relay",
+          figureRef: "Fig. 3",
+          label: "R",
+          element: "Relay magnet",
+          description: "Sensitive relay closing local circuit upon wave reception.",
+          x: 55,
+          y: 45,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 4–8",
@@ -306,7 +362,27 @@ In a broad sense, then, my invention differs from all of those systems which pro
       caption:
         "The fourth drawing sheet contains the numbered enlarged mechanism and sensitive-device detail figures specified in the source.",
       svgType: "tesla-teleautomaton",
-      callouts: [],
+      callouts: [
+        {
+          id: "tta-fig4-disk",
+          figureRef: "Fig. 4",
+          label: "K",
+          element: "Step-by-step disc",
+          description: "Escapement disc advancing contact positions with each received pulse.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "tta-fig6-coh",
+          figureRef: "Fig. 6",
+          label: "S",
+          element: "Coherer cylinder",
+          description:
+            "Rotatable glass cylinder containing metallic granules with decohering contacts.",
+          x: 50,
+          y: 35,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 9–10",
@@ -314,7 +390,26 @@ In a broad sense, then, my invention differs from all of those systems which pro
       caption:
         "The fifth drawing sheet contains the system diagram and enlarged mechanism view named in the specification.",
       svgType: "tesla-teleautomaton",
-      callouts: [],
+      callouts: [
+        {
+          id: "tta-fig9-trans",
+          figureRef: "Fig. 9",
+          label: "T",
+          element: "Transmitting station",
+          description: "High-frequency oscillator and transmitting terminal.",
+          x: 20,
+          y: 50,
+        },
+        {
+          id: "tta-fig9-vess",
+          figureRef: "Fig. 9",
+          label: "A",
+          element: "Controlled vessel",
+          description: "Receiving vessel responsive to beamed electromagnetic impulses.",
+          x: 80,
+          y: 50,
+        },
+      ],
     },
   ],
   historicalContext: {

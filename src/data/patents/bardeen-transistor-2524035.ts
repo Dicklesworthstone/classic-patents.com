@@ -487,7 +487,27 @@ export const bardeenTransistor2524035Patent: Patent = {
       caption:
         "Plan views compare current stream lines without the collector field and with its distortion.",
       svgType: "bardeen-transistor",
-      callouts: [],
+      callouts: [
+        {
+          id: "bardeen-stream",
+          figureRef: "Fig. 3",
+          label: "3",
+          element: "Current streamlines",
+          description:
+            "Streamlines of injected hole current spreading through surface layer toward collector.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "bardeen-coll-field",
+          figureRef: "Fig. 3",
+          label: "6",
+          element: "Collector sink",
+          description: "Collector contact establishing concentrated field sink.",
+          x: 60,
+          y: 35,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 15",
@@ -495,7 +515,35 @@ export const bardeenTransistor2524035Patent: Patent = {
       caption:
         "Energy-band curves depict the thin P-type layer and N-type body separated by a barrier.",
       svgType: "bardeen-transistor",
-      callouts: [],
+      callouts: [
+        {
+          id: "bardeen-p-layer",
+          figureRef: "Fig. 15",
+          label: "P",
+          element: "Thin P-type surface layer",
+          description: "Inversion surface layer providing hole conduction path.",
+          x: 30,
+          y: 45,
+        },
+        {
+          id: "bardeen-barrier",
+          figureRef: "Fig. 15",
+          label: "B",
+          element: "Internal potential barrier",
+          description: "High-resistance barrier separating P-type layer from N-type body.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "bardeen-n-body",
+          figureRef: "Fig. 15",
+          label: "N",
+          element: "Bulk N-type germanium body",
+          description: "Bulk semiconductor crystal supporting electron conduction.",
+          x: 70,
+          y: 55,
+        },
+      ],
     },
   ],
   historicalContext: {

@@ -19,13 +19,15 @@
 | --- | --- | --- |
 | Drawing sheet 1, Figures 1–2 | PDF p. 1, “Sheet 1, 2 Sheets” | Figure-sheet record; explicit Figure 1 and Figure 2 references; reviewed-transcription ledger page 1 |
 | Drawing sheet 2, Figures 3–6 | PDF p. 2, “Sheet 2, 2 Sheets” | Figure-sheet record; explicit Figure 3–6 references; reviewed-transcription ledger page 2 |
-| Masthead and opening specification | PDF p. 3, lines 1–110 | Masthead and first construction paragraphs; reviewed-transcription ledger page 3 |
-| Figure 3, drawing No. 2, installation description | PDF p. 4, lines 1–130 | Figure 3–6 and removable-installation paragraphs; reviewed-transcription ledger page 4 |
-| Motion recommendation, disclaimer, claims, signature, witnesses | PDF p. 5, lines 1–68 | Claims 1–3, J. Ericsson signature, Curley and Marquette witnesses; reviewed-transcription ledger page 5 |
+| Masthead and first physical specification page | PDF p. 3, ending after `piston rod or beam of a` | Masthead, first construction paragraphs, and the first half of a sentence that continues onto PDF p. 4; reviewed-transcription ledger page 3 |
+| Second physical specification page | PDF p. 4, beginning `steam engine the cylinder of which may be` | Remainder of the specification, motion recommendation, disclaimer, claims 1–3, J. Ericsson signature, and Curley and Marquette witnesses; reviewed-transcription ledger page 4 |
+| Blank trailing source page | PDF p. 5, no printed content | Explicit blank-page receipt only; no source prose is reassigned to this page |
 
 ## Editorial boundary
 
 `public/patents/transcripts/us-588-ericsson-propeller-reviewed.txt` is the accountable five-page review ledger for the continuous edition. It is pinned in the catalogue as a `reviewed-transcription`, names its reviewer and review date, and carries the source PDF digest above. It records page coverage without imposing source-sheet breaks on the visitor-facing React edition.
+
+The source PDF's trailing fifth page is blank. Its ledger section therefore contains only the explicit `[BLANK FACSIMILE PAGE: no printed content]` receipt. It does not move the tail of PDF p. 4 onto a fictitious content-bearing fifth page.
 
 The local `public/patents/source-text/us-588-ericsson-propeller.txt` is retained as a legacy comparison artifact and is not used by the manually prepared Original Patent Text face. It is neither a source for the edition nor evidence of completeness.
 

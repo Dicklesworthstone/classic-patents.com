@@ -492,7 +492,35 @@ export const thomsonWeldingPatent: Patent = {
       caption:
         "First source sheet: Fig. 1's clamp apparatus through Fig. 9's modified gravity-pressure arrangement.",
       svgType: "thomson-welding",
-      callouts: [],
+      callouts: [
+        {
+          id: "tw-arms",
+          figureRef: "Fig. 1",
+          label: "L, L'",
+          element: "Conductive holding arms",
+          description: "Pivoted conductive arms holding the workpiece clamps.",
+          x: 45,
+          y: 40,
+        },
+        {
+          id: "tw-joint",
+          figureRef: "Fig. 1",
+          label: "J",
+          element: "Abutting weld joint",
+          description: "Interface where heavy fusing current develops heat under pressure.",
+          x: 50,
+          y: 35,
+        },
+        {
+          id: "tw-spring",
+          figureRef: "Fig. 1",
+          label: "S",
+          element: "Adjustable upset spring",
+          description: "Spring exerting axial pressure to force the softening pieces together.",
+          x: 65,
+          y: 55,
+        },
+      ],
     },
     {
       figureNumber: "Figs. 10–18",
@@ -500,7 +528,26 @@ export const thomsonWeldingPatent: Patent = {
       caption:
         "Second source sheet: Fig. 10 through Fig. 18, including transformer and secondary-battery sources.",
       svgType: "thomson-welding",
-      callouts: [],
+      callouts: [
+        {
+          id: "tw-prim",
+          figureRef: "Fig. 16",
+          label: "M",
+          element: "Primary winding",
+          description: "Fine-wire high-voltage primary winding controlled by switch B.",
+          x: 40,
+          y: 60,
+        },
+        {
+          id: "tw-sec",
+          figureRef: "Fig. 16",
+          label: "N",
+          element: "Heavy secondary conductor",
+          description: "Single low-resistance turn delivering high fusing current to workpieces.",
+          x: 55,
+          y: 45,
+        },
+      ],
     },
   ],
   historicalContext: {

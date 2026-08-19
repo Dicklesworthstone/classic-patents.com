@@ -5,9 +5,8 @@ export const goodyearRubberPatent: Patent = {
   id: "us-3633-goodyear-rubber",
   patentNumber: "US 3,633",
   title: "Improvement in India-Rubber Fabrics",
-  shortTitle: "Goodyear Vulcanized Rubber",
-  subtitle:
-    "Chemical Cross-Linking of Polyisoprene Elastomers via Sulfur and High-Temperature Curing",
+  shortTitle: "Goodyear India-Rubber Fabric",
+  subtitle: "A sulphur, white-lead, cotton-batting, and heat-treatment process",
   inventors: ["Charles Goodyear"],
   inventorLocation: "New York, New York",
   grantDate: "1844-06-15",
@@ -30,6 +29,19 @@ export const goodyearRubberPatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (SunnySpring)",
     reviewedAt: "2026-08-17",
     sourcePdfSha256: "efd8490327472ea50fd873afd35ec759489f9587c9a9df1a590a500f7a66a8a7",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship: "Patent-office masthead and first part of the specification.",
+      },
+      {
+        page: 2,
+        exactSourceText: "Having thus fully described the nature of the process",
+        sourceRelationship:
+          "Specification conclusion, claim lead-in, claims 1–3, execution, and witnesses.",
+      },
+    ],
   },
   archivalEdition: goodyearRubberArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
@@ -50,76 +62,63 @@ My principal improvement consists in the combining of sulphur and white lead wit
       "The claimed manufacturing chain is: mix India-rubber with sulphur and white lead; form it as a sheet or coat it on cloth or leather; optionally put cotton-wool between gum layers; dry it; then heat it. The printed range is 212°F to 350°F, with the best effect said to approach 270°F. The source makes a process claim about the changed properties; it does not disclose a modern molecular mechanism, so later cross-linking terminology is editorial interpretation, not wording from the grant.",
     mechanicalBreakdown: [
       {
-        title: "Sulfur Covalent Cross-Linking Bridges",
-        summary: "Sulfur atoms forming covalent cross-links between parallel polyisoprene chains.",
+        title: "Three-part compound",
+        summary:
+          "The source combines India-rubber, sulphur, and white lead before the heat treatment.",
         technicalDetails:
-          "Disulfide and polysulfide bridges ($-S_x-$ where $x = 1\\text{ to }6$) connect the carbon backbones. The cross-link density determines hardness, transforming soft gum into flexible tire tread or hard ebonite.",
-        archaicTerm: "Combining of sulfur with gum-elastic by heat",
-        modernEquivalent: "Covalent polymer vulcanization network",
+          "Goodyear gives 25 parts India-rubber, 5 parts sulphur, and 7 parts white lead as the mixture he had found best. His first claim also permits other lead salts or oxides in place of white lead when they produce a like result. The document does not state a molecular reaction mechanism or a measured cross-link density.",
+        archaicTerm: "white lead",
+        modernEquivalent:
+          "A lead-containing pigment material; the grant also names lead salts and oxides.",
       },
       {
-        title: "White Lead Inorganic Activator / Catalyst",
-        summary: "Basic lead carbonate added to accelerate the sulfur cross-linking reaction.",
+        title: "Sheet and coating routes",
+        summary: "The compound may become a free sheet or a coating on cloth or leather.",
         technicalDetails:
-          "Lead oxide acts as an inorganic activator and hydrogen sulfide ($H_2S$) acid scavenger, accelerating cross-linking reaction rates and preventing spongy gas porosity in the cured elastomer.",
-        archaicTerm: "White lead / Carbonate of lead",
-        modernEquivalent: "Vulcanization accelerator & acid scavenger",
+          "The specification first describes dissolving India-rubber in turpentine or another essential oil and grinding the white lead and sulphur in turpentine. It also gives an alternative: incorporate the ground materials into the gum with heated cylinders or calender rollers, then make sheets or apply them to cloth or leather. Those are manufacturing routes stated in the grant, not a recipe for a modern material-performance model.",
+        archaicTerm: "calender-rollers",
+        modernEquivalent: "Heated rollers used to work material into a sheet.",
       },
       {
-        title: "Thermal Curing Steam Chamber",
-        summary: "An oven heating the compounded rubber to 270°F–300°F (132°C–149°C).",
+        title: "Cotton-wool laminate",
+        summary: "Cotton-wool batting sits between successive gum coats on a supporting fabric.",
         technicalDetails:
-          "Provides the thermal activation energy ($E_a \\approx 105\\text{ kJ/mol}$) required to break sulfur ring molecules ($S_8$) into reactive free radicals that cross-link the polymer chains.",
-        archaicTerm: "Artificial heat in an oven or steam-chamber",
-        modernEquivalent: "High-temperature vulcanization autoclave",
+          "After laying a compounded coat on fabric, Goodyear covers it with cotton-wool as delivered from a carding-machine and then covers that batting with another coat of gum. He says the sequence may be repeated two or three times to obtain the desired thickness. The printed claim is specifically the interposition of cotton-batting between layers of gum.",
+        archaicTerm: "doffer of a carding-machine",
+        modernEquivalent: "The part of a carding machine that removes the formed cotton web.",
       },
       {
-        title: "Cotton-Batting Interlayer Reinforcement",
-        summary: "Layers of woven textile fabric sandwiched between rubber sheets.",
+        title: "Regulated heat treatment",
+        summary:
+          "The dried fabric is heated between 212°F and 350°F, with the best effect said to approach 270°F.",
         technicalDetails:
-          "Distributes tensile tearing stress across high-modulus cellulose fibers, preventing puncture propagation and providing dimensional stability for garments and hoses.",
-        archaicTerm: "Cotton-batting interposed between layers of gum",
-        modernEquivalent: "Elastomeric fabric ply reinforcement",
+          "Goodyear permits either a heated cylinder or an atmosphere of the proper temperature in an oven with openings for the sheet or web. He warns that material above 270°F must remain there only briefly and says the softened fabric must stay on its supporting cloth during the operation. The source gives this operating window but no time, pressure, reaction-rate, or material-strength measurement.",
+        archaicTerm: "action of a high degree of temperature",
+        modernEquivalent: "A controlled heat-treatment step.",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Rubber Elasticity & Entropic Spring Physics",
-        formula:
-          "f = -T \\left(\\frac{\\partial S}{\\partial L}\\right)_T = \\frac{\\rho R T}{M_c} \\left(\\lambda - \\frac{1}{\\lambda^2}\\right)",
+        principle: "Stated composition window",
+        formula: "25 parts India-rubber : 5 parts sulphur : 7 parts white lead",
         explanation:
-          "Cross-linked rubber elasticity is purely entropic: stretching chains straight reduces conformational entropy; releasing tension allows thermal agitation to pull chains back into random coiled states.",
+          "This is the preferred mixture Goodyear reports from practice. Claim 1 does not freeze the claim at that ratio; it extends to other proportions that produce a like result and to other lead salts or oxides named in the claim.",
       },
       {
-        principle: "Cross-Link Density & Shear Modulus",
-        formula: "G = N k_B T = \\frac{\\rho R T}{M_c}",
+        principle: "Stated heat window",
+        formula: "212°F–350°F; best effect approaching 270°F",
         explanation:
-          "The shear modulus G is directly proportional to absolute temperature T and cross-link density N (inversely proportional to average molecular weight between cross-links M_c).",
+          "The grant supplies an operating range and a qualitative preference, not a heat-time curve. It says exposure above 270°F must be very brief and that the material needs its cloth support while softened.",
       },
       {
-        principle: "Mooney-Rivlin Hyperelastic Strain Energy Density",
-        formula:
-          "W = C_{10}(I_1 - 3) + C_{01}(I_2 - 3), \\quad I_1 = \\lambda_1^2 + \\lambda_2^2 + \\lambda_3^2",
+        principle: "Layered support during processing",
+        formula: "Laminate = gum + cotton-batting + gum",
         explanation:
-          "Vulcanized elastomers undergo non-linear large-strain deformation, where strain energy density $W$ depends on the first and second strain invariants ($I_1, I_2$).",
-      },
-      {
-        principle: "Sulfur Radical Ring Cleavage Kinetics",
-        formula:
-          "k = A \\exp\\left(-\\frac{E_a}{R T}\\right), \\quad E_a \\approx 105\\text{ kJ/mol}",
-        explanation:
-          "At room temperature, the octasulfur ring ($S_8$) is chemically inert. Heating above 130°C provides the activation energy ($E_a$) to cleave the sulfur rings into highly reactive biradicals that attack polyisoprene double bonds.",
-      },
-      {
-        principle: "Glass Transition Temperature ($T_g$) Stabilization",
-        formula:
-          "T_g = T_{g0} + \\frac{K \\cdot N_{crosslink}}{1 + N_{crosslink}}, \\quad T_g \\approx -70^\\circ\\text{C}",
-        explanation:
-          "Vulcanization maintains a low glass transition temperature while eliminating viscous flow, ensuring flexible elasticity across an operating window of -40°C to +120°C.",
+          "The patent’s explanation is mechanical and process-specific: cotton-wool is put between gum layers, and the fabric stays on its cloth support during heating because the softened compound cannot support its own weight. It does not give a constitutive equation, tensile strength, or a modern polymer model.",
       },
     ],
     whyItMattersToday:
-      "Sulfur vulcanization remains the foundational chemical process of the global automotive and aerospace industries. Over two billion pneumatic tires produced annually worldwide rely on sulfur cross-linking of natural rubber and synthetic styrene-butadiene rubber (SBR). Without Goodyear's vulcanization chemistry, modern automobiles, commercial aircraft landing gear, heavy machinery belts, and medical seals could not exist.",
+      "The grant is useful because it records a concrete early manufacturing program rather than a slogan: ingredients, preferred proportions, two fabrication routes, a cotton-wool laminate, a heat range, and limits on exposure above 270°F. Those details make the historical document legible without assigning it unprinted molecular mechanisms, performance figures, or credit for every later rubber product.",
   },
   claims: [
     {
@@ -128,11 +127,11 @@ My principal improvement consists in the combining of sulphur and white lead wit
       originalText:
         "The combining of the said gum with sulphur and with white lead, so as to form a triple compound, either in the proportions herein named or in any other within such limits as will produce a like result; and I will here remark that although I have obtained the best results from the carbonate of lead, other salts of lead or the oxides of that metal may be substituted therefor, and will produce a good effect. I therefore under this head claim the employment of either of the oxides or salts of lead in the place of the white lead in the above-named compound.",
       plainEnglish:
-        "The foundational composition-of-matter claim covering the three-part formulation: natural rubber gum, sulfur, and white lead (or metallic oxide catalysts) in any proportions that achieve thermal cross-linking.",
+        "Claim 1 covers the three-part compound: the gum, sulphur, and white lead. It says the stated proportions are examples, permits other proportions that produce a like result, and expressly extends the lead component to other lead salts or oxides. The claim does not state a catalyst role or a molecular reaction.",
       keyInnovations: [
-        "Three-part vulcanization composition",
-        "Sulfur cross-linking curing agent",
-        "Lead oxide acceleration and stabilization",
+        "India-rubber, sulphur, and white-lead compound",
+        "Alternative lead salts or oxides",
+        "Result-producing composition range",
       ],
       legalSignificance:
         "Claim 1 is the composition claim: it reaches the three-part gum, sulphur, and lead compound, while expressly extending the lead component beyond carbonate of lead.",
@@ -143,11 +142,11 @@ My principal improvement consists in the combining of sulphur and white lead wit
       originalText:
         "The formation of a fabric of the india-rubber by interposing layers of cotton-batting between those of the gum, in the manner and for the purpose above described.",
       plainEnglish:
-        "A composite elastomeric fabric formed by interposing layers of cotton batting or textile matrix between vulcanized rubber plies to make thin, flexible, high-tensile waterproof cloth.",
+        "Claim 2 covers the stated layered fabric: cotton-batting is placed between layers of gum in the manner the specification describes. It is a claim to that interposed batting construction, not a claim to every rubber-coated or waterproof textile.",
       keyInnovations: [
-        "Layered rubber-textile composite",
-        "Cotton-batting matrix reinforcement",
-        "Thin flexible waterproof sheeting",
+        "Cotton-batting interlayer",
+        "Gum-layer fabric construction",
+        "Repeated laminate process",
       ],
       legalSignificance:
         "Claim 2 is limited to the cotton-batting interlayer fabric described in the specification; it does not claim every rubber-coated textile.",
@@ -162,8 +161,8 @@ My principal improvement consists in the combining of sulphur and white lead wit
         "With the preceding compound and fabric, this claim adds the specified high-heat exposure. The specification permits 212°F to 350°F, says the best effect approaches 270°F, and warns that exposure above 270°F must be brief.",
       keyInnovations: [
         "High-temperature thermal curing process",
-        "Permanent thermoset cross-linking transformation",
-        "Weather and solvent resistance",
+        "212°F–350°F heat range",
+        "Cloth-supported heat treatment",
       ],
       legalSignificance:
         "Claim 3 makes the heat-treatment step part of the claimed combination, tied to the patent's stated protection against deterioration of India-rubber goods.",

@@ -183,16 +183,19 @@ export const lamarrPatent: Patent = {
     scientificPrinciples: [
       {
         principle: "Synchronized selection",
+        formula: "t_sync = t_tx - t_rx = 0",
         explanation:
           "The functional requirement is phase agreement between the two moving records: corresponding perforations must reach their control heads together, so the receiver follows the transmitter's selected carrier frequency.",
       },
       {
         principle: "Selective tuning",
+        formula: "f_k = 1 / (2 * pi * sqrt(L * C_k))",
         explanation:
           "Different capacitor capacities give oscillator 20 and selector 61 different tuned states. The record-controlled switches choose among those states; the specification says the order can be arbitrary rather than periodically recurring.",
       },
       {
         principle: "Tone selection and ratchet motion",
+        formula: "f_mod -> magnet -> delta_theta",
         explanation:
           "The two printed modulation frequencies serve as distinct command labels after detection. Separate filters, magnets, and pawls turn those labels into one-step left or right rudder movement.",
       },

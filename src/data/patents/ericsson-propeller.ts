@@ -29,6 +29,35 @@ export const ericssonPropellerPatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "40582250d44f6558cf9a438801e312a469ccb83b6755ebc813943fba54c3ea9a",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "Sheet 1, 2 Sheets.",
+        sourceRelationship: "Printed drawing sheet 1 of 2, containing Figs. 1 and 2.",
+      },
+      {
+        page: 2,
+        exactSourceText: "Sheet 2, 2 Sheets.",
+        sourceRelationship: "Printed drawing sheet 2 of 2, containing Figs. 3 through 6.",
+      },
+      {
+        page: 3,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship: "Patent-office masthead and the first physical specification page.",
+      },
+      {
+        page: 4,
+        exactSourceText: "steam engine the cylinder of which may be",
+        sourceRelationship:
+          "Second physical specification page, continuing the sentence split after “a” at the foot of PDF page 3.",
+      },
+      {
+        page: 5,
+        isBlank: true,
+        sourceRelationship:
+          "Visually reviewed trailing PDF page with no printed content; it is retained in the immutable facsimile and ledger as an explicit blank-page receipt.",
+      },
+    ],
   },
   originalText:
     "Be it known that I, JOHN ERICSSON, a subject of the Kingdom of Sweden, residing at London, England, have invented a new and useful Propeller for the Purpose of Propelling Steamboats Effectually Notwithstanding Any Variations in Their Draft of Water. The complete, manually prepared edition is available in the Original Patent Text face.",
@@ -99,6 +128,7 @@ export const ericssonPropellerPatent: Patent = {
       },
       {
         principle: "Whole-Surface Immersion",
+        formula: "A_{\\text{active}} = \\sum A_{\\text{plates}} \\quad (h_{\\text{immersion}} > D)",
         explanation:
           "Claim 1 ties the hoop-and-spoke construction to entire immersion, saying that this lets the whole surface of all spiral plates be employed at one time. That is the source's stated physical rationale. It does not provide depth, cavitation criteria, density, or a quantified propulsive efficiency.",
       },

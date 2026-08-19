@@ -157,4 +157,41 @@ describe("source-PDF text layer validation", () => {
       ]),
     ).toEqual({ valid: true });
   });
+
+  it("permits a visually verified blank facsimile page only with its explicit receipt", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "",
+      "UNITED STATES PATENT OFFICE.",
+      "",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "",
+      "[BLANK FACSIMILE PAGE: no printed content]",
+    ].join("\n");
+    const anchors = [
+      {
+        page: 1,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship: "Patent-office masthead.",
+      },
+      {
+        page: 2,
+        isBlank: true as const,
+        sourceRelationship: "Visually reviewed blank trailing source page.",
+      },
+    ];
+
+    expect(validateReviewedTranscriptionPageAnchors(ledger, 2, anchors)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(
+        ledger.replace("[BLANK FACSIMILE PAGE: no printed content]", "Editorial placeholder"),
+        2,
+        anchors,
+      ),
+    ).toEqual({
+      valid: false,
+      error:
+        "The reviewed transcription source page 2 is declared blank but does not contain only the blank-page receipt.",
+    });
+  });
 });

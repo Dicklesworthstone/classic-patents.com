@@ -1,5 +1,8 @@
+import type { ReviewedTranscriptionPageAnchor } from "@/types/patent";
+
 const SOURCE_PAGE_MARKER = /^--- SOURCE PDF PAGE (\d+) OF (\d+) ---$/gm;
 const REVIEWED_PAGE_MARKER = /^--- REVIEWED TRANSCRIPTION PAGE (\d+) OF (\d+) ---$/gm;
+const REVIEWED_BLANK_FACSIMILE_PAGE = "[BLANK FACSIMILE PAGE: no printed content]";
 
 export interface SourceTextValidationResult {
   valid: boolean;
@@ -109,13 +112,7 @@ export function validateReviewedTranscription(
 export function validateReviewedTranscriptionPageAnchors(
   text: string,
   expectedPageCount: number,
-  anchors:
-    | readonly {
-        page: number;
-        exactSourceText: string;
-        sourceRelationship: string;
-      }[]
-    | undefined,
+  anchors: readonly ReviewedTranscriptionPageAnchor[] | undefined,
 ): SourceTextValidationResult {
   const ledger = validateReviewedTranscription(text, expectedPageCount);
   if (!ledger.valid) return ledger;
@@ -143,13 +140,6 @@ export function validateReviewedTranscriptionPageAnchors(
       };
     }
 
-    const phrase = normalizeAnchorText(anchor.exactSourceText);
-    if (!phrase) {
-      return {
-        valid: false,
-        error: `The reviewed transcription source page ${expectedPage} has an empty exact-source anchor.`,
-      };
-    }
     if (!anchor.sourceRelationship.trim()) {
       return {
         valid: false,
@@ -161,6 +151,23 @@ export function validateReviewedTranscriptionPageAnchors(
     const start = (marker?.index ?? 0) + (marker?.[0].length ?? 0);
     const end = markers[index + 1]?.index ?? text.length;
     const ledgerPage = normalizeAnchorText(text.slice(start, end));
+    if (anchor.isBlank) {
+      if (ledgerPage !== REVIEWED_BLANK_FACSIMILE_PAGE) {
+        return {
+          valid: false,
+          error: `The reviewed transcription source page ${expectedPage} is declared blank but does not contain only the blank-page receipt.`,
+        };
+      }
+      continue;
+    }
+
+    const phrase = normalizeAnchorText(anchor.exactSourceText);
+    if (!phrase) {
+      return {
+        valid: false,
+        error: `The reviewed transcription source page ${expectedPage} has an empty exact-source anchor.`,
+      };
+    }
     if (!ledgerPage.includes(phrase)) {
       return {
         valid: false,

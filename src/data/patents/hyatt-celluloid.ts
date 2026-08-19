@@ -30,6 +30,14 @@ export const hyattCelluloidPatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "186dd64b072c5a1182eac0c9c2cb4d2edb20f17296f3e5d934c9114ed684df82",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship:
+          "The sole two-column patent-office sheet: formal matter, specification, claims, signatures, and witnesses.",
+      },
+    ],
   },
   // This is a source-true on-page excerpt. The complete public source is the
   // explicit archivalEdition below; the preserved legacy text assets are not

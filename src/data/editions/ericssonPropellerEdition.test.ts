@@ -7,7 +7,10 @@ import {
   ericssonPropellerParallelReadings,
 } from "@/data/editions/ericssonPropellerEdition";
 import { ericssonPropellerPatent } from "@/data/patents/ericsson-propeller";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
 
 describe("ericssonPropellerArchivalEdition", () => {
   test("is an explicit, continuous edition of the pinned US 588 facsimile", () => {
@@ -147,6 +150,16 @@ describe("ericssonPropellerArchivalEdition", () => {
 
     const transcript = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(transcript, asset.pageCount)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(transcript, asset.pageCount, asset.pageAnchors),
+    ).toEqual({
+      valid: true,
+    });
+    expect(asset.pageAnchors?.[4]).toMatchObject({
+      page: 5,
+      isBlank: true,
+      sourceRelationship: expect.stringContaining("trailing PDF page"),
+    });
     const sourcePdf = readFileSync(
       `${process.cwd()}/public${ericssonPropellerPatent.originalPdfUrl}`,
     );

@@ -337,11 +337,15 @@ My object is to so arrange the engines and couple up the steam connections as to
     scientificPrinciples: [
       {
         principle: "Staged expansion",
+        formula:
+          "h_{\\text{total}} = \\sum_{i=1}^N \\Delta h_i \\quad \\text{and} \\quad P_{\\text{boiler}} > P_1 > P_2 > P_{\\text{condenser}}",
         explanation:
           "The source treats expansion as a sequence of pressure drops across several engines. Selecting more serial machines gives the steam more successive expansion steps before condensation.",
       },
       {
         principle: "Parallel flow division",
+        formula:
+          "\\dot{m}_{\\text{total}} = \\sum_{k=1}^M \\dot{m}_k \\quad \\text{at boiler pressure } P_{\\text{admission}}",
         explanation:
           "In the compound-parallel arrangements, separate turbine trains receive steam from the boiler and exhaust to the condenser. The routing trades the number of operating paths against the demanded ship power.",
       },
@@ -394,7 +398,35 @@ My object is to so arrange the engines and couple up the steam connections as to
       caption:
         "The first drawing sheet shows the A through D-prime turbine sets connected to four screw-shafts.",
       svgType: "parsons-turbine",
-      callouts: [],
+      callouts: [
+        {
+          id: "pt-a",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "High-pressure turbine",
+          description: "First turbine receiving live steam from the boiler.",
+          x: 25,
+          y: 35,
+        },
+        {
+          id: "pt-d",
+          figureRef: "Fig. 1",
+          label: "D'",
+          element: "Low-pressure turbine",
+          description: "Final expansion turbine discharging directly into condenser E.",
+          x: 75,
+          y: 65,
+        },
+        {
+          id: "pt-e",
+          figureRef: "Fig. 1",
+          label: "E",
+          element: "Surface condenser",
+          description: "Condenser maintaining deep vacuum for the turbine train exhaust.",
+          x: 85,
+          y: 50,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 2",
@@ -402,14 +434,52 @@ My object is to so arrange the engines and couple up the steam connections as to
       caption:
         "The second sheet shows main turbines A through D and reversing turbines X and Y for a fast vessel or torpedo-boat destroyer.",
       svgType: "parsons-turbine",
-      callouts: [],
+      callouts: [
+        {
+          id: "pt-main",
+          figureRef: "Fig. 2",
+          label: "A, B, C, D",
+          element: "Main ahead turbines",
+          description: "Four forward-propulsion turbines driving screw-shafts.",
+          x: 45,
+          y: 40,
+        },
+        {
+          id: "pt-rev",
+          figureRef: "Fig. 2",
+          label: "X, Y",
+          element: "Astern reversing turbines",
+          description: "Reversing turbines that turn in condenser vacuum during ahead propulsion.",
+          x: 60,
+          y: 70,
+        },
+      ],
     },
     {
       figureNumber: "Fig. 3",
       title: "Six turbines on three screw-shafts",
       caption: "The third sheet shows the three-shaft, six-motor modification.",
       svgType: "parsons-turbine",
-      callouts: [],
+      callouts: [
+        {
+          id: "pt-s1",
+          figureRef: "Fig. 3",
+          label: "A, B, C",
+          element: "First turbine set",
+          description: "Three turbines arranged along three parallel propeller shafts.",
+          x: 30,
+          y: 50,
+        },
+        {
+          id: "pt-s2",
+          figureRef: "Fig. 3",
+          label: "A', B', C'",
+          element: "Second graduated turbine set",
+          description: "Graduated-capacity turbines expanding steam in series or parallel.",
+          x: 70,
+          y: 50,
+        },
+      ],
     },
   ],
   historicalContext: {
