@@ -75,6 +75,7 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     expect(result.brinellHardness).toBe(24);
     expect(result.isEutecticTemp).toBe(true);
     expect(result.wedgeLift).toBeCloseTo(0.0975, 3);
+    expect(result.slugSvgWidth).toBeCloseTo(result.justificationWidthMm * 2.8, 2);
   });
 
   test("builds and articulates procedural magazine, spacebands, casting pot, and mold disk correctly", () => {
