@@ -1,6 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import {
   ccdGateSvgX,
+  ccdSchematicGateX,
+  renoSchematicCleat,
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
@@ -25,6 +27,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res1.wellSvgDepths[0]).toBe(ccdWellSvgDepth(res1.wells[0], res1.fullWellElectrons));
     expect(res1.gateSvgCount).toBe(9);
     expect(ccdGateSvgX(2, res1.gateSvgPitch)).toBe(100);
+    expect(res1.schematicGateCount).toBe(6);
+    expect(ccdSchematicGateX(0, res1.schematicGateOriginX, res1.schematicGatePitch)).toBe(70);
     expect(res1.fullWellElectrons).toBeGreaterThan(50000);
     expect(res1.phasePeriodNs).toBeCloseTo(33.3, 1);
 
@@ -104,6 +108,9 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res.motorTorqueNm).toBeGreaterThan(0);
     expect(res.motorPowerKw).toBeGreaterThan(0);
     expect(res.combPlateClearanceMm).toBe(1.2);
+    expect(res.schematicCleatCount).toBe(7);
+    expect(renoSchematicCleat(0).x).toBe(60);
+    expect(renoSchematicCleat(1).y).toBe(180);
   });
 
   test("stepOtisElevator computes spring-bow deflection and safety pawl arrest under simulated rope snap", () => {
