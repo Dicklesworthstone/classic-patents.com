@@ -28,3 +28,19 @@
 `public/patents/transcripts/us-588-ericsson-propeller-reviewed.txt` is the accountable five-page review ledger for the continuous edition. It is pinned in the catalogue as a `reviewed-transcription`, names its reviewer and review date, and carries the source PDF digest above. It records page coverage without imposing source-sheet breaks on the visitor-facing React edition.
 
 The local `public/patents/source-text/us-588-ericsson-propeller.txt` is retained as a legacy comparison artifact and is not used by the manually prepared Original Patent Text face. It is neither a source for the edition nor evidence of completeness.
+
+## Figure-preview receipt
+
+The Original Patent Text face uses six individually authored source crops rather
+than sending every figure reference to a whole drawing sheet:
+
+- `public/patents/figures/us-588-ericsson-propeller/fig-1-source-crop-v1.png`
+  and `fig-2-source-crop-v1.png` are cropped from PDF p. 1.
+- `fig-3-source-crop-v1.png` through `fig-6-source-crop-v1.png` are cropped
+  from PDF p. 2.
+
+Each crop was checked visually against its printed figure label before it was
+bound to the matching typed figure reference. The two
+`source-sheet-*-source-crop-v1.png` files in the same directory are retained
+as source-review renders of the two drawing sheets; they are provenance
+evidence, not visitor-facing previews.
