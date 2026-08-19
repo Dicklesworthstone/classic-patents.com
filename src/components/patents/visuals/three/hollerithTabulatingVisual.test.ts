@@ -72,6 +72,8 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
     expect(result.pocketSvgPitch).toBe(18);
     expect(result.pocketSvgOriginX).toBe(15);
     expect(result.dialNeedleRadiusPx).toBe(14);
+    expect(result.cupCols).toBe(8);
+    expect(result.cupSvgPitchX).toBe(25);
     expect(result.dialUnitsPerRev).toBe(100);
   });
 

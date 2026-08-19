@@ -3,8 +3,11 @@ import {
   bardeenHoleStream,
   bardeenLoadLine,
   edisonSchematicGlowOpacity,
+  hollerithCupSvg,
+  hyattPolymerSvg,
   marconiMastHeightFromHz,
   mccormickReelAngleDeg,
+  nobelKieselguhrSvg,
   pasteurMicrobeSvg,
   phonographAxialTravelMm,
   pistonSvgDisplacement,
@@ -129,6 +132,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.detonationVelocityMps).toBeGreaterThan(5000);
     expect(res.blastOverpressureMpa).toBeGreaterThan(4000);
     expect(res.isInitiated).toBe(true);
+    expect(res.kieselguhrCount).toBe(24);
+    expect(nobelKieselguhrSvg(0).cx).toBe(200);
+    expect(nobelKieselguhrSvg(8).cy).toBe(167);
   });
 
   test("Whitney cotton gin computes tooth snagging frequency and lint separation rate", () => {
@@ -174,6 +180,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepHyattCelluloid({ steamTempC: 95, hydraulicPressureMpa: 10 });
     expect(res.viscosityPaS).toBeGreaterThan(0);
     expect(res.isMelted).toBe(true);
+    expect(res.polymerCount).toBe(16);
+    expect(hyattPolymerSvg(0).xPos).toBe(220);
+    expect(hyattPolymerSvg(4).yPos).toBe(175);
   });
 
   test("Pasteur fermentation computes anaerobic ethanol conversion and microbial kill kinetics", () => {
@@ -229,6 +238,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepHollerithTabulating({ cardsPerMin: 60, supplyVoltageV: 12 });
     expect(res.solenoidForceN).toBeGreaterThan(0);
     expect(res.cycleTimeMs).toBe(1000);
+    expect(res.cupCols).toBe(8);
+    expect(hollerithCupSvg(0).cx).toBe(20);
+    expect(hollerithCupSvg(8).cy).toBe(130);
   });
 
   test("Noyce planar integrated circuit computes junction isolation and oxide passivation", () => {
@@ -295,6 +307,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.powerGainDb).toBeGreaterThan(0);
     const loadLine = bardeenLoadLine(res.currentGainAlpha);
     expect(loadLine.voltageGain).toBeGreaterThan(0);
+    expect(res.holeStreamCount).toBe(12);
+    const hole0 = bardeenHoleStream(0, res.pointGapSvgPx);
+    const holeLast = bardeenHoleStream(12, res.pointGapSvgPx);
+    expect(hole0.cx).toBeCloseTo(130 - res.pointGapSvgPx, 5);
+    expect(holeLast.cx).toBeCloseTo(130 + res.pointGapSvgPx, 5);
   });
 
   test("Marconi radio computes quarter-wave antenna radiation resistance and resonant frequency", () => {

@@ -263,6 +263,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.170 Fermi fermiLatticeCell / latticeRows/Cols / origin / pitch. 2D no longer converts leftover 80+c×40 or 60+r×38 privately.
 - [x] P5.171 Whitney sawToothCount / bristleCount. 2D no longer converts leftover 16-tooth / 24-bristle rings privately.
 - [x] P5.172 McCormick reelToCutterRatio / mccormickReelAngleDeg. 2D no longer converts leftover phase×(ω_reel/ω_cutter)×180/π privately.
+- [x] P5.173 Bardeen bardeenHoleStream / holeStreamCount / HubX / ArcAmp. 2D no longer converts leftover i/12 or sin×10 privately.
+- [x] P5.174 CCD ccdGateSvgX / gateSvgCount / Pitch / Width. 2D no longer converts leftover i×50 or gate×45 privately.
+- [x] P5.175 Hollerith hollerithCupSvg / cup origin/pitch/cols. 2D no longer converts leftover 20+(i%8)×25 or 100+⌊i/8⌋×30 privately.
+- [x] P5.176 Nobel nobelKieselguhrSvg / kieselguhr grid. 2D no longer converts leftover 200+(i%8)×32 or 135+⌊i/8⌋×32 privately.
+- [x] P5.177 Hyatt hyattPolymerSvg / polymer grid. 2D no longer converts leftover 220+(i%4)×45 or 150+⌊i/4⌋×25 privately.
+- [x] P5.178 Lamarr spectrumBarOriginX / spectrumBarPitchPx. 2D no longer converts leftover 20+i×4.5 privately.
 
 ## Explicitly out of scope
 

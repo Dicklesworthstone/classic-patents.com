@@ -72,6 +72,8 @@ describe("US 3,858,232 Willard Boyle & George Smith Charge-Coupled Device visual
     expect(wells.packetOpacity).toBeCloseTo(0.35 + wells.cte * 0.55, 4);
     expect(wells.wellSvgDepths[0]).toBeGreaterThan(wells.wellSvgDepthBase);
     expect(wells.wellSvgDepths[0]).toBeLessThan(wells.wellSvgDepthBase + wells.wellSvgDepthSpan);
+    expect(wells.gateSvgCount).toBe(9);
+    expect(wells.gateSvgPitch).toBe(50);
   });
 
   test("builds and articulates procedural silicon substrate, channel stops, gate oxide, 3-phase gates, and electron packets correctly", () => {

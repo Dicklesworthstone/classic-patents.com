@@ -71,6 +71,8 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(result.energyMjPerKg).toBeGreaterThan(4.0);
     expect(result.capEnergyJoules).toBe(1.2);
     expect(result.isInitiated).toBe(true);
+    expect(result.kieselguhrCount).toBe(24);
+    expect(result.kieselguhrPitch).toBe(32);
     expect(result.shockwaveGlow).toBeCloseTo(1 + (result.detonationVelocityMps / 6000) * 1.5, 2);
     expect(result.stickDisplayOmegaRadPerS).toBeCloseTo(0.2, 5);
   });

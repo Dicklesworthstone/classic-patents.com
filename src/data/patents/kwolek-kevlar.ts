@@ -300,7 +300,7 @@ export const kwolekKevlarPatent: Patent = {
   id: "us-3671542-kwolek-kevlar",
   patentNumber: "US 3,671,542",
   title: "Optically Anisotropic Aromatic Polyamide Dopes",
-  shortTitle: "Kwolek Kevlar Aromatic Polyamide Dopes",
+  shortTitle: "Kwolek Aromatic Polyamide Dopes",
   subtitle: "Source edition withheld pending a complete 58-page manual transcription",
   inventors: ["Stephanie Louise Kwolek"],
   inventorLocation: "Wilmington, Delaware",
@@ -344,28 +344,10 @@ The full 58-page historical instrument is available through the original PDF. It
         modernEquivalent: "Polymer solution used to form shaped articles",
       },
     ],
-    scientificPrinciples: [
-      {
-        principle: "Liquid-Crystalline Nematic Phase Transition (Flory Lattice Theory)",
-        formula: "v_p^* = \\frac{8}{x} \\left(1 - \\frac{2}{x}\\right)",
-        explanation:
-          "Rigid-rod macromolecules (aspect ratio $x = L/D > 100$) cannot pack randomly at high volume fractions ($v_p$). Above a critical concentration ($v_p^*$), thermodynamic entropy forces the rods into parallel nematic domains, causing a sharp drop in solution viscosity.",
-      },
-      {
-        principle: "Sonic Wave Propagation Velocity in Anisotropic Continua",
-        formula:
-          "c = \\sqrt{\\frac{E}{\\rho}} = \\sqrt{\\frac{130 \\times 10^9\\text{ Pa}}{1,440\\text{ kg/m}^3}} \\approx 9,500\\text{ m/s}",
-        explanation:
-          "Because the acoustic velocity in Kevlar ($9,500\\text{ m/s}$) is ten times faster than a handgun bullet ($350-900\\text{ m/s}$), the kinetic energy of an incoming projectile spreads outward across adjacent yarns in microseconds before local yarn tensile failure can occur.",
-      },
-      {
-        principle: "Inter-Chain Hydrogen Bonding Cohesion",
-        formula:
-          "E_{coh} = \\frac{\\Delta H_{vap} - R T}{V_m}, \\quad E_{H-bond} \\approx 20-30\\text{ kJ/mol}",
-        explanation:
-          "Dense arrays of $N-H \\cdots O=C$ hydrogen bonds cross-link parallel PPTA chains into rigid planar sheets, giving aramid fibers phenomenal transverse shear strength and dimensional stability up to 500°C.",
-      },
-    ],
+    // These would be modern materials-science interpretations, not checked
+    // claims or complete-source annotations. Keep the public face empty until
+    // the specification can support a non-lossy, manually reviewed treatment.
+    scientificPrinciples: [],
     whyItMattersToday:
       "This record preserves the grant and its verified claim boundary while a complete source-led edition is prepared; it does not substitute later material-performance narratives for the historical instrument.",
   },
@@ -408,7 +390,7 @@ The full 58-page historical instrument is available through the original PDF. It
     civilizationalImpact:
       "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile.",
   },
-  tags: ["Stephanie Louise Kwolek", "Kevlar", "Aromatic polyamide dopes", "Polymer chemistry"],
+  tags: ["Stephanie Louise Kwolek", "Aromatic polyamide dopes", "Polymer chemistry"],
   stats: {
     totalClaims: 2,
     independentClaims: 1,

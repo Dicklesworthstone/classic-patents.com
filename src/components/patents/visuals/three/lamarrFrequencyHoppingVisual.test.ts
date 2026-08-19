@@ -74,6 +74,8 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(result.defaultJamChannel).toBe(26);
     expect(result.pianoKeys).toBe(88);
     expect(result.pianoRollStep).toBe(37);
+    expect(result.spectrumBarOriginX).toBe(20);
+    expect(result.spectrumBarPitchPx).toBe(4.5);
     expect(lamarrPianoRollChannel(0)).toBe(1);
     expect(lamarrChannelFrequencyMhz(1)).toBe(302);
     expect(lamarrChannelFrequencyMhz(88)).toBe(520);
