@@ -1,6 +1,6 @@
 import {
   marconiRadioArchivalEdition,
-  marconiRadioClaims,
+  marconiRadioClaimText,
 } from "@/data/editions/marconiRadioEdition";
 import type { Patent } from "@/types/patent";
 
@@ -297,7 +297,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 1,
     isIndependent: true,
-    originalText: marconiRadioClaims[0],
+    originalText: marconiRadioClaimText(1),
     plainEnglish:
       "Claim 1 requires the imperfect electrical contact itself, its circuit path, and a circuit-powered shaker. It protects a detector-reset combination; an ordinary switch without the shaker, or a shaker not actuated by that circuit, does not supply every stated element.",
     keyInnovations: ["Imperfect electrical contact", "Circuit-actuated contact shaker"],
@@ -305,7 +305,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 2,
     isIndependent: true,
-    originalText: marconiRadioClaims[1],
+    originalText: marconiRadioClaimText(2),
     plainEnglish:
       "Claim 2 retains Claim 1's contact, current path, and circuit-actuated shake, and additionally requires metallic plates connected to the contact. The plates are an express electrical part, not a decorative enclosure.",
     keyInnovations: ["Contact-connected metallic plates", "Circuit-actuated contact reset"],
@@ -313,7 +313,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 3,
     isIndependent: true,
-    originalText: marconiRadioClaims[2],
+    originalText: marconiRadioClaimText(3),
     plainEnglish:
       "Claim 3 adds choking-coils to the plated imperfect contact and routes the circuit through both coils and contact before the circuit-powered shake. Its scope is the filtered contact receiver with reset.",
     keyInnovations: ["Contact choking-coils", "Coil-and-contact circuit path"],
@@ -321,7 +321,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 4,
     isIndependent: true,
-    originalText: marconiRadioClaims[3],
+    originalText: marconiRadioClaimText(4),
     plainEnglish:
       "Claim 4 substitutes a tube containing metallic powder for the bare imperfect contact. The current through that powder must actuate a mechanism that shakes the powder after conduction.",
     keyInnovations: ["Metallic-powder tube", "Powder-current reset"],
@@ -329,7 +329,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 5,
     isIndependent: true,
-    originalText: marconiRadioClaims[4],
+    originalText: marconiRadioClaimText(5),
     plainEnglish:
       "Claim 5 is the metallic-powder tube with plates electrically connected to its powder, a powder circuit, and a circuit-actuated powder shaker. The plates and automatic reset are both required limits.",
     keyInnovations: ["Powder-connected metallic plates", "Plated coherer reset"],
@@ -337,7 +337,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 6,
     isIndependent: true,
-    originalText: marconiRadioClaims[5],
+    originalText: marconiRadioClaimText(6),
     plainEnglish:
       "Claim 6 requires the powder tube, powder-connected plates, choking-coils connected to the powder, a circuit through the coils and powder, and a circuit-actuated shaker. It specifically protects suppression of local-circuit loss around the resettable powder detector.",
     keyInnovations: ["Powder choking-coils", "Coil-protected powder path"],
@@ -345,7 +345,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 7,
     isIndependent: true,
-    originalText: marconiRadioClaims[6],
+    originalText: marconiRadioClaimText(7),
     plainEnglish:
       "Claim 7 changes the active material to a mixture of metallic powders. The combination still requires its powder circuit and a shaker actuated by that circuit, so a mixture alone is not the claimed receiver.",
     keyInnovations: ["Mixed-metal powder filling", "Mixture-current reset"],
@@ -353,7 +353,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 8,
     isIndependent: true,
-    originalText: marconiRadioClaims[7],
+    originalText: marconiRadioClaimText(8),
     plainEnglish:
       "Claim 8 is the mixed-metal powder tube with metallic plates connected to the powder, the powder circuit, and its circuit-actuated shaker. It makes the plated version of the mixture detector a separate combination.",
     keyInnovations: ["Plated mixed-powder detector", "Circuit-actuated mixture shaker"],
@@ -361,7 +361,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 9,
     isIndependent: true,
-    originalText: marconiRadioClaims[8],
+    originalText: marconiRadioClaimText(9),
     plainEnglish:
       "Claim 9 adds choking-coils to Claim 8's plated mixed-powder detector and requires current through both coils and powder before shaking. The coil connections, not merely the presence of coils nearby, delimit the claim.",
     keyInnovations: ["Mixed-powder choking-coils", "Coil-and-mixture circuit"],
@@ -369,7 +369,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 10,
     isIndependent: true,
-    originalText: marconiRadioClaims[9],
+    originalText: marconiRadioClaimText(10),
     plainEnglish:
       "Claim 10 calls for a tube containing metallic powder mixed with mercury, a circuit through that powder, and a circuit-actuated powder shaker. Mercury is a material condition in this otherwise resettable detector combination.",
     keyInnovations: ["Mercury-treated powder", "Mercury-powder reset"],
@@ -377,7 +377,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 11,
     isIndependent: true,
-    originalText: marconiRadioClaims[10],
+    originalText: marconiRadioClaimText(11),
     plainEnglish:
       "Claim 11 places metallic plates on the mercury-and-powder detector of Claim 10 and keeps the powder circuit and its automatic shaker. All four portions must be present for this stated combination.",
     keyInnovations: ["Plated mercury-powder tube", "Circuit-powered mercury reset"],
@@ -385,7 +385,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 12,
     isIndependent: true,
-    originalText: marconiRadioClaims[11],
+    originalText: marconiRadioClaimText(12),
     plainEnglish:
       "Claim 12 adds powder-connected choking-coils and requires a circuit through those coils and the mercury-containing powder before the shake. It is the choked, plated mercury-detector version.",
     keyInnovations: ["Mercury-powder choking-coils", "Choked plated mercury detector"],
@@ -393,7 +393,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 13,
     isIndependent: true,
-    originalText: marconiRadioClaims[12],
+    originalText: marconiRadioClaimText(13),
     plainEnglish:
       "Claim 13 identifies the detector construction more closely: a tube, metallic plugs in it, metallic powder between the plugs, a circuit through plugs and powder, and a circuit-actuated powder shaker.",
     keyInnovations: ["Plug-bounded powder gap", "Plug-and-powder current path"],
@@ -401,7 +401,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 14,
     isIndependent: true,
-    originalText: marconiRadioClaims[13],
+    originalText: marconiRadioClaimText(14),
     plainEnglish:
       "Claim 14 adds metallic plates connected to the plugs of Claim 13's tube. The legal combination is plugs, intervening powder, plate connections, the plugs-and-powder circuit, and its automatic shake.",
     keyInnovations: ["Plug-connected metallic plates", "Plated plug-gap coherer"],
@@ -409,7 +409,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 15,
     isIndependent: true,
-    originalText: marconiRadioClaims[14],
+    originalText: marconiRadioClaimText(15),
     plainEnglish:
       "Claim 15 adds choking-coils connected to the plugs and routes the circuit through coils, plugs, and powder before the shake. It protects the fully connected plug-and-powder detector rather than powder in any vessel.",
     keyInnovations: ["Plug choking-coils", "Coil-plug-powder circuit"],
@@ -417,7 +417,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 16,
     isIndependent: true,
-    originalText: marconiRadioClaims[15],
+    originalText: marconiRadioClaimText(16),
     plainEnglish:
       "Claim 16 uses a mixture of metallic powders between the tube's plugs, then requires a circuit through plugs and powder and a circuit-actuated shaker. It narrows the material but preserves the same reset sequence.",
     keyInnovations: ["Plug-confined mixed powders", "Mixed-powder plug reset"],
@@ -425,7 +425,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 17,
     isIndependent: true,
-    originalText: marconiRadioClaims[16],
+    originalText: marconiRadioClaimText(17),
     plainEnglish:
       "Claim 17 adds metallic plates connected to the plugs of the mixed-powder plug detector. The claimed current remains through plugs and powder, followed by a circuit-actuated shake.",
     keyInnovations: ["Plated mixed-powder plugs", "Plate-coupled plug detector"],
@@ -433,7 +433,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 18,
     isIndependent: true,
-    originalText: marconiRadioClaims[17],
+    originalText: marconiRadioClaimText(18),
     plainEnglish:
       "Claim 18 further adds choking-coils connected to the plugs and specifies the circuit through coils, plugs, and mixed powder. It protects that exact filtered resettable geometry.",
     keyInnovations: ["Choked mixed-powder plugs", "Coil-plug-mixture path"],
@@ -441,7 +441,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 19,
     isIndependent: true,
-    originalText: marconiRadioClaims[18],
+    originalText: marconiRadioClaimText(19),
     plainEnglish:
       "Claim 19 specifies metallic powder and mercury between metallic plugs in a tube, with a plugs-and-powder circuit and a circuit-actuated shaker. The mercury mixture and plug geometry are cumulative conditions.",
     keyInnovations: ["Mercury mixture between plugs", "Mercury plug-gap reset"],
@@ -449,7 +449,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 20,
     isIndependent: true,
-    originalText: marconiRadioClaims[19],
+    originalText: marconiRadioClaimText(20),
     plainEnglish:
       "Claim 20 adds metallic plates connected to Claim 19's plugs. It covers the mercury plug detector only with its stated plate connections, plugs-and-powder circuit, and circuit-actuated reset.",
     keyInnovations: ["Plated mercury plug detector", "Plate-connected mercury plugs"],
@@ -457,7 +457,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 21,
     isIndependent: true,
-    originalText: marconiRadioClaims[20],
+    originalText: marconiRadioClaimText(21),
     plainEnglish:
       "Claim 21 adds choking-coils connected to the mercury detector's plugs and the circuit through coils, plugs, and powder. The shaking means remains actuated by that circuit, completing this most specified non-relay detector form.",
     keyInnovations: ["Choked mercury plug assembly", "Coil-plug-mercury reset"],
@@ -465,7 +465,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 22,
     isIndependent: true,
-    originalText: marconiRadioClaims[21],
+    originalText: marconiRadioClaimText(22),
     plainEnglish:
       "Claim 22 inserts a relay between the imperfect contact's circuit and the shaking mechanism. The contact circuit actuates the relay, and the relay, not that circuit directly, actuates the reset.",
     keyInnovations: ["Contact-actuated relay", "Relay-driven contact shaker"],
@@ -473,7 +473,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 23,
     isIndependent: true,
-    originalText: marconiRadioClaims[22],
+    originalText: marconiRadioClaimText(23),
     plainEnglish:
       "Claim 23 adds metallic plates to the relay-reset imperfect contact of Claim 22. The relay must be actuated by the contact circuit, then operate the shaker; the plate connection is an additional limitation.",
     keyInnovations: ["Relay-reset plated contact", "Plate-connected contact relay"],
@@ -481,7 +481,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 24,
     isIndependent: true,
-    originalText: marconiRadioClaims[23],
+    originalText: marconiRadioClaimText(24),
     plainEnglish:
       "Claim 24 adds choking-coils to the plated contact and requires the relay-driving circuit through coils and contact. It protects the filtered contact receiver with relay-separated mechanical reset.",
     keyInnovations: ["Relay-reset contact choking-coils", "Filtered contact relay loop"],
@@ -489,7 +489,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 25,
     isIndependent: true,
-    originalText: marconiRadioClaims[24],
+    originalText: marconiRadioClaimText(25),
     plainEnglish:
       "Claim 25 is the basic metallic-powder tube receiver with a relay actuated by the powder circuit and a shaker actuated by that relay. It makes the relay a required causal link in the reset.",
     keyInnovations: ["Powder-current relay", "Relay-actuated powder shaker"],
@@ -497,7 +497,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 26,
     isIndependent: true,
-    originalText: marconiRadioClaims[25],
+    originalText: marconiRadioClaimText(26),
     plainEnglish:
       "Claim 26 adds metallic plates connected to the powder of Claim 25's tube. The powder circuit must actuate a relay, and the relay must actuate the shaker; neither function is optional.",
     keyInnovations: ["Plated powder relay receiver", "Relay-separated powder reset"],
@@ -505,7 +505,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 27,
     isIndependent: true,
-    originalText: marconiRadioClaims[26],
+    originalText: marconiRadioClaimText(27),
     plainEnglish:
       "Claim 27 adds powder-connected choking-coils and a circuit through coils and powder to the plated relay receiver. The relay provides the stipulated drive for the powder shaker.",
     keyInnovations: ["Choked powder relay receiver", "Coil-powder relay path"],
@@ -513,7 +513,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 28,
     isIndependent: true,
-    originalText: marconiRadioClaims[27],
+    originalText: marconiRadioClaimText(28),
     plainEnglish:
       "Claim 28 uses a mixture of metallic powders and requires its circuit to actuate a relay that actuates the shaker. The particular mixture and two-stage actuation distinguish this claim from the direct-reset forms.",
     keyInnovations: ["Mixed-powder relay detector", "Relay-driven mixture shaker"],
@@ -521,7 +521,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 29,
     isIndependent: true,
-    originalText: marconiRadioClaims[28],
+    originalText: marconiRadioClaimText(29),
     plainEnglish:
       "Claim 29 adds metallic plates connected to the mixed powder in Claim 28. It retains the powder circuit to relay and relay to shaker sequence as legal limits.",
     keyInnovations: ["Plated mixed-powder relay", "Relay-controlled plate detector"],
@@ -529,7 +529,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 30,
     isIndependent: true,
-    originalText: marconiRadioClaims[29],
+    originalText: marconiRadioClaimText(30),
     plainEnglish:
       "Claim 30 adds choking-coils connected to the plated mixed powder and requires the relay-driving path through coils and powder. The relay then shakes the powder, preserving the source's filtering and reset relationship.",
     keyInnovations: ["Choked mixed-powder relay", "Coil-mixture relay circuit"],
@@ -537,7 +537,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 31,
     isIndependent: true,
-    originalText: marconiRadioClaims[30],
+    originalText: marconiRadioClaimText(31),
     plainEnglish:
       "Claim 31 moves the relay-reset arrangement to a tube containing metallic powder and mercury. A circuit through that material actuates the relay, which in turn shakes the powder.",
     keyInnovations: ["Mercury-powder relay detector", "Relay-reset mercury filling"],
@@ -545,7 +545,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 32,
     isIndependent: true,
-    originalText: marconiRadioClaims[31],
+    originalText: marconiRadioClaimText(32),
     plainEnglish:
       "Claim 32 adds metallic plates connected to the mercury-and-powder detector and retains the powder-circuit-to-relay-to-shaker sequence. Both the plate connection and relay intermediate are explicit.",
     keyInnovations: ["Plated mercury-powder relay", "Relay-actuated mercury reset"],
@@ -553,7 +553,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 33,
     isIndependent: true,
-    originalText: marconiRadioClaims[32],
+    originalText: marconiRadioClaimText(33),
     plainEnglish:
       "Claim 33 adds choking-coils connected to the plated mercury powder, with the circuit through coils and powder actuating the relay. The relay must then actuate the powder shaker.",
     keyInnovations: ["Choked mercury-powder relay", "Coil-mercury relay loop"],
@@ -561,7 +561,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 34,
     isIndependent: true,
-    originalText: marconiRadioClaims[33],
+    originalText: marconiRadioClaimText(34),
     plainEnglish:
       "Claim 34 requires a tube with metallic plugs and metallic powder between them. The plugs-and-powder circuit actuates a relay, and that relay actuates the powder shaker.",
     keyInnovations: ["Plug-gap relay detector", "Relay-reset plug powder"],
@@ -569,7 +569,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 35,
     isIndependent: true,
-    originalText: marconiRadioClaims[34],
+    originalText: marconiRadioClaimText(35),
     plainEnglish:
       "Claim 35 adds metallic plates connected to the plugs of the relay-reset plug detector. The current still runs through plugs and powder before it can actuate the relay.",
     keyInnovations: ["Plated plug-gap relay", "Plug-plate relay path"],
@@ -577,7 +577,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 36,
     isIndependent: true,
-    originalText: marconiRadioClaims[35],
+    originalText: marconiRadioClaimText(36),
     plainEnglish:
       "Claim 36 adds choking-coils connected to the plugs and a relay-driving circuit through coils, plugs, and powder. It protects the fully choked, relay-reset metallic-powder plug assembly.",
     keyInnovations: ["Choked plug-gap relay", "Coil-plug-powder relay"],
@@ -585,7 +585,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 37,
     isIndependent: true,
-    originalText: marconiRadioClaims[36],
+    originalText: marconiRadioClaimText(37),
     plainEnglish:
       "Claim 37 changes the material between the plugs to a mixture of metallic powders. Its circuit must actuate the relay, and the relay must shake the mixture.",
     keyInnovations: ["Mixed-powder plug relay", "Relay-reset powder mixture"],
@@ -593,7 +593,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 38,
     isIndependent: true,
-    originalText: marconiRadioClaims[37],
+    originalText: marconiRadioClaimText(38),
     plainEnglish:
       "Claim 38 adds metallic plates connected to the plugs of Claim 37's mixed-powder tube. The stated plug-and-powder circuit and relay-driven shaker remain required.",
     keyInnovations: ["Plated mixed-powder plugs relay", "Plate-connected plug relay"],
@@ -601,7 +601,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 39,
     isIndependent: true,
-    originalText: marconiRadioClaims[38],
+    originalText: marconiRadioClaimText(39),
     plainEnglish:
       "Claim 39 adds choking-coils connected to the plugged mixed-powder detector and requires a circuit through coils, plugs, and powder to actuate the relay. The relay's shaker resets the detector.",
     keyInnovations: ["Choked mixed-plug relay", "Coil-plug-mixture relay"],
@@ -609,7 +609,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 40,
     isIndependent: true,
-    originalText: marconiRadioClaims[39],
+    originalText: marconiRadioClaimText(40),
     plainEnglish:
       "Claim 40 specifies mercury with metallic powder between the plugs and makes the plugs-and-powder circuit actuate a relay, which actuates the reset. It is the mercury version of the relay plug detector.",
     keyInnovations: ["Mercury plug-gap relay", "Relay-reset mercury plugs"],
@@ -617,7 +617,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 41,
     isIndependent: true,
-    originalText: marconiRadioClaims[40],
+    originalText: marconiRadioClaimText(41),
     plainEnglish:
       "Claim 41 adds metallic plates connected to Claim 40's plugs. It preserves the mercury powder, plug-and-powder circuit, relay, and relay-actuated shaker as one cumulative combination.",
     keyInnovations: ["Plated mercury plug relay", "Mercury plug plate coupling"],
@@ -625,7 +625,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 42,
     isIndependent: true,
-    originalText: marconiRadioClaims[41],
+    originalText: marconiRadioClaimText(42),
     plainEnglish:
       "Claim 42 adds choking-coils connected to the plugs and requires the relay-driving path through coils, plugs, and mercury powder. It is the most specified relay-reset detector in this plug-and-mercury series.",
     keyInnovations: ["Choked mercury plug relay", "Coil-plug-mercury relay"],
@@ -633,7 +633,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 43,
     isIndependent: true,
-    originalText: marconiRadioClaims[42],
+    originalText: marconiRadioClaimText(43),
     plainEnglish:
       "Claim 43 joins stations: a spark-producer has earth at one end and an insulated conductor at the other; an imperfect contact at the receiver likewise has earth and insulated-conductor ends, with a circuit through the contact. It claims this complete grounded contact link, not an antenna in isolation.",
     keyInnovations: ["Grounded spark-producer", "Grounded imperfect-contact receiver"],
@@ -641,7 +641,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 44,
     isIndependent: true,
-    originalText: marconiRadioClaims[43],
+    originalText: marconiRadioClaimText(44),
     plainEnglish:
       "Claim 44 is Claim 43's two-station grounded contact system plus a circuit-actuated contact shaker. The reset is added at the receiver without removing the required earth and insulated-conductor arrangement.",
     keyInnovations: ["Grounded contact system reset", "Spark-to-contact automatic shaker"],
@@ -649,7 +649,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 45,
     isIndependent: true,
-    originalText: marconiRadioClaims[44],
+    originalText: marconiRadioClaimText(45),
     plainEnglish:
       "Claim 45 puts choking-coils on each end of the grounded receiver contact and requires the circuit through both coils and contact. It has the transmitter earth and insulated conductor but does not add a reset means.",
     keyInnovations: ["Dual-ended contact choking-coils", "Grounded choked contact receiver"],
@@ -657,7 +657,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 46,
     isIndependent: true,
-    originalText: marconiRadioClaims[45],
+    originalText: marconiRadioClaimText(46),
     plainEnglish:
       "Claim 46 adds circuit-actuated shaking to Claim 45's grounded, choked imperfect-contact arrangement. The contact, its two coil connections, both station conductors, and the reset are cumulative limits.",
     keyInnovations: ["Grounded choked contact reset", "Two-station coil-contact shaker"],
@@ -665,7 +665,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 47,
     isIndependent: true,
-    originalText: marconiRadioClaims[46],
+    originalText: marconiRadioClaimText(47),
     plainEnglish:
       "Claim 47 substitutes a metallic-powder tube for the receiver contact in the grounded spark-producer system. It requires earth at one powder end, an insulated conductor at the other, and a circuit through the powder.",
     keyInnovations: ["Grounded powder-tube receiver", "Spark-to-powder station link"],
@@ -673,7 +673,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 48,
     isIndependent: true,
-    originalText: marconiRadioClaims[47],
+    originalText: marconiRadioClaimText(48),
     plainEnglish:
       "Claim 48 is the grounded spark-to-powder system of Claim 47 with circuit-actuated powder shaking. The earth and insulated-conductor connections remain stated legal elements.",
     keyInnovations: ["Grounded powder detector reset", "Spark-linked powder shaker"],
@@ -681,7 +681,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 49,
     isIndependent: true,
-    originalText: marconiRadioClaims[48],
+    originalText: marconiRadioClaimText(49),
     plainEnglish:
       "Claim 49 places choking-coils at each end of the grounded powder receiver and specifies a circuit through coils and powder. It covers the two-station choked powder arrangement without a shake mechanism.",
     keyInnovations: ["Dual-ended powder choking-coils", "Grounded choked powder receiver"],
@@ -689,7 +689,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 50,
     isIndependent: true,
-    originalText: marconiRadioClaims[49],
+    originalText: marconiRadioClaimText(50),
     plainEnglish:
       "Claim 50 adds a circuit-actuated powder shaker to the grounded, dual-choked powder combination. The coils, earth connection, insulated conductor, powder circuit, and reset work together as the claimed system.",
     keyInnovations: ["Grounded choked powder reset", "Two-station powder shaker"],
@@ -697,7 +697,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 51,
     isIndependent: true,
-    originalText: marconiRadioClaims[50],
+    originalText: marconiRadioClaimText(51),
     plainEnglish:
       "Claim 51 specifies choking-coils and earth connections through condensers at each end of the receiver powder, plus the powder-and-coil circuit and automatic shaker. The condenser-mediated earth path is the distinguishing added electrical structure.",
     keyInnovations: ["Condenser-coupled earth connections", "Choked powder reset with condensers"],
@@ -705,7 +705,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 52,
     isIndependent: true,
-    originalText: marconiRadioClaims[51],
+    originalText: marconiRadioClaimText(52),
     plainEnglish:
       "Claim 52 requires an imperfect contact, its circuit, an electric trembler that shakes it, and means preventing the trembler's self-induction from affecting the contact. The isolation of the trembler's inductive disturbance is a separate functional limitation.",
     keyInnovations: ["Self-induction isolation", "Electric trembler contact reset"],
@@ -713,7 +713,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 53,
     isIndependent: true,
-    originalText: marconiRadioClaims[52],
+    originalText: marconiRadioClaimText(53),
     plainEnglish:
       "Claim 53 generalizes the receiver as a variable-resistance medium altered by received oscillations, with a trembler or shaker and control means that restores normal resistance after each reception. It requires recovery after every received impulse, not just a one-time actuation.",
     keyInnovations: [
@@ -724,7 +724,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 54,
     isIndependent: true,
-    originalText: marconiRadioClaims[53],
+    originalText: marconiRadioClaimText(54),
     plainEnglish:
       "Claim 54 retains Claim 53's variable-resistance recovery cycle and adds means that make successive received impulses manifest so defined signals can be given out. It claims detection, automatic reset, and readable consecutive signalling together.",
     keyInnovations: ["Consecutive-signal indication", "Controlled variable-resistance recovery"],
@@ -732,7 +732,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 55,
     isIndependent: true,
-    originalText: marconiRadioClaims[54],
+    originalText: marconiRadioClaimText(55),
     plainEnglish:
       "Claim 55 combines an operator-controlled oscillation transmitter with a responsive receiver whose variable-resistance medium changes on reception, is restored after each reception, and produces a manifest signal. The legal chain runs from intentional transmission through reception, recovery, and output.",
     keyInnovations: [
@@ -743,7 +743,7 @@ const marconiRadioClaimRecords: Patent["claims"] = [
   {
     number: 56,
     isIndependent: true,
-    originalText: marconiRadioClaims[55],
+    originalText: marconiRadioClaimText(56),
     plainEnglish:
       "Claim 56 adds a distance-located conductor tuned to respond to the transmitter's oscillations. The variable-resistance medium is in that conductor's circuit, then is restored after each reception and rendered manifest; tuning, response, reset, and output are all stated limits.",
     keyInnovations: ["Tuned remote conductor", "Tuned-circuit variable-resistance recovery"],

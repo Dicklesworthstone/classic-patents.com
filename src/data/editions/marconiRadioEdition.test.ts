@@ -5,7 +5,11 @@ import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { marconiRadioPatent } from "@/data/patents/marconi-radio";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
-import { marconiRadioArchivalEdition, marconiRadioParallelReadings } from "./marconiRadioEdition";
+import {
+  marconiRadioArchivalEdition,
+  marconiRadioClaimText,
+  marconiRadioParallelReadings,
+} from "./marconiRadioEdition";
 
 describe("US 586,193 Marconi Radio manual archival edition", () => {
   test("retains the eleven-page facsimile evidence and every printed claim", () => {
@@ -27,6 +31,15 @@ describe("US 586,193 Marconi Radio manual archival edition", () => {
         .filter((block) => block.kind === "claim")
         .map((block) => block.inlines.map((inline) => inline.text).join("")),
     );
+    expect(marconiRadioPatent.claims.map((claim) => claim.originalText)).toEqual(
+      Array.from({ length: 56 }, (_, index) => marconiRadioClaimText(index + 1)),
+    );
+    const recordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/marconi-radio.ts"),
+      "utf8",
+    );
+    expect(recordSource).toContain("marconiRadioClaimText");
+    expect(recordSource).not.toContain("marconiRadioClaims");
   });
 
   test("uses local source crops and authored term annotations", () => {
@@ -46,7 +59,17 @@ describe("US 586,193 Marconi Radio manual archival edition", () => {
     const terms = marconiRadioArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block ? block.inlines.filter((inline) => inline.kind === "term") : [],
     );
-    expect(terms.map((term) => term.text)).toEqual(["Ruhmkorff coil", "choking-coils"]);
+    expect(terms.map((term) => term.text)).toEqual(
+      expect.arrayContaining([
+        "Hertz rays",
+        "Ruhmkorff coil",
+        "circuit-closer",
+        "sensitive tube",
+        "choking-coils",
+        "trembler",
+      ]),
+    );
+    for (const term of terms) expect(term.definition.length).toBeGreaterThan(80);
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {
@@ -74,6 +97,24 @@ describe("US 586,193 Marconi Radio manual archival edition", () => {
       });
       const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
       expect(validateReviewedTranscription(ledger, 11)).toEqual({ valid: true });
+      const continuousLedger = ledger
+        .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 11 ---/g, "")
+        .replace(/\s+/g, " ");
+      const sourceBlocks = marconiRadioArchivalEdition.blocks.filter(
+        (
+          block,
+        ): block is Extract<
+          (typeof marconiRadioArchivalEdition.blocks)[number],
+          { kind: "masthead" | "paragraph" | "claim" }
+        > => block.kind === "masthead" || block.kind === "paragraph" || block.kind === "claim",
+      );
+      for (const block of sourceBlocks) {
+        const sourceText =
+          block.kind === "masthead"
+            ? block.lines.join(" ")
+            : block.inlines.map((inline) => inline.text).join("");
+        expect(continuousLedger).toContain(sourceText.replace(/\s+/g, " "));
+      }
     } else {
       expect(asset?.kind).toBe("source-pdf-text-layer");
     }

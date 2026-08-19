@@ -104,9 +104,13 @@ export const marconiRadioClaims: readonly string[] = [
 ];
 
 export function marconiRadioClaimText(number: number): string {
-  const claim = marconiRadioClaims[number - 1];
-  if (!claim) throw new Error(`Marconi manual edition is missing claim ${number}.`);
-  return claim;
+  const block = marconiRadioArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Marconi manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
 }
 
 const paragraphs: CuratedSpecificationInlines[] = [
@@ -116,7 +120,14 @@ const paragraphs: CuratedSpecificationInlines[] = [
   ),
   [
     text(
-      'According to this invention electrical signals, actions, or manifestations are transmitted through the air, earth, or water by means of oscillations of high frequency, such as have been called the "Hertz rays" or "Hertz oscillations." Usually all line-wires are dispensed with. At the transmitting-station I employ a ',
+      'According to this invention electrical signals, actions, or manifestations are transmitted through the air, earth, or water by means of oscillations of high frequency, such as have been called the "',
+    ),
+    term(
+      "Hertz rays",
+      "A period name for the rapidly oscillating electromagnetic disturbances associated with Hertz; Marconi uses them here as the wireless carrier of a signal.",
+    ),
+    text(
+      '" or "Hertz oscillations." Usually all line-wires are dispensed with. At the transmitting-station I employ a ',
     ),
     term(
       "Ruhmkorff coil",
@@ -129,9 +140,18 @@ const paragraphs: CuratedSpecificationInlines[] = [
   literal(
     "When working with large amounts of energy, it is, however, better to keep the coil or transformer constantly working for the time during which one is transmitting, and instead of interrupting the current of the primary interrupting the discharge of the secondary. In this case the contacts of the key should be immersed in oil, as otherwise, owing to the length of the spark, the current will continue to pass after the contacts have been separated.",
   ),
-  literal(
-    "At the receiving-station there is a local-battery circuit, containing any ordinary receiving instrument and an appliance for closing the circuit, the latter being actuated by the oscillations from the transmitting-station. When transmitting through the air and it is desired that the signal should only be sent in one direction, I place the oscillation-producer at the transmitting-station in the focus or focal line of a reflector directed to the receiving-station, and I place the circuit-closer at the receiving-station in a similar reflector directed toward the transmitting-station.",
-  ),
+  [
+    text(
+      "At the receiving-station there is a local-battery circuit, containing any ordinary receiving instrument and an appliance for closing the circuit, the latter being actuated by the oscillations from the transmitting-station. When transmitting through the air and it is desired that the signal should only be sent in one direction, I place the oscillation-producer at the transmitting-station in the focus or focal line of a reflector directed to the receiving-station, and I place the ",
+    ),
+    term(
+      "circuit-closer",
+      "The receiving-side detector or switching appliance whose response to an incoming oscillation completes a separate local-battery circuit for the telegraphic instrument.",
+    ),
+    text(
+      " at the receiving-station in a similar reflector directed toward the transmitting-station.",
+    ),
+  ],
   [
     figure("Figure 1", "1-3"),
     text(
@@ -215,9 +235,18 @@ const paragraphs: CuratedSpecificationInlines[] = [
   literal(
     "The tube must be sealed, but a vacuum inside it is not essential, except the slight vacuum which results from having heated it while sealing it. Care must also be taken not to heat the tube too much in the center when sealing it, as it would oxidize the surfaces of the silver stops and also the powder, which would diminish its sensitiveness. I use in sealing the tubes a hydrogen and air flame. A vacuum is, however, desirable, and I have used one of about one one-thousandth of an atmosphere, obtained by a mercury-pump. It is also necessary for the powder or grains to be dry and free from grease or dirt, and the files used in producing the same ought to be frequently washed and dried and used when warm.",
   ),
-  literal(
-    "If the tube has been well made, it should be sensitive to the induction of an ordinary electric bell when the same is working at one to two yards or more from the tube. In order to keep the sensitive tube j in good working order, it is desirable, but not absolutely necessary, not to allow more than one milliampere to flow through it when active. If a stronger current is necessary, several tubes may be put in derivation between the tuned plates, but this arrangement is not quite as satisfactory as the single tube. It is necessary when using tubes of the type I have described not to insert in the circuit more than one cell of the Leclanché type, as a higher electromotive force than 1.5 volts is apt to pass a current through the tube even when no oscillations are transmitted.",
-  ),
+  [
+    text(
+      "If the tube has been well made, it should be sensitive to the induction of an ordinary electric bell when the same is working at one to two yards or more from the tube. In order to keep the ",
+    ),
+    term(
+      "sensitive tube",
+      "Marconi's powder-filled detector tube: a received oscillation changes the electrical behavior of its filings, allowing the local relay circuit to respond.",
+    ),
+    text(
+      " j in good working order, it is desirable, but not absolutely necessary, not to allow more than one milliampere to flow through it when active. If a stronger current is necessary, several tubes may be put in derivation between the tuned plates, but this arrangement is not quite as satisfactory as the single tube. It is necessary when using tubes of the type I have described not to insert in the circuit more than one cell of the Leclanché type, as a higher electromotive force than 1.5 volts is apt to pass a current through the tube even when no oscillations are transmitted.",
+    ),
+  ],
   [
     text(
       "I can, however, construct tubes capable of working with a much higher electromotive force. ",
@@ -254,9 +283,16 @@ const paragraphs: CuratedSpecificationInlines[] = [
   literal(
     "The plates k, tube j, and choking-coils k' are fastened by means of wire stitches o' to a thin glass tube o, preferably not longer than twelve inches, firmly fixed at one end to a strong piece of timber o2. This may be done by means of wooden or ebonite grasping-screws.",
   ),
-  literal(
-    "I do the tapping automatically by the current started by the tube, employing a trembler p on the circuit of the relay n similar in construction to that of an electric bell, but having a shorter arm. The vibrator must be carefully adjusted. Preferably the blows should be directed slightly upward to prevent the filings from getting caked. In place of tapping the tube the powder can be disturbed by slightly moving outward and inward one or both of the stops j2, the trembler p being replaced by a small electromagnet whose armature is connected to the stop.",
-  ),
+  [
+    text("I do the tapping automatically by the current started by the tube, employing a "),
+    term(
+      "trembler",
+      "An electrically driven vibrating striker, akin to an electric-bell mechanism, used here to tap the detector so its filings can return to a responsive condition.",
+    ),
+    text(
+      " p on the circuit of the relay n similar in construction to that of an electric bell, but having a shorter arm. The vibrator must be carefully adjusted. Preferably the blows should be directed slightly upward to prevent the filings from getting caked. In place of tapping the tube the powder can be disturbed by slightly moving outward and inward one or both of the stops j2, the trembler p being replaced by a small electromagnet whose armature is connected to the stop.",
+    ),
+  ],
   literal(
     "I ordinarily work the telegraphic receiver h (or other instruments) by a derivation, as shown, from the circuit which works the trembler p. They can also, however, be worked in series with the trembler. When working ordinary sounders or Morse apparatus, a special adjustment of the same is sometimes needed to enable one to obtain dots and dashes. Sometimes it is necessary to work the telegraphic instruments or relays from the back-stop of the first relay, as is done in some systems of multiple telegraphy. Such adjustments are known to telegraphic experts.",
   ),
