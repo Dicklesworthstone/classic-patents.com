@@ -7,15 +7,16 @@ import { boyleSmithCcdPatent } from "@/data/patents/boyle-smith-ccd";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
   boyleSmithCcdArchivalEdition,
+  boyleSmithCcdClaimText,
   boyleSmithCcdClaimTexts,
   boyleSmithCcdFigureSheets,
   boyleSmithCcdParallelReadings,
 } from "./boyleSmithCcdEdition";
 
 describe("boyleSmithCcdArchivalEdition", () => {
-  test("pins the reviewed US 3,858,232 facsimile with explicit source nodes", () => {
-    if (boyleSmithCcdPatent.archivalEdition)
-      expect(boyleSmithCcdPatent.archivalEdition).toBe(boyleSmithCcdArchivalEdition);
+  test("pins the US 3,858,232 facsimile while keeping the unready manuscript unserved", () => {
+    expect(boyleSmithCcdPatent.archivalEdition).toBeUndefined();
+    expect(boyleSmithCcdPatent.originalTextAsset).toBeUndefined();
     expect(validateCuratedSpecificationEdition(boyleSmithCcdArchivalEdition)).toEqual({
       valid: true,
       errors: [],
@@ -39,6 +40,9 @@ describe("boyleSmithCcdArchivalEdition", () => {
       Array.from({ length: 32 }, (_, index) => index + 1),
     );
     expect(boyleSmithCcdClaimTexts).toHaveLength(32);
+    for (const claim of boyleSmithCcdPatent.claims) {
+      expect(claim.originalText).toBe(boyleSmithCcdClaimText(claim.number));
+    }
     expect(boyleSmithCcdPatent.stats).toMatchObject({
       totalClaims: 32,
       independentClaims: 7,
@@ -69,18 +73,14 @@ describe("boyleSmithCcdArchivalEdition", () => {
     }
   });
 
-  test("publishes a reviewed ledger and validates source text", () => {
-    const asset = boyleSmithCcdPatent.originalTextAsset;
-    expect(asset).toMatchObject({
-      url: "/patents/transcripts/us-3858232-boyle-smith-ccd-reviewed.txt",
-      pageCount: 19,
-      kind: "reviewed-transcription",
-      reviewedBy: expect.any(String),
-      reviewedAt: expect.any(String),
-      sourcePdfSha256: boyleSmithCcdArchivalEdition.sourcePdfSha256,
-    });
-    if (!asset) throw new Error("Boyle Smith CCD reviewed transcript asset is missing.");
-    const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+  test("keeps the page-marked manuscript as private WIP until its source-page mapping is repaired", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-3858232-boyle-smith-ccd-reviewed.txt`,
+      "utf8",
+    );
     expect(validateReviewedTranscription(ledger, 19)).toEqual({ valid: true });
+    expect(ledger).toContain("[Drawing Sheet 1:");
+    expect(boyleSmithCcdPatent.archivalEdition).toBeUndefined();
+    expect(boyleSmithCcdPatent.originalTextAsset).toBeUndefined();
   });
 });

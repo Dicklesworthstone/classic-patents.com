@@ -1,26 +1,37 @@
+/**
+ * carrierAirConditionerModel.ts
+ *
+ * Museum-Grade Procedural 3D Model for Willis H. Carrier's 1906 Apparatus for Treating Air
+ * (US Patent 808,897 - "Apparatus for Treating Air").
+ *
+ * Reconstructs the original industrial spray-type air conditioning and humidity control system:
+ * 1. Galvanized sheet-metal spray chamber tunnel with authentic zinc spangle grain and angle-iron bracing.
+ * 2. Bottom water collection sump tank with water surface, drain strainer, and float valve.
+ * 3. Fresh air and return air mixing damper louvers with modulating quadrant linkage.
+ * 4. Dual vertical spray header trees with centrifugal atomizing swirl nozzles (counter-flow and parallel-flow banks).
+ * 5. Recirculating water pump with Buffalo Forge green cast-iron volute and pressure gauge.
+ * 6. Zig-zag corrugated eliminator baffle plates with droplet separation lip gutters (Claim 3).
+ * 7. Forward-curved multi-blade "Sirocco" centrifugal blower fan housing with squirrel-cage rotor.
+ * 8. Thermostatic dew-point expansion bulb and psychrometric mist particle advection field.
+ */
+
 import * as THREE from "three";
 
 export interface CarrierAirConditionerModelNodes {
   root: THREE.Group;
-  // Housing & Sump
   housingGroup: THREE.Group;
   solidCasingMesh: THREE.Mesh;
   cutawayCasingMesh: THREE.Mesh;
   sumpTank: THREE.Mesh;
-  // Air Flow Dampers
   freshAirDamperLouvers: THREE.Mesh[];
   returnAirDamperLouvers: THREE.Mesh[];
-  // Spray Atomizers & Piping
   sprayHeadersGroup: THREE.Group;
   sprayNozzles: THREE.Mesh[];
   recirculatingPump: THREE.Group;
   dewPointThermostatBulb: THREE.Mesh;
-  // Eliminator Baffles
   eliminatorBafflesGroup: THREE.Group;
-  // Centrifugal Fan
   blowerFanRotor: THREE.Group;
   blowerScrollHousing: THREE.Group;
-  // Mist & Droplets
   atomizedMistPoints: THREE.Points;
 }
 
@@ -41,12 +52,74 @@ export interface CarrierAirConditionerModelResult {
   dispose: () => void;
 }
 
-const MIST_PARTICLE_COUNT = 160;
+const MIST_PARTICLE_COUNT = 180;
+
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Hot-Dip Galvanized Zinc Spangle Texture
+ */
+function createGalvanizedSpangleTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Crystalline zinc spangles (feathery polygonal crystal grains)
+  for (let i = 0; i < 70; i++) {
+    const cx = deterministicUnit(i, 0) * 512;
+    const cy = deterministicUnit(i, 1) * 512;
+    const rad = 25 + deterministicUnit(i, 2) * 50;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(deterministicUnit(i, 3) * Math.PI);
+
+    const grad = ctx.createRadialGradient(0, 0, 2, 0, 0, rad);
+    const bright = 140 + Math.floor(deterministicUnit(i, 4) * 60);
+    grad.addColorStop(0, `rgba(${bright}, ${bright + 10}, ${bright + 20}, 0.55)`);
+    grad.addColorStop(0.8, "rgba(90, 105, 125, 0.3)");
+    grad.addColorStop(1, "rgba(70, 85, 105, 0)");
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    for (let p = 0; p < 6; p++) {
+      const angle = (p * Math.PI) / 3;
+      const r = rad * (0.7 + deterministicUnit(i + p, 5) * 0.5);
+      const x = Math.cos(angle) * r;
+      const y = Math.sin(angle) * r;
+      if (p === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
 
 export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelResult {
   const root = new THREE.Group();
   const disposableGeometries: THREE.BufferGeometry[] = [];
   const disposableMaterials: THREE.Material[] = [];
+  const disposableTextures: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     disposableGeometries.push(geo);
@@ -57,27 +130,31 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
     return mat;
   };
 
+  const spangleTex = createGalvanizedSpangleTexture();
+  if (spangleTex) disposableTextures.push(spangleTex);
+
   // Authentic 1906 Willis Carrier Industrial Air Conditioning Materials
   const materials: CarrierAirConditionerMaterials = {
     galvanizedSteel: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(spangleTex ? { map: spangleTex } : {}),
         color: 0x64748b,
-        roughness: 0.45,
-        metalness: 0.75,
+        roughness: 0.42,
+        metalness: 0.82,
       }),
     ),
     paintedDarkGreen: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x1e3a29, // Historic Buffalo Forge industrial green
-        roughness: 0.5,
-        metalness: 0.55,
+        color: 0x1e3a29, // Buffalo Forge industrial green
+        roughness: 0.52,
+        metalness: 0.58,
       }),
     ),
     brassNozzles: trackMat(
       new THREE.MeshStandardMaterial({
         color: 0xd4af37,
-        roughness: 0.2,
-        metalness: 0.9,
+        roughness: 0.22,
+        metalness: 0.92,
       }),
     ),
     zincBaffles: trackMat(
@@ -185,6 +262,14 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
   cutawayBack.position.set(-1.2, 0.4, -1.56);
   housingGroup.add(cutawayBack);
 
+  // Inspection Window on Side
+  const windowFrame = new THREE.Mesh(
+    trackGeo(new THREE.TorusGeometry(0.35, 0.04, 8, 20)),
+    materials.brassNozzles,
+  );
+  windowFrame.position.set(-1.2, 0.5, 1.6);
+  housingGroup.add(windowFrame);
+
   // -------------------------------------------------------------
   // 3. Intake Air Mixing Louver Dampers
   // -------------------------------------------------------------
@@ -277,7 +362,6 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
   // 14 Closely-spaced corrugated chevron baffle plates
   for (let b = 0; b < 14; b++) {
     const bz = -1.3 + b * 0.2;
-    // Multi-bend corrugated plate
     const bafflePlate = new THREE.Mesh(
       trackGeo(new THREE.BoxGeometry(0.7, 2.3, 0.03)),
       materials.zincBaffles,
@@ -345,9 +429,9 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
     const hashX = Math.sin(i * 13.123);
     const hashY = Math.cos(i * 37.456);
     const hashZ = Math.sin(i * 59.789);
-    mistPositions[i * 3 + 0] = -3.2 + (hashX + 1) * 1.8; // between -3.2 and 0.4
-    mistPositions[i * 3 + 1] = -0.6 + (hashY + 1) * 1.0; // height
-    mistPositions[i * 3 + 2] = hashZ * 1.3; // width
+    mistPositions[i * 3 + 0] = -3.2 + (hashX + 1) * 1.8;
+    mistPositions[i * 3 + 1] = -0.6 + (hashY + 1) * 1.0;
+    mistPositions[i * 3 + 2] = hashZ * 1.3;
   }
 
   mistGeo.setAttribute("position", new THREE.BufferAttribute(mistPositions, 3));
@@ -373,12 +457,9 @@ export function buildCarrierAirConditionerModel(): CarrierAirConditionerModelRes
   };
 
   const dispose = () => {
-    for (const g of disposableGeometries) {
-      g.dispose();
-    }
-    for (const m of disposableMaterials) {
-      m.dispose();
-    }
+    for (const g of disposableGeometries) g.dispose();
+    for (const m of disposableMaterials) m.dispose();
+    for (const t of disposableTextures) t.dispose();
   };
 
   return { root, nodes, materials, dispose };
@@ -397,13 +478,13 @@ export function updateCarrierAirConditionerKinematics(
   cutawayMode: boolean,
 ) {
   // 1. Blower Fan Impeller Rotation
-  const fanOmega = (airflowCfm / 15000) * 14.0; // rad/s
+  const fanOmega = (airflowCfm / 15000) * 14.0;
   nodes.blowerFanRotor.rotation.z -= fanOmega * dt;
 
   // 2. Cutaway Visibility
   nodes.solidCasingMesh.visible = !cutawayMode;
 
-  // 3. Modulating Dampers Angle (Opens more with higher CFM)
+  // 3. Modulating Dampers Angle
   const damperAngle = (airflowCfm / 25000) * (Math.PI / 3);
   nodes.freshAirDamperLouvers.forEach((louver) => {
     louver.rotation.z = damperAngle;
@@ -420,7 +501,6 @@ export function updateCarrierAirConditionerKinematics(
       const idx = i * 3;
       pos[idx] += speed * dt;
 
-      // If particle reaches eliminator baffles (+0.4), it is captured or recycled to intake
       if (pos[idx] > 0.4) {
         const hashX = Math.sin((i + dt * 100) * 13.123);
         const hashY = Math.cos((i + dt * 100) * 37.456);

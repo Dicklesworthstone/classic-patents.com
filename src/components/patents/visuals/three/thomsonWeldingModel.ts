@@ -18,9 +18,6 @@
 import * as THREE from "three";
 import { stepThomsonWelding, wrapCycleRad } from "@/physics/catalogKernels";
 import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(1458);
 
 export interface ThomsonWeldingModelNodes {
   rootGroup: THREE.Group;
@@ -56,10 +53,85 @@ export interface ThomsonWeldingModelResult {
 
 const SPARK_COUNT = 72;
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Cast-Iron Machine Bedplate Texture
+ */
+function createCastIronBedplateTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#22272e";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Cast surface grain and machine tool scratches
+  ctx.strokeStyle = "rgba(75, 85, 99, 0.25)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 200; i++) {
+    const y = (i * 2.56) % 512;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y + (deterministicUnit(i, 0) - 0.5) * 4);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Heavy Cast-Copper Texture
+ */
+function createCastCopperTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#c26228";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Copper grain
+  for (let i = 0; i < 150; i++) {
+    const cx = deterministicUnit(i, 0) * 512;
+    const cy = deterministicUnit(i, 1) * 512;
+    const rad = 2 + deterministicUnit(i, 2) * 5;
+    ctx.fillStyle = `rgba(234, 88, 12, ${0.2 + deterministicUnit(i, 3) * 0.25})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -70,9 +142,16 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
     return mat;
   };
 
+  const castIronTex = createCastIronBedplateTexture();
+  if (castIronTex) texturesToDispose.push(castIronTex);
+
+  const copperTex = createCastCopperTexture();
+  if (copperTex) texturesToDispose.push(copperTex);
+
   // --- Museum-Grade Materials ---
   const castIron = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(castIronTex ? { map: castIronTex } : {}),
       color: 0x22272e,
       roughness: 0.65,
       metalness: 0.85,
@@ -81,6 +160,7 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
 
   const heavyCopper = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(copperTex ? { map: copperTex } : {}),
       color: 0xc26228,
       roughness: 0.28,
       metalness: 0.92,
@@ -278,9 +358,9 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
   const sparkGeo = trackGeo(new THREE.BufferGeometry());
   const sparkPositions = new Float32Array(SPARK_COUNT * 3);
   for (let i = 0; i < SPARK_COUNT; i++) {
-    sparkPositions[i * 3] = (lcg() - 0.5) * 0.4;
-    sparkPositions[i * 3 + 1] = 0.4 + lcg() * 0.3;
-    sparkPositions[i * 3 + 2] = (lcg() - 0.5) * 0.4;
+    sparkPositions[i * 3] = (deterministicUnit(i, 0) - 0.5) * 0.4;
+    sparkPositions[i * 3 + 1] = 0.4 + deterministicUnit(i, 1) * 0.3;
+    sparkPositions[i * 3 + 2] = (deterministicUnit(i, 2) - 0.5) * 0.4;
   }
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
 
@@ -304,12 +384,9 @@ export function buildThomsonWeldingModel(): ThomsonWeldingModelResult {
   };
 
   const dispose = () => {
-    for (const m of materialsToDispose) {
-      m.dispose();
-    }
-    for (const g of geometriesToDispose) {
-      g.dispose();
-    }
+    for (const m of materialsToDispose) m.dispose();
+    for (const g of geometriesToDispose) g.dispose();
+    for (const t of texturesToDispose) t.dispose();
   };
 
   return { rootGroup, nodes, materials, dispose };
@@ -331,7 +408,6 @@ export function updateThomsonWeldingKinematics(
   showSparks: boolean,
 ) {
   // 1. Incandescence Intensity & Color based on temperature
-  // Below 500°C: dark; 500-900°C: dull red; 900-1200°C: bright orange; >1200°C: dazzling white
   materials.glowingWeld.emissiveIntensity = weldGlowIntensity;
 
   if (interfaceTempC > 1100) {

@@ -19,40 +19,52 @@ import {
 
 type CameraPreset =
   | "iso"
-  | "triple_valve"
+  | "selecting_cock"
+  | "trip_apparatus"
   | "brake_cylinder"
-  | "wheel_shoes"
   | "reservoir"
-  | "track";
+  | "signaling_gauge";
 
 export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
-  // Pneumatic Simulation Parameters
+  // Pneumatic Simulation Parameters from Shared Hook
   const { params } = usePatentPhysics("us-124404-westinghouse-air-brake");
-  const trainlinePressurePsi = params.trainPipePressure ?? params.brakePressurePsi ?? 70;
+  const trainPipePressurePsi = params.trainPipePressure ?? 0;
+  const reservoirPipePressurePsi = params.reservoirPipePressure ?? 90;
+  const selectingCockPos = params.selectingCockPosition ?? 0;
+  const accidentTripMode = params.accidentTrip ?? 0;
+  const signalPulsePsi = params.signalPulsePressure ?? 0;
+
+  const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
+  const tripCockState = tripModes[accidentTripMode] ?? "running";
+  const selectingCockState = selectingCockPos === 1 ? "reversed" : "normal";
+
   const westinghouse = FrankenSimEngine.stepWestinghouseAirBrake({
-    trainPipePressurePsi: trainlinePressurePsi,
-    carMassTonnes: params.carMass ?? 35,
+    trainPipePressurePsi,
+    reservoirPipePressurePsi,
+    selectingCockState,
+    tripCockState,
+    signalPulsePressurePsi: signalPulsePsi,
   });
-  const isBrakeClamped = westinghouse.valveState !== "RELEASE";
+
+  const isBrakeClamped = westinghouse.brakeCylinderPressurePsi > 5;
   const clampingForceKn = westinghouse.shoeClampingForceKn;
-  const stoppingDistanceFt = westinghouse.stoppingDistanceFt;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
-    trainlinePressurePsi,
+    trainPipePressurePsi,
+    reservoirPipePressurePsi,
+    selectingCockState,
+    tripCockState,
+    signalPulsePressurePsi: signalPulsePsi,
     isBrakeClamped,
     isAudioMuted,
     clampingForceKn,
-    stoppingDistanceFt,
-    pistonStrokeRatio: westinghouse.pistonStrokeRatio,
-    approachSpeedMph: westinghouse.approachSpeedMph,
     rollingOmegaRadPerS: westinghouse.rollingOmegaRadPerS,
-    clampRatio: westinghouse.clampRatio,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -69,25 +81,25 @@ export function WestinghouseAirBrake3D() {
         camera.position.set(8.5, 5.5, 9.5);
         controls.target.set(0, 0, 0);
         break;
-      case "triple_valve":
-        camera.position.set(-0.8, 1.8, 2.5);
-        controls.target.set(-0.2, 0.85, 0.35);
+      case "selecting_cock":
+        camera.position.set(0.2, 2.2, 2.8);
+        controls.target.set(0, 0.9, 0.825);
+        break;
+      case "trip_apparatus":
+        camera.position.set(-3.2, 1.2, 2.6);
+        controls.target.set(-3.6, 0.2, 0.85);
         break;
       case "brake_cylinder":
-        camera.position.set(2.4, 1.8, 2.5);
-        controls.target.set(1.4, 0.85, -0.2);
-        break;
-      case "wheel_shoes":
-        camera.position.set(-2.5, -0.2, 3.2);
-        controls.target.set(-1.8, -1.05, 0);
+        camera.position.set(2.6, 1.8, 2.2);
+        controls.target.set(1.4, 0.5, 0);
         break;
       case "reservoir":
-        camera.position.set(-2.6, 2.0, 2.4);
-        controls.target.set(-1.6, 0.85, -0.2);
+        camera.position.set(-2.4, 1.8, 2.2);
+        controls.target.set(-1.5, 0.5, 0);
         break;
-      case "track":
-        camera.position.set(0, -1.2, 5.5);
-        controls.target.set(0, -1.5, 0);
+      case "signaling_gauge":
+        camera.position.set(4.2, 1.8, 1.8);
+        controls.target.set(3.4, 0.8, 0.4);
         break;
     }
     controls.update();
@@ -131,21 +143,32 @@ export function WestinghouseAirBrake3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const clampRatio = p.clampRatio;
       const wheelOmega = p.rollingOmegaRadPerS ?? 0;
-
       wheelAngle -= wheelOmega * delta;
 
       // Update model kinematics
       updateWestinghouseAirBrakeKinematics(
-        brakeModel.nodes,
-        brakeModel.materials,
-        wheelAngle,
-        clampRatio,
-        wheelOmega,
+        brakeModel,
+        {
+          trainPipePressurePsi: p.trainPipePressurePsi,
+          reservoirPipePressurePsi: p.reservoirPipePressurePsi,
+          selectingCockState: p.selectingCockState as "normal" | "reversed" | undefined,
+          tripCockState: p.tripCockState as
+            | "running"
+            | "tripped_derailment"
+            | "tripped_parting"
+            | undefined,
+          signalPulsePressurePsi: p.signalPulsePressurePsi,
+        },
+        delta,
       );
 
-      // Audio hiss on brake application trigger
+      // Rotate wheels
+      brakeModel.nodes.wheelSets.forEach((ws) => {
+        ws.rotation.z = wheelAngle;
+      });
+
+      // Audio puff on brake application trigger
       if (p.isBrakeClamped && !wasClamped && !p.isAudioMuted) {
         soundEngine.playPneumaticPuff();
       }
@@ -173,7 +196,7 @@ export function WestinghouseAirBrake3D() {
         <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-sky-400 animate-pulse" />
           <span className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider">
-            Westinghouse Automatic Air Brake 3D
+            Westinghouse Double-Pipe Air Brake 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
             US Patent 124,404 (1872)
@@ -186,11 +209,11 @@ export function WestinghouseAirBrake3D() {
           {(
             [
               ["iso", "Overview"],
-              ["triple_valve", "Triple Valve"],
-              ["brake_cylinder", "Cylinder & Levers"],
-              ["wheel_shoes", "Brake Shoes"],
-              ["reservoir", "Air Tank"],
-              ["track", "Truck & Rails"],
+              ["selecting_cock", "Selecting Cock d¹"],
+              ["trip_apparatus", "Trip Cock e"],
+              ["brake_cylinder", "Cylinder C"],
+              ["reservoir", "Receiver D"],
+              ["signaling_gauge", "Signal Gauge g²"],
             ] as [CameraPreset, string][]
           ).map(([preset, label]) => (
             <button
@@ -230,21 +253,26 @@ export function WestinghouseAirBrake3D() {
 
       <StudioKernelChips
         visible={showUiOverlay}
-        title="Westinghouse Fail-Safe Pneumatics"
+        title="US 124,404 Double-Pipe Pneumatics"
         chips={[
-          { label: "Pipe Pressure", value: `${trainlinePressurePsi} psi` },
+          { label: "Operating Pipe B", value: `${westinghouse.operatingPipePressurePsi} psi` },
+          { label: "Receiver Pipe B¹", value: `${westinghouse.reservoirPipePressurePsi} psi` },
           {
-            label: "State",
-            value: westinghouse.valveState,
-            tone: westinghouse.valveState === "EMERGENCY" ? "warn" : "ok",
+            label: "Cock d¹",
+            value: westinghouse.isSelectingCockReversed ? "Position 2 (Swapped)" : "Position 1",
+            tone: "ok",
           },
-          { label: "Clamping Force", value: `${clampingForceKn.toFixed(1)} kN` },
-          { label: "Stop Dist.", value: `${stoppingDistanceFt.toFixed(0)} ft` },
-          { label: "Fail-Safe", value: "Triple-Valve Armed" },
-          { label: "ω_roll", value: westinghouse.rollingOmegaRadPerS.toFixed(1), unit: "rad/s" },
           {
-            label: "Air crate",
-            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+            label: "Cock e",
+            value: westinghouse.isTripped ? "TRIPPED (Accident)" : "ARMED",
+            tone: westinghouse.isTripped ? "warn" : "ok",
+          },
+          { label: "Cylinder C", value: `${westinghouse.brakeCylinderPressurePsi} psi` },
+          { label: "Clamping", value: `${clampingForceKn.toFixed(1)} kN` },
+          { label: "Signal Code", value: westinghouse.signalMessage },
+          {
+            label: "Pneumatics kernel",
+            value: crateSource === "wasm" ? "fs-fluid" : "ts-pneumatics",
           },
         ]}
       />

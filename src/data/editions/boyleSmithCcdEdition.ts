@@ -1097,6 +1097,16 @@ export const boyleSmithCcdArchivalEdition: CuratedSpecificationEdition = {
   ],
 };
 
+export function boyleSmithCcdClaimText(number: number): string {
+  const block = boyleSmithCcdArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Boyle-Smith CCD source-authoring WIP is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const boyleSmithCcdParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
     "The application establishes its priority timeline as a continuation-in-part of abandoned application Ser. No. 11,541 filed February 16, 1970, formally defining the device category as charge coupled devices.",

@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
+import { archivalEditionForPublication } from "./publicationApproval";
 
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;

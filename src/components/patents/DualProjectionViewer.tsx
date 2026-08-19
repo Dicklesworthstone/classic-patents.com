@@ -16,11 +16,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
-import {
-  ARCHIVAL_PARALLEL_READINGS,
-  archivalParallelReadingsFor,
-} from "@/data/editions/parallelReadings";
-import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
+import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
+import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 import type { Patent } from "@/types/patent";
@@ -81,18 +78,7 @@ export function viewModeFromSearch(search: string): PatentViewMode | undefined {
   return isPatentViewMode(candidate) ? candidate : undefined;
 }
 
-export function archivalEditionForPublication(
-  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
-) {
-  return patent.archivalEdition &&
-    patent.originalTextAsset?.kind === "reviewed-transcription" &&
-    patent.originalTextAsset.pageAnchors &&
-    patent.originalTextAsset.pageAnchors.length > 0 &&
-    !isArchivalEditionExplicitlyWithheld(patent.id) &&
-    ARCHIVAL_PARALLEL_READINGS[patent.id]
-    ? patent.archivalEdition
-    : undefined;
-}
+export { archivalEditionForPublication };
 
 function viewModeFromLocation(): PatentViewMode | undefined {
   return viewModeFromSearch(window.location.search);

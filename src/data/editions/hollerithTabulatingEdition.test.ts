@@ -126,6 +126,12 @@ describe("hollerithTabulatingArchivalEdition", () => {
       expect(crop.width).toBeGreaterThan(300);
       expect(crop.height).toBeGreaterThan(300);
     }
+
+    expect(hollerithTabulatingFigureCrops["Fig. 6"][0]).toMatchObject({
+      src: "/patents/figures/us-395781-hollerith-tabulating/fig-6-source-crop-v4.png",
+      width: 800,
+      height: 900,
+    });
   });
 
   test("uses specific term annotations rather than leaving period language unexplained", () => {

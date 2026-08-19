@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { allPatents } from "@/data/patents";
+import { isArchivalEditionExplicitlyWithheld } from "./publicationApproval";
 
 /**
  * A reader must be able to discover a cited source figure or drawing division
@@ -13,6 +14,11 @@ const FIGURE_GROUP_REFERENCE =
   /\b(?:figs\.?|figures)\s+\d+[a-z′′]*(?:\s*(?:,|and|to|through)\s*\d+[a-z′′]*)+/i;
 const FIGURE_LABEL = /\d+[a-z′′]*/gi;
 const NUMERIC_FIGURE_RANGE = /(\d+)\s*(?:to|through|[-–])\s*(\d+)/i;
+const SINGLE_FIGURE_REFERENCE = /^fig(?:ure)?\.?\s*(\d+[a-z′′]*)\.?$/i;
+
+function escapeForRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 function sourcePngDimensions(path: string): { width: number; height: number } | undefined {
   const bytes = readFileSync(path);
@@ -27,11 +33,48 @@ function sourcePngDimensions(path: string): { width: number; height: number } | 
   return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
 }
 
+function previewExplicitlyIdentifiesFigure(preview: { src: string; alt: string }, label: string) {
+  const sourceIdentity = `${preview.src} ${preview.alt}`;
+  const directIdentifier = new RegExp(
+    `\\bfig(?:ure)?s?[-_\\s.]*${escapeForRegExp(label)}(?![a-z0-9])`,
+    "i",
+  );
+  if (directIdentifier.test(sourceIdentity)) return true;
+
+  const explicitFigureLists = sourceIdentity.matchAll(/\bfig(?:ure)?s?\.?\s+([^:;]+)/gi);
+  for (const [, list] of explicitFigureLists) {
+    const listedLabels = list.match(FIGURE_LABEL)?.map((entry) => entry.toLowerCase()) ?? [];
+    if (listedLabels.includes(label)) return true;
+  }
+
+  const numericLabel = /^\d+$/.test(label) ? Number(label) : undefined;
+  if (numericLabel === undefined) return false;
+
+  const range = sourceIdentity.match(NUMERIC_FIGURE_RANGE);
+  if (range !== null && numericLabel >= Number(range[1]) && numericLabel <= Number(range[2])) {
+    return true;
+  }
+
+  return false;
+}
+
+function citedFigureLabels(citation: string): string[] {
+  const labels = (citation.match(FIGURE_LABEL) ?? []).map((entry) => entry.toLowerCase());
+  const range = citation.match(NUMERIC_FIGURE_RANGE);
+  if (range === null) return labels;
+
+  const first = Number(range[1]);
+  const last = Number(range[2]);
+  if (last < first || last - first > 50) return labels;
+  return Array.from({ length: last - first + 1 }, (_, offset) => String(first + offset));
+}
+
 describe("manual archival-edition semantics", () => {
   test("does not leave source drawing references as inert prose", () => {
     const violations: string[] = [];
 
     for (const patent of allPatents) {
+      if (isArchivalEditionExplicitlyWithheld(patent.id)) continue;
       const edition = patent.archivalEdition;
       if (!edition) continue;
 
@@ -67,6 +110,7 @@ describe("manual archival-edition semantics", () => {
     let figureReferenceCount = 0;
 
     for (const patent of allPatents) {
+      if (isArchivalEditionExplicitlyWithheld(patent.id)) continue;
       const edition = patent.archivalEdition;
       if (!edition) continue;
 
@@ -142,10 +186,11 @@ describe("manual archival-edition semantics", () => {
     expect(violations).toEqual([]);
   });
 
-  test("does not let a multi-figure citation pretend one figure crop covers unnamed figures", () => {
+  test("gives every figure in a multi-figure citation an explicitly identified preview", () => {
     const violations: string[] = [];
 
     for (const patent of allPatents) {
+      if (isArchivalEditionExplicitlyWithheld(patent.id)) continue;
       const edition = patent.archivalEdition;
       if (!edition) continue;
 
@@ -163,23 +208,58 @@ describe("manual archival-edition semantics", () => {
           for (const inline of inlines) {
             if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
             const citation = inline.text.match(FIGURE_GROUP_REFERENCE)?.[0];
-            if (!citation || inline.figurePreviews?.length !== 1) continue;
+            if (!citation || !inline.figurePreviews?.length) continue;
 
-            const alt = inline.figurePreviews[0]?.alt.toLowerCase() ?? "";
-            const citationLabels = citation.match(FIGURE_LABEL) ?? [];
-            const explicitlyNamed = citationLabels.every((label) =>
-              alt.includes(label.toLowerCase()),
+            for (const label of citedFigureLabels(citation)) {
+              if (
+                !inline.figurePreviews.some((preview) =>
+                  previewExplicitlyIdentifiesFigure(preview, label),
+                )
+              ) {
+                violations.push(
+                  `${patent.id} block ${blockIndex}: ${inline.text} has no preview identifying Fig. ${label}.`,
+                );
+              }
+            }
+          }
+        }
+      }
+    }
+
+    expect(violations).toEqual([]);
+  });
+
+  test("does not attach an exactly cited figure number to a differently numbered crop", () => {
+    const violations: string[] = [];
+
+    for (const patent of allPatents) {
+      if (isArchivalEditionExplicitlyWithheld(patent.id)) continue;
+      const edition = patent.archivalEdition;
+      if (!edition) continue;
+
+      for (const [blockIndex, block] of edition.blocks.entries()) {
+        const inlineGroups =
+          block.kind === "paragraph" || block.kind === "claim"
+            ? [block.inlines]
+            : block.kind === "figure-sheet"
+              ? [block.description]
+              : block.kind === "table"
+                ? [...block.headers, ...block.rows.flat()]
+                : [];
+
+        for (const inlines of inlineGroups) {
+          for (const inline of inlines) {
+            if (inline.kind !== "reference" || inline.referenceType !== "figure") continue;
+            const match = inline.text.trim().match(SINGLE_FIGURE_REFERENCE);
+            if (!match || !inline.figurePreviews?.length) continue;
+
+            const label = match[1].toLowerCase();
+            const identified = inline.figurePreviews.some((preview) =>
+              previewExplicitlyIdentifiesFigure(preview, label),
             );
-            const numericLabels = citationLabels.map((label) => Number(label));
-            const range = alt.match(NUMERIC_FIGURE_RANGE);
-            const rangeCoversCitation =
-              citationLabels.every((label) => /^\d+$/.test(label)) &&
-              range !== null &&
-              Math.min(...numericLabels) >= Number(range[1]) &&
-              Math.max(...numericLabels) <= Number(range[2]);
-            if (!explicitlyNamed && !rangeCoversCitation) {
+            if (!identified) {
               violations.push(
-                `${patent.id} block ${blockIndex}: ${inline.text} has one preview that does not identify both cited figure endpoints.`,
+                `${patent.id} block ${blockIndex}: ${inline.text} has no preview identifying Fig. ${label}.`,
               );
             }
           }

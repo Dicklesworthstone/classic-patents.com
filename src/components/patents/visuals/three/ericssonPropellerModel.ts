@@ -1,5 +1,21 @@
+/**
+ * ericssonPropellerModel.ts
+ *
+ * Museum-Grade Procedural 3D Model for John Ericsson's 1838 Screw Propeller
+ * (US Patent 588 - "Screw-Propeller for Vessels").
+ *
+ * Reconstructs the authentic historical apparatus of the SS Archimedes / Robert F. Stockton:
+ * 1. Wooden ship stern deadwood keel block with aged oak planking and caulking seams.
+ * 2. Bottom verdigris copper hull sheathing with copper rivets.
+ * 3. Heavy cast-iron sternpost with bronze stuffing box and water-tight packing gland.
+ * 4. Concentric hollow/solid steel drive shafts for contra-rotating motion (Claim 2).
+ * 5. Forward and aft cylindrical hoop drums (Claim 1) with radial spokes and helical airfoil blades.
+ * 6. Internal reversing bevel gear transmission inside the ship's stern.
+ * 7. Rudder post, iron gudgeon/pintle hinges, and wooden rudder blade.
+ * 8. Hydrodynamic wake streamlines and blade-tip cavitation vortex particles.
+ */
+
 import * as THREE from "three";
-import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -26,12 +42,104 @@ export interface EricssonPropellerModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Weathered Ship Hull Oak Plank Texture
+ */
+function createShipHullTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#3b2210";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Horizontal plank seams and tar caulk lines
+  for (let p = 0; p < 8; p++) {
+    const y = p * 64;
+    ctx.fillStyle = "#150a04";
+    ctx.fillRect(0, y - 2, 512, 4);
+  }
+
+  // Coarse wood grain
+  for (let i = 0; i < 90; i++) {
+    const y = i * 5.7 + (deterministicUnit(i, 0) - 0.5) * 4;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(25, 12, 5, ${alpha})`;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(160, y + 8, 340, y - 8, 512, y + 4);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Verdigris Maritime Copper Sheathing Texture
+ */
+function createVerdigrisTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#9a5628";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Verdigris oxidation patches (sea-green patina)
+  for (let i = 0; i < 40; i++) {
+    const cx = deterministicUnit(i, 0) * 512;
+    const cy = deterministicUnit(i, 1) * 512;
+    const r = 15 + deterministicUnit(i, 2) * 45;
+    const grad = ctx.createRadialGradient(cx, cy, 2, cx, cy, r);
+    grad.addColorStop(0, "rgba(52, 144, 118, 0.6)");
+    grad.addColorStop(0.7, "rgba(38, 110, 89, 0.3)");
+    grad.addColorStop(1, "rgba(154, 86, 40, 0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildEricssonPropellerModel(): EricssonPropellerModel {
   const lcg = createLcg(1838);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
+
+  const hullTex = createShipHullTexture();
+  if (hullTex) texturesToDispose.push(hullTex);
+
+  const copperTex = createVerdigrisTexture();
+  if (copperTex) texturesToDispose.push(copperTex);
 
   // --- 1. AUTHENTIC MATERIALS ---
   const bronzeGunmetal = new THREE.MeshStandardMaterial({
@@ -49,14 +157,16 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   materialsToDispose.push(polishedBrass);
 
   const shipHullWood = new THREE.MeshStandardMaterial({
-    color: 0x3d2714,
-    roughness: 0.75,
-    metalness: 0.08,
+    ...(hullTex ? { map: hullTex } : {}),
+    color: 0x4a2c14,
+    roughness: 0.72,
+    metalness: 0.06,
   });
   materialsToDispose.push(shipHullWood);
 
   const copperSheathing = new THREE.MeshStandardMaterial({
-    color: 0xb87333,
+    ...(copperTex ? { map: copperTex } : {}),
+    color: 0xa86030,
     roughness: 0.42,
     metalness: 0.85,
   });
@@ -82,7 +192,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   rootGroup.add(hullGroup);
 
   // Wood Keel / Deadwood Block
-  const deadwoodGeo = new THREE.BoxGeometry(3.0, 4.8, 1.4);
+  const deadwoodGeo = new THREE.BoxGeometry(3.2, 5.0, 1.45);
   geometriesToDispose.push(deadwoodGeo);
   const deadwood = new THREE.Mesh(deadwoodGeo, shipHullWood);
   deadwood.position.set(-1.0, 1.2, 0);
@@ -91,14 +201,15 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   hullGroup.add(deadwood);
 
   // Bottom Copper Hull Sheathing Plate
-  const copperGeo = new THREE.BoxGeometry(3.04, 1.6, 1.44);
+  const copperGeo = new THREE.BoxGeometry(3.24, 1.8, 1.49);
   geometriesToDispose.push(copperGeo);
   const copperPlate = new THREE.Mesh(copperGeo, copperSheathing);
   copperPlate.position.set(-1.0, -0.4, 0);
+  copperPlate.castShadow = true;
   hullGroup.add(copperPlate);
 
   // Heavy Cast-Iron Sternpost
-  const sternpostGeo = new THREE.BoxGeometry(0.55, 5.2, 0.7);
+  const sternpostGeo = new THREE.BoxGeometry(0.58, 5.4, 0.75);
   geometriesToDispose.push(sternpostGeo);
   const sternpost = new THREE.Mesh(sternpostGeo, castIronSternpost);
   sternpost.position.set(0.4, 1.0, 0);
@@ -106,7 +217,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   hullGroup.add(sternpost);
 
   // Stuffing Box Stern Tunnel Housing
-  const tunnelGeo = new THREE.CylinderGeometry(0.45, 0.45, 1.6, 20);
+  const tunnelGeo = new THREE.CylinderGeometry(0.48, 0.48, 1.8, 20);
   geometriesToDispose.push(tunnelGeo);
   const tunnel = new THREE.Mesh(tunnelGeo, castIronSternpost);
   tunnel.rotation.z = Math.PI / 2;
@@ -114,11 +225,11 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   hullGroup.add(tunnel);
 
   // Bronze Stuffing Gland Packing Flange
-  const glandGeo = new THREE.CylinderGeometry(0.52, 0.52, 0.25, 20);
+  const glandGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.28, 20);
   geometriesToDispose.push(glandGeo);
   const gland = new THREE.Mesh(glandGeo, polishedBrass);
   gland.rotation.z = Math.PI / 2;
-  gland.position.set(1.6, 0, 0);
+  gland.position.set(1.65, 0, 0);
   hullGroup.add(gland);
 
   // Rudder Post & Hinged Rudder Blade
@@ -126,13 +237,13 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   rudderGroup.position.set(3.8, 0, 0);
   rootGroup.add(rudderGroup);
 
-  const rudderAftPostGeo = new THREE.BoxGeometry(0.45, 5.2, 0.55);
+  const rudderAftPostGeo = new THREE.BoxGeometry(0.48, 5.4, 0.58);
   geometriesToDispose.push(rudderAftPostGeo);
   const rudderAftPost = new THREE.Mesh(rudderAftPostGeo, castIronSternpost);
   rudderAftPost.position.set(0, 1.0, 0);
   rudderGroup.add(rudderAftPost);
 
-  const rudderBladeGeo = new THREE.BoxGeometry(1.6, 4.2, 0.22);
+  const rudderBladeGeo = new THREE.BoxGeometry(1.65, 4.4, 0.24);
   geometriesToDispose.push(rudderBladeGeo);
   const rudderMesh = new THREE.Mesh(rudderBladeGeo, shipHullWood);
   rudderMesh.position.set(0.9, 0.8, 0);
@@ -141,7 +252,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
 
   // --- 3. CONCENTRIC DRIVE SHAFTS ---
   // Outer Hollow Shaft (drives forward drum)
-  const outerShaftGeo = new THREE.CylinderGeometry(0.24, 0.24, 2.2, 20);
+  const outerShaftGeo = new THREE.CylinderGeometry(0.25, 0.25, 2.4, 20);
   geometriesToDispose.push(outerShaftGeo);
   const outerShaftMesh = new THREE.Mesh(outerShaftGeo, steelShaft);
   outerShaftMesh.rotation.z = Math.PI / 2;
@@ -149,7 +260,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   rootGroup.add(outerShaftMesh);
 
   // Inner Solid Shaft (extends through to aft drum)
-  const innerShaftGeo = new THREE.CylinderGeometry(0.15, 0.15, 6.2, 20);
+  const innerShaftGeo = new THREE.CylinderGeometry(0.16, 0.16, 6.4, 20);
   geometriesToDispose.push(innerShaftGeo);
   const innerShaftMesh = new THREE.Mesh(innerShaftGeo, steelShaft);
   innerShaftMesh.rotation.z = Math.PI / 2;
@@ -161,7 +272,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
     const drumGroup = new THREE.Group();
 
     // Central Bronze Hub
-    const hubGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.85, 24);
+    const hubGeo = new THREE.CylinderGeometry(0.44, 0.44, 0.88, 24);
     geometriesToDispose.push(hubGeo);
     const hub = new THREE.Mesh(hubGeo, polishedBrass);
     hub.rotation.z = Math.PI / 2;
@@ -170,7 +281,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
 
     // Outer Cylindrical Hoop Drum (Claim 1)
     const drumRadius = 2.2;
-    const drumWidth = 0.75;
+    const drumWidth = 0.78;
     const hoopGeo = new THREE.CylinderGeometry(drumRadius, drumRadius, drumWidth, 36, 1, true);
     geometriesToDispose.push(hoopGeo);
     const hoop = new THREE.Mesh(hoopGeo, drumColor);
@@ -206,16 +317,16 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
       drumGroup.add(spoke);
     }
 
-    // 6 Helical Spiral Blades mounted on exterior of drum
+    // 6 Helical Spiral Airfoil Blades mounted on exterior of drum
     for (let b = 0; b < 6; b++) {
       const bladeAngle = (b * Math.PI) / 3;
       const bladeHolder = new THREE.Group();
       bladeHolder.rotation.x = bladeAngle;
 
-      const bladeGeo = new THREE.BoxGeometry(0.72, 1.1, 0.08);
+      const bladeGeo = new THREE.BoxGeometry(0.74, 1.15, 0.09);
       geometriesToDispose.push(bladeGeo);
       const blade = new THREE.Mesh(bladeGeo, bronzeGunmetal);
-      blade.position.set(0, drumRadius + 0.5, 0);
+      blade.position.set(0, drumRadius + 0.52, 0);
       blade.rotation.y = pitchAngleRad;
       blade.castShadow = true;
       bladeHolder.add(blade);
@@ -237,7 +348,7 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   rootGroup.add(aftDrumGroup);
 
   // --- 6. HYDRODYNAMIC CAVITATION & WAKE STREAMLINES ---
-  const wakeCount = 220;
+  const wakeCount = 240;
   const wakeGeo = new THREE.BufferGeometry();
   geometriesToDispose.push(wakeGeo);
   const wakePositions = new Float32Array(wakeCount * 3);
@@ -251,24 +362,24 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
     wakePositions[idx + 1] = Math.cos(a) * r;
     wakePositions[idx + 2] = Math.sin(a) * r;
 
-    // Ocean blue/cyan foam
-    wakeColors[idx] = 0.35 + lcg() * 0.25;
-    wakeColors[idx + 1] = 0.78 + lcg() * 0.2;
-    wakeColors[idx + 2] = 0.95 + lcg() * 0.05;
+    // Luminous cyan / bubbly white
+    wakeColors[idx] = 0.6 + lcg() * 0.4;
+    wakeColors[idx + 1] = 0.85 + lcg() * 0.15;
+    wakeColors[idx + 2] = 1.0;
   }
 
   wakeGeo.setAttribute("position", new THREE.BufferAttribute(wakePositions, 3));
   wakeGeo.setAttribute("color", new THREE.BufferAttribute(wakeColors, 3));
 
-  const waterGlowTex = createGlowPointTexture();
-  texturesToDispose.push(waterGlowTex);
+  const glowTex = createGlowPointTexture();
+  if (glowTex) texturesToDispose.push(glowTex);
 
   const wakeMat = new THREE.PointsMaterial({
-    size: 0.32,
-    map: waterGlowTex,
+    size: 0.16,
+    map: glowTex,
     vertexColors: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.65,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
   });
@@ -278,9 +389,9 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
   rootGroup.add(wakePoints);
 
   const dispose = () => {
-    for (const geo of geometriesToDispose) geo.dispose();
-    for (const mat of materialsToDispose) mat.dispose();
-    for (const tex of texturesToDispose) tex.dispose();
+    for (const m of materialsToDispose) m.dispose();
+    for (const g of geometriesToDispose) g.dispose();
+    for (const t of texturesToDispose) t.dispose();
   };
 
   return {
@@ -308,57 +419,88 @@ export function buildEricssonPropellerModel(): EricssonPropellerModel {
 }
 
 /**
- * Updates Ericsson contra-rotating propeller drums, wake vortex, and cutaway state.
+ * Updates contra-rotating drums, coaxial shafts, and hydrodynamic wake particle vortex.
  */
 export function updateEricssonPropellerKinematics(
   model: EricssonPropellerModel,
   dt: number,
-  shaftOmegaRadPerS: number,
-  wakeSwirlScale: number,
-  wakeFlowSpeed: number,
-  wakeSwirlCoeff: number,
-  showWake: boolean,
-  isCutaway = false,
-): void {
-  // Counter-rotating propeller drums (US Patent 588)
-  const dAngle = shaftOmegaRadPerS * dt;
-  model.forwardDrumGroup.rotation.x += dAngle;
-  model.aftDrumGroup.rotation.x -= dAngle;
+  displayOmegaRadPerS: number,
+  wakeOpacityOrScale: number,
+  flowSpeedOrRudder: number,
+  swirlCoeffOrShowWake: number | boolean,
+  showWakeOrCutaway?: boolean,
+  isCutaway?: boolean,
+) {
+  const cutaway =
+    typeof showWakeOrCutaway === "boolean" && isCutaway !== undefined
+      ? isCutaway
+      : Boolean(showWakeOrCutaway);
+  const showWake =
+    typeof swirlCoeffOrShowWake === "boolean"
+      ? swirlCoeffOrShowWake
+      : showWakeOrCutaway !== undefined
+        ? Boolean(showWakeOrCutaway)
+        : true;
+  const rudderAngle =
+    typeof flowSpeedOrRudder === "number" && Math.abs(flowSpeedOrRudder) <= 45
+      ? flowSpeedOrRudder
+      : 0;
+  const wakeOpacity = typeof wakeOpacityOrScale === "number" ? wakeOpacityOrScale : 0.65;
 
-  if (showWake) {
-    model.wakePoints.visible = true;
-    const wPos = model.wakePositions;
-    const flowVelocity = wakeFlowSpeed * dt;
-    const swirlVelocity = shaftOmegaRadPerS * wakeSwirlCoeff * dt * wakeSwirlScale;
-    const fluid = fluidFrames(16, 8);
-    const frame = Math.abs(Math.floor(model.forwardDrumGroup.rotation.x * 2)) % 8;
-
-    for (let i = 0; i < model.wakeCount; i++) {
-      const idx = i * 3;
-      const u = (wPos[idx] - 2.2) / 8.3;
-      const v = (wPos[idx + 1] + 2) / 4;
-      const dens = 1 + sampleFluidAt(fluid, 16, 8, frame, u, v);
-      wPos[idx] += flowVelocity * dens; // Travel downstream (+X)
-
-      // Swirl vortex
-      const y = wPos[idx + 1];
-      const z = wPos[idx + 2];
-      wPos[idx + 1] = y * Math.cos(swirlVelocity) - z * Math.sin(swirlVelocity);
-      wPos[idx + 2] = y * Math.sin(swirlVelocity) + z * Math.cos(swirlVelocity);
-
-      // Recycle downstream particles
-      if (wPos[idx] > 10.5) {
-        wPos[idx] = 2.2;
-      }
-    }
-    model.wakePoints.geometry.attributes.position.needsUpdate = true;
+  // 1. Cutaway Material Opacity
+  if (cutaway) {
+    model.materials.bronzeGunmetal.transparent = true;
+    model.materials.bronzeGunmetal.opacity = 0.45;
   } else {
-    model.wakePoints.visible = false;
+    model.materials.bronzeGunmetal.transparent = false;
+    model.materials.bronzeGunmetal.opacity = 1.0;
   }
 
-  // Cutaway mode
-  model.materials.bronzeGunmetal.opacity = isCutaway ? 0.45 : 1.0;
-  model.materials.bronzeGunmetal.transparent = isCutaway;
-  model.materials.shipHullWood.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.shipHullWood.transparent = isCutaway;
+  // 2. Contra-Rotating Drums (Forward Drum rotates CW, Aft Drum rotates CCW)
+  const angleDelta = displayOmegaRadPerS * dt;
+  model.forwardDrumGroup.rotation.x += angleDelta;
+  model.outerShaftMesh.rotation.x += angleDelta;
+
+  model.aftDrumGroup.rotation.x -= angleDelta;
+  model.innerShaftMesh.rotation.x -= angleDelta;
+
+  // 3. Rudder Yaw Angle
+  model.rudderMesh.rotation.y = (rudderAngle * Math.PI) / 180;
+
+  // 4. Wake Cavitation Streamlines
+  if (!showWake) {
+    model.wakePoints.visible = false;
+    return;
+  }
+  model.wakePoints.visible = true;
+  model.materials.wakeMat.opacity = wakeOpacity;
+
+  const positions = model.wakePositions;
+  const flowSpeed = 6.5 * dt * (Math.abs(displayOmegaRadPerS) / 3.0);
+  const swirlCoeff = 0.08 * dt * displayOmegaRadPerS;
+
+  for (let i = 0; i < model.wakeCount; i++) {
+    const idx = i * 3;
+    positions[idx] += flowSpeed; // Move downstream
+
+    // Swirl around propeller axis
+    const y = positions[idx + 1];
+    const z = positions[idx + 2];
+    positions[idx + 1] = y * Math.cos(swirlCoeff) - z * Math.sin(swirlCoeff);
+    positions[idx + 2] = y * Math.sin(swirlCoeff) + z * Math.cos(swirlCoeff);
+
+    // Reset when exiting downstream bounding box
+    if (positions[idx] > 10.0) {
+      positions[idx] = 2.2;
+      const r = 0.5 + deterministicUnit(i, 1) * 2.2;
+      const a = deterministicUnit(i, 2) * Math.PI * 2;
+      positions[idx + 1] = Math.cos(a) * r;
+      positions[idx + 2] = Math.sin(a) * r;
+    }
+  }
+
+  const attr = model.wakePoints.geometry.getAttribute("position") as THREE.BufferAttribute;
+  if (attr) {
+    attr.needsUpdate = true;
+  }
 }

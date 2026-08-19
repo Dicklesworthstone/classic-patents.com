@@ -732,23 +732,45 @@ export const FrankenSimEngine = {
 
   /**
    * George Westinghouse Automatic Air Brake (US 124,404)
-   * Differential Triple-Valve Pneumatics & Foundation Brake Clamping
+   * US 124,404 Double-Pipe Steam-Power Air Brake, Tripping Cocks, and Pneumatic Signalling
    */
   stepWestinghouseAirBrake(params: {
-    trainPipePressurePsi?: number; // 0 to 70 psi
+    trainPipePressurePsi?: number; // operating line pressure (0 to 80 psi)
+    reservoirPipePressurePsi?: number; // reservoir charging line pressure (0 to 100 psi)
+    selectingCockState?: "normal" | "reversed"; // cock d1 position
+    tripCockState?: "running" | "tripped_derailment" | "tripped_parting"; // cock e automatic trip
+    signalPulsePressurePsi?: number; // pneumatic signalling differential (0 to 2.5 psi)
+    conductorCockOpen?: boolean; // conductor emergency cock n2
     carMassTonnes?: number; // 20 to 60 tonnes
     approachSpeedMph?: number;
   }) {
     const pipePsi = params.trainPipePressurePsi ?? 70;
+    const resPipePsi = params.reservoirPipePressurePsi ?? 90;
     const carMass = params.carMassTonnes ?? 35;
     const approachSpeedMph = params.approachSpeedMph ?? 45;
-    const auxPsi = 70; // charged reservoir pressure
-    const isEmergency = pipePsi < 10;
-    const isService = pipePsi < 60 && !isEmergency;
-    const _isRelease = pipePsi >= 65;
+    const isReversed = params.selectingCockState === "reversed";
+    const tripState = params.tripCockState ?? "running";
+    const isTripped = tripState !== "running";
+    const signalPsi = params.signalPulsePressurePsi ?? 0;
+    const isConductorOpen = params.conductorCockOpen ?? false;
 
-    // Cylinder pressure equalizes from aux reservoir as pipe pressure drops
-    const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
+    // Stored air receiver D nominal volume = 40L, brake cylinder C volume = 15L
+    const receiverStoredPsi = resPipePsi;
+    const boyleEqualizationPsi = Number(((receiverStoredPsi * 40) / (40 + 15)).toFixed(1));
+
+    // Cylinder pressure: from operating pipe under normal operation,
+    // or equalized from receiver D when cock e trips (derailment/parting) or conductor opens n2
+    let cylPsi: number;
+    if (isTripped || isConductorOpen) {
+      cylPsi = boyleEqualizationPsi;
+    } else {
+      cylPsi = Math.max(0, Math.min(80, pipePsi));
+    }
+
+    const isEmergency = isTripped || isConductorOpen || cylPsi >= 50;
+    const isService = cylPsi > 10 && !isEmergency;
+    const _isRelease = cylPsi <= 5;
+
     const cylAreaSqIn = 78.5; // 10-inch cylinder
     const pistonThrustLbf = cylPsi * cylAreaSqIn;
     const shoeClampingForceKn = Number(((pistonThrustLbf * 5 * 4.44822) / 1000).toFixed(1));
@@ -762,12 +784,26 @@ export const FrankenSimEngine = {
     const stoppingTimeS =
       decelerationMps2 > 0 ? Number((approachSpeedMps / decelerationMps2).toFixed(1)) : 0;
     const wheelRadiusM = 0.42;
-    const clampRatio =
-      pipePsi >= 65 ? 0 : Number(Math.min(1, Math.max(0, (65 - pipePsi) / 55)).toFixed(3));
+    const clampRatio = Number(Math.min(1, Math.max(0, cylPsi / 55)).toFixed(3));
+
+    // Signalling index dial graduation (Fig. 4: 1 = normal running, 2 = flag station, 3 = stop for orders, 4 = danger run slow, 5 = danger stop)
+    const signalIndexStep = Math.min(5, Math.max(1, 1 + Math.floor(signalPsi / 0.5)));
+    const signalMessages = [
+      "1: Normal Running / Clear",
+      "2: Flag Station",
+      "3: Stop for Orders",
+      "4: Danger — Run Slow",
+      "5: Danger — Stop",
+    ] as const;
+    const signalMessage = signalMessages[signalIndexStep - 1] ?? signalMessages[0];
+    const alarmWhistleActive = signalPsi > 0.2;
 
     return {
       trainPipePressurePsi: pipePsi,
-      auxReservoirPressurePsi: auxPsi,
+      operatingPipePressurePsi: isReversed ? resPipePsi : pipePsi,
+      reservoirPipePressurePsi: isReversed ? pipePsi : resPipePsi,
+      auxReservoirPressurePsi: receiverStoredPsi,
+      receiverPressurePsi: receiverStoredPsi,
       brakeCylinderPressurePsi: cylPsi,
       shoeClampingForceKn,
       stoppingDistanceM,
@@ -776,6 +812,21 @@ export const FrankenSimEngine = {
       pistonStrokePx: Math.round((cylPsi / 55) * 18),
       shoeDistancePx: Math.max(0, 18 - Math.round((cylPsi / 55) * 18)),
       valveState: isEmergency ? "EMERGENCY" : isService ? "SERVICE" : "RELEASE",
+      selectingCockState: isReversed ? "reversed" : "normal",
+      isSelectingCockReversed: isReversed,
+      cockD1AngleDeg: isReversed ? 90 : 0,
+      tripCockState: tripState,
+      isTripped,
+      isDerailmentTripped: tripState === "tripped_derailment",
+      isUncouplingTripped: tripState === "tripped_parting",
+      cockEAngleDeg: isTripped ? 90 : 0,
+      tripCatchReleased: isTripped,
+      conductorCockOpen: isConductorOpen,
+      signalPulsePressurePsi: signalPsi,
+      signalIndexStep,
+      signalMessage,
+      alarmWhistleActive,
+      boyleEqualizationPsi,
       approachSpeedMph,
       approachSpeedMps,
       decelerationMps2,

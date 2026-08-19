@@ -261,6 +261,9 @@ export const whitneyCottonGinPatent: Patent = {
     reviewedAt: "2026-08-17",
     sourcePdfSha256: "9b0873182dbd2852a89bbf5bc7101e2c3b7a2d0cc76cee0df5c7acbfc86844ee",
   },
+  // Retained only as a source-preparation draft. Publication approval rejects
+  // this id until the figure citations can be re-established against a
+  // compatible primary drawing source.
   archivalEdition: whitneyCottonGinArchivalEdition,
   plainEnglishExplanation: {
     overview:

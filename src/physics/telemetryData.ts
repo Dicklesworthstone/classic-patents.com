@@ -3507,107 +3507,146 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-124404-westinghouse-air-brake": {
     domain: "thermo_fluid",
-    domainTitle: "Continuous Pneumatic Train Line & Triple-Valve Differential Pressure Dynamics",
-    equationName: "Boyle's Equalization & Train Line Rarefaction Wave Speed",
+    domainTitle: "Double-Pipe Trainline Pneumatics, Automatic Trip Cocks & Coded Signalling",
+    equationName: "Boyle's Expansion Equilibrium & Coded Pressure-Index Signalling",
     governingEquation:
-      "c = \\sqrt{\\gamma R T} \\approx 340\\text{ m/s} \\quad \\text{and} \\quad P_{\\text{final}}(V_{\\text{aux}} + V_{\\text{cyl}}) = P_{\\text{aux}} V_{\\text{aux}}",
+      "P_{\\text{cyl}} = P_D \\cdot \\frac{V_D}{V_D + V_C} \\quad \\text{and} \\quad \\text{Index Graduation } N = 1 + \\left\\lfloor \\frac{\\Delta P_{\\text{signal}}}{\\Delta P_{\\text{step}}} \\right\\rfloor",
     engineMethod: "FrankenSimEngine.stepWestinghouseAirBrake",
     controls: [
       {
         id: "trainPipePressure",
-        label: "Brake Pipe Pressure (Locomotive Engineer Valve)",
+        label: "Locomotive Operating Pipe Pressure (Pipe B)",
         min: 0,
-        max: 70,
+        max: 80,
         step: 5,
-        defaultValue: 70,
+        defaultValue: 0,
         unit: "psi",
       },
       {
-        id: "carMass",
-        label: "Railcar Gross Mass",
-        min: 20,
-        max: 80,
+        id: "reservoirPipePressure",
+        label: "Auxiliary Charging Pipe Pressure (Pipe B¹)",
+        min: 0,
+        max: 100,
         step: 5,
-        defaultValue: 35,
-        unit: "tonnes",
+        defaultValue: 90,
+        unit: "psi",
+      },
+      {
+        id: "selectingCockPosition",
+        label: "Selecting Cock d¹ Role Assignment",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "pos",
+      },
+      {
+        id: "accidentTrip",
+        label: "Automatic Tripping Cock e State",
+        min: 0,
+        max: 2,
+        step: 1,
+        defaultValue: 0,
+        unit: "mode",
+      },
+      {
+        id: "signalPulsePressure",
+        label: "Conductor Signalling Pulse (Loop n, n¹)",
+        min: 0,
+        max: 2.5,
+        step: 0.5,
+        defaultValue: 0,
+        unit: "psi",
       },
     ],
     computeMetrics: (p) => {
+      const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
+      const tripCockState = tripModes[p.accidentTrip ?? 0] ?? "running";
+      const selectingCockState = (p.selectingCockPosition ?? 0) === 1 ? "reversed" : "normal";
+
       const wh = FrankenSimEngine.stepWestinghouseAirBrake({
-        trainPipePressurePsi: p.trainPipePressure ?? 70,
-        carMassTonnes: p.carMass ?? 35,
+        trainPipePressurePsi: p.trainPipePressure ?? 0,
+        reservoirPipePressurePsi: p.reservoirPipePressure ?? 90,
+        selectingCockState,
+        tripCockState,
+        signalPulsePressurePsi: p.signalPulsePressure ?? 0,
       });
+
       const cylPsi = wh.brakeCylinderPressurePsi;
       const pistonThrustKn = wh.shoeClampingForceKn.toFixed(1);
       const isEmergency = wh.valveState === "EMERGENCY";
-      const isService = wh.valveState === "SERVICE";
-      const stopDistM = wh.stoppingDistanceM;
 
       return [
         {
-          label: "Brake Cylinder Pressure",
+          label: "Brake Cylinder Pressure (C)",
           value: `${cylPsi} psi`,
           unit: "P_cyl",
-          badgeColor: cylPsi > 30 ? "amber" : "emerald",
-          progressPct: clampProgress((cylPsi / 55) * 100),
+          badgeColor: cylPsi > 30 ? "rose" : cylPsi > 5 ? "amber" : "emerald",
+          progressPct: clampProgress((cylPsi / 80) * 100),
+        },
+        {
+          label: "Auxiliary Receiver (D)",
+          value: `${wh.receiverPressurePsi} psi`,
+          unit: "P_res",
+          badgeColor: "cyan",
+          progressPct: clampProgress((wh.receiverPressurePsi / 100) * 100),
         },
         {
           label: "Shoe Clamping Force",
           value: `${pistonThrustKn} kN`,
           unit: "F_clamp",
-          badgeColor: Number(pistonThrustKn) > 40 ? "rose" : "cyan",
+          badgeColor: Number(pistonThrustKn) > 40 ? "rose" : "amber",
           progressPct: clampProgress((Number(pistonThrustKn) / 85) * 100),
         },
         {
-          label: "Stopping Distance",
-          value: `${wh.stoppingDistanceFt} ft`,
-          unit: "ft",
-          badgeColor: "amber",
-          progressPct: Math.min(100, (wh.stoppingDistanceFt / 4000) * 100),
-        },
-        {
-          label: "Approach Speed",
-          value: `${wh.approachSpeedMph}`,
-          unit: "mph",
-          badgeColor: "cyan",
-          progressPct: clampProgress((wh.approachSpeedMph / 60) * 100),
-        },
-        {
-          label: "Stop Time",
-          value: wh.stoppingTimeS > 0 ? `${wh.stoppingTimeS}` : "—",
-          unit: "s",
+          label: "Selecting Cock d¹ (Case d)",
+          value: wh.isSelectingCockReversed
+            ? "Position 2 (B¹ → Brake, B → Charge)"
+            : "Position 1 (B → Brake, B¹ → Charge)",
+          unit: "pos",
           badgeColor: "indigo",
-          progressPct: wh.stoppingTimeS > 0 ? Math.min(100, (wh.stoppingTimeS / 60) * 100) : 0,
+          progressPct: wh.isSelectingCockReversed ? 100 : 0,
         },
         {
-          label: "Wheel ω",
-          value: `${wh.rollingOmegaRadPerS}`,
-          unit: "rad/s",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (wh.rollingOmegaRadPerS / 60) * 100),
+          label: "Accident Tripping Cock e",
+          value: wh.isTripped
+            ? wh.isDerailmentTripped
+              ? "TRIPPED (Stem i¹)"
+              : "TRIPPED (Cord y)"
+            : "ARMED (Normal)",
+          unit: "state",
+          badgeColor: wh.isTripped ? "rose" : "emerald",
+          progressPct: wh.isTripped ? 100 : 0,
         },
         {
-          label: "Triple Valve State",
+          label: "Signalling Index (Fig. 4)",
+          value: wh.signalMessage,
+          unit: "signal",
+          badgeColor: wh.signalIndexStep > 1 ? "amber" : "emerald",
+          progressPct: (wh.signalIndexStep / 5) * 100,
+        },
+        {
+          label: "Alarm Whistle (h)",
+          value: wh.alarmWhistleActive ? "BLASTING" : "QUIET",
+          unit: "audio",
+          badgeColor: wh.alarmWhistleActive ? "amber" : "emerald",
+          progressPct: wh.alarmWhistleActive ? 100 : 0,
+        },
+        {
+          label: "Braking Mode",
           value: isEmergency
-            ? "EMERGENCY DUMP"
-            : isService
-              ? "SERVICE APPLICATION"
-              : "RUNNING / CHARGE",
+            ? "EMERGENCY (Receiver D Equalized)"
+            : cylPsi > 5
+              ? "SERVICE (Locomotive Operating Line)"
+              : "RELEASED (Clear Track)",
           unit: "mode",
-          badgeColor: isEmergency ? "rose" : isService ? "amber" : "emerald",
-          progressPct: clampProgress(isEmergency ? 100 : isService ? 60 : 10),
-        },
-        {
-          label: "Estimated Stop Distance",
-          value: `${stopDistM} m`,
-          unit: "d_stop",
-          badgeColor: stopDistM < 400 ? "emerald" : "amber",
-          progressPct: Math.min(100, (stopDistM / 1200) * 100),
+          badgeColor: isEmergency ? "rose" : cylPsi > 5 ? "amber" : "emerald",
+          progressPct: clampProgress(isEmergency ? 100 : cylPsi > 5 ? 50 : 10),
         },
       ];
     },
     pedagogicalInsight:
-      "The triple valve inverts brake control: maintaining 70 psi in the continuous train pipe keeps the brakes released. When line pressure is dropped, higher pressure in the car's local auxiliary reservoir shifts the piston to dump air directly into the brake cylinder, stopping the train.",
+      "US 124,404 establishes a double line of continuous pipes (B and B¹). Selecting cock d¹ allows the engineer to reverse the pipe roles at will. When an accident occurs (derailment stem i¹ striking ties or parted coupling cord y pulling cock e), three-way cock e automatically vents stored air from car receiver D into brake cylinder C, applying fail-safe emergency braking without requiring locomotive intervention.",
   },
   "us-x72-whitney-cotton-gin": {
     domain: "aerodynamics_mbd",

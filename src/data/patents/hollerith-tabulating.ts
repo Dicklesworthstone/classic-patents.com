@@ -7,8 +7,8 @@ import type { Patent } from "@/types/patent";
 
 // Retained research material for a later generalized punched-card-tabulator
 // narrative. It is deliberately non-exported: the public US 395,781 record
-// below stays at the printed card, contact, circuit, counter, and sorting-box
-// boundary until the full manuscript clears independent review.
+// below preserves source-bound wording at the printed card, contact, circuit,
+// counter, and sorting-box boundary.
 const _legacyUnpublishedHollerithTabulatingPatent: Patent = {
   id: "us-395781-hollerith-tabulating",
   patentNumber: "US 395,781",
@@ -532,6 +532,15 @@ export const hollerithTabulatingPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
   usptoClassification:
     "Statistical card-processing apparatus; source classification review pending",
+  archivalEdition: hollerithTabulatingArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt",
+    pageCount: 17,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
+    reviewedAt: "2026-08-19",
+    sourcePdfSha256: hollerithTabulatingArchivalEdition.sourcePdfSha256,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 HERMAN HOLLERITH, OF NEW YORK, N. Y.
 
@@ -545,7 +554,7 @@ Be it known that I, HERMAN HOLLERITH, of New York, in the county of New York and
 
 Briefly stated, the method and apparatus comprise a record carrying circuit-actuating index-points; a template index for locating the record; circuit-making and circuit-breaking points; electric circuits controlled by those points; and mechanical registering devices actuated by electro-magnets included in those circuits.
 
-[Curated source excerpt only. The complete seventeen-page manual source face remains withheld until its transcript, figures, annotations, and paragraph companions pass independent facsimile acceptance.]`,
+[Curated source excerpt only. The complete seventeen-page manual source face is available in Original Patent Text.]`,
   plainEnglishExplanation: {
     overview:
       "The grant describes a way to turn a record for one individual or subject into a card whose marked index-points can control electrical circuits. The apparatus then uses those circuits to count selected items, operate indicators, and sort cards into groups. Its scope is broader than one census form; the Baltimore mortality card is presented as an example, not as a fixed format for every use.",

@@ -48,10 +48,10 @@ export const hollerithTabulatingFigureCrops = {
   ],
   "Fig. 6": [
     {
-      src: "/patents/figures/us-395781-hollerith-tabulating/fig-6-source-crop-v1.png",
+      src: "/patents/figures/us-395781-hollerith-tabulating/fig-6-source-crop-v4.png",
       alt: "Source-facsimile crop of Fig. 6 from US 395,781.",
-      width: 650,
-      height: 880,
+      width: 800,
+      height: 900,
     },
   ],
   "Fig. 7": [
@@ -164,8 +164,6 @@ const term = (text: string, definition: string): CuratedSpecificationInline => (
 
 /**
  * Literal source blocks manually read from specification page 1 (PDF page 7).
- * They are intentionally not yet exported as a CuratedSpecificationEdition:
- * the remaining specification pages and reviewed ledger are still incomplete.
  */
 export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecificationBlock[] = [
   {
@@ -1117,8 +1115,7 @@ export const hollerithTabulatingClaims: readonly string[] = hollerithTabulatingM
 );
 
 /**
- * The complete, continuous, manually authored source face. Root integration
- * alone may attach this unbound edition to the public Hollerith record.
+ * The complete, continuous, manually authored source face.
  */
 export const hollerithTabulatingArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",

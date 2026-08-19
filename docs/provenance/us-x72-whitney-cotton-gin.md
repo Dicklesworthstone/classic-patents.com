@@ -40,6 +40,27 @@ it does not contain a numbered claims section. The record must therefore state
 an evidence-backed no-formal-claims condition and must not substitute a modern
 summary of the mechanism for historical claim text.
 
+## Source-figure integrity hold (2026-08-19)
+
+The historical specification and the supplied drawing packet cannot yet be
+published together as a fully verified, figure-linked source face. A direct
+second review found that the descriptive schedule cites figures 4, 8, 9, and
+10 among others, while the pinned packet combines an original/copy sheet with
+later restored drawing sheets whose labels and depicted details cannot be
+proven one-to-one against each citation. The later sheets must not be silently
+substituted simply because they show a superficially similar component.
+
+This is consistent with the preservation warning in Founders Online's
+[Drawing of the Cotton Gin, 28 October 1793](https://founders.archives.gov/documents/Jefferson/01-27-02-0224): its source note distinguishes a copy of the lost original from an 1845 Patent Office reconstruction and explains that the reconstruction and later plates vary significantly from Whitney's drawing.
+
+The existing manual-edition draft, ledger, and every existing crop are
+preserved as recovery evidence, but the catalog record is deliberately gated.
+Re-release requires an editor to establish, against an authoritative primary
+drawing source, an explicit citation-to-crop ledger for every occurrence in the
+description; crop each verified figure from that source; inspect the framing;
+and rerun the cross-catalog figure-reference audit. No inferred filename,
+automatic crop, or "close enough" drawing is acceptable.
+
 ## Editorial layers
 
 1. The PDF above is immutable evidence.

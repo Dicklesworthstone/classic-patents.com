@@ -327,16 +327,30 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
-  test("keeps Goodyear US 3,633 at its source compounding and process boundary without discovery anecdotes", () => {
-    const cards = ALL_COLORIZED_EQUATIONS["us-3633-goodyear-rubber"];
-    expect(cards.length).toBeGreaterThan(0);
+  test("keeps Westinghouse US 124,404 at its authentic double-pipe and signalling boundary without triple-valve anachronisms", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-124404-westinghouse-air-brake"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "westinghouse-double-pipe-receiver-expansion",
+      "westinghouse-pneumatic-signalling-index",
+    ]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[1]?.claimRef).toBe(5);
+    expect(cards[0]?.rawLatex).toContain("V_D");
+    expect(cards[0]?.rawLatex).toContain("V_C");
+    expect(cards[1]?.rawLatex).toContain("N_{\\text{signal}}");
+
     const published = JSON.stringify(cards).toLowerCase();
-    for (const unsupportedAnecdote of [
-      "hot stove",
-      "accidentally dropped",
-      "foul-smelling, sticky sludge",
+    for (const unsupportedLegacyAssertion of [
+      "triple-valve",
+      "triple valve",
+      "\\mu_{\\text{shoe}}",
+      "p_{\\text{pipe}}",
+      "f_{\\text{piston}}",
+      "f_{\\text{spring}}",
+      "graduating spring",
+      "slide valve",
     ]) {
-      expect(published).not.toContain(unsupportedAnecdote);
+      expect(published).not.toContain(unsupportedLegacyAssertion);
     }
   });
 });

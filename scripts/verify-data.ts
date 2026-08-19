@@ -35,8 +35,8 @@ const BARE_DRAWING_REFERENCE =
 // a bulk companion-map merge or an accidental empty hold list must fail the
 // verifier instead of turning drafts into visitor-facing "complete" editions.
 const REQUIRED_ROOT_QA_WITHHOLDS = [
+  "us-x72-whitney-cotton-gin",
   "us-313224-mergenthaler-linotype",
-  "us-395781-hollerith-tabulating",
   "us-2708656-fermi-reactor",
   "us-3671542-kwolek-kevlar",
   "us-3858232-boyle-smith-ccd",

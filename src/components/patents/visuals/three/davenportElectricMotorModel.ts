@@ -13,7 +13,6 @@
  */
 
 import * as THREE from "three";
-import { gaMotorFrameIndex, gaMotorOrbit } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(2287);
@@ -105,6 +104,36 @@ function createMahoganyTexture(): THREE.CanvasTexture | undefined {
   return tex;
 }
 
+/**
+ * Procedural Silk-Insulated Enamelled Copper Magnet Wire Texture
+ */
+function createSilkCoilTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#b45309";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Dense parallel helical wire winding layers
+  for (let y = 0; y < 512; y += 6) {
+    ctx.fillStyle = "rgba(45, 18, 4, 0.6)";
+    ctx.fillRect(0, y, 512, 1.5);
+    ctx.fillStyle = "rgba(251, 191, 36, 0.4)";
+    ctx.fillRect(0, y + 2, 512, 2.5);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(4, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildDavenportMotorModel(): DavenportMotorModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
@@ -122,6 +151,9 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
 
   const mahoganyTex = createMahoganyTexture();
   if (mahoganyTex) texturesToDispose.push(mahoganyTex);
+
+  const silkCoilTex = createSilkCoilTexture();
+  if (silkCoilTex) texturesToDispose.push(silkCoilTex);
 
   // --- Museum-Grade Materials ---
   const mahogany = trackMat(
@@ -143,9 +175,10 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
 
   const copperWire = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(silkCoilTex ? { map: silkCoilTex } : {}),
       color: 0xd97706,
-      roughness: 0.3,
-      metalness: 0.9,
+      roughness: 0.32,
+      metalness: 0.88,
     }),
   );
 
@@ -451,16 +484,21 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
     rootGroup.add(brushHolderGroup);
   });
 
-  // --- 5. Commutator Sparks Particles ---
+  // --- 5. Commutator Contact Sparks ---
   const sparkGeo = trackGeo(new THREE.BufferGeometry());
   const sparkPositions = new Float32Array(SPARK_COUNT * 3);
+
   for (let i = 0; i < SPARK_COUNT; i++) {
-    sparkPositions[i * 3] = (lcg() > 0.5 ? 0.4 : -0.4) + (lcg() - 0.5) * 0.15;
-    sparkPositions[i * 3 + 1] = 1.6 + (lcg() - 0.5) * 0.2;
-    sparkPositions[i * 3 + 2] = (lcg() - 0.5) * 0.2;
+    const idx = i * 3;
+    const isLeft = i % 2 === 0;
+    sparkPositions[idx] = (isLeft ? -0.42 : 0.42) + (lcg() - 0.5) * 0.15;
+    sparkPositions[idx + 1] = 1.6 + (lcg() - 0.5) * 0.25;
+    sparkPositions[idx + 2] = (lcg() - 0.5) * 0.15;
   }
+
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
   const sparkPoints = new THREE.Points(sparkGeo, materials.sparkMat);
+  sparkPoints.visible = false;
   rootGroup.add(sparkPoints);
 
   const nodes: DavenportMotorModelNodes = {
@@ -481,60 +519,57 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
   };
 
   const dispose = () => {
-    for (const m of materialsToDispose) {
-      m.dispose();
-    }
-    for (const g of geometriesToDispose) {
-      g.dispose();
-    }
-    for (const t of texturesToDispose) {
-      t.dispose();
-    }
+    for (const g of geometriesToDispose) g.dispose();
+    for (const m of materialsToDispose) m.dispose();
+    for (const t of texturesToDispose) t.dispose();
   };
 
   return { rootGroup, nodes, materials, dispose };
 }
 
 /**
- * Updates Davenport motor armature rotation, commutator spark animation, and cutaway.
+ * Updates rotor rotation, spark particle burst dynamics, and coil electromagnetic field luminescence.
  */
 export function updateDavenportMotorKinematics(
   nodes: DavenportMotorModelNodes,
   materials: DavenportMotorMaterials,
   dt: number,
-  _timeSec: number,
-  shaftOmegaRadPerS: number,
-  showSparkParticles: boolean,
-  isCutaway: boolean,
+  omegaRadPerS: number,
+  sparkIntensity: number,
+  fieldLuminescenceOrShowSparks: boolean | number,
+  isCutaway?: boolean,
 ) {
-  // 1. Rotor Armature Rotation
-  nodes.rotorGroup.rotation.y += shaftOmegaRadPerS * dt;
+  // 1. Rotor Armature Angular Velocity
+  nodes.rotorGroup.rotation.y += omegaRadPerS * dt;
 
-  // 2. Commutator Spark Dynamics
-  if (showSparkParticles && shaftOmegaRadPerS > 0.5) {
-    nodes.sparkPoints.visible = true;
+  // 2. Commutator Contact Spark Particles
+  const isSparking = Math.abs(omegaRadPerS) > 0.5 && sparkIntensity > 0.05;
+  nodes.sparkPoints.visible = isSparking;
+
+  if (isSparking) {
     const pos = nodes.sparkPositions;
-    const orbit = gaMotorOrbit(nodes.sparkCount, 60);
-    const frame = gaMotorFrameIndex(nodes.rotorGroup.rotation.y, 1, 60);
-    const header = 2;
     for (let i = 0; i < nodes.sparkCount; i++) {
-      const src = header + (frame * nodes.sparkCount + i) * 3;
       const idx = i * 3;
-      const x = orbit[src] ?? 0;
-      const y = orbit[src + 1] ?? 0;
-      const z = orbit[src + 2] ?? 0;
-      pos[idx] = (x - 1) * 0.5;
-      pos[idx + 1] = 1.6 + z * 0.15;
-      pos[idx + 2] = y * 0.2;
+      const isLeft = i % 2 === 0;
+      pos[idx] = (isLeft ? -0.42 : 0.42) + (deterministicUnit(i, 0) - 0.5) * 0.2 * sparkIntensity;
+      pos[idx + 1] = 1.6 + (deterministicUnit(i, 1) - 0.5) * 0.3 * sparkIntensity;
+      pos[idx + 2] = (deterministicUnit(i, 2) - 0.5) * 0.2 * sparkIntensity;
     }
-    nodes.sparkPoints.geometry.attributes.position.needsUpdate = true;
-  } else {
-    nodes.sparkPoints.visible = false;
+    const attr = nodes.sparkPoints.geometry.getAttribute("position") as THREE.BufferAttribute;
+    if (attr) {
+      attr.needsUpdate = true;
+    }
+    materials.sparkMat.opacity = Math.min(1.0, sparkIntensity * 1.5);
   }
 
-  // 3. Cutaway Mode
-  materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
-  materials.mahogany.transparent = isCutaway;
-  materials.copperWire.opacity = isCutaway ? 0.45 : 1.0;
-  materials.copperWire.transparent = isCutaway;
+  // 3. Stator / Rotor Coil Flux Glow
+  const glow =
+    typeof fieldLuminescenceOrShowSparks === "number" ? fieldLuminescenceOrShowSparks : 0.5;
+  const glowHex = glow > 0.3 ? 0xf59e0b : 0xd97706;
+  materials.copperWire.color.setHex(glowHex);
+
+  // 4. Cutaway mode
+  const cutaway = Boolean(isCutaway);
+  materials.mahogany.opacity = cutaway ? 0.35 : 1.0;
+  materials.mahogany.transparent = cutaway;
 }

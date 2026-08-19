@@ -2,17 +2,18 @@
  * delavalSeparatorModel.ts
  *
  * Museum-Grade Procedural 3D Model for Gustaf de Laval's 1881 Continuous Centrifugal Cream Separator
- * (US Patent 247,804).
+ * (US Patent 247,804 - "Centrifugal Cream Separator").
  *
- * Reconstructs the authentic 19th-century Swedish dairy engineering landmark:
+ * Reconstructs the authentic 1881 Swedish dairy engineering landmark:
  * 1. Heavy tripod cast-iron pedestal with mounting feet, oil sump, and belt-driven speed-multiplier pulley.
- * 2. Flexible vertical steel spindle designed to rotate self-centered above its critical resonant speed.
+ * 2. Flexible vertical steel spindle designed to rotate self-centered above its critical resonant speed (Claim 1).
  * 3. High-speed forged-steel centrifuge bowl with conical upper bonnet, central raw milk feed tube, and
- *    internal vertical radial wing baffles preventing fluid slip.
- * 4. Dual peripheral skim-milk riser conduits and central cream weir discharge collar.
- * 5. Concentric tinned-brass collecting pans with angled discharge spouts for cream and skim milk.
- * 6. Overhead brass supply funnel with regulating float valve.
- * 7. Cutaway fluid layers: outer dense skim milk ($1035\\text{ kg/m}^3$) and inner light cream core ($920\\text{ kg/m}^3$).
+ *    internal vertical radial wing baffles preventing fluid slip (Claim 2).
+ * 4. Internal stack of 10 nested conical stainless steel separator discs with distribution holes.
+ * 5. Dual peripheral skim-milk riser conduits and central cream weir discharge collar.
+ * 6. Concentric tinned-brass collecting pans with angled discharge spouts for cream and skim milk.
+ * 7. Overhead brass supply funnel with regulating float valve.
+ * 8. Cutaway fluid layers: outer dense skim milk ($1035\text{ kg/m}^3$) and inner light cream core ($920\text{ kg/m}^3$).
  */
 
 import * as THREE from "three";
@@ -44,17 +45,97 @@ export interface DeLavalSeparatorModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Swedish Dark Cast-Iron Pedestal Texture
+ */
+function createCastIronTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Cast foundry micro-pitting
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const d = imgData.data;
+  for (let i = 0; i < 512 * 512; i++) {
+    const n = (deterministicUnit(i, 0) - 0.5) * 24;
+    d[i * 4 + 0] = Math.max(0, Math.min(255, d[i * 4 + 0] + n));
+    d[i * 4 + 1] = Math.max(0, Math.min(255, d[i * 4 + 1] + n));
+    d[i * 4 + 2] = Math.max(0, Math.min(255, d[i * 4 + 2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Tinned Brass Metal Texture
+ */
+function createTinnedBrassTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#d97706";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Fine circumferential spun lathe lines
+  ctx.strokeStyle = "rgba(251, 191, 36, 0.15)";
+  ctx.lineWidth = 1;
+  for (let y = 0; y < 512; y += 4) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(1, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildDeLavalSeparatorModel(): DeLavalSeparatorModel {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const castIronTex = createCastIronTexture();
+  if (castIronTex) texturesToDispose.push(castIronTex);
+
+  const tinnedBrassTex = createTinnedBrassTexture();
+  if (tinnedBrassTex) texturesToDispose.push(tinnedBrassTex);
+
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
+    ...(castIronTex ? { map: castIronTex } : {}),
     color: 0x1e293b,
-    roughness: 0.6,
-    metalness: 0.75,
+    roughness: 0.65,
+    metalness: 0.78,
   });
   materialsToDispose.push(castIron);
 
@@ -66,6 +147,7 @@ export function buildDeLavalSeparatorModel(): DeLavalSeparatorModel {
   materialsToDispose.push(polishedSteel);
 
   const tinnedBrass = new THREE.MeshStandardMaterial({
+    ...(tinnedBrassTex ? { map: tinnedBrassTex } : {}),
     color: 0xd97706,
     roughness: 0.25,
     metalness: 0.88,
@@ -202,6 +284,15 @@ export function buildDeLavalSeparatorModel(): DeLavalSeparatorModel {
     wing.position.set(Math.cos(wAngle) * 0.75, 0.1, Math.sin(wAngle) * 0.75);
     wing.rotation.y = -wAngle;
     bowlGroup.add(wing);
+  }
+
+  // 8 Conical Separator Discs Stack (Alpha-Laval Disc Stack)
+  for (let d = 0; d < 8; d++) {
+    const discGeo = new THREE.ConeGeometry(1.35 - d * 0.03, 0.35, 24, 1, true);
+    geometriesToDispose.push(discGeo);
+    const disc = new THREE.Mesh(discGeo, polishedSteel);
+    disc.position.y = -0.3 + d * 0.14;
+    bowlGroup.add(disc);
   }
 
   // 2 Skim Milk Peripheral Riser Tubes (leading to top discharge)

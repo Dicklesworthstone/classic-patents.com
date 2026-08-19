@@ -384,16 +384,18 @@ export function materialProbe(
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
     const wh = FrankenSimEngine.stepWestinghouseAirBrake({
-      trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
+      trainPipePressurePsi: params.trainPipePressure ?? 0,
+      reservoirPipePressurePsi: params.reservoirPipePressure ?? 90,
+      selectingCockState: params.selectingCockPosition === 1 ? "reversed" : "normal",
       carMassTonnes: params.carMass ?? 35,
     });
     return {
       part: calloutLabel,
-      material: "Triple valve + 10-inch foundation cylinder",
+      material: "Double pipe B/B¹ + 10-inch cylinder C",
       qty: "F_shoe",
       value: wh.shoeClampingForceKn.toString(),
       unit: "kN",
-      note: `${wh.valveState} at ${wh.brakeCylinderPressurePsi} psi cyl · ω ${wh.rollingOmegaRadPerS} rad/s.`,
+      note: `${wh.valveState} at ${wh.brakeCylinderPressurePsi} psi cyl · Receiver ${wh.receiverPressurePsi} psi.`,
     };
   }
   if (patentId.includes("lamarr") || patentId.includes("2292387")) {
@@ -1486,14 +1488,15 @@ export function fidelityField(
   }
   if (patentId.includes("westinghouse") || patentId.includes("124404")) {
     const wh = FrankenSimEngine.stepWestinghouseAirBrake({
-      trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
+      trainPipePressurePsi: params.trainPipePressure ?? 0,
+      reservoirPipePressurePsi: params.reservoirPipePressure ?? 90,
       carMassTonnes: params.carMass ?? 35,
     });
     return {
-      part: "Train-pipe charge vs 70 psi running",
-      model: wh.trainPipePressurePsi.toString(),
-      reference: "70",
-      residual: (wh.trainPipePressurePsi - 70).toString(),
+      part: "Reservoir-pipe charge vs 90 psi running",
+      model: wh.reservoirPipePressurePsi.toString(),
+      reference: "90",
+      residual: (wh.reservoirPipePressurePsi - 90).toString(),
       unit: "psi",
     };
   }

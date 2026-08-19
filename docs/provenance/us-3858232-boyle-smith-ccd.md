@@ -35,3 +35,24 @@
 ## Identity correction
 
 The prior `us-3923554-boyle-smith-ccd` route/data description named a different patent and title. The corrected served record is `us-3858232-boyle-smith-ccd`, title *Information Storage Devices*, inventors Willard Sterling Boyle and George Elwood Smith, filed November 9, 1971, and granted December 31, 1974. The prior PDF and its supporting text assets are deliberately retained untouched as unserved comparison material.
+
+## Source-edition hold: page-ledger mismatch
+
+An independent source check found that the current page-marked WIP ledger is
+not yet a trustworthy facsimile map. Its first seven markers replace the
+actual sheets with generic editorial descriptions; the real PDF instead has a
+bibliographic/abstract sheet with a reduced Fig. 2 on PDF p. 1, followed by
+eight printed drawing sheets on PDF pp. 2–9. In particular, PDF pp. 8 and 9
+are `SHEET 7 OF 8` (Figs. 11–13) and `SHEET 8 OF 8` (Figs. 14–16), while the
+WIP ledger incorrectly begins specification prose at its marker 8. The later
+ledger markers therefore cannot yet establish page-specific transcription
+parity. This is a source-integrity failure, not a formatting issue.
+
+The canonical record is deliberately detached from both the WIP
+`archivalEdition` and the WIP `-reviewed.txt` asset. Its visitor-facing
+editorial text is source-bounded and does not repeat the legacy draft's
+unverified performance figures, commercial history, reconstructed diagram, or
+patent-dispute narrative. Do not restore either binding until a manually
+checked ledger gives every PDF page its actual source content and a full set of
+page anchors, every source figure citation is explicit rather than parser-made,
+and a fresh independent review accepts the result.

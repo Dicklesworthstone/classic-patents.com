@@ -5,8 +5,14 @@ import type {
 } from "@/types/patent";
 
 /**
- * This is a direct, manually checked edition of all twelve sheets in the
- * pinned facsimile. It deliberately has no OCR import or text parsing step.
+ * This is a direct, manually checked transcription draft of the pinned twelve
+ * page packet. It deliberately has no OCR import or text parsing step.
+ *
+ * Publication is intentionally withheld: the packet combines a surviving
+ * drawing copy with later reconstructed sheets whose figure labels cannot yet
+ * be verified one-to-one against every figure citation in the description.
+ * Keep this draft, its ledger, and its existing crops for recovery research;
+ * do not rebind it until every citation has an evidence-backed source crop.
  */
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 

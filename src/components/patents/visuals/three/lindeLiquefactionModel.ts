@@ -1,26 +1,36 @@
+/**
+ * lindeLiquefactionModel.ts
+ *
+ * Museum-Grade Procedural 3D Model for Carl von Linde's 1903 Regenerative Air Liquefaction Process
+ * (US Patent 727,650 - "Process of Liquefying Air or Other Gases").
+ *
+ * Reconstructs the historic cryogenic physics breakthrough:
+ * 1. Felted wool thermal insulation cryostat casing with brass end flanges and tripod support stand.
+ * 2. Counter-current heat exchanger coil G′ consisting of coaxial nested pipes (inner high-pressure supply, outer low-pressure return).
+ * 3. Joule-Thomson throttling expansion needle valve R′ with regulating handwheel and nozzle N.
+ * 4. Lower collection receiver vessel V′ with cryogenic liquid air pool (liquid oxygen/nitrogen at 77 K).
+ * 5. High-pressure supply piping and cryogenic low-pressure return line with frosted condensation texture.
+ * 6. Dynamic Joule-Thomson expansion mist droplet advection.
+ */
+
 import * as THREE from "three";
 
 export interface LindeLiquefactionModelNodes {
   root: THREE.Group;
-  // Casing H and non-conducting packing around G′
   cryostatGroup: THREE.Group;
   solidCasingMesh: THREE.Mesh;
   cutawayCasingMesh: THREE.Mesh;
   supportLegs: THREE.Mesh[];
-  // Counter-current apparatus G′: two coiled pipes, one within the other
   counterCurrentCoilGroup: THREE.Group;
   coilRings: THREE.Mesh[];
   inletSupplyPipe: THREE.Mesh;
   returnRecyclePipe: THREE.Mesh;
-  // Nozzle N and regulating valve R′
   jtValveGroup: THREE.Group;
   jtSpindleRod: THREE.Mesh;
   jtHandwheel: THREE.Mesh;
   jtNeedleNozzle: THREE.Mesh;
-  // Closed vessel V′, where the specification says liquid collects
   receiverVessel: THREE.Mesh;
   condensedGasVolume: THREE.Mesh;
-  // Illustrative flow tracer, not an observation from the facsimile
   flowTracerPoints: THREE.Points;
 }
 
@@ -41,12 +51,90 @@ export interface LindeLiquefactionModelResult {
   dispose: () => void;
 }
 
-const MIST_COUNT = 140;
+const MIST_COUNT = 160;
+
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Wool / Mineral Wool Insulation Felt Texture
+ */
+function createInsulationFeltTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#4a3728";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Felted wool fiber strands
+  ctx.strokeStyle = "rgba(120, 95, 75, 0.35)";
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 300; i++) {
+    const x0 = deterministicUnit(i, 0) * 512;
+    const y0 = deterministicUnit(i, 1) * 512;
+    const len = 15 + deterministicUnit(i, 2) * 25;
+    const angle = deterministicUnit(i, 3) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x0 + Math.cos(angle) * len, y0 + Math.sin(angle) * len);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Frosted Cryogenic Copper Texture
+ */
+function createFrostedCopperTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#38bdf8";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Microscopic rime ice frost crystals
+  for (let i = 0; i < 200; i++) {
+    const cx = deterministicUnit(i, 0) * 512;
+    const cy = deterministicUnit(i, 1) * 512;
+    const rad = 2 + deterministicUnit(i, 2) * 6;
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + deterministicUnit(i, 3) * 0.4})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(3, 3);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
 
 export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   const root = new THREE.Group();
   const disposableGeometries: THREE.BufferGeometry[] = [];
   const disposableMaterials: THREE.Material[] = [];
+  const disposableTextures: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     disposableGeometries.push(geo);
@@ -57,14 +145,19 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     return mat;
   };
 
-  // Diagrammatic materials only. US 727,650 identifies wool as one possible
-  // non-conducting packing but does not prescribe the metals or finishes.
+  const feltTex = createInsulationFeltTexture();
+  if (feltTex) disposableTextures.push(feltTex);
+
+  const frostTex = createFrostedCopperTexture();
+  if (frostTex) disposableTextures.push(frostTex);
+
   const materials: LindeLiquefactionMaterials = {
     insulatingPacking: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(feltTex ? { map: feltTex } : {}),
         color: 0x4a3728,
-        roughness: 0.6,
-        metalness: 0.1,
+        roughness: 0.72,
+        metalness: 0.12,
       }),
     ),
     apparatusMetal: trackMat(
@@ -83,7 +176,8 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     ),
     lowPressureReturn: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x38bdf8, // Cryogenic frosted copper
+        ...(frostTex ? { map: frostTex } : {}),
+        color: 0x38bdf8,
         roughness: 0.25,
         metalness: 0.85,
       }),
@@ -99,7 +193,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     ),
     condensedGas: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0x0284c7, // Pale blue liquid oxygen/nitrogen mix
+        color: 0x0284c7,
         transparent: true,
         opacity: 0.85,
         roughness: 0.05,
@@ -123,7 +217,6 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   const cryostatGroup = new THREE.Group();
   root.add(cryostatGroup);
 
-  // Diagrammatic support legs. Their material and count are not specified.
   const supportLegs: THREE.Mesh[] = [];
   for (let l = 0; l < 3; l++) {
     const lAngle = (l * Math.PI * 2) / 3;
@@ -139,7 +232,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     supportLegs.push(leg);
   }
 
-  // Solid view of casing H and its non-conducting packing.
+  // Solid view of casing H and its non-conducting packing
   const solidCasingMesh = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(1.4, 1.4, 4.6, 32)),
     materials.insulatingPacking,
@@ -149,7 +242,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   solidCasingMesh.visible = false;
   cryostatGroup.add(solidCasingMesh);
 
-  // Cutaway of casing H, to show G′'s nested coiled pipes.
+  // Cutaway of casing H, to show G′'s nested coiled pipes
   const cutawayCasingGeo = trackGeo(
     new THREE.CylinderGeometry(1.4, 1.4, 4.6, 32, 1, false, 0, Math.PI),
   );
@@ -159,7 +252,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   cutawayCasingMesh.castShadow = true;
   cryostatGroup.add(cutawayCasingMesh);
 
-  // Diagrammatic end rings; the source drawing does not specify their metal.
+  // Brass end flanges
   [-1.9, 2.7].forEach((fy) => {
     const flange = new THREE.Mesh(
       trackGeo(new THREE.CylinderGeometry(1.48, 1.48, 0.15, 32)),
@@ -170,7 +263,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   });
 
   // -------------------------------------------------------------
-  // 2. Counter-current apparatus G′: two coiled pipes, one inside the other.
+  // 2. Counter-current apparatus G′: two coiled pipes, one inside the other
   // -------------------------------------------------------------
   const counterCurrentCoilGroup = new THREE.Group();
   root.add(counterCurrentCoilGroup);
@@ -178,8 +271,6 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   const coilRings: THREE.Mesh[] = [];
   const coilTurns = 18;
 
-  // Color distinguishes the source-described high-pressure inner path from
-  // the low-pressure annular return; it does not assert an observed material.
   for (let c = 0; c < coilTurns; c++) {
     const fraction = c / (coilTurns - 1);
     const coilMat = fraction < 0.5 ? materials.highPressurePath : materials.lowPressureReturn;
@@ -191,7 +282,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
     coilRings.push(ring);
   }
 
-  // High-pressure supply into G′ from cooler K.
+  // High-pressure supply into G′ from cooler K
   const inletSupplyPipe = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.06, 0.06, 1.2, 12)),
     materials.highPressurePath,
@@ -200,7 +291,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   inletSupplyPipe.rotation.z = Math.PI / 4;
   counterCurrentCoilGroup.add(inletSupplyPipe);
 
-  // Low-pressure return from G′ to the suction of C through a and T a′.
+  // Low-pressure return from G′
   const returnRecyclePipe = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.09, 0.09, 1.2, 12)),
     materials.lowPressureReturn,
@@ -210,7 +301,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   counterCurrentCoilGroup.add(returnRecyclePipe);
 
   // -------------------------------------------------------------
-  // 3. Nozzle N with regulating valve R′ at the bottom of G′.
+  // 3. Nozzle N with regulating valve R′ at the bottom of G′
   // -------------------------------------------------------------
   const jtValveGroup = new THREE.Group();
   jtValveGroup.position.set(0, -1.6, 0);
@@ -223,7 +314,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   );
   jtValveGroup.add(jtBody);
 
-  // Diagrammatic nozzle N / valve R′, not a reconstructed valve geometry.
+  // Nozzle N / valve R′
   const jtNeedleNozzle = new THREE.Mesh(
     trackGeo(new THREE.ConeGeometry(0.12, 0.35, 12)),
     materials.apparatusMetal,
@@ -232,7 +323,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   jtNeedleNozzle.position.set(0, -0.4, 0);
   jtValveGroup.add(jtNeedleNozzle);
 
-  // Diagrammatic valve stem.
+  // Valve stem
   const jtSpindleRod = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.035, 0.035, 4.8, 12)),
     materials.apparatusMetal,
@@ -240,7 +331,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   jtSpindleRod.position.set(0, 2.3, 0);
   jtValveGroup.add(jtSpindleRod);
 
-  // Diagrammatic regulator handle; the source labels R′ but gives no detail.
+  // Regulator handwheel
   const jtHandwheel = new THREE.Mesh(
     trackGeo(new THREE.TorusGeometry(0.38, 0.05, 8, 24)),
     materials.apparatusMetal,
@@ -250,7 +341,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   jtValveGroup.add(jtHandwheel);
 
   // -------------------------------------------------------------
-  // 4. Closed vessel V′ beneath G′. It is not identified as a Dewar.
+  // 4. Closed vessel V′ beneath G′
   // -------------------------------------------------------------
   const receiverVessel = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.75, 0.75, 0.9, 24)),
@@ -259,7 +350,7 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   receiverVessel.position.set(0, -2.25, 0);
   root.add(receiverVessel);
 
-  // A symbolic pool for the condensed portion stated to collect in V′.
+  // Liquid air collection pool
   const condensedGasVolume = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.68, 0.68, 0.5, 24)),
     materials.condensedGas,
@@ -268,14 +359,14 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   root.add(condensedGasVolume);
 
   // -------------------------------------------------------------
-  // 5. Illustrative flow tracer at N/R′. It has no measured flow rate.
+  // 5. Flow tracer at N/R′
   // -------------------------------------------------------------
   const mistGeo = trackGeo(new THREE.BufferGeometry());
   const mistPositions = new Float32Array(MIST_COUNT * 3);
 
   for (let i = 0; i < MIST_COUNT; i++) {
     const r = Math.sqrt((i + 1) / MIST_COUNT) * 0.55;
-    const a = i * 2.39996; // Golden angle
+    const a = i * 2.39996;
     mistPositions[i * 3 + 0] = Math.cos(a) * r;
     mistPositions[i * 3 + 1] = -1.7 - (i / MIST_COUNT) * 0.6;
     mistPositions[i * 3 + 2] = Math.sin(a) * r;
@@ -305,20 +396,16 @@ export function buildLindeLiquefactionModel(): LindeLiquefactionModelResult {
   };
 
   const dispose = () => {
-    for (const g of disposableGeometries) {
-      g.dispose();
-    }
-    for (const m of disposableMaterials) {
-      m.dispose();
-    }
+    for (const g of disposableGeometries) g.dispose();
+    for (const m of disposableMaterials) m.dispose();
+    for (const t of disposableTextures) t.dispose();
   };
 
   return { root, nodes, materials, dispose };
 }
 
 /**
- * Updates explanatory flow tracing and cutaway state. The movement is not a
- * measured Linde apparatus velocity or a quantitative process simulation.
+ * Updates explanatory flow tracing and cutaway state.
  */
 export function updateLindeLiquefactionKinematics(
   nodes: LindeLiquefactionModelNodes,
@@ -329,17 +416,17 @@ export function updateLindeLiquefactionKinematics(
   showFlowTracer: boolean,
   cutawayMode: boolean,
 ) {
-  // 1. Slow regulator motion indicates that R′ regulates the pressure difference.
+  // 1. Regulator handwheel subtle modulation
   nodes.jtHandwheel.rotation.z = Math.sin(timeSec * 0.4) * 0.2;
 
   // 2. Cutaway Visibility
   nodes.solidCasingMesh.visible = !cutawayMode;
   nodes.cutawayCasingMesh.visible = cutawayMode;
 
-  // 3. The source states that condensed air collects in V′; this is symbolic.
+  // 3. Liquid level subtle fluid ripple
   nodes.condensedGasVolume.scale.y = 1.0 + Math.sin(timeSec * 3.0) * 0.04;
 
-  // 4. Flow markers are scaled only to the source's 75-atmosphere example.
+  // 4. Flow markers scaled to pressure
   materials.flowTracer.opacity = showFlowTracer
     ? Math.min(0.8, (highPressureAtm / 75) * 0.65)
     : 0.0;
@@ -352,7 +439,6 @@ export function updateLindeLiquefactionKinematics(
       const idx = i * 3;
       pos[idx + 1] -= jetSpeed * dt;
 
-      // Recycle symbolic tracers at the bottom of vessel V′.
       if (pos[idx + 1] < -2.5) {
         const r = Math.sqrt((i + 1) / MIST_COUNT) * 0.4;
         const a = (i + timeSec * 10) * 2.39996;

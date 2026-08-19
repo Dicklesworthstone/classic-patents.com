@@ -26,6 +26,7 @@ import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
@@ -51,7 +52,6 @@ import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
-import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 
 export type ArchivalParallelReading = readonly string[];
@@ -59,7 +59,6 @@ export type ArchivalParallelReading = readonly string[];
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, readonly string[]>>>
 > = {
-  "us-x72-whitney-cotton-gin": whitneyCottonGinParallelReadings,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
@@ -89,6 +88,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
+  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
   "us-586193-marconi-radio": marconiRadioParallelReadings,

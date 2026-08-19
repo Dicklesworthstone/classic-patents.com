@@ -1,10 +1,14 @@
 import type { Patent } from "@/types/patent";
 import {
   boyleSmithCcdArchivalEdition,
+  boyleSmithCcdClaimText,
   boyleSmithCcdClaimTexts,
 } from "../editions/boyleSmithCcdEdition";
 
-export const boyleSmithCcdPatent: Patent = {
+// Preserved research draft. It contains modern-device claims, numerical
+// performance assertions, a reconstructed drawing, and later-history material
+// not established by US 3,858,232 itself. It is deliberately not exported.
+const _legacyBoyleSmithCcdPatentDraft: Patent = {
   id: "us-3858232-boyle-smith-ccd",
   patentNumber: "US 3,858,232",
   title: "Information Storage Devices",
@@ -625,5 +629,137 @@ export const boyleSmithCcdPatent: Patent = {
     independentClaims: 7,
     patentWarYears: "1969–2009",
     impactScore: 100,
+  },
+};
+
+/**
+ * Public, source-bounded record while the full manual source edition remains
+ * withheld. The detailed WIP stays available to editors above, but visitors
+ * must not receive its unsupported modern performance, history, or drawing
+ * reconstruction as though it came from this 1974 grant.
+ */
+export const boyleSmithCcdPatent: Patent = {
+  id: "us-3858232-boyle-smith-ccd",
+  patentNumber: "US 3,858,232",
+  title: "Information Storage Devices",
+  shortTitle: "Charge-Coupled Information Storage",
+  subtitle: "Sequential transfer of semiconductor charge through induced potential wells",
+  inventors: ["Willard S. Boyle", "George E. Smith"],
+  inventorLocation: "Murray Hill, New Jersey",
+  grantDate: "1974-12-31",
+  filingDate: "1971-11-09",
+  era: "Semiconductor Revolution (1950–1975)",
+  category: "computing",
+  categoryLabel: "Digital Imaging & Optoelectronics",
+  summary:
+    "US 3,858,232 describes information-storage devices in which charge carriers occupy induced potential-energy minima in a semiconductor and are translated by sequential electrode bias. The complete, hand-authored source face remains withheld while its page-by-page ledger is corrected.",
+  heroQuote:
+    "The specification describes devices based on the recognition that minority charge carriers within a semiconductor can be used to represent information.",
+  originalPdfUrl: "/patents/pdfs/us-3858232-boyle-smith-ccd.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US3858232A/en",
+  usptoClassification: "US 357/24, 357/23, 307/304; Int. Cl. H01L 11/14.",
+  originalText:
+    "The source-corrected record points to the reviewed US 3,858,232 facsimile. The former US 3,923,554 text remains preserved as an unserved comparison asset and is not a transcription of this record.",
+  plainEnglishExplanation: {
+    overview:
+      "The grant treats information as a packet of charge held at a selected place in a semiconductor. An electrode pattern creates a local potential minimum; a later electrode sequence establishes the next minimum before the earlier one disappears, so the packet can move through the medium.",
+    coreMechanism:
+      "The specification describes minority-charge packets, surface and buried storage regions, input and detection stages, multichannel registers, image read-in, and acoustic-wave alternatives. Its recurring condition is a controlled sequence of potential wells that stores, translates, and detects charge without turning the historical description into a claim about a later camera or sensor product.",
+    mechanicalBreakdown: [
+      {
+        title: "Induced potential wells",
+        summary:
+          "Electrode bias defines locations at which charge carriers can be stored in a semiconductor.",
+        technicalDetails:
+          "The source calls these locations potential wells and explains that their position and depth can be changed by the electric-field pattern at the semiconductor surface.",
+        archaicTerm: "potential wells",
+        modernEquivalent: "electrostatically defined charge-storage sites",
+      },
+      {
+        title: "Sequential charge transfer",
+        summary:
+          "The next storage site is established in sequence so stored charge can move along the intended path.",
+        technicalDetails:
+          "The specification describes two- and three-phase electrode arrangements, overlapping wells, and different pulse shapes as alternatives for translating charge packets.",
+        archaicTerm: "translating function",
+        modernEquivalent: "clocked charge transfer",
+      },
+      {
+        title: "Input and detection",
+        summary:
+          "The document gives several ways to introduce charge and to detect its presence at a terminal region.",
+        technicalDetails:
+          "Its examples include p-n-junction and metal-insulator-semiconductor input or detection structures, a capacitive bridge, and a regeneration path; they are described as alternative embodiments.",
+        archaicTerm: "charge detecting devices",
+        modernEquivalent: "electrical charge readout structures",
+      },
+      {
+        title: "Alternative embodiments",
+        summary:
+          "The grant also describes buried storage, multichannel transfer, image read-in, and traveling-field arrangements.",
+        technicalDetails:
+          "These passages extend the same storage-and-transfer idea to different structures, including a piezoelectric layer whose traveling acoustic field can sequentially bias charge-storage sites.",
+        archaicTerm: "charge translating device",
+        modernEquivalent: "semiconductor charge-transfer structure",
+      },
+    ],
+    scientificPrinciples: [
+      {
+        principle: "Electrostatic charge storage",
+        explanation:
+          "A spatial variation in electric potential changes the energy landscape experienced by charge carriers. The patent uses that variation to create a selected storage location in the semiconductor.",
+      },
+      {
+        principle: "Overlapped transfer sequence",
+        explanation:
+          "The source explains that adjacent potential wells must overlap, or nearly overlap, so charge can diffuse or be carried into the receiving site before the preceding well collapses.",
+      },
+      {
+        principle: "Semiconductor carrier transport",
+        explanation:
+          "The examples distinguish storage media, carrier mobility, depletion regions, and surface or buried arrangements because those properties determine whether a charge packet can be held and moved.",
+      },
+    ],
+    whyItMattersToday:
+      "The grant is an early primary record for charge-coupled information storage. This catalogue entry intentionally does not claim particular later products, performance figures, or commercial outcomes until those statements receive their own cited historical review.",
+  },
+  claims: _legacyBoyleSmithCcdPatentDraft.claims.map(
+    ({ legalSignificance: _legacySignificance, ...claim }) => ({
+      ...claim,
+      originalText: boyleSmithCcdClaimText(claim.number),
+    }),
+  ),
+  drawings: [],
+  historicalContext: {
+    problemStatement:
+      "The specification contrasts its approach with magnetic storage, scanned video-camera targets, delay lines, and logic-device arrays, then proposes charge storage and translation within a semiconductor.",
+    priorArtLimitations: [
+      "Magnetic storage represents information through magnetic domains.",
+      "A scanned video-camera target stores an optical image as an electrostatic pattern.",
+      "Delay lines store information dynamically in traveling acoustic or electromechanical waves.",
+    ],
+    breakthroughInsight:
+      "The documented move is to create, select, change, and retrieve a spatially defined semiconductor storage site by electric fields, then translate the stored charge along a selected path.",
+    patentWars: [],
+    civilizationalImpact:
+      "The pinned grant does not itself establish later commercial adoption or a patent dispute. Those topics remain deliberately unasserted pending separately sourced editorial work.",
+    funFact:
+      "The 1974 document presents storage, serial transfer, image read-in, multichannel registers, and acoustic-wave arrangements as related uses of one charge-translation concept.",
+    aftermath:
+      "The complete original text remains unavailable until the corrected ledger and explicit source references pass independent review.",
+    sideNotes: [],
+  },
+  tags: [
+    "Willard Sterling Boyle",
+    "George Elwood Smith",
+    "Charge-coupled device",
+    "Information storage",
+    "Potential wells",
+    "Charge transfer",
+    "Bell Labs",
+  ],
+  stats: {
+    totalClaims: 32,
+    independentClaims: 7,
   },
 };
