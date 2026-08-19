@@ -170,7 +170,23 @@ export function stepHoweSewingMachine(
     schematicFeedY: 200,
     schematicFeedW: 40,
     schematicFeedH: 12,
+    stitchXs: [100, 140, 180, 220],
+    stitchLen: 40,
+    stitchUpperY: 150,
+    stitchLowerY: 168,
   };
+}
+
+/** Completed lockstitch seat on the 2D face. Shared by 2D. */
+export function howeStitch(
+  index: number,
+  xs = [100, 140, 180, 220],
+  len = 40,
+  upperY = 150,
+  lowerY = 168,
+) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i], x2: xs[i] + len, upperY, lowerY };
 }
 
 export function stepHoweLockstitch(crankDeg: number): {

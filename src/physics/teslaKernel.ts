@@ -242,6 +242,19 @@ export function teslaCoilSiUnits(
     schematicSparkX1: 240,
     schematicSparkY: 245,
     schematicSparkR: 5,
+    schematicSparkDx: 5,
+    schematicBaseX: 70,
+    schematicBaseY: 230,
+    schematicBaseW: 260,
+    schematicBaseH: 18,
+    schematicPostX0: 100,
+    schematicPostX1: 300,
+    schematicPostY0: 230,
+    schematicPostY1: 170,
+    schematicBellD: "M 120 170 C 120 120 160 80 200 80 C 240 80 280 120 280 170 Z",
+    schematicSecondaryX: 200,
+    schematicSecondaryY0: 88,
+    schematicSecondaryY1: 170,
   };
 }
 

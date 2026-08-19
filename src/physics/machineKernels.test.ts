@@ -4,6 +4,7 @@ import {
   ccdPacketGateIndex,
   ccdSchematicGateX,
   ccdWellSvgDepth,
+  howeStitch,
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
   mergenthalerSchematicChuteX,
@@ -58,6 +59,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(machine.schematicNeedleX).toBe(220);
     expect(machine.schematicBedW).toBe(260);
     expect(machine.schematicShuttleArmDx).toBe(22);
+    expect(machine.stitchLen).toBe(40);
+    expect(howeStitch(0).x2).toBe(140);
 
     // Needle Top Dead Center (crankDeg = 90)
     const atTdc = stepHoweLockstitch(90);
@@ -96,6 +99,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(bar.isActive).toBe(true);
     expect(bar.xEnd).toBe(cycle.typebarHubX);
     expect(cycle.schematicTypebarCount).toBe(14);
+    expect(cycle.schematicBasketR).toBe(65);
+    expect(cycle.schematicPlatenW).toBe(140);
     expect(sholesSchematicTypebar(0).deg).toBe(20);
     expect(sholesSchematicTypebar(0).x).toBeCloseTo(256.38, 2);
     expect(sholesSchematicTypebar(13).deg).toBe(345);

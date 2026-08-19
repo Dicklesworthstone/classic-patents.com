@@ -368,6 +368,24 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.275 De Laval schematicBowl / disc X / spindle / cream-skim. Schematic no longer converts leftover 140,80 bowl or 180/200/220 discs privately.
 - [x] P5.276 Thomson schematicBar / core / weld line / upset. Schematic no longer converts leftover 90–310 bar or 170×160 core privately.
 - [x] P5.277 Parsons schematicRotor / blade Y / casing / inlet. Schematic no longer converts leftover stepped-rotor points or 85–195 blades privately.
+- [x] P5.278 Spencer schematicOven / anodeR / cavityDotR / waveguide / load. Schematic no longer converts leftover 50×55 oven or r=42/7 privately.
+- [x] P5.279 Goodyear goodyearSchematicLink. Schematic no longer converts leftover 88–315 S–S links privately.
+- [x] P5.280 Lamarr schematicBox / staff X / hop W-H. Schematic no longer converts leftover 50×60 300×160 box or 22×11 hops privately.
+- [x] P5.281 Marconi schematicMastY / aerial / sparkDx / earth. Schematic no longer converts leftover 50–200 mast or +10 spark privately.
+- [x] P5.282 Whitney schematicHopper / grate / sawR / brushR. Schematic no longer converts leftover hopper polygon or r=48/36 privately.
+- [x] P5.283 McCormick schematicBull / sickle span / platform / arm pad. Schematic no longer converts leftover 100,180 r=45 bull wheel privately.
+- [x] P5.284 Ericsson schematicStern / shaft / helices. Schematic no longer converts leftover 60,80 stern or 140–340 shaft privately.
+- [x] P5.285 Corliss schematicCylinder / linkage. Schematic no longer converts leftover 70×60 260×180 cylinder or 108/292 links privately.
+- [x] P5.286 Gatling schematicBarrel X / breech / cam / hopper / crank. Schematic no longer converts leftover 180–350 barrels or 70×105 breech privately.
+- [x] P5.287 Nobel schematicCartridge / grainR / cap / fuse. Schematic no longer converts leftover 70×110 cartridge or r=4 grains privately.
+- [x] P5.288 Sholes schematicBasketR / hubR / platen. Schematic no longer converts leftover r=65 basket or 130×60 platen privately.
+- [x] P5.289 Glidden schematicWire / spur rx-ry / barb. Schematic no longer converts leftover twin-wire paths or ±12 barbs privately.
+- [x] P5.290 Wright remaining Fig. 4 raster / wings / struts / canard / rudder / cradle. Schematic no longer converts leftover 24×28 raster or 40/360 wings privately.
+- [x] P5.291 Tesla coil schematicBase / posts / bell / secondary / sparkDx. Schematic no longer converts leftover 70×230 base or +5 spark privately.
+- [x] P5.292 Farnsworth schematicEnvelope / collector W-H / deflector W-H / label Δ. Schematic no longer converts leftover 55×95 290×110 envelope privately.
+- [x] P5.293 Default schematic named seats. Generic fallback no longer converts leftover 200,150 r=140/70 privately.
+- [x] P5.294 Goodyear goodyearChainPost / chainPostXs. 2D no longer converts leftover 100/180/260/340 sulfur posts privately.
+- [x] P5.295 Hyatt camphorDx/Dy / meltLink / polymer melt-solid R. 2D no longer converts leftover +12/−6 or +25/+10 privately.
 
 ## Explicitly out of scope
 

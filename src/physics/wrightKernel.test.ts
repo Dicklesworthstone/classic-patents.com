@@ -75,6 +75,9 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
     expect(pose.wingWarpDeg).toBe(10);
     expect(pose.warpPx).toBeGreaterThan(0);
     expect(pose.rasterSkew).toBeGreaterThan(0);
+    expect(pose.schematicRasterW).toBe(352);
+    expect(pose.schematicCanardW).toBe(120);
+    expect(pose.schematicStrutXs).toEqual([80, 160, 240, 320]);
     expect(pose.adverse).toBe(false);
 
     const adversePose = wrightSchematicPose({ wingWarp: 10, rudder: 0, coupled: 0 });

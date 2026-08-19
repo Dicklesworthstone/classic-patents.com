@@ -18,7 +18,9 @@ import {
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
   goddardSchematicStack,
+  goodyearChainPost,
   goodyearSchematicCrosslink,
+  goodyearSchematicLink,
   goodyearSchematicStrand,
   grammeSchematicBrush,
   grammeSchematicJunction,
@@ -28,6 +30,7 @@ import {
   hyattPolymerSvg,
   hyattSchematicMold,
   hyattSchematicRam,
+  kevlarChainBond,
   kevlarSchematicBond,
   kevlarSchematicLattice,
   lincolnSchematicChamber,
@@ -44,6 +47,7 @@ import {
   nobelSchematicKieselguhr,
   noyceSchematicContactX,
   noyceSchematicJunction,
+  parsonsStageHeight,
   pasteurMicrobeSvg,
   pasteurSchematicBubbleX,
   pasteurSchematicYeast,
@@ -174,6 +178,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.stageSvgPitch).toBe(16);
     expect(res.schematicStageXs).toEqual([100, 120, 140, 170, 190, 210, 230, 260, 280, 300]);
     expect(res.schematicBladeY0).toBe(85);
+    expect(parsonsStageHeight(200, res.stageSplitX0, res.stageSplitX1)).toBe(30);
+    expect(parsonsStageHeight(300, res.stageSplitX0, res.stageSplitX1)).toBe(45);
     expect(res.schematicInletX1).toBe(40);
   });
 
@@ -189,6 +195,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.bladePitchDeg).toBe(60);
     expect(res.schematicForwardRy).toBe(50);
     expect(res.schematicAftRy).toBe(46);
+    expect(res.schematicShaftY).toBe(150);
+    expect(res.schematicSternD).toContain("60 80");
     expect(res.shroudSvgRx).toBe(14);
     expect(res.forwardShroudSvgRy).toBe(60);
     expect(res.aftHubSvgR).toBe(8);
@@ -214,6 +222,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(nobelKieselguhrSvg(0).cx).toBe(200);
     expect(nobelKieselguhrSvg(8).cy).toBe(167);
     expect(res.schematicKieselguhrCols).toBe(7);
+    expect(res.schematicCartridgeW).toBe(220);
+    expect(res.schematicGrainR).toBe(4);
     expect(nobelSchematicKieselguhr(0, 0).cx).toBe(90);
     expect(nobelSchematicKieselguhr(1, 1).cy).toBe(150);
   });
@@ -230,6 +240,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.sawToothCount).toBe(16);
     expect(res.bristleCount).toBe(24);
     expect(res.schematicSawToothCount).toBe(12);
+    expect(res.schematicSawR).toBe(48);
+    expect(res.schematicHopperPoints).toContain("60,40");
     const saw0 = whitneySchematicRay(
       0,
       res.schematicSawCx,
@@ -258,6 +270,10 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.reelArmCount).toBe(4);
     expect(res.reelArmSvgLen).toBe(95);
     expect(res.schematicReelR).toBe(50);
+    expect(res.schematicBullR).toBe(45);
+    expect(res.pitmanCutterPad).toBe(50);
+    expect(res.guardTipDx).toBe(12);
+    expect(res.schematicSickleX1).toBe(160);
     expect(mccormickSchematicReelArm(0).x).toBe(260);
     expect(mccormickSchematicReelArm(90).y).toBe(150);
     expect(res.schematicSickleCount).toBe(8);
@@ -283,6 +299,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.indicatedHp).toBeGreaterThan(0);
     expect(res.expansionRatio).toBe(4);
     expect(res.schematicValveR).toBe(16);
+    expect(res.schematicCylinderW).toBe(260);
+    expect(res.schematicLinkInnerX).toBe(108);
     expect(corlissSchematicValve(0).cx).toBe(100);
     expect(corlissSchematicValve(3).cy).toBe(215);
   });
@@ -292,6 +310,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.roundsPerMin).toBe(360);
     expect(res.muzzleEnergyJoules).toBe(1850);
     expect(res.schematicBarrelCount).toBe(6);
+    expect(res.schematicBarrelX1).toBe(180);
+    expect(res.schematicBreechW).toBe(110);
     expect(gatlingSchematicBarrelY(0)).toBe(150);
     expect(gatlingSchematicBarrelY(90)).toBe(178);
   });
@@ -303,6 +323,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.polymerCount).toBe(16);
     expect(hyattPolymerSvg(0).xPos).toBe(220);
     expect(hyattPolymerSvg(4).yPos).toBe(175);
+    expect(res.camphorDx).toBe(12);
+    expect(res.polymerMeltR).toBe(8);
     expect(hyattSchematicRam().x).toBe(40);
     expect(hyattSchematicMold().x).toBe(295);
     expect(goddardSchematicStack().schematicNoseCx).toBe(200);
@@ -334,6 +356,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.tensileStrengthLbs).toBe(950);
     expect(res.isLocked).toBe(true);
     expect(res.schematicSpurCount).toBe(3);
+    expect(res.schematicSpurRx).toBe(8);
+    expect(res.schematicBarbDx).toBe(12);
     expect(gliddenSchematicSpurX(0)).toBe(110);
     expect(gliddenSchematicSpurX(2)).toBe(290);
   });
@@ -345,6 +369,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(phonographAxialTravelMm(60, 2)).toBeGreaterThan(0);
     expect(res.schematicGrooveCount).toBe(8);
     expect(res.schematicMandrelW).toBe(180);
+    expect(res.leadScrewThreadDx).toBe(6);
     expect(res.schematicDiaphragmR).toBe(16);
     expect(edisonSchematicGrooveX(0)).toBe(120);
     expect(edisonSchematicGrooveX(7)).toBe(260);
@@ -490,6 +515,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.popcornKernelCount).toBe(12);
     expect(spencerPopcornSvg(0, false, res.popcornKernelCount).px).toBeCloseTo(8, 0);
     expect(res.schematicCavityCount).toBe(8);
+    expect(res.schematicAnodeR).toBe(42);
+    expect(res.schematicOvenW).toBe(300);
     expect(spencerSchematicCavity(0).cx).toBe(136);
     expect(spencerSchematicCavity(2).cy).toBe(176);
   });
@@ -500,6 +527,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicLatticeRows).toBe(5);
     expect(res.schematicNodeR).toBe(5);
     expect(kevlarSchematicBond(1).x).toBe(200);
+    expect(kevlarChainBond(0).x).toBe(80);
+    expect(res.chainBondH).toBe(30);
     expect(kevlarSchematicLattice(0, 1).cx).toBe(120);
     expect(res.tensileStrengthGpa).toBeGreaterThan(2);
   });
@@ -525,6 +554,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.resonantFreqKhz).toBeGreaterThan(0);
     expect(marconiMastHeightFromHz(1000000)).toBeGreaterThan(0);
     expect(res.schematicGapR).toBe(10);
+    expect(res.schematicMastY0).toBe(50);
+    expect(res.schematicEarthW).toBe(80);
     expect(res.schematicMastX).toBe(120);
   });
 
@@ -544,6 +575,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.chainSagPx).toBe(25);
     expect(res.chainSagBezierScale).toBe(1.5);
     expect(res.schematicStrandCount).toBe(4);
+    expect(res.schematicLinkCount).toBe(3);
+    expect(goodyearSchematicLink(0).x1).toBe(88);
+    expect(goodyearChainPost(1).x).toBe(180);
     expect(goodyearSchematicStrand(0).x).toBe(70);
     expect(goodyearSchematicCrosslink(0).cx).toBe(122);
   });

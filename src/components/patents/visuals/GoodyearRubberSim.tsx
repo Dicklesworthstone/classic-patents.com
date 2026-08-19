@@ -1,7 +1,7 @@
 "use client";
 
 import { Layers } from "lucide-react";
-import { stepGoodyearRubber } from "@/physics/catalogKernels";
+import { goodyearChainPost, stepGoodyearRubber } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function GoodyearRubberSim() {
@@ -80,15 +80,25 @@ export function GoodyearRubberSim() {
                   {/* Sulfur Disulfide Cross-Links between chains */}
                   {!isRaw && idx < 3 && (
                     <g stroke="#eab308" strokeWidth="2.5">
-                      <line x1="100" y1={yBase} x2="100" y2={yBase + 25} />
-                      <line x1="180" y1={yBase} x2="180" y2={yBase + 25} />
-                      <line x1="260" y1={yBase} x2="260" y2={yBase + 25} />
-                      <line x1="340" y1={yBase} x2="340" y2={yBase + 25} />
-                      {/* Sulfur Atoms */}
-                      <circle cx="100" cy={yBase + 12} r="4" fill="#ca8a04" />
-                      <circle cx="180" cy={yBase + 12} r="4" fill="#ca8a04" />
-                      <circle cx="260" cy={yBase + 12} r="4" fill="#ca8a04" />
-                      <circle cx="340" cy={yBase + 12} r="4" fill="#ca8a04" />
+                      {rubber.chainPostXs.map((_, i) => {
+                        const post = goodyearChainPost(i, rubber.chainPostXs);
+                        return (
+                          <g key={post.x}>
+                            <line
+                              x1={post.x}
+                              y1={yBase}
+                              x2={post.x}
+                              y2={yBase + rubber.chainPostH}
+                            />
+                            <circle
+                              cx={post.x}
+                              cy={yBase + rubber.chainAtomDy}
+                              r={rubber.chainAtomR}
+                              fill="#ca8a04"
+                            />
+                          </g>
+                        );
+                      })}
                     </g>
                   )}
                 </g>

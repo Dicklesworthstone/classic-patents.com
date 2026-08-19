@@ -66,6 +66,8 @@ describe("US 1,773,980 Philo T. Farnsworth Television System visual & electron o
     expect(result.relativisticPct).toBeCloseTo(result.relativisticBeta * 100, 1);
     expect(result.acceleratingVoltageVolts).toBe(1500);
     expect(result.schematicCathodeR).toBe(28);
+    expect(result.schematicEnvelopeW).toBe(290);
+    expect(result.schematicDeflectorW).toBe(70);
     expect(result.schematicCollectorX).toBe(300);
   });
 

@@ -226,6 +226,14 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     stageRingSvgCount: 22,
     stageSvgOriginX: 135,
     stageSvgPitch: 16,
+    bladeMidY: 170,
+    bladeGap: 10,
+    bladeLean: 4,
+    stageHeightNear: 30,
+    stageHeightMid: 45,
+    stageHeightFar: 65,
+    stageSplitX0: 240,
+    stageSplitX1: 380,
     schematicStageXs: [100, 120, 140, 170, 190, 210, 230, 260, 280, 300],
     schematicRotorPoints:
       "80,120 150,120 150,110 240,110 240,95 320,95 320,185 240,185 240,170 150,170 150,160 80,160",
@@ -241,6 +249,18 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     schematicInletX2: 75,
     schematicInletY: 140,
   };
+}
+
+/** Rotor/stator blade height on the 2D expansion face. Shared by 2D. */
+export function parsonsStageHeight(
+  xPos: number,
+  splitX0 = 240,
+  splitX1 = 380,
+  near = 30,
+  mid = 45,
+  far = 65,
+) {
+  return xPos < splitX0 ? near : xPos < splitX1 ? mid : far;
 }
 
 export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAngleDeg?: number }) {
@@ -568,6 +588,22 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     sickleToothPitchX: 25,
     crankPinHubX: -50,
     crankPinOrbitPx: 8,
+    pitmanCutterPad: 50,
+    grainStemY0: 280,
+    grainStemQy: 200,
+    grainStemY1: 120,
+    grainStemQdx: 5,
+    grainStemEndDx: -2,
+    guardTipDx: 12,
+    guardTipDy: -35,
+    guardEndDx: 24,
+    faceSickleTipDx: 11,
+    faceSickleTipDy: -26,
+    faceSickleEndDx: 22,
+    reelSlatX: 85,
+    reelSlatY: -12,
+    reelSlatW: 22,
+    reelSlatH: 24,
     reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
 }
@@ -794,6 +830,13 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     polymerOriginY: 150,
     polymerPitchX: 45,
     polymerPitchY: 25,
+    polymerSolidR: 5,
+    polymerMeltR: 8,
+    camphorDx: 12,
+    camphorDy: -6,
+    camphorR: 4,
+    meltLinkDx: 25,
+    meltLinkDy: 10,
     schematicJacketX: 70,
     schematicJacketY: 100,
     schematicJacketW: 180,
@@ -1046,6 +1089,9 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     leadScrewThreadCount: 40,
     leadScrewThreadOriginX: 90,
     leadScrewThreadPitchX: 10,
+    leadScrewThreadDx: 6,
+    leadScrewThreadY0: 165,
+    leadScrewThreadY1: 175,
     foilGrooveCount: 16,
     foilGrooveOriginX: 15,
     foilGroovePitchX: 11,
@@ -1928,6 +1974,8 @@ export function stepKevlarContinuum(
     schematicBondXs: [120, 200, 280],
     schematicBondY0: 80,
     schematicBondY1: 200,
+    chainBondXs: [80, 140, 200, 260, 320],
+    chainBondH: 30,
   };
 }
 
@@ -1948,6 +1996,12 @@ export function kevlarSchematicLattice(
 
 /** H-bond column on the schematic. Shared by the schematic. */
 export function kevlarSchematicBond(index: number, xs = [120, 200, 280]) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i] };
+}
+
+/** 2D inter-chain H-bond post. Shared by 2D. */
+export function kevlarChainBond(index: number, xs = [80, 140, 200, 260, 320]) {
   const i = ((index % xs.length) + xs.length) % xs.length;
   return { x: xs[i] };
 }
@@ -2213,11 +2267,21 @@ export function stepGoodyearRubber(
     schematicStrandCount: 4,
     schematicCrosslinkCount: 3,
     schematicCrosslinkR: 5,
+    chainPostXs: [100, 180, 260, 340],
+    chainPostH: 25,
+    chainAtomDy: 12,
+    chainAtomR: 4,
     schematicLinkCount: 3,
     schematicLinkXs: [88, 155, 235, 315],
     schematicLinkY0s: [120, 170, 110],
     schematicLinkY1s: [125, 165, 120],
   };
+}
+
+/** 2D sulfur-post seat between gum chains. Shared by 2D. */
+export function goodyearChainPost(index: number, xs = [100, 180, 260, 340]) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i] };
 }
 
 /** Sulfur S–S link on the schematic. Shared by the schematic. */

@@ -150,14 +150,26 @@ export function HyattCelluloidSim() {
               );
               return (
                 <g key={`polymer-node-${xPos}-${yPos}`}>
-                  <circle cx={xPos} cy={yPos} r={isMelted ? 8 : 5} fill="#D69E2E" opacity="0.8" />
-                  <circle cx={xPos + 12} cy={yPos - 6} r="4" fill="#3182CE" opacity="0.7" />
+                  <circle
+                    cx={xPos}
+                    cy={yPos}
+                    r={isMelted ? hyatt.polymerMeltR : hyatt.polymerSolidR}
+                    fill="#D69E2E"
+                    opacity="0.8"
+                  />
+                  <circle
+                    cx={xPos + hyatt.camphorDx}
+                    cy={yPos + hyatt.camphorDy}
+                    r={hyatt.camphorR}
+                    fill="#3182CE"
+                    opacity="0.7"
+                  />
                   {isMelted && (
                     <line
                       x1={xPos}
                       y1={yPos}
-                      x2={xPos + 25}
-                      y2={yPos + 10}
+                      x2={xPos + hyatt.meltLinkDx}
+                      y2={yPos + hyatt.meltLinkDy}
                       stroke="#D69E2E"
                       strokeWidth="2"
                       opacity="0.6"
