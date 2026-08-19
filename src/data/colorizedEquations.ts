@@ -1628,6 +1628,282 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 1781541 patented the single-pressure absorption cycle, which powers modern off-grid propane/solar refrigerators and industrial waste-heat chillers.",
     },
+    {
+      id: "einstein-thermosyphon-bubble-pump",
+      patentId: "us-1781541-einstein-refrigerator",
+      title: "Geyser Bubble-Lift Thermosyphon Head & Two-Phase Circulation",
+      category: "Two-Phase Fluid Dynamics & Heat Transfer",
+      rawLatex:
+        "\\Delta P_{\\text{lift}} = (\\rho_{\\text{liquid}} - \\rho_{\\text{vapor}}) g L_{\\text{riser}} \\alpha_{\\text{void}} = \\frac{1}{2} f_{\\text{Darcy}} \\frac{L_{\\text{riser}}}{D_{\\text{tube}}} \\rho_m v_m^2 + \\rho_m g h_{\\text{lift}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta P_{\\text{lift}}} = (\\textcolor{#2563eb}{\\rho_{\\text{liquid}}} - \\textcolor{#d97706}{\\rho_{\\text{vapor}}}) g \\textcolor{#9333ea}{L_{\\text{riser}}} \\textcolor{#dc2626}{\\alpha_{\\text{void}}} = \\text{Friction} + \\textcolor{#0891b2}{\\rho_m} g \\textcolor{#ea580c}{h_{\\text{lift}}}",
+      plainEnglishSentence: [
+        {
+          text: "Thermal ",
+        },
+        {
+          text: "thermosyphon buoyant lift pressure head",
+          variableId: "dp_lift",
+        },
+        {
+          text: " arises from the density difference between ",
+        },
+        {
+          text: "liquid solution density",
+          variableId: "rho_liq",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "hot vapor density",
+          variableId: "rho_vap",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "vertical riser tube length",
+          variableId: "l_riser",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "vapor void fraction",
+          variableId: "alpha_void",
+        },
+        {
+          text: ", pumping ",
+        },
+        {
+          text: "two-phase mixture",
+          variableId: "rho_mix",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "upper condenser elevation height",
+          variableId: "h_lift",
+        },
+        {
+          text: " with zero moving mechanical parts.",
+        },
+      ],
+      variables: [
+        {
+          id: "dp_lift",
+          symbol: "\\Delta P_{\\text{lift}}",
+          name: "Thermosyphon Bubble-Lift Pressure Head",
+          color: "emerald",
+          role: "Net buoyant pressure lifting liquid refrigerant/absorbent solution ($2.5\\text{ to }6.0\\text{ kPa}$)",
+          unit: "Kilopascals (kPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "As heat is applied to the boiler, vapor bubbles nucleate inside the riser tube, creating an aerated two-phase column that rises like a coffee percolator to circulate the liquid.",
+          telemetryMetricLabel: "Bubble Pump Head",
+        },
+        {
+          id: "rho_liq",
+          symbol: "\\rho_{\\text{liquid}}",
+          name: "Liquid Refrigerant/Absorbent Density",
+          color: "sapphire",
+          role: "Density of liquid ammonia-water or butane solution ($750\\text{ to }950\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation: "Heavy liquid column in the downcomer balances the aerated bubble riser.",
+        },
+        {
+          id: "rho_vap",
+          symbol: "\\rho_{\\text{vapor}}",
+          name: "Boiling Refrigerant Vapor Density",
+          color: "amber",
+          role: "Density of hot saturated vapor at $10\\text{ atm}$ ($8\\text{ to }15\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation:
+            "Two orders of magnitude lighter than liquid, creating enormous buoyant upward drive.",
+        },
+        {
+          id: "l_riser",
+          symbol: "L_{\\text{riser}}",
+          name: "Vertical Bubble Riser Length",
+          color: "amethyst",
+          role: "Height of insulated narrow vertical chimney tube ($0.6\\text{ to }1.2\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Provides sufficient vertical run for slug/churn two-phase flow to accelerate liquid upward.",
+        },
+        {
+          id: "alpha_void",
+          symbol: "\\alpha_{\\text{void}}",
+          name: "Two-Phase Vapor Void Fraction",
+          color: "crimson",
+          role: "Volumetric fraction of vapor bubbles occupying the riser tube cross-section ($0.45\\text{ to }0.75$)",
+          unit: "Dimensionless void fraction",
+          dimension: "[1]",
+          explanation:
+            "Higher void fraction lowers average column density, increasing upward pumping power.",
+        },
+        {
+          id: "rho_mix",
+          symbol: "\\rho_m",
+          name: "Mean Two-Phase Mixture Density",
+          color: "cyan",
+          role: "Average density of liquid slugs and vapor bubbles in the riser ($250\\text{ to }450\\text{ kg/m}^3$)",
+          unit: "kg/m^3",
+          dimension: "[M L^-3]",
+          explanation: "Governs gravitational head and frictional pressure drop.",
+        },
+        {
+          id: "h_lift",
+          symbol: "h_{\\text{lift}}",
+          name: "Net Fluid Pumping Height",
+          color: "coral",
+          role: "Elevation gain from boiler base to top condenser entry ($0.4\\text{ to }0.8\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Gravity then returns the condensed liquid downward through the evaporator without any mechanical pump.",
+        },
+      ],
+      pedagogicalNote:
+        "Thermal bubble pumping elevates the liquid absorbent to the condenser level purely by thermal expansion and buoyancy, completely replacing the electric motor and piston pump.",
+      claimRef: 1,
+      historicalSignificance:
+        "Einstein and Leo Szilard co-patented the single-pressure absorption refrigerator in 1930 to create an inherently safe home appliance with zero toxic gas leakage risks.",
+    },
+    {
+      id: "einstein-electromagnetic-conduction-pump",
+      patentId: "us-1781541-einstein-refrigerator",
+      title: "Einstein-Szilard Magnetohydrodynamic Conduction Pump Body Force",
+      category: "Magnetohydrodynamics & Electromagnetics",
+      rawLatex:
+        "\\mathbf{F}_{\\text{EM}} = \\mathbf{J} \\times \\mathbf{B} = \\sigma (\\mathbf{E} + \\mathbf{v} \\times \\mathbf{B}) \\times \\mathbf{B} \\implies \\Delta P_{\\text{pump}} = \\sigma E B L_{\\text{chan}} - \\sigma v B^2 L_{\\text{chan}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta P_{\\text{pump}}} = \\textcolor{#2563eb}{\\sigma} \\textcolor{#d97706}{E} \\textcolor{#9333ea}{B} \\textcolor{#dc2626}{L_{\\text{chan}}} - \\textcolor{#2563eb}{\\sigma} \\textcolor{#0891b2}{v} \\textcolor{#9333ea}{B^2} \\textcolor{#dc2626}{L_{\\text{chan}}}",
+      plainEnglishSentence: [
+        {
+          text: "Magnetohydrodynamic ",
+        },
+        {
+          text: "liquid metal pumping pressure",
+          variableId: "dp_em",
+        },
+        {
+          text: " is generated by ",
+        },
+        {
+          text: "liquid metal electrical conductivity",
+          variableId: "sigma_elec",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "applied transverse electric field",
+          variableId: "e_field",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "magnetic flux density",
+          variableId: "b_field",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "channel active length",
+          variableId: "l_chan",
+        },
+        {
+          text: " minus counter-EMF damping from ",
+        },
+        {
+          text: "liquid flow velocity",
+          variableId: "v_flow",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "dp_em",
+          symbol: "\\Delta P_{\\text{pump}}",
+          name: "MHD Electromagnetic Pump Pressure",
+          color: "emerald",
+          role: "Pressure developed across hermetic pipe channel pumping liquid metal ($20\\text{ to }60\\text{ kPa}$)",
+          unit: "Kilopascals (kPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Lorentz body force acts directly on conduction electrons in liquid sodium-potassium alloy, driving flow with zero seals or rotating shafts.",
+          telemetryMetricLabel: "MHD Pressure",
+        },
+        {
+          id: "sigma_elec",
+          symbol: "\\sigma",
+          name: "Liquid Metal Electrical Conductivity",
+          color: "sapphire",
+          role: "Conductivity of liquid sodium-potassium eutectic alloy ($2.5 \\times 10^6\\,\\text{S/m}$ at $100^\\circ\\text{C}$)",
+          unit: "Siemens / meter (S/m)",
+          dimension: "[M^-1 L^-3 T^3 I^2]",
+          explanation:
+            "Extremely high conductivity allows heavy DC current density with minimal Ohmic heating.",
+        },
+        {
+          id: "e_field",
+          symbol: "E",
+          name: "Applied DC Electric Field",
+          color: "amber",
+          role: "Electric field between copper electrodes brazed to conduit walls ($1.5\\text{ to }4.0\\text{ V/m}$)",
+          unit: "Volts / meter (V/m)",
+          dimension: "[M L T^-3 I^-1]",
+          explanation: "Drives transverse current perpendicular to fluid flow.",
+        },
+        {
+          id: "b_field",
+          symbol: "B",
+          name: "Applied DC Magnetic Flux Density",
+          color: "amethyst",
+          role: "Magnetic field established by external permanent magnet or electromagnet ($0.4\\text{ to }1.2\\text{ Tesla}$)",
+          unit: "Tesla (T)",
+          dimension: "[M T^-2 I^-1]",
+          explanation:
+            "Oriented mutually perpendicular to both the electric field and the pipe axis.",
+        },
+        {
+          id: "l_chan",
+          symbol: "L_{\\text{chan}}",
+          name: "Active Interaction Channel Length",
+          color: "crimson",
+          role: "Length of channel subject to simultaneous magnetic and electric fields ($100\\text{ to }250\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation: "Longer channel increases total developed pressure head.",
+        },
+        {
+          id: "v_flow",
+          symbol: "v",
+          name: "Liquid Metal Pumping Velocity",
+          color: "cyan",
+          role: "Mean bulk velocity of conducting fluid through duct ($0.5\\text{ to }2.5\\text{ m/s}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Motion through the magnetic field induces counter-EMF ($v B$), naturally self-regulating pump speed.",
+        },
+      ],
+      pedagogicalNote:
+        "By passing electric current through a conducting fluid inside a magnetic field, the Lorentz force drives fluid motion without any mechanical pistons, impellers, or shaft seals.",
+      claimRef: 2,
+      historicalSignificance:
+        "The Einstein-Szilard electromagnetic pump was later adopted to circulate liquid sodium and NaK coolant in fast breeder nuclear reactors worldwide.",
+    },
   ],
 
   // 7. John Bardeen & Walter Brattain Point-Contact Transistor (US 2,524,035)
@@ -2003,6 +2279,297 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         "US 3541541 introduced the computer mouse, graphic cursor pointing, and the foundation for all modern Graphical User Interfaces (GUIs).",
       pedagogicalNote:
         "The knife-edge wheels act as mechanical vector projection operators. As the mouse glides freely across a 2D plane, one wheel only rolls under X-axis movement and drags along Y; the other rolls under Y and drags along X. This pure mechanical decoupling cleanly isolates the planar vector components into independent rotational analog voltages without complex trigonometry.",
+    },
+    {
+      id: "engelbart-orthogonal-skid-kinematics",
+      patentId: "us-3541541-engelbart-mouse",
+      title: "Orthogonal Dual Knife-Edge Wheel Zero-Skid Kinematic Decomposition",
+      category: "Kinematics & Friction Mechanics",
+      rawLatex:
+        "\\begin{bmatrix} v_X \\\\ v_Y \\end{bmatrix} = \\begin{bmatrix} r_X \\omega_X \\\\ r_Y \\omega_Y \\end{bmatrix} \\quad \\text{with orthogonal friction dissipation} \\quad P_{\\text{skid}} = \\mu_k F_N \\sqrt{v_Y^2 + v_X^2}",
+      colorizedLatex:
+        "\\begin{bmatrix} \\textcolor{#2563eb}{v_X} \\\\ \\textcolor{#059669}{v_Y} \\end{bmatrix} = \\begin{bmatrix} \\textcolor{#d97706}{r_X} \\textcolor{#9333ea}{\\omega_X} \\\\ \\textcolor{#d97706}{r_Y} \\textcolor{#dc2626}{\\omega_Y} \\end{bmatrix} \\quad \\text{and} \\quad \\textcolor{#ea580c}{P_{\\text{skid}}} = \\textcolor{#0891b2}{\\mu_k} F_N \\sqrt{v_Y^2 + v_X^2}",
+      plainEnglishSentence: [
+        {
+          text: "Planar cursor velocities ",
+        },
+        {
+          text: "horizontal X velocity",
+          variableId: "v_x",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "vertical Y velocity",
+          variableId: "v_y",
+        },
+        {
+          text: " are resolved by ",
+        },
+        {
+          text: "wheel radius",
+          variableId: "r_w",
+        },
+        {
+          text: " multiplying ",
+        },
+        {
+          text: "X-wheel angular roll rate",
+          variableId: "omega_x",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "Y-wheel angular roll rate",
+          variableId: "omega_y",
+        },
+        {
+          text: ", while ",
+        },
+        {
+          text: "frictional sliding power",
+          variableId: "p_skid",
+        },
+        {
+          text: " is dissipated through ",
+        },
+        {
+          text: "kinetic steel-on-wood friction",
+          variableId: "mu_k",
+        },
+        {
+          text: " as the perpendicular knife wheel skids sideways without rotating.",
+        },
+      ],
+      variables: [
+        {
+          id: "v_x",
+          symbol: "v_X",
+          name: "Horizontal X Tracking Velocity",
+          color: "sapphire",
+          role: "Pure longitudinal velocity of mouse across table surface ($0\\text{ to }0.8\\text{ m/s}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation:
+            "Rotates only the X-axis wheel while the perpendicular Y-wheel skids laterally on its narrow knife edge.",
+          telemetryMetricLabel: "X Velocity",
+        },
+        {
+          id: "v_y",
+          symbol: "v_Y",
+          name: "Vertical Y Tracking Velocity",
+          color: "emerald",
+          role: "Pure transverse velocity of mouse across table surface ($0\\text{ to }0.8\\text{ m/s}$)",
+          unit: "Meters / second (m/s)",
+          dimension: "[L T^-1]",
+          explanation: "Rotates only the Y-axis wheel while the X-wheel skids laterally.",
+          telemetryMetricLabel: "Y Velocity",
+        },
+        {
+          id: "r_w",
+          symbol: "r_X, r_Y",
+          name: "Steel Tracking Wheel Radius",
+          color: "amber",
+          role: "Radius of sharp-rimmed hardened steel tracking disc ($9.525\\text{ mm} = 0.375\\text{ in}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Sharp knife edge bites into desk surface, preventing yaw slip during diagonal movement.",
+        },
+        {
+          id: "omega_x",
+          symbol: "\\omega_X",
+          name: "X Resolver Shaft Angular Velocity",
+          color: "amethyst",
+          role: "Rotation rate of X-axis potentiometer / optical encoder shaft ($0\\text{ to }80\\text{ rad/s}$)",
+          unit: "Radians / second (rad/s)",
+          dimension: "[T^-1]",
+          explanation: "Converts linear X-motion into electrical resistance or pulse signals.",
+          telemetryKey: "wheelRpm",
+        },
+        {
+          id: "omega_y",
+          symbol: "\\omega_Y",
+          name: "Y Resolver Shaft Angular Velocity",
+          color: "crimson",
+          role: "Rotation rate of Y-axis potentiometer / optical encoder shaft ($0\\text{ to }80\\text{ rad/s}$)",
+          unit: "Radians / second (rad/s)",
+          dimension: "[T^-1]",
+          explanation: "Converts linear Y-motion into electrical resistance or pulse signals.",
+        },
+        {
+          id: "p_skid",
+          symbol: "P_{\\text{skid}}",
+          name: "Orthogonal Skidding Power Dissipation",
+          color: "coral",
+          role: "Mechanical power dissipated as heat during diagonal mouse travel ($0.05\\text{ to }0.25\\text{ W}$)",
+          unit: "Watts (W)",
+          dimension: "[M L^2 T^-3]",
+          explanation:
+            "Narrow knife-edge wheels minimize contact area to keep dragging resistance imperceptible to the user.",
+        },
+        {
+          id: "mu_k",
+          symbol: "\\mu_k",
+          name: "Steel Knife-Edge Kinetic Friction Coefficient",
+          color: "cyan",
+          role: "Kinetic sliding friction coefficient of smooth steel disc edge on desk pad ($\\approx 0.15\\text{ to }0.22$)",
+          unit: "Dimensionless friction coefficient",
+          dimension: "[1]",
+          explanation: "Ensures light, effortless glide across wood or formica tabletops.",
+        },
+      ],
+      pedagogicalNote:
+        "Engelbart's original prototype used two perpendicular knife-edge steel wheels. Diagonal motions caused each wheel to rotate strictly along its tangent while slipping sideways with low friction.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 3541541 introduced the computer mouse, demonstrated publicly in Engelbart's legendary 1968 'Mother of All Demos' at the Fall Joint Computer Conference.",
+    },
+    {
+      id: "engelbart-potentiometer-voltage-divider",
+      patentId: "us-3541541-engelbart-mouse",
+      title: "Rotary Potentiometer Coordinate Transduction & Pulse Encoding",
+      category: "Analog Signal Processing & Sensors",
+      rawLatex:
+        "V_{\\text{out}}(X) = V_{\\text{ref}} \\left(\\frac{R_{\\text{wiper}}(X)}{R_{\\text{total}}}\\right) = V_{\\text{ref}} \\left(\\frac{X}{2\\pi r_{\\text{wheel}} N_{\\text{turns}}}\\right)",
+      colorizedLatex:
+        "\\textcolor{#059669}{V_{\\text{out}}(X)} = \\textcolor{#2563eb}{V_{\\text{ref}}} \\left(\\frac{\\textcolor{#d97706}{R_{\\text{wiper}}}}{\\textcolor{#dc2626}{R_{\\text{total}}}}\\right) = \\textcolor{#2563eb}{V_{\\text{ref}}} \\left(\\frac{\\textcolor{#0891b2}{X}}{2\\pi \\textcolor{#ea580c}{r_{\\text{wheel}}} \\textcolor{#9333ea}{N_{\\text{turns}}}}\\right)",
+      plainEnglishSentence: [
+        {
+          text: "Analog ",
+        },
+        {
+          text: "coordinate output voltage",
+          variableId: "v_out",
+        },
+        {
+          text: " scales with ",
+        },
+        {
+          text: "DC reference supply voltage",
+          variableId: "v_ref",
+        },
+        {
+          text: " times the ratio of ",
+        },
+        {
+          text: "wiper resistance",
+          variableId: "r_wip",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "total potentiometer track resistance",
+          variableId: "r_tot",
+        },
+        {
+          text: ", converting ",
+        },
+        {
+          text: "linear table travel distance",
+          variableId: "x_dist",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "wheel circumference",
+          variableId: "r_wheel",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "potentiometer multi-turn capacity",
+          variableId: "n_turns",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "v_out",
+          symbol: "V_{\\text{out}}",
+          name: "Analog Coordinate Output Voltage",
+          color: "emerald",
+          role: "Continuous DC voltage fed to analog-to-digital converter or oscilloscope deflection amplifier ($0\\text{ to }+10\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation: "Directly mapped to electron-beam X and Y deflection on the CRT display.",
+          telemetryMetricLabel: "Output Voltage",
+        },
+        {
+          id: "v_ref",
+          symbol: "V_{\\text{ref}}",
+          name: "Precision DC Reference Voltage",
+          color: "sapphire",
+          role: "Regulated DC supply voltage applied across potentiometer resistive element ($+10.0\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation: "Stable voltage source ensures calibration accuracy.",
+        },
+        {
+          id: "r_wip",
+          symbol: "R_{\\text{wiper}}",
+          name: "Variable Wiper Pickoff Resistance",
+          color: "amber",
+          role: "Resistance from ground terminal to sliding contact wiper ($0\\text{ to }10\\text{ k}\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Linear cermet track provides continuous infinite-resolution position readout.",
+        },
+        {
+          id: "r_tot",
+          symbol: "R_{\\text{total}}",
+          name: "Total Potentiometer Track Resistance",
+          color: "crimson",
+          role: "Full end-to-end resistance of the multi-turn precision potentiometer ($10.0\\text{ k}\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "High resistance minimizes battery current drain.",
+        },
+        {
+          id: "x_dist",
+          symbol: "X",
+          name: "Cumulative Table Displacement",
+          color: "cyan",
+          role: "Total linear distance mouse has rolled across the mousepad ($0\\text{ to }300\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation: "Physical hand travel mapped onto the graphical workspace.",
+        },
+        {
+          id: "r_wheel",
+          symbol: "r_{\\text{wheel}}",
+          name: "Knife-Edge Wheel Radius",
+          color: "coral",
+          role: "Radius of precision steel tracking wheel ($9.525\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation: "One wheel revolution equals $59.85\\text{ mm}$ of table travel.",
+        },
+        {
+          id: "n_turns",
+          symbol: "N_{\\text{turns}}",
+          name: "Potentiometer Total Revolutions",
+          color: "amethyst",
+          role: "Full mechanical rotation capacity of precision multi-turn potentiometer ($10\\text{ turns}$)",
+          unit: "Turns (count)",
+          dimension: "[1]",
+          explanation:
+            "Provides up to $600\\text{ mm}$ ($24\\text{ inches}$) of travel before reaching end-stop.",
+        },
+      ],
+      pedagogicalNote:
+        "Each wheel drove a precision rotary potentiometer whose variable analog voltage directly controlled the CRT cursor deflection amplifiers on the NLS computer system.",
+      claimRef: 2,
+      historicalSignificance:
+        "This electromechanical displacement-to-voltage conversion was the hardware basis for modern graphical interactive computing and windowing environments.",
     },
   ],
 
@@ -3540,6 +4107,248 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 4136359 made the Apple II the first practical, affordable personal computer with full color graphics, launching the PC revolution.",
     },
+    {
+      id: "wozniak-ntsc-color-burst-synthesis",
+      patentId: "us-4136359-wozniak-apple",
+      title: "Shift-Register Dot Phase Delay & NTSC Color Artifacting",
+      category: "Video Processing & Digital Logic",
+      rawLatex:
+        "\\Delta \\phi_{\\text{color}} = 2\\pi f_{\\text{subcarrier}} \\Delta t_{\\text{delay}} = 2\\pi (3.579545\\,\\text{MHz}) \\left(\\frac{k}{14.31818\\,\\text{MHz}}\\right) = k \\cdot \\frac{\\pi}{2} \\pmod{2\\pi}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta \\phi_{\\text{color}}} = 2\\pi \\textcolor{#2563eb}{f_{\\text{subcarrier}}} \\textcolor{#d97706}{\\Delta t_{\\text{delay}}} = 2\\pi (3.58\\,\\text{MHz}) \\left(\\frac{\\textcolor{#9333ea}{k}}{\\textcolor{#dc2626}{14.32\\,\\text{MHz}}}\\right) = \\textcolor{#9333ea}{k} \\cdot \\frac{\\pi}{2}",
+      plainEnglishSentence: [
+        {
+          text: "The synthesized ",
+        },
+        {
+          text: "NTSC composite color hue phase angle",
+          variableId: "phi_col",
+        },
+        {
+          text: " is created by locking to the ",
+        },
+        {
+          text: "3.579545 MHz color subcarrier frequency",
+          variableId: "f_sub",
+        },
+        {
+          text: " while delaying pixels by ",
+        },
+        {
+          text: "shift register bit delay time",
+          variableId: "dt_del",
+        },
+        {
+          text: " in ",
+        },
+        {
+          text: "quarter-cycle tap steps",
+          variableId: "k_tap",
+        },
+        {
+          text: " from the ",
+        },
+        {
+          text: "14.31818 MHz master crystal oscillator",
+          variableId: "f_xtal",
+        },
+        {
+          text: ", generating green, violet, blue, and orange without expensive color encoder chips.",
+        },
+      ],
+      variables: [
+        {
+          id: "phi_col",
+          symbol: "\\Delta \\phi_{\\text{color}}",
+          name: "NTSC Color Phase Shift",
+          color: "emerald",
+          role: "Phase angle relative to the standard $3.579545\\text{ MHz}$ color burst reference ($0^\\circ, 90^\\circ, 180^\\circ, 270^\\circ$)",
+          unit: "Degrees / Radians",
+          dimension: "[1]",
+          explanation:
+            "Standard NTSC televisions decode phase angle as hue: $0^\\circ$ produces green, $90^\\circ$ produces violet/magenta, $180^\\circ$ produces orange, and $270^\\circ$ produces blue.",
+          telemetryMetricLabel: "Color Phase",
+        },
+        {
+          id: "f_sub",
+          symbol: "f_{\\text{subcarrier}}",
+          name: "NTSC Color Subcarrier Frequency",
+          color: "sapphire",
+          role: "Standard television color subcarrier frequency ($3.579545\\text{ MHz} = 315/88\\text{ MHz}$)",
+          unit: "Megahertz (MHz)",
+          dimension: "[T^-1]",
+          explanation:
+            "The broadcast television standard frequency used to modulate chrominance signals.",
+        },
+        {
+          id: "dt_del",
+          symbol: "\\Delta t_{\\text{delay}}",
+          name: "Shift Register Pixel Delay",
+          color: "amber",
+          role: "Digital propagation delay introduced by 74LS166 parallel-to-serial shift register ($69.84\\text{ ns}$ per dot)",
+          unit: "Nanoseconds (ns)",
+          dimension: "[T]",
+          explanation:
+            "Each 1-dot lateral shift in screen position advances the color phase by exactly 90 degrees ($1/4$ subcarrier cycle).",
+        },
+        {
+          id: "k_tap",
+          symbol: "k",
+          name: "Digital Dot Phase Offset",
+          color: "amethyst",
+          role: "Integer shift register tap index ($k \\in \\{0, 1, 2, 3\\}$)",
+          unit: "Integer index",
+          dimension: "[1]",
+          explanation:
+            "Even vs odd screen dot column positions determine whether a single-pixel line appears green or violet on a color TV.",
+          telemetryKey: "colorMode",
+        },
+        {
+          id: "f_xtal",
+          symbol: "f_{\\text{crystal}}",
+          name: "Master Oscillator Frequency",
+          color: "crimson",
+          role: "Single quartz crystal clock frequency ($14.31818\\text{ MHz} = 4 \\times f_{\\text{subcarrier}}$)",
+          unit: "Megahertz (MHz)",
+          dimension: "[T^-1]",
+          explanation:
+            "Wozniak's brilliant insight was using a single 14.318 MHz crystal to drive the 6502 CPU (divided by 14 = 1.023 MHz), video dot clock, and 4x NTSC color burst simultaneously.",
+        },
+      ],
+      pedagogicalNote:
+        "Wozniak synthesized composite color video using digital shift registers and clock division, producing crisp 4-color high-resolution graphics with only $15 worth of standard 7400-series TTL chips instead of expensive analog encoders.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 4136359 enabled the Apple II to output high-resolution color graphics directly to standard home color televisions, launching the personal computer revolution.",
+    },
+    {
+      id: "wozniak-horizontal-scanline-timing",
+      patentId: "us-4136359-wozniak-apple",
+      title: "Composite NTSC Video Scanline Timing & Sync Circuitry",
+      category: "Display Synchronization & Digital Architecture",
+      rawLatex:
+        "T_{\\text{scanline}} = 65 \\cdot T_{\\text{CPU}} = 65 \\left(\\frac{14}{f_{\\text{crystal}}}\\right) = 63.555\\,\\mu\\text{s} \\quad (f_{\\text{horiz}} = 15.734\\,\\text{kHz})",
+      colorizedLatex:
+        "\\textcolor{#059669}{T_{\\text{scanline}}} = \\textcolor{#2563eb}{65} \\cdot \\textcolor{#d97706}{T_{\\text{CPU}}} = 65 \\left(\\frac{14}{\\textcolor{#dc2626}{f_{\\text{crystal}}}}\\right) = \\textcolor{#0891b2}{63.555\\,\\mu\\text{s}} \\quad (\\textcolor{#ea580c}{f_{\\text{horiz}}} = 15.73\\,\\text{kHz})",
+      plainEnglishSentence: [
+        {
+          text: "Total ",
+        },
+        {
+          text: "horizontal scanline duration",
+          variableId: "t_scan",
+        },
+        {
+          text: " is generated by counting exactly ",
+        },
+        {
+          text: "65 microprocessor clock cycles",
+          variableId: "n_cycles",
+        },
+        {
+          text: " of ",
+        },
+        {
+          text: "1.023 MHz CPU clock period",
+          variableId: "t_cpu",
+        },
+        {
+          text: " derived from ",
+        },
+        {
+          text: "master 14.318 MHz crystal oscillator",
+          variableId: "f_xtal",
+        },
+        {
+          text: ", yielding the standard ",
+        },
+        {
+          text: "63.555 microsecond line period",
+          variableId: "t_line",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "15.734 kHz horizontal deflection frequency",
+          variableId: "f_horiz",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "t_scan",
+          symbol: "T_{\\text{scanline}}",
+          name: "Horizontal Scanline Period",
+          color: "emerald",
+          role: "Time duration to scan one complete horizontal line of 280 pixels plus blanking ($63.555\\,\\mu\\text{s}$)",
+          unit: "Microseconds (\\mu s)",
+          dimension: "[T]",
+          explanation:
+            "Matches standard NTSC broadcast line duration within 0.05%, allowing standard consumer color television sets to lock sync without jitter.",
+          telemetryMetricLabel: "Scanline Period",
+        },
+        {
+          id: "n_cycles",
+          symbol: "N_{\\text{cycles}}",
+          name: "Scanline CPU Clock Cycles",
+          color: "sapphire",
+          role: "Number of 1.023 MHz system clock cycles per horizontal line ($65\\text{ cycles} = 40\\text{ display} + 25\\text{ blanking}$)",
+          unit: "Cycles (count)",
+          dimension: "[1]",
+          explanation:
+            "40 cycles display 40 text columns (or 280 graphics dots); 25 cycles provide horizontal sync, color burst, and front/back porch blanking.",
+        },
+        {
+          id: "t_cpu",
+          symbol: "T_{\\text{CPU}}",
+          name: "System Clock Period",
+          color: "amber",
+          role: "Microprocessor single clock cycle duration ($977.78\\text{ ns}$ at $1.0227\\text{ MHz}$)",
+          unit: "Nanoseconds (ns)",
+          dimension: "[T]",
+          explanation: "Exactly 14 master crystal clock ticks.",
+        },
+        {
+          id: "f_xtal",
+          symbol: "f_{\\text{crystal}}",
+          name: "Quartz Crystal Frequency",
+          color: "crimson",
+          role: "Master color-burst quadruple crystal ($14.31818\\text{ MHz}$)",
+          unit: "Megahertz (MHz)",
+          dimension: "[T^-1]",
+          explanation:
+            "Fundamental frequency source for all video timing, memory interleaving, and CPU execution.",
+        },
+        {
+          id: "t_line",
+          symbol: "T_{\\text{line}}",
+          name: "NTSC Standard Line Interval",
+          color: "cyan",
+          role: "Standard NTSC color television horizontal line time ($63.5555\\,\\mu\\text{s}$)",
+          unit: "Microseconds (\\mu s)",
+          dimension: "[T]",
+          explanation: "The exact reciprocal of $15.734264\\text{ kHz}$ line frequency.",
+        },
+        {
+          id: "f_horiz",
+          symbol: "f_{\\text{horiz}}",
+          name: "Horizontal Line Scan Frequency",
+          color: "coral",
+          role: "Horizontal flyback deflection frequency ($15.734\\text{ kHz}$)",
+          unit: "Kilohertz (kHz)",
+          dimension: "[T^-1]",
+          explanation: "Drives TV horizontal deflection yoke coils.",
+        },
+      ],
+      pedagogicalNote:
+        "By aligning 65 CPU clock cycles to exactly one NTSC scanline interval (63.555 μs), Wozniak eliminated memory arbitration wait-states, letting the CPU and video display share RAM simultaneously without flicker.",
+      claimRef: 2,
+      historicalSignificance:
+        "This zero-wait-state shared DRAM architecture made the Apple II the fastest and most cost-effective microcomputer of its generation.",
+    },
   ],
 
   // 16. Robert Goddard Liquid-Fuel Rocket (US 1,102,653)
@@ -4176,6 +4985,230 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 586193 launched commercial wireless communications, ship-to-shore safety (saving Titanic survivors), and global broadcasting.",
+    },
+    {
+      id: "marconi-coherer-breakdown-conduction",
+      patentId: "us-586193-marconi-radio",
+      title: "Branly-Marconi Nickel-Silver Coherer Micro-Junction Breakdown Conduction",
+      category: "Semiconductor & Contact Physics",
+      rawLatex:
+        "E_{\\text{gap}} = \\frac{V_{\\text{RF}}}{d_{\\text{gap}}} \\ge E_{\\text{crit}} \\implies R_{\\text{coherer}} = \\begin{cases} 10^5\\,\\Omega & \\text{(Quiescent Open)} \\\\ 10^2\\,\\Omega & \\text{(Cohere Conduction)} \\end{cases}",
+      colorizedLatex:
+        "\\textcolor{#059669}{E_{\\text{gap}}} = \\frac{\\textcolor{#2563eb}{V_{\\text{RF}}}}{\\textcolor{#d97706}{d_{\\text{gap}}}} \\ge \\textcolor{#dc2626}{E_{\\text{crit}}} \\implies \\textcolor{#9333ea}{R_{\\text{coherer}}} = \\begin{cases} \\textcolor{#0891b2}{10^5\\,\\Omega} & \\text{(Open)} \\\\ \\textcolor{#ea580c}{10^2\\,\\Omega} & \\text{(Conduction)} \\end{cases}",
+      plainEnglishSentence: [
+        {
+          text: "When received ",
+        },
+        {
+          text: "RF peak electric field across powder gaps",
+          variableId: "e_gap",
+        },
+        {
+          text: " induced by ",
+        },
+        {
+          text: "antenna RF signal voltage",
+          variableId: "v_rf",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "filing micro-particle gap distance",
+          variableId: "d_gap",
+        },
+        {
+          text: " exceeds the ",
+        },
+        {
+          text: "critical dielectric breakdown threshold",
+          variableId: "e_crit",
+        },
+        {
+          text: ", the ",
+        },
+        {
+          text: "coherer electrical resistance",
+          variableId: "r_coh",
+        },
+        {
+          text: " collapses by three orders of magnitude to complete the local relay circuit.",
+        },
+      ],
+      variables: [
+        {
+          id: "e_gap",
+          symbol: "E_{\\text{gap}}",
+          name: "Micro-Junction Electric Field",
+          color: "emerald",
+          role: "Electric field strength across the microscopic oxide barrier between loose metal filings ($10^6\\text{ to }10^7\\text{ V/m}$)",
+          unit: "Volts / meter (V/m)",
+          dimension: "[M L T^-3 I^-1]",
+          explanation:
+            "High local field intensity causes dielectric puncture of the surface oxide film, forming microscopic welded metallic bridges.",
+          telemetryMetricLabel: "Coherer Field",
+        },
+        {
+          id: "v_rf",
+          symbol: "V_{\\text{RF}}",
+          name: "Induced Antenna RF Voltage",
+          color: "sapphire",
+          role: "High-frequency electromotive force induced across the coherer terminals by incoming radio waves ($0.1\\text{ to }2.0\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Gathered by the elevated aerial mast wire and fed across the evacuated glass tube.",
+        },
+        {
+          id: "d_gap",
+          symbol: "d_{\\text{gap}}",
+          name: "Inter-Particle Powder Oxide Gap",
+          color: "amber",
+          role: "Thickness of native oxide skin on nickel-silver powder grains ($10\\text{ to }100\\text{ nm}$)",
+          unit: "Nanometers (nm)",
+          dimension: "[L]",
+          explanation:
+            "Sub-micron gap ensures that even small induced radio voltages produce extreme electric fields.",
+        },
+        {
+          id: "e_crit",
+          symbol: "E_{\\text{crit}}",
+          name: "Critical Cohesion Breakdown Field",
+          color: "crimson",
+          role: "Threshold electric field required to break down contact resistance ($3 \\times 10^6\\text{ V/m}$ for $95\\%\\text{ Ni} + 5\\%\\text{ Ag}$ filings)",
+          unit: "Volts / meter (V/m)",
+          dimension: "[M L T^-3 I^-1]",
+          explanation:
+            "Marconi's specific mixture of 95% nickel and 5% silver with a trace of mercury provided maximum RF sensitivity.",
+        },
+        {
+          id: "r_coh",
+          symbol: "R_{\\text{coherer}}",
+          name: "Coherer Dynamic Electrical Resistance",
+          color: "amethyst",
+          role: "Resistance across the silver electrode plugs ($100\\text{ k}\\Omega \\to 100\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "The three-order-of-magnitude drop triggers the sensitive polarized telegraph relay.",
+        },
+      ],
+      pedagogicalNote:
+        "The coherer acts as an RF-triggered non-linear switch: micro-discharges weld the loose nickel-silver filings together, which are then tapped by an automatic mechanical hammer to de-cohere before the next spark pulse.",
+      claimRef: 1,
+      historicalSignificance:
+        "Marconi's sensitive evacuated coherer tube made practical long-distance wireless telegraphy possible before the vacuum tube diode and triode were invented.",
+    },
+    {
+      id: "marconi-choke-filtering-attenuation",
+      patentId: "us-586193-marconi-radio",
+      title: "RF Inductive Choke Isolation & Local Relay Transient Attenuation",
+      category: "RF Filtering & Electromagnetic Compatibility",
+      rawLatex:
+        "|Z_{\\text{choke}}(\\omega_{\\text{RF}})| = \\sqrt{R_{\\text{choke}}^2 + (\\omega_{\\text{RF}} L_{\\text{choke}})^2} \\gg R_{\\text{relay}}",
+      colorizedLatex:
+        "|\\textcolor{#059669}{Z_{\\text{choke}}}| = \\sqrt{\\textcolor{#2563eb}{R_{\\text{choke}}^2} + (\\textcolor{#d97706}{\\omega_{\\text{RF}}} \\textcolor{#9333ea}{L_{\\text{choke}}})^2} \\gg \\textcolor{#dc2626}{R_{\\text{relay}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "RF choke isolation impedance",
+          variableId: "z_choke",
+        },
+        {
+          text: " combines ",
+        },
+        {
+          text: "DC winding resistance",
+          variableId: "r_choke",
+        },
+        {
+          text: " with ",
+        },
+        {
+          text: "radio carrier frequency",
+          variableId: "omega_rf",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "choke coil self-inductance",
+          variableId: "l_choke",
+        },
+        {
+          text: " to prevent high-frequency antenna signals from being shunted through the ",
+        },
+        {
+          text: "local telegraph sounder relay circuit",
+          variableId: "r_relay",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "z_choke",
+          symbol: "Z_{\\text{choke}}",
+          name: "High-Frequency Choke Impedance",
+          color: "emerald",
+          role: "Total electrical impedance presented to incoming RF signals ($5\\text{ to }50\\text{ k}\\Omega$ at $1\\text{ MHz}$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Blocks received high-frequency energy from escaping into the DC battery wiring, forcing full RF voltage across the coherer.",
+          telemetryMetricLabel: "Choke Impedance",
+        },
+        {
+          id: "r_choke",
+          symbol: "R_{\\text{choke}}",
+          name: "Choke DC Resistance",
+          color: "sapphire",
+          role: "Low direct-current resistance of the choke winding ($2\\text{ to }5\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Allows DC battery current to pass unobstructed to operate the telegraph relay once the coherer fires.",
+        },
+        {
+          id: "omega_rf",
+          symbol: "\\omega_{\\text{RF}}",
+          name: "Radio Carrier Angular Frequency",
+          color: "amber",
+          role: "Oscillation frequency of spark-generated electromagnetic wave ($2\\pi \\times 500\\text{ kHz to }5\\text{ MHz}$)",
+          unit: "Radians / second (rad/s)",
+          dimension: "[T^-1]",
+          explanation: "High frequency causes massive inductive reactance across even small coils.",
+        },
+        {
+          id: "l_choke",
+          symbol: "L_{\\text{choke}}",
+          name: "Choke Self-Inductance",
+          color: "amethyst",
+          role: "Inductance of tightly wound copper air-core coils placed in series with the coherer ($1\\text{ to }5\\text{ mH}$)",
+          unit: "Millihenries (mH)",
+          dimension: "[M L^2 T^-2 I^-2]",
+          explanation:
+            "Isolates the coherer from relay back-EMF spikes that would otherwise cause false re-cohesion.",
+        },
+        {
+          id: "r_relay",
+          symbol: "R_{\\text{relay}}",
+          name: "Telegraph Relay Coil Resistance",
+          color: "crimson",
+          role: "Resistance of sensitive polarized Morse sounder relay ($500\\text{ to }1000\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "Receives current once the coherer enters its conductive state.",
+        },
+      ],
+      pedagogicalNote:
+        "By placing inductive choke coils between the coherer and the battery relay circuit, Marconi prevented inductive kickback sparks from false-triggering the coherer, solving the critical self-interference flaw of earlier wireless detectors.",
+      claimRef: 3,
+      historicalSignificance:
+        "This was the earliest commercial implementation of electromagnetic compatibility (EMC) design in radio receiver architecture.",
     },
   ],
 
@@ -4814,6 +5847,263 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 727650 established industrial cryogenics, enabling pure liquid oxygen and nitrogen for steelmaking, rocketry, medicine, and semiconductor manufacturing.",
+    },
+    {
+      id: "linde-countercurrent-liquefaction-fraction",
+      patentId: "us-727650-linde-air-liquefaction",
+      title: "Steady-State Liquefaction Yield & Counter-Current Recuperator Enthalpy Balance",
+      category: "Cryogenics & Thermodynamics",
+      rawLatex:
+        "y = \\frac{\\dot{m}_{\\text{liquid}}}{\\dot{m}_{\\text{inlet}}} = \\frac{h_{\\text{return}}(P_{\\text{low}}, T_{\\text{amb}}) - h_{\\text{inlet}}(P_{\\text{high}}, T_{\\text{amb}})}{h_{\\text{return}}(P_{\\text{low}}, T_{\\text{amb}}) - h_{\\text{liquid}}(P_{\\text{low}}, T_{\\text{sat}})}",
+      colorizedLatex:
+        "\\textcolor{#059669}{y} = \\frac{\\textcolor{#2563eb}{\\dot{m}_{\\text{liquid}}}}{\\textcolor{#d97706}{\\dot{m}_{\\text{inlet}}}} = \\frac{\\textcolor{#9333ea}{h_{\\text{return}}} - \\textcolor{#dc2626}{h_{\\text{inlet}}}}{\\textcolor{#9333ea}{h_{\\text{return}}} - \\textcolor{#0891b2}{h_{\\text{liquid}}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "continuous liquid air yield fraction",
+          variableId: "yield_frac",
+        },
+        {
+          text: " equals the ratio of ",
+        },
+        {
+          text: "produced liquid mass flow rate",
+          variableId: "m_liq",
+        },
+        {
+          text: " to ",
+        },
+        {
+          text: "high-pressure inlet mass flow rate",
+          variableId: "m_in",
+        },
+        {
+          text: ", determined by the enthalpy gap between ",
+        },
+        {
+          text: "ambient unliquefied return gas enthalpy",
+          variableId: "h_ret",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "200-bar compressed inlet enthalpy",
+          variableId: "h_in",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "saturated liquid air enthalpy at 78 K",
+          variableId: "h_liq",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "yield_frac",
+          symbol: "y",
+          name: "Cryogenic Liquefaction Fraction",
+          color: "emerald",
+          role: "Fraction of high-pressure air stream converted into liquid air per cycle ($0.06\\text{ to }0.10\\text{ kg liquid / kg air}$ at $200\\text{ bar}$)",
+          unit: "Dimensionless yield fraction",
+          dimension: "[1]",
+          explanation:
+            "Under steady counter-current recuperation, between 6% and 10% of compressed air liquefies at the nozzle; the remaining 90-94% chilled vapor recirculates upward to cool incoming gas.",
+          telemetryMetricLabel: "Liquid Yield",
+        },
+        {
+          id: "m_liq",
+          symbol: "\\dot{m}_{\\text{liquid}}",
+          name: "Liquid Air Production Rate",
+          color: "sapphire",
+          role: "Mass flow rate of liquid air tapping into the vacuum Dewar receiver ($0.5\\text{ to }2.0\\text{ kg/h}$ in laboratory plant)",
+          unit: "kg / hour (kg/h)",
+          dimension: "[M T^-1]",
+          explanation: "Liquid air forms at 78.8 K at atmospheric pressure.",
+        },
+        {
+          id: "m_in",
+          symbol: "\\dot{m}_{\\text{inlet}}",
+          name: "High-Pressure Inlet Air Flow",
+          color: "amber",
+          role: "Total compressed air mass delivered by reciprocating compressor ($10\\text{ to }30\\text{ kg/h}$ at $200\\text{ bar}$)",
+          unit: "kg / hour (kg/h)",
+          dimension: "[M T^-1]",
+          explanation:
+            "High flow rates maintain intense counter-current heat transfer inside the coaxial copper coils.",
+        },
+        {
+          id: "h_ret",
+          symbol: "h_{\\text{return}}",
+          name: "Return Stream Enthalpy",
+          color: "amethyst",
+          role: "Specific enthalpy of unliquefied low-pressure return gas leaving the top of the heat exchanger at $285\\text{ K}$ ($\\approx 420\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Because the counter-current exchanger is highly efficient, return gas exits only a few degrees below ambient inlet temperature.",
+        },
+        {
+          id: "h_in",
+          symbol: "h_{\\text{inlet}}",
+          name: "High-Pressure Inlet Enthalpy",
+          color: "crimson",
+          role: "Specific enthalpy of dry, water-cooled air entering at $200\\text{ bar}$ and $293\\text{ K}$ ($\\approx 395\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Due to real-gas intermolecular attraction, high-pressure air has lower specific enthalpy than atmospheric air at the same temperature.",
+        },
+        {
+          id: "h_liq",
+          symbol: "h_{\\text{liquid}}",
+          name: "Saturated Liquid Air Enthalpy",
+          color: "cyan",
+          role: "Specific enthalpy of boiling liquid nitrogen/oxygen mixture at $1\\text{ bar}$ and $78.8\\text{ K}$ ($\\approx -125\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Represents the low-energy condensed liquid state collected in the bottom vessel.",
+        },
+      ],
+      pedagogicalNote:
+        "Linde's counter-current heat exchanger accumulates small Joule-Thomson cooling increments continuously, allowing gas at ambient room temperature to cool itself progressively to cryogenic condensation at 78 K.",
+      claimRef: 1,
+      historicalSignificance:
+        "Linde's 1895 patent created the global industrial gases industry, enabling tonnage production of oxygen, nitrogen, and argon.",
+    },
+    {
+      id: "linde-minimum-work-liquefaction",
+      patentId: "us-727650-linde-air-liquefaction",
+      title: "Reversible Thermodynamic Minimum Work of Liquefaction",
+      category: "Second-Law Thermodynamics",
+      rawLatex: "W_{\\text{rev}} = T_0 (s_0 - s_{\\text{liquid}}) - (h_0 - h_{\\text{liquid}})",
+      colorizedLatex:
+        "\\textcolor{#059669}{W_{\\text{rev}}} = \\textcolor{#2563eb}{T_0} (\\textcolor{#d97706}{s_0} - \\textcolor{#0891b2}{s_{\\text{liquid}}}) - (\\textcolor{#dc2626}{h_0} - \\textcolor{#9333ea}{h_{\\text{liquid}}})",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "ideal reversible minimum work",
+          variableId: "w_rev",
+        },
+        {
+          text: " required to liquefy one kilogram of air depends on ",
+        },
+        {
+          text: "ambient rejection temperature",
+          variableId: "t_0",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "ambient inlet entropy",
+          variableId: "s_0",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "liquid state entropy",
+          variableId: "s_liq",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "ambient inlet enthalpy",
+          variableId: "h_0",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "saturated liquid air enthalpy",
+          variableId: "h_liq",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "w_rev",
+          symbol: "W_{\\text{rev}}",
+          name: "Reversible Minimum Liquefaction Work",
+          color: "emerald",
+          role: "Theoretical minimum electrical/mechanical energy to liquefy $1\\text{ kg}$ of atmospheric air ($\\approx 740\\text{ kJ/kg} \\approx 0.205\\text{ kWh/kg}$)",
+          unit: "Kilojoules / kilogram (kJ/kg)",
+          dimension: "[L^2 T^-2]",
+          explanation:
+            "Defines the Carnot second-law efficiency ceiling against which practical industrial Joule-Thomson plants are measured.",
+          telemetryMetricLabel: "Min Reversible Work",
+        },
+        {
+          id: "t_0",
+          symbol: "T_0",
+          name: "Ambient Rejection Temperature",
+          color: "sapphire",
+          role: "Heat sink temperature of surrounding atmospheric cooling water ($293.15\\text{ K} \\approx 20^\\circ\\text{C}$)",
+          unit: "Kelvin (K)",
+          dimension: "[\\Theta]",
+          explanation:
+            "All heat extracted during air compression and aftercooling is rejected into this reservoir.",
+        },
+        {
+          id: "s_0",
+          symbol: "s_0",
+          name: "Ambient Specific Entropy",
+          color: "amber",
+          role: "Specific entropy of atmospheric air at $1\\text{ bar}$ and $293\\text{ K}$ ($6.86\\text{ kJ}/(\\text{kg}\\cdot\\text{K})$)",
+          unit: "kJ / (kg·K)",
+          dimension: "[L^2 T^-2 \\Theta^-1]",
+          explanation:
+            "Entropy decreases dramatically as chaotic gaseous molecules condense into ordered cryogenic liquid.",
+        },
+        {
+          id: "s_liq",
+          symbol: "s_{\\text{liquid}}",
+          name: "Liquid Air Specific Entropy",
+          color: "cyan",
+          role: "Specific entropy of liquid air at $1\\text{ bar}$ and $78.8\\text{ K}$ ($2.85\\text{ kJ}/(\\text{kg}\\cdot\\text{K})$)",
+          unit: "kJ / (kg·K)",
+          dimension: "[L^2 T^-2 \\Theta^-1]",
+          explanation: "Represents the tight intermolecular spacing and ordered liquid phase.",
+        },
+        {
+          id: "h_0",
+          symbol: "h_0",
+          name: "Ambient Specific Enthalpy",
+          color: "crimson",
+          role: "Enthalpy of air at $1\\text{ bar}$ and $293\\text{ K}$ ($422\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation: "Initial state enthalpy before compression.",
+        },
+        {
+          id: "h_liq",
+          symbol: "h_{\\text{liquid}}",
+          name: "Liquid Specific Enthalpy",
+          color: "amethyst",
+          role: "Enthalpy of condensed liquid air at $78.8\\text{ K}$ ($-125\\text{ kJ/kg}$)",
+          unit: "kJ/kg",
+          dimension: "[L^2 T^-2]",
+          explanation: "Sum of sensible and latent heat extracted by refrigeration.",
+        },
+      ],
+      pedagogicalNote:
+        "Thermodynamic exergy analysis proves that liquefying real air requires overcoming both the thermal sensible cooling load and the latent heat of condensation, defining the physical lower limit of industrial cryogenic refrigeration.",
+      claimRef: 1,
+      historicalSignificance:
+        "Linde's cycle was the first to achieve sustained cryogenic liquefaction of atmospheric gases without hazardous chemical refrigerants like methyl ether.",
     },
   ],
 
@@ -10096,6 +11386,303 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 313224 transformed global journalism and literature, enabling 60-page daily newspapers, mass paperback books, and universal public literacy, while pioneering early mechanical binary sorting combinatorics.",
     },
+    {
+      id: "mergenthaler-double-wedge-justification",
+      patentId: "us-313224-mergenthaler-linotype",
+      title: "Double-Wedge Spaceband Line Justification Geometry",
+      category: "Precision Kinematics & Typography",
+      rawLatex:
+        "\\Delta W_{\\text{just}} = \\sum_{k=1}^{N_{\\text{space}}} 2 h_k \\tan\\left(\\frac{\\phi}{2}\\right) = W_{\\text{measure}} - \\sum_{i=1}^{M_{\\text{mat}}} w_i",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta W_{\\text{just}}} = \\sum_{k=1}^{\\textcolor{#2563eb}{N_{\\text{space}}}} 2 \\textcolor{#d97706}{h_k} \\tan\\left(\\frac{\\textcolor{#9333ea}{\\phi}}{2}\\right) = \\textcolor{#dc2626}{W_{\\text{measure}}} - \\sum_{i=1}^{\\textcolor{#0891b2}{M_{\\text{mat}}}} \\textcolor{#ea580c}{w_i}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "total justification expansion expansion width",
+          variableId: "dw_just",
+        },
+        {
+          text: " equals the number of ",
+        },
+        {
+          text: "inserted spacebands",
+          variableId: "n_spaces",
+        },
+        {
+          text: " times ",
+        },
+        {
+          text: "vertical wedge upward lift height",
+          variableId: "h_lift",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "wedge taper angle",
+          variableId: "phi_angle",
+        },
+        {
+          text: ", expanding the line precisely to the ",
+        },
+        {
+          text: "fixed column measure",
+          variableId: "w_measure",
+        },
+        {
+          text: " minus total ",
+        },
+        {
+          text: "matrix character count",
+          variableId: "m_mat",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "individual matrix widths",
+          variableId: "w_i",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "dw_just",
+          symbol: "\\Delta W_{\\text{just}}",
+          name: "Justification Expansion Width",
+          color: "emerald",
+          role: "Net lateral expansion distance needed to tightly fill the vice jaws ($0.5\\text{ to }12.0\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "The spaceband wedge driver pushes upward simultaneously against all spaceband sleeves, spreading every word space equally until the line firmly locks against the vice jaws.",
+          telemetryMetricLabel: "Justification Width",
+        },
+        {
+          id: "n_spaces",
+          symbol: "N_{\\text{space}}",
+          name: "Line Spaceband Count",
+          color: "sapphire",
+          role: "Number of double-wedge steel spacebands dropped between word matrices ($4\\text{ to }10\\text{ bands}$)",
+          unit: "Count",
+          dimension: "[1]",
+          explanation: "Each word space receives an identical pair of opposing sliding wedges.",
+          telemetryKey: "spacebandsCount",
+        },
+        {
+          id: "h_lift",
+          symbol: "h_k",
+          name: "Spaceband Driver Vertical Lift",
+          color: "amber",
+          role: "Vertical distance the justification bar elevates the long spaceband wedge ($0\\text{ to }40\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "An eccentric cam underneath the machine raises the justification lever in two successive upward strokes.",
+        },
+        {
+          id: "phi_angle",
+          symbol: "\\phi",
+          name: "Spaceband Included Wedge Taper Angle",
+          color: "amethyst",
+          role: "Included angle between the two sliding wedge faces ($3.5^\\circ\\text{ to }4.5^\\circ$)",
+          unit: "Degrees",
+          dimension: "[1]",
+          explanation:
+            "A shallow angle prevents back-slipping under casting pressure while maximizing lateral mechanical advantage.",
+        },
+        {
+          id: "w_measure",
+          symbol: "W_{\\text{measure}}",
+          name: "Column Measure Width",
+          color: "crimson",
+          role: "Fixed typographical line measure set by the vice jaws ($12\\text{ to }30\\text{ picas} \\approx 50.8\\text{ to }127.0\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Determines the exact standard column width of the printed newspaper or book page.",
+        },
+        {
+          id: "m_mat",
+          symbol: "M_{\\text{mat}}",
+          name: "Assembled Matrix Character Count",
+          color: "cyan",
+          role: "Total brass character matrices in the assembled line ($30\\text{ to }60\\text{ characters}$)",
+          unit: "Count",
+          dimension: "[1]",
+          explanation:
+            "The total number of letter matrices gathered in the elevator before justification.",
+        },
+        {
+          id: "w_i",
+          symbol: "w_i",
+          name: "Individual Matrix Thickness",
+          color: "coral",
+          role: "Set width of each individual brass character matrix ($0.8\\text{ to }4.5\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Proportional to typographical character width (e.g. wide 'M' vs narrow 'i').",
+        },
+      ],
+      pedagogicalNote:
+        "Before Mergenthaler's invention, human compositors spent hours hand-inserting variable lead spaces to justify right margins. The double-wedge spaceband automated line justification mechanically using simultaneous wedge expansion.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 313,224 automated line justification, enabling daily newspapers to expand from 8 pages to 64+ pages and reducing typesetting costs by 85%.",
+    },
+    {
+      id: "mergenthaler-capillary-eutectic-solidification",
+      patentId: "us-313224-mergenthaler-linotype",
+      title: "Type-Metal Eutectic Solidification & Mold Cavity Pressure",
+      category: "Metallurgy & Fluid Dynamics",
+      rawLatex:
+        "P_{\\text{cavity}} = P_{\\text{pump}} + \\frac{2\\gamma\\cos\\theta}{r_{\\text{matrix}}} - \\frac{128 \\mu L_{\\text{throat}} Q}{\\pi D_{\\text{throat}}^4}",
+      colorizedLatex:
+        "\\textcolor{#059669}{P_{\\text{cavity}}} = \\textcolor{#2563eb}{P_{\\text{pump}}} + \\frac{2\\textcolor{#d97706}{\\gamma}\\cos\\textcolor{#9333ea}{\\theta}}{\\textcolor{#dc2626}{r_{\\text{matrix}}}} - \\frac{128 \\textcolor{#0891b2}{\\mu} L_{\\text{throat}} \\textcolor{#ea580c}{Q}}{\\pi D_{\\text{throat}}^4}",
+      plainEnglishSentence: [
+        {
+          text: "Net ",
+        },
+        {
+          text: "mold cavity filling pressure",
+          variableId: "p_cav",
+        },
+        {
+          text: " combines ",
+        },
+        {
+          text: "plunger pump injection pressure",
+          variableId: "p_pump",
+        },
+        {
+          text: " with ",
+        },
+        {
+          text: "molten alloy surface tension",
+          variableId: "gamma_surf",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "wetting contact angle",
+          variableId: "theta_wet",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "matrix letter engraving radius",
+          variableId: "r_mat",
+        },
+        {
+          text: " minus viscous head loss from ",
+        },
+        {
+          text: "eutectic type-metal viscosity",
+          variableId: "mu_visc",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "volumetric injection flow rate",
+          variableId: "q_flow",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "p_cav",
+          symbol: "P_{\\text{cavity}}",
+          name: "Mold Cavity Liquid Pressure",
+          color: "emerald",
+          role: "Hydrostatic pressure forcing liquid molten metal into the microscopic character serifs ($1.5\\text{ to }3.0\\text{ MPa}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "High pressure ensures sharp, crystal-clear reproduction of fine serifs and punctuation marks before alloy freezing begins.",
+          telemetryMetricLabel: "Cavity Pressure",
+        },
+        {
+          id: "p_pump",
+          symbol: "P_{\\text{pump}}",
+          name: "Well Plunger Injection Pressure",
+          color: "sapphire",
+          role: "Pressure developed by the spring-loaded pot plunger descending into the molten metal well ($2.0\\text{ to }4.0\\text{ MPa}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "A heavy coil spring drives the pot plunger downward, forcing molten metal through the pot mouth into the mold disk.",
+        },
+        {
+          id: "gamma_surf",
+          symbol: "\\gamma",
+          name: "Type-Metal Surface Tension",
+          color: "amber",
+          role: "Liquid surface tension of molten lead-antimony-tin eutectic alloy ($\\approx 0.45\\text{ N/m}$ at $280^\\circ\\text{C}$)",
+          unit: "Newtons / meter (N/m)",
+          dimension: "[M T^-2]",
+          explanation:
+            "Capillarity resists entry into tight corners until pump pressure overcomes the meniscus barrier.",
+        },
+        {
+          id: "theta_wet",
+          symbol: "\\theta",
+          name: "Alloy-Brass Contact Wetting Angle",
+          color: "amethyst",
+          role: "Wetting angle between liquid type metal and engraved brass matrix walls ($110^\\circ\\text{ to }130^\\circ$ non-wetting)",
+          unit: "Degrees",
+          dimension: "[1]",
+          explanation:
+            "Non-wetting properties prevent the cast slug from soldering or sticking to the brass matrices after freezing.",
+        },
+        {
+          id: "r_mat",
+          symbol: "r_{\\text{matrix}}",
+          name: "Matrix Character Engraving Radius",
+          color: "crimson",
+          role: "Microscopic corner radius of fine typographical serifs ($10\\text{ to }50\\,\\mu\\text{m}$)",
+          unit: "Microns (\\mu m)",
+          dimension: "[L]",
+          explanation:
+            "Finer type sizes require higher injection pressures to overcome capillary resistance in tiny letter crevices.",
+        },
+        {
+          id: "mu_visc",
+          symbol: "\\mu",
+          name: "Molten Type-Metal Dynamic Viscosity",
+          color: "cyan",
+          role: "Dynamic viscosity of ternary eutectic alloy ($85\\%\\text{ Pb}, 11\\%\\text{ Sb}, 4\\%\\text{ Sn}$) at $280^\\circ\\text{C}$ ($\\approx 2.4\\text{ mPa}\\cdot\\text{s}$)",
+          unit: "mPa·s",
+          dimension: "[M L^-1 T^-1]",
+          explanation:
+            "The low viscosity of the eutectic mixture allows instantaneous mold filling in under 50 milliseconds.",
+        },
+        {
+          id: "q_flow",
+          symbol: "Q",
+          name: "Volumetric Injection Flow Rate",
+          color: "coral",
+          role: "Rate of molten alloy delivery through pot throat into the mold ($150\\text{ to }300\\text{ cm}^3\\text{/s}$)",
+          unit: "cm^3/s",
+          dimension: "[L^3 T^-1]",
+          explanation: "Completes slug casting before any thermal chill crust forms.",
+        },
+      ],
+      pedagogicalNote:
+        "Type metal expands slightly upon cooling due to its antimony content (11%), perfectly filling the engraved matrix molds before freezing solid in under one second.",
+      claimRef: 2,
+      historicalSignificance:
+        "The eutectic lead-antimony-tin alloy cast at 280 °C provided the exact combination of low melting point, rapid freezing, and sharp edge definition necessary for high-speed linecasting.",
+    },
   ],
 
   // 49. Gottlieb Daimler Marine Engine (US 361,931)
@@ -10477,6 +12064,297 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       historicalSignificance:
         "US 395781 launched the automated data processing industry; Hollerith founded the Tabulating Machine Company in 1896, which later became **IBM (International Business Machines)**.",
     },
+    {
+      id: "hollerith-mercury-cup-current",
+      patentId: "us-395781-hollerith-tabulating",
+      title: "Punched-Card Mercury-Cup Electrical Interface & Solenoid Ohm's Law",
+      category: "Electrical Contact Physics",
+      rawLatex:
+        "I_{\\text{pin}} = \\frac{V_{\\text{battery}}}{R_{\\text{solenoid}} + R_{\\text{wire}} + \\frac{\\rho_{\\text{Hg}} \\ell_{\\text{cup}}}{\\pi r_{\\text{pin}}^2}} \\quad \\text{and} \\quad \\tau_{\\text{pull}} = \\frac{L_{\\text{solenoid}}}{R_{\\text{total}}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{I_{\\text{pin}}} = \\frac{\\textcolor{#2563eb}{V_{\\text{battery}}}}{\\textcolor{#d97706}{R_{\\text{solenoid}}} + \\textcolor{#ea580c}{R_{\\text{wire}}} + \\frac{\\textcolor{#0891b2}{\\rho_{\\text{Hg}}} \\ell_{\\text{cup}}}{\\pi \\textcolor{#9333ea}{r_{\\text{pin}}^2}}} \\quad \\text{and} \\quad \\textcolor{#dc2626}{\\tau_{\\text{pull}}} = \\frac{L_{\\text{solenoid}}}{R_{\\text{total}}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "circuit pulse current",
+          variableId: "i_pin",
+        },
+        {
+          text: " delivered through each hole depends on ",
+        },
+        {
+          text: "chemical battery voltage",
+          variableId: "v_bat",
+        },
+        {
+          text: " divided by ",
+        },
+        {
+          text: "counter solenoid coil resistance",
+          variableId: "r_sol",
+        },
+        {
+          text: ", ",
+        },
+        {
+          text: "lead wiring resistance",
+          variableId: "r_wire",
+        },
+        {
+          text: ", and ",
+        },
+        {
+          text: "liquid mercury contact resistivity",
+          variableId: "rho_hg",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "pin contact radius",
+          variableId: "r_pin",
+        },
+        {
+          text: ", setting the ",
+        },
+        {
+          text: "inductive electrical pull-in time constant",
+          variableId: "tau_pull",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "i_pin",
+          symbol: "I_{\\text{pin}}",
+          name: "Sensing Pin Loop Current",
+          color: "emerald",
+          role: "Current flowing through a single punched hole when the pin plunges into its mercury cup ($0.8\\text{ to }1.2\\text{ A}$ at $12\\text{ V}$)",
+          unit: "Amperes (A)",
+          dimension: "[I]",
+          explanation:
+            "Each punched hole completes an isolated circuit through its corresponding counter coil without affecting adjacent dials.",
+          telemetryMetricLabel: "Pin Current",
+        },
+        {
+          id: "v_bat",
+          symbol: "V_{\\text{battery}}",
+          name: "DC Chemical Battery Supply Voltage",
+          color: "sapphire",
+          role: "Direct current potential from gravity/lead-acid wet cells ($10\\text{ to }15\\text{ V}$)",
+          unit: "Volts (V)",
+          dimension: "[M L^2 T^-3 I^-1]",
+          explanation:
+            "Provides reliable low-voltage excitation without risk of sparking or operator electrical shock.",
+        },
+        {
+          id: "r_sol",
+          symbol: "R_{\\text{solenoid}}",
+          name: "Counter Electromagnet Coil Resistance",
+          color: "amber",
+          role: "Electrical resistance of the insulated copper magnet wire coil ($8\\text{ to }12\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation:
+            "Limits loop current to protect the dial solenoids during prolonged press closure.",
+        },
+        {
+          id: "r_wire",
+          symbol: "R_{\\text{wire}}",
+          name: "Lead Cable Wiring Resistance",
+          color: "coral",
+          role: "Resistance of copper interconnect harness connecting the press bed to the tabulating dials ($0.5\\text{ to }1.5\\,\\Omega$)",
+          unit: "Ohms (\\Omega)",
+          dimension: "[M L^2 T^-3 I^-2]",
+          explanation: "Minimized by thick stranded copper cables.",
+        },
+        {
+          id: "rho_hg",
+          symbol: "\\rho_{\\text{Hg}}",
+          name: "Liquid Mercury Contact Resistivity",
+          color: "cyan",
+          role: "Electrical resistivity of pure liquid mercury in the contact cups ($9.6 \\times 10^{-7}\\,\\Omega\\cdot\\text{m}$)",
+          unit: "Ohm-meters (\\Omega·m)",
+          dimension: "[M L^3 T^-3 I^-2]",
+          explanation:
+            "Liquid mercury conforms perfectly to the rounded steel pin tip, establishing instantaneous zero-bounce conduction.",
+        },
+        {
+          id: "r_pin",
+          symbol: "r_{\\text{pin}}",
+          name: "Sensing Pin Tip Radius",
+          color: "amethyst",
+          role: "Radius of spring-loaded brass/steel contact pin ($0.8\\text{ to }1.2\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation:
+            "Sized to pass freely through the standard $3.175\\text{ mm}$ ($1/8\\text{ inch}$) punched census card holes.",
+        },
+        {
+          id: "tau_pull",
+          symbol: "\\tau_{\\text{pull}}",
+          name: "Solenoid Pull-in Time Constant",
+          color: "crimson",
+          role: "Electrical inductive rise time constant ($L/R \\approx 4\\text{ to }8\\text{ ms}$)",
+          unit: "Milliseconds (ms)",
+          dimension: "[T]",
+          explanation:
+            "Ensures the electromagnetic armature pulls in and locks the register tooth in under 15 milliseconds.",
+        },
+      ],
+      pedagogicalNote:
+        "By using liquid mercury pools beneath non-conductive cardboard cards, Hollerith achieved instant electrical circuit completion through punched holes without mechanical contact wear or oxidization.",
+      claimRef: 1,
+      historicalSignificance:
+        "Hollerith's punched-card electric tabulator processed the 1890 US Census in under two years instead of eight, and founded the Tabulating Machine Company, later renamed IBM.",
+    },
+    {
+      id: "hollerith-sorter-deflection-torque",
+      patentId: "us-395781-hollerith-tabulating",
+      title: "Sorting Box Compartment Gate Electromechanical Release Torque",
+      category: "Electromechanical Automation",
+      rawLatex:
+        "\\tau_{\\text{gate}} = F_{\\text{mag}} r_{\\text{latch}} \\cos\\theta - k_{\\text{spring}} r_{\\text{spring}}^2 \\Delta\\theta = I_{\\text{lid}} \\frac{d^2\\theta}{dt^2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\tau_{\\text{gate}}} = \\textcolor{#2563eb}{F_{\\text{mag}}} \\textcolor{#d97706}{r_{\\text{latch}}} \\cos\\textcolor{#9333ea}{\\theta} - \\textcolor{#dc2626}{k_{\\text{spring}}} r_{\\text{spring}}^2 \\textcolor{#0891b2}{\\Delta\\theta} = \\textcolor{#ea580c}{I_{\\text{lid}}} \\ddot{\\theta}",
+      plainEnglishSentence: [
+        {
+          text: "Net ",
+        },
+        {
+          text: "sorter compartment lid release torque",
+          variableId: "tau_gate",
+        },
+        {
+          text: " is triggered by ",
+        },
+        {
+          text: "solenoid magnetic trip force",
+          variableId: "f_mag",
+        },
+        {
+          text: " acting at ",
+        },
+        {
+          text: "latch trip lever radius",
+          variableId: "r_latch",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "latch engagement angle",
+          variableId: "theta_latch",
+        },
+        {
+          text: ", overcome by ",
+        },
+        {
+          text: "lid torsion spring stiffness",
+          variableId: "k_spring",
+        },
+        {
+          text: " through ",
+        },
+        {
+          text: "lid opening rotation angle",
+          variableId: "dtheta",
+        },
+        {
+          text: " to accelerate ",
+        },
+        {
+          text: "wooden lid moment of inertia",
+          variableId: "i_lid",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "tau_gate",
+          symbol: "\\tau_{\\text{gate}}",
+          name: "Sorting Box Lid Torque",
+          color: "emerald",
+          role: "Dynamic torque snapping open the sorting compartment lid ($0.35\\text{ to }0.75\\text{ N}\\cdot\\text{m}$)",
+          unit: "Newton-meters (N·m)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "When a specific demographic combination triggers a relay, the appropriate sorting box lid pops open automatically so the clerk can drop the card.",
+          telemetryMetricLabel: "Gate Torque",
+        },
+        {
+          id: "f_mag",
+          symbol: "F_{\\text{mag}}",
+          name: "Solenoid Latch Release Force",
+          color: "sapphire",
+          role: "Electromagnetic pull tripping the mechanical latch hook ($4\\text{ to }8\\text{ N}$)",
+          unit: "Newtons (N)",
+          dimension: "[M L T^-2]",
+          explanation: "Disengages the catch in under 10 milliseconds.",
+        },
+        {
+          id: "r_latch",
+          symbol: "r_{\\text{latch}}",
+          name: "Latch Hook Moment Arm",
+          color: "amber",
+          role: "Distance from the lid hinge pivot to the solenoid latch hook ($60\\text{ to }90\\text{ mm}$)",
+          unit: "Millimeters (mm)",
+          dimension: "[L]",
+          explanation: "Multiplies solenoid force to release the spring-loaded lid.",
+        },
+        {
+          id: "theta_latch",
+          symbol: "\\theta",
+          name: "Latch Engagement Angle",
+          color: "amethyst",
+          role: "Angle of latch contact surface relative to normal ($15^\\circ\\text{ to }25^\\circ$)",
+          unit: "Degrees",
+          dimension: "[1]",
+          explanation: "Slight back-angle prevents accidental tripping from vibration.",
+        },
+        {
+          id: "k_spring",
+          symbol: "k_{\\text{spring}}",
+          name: "Opening Torsion Spring Constant",
+          color: "crimson",
+          role: "Torsional spring stiffness driving rapid lid pop-up ($0.8\\text{ to }1.5\\text{ N}\\cdot\\text{m/rad}$)",
+          unit: "N·m / radian",
+          dimension: "[M L^2 T^-2]",
+          explanation: "Forces the lightweight wooden compartment cover open through 45 degrees.",
+        },
+        {
+          id: "dtheta",
+          symbol: "\\Delta\\theta",
+          name: "Lid Pop-up Angle",
+          color: "cyan",
+          role: "Angular opening displacement of the compartment door ($45^\\circ \\approx 0.785\\text{ rad}$)",
+          unit: "Degrees / Radians",
+          dimension: "[1]",
+          explanation: "Provides clear, unambiguous visual guidance for card placement.",
+        },
+        {
+          id: "i_lid",
+          symbol: "I_{\\text{lid}}",
+          name: "Compartment Cover Rotational Inertia",
+          color: "coral",
+          role: "Moment of inertia of lightweight polished wood lid ($1.2 \\times 10^{-3}\\text{ kg}\\cdot\\text{m}^2$)",
+          unit: "kg·m^2",
+          dimension: "[M L^2]",
+          explanation: "Low inertia enables instantaneous 50-millisecond lid flip.",
+        },
+      ],
+      pedagogicalNote:
+        "Hollerith's sorting box connected 26 electromagnetic compartments in parallel with the tabulating circuit, opening a single compartment door automatically based on multi-variable boolean logic combinations.",
+      claimRef: 2,
+      historicalSignificance:
+        "This was the first automated sorting mechanism driven by stored digital data, establishing the foundation of mechanical database querying.",
+    },
   ],
 
   // 52. Jesse Reno Escalator (US 470,918)
@@ -10851,6 +12729,281 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 621195 created the rigid airship (Zeppelin), founded the world's first commercial airline (DELAG in 1909), achieved the first non-stop passenger round-the-world flights, and pioneered lightweight metal space-frame structures used in modern aerospace fuselages.",
+    },
+    {
+      id: "zeppelin-longitudinal-trim-moment",
+      patentId: "us-621195-zeppelin-airship",
+      title: "Sliding Keel-Ballast Pitch Trim & Aerostatic Equilibrium",
+      category: "Aerostatics & Flight Mechanics",
+      rawLatex:
+        "M_{\\text{pitch}} = m_{\\text{trim}} g x_{\\text{ballast}} + \\sum_{k=1}^{N_{\\text{cells}}} (F_{B,k} - W_k) x_k = I_{yy} \\frac{d^2\\theta}{dt^2} + M_{\\text{aero}}(\\alpha, V)",
+      colorizedLatex:
+        "\\textcolor{#059669}{M_{\\text{pitch}}} = \\textcolor{#2563eb}{m_{\\text{trim}}} g \\textcolor{#d97706}{x_{\\text{ballast}}} + \\sum_{k=1}^{N} (\\textcolor{#0891b2}{F_{B,k}} - \\textcolor{#dc2626}{W_k}) \\textcolor{#ea580c}{x_k} = \\textcolor{#9333ea}{I_{yy}} \\ddot{\\theta} + M_{\\text{aero}}",
+      plainEnglishSentence: [
+        {
+          text: "The ",
+        },
+        {
+          text: "net pitch restoring moment",
+          variableId: "m_pitch",
+        },
+        {
+          text: " is adjusted by ",
+        },
+        {
+          text: "movable keel trim ballast mass",
+          variableId: "m_trim",
+        },
+        {
+          text: " shifted along ",
+        },
+        {
+          text: "longitudinal keel track position",
+          variableId: "x_bal",
+        },
+        {
+          text: " to balance ",
+        },
+        {
+          text: "cell buoyant lift",
+          variableId: "f_buoy",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "local compartment structural weight",
+          variableId: "w_cell",
+        },
+        {
+          text: " across ",
+        },
+        {
+          text: "cell station locations",
+          variableId: "x_k",
+        },
+        {
+          text: " against airship ",
+        },
+        {
+          text: "pitch moment of inertia",
+          variableId: "i_yy",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "m_pitch",
+          symbol: "M_{\\text{pitch}}",
+          name: "Longitudinal Pitch Trim Moment",
+          color: "emerald",
+          role: "Net torque rotating the 128-meter airship hull about its transverse pitch axis ($-150\\text{ to }+150\\text{ kN}\\cdot\\text{m}$)",
+          unit: "Kilonewton-meters (kN·m)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Controls climb and descent attitudes without releasing expensive hydrogen gas or dropping water ballast.",
+          telemetryMetricLabel: "Trim Moment",
+        },
+        {
+          id: "m_trim",
+          symbol: "m_{\\text{trim}}",
+          name: "Movable Keel Ballast Mass",
+          color: "sapphire",
+          role: "Sliding lead/iron car ballast mounted on the ventral keel rail ($300\\text{ to }800\\text{ kg}$)",
+          unit: "Kilograms (kg)",
+          dimension: "[M]",
+          explanation:
+            "Operated via winch cables from the forward control car to shift the aircraft's center of gravity fore or aft.",
+          telemetryKey: "trimMassKg",
+        },
+        {
+          id: "x_bal",
+          symbol: "x_{\\text{ballast}}",
+          name: "Ballast Keel Displacement",
+          color: "amber",
+          role: "Distance of sliding ballast car forward or aft of center of buoyancy ($-40\\text{ to }+40\\text{ m}$)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation: "Provides instant pitch attitude control during flight.",
+          telemetryKey: "trimM",
+        },
+        {
+          id: "f_buoy",
+          symbol: "F_{B,k}",
+          name: "Individual Cell Aerostatic Lift",
+          color: "cyan",
+          role: "Buoyant lift force of each isolated hydrogen cell ($8\\text{ to }16\\text{ kN}$ per cell)",
+          unit: "Kilonewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation:
+            "17 separate gas cells prevent longitudinal gas surging during steep climbs or dives.",
+        },
+        {
+          id: "w_cell",
+          symbol: "W_k",
+          name: "Local Compartment Deadweight",
+          color: "crimson",
+          role: "Gravitational weight of aluminum frame ring, fabric, gondolas, and engines at station $k$",
+          unit: "Kilonewtons (kN)",
+          dimension: "[M L T^-2]",
+          explanation: "Heavier at the two engine gondolas and passenger cabins.",
+        },
+        {
+          id: "x_k",
+          symbol: "x_k",
+          name: "Cell Station Distance from Origin",
+          color: "coral",
+          role: "Axial position of each frame section along the 128-meter keel",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation: "Moment arm from center of buoyancy.",
+        },
+        {
+          id: "i_yy",
+          symbol: "I_{yy}",
+          name: "Hull Pitch Moment of Inertia",
+          color: "amethyst",
+          role: "Rotational inertia of the 128-meter hull about the transverse pitch axis ($\\approx 2.5 \\times 10^7\\text{ kg}\\cdot\\text{m}^2$)",
+          unit: "kg·m^2",
+          dimension: "[M L^2]",
+          explanation: "Large inertia dampens aerodynamic pitch gusts.",
+        },
+      ],
+      pedagogicalNote:
+        "Zeppelin used a heavy sliding trim weight running along the ventral walkway keel to adjust static pitch trim dynamically without venting precious lifting gas or dropping water ballast.",
+      claimRef: 1,
+      historicalSignificance:
+        "Ferdinand von Zeppelin's US 621,195 solved the stability problem that destroyed earlier non-rigid airships by enclosing separate gas bags in a continuous rigid aluminum skeleton.",
+    },
+    {
+      id: "zeppelin-spaceframe-bending-stress",
+      patentId: "us-621195-zeppelin-airship",
+      title: "Triangular Duralumin Girder Bending Stress & Ring Truss Rigidity",
+      category: "Structural Mechanics & Spaceframes",
+      rawLatex:
+        "\\sigma_{\\text{max}} = \\frac{M_{\\text{bending}} R_{\\text{hull}}}{I_{\\text{hull}}} = \\frac{M_{\\text{bending}} R_{\\text{hull}}}{\\frac{1}{2} \\sum_{j=1}^{N_{\\text{long}}} A_{\\text{girder}} R_{\\text{hull}}^2}",
+      colorizedLatex:
+        "\\textcolor{#059669}{\\sigma_{\\text{max}}} = \\frac{\\textcolor{#2563eb}{M_{\\text{bending}}} \\textcolor{#d97706}{R_{\\text{hull}}}}{\\textcolor{#9333ea}{I_{\\text{hull}}}} = \\frac{\\textcolor{#2563eb}{M_{\\text{bending}}}}{\\frac{1}{2} \\textcolor{#0891b2}{N_{\\text{long}}} \\textcolor{#dc2626}{A_{\\text{girder}}} \\textcolor{#d97706}{R_{\\text{hull}}}}",
+      plainEnglishSentence: [
+        {
+          text: "Peak ",
+        },
+        {
+          text: "longitudinal space-frame bending stress",
+          variableId: "sigma_bend",
+        },
+        {
+          text: " is induced by ",
+        },
+        {
+          text: "aerodynamic aerodynamic and buoyant bending moments",
+          variableId: "m_bend",
+        },
+        {
+          text: " over ",
+        },
+        {
+          text: "outer hull radius",
+          variableId: "r_hull",
+        },
+        {
+          text: " and ",
+        },
+        {
+          text: "hull cross-sectional second moment of area",
+          variableId: "i_hull",
+        },
+        {
+          text: ", distributed across ",
+        },
+        {
+          text: "longitudinal triangular girders",
+          variableId: "n_long",
+        },
+        {
+          text: " of ",
+        },
+        {
+          text: "duralumin girder cross-sectional area",
+          variableId: "a_girder",
+        },
+        {
+          text: ".",
+        },
+      ],
+      variables: [
+        {
+          id: "sigma_bend",
+          symbol: "\\sigma_{\\text{max}}",
+          name: "Peak Longitudinal Hull Bending Stress",
+          color: "emerald",
+          role: "Tensile/compressive stress carried by the uppermost and lowermost longitudinal girders ($15\\text{ to }45\\text{ MPa}$)",
+          unit: "Megapascals (MPa)",
+          dimension: "[M L^-1 T^-2]",
+          explanation:
+            "Maintained well below the yield strength of duralumin ($220\\text{ MPa}$) through internal diagonal wire bracing.",
+          telemetryMetricLabel: "Bending Stress",
+        },
+        {
+          id: "m_bend",
+          symbol: "M_{\\text{bending}}",
+          name: "Total Longitudinal Bending Moment",
+          color: "sapphire",
+          role: "Bending moment from uneven lift/weight distribution and aerodynamic gusts ($50\\text{ to }200\\text{ kN}\\cdot\\text{m}$)",
+          unit: "Kilonewton-meters (kN·m)",
+          dimension: "[M L^2 T^-2]",
+          explanation:
+            "Zeppelin's rigid framework prevents the catastrophic bending and buckling seen in earlier non-rigid airships.",
+        },
+        {
+          id: "r_hull",
+          symbol: "R_{\\text{hull}}",
+          name: "Airship Outer Hull Radius",
+          color: "amber",
+          role: "Radius of 24-sided polygonal transverse rings ($5.85\\text{ m}$, diameter $11.7\\text{ m}$ on LZ-1)",
+          unit: "Meters (m)",
+          dimension: "[L]",
+          explanation:
+            "Large radius gives extreme structural section modulus with minimal material weight.",
+        },
+        {
+          id: "i_hull",
+          symbol: "I_{\\text{hull}}",
+          name: "Hull Second Moment of Area",
+          color: "amethyst",
+          role: "Second moment of area of the polygonal girder ring assembly ($\\approx 0.045\\text{ m}^4$)",
+          unit: "Meters to the fourth (m^4)",
+          dimension: "[L^4]",
+          explanation: "Geometric resistance to hull bending deflections.",
+        },
+        {
+          id: "n_long",
+          symbol: "N_{\\text{long}}",
+          name: "Longitudinal Girder Count",
+          color: "cyan",
+          role: "Number of continuous longitudinal lattice girders running nose to tail ($24\\text{ girders}$)",
+          unit: "Count",
+          dimension: "[1]",
+          explanation: "Form the 24 longitudinal vertices of the cylindrical hull.",
+        },
+        {
+          id: "a_girder",
+          symbol: "A_{\\text{girder}}",
+          name: "Lattice Girder Cross-Sectional Area",
+          color: "crimson",
+          role: "Effective metal area of riveted duralumin stamped channel angles ($\\approx 3.2\\text{ cm}^2$ per girder)",
+          unit: "Square centimeters (cm^2)",
+          dimension: "[L^2]",
+          explanation: "Lightweight lattice design punched with weight-reduction holes.",
+        },
+      ],
+      pedagogicalNote:
+        "The 24 longitudinal stamped aluminum lattice girders connected by polygonal transverse rings formed a self-supporting spaceframe that maintained aerodynamic form regardless of gas bag inflation.",
+      claimRef: 2,
+      historicalSignificance:
+        "This rigid spaceframe design was the architectural precursor to the Graf Zeppelin and Hindenburg, establishing global commercial transatlantic passenger aviation.",
     },
   ],
 };
