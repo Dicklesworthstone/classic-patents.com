@@ -190,7 +190,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(intervalGhosts("us-3858232-boyle-smith-ccd", {})[0]?.unit).toBe("e⁻");
     expect(fidelityField("us-3858232-boyle-smith-ccd", {})?.unit).toBe("");
     expect(datedScenarios("us-3858232-boyle-smith-ccd")[0]?.id).toBe("murray-hill-1969");
-    expect(coupleLinks("us-3858232-boyle-smith-ccd", {}).length).toBeGreaterThan(0);
+    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})).toEqual([]);
 
     expect(materialProbe("us-3671542-kwolek-kevlar", "Dope", {})?.qty).toBe("E");
     expect(intervalGhosts("us-3671542-kwolek-kevlar", {})[0]?.unit).toBe("GPa");
@@ -261,6 +261,9 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
 
     expect(coupleLinks("us-381968-tesla-motor", { frequency: 60 })).toEqual([]);
     expect(coupleLinks("us-593138-tesla-coil", { inputVoltageKv: 15 })).toEqual([]);
+    expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
+    expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
+    expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("jet");
   });
 
   test("computes Kitty Hawk 1903 empirical flight residuals", () => {

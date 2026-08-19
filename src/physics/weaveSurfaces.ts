@@ -1975,10 +1975,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   if (patentId.includes("wright")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     const v = (params.airspeed ?? 28) * 0.44704;
-    return [
-      { from: "thrust · v", to: "induced drag", watts: si.inducedDragNewtons * v },
-      { from: "warp ΔL", to: "adverse yaw", watts: Math.abs(si.adverseYawNm) * 2 },
-    ];
+    return [{ from: "thrust · v", to: "induced drag", watts: si.inducedDragNewtons * v }];
   }
   if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
     // The source illustrates progressive attraction, not a quantified power
@@ -1992,6 +1989,27 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     });
     return [{ from: "I²R", to: "radiation", watts: bulb.radiantWatts }];
   }
+  if (patentId.includes("davenport") || patentId.includes("us-132")) {
+    const motor = stepDavenportMotor({
+      batteryVoltage: params.batteryVoltage,
+      loadTorque: params.loadTorque,
+    });
+    return [{ from: "battery", to: "shaft", watts: motor.shaftPowerW }];
+  }
+  if (patentId.includes("thomson") || patentId.includes("347140")) {
+    const weld = stepThomsonWelding({
+      weldCurrentAmps: params.weldCurrentAmps ?? params.currentAmperes,
+      clampPressureMpa: params.clampPressureMpa,
+    });
+    return [{ from: "I²R", to: "nugget", watts: weld.jouleWatts }];
+  }
+  if (patentId.includes("pelton") || patentId.includes("233692")) {
+    const pelton = stepPeltonWheel({
+      headMeters: params.headMeters,
+      runnerRpm: params.runnerRpm,
+    });
+    return [{ from: "jet", to: "shaft", watts: pelton.shaftPowerKw * 1000 }];
+  }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     // stepTeslaCoil owns streamer length, secondary potential, and a 0–1 toneEnergy.
     // It does not own a watt. Do not print kV × 20 as if it were primary-spark power.
@@ -2003,27 +2021,12 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     patentId.includes("3923554") ||
     patentId.includes("3858232")
   ) {
-    const wells = stepCcdWells(
-      1,
-      params.incidentLux ?? 850,
-      params.clockFreq ?? 2.5,
-      params.gateVoltage ?? 8,
-    );
-    return [{ from: "photons", to: "well packet", watts: wells.photoElectrons * 1.6e-19 * 1e12 }];
+    // stepCcdWells owns electrons, not a watt. Do not print e⁻ × e × 1e12 as power.
+    return [];
   }
   if (patentId.includes("howe") || patentId.includes("4750")) {
-    const sew = stepHoweSewingMachine(
-      params.crankRpm ?? 240,
-      params.threadTensionGrams ?? 45,
-      params.stitchPitchMm ?? 3.5,
-    );
-    return [
-      {
-        from: "flywheel",
-        to: "lockstitch",
-        watts: sew.stitchFrequencyHz * sew.lockstitchShearStrengthN * 0.003,
-      },
-    ];
+    // Lockstitch shear and stitch rate are owned; a guessed 3 mm throw is not a watt.
+    return [];
   }
   return [];
 }

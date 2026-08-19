@@ -475,6 +475,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.379 Energy strips only where the kernel already owns a watt: Davenport electrical/shaft/copper, Thomson I²R nugget, Otto/Daimler brake hp, Corliss indicated hp, Pelton shaft kW. Tesla motor, Tesla coil, Diesel, Lamarr, Linotype, Hollerith, Engelbart, Kevlar stay empty.
 - [x] P5.380 Tesla coil `coupleLinks` no longer prints invented `(inputVoltageKv ?? 15) * 20` W. The coil step owns kV and streamer length, not a watt.
 - [x] P5.381 Tesla 3D HUD title is Fig. 9 motor-generator, not Source Guide. Overlay prints generator / pole-shift / disk rpm and B intensity from `stepTeslaMotorFig9`.
+- [x] P5.382 `coupleLinks` keeps only owned watts: Wright induced-drag · v, Edison I²R. Dropped invented CCD e⁻×e×1e12, Howe shear×Hz×3 mm, Wright adverse-yaw×2, Tesla coil kV×20.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 
