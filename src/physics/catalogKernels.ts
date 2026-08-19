@@ -815,7 +815,13 @@ export function stepEngelbartMouse(params: {
     clickDisplayMs: Math.max(80, Math.round(180000 / Math.max(1, (v * ppr) / circumferenceMm))),
     pathDisplayOmega: Number((v * 0.018).toFixed(4)),
     resolverSvgScale: 40,
+    diameterToRadius: 2,
   };
+}
+
+/** Registry stores knife-edge radius; the 2D slider is labeled as diameter. */
+export function engelbartRadiusFromDiameterMm(diameterMm: number) {
+  return Number((Math.max(0, diameterMm) / 2).toFixed(3));
 }
 
 export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?: number }) {
@@ -887,6 +893,8 @@ export function stepKevlarContinuum(
   const strainPct = (v / sonic) * 100;
   const tensileStrengthGpa = Number(Math.min(3.6, 0.5 + draw * 0.45).toFixed(2));
   const alignmentPct = Math.min(100, Math.round((draw / 8.0) * 100));
+  const thermalDisorder = Number((Math.max(0, (tempC - 60) / 60) * 0.3).toFixed(3));
+  const shearAlignment = Number(Math.min(1, (50 + ((draw - 2) / 7) * 950) / 600).toFixed(3));
   return {
     tensileStressMpa: Math.round((strainPct / 100) * elasticModulusGpa * 1000),
     tensileStrainPct: Number(strainPct.toFixed(2)),
@@ -897,10 +905,13 @@ export function stepKevlarContinuum(
     residualStrengthGpa: Number((tensileStrengthGpa * (1 - load / 220)).toFixed(2)),
     impactDisplayMs: Math.round(Math.max(400, 1e6 / Math.max(50, v))),
     chainWiggleOmegaRadPerS: Number((draw >= 4 ? 2 : 1.5).toFixed(3)),
-    thermalDisorder: Number((Math.max(0, (tempC - 60) / 60) * 0.3).toFixed(3)),
+    thermalDisorder,
     shearRatePerS: Number((50 + ((draw - 2) / 7) * 950).toFixed(1)),
-    shearAlignment: Number(Math.min(1, (50 + ((draw - 2) / 7) * 950) / 600).toFixed(3)),
+    shearAlignment,
     bulletDisplaySpeed: Number(((v / 400) * 15).toFixed(3)),
+    chainWiggleAmp: Number((0.05 * (1 - shearAlignment) + thermalDisorder).toFixed(4)),
+    chainWobbleAmp: Number((0.03 * thermalDisorder).toFixed(5)),
+    chainWobbleOmega: 2,
     chainWaviness: Number(((100 - alignmentPct) * 0.25 * (1 - load / 180)).toFixed(3)),
     chainEndX: Number((350 + load * 0.28).toFixed(2)),
   };
