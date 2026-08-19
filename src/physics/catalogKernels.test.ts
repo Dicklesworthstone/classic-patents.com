@@ -147,6 +147,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(dieselCamWindows().fuelPumpStrokeAmp).toBe(0.08);
     expect(dieselCamWindows().injectionBar).toBe(45);
     expect(dieselCamWindows().gasIntakeColor).toBe(0x38bdf8);
+    expect(dieselCamWindows().crankR).toBe(0.55);
+    expect(dieselCamWindows().rodLen).toBe(2.2);
+    expect(dieselCamWindows().pistonCrownLift).toBe(1.5);
     expect(farnsworthBeamFrac(-4.5)).toBe(0);
     expect(farnsworthBeamFrac(-0.5)).toBe(0.5);
     expect(farnsworthBeamFrac(3.5)).toBe(1);
@@ -264,6 +267,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicInletX1).toBe(40);
     expect(res.displayWrapDeg).toBe(360);
     expect(parsonsIsRotor(1)).toBe(true);
+    expect(res.steamWrapX).toBe(5);
+    expect(res.steamResetX).toBe(-4.5);
+    expect(res.steamRadiusLp).toBe(2.35);
     expect(parsonsIsRotor(0)).toBe(false);
   });
 
@@ -310,6 +316,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.schematicCartridgeW).toBe(220);
     expect(res.schematicGrainR).toBe(4);
     expect(nobelSchematicKieselguhr(0, 0).cx).toBe(90);
+    expect(res.sparkOmega).toBe(25);
+    expect(res.shockwaveScaleAmp).toBe(1.5);
     expect(nobelSchematicKieselguhr(1, 1).cy).toBe(150);
   });
 
@@ -409,6 +417,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.wristLeadRad).toBeCloseTo(Math.PI * 0.25, 10);
     expect(res.intakeValveCoupling).toBe(0.9);
     expect(res.dashpotHomeY).toBe(1.5);
+    expect(res.crankR).toBe(0.65);
+    expect(res.pinHomeX).toBe(3.8);
+    expect(res.rodLen).toBe(4.4);
   });
 
   test("Gatling gun computes cyclic fire rate and barrel cluster rotation", () => {
@@ -442,6 +453,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.flowMax).toBe(1.4);
     expect(goddardSchematicStack().schematicNoseCx).toBe(200);
     expect(goddardSchematicStack().schematicChamberH).toBe(70);
+    expect(goddardSchematicStack().plumeWrapY).toBe(-8.5);
+    expect(goddardSchematicStack().stage2SepY).toBe(7.5);
   });
 
   test("Pasteur fermentation computes anaerobic ethanol conversion and microbial kill kinetics", () => {
@@ -465,6 +478,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.yeastSvgR).toBe(5);
     expect(res.rodDx).toBe(10);
     expect(res.timerWrapS).toBe(60);
+    expect(res.bubbleRise0).toBe(0.15);
+    expect(res.bubbleWrapY).toBe(2);
+    expect(res.bubbleWarmC).toBe(28);
   });
 
   test("Glidden barbed wire computes tensile yield and barb lock security", () => {
@@ -515,6 +531,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.grossLiftKg).toBeGreaterThan(10000);
     expect(res.netLiftKn).toBeDefined();
     expect(res.gasCellCount).toBe(17);
+    expect(res.swayOmega).toBe(0.8);
+    expect(res.swayAmp).toBe(0.08);
+    expect(res.trimMaxX).toBe(5);
     expect(res.schematicCellCount).toBe(9);
     expect(res.schematicHullRx).toBe(170);
     expect(zeppelinSchematicCell(1).cx).toBe(102);
@@ -539,6 +558,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.exhaustRockerCoupling).toBe(1.5);
     expect(res.flameScale0).toBe(0.6);
     expect(res.hotTubeBrightC).toBe(800);
+    expect(res.crankR).toBe(0.42);
+    expect(res.pinYHome).toBe(-0.65);
+    expect(res.rodLen).toBe(1.7);
   });
 
   test("Hollerith tabulating machine computes pin-brush electrical circuit matrix and tally count", () => {
@@ -700,6 +722,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(bardeenSchematicDie().labelX).toBe(200);
     expect(res.holeSvgR).toBe(3);
     expect(res.holeLabelDx).toBe(2);
+    expect(res.holeWrapPad).toBe(0.1);
+    expect(res.holeResetPad).toBe(0.05);
   });
 
   test("Marconi radio computes quarter-wave antenna radiation resistance and resonant frequency", () => {

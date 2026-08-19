@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -34,6 +35,7 @@ export function HollerithTabulating3D() {
   const clockDialCount = hollerith.registerDialCount;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     cardsPerMin,
@@ -89,6 +91,10 @@ export function HollerithTabulating3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -229,6 +235,10 @@ export function HollerithTabulating3D() {
           { label: "Tau", value: `${hollerith.inductiveTauMs}`, unit: "ms" },
           { label: "Pins", value: String(hollerith.sensingPinCount), unit: "" },
           { label: "Pockets", value: String(hollerith.sortingPocketCount), unit: "" },
+          {
+            label: "Dial crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

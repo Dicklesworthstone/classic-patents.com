@@ -9,6 +9,7 @@
 
 import * as THREE from "three";
 import { stepMaximMachineGun, wrapCycleRad } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(319596);
@@ -500,8 +501,11 @@ export function updateMaximMachineGunKinematics(
   model.muzzleFlashMesh.visible = isMuzzleFlash;
 
   // 5. Water jacket thermal heating & steam emission ($T >= 95 deg C)
+  const heat = heatFrames(12, 16, 2);
+  const localHeat =
+    1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, Math.min(1, barrelTempC / 400), 0.4));
   const steamMat = model.steamPoints.material as THREE.PointsMaterial;
-  steamMat.opacity = steamOpacity;
+  steamMat.opacity = steamOpacity * localHeat;
 
   // Water jacket color thermal shift
   model.materials.jacketMat.color.setHex(

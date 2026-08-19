@@ -16,6 +16,7 @@
 
 import * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 export interface PeltonWheelModel {
@@ -445,13 +446,20 @@ export function updatePeltonWheelKinematics(
     model.jetPoints.visible = true;
     model.sprayPoints.visible = true;
     const pelton = stepPeltonWheel({});
+    const fluid = fluidFrames(16, 8);
+    const frame = Math.abs(Math.floor(model.runnerGroup.rotation.z * 3)) % 8;
 
     // High-speed jet streamline flow
     const jPos = model.jetPoints.geometry.attributes.position.array as Float32Array;
     const jetSpeed = jetDisplaySpeed * dt;
+    const spanX = Math.max(0.1, pelton.jetWrapX - pelton.jetResetX);
     for (let i = 0; i < jPos.length; i += 3) {
-      jPos[i] += jetSpeed;
-      jPos[i + 1] += jetSpeed * pelton.jetYOverX;
+      const u = ((jPos[i] ?? 0) - pelton.jetResetX) / spanX;
+      const v = ((jPos[i + 1] ?? 0) - pelton.jetResetY + 3) / 6;
+      const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
+      const local = 1 + dens;
+      jPos[i] += jetSpeed * local;
+      jPos[i + 1] += jetSpeed * pelton.jetYOverX * local;
       if (jPos[i] > pelton.jetWrapX) {
         jPos[i] = pelton.jetResetX;
         jPos[i + 1] = pelton.jetResetY;

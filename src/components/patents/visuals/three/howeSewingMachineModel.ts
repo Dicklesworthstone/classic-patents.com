@@ -15,6 +15,13 @@
  */
 
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+
+/** Six-bar lockstitch analogue of the needle/shuttle coupling. */
+export function howeCyclicFlex(shaftRate: number): number {
+  const ring = cyclicSymmetry(6, 0.35 + Math.abs(shaftRate) * 0.04);
+  return 1 + 0.12 * cyclicSol(ring, 0);
+}
 
 export interface HoweSewingMachineModel {
   rootGroup: THREE.Group;

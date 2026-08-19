@@ -3,6 +3,8 @@
  * Airspeed control stays in mph (historical); forces and moments are SI.
  */
 
+import { wrightBayTensions } from "./genericWasm";
+
 export const WRIGHT_PATENT_ID = "us-821393-wright-flyer";
 /** Claim 18 rudder linkage: rudder degrees per degree of wing warp. */
 export const WRIGHT_COUPLING = 0.45;
@@ -182,8 +184,7 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     streamFlowSpeed: Number(((controls.airspeedMph / 30) * 18).toFixed(3)),
     downwashSpeed: Number((cl * 0.08).toFixed(4)),
     cradleStudioX: Number((-0.35 + (controls.wingWarpDeg / 15) * 0.12).toFixed(4)),
-    leftBayTension: Number(Math.max(0, liftNewtons / 2200 + controls.wingWarpDeg / 15).toFixed(4)),
-    rightBayTension: Number(Math.max(0, liftNewtons / 2200 - controls.wingWarpDeg / 15).toFixed(4)),
+    ...wrightBayTensions(liftNewtons, controls.wingWarpDeg),
     liftVectorLength: Number(Math.max(0.5, liftNewtons / 1100).toFixed(4)),
     dragVectorLength: Number(Math.max(0.3, totalDragNewtons / 400).toFixed(4)),
     warpLiftN,

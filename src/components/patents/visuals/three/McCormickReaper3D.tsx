@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Layers } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -18,6 +19,7 @@ export function McCormickReaper3D() {
   // Mechanical Reaper Simulation Parameters
   const { params } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
   const cutterCrankRpm = reaper.cutterCrankRpm;
   const reelRpm = reaper.reelRpm;
@@ -73,6 +75,10 @@ export function McCormickReaper3D() {
     }
     controls.update();
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -215,6 +221,10 @@ export function McCormickReaper3D() {
           { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
           { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
           { label: "ω_cut", value: reaper.cutterOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          {
+            label: "Reel crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

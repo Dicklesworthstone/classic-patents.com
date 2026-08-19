@@ -15,6 +15,7 @@
  */
 
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 export interface HollerithTabulatingModelNodes {
   rootGroup: THREE.Group;
@@ -395,10 +396,12 @@ export function updateHollerithTabulatingKinematics(
   isCutaway: boolean,
 ) {
   const pressPhase = Math.sin(timeSec * pressOmegaRadPerS);
+  const bank = cyclicSymmetry(Math.max(4, nodes.dialHands.length), 0.35);
+  const flex = 1 + 0.12 * cyclicSol(bank, 0);
 
   // 1. Pin Press Plunging Stroke & Lever Handle Action
   if (pressPhase > 0) {
-    const plunge = pressPhase * plungeAmp;
+    const plunge = pressPhase * plungeAmp * flex;
     nodes.pinPlateGroup.position.y = 0.8 - plunge;
     nodes.pressLever.rotation.z = Math.PI / 3 - plunge * 0.8;
   } else {

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -457,9 +458,14 @@ export function updateWhitneyCottonGinKinematics(
     model.fiberPoints.visible = true;
     const whitney = stepWhitneyCottonGin({});
     const pos = model.fiberPositions;
+    const fluid = fluidFrames(16, 8);
+    const frame = Math.abs(Math.floor(model.sawCylinderGroup.rotation.x * 2)) % 8;
     for (let i = 0; i < model.fiberCount; i++) {
       const idx = i * 3;
-      pos[idx + 2] += (sawOmegaRadPerS * whitney.fiberSawCoupling + whitney.fiberCarrySpeed) * dt;
+      const u = (i + 0.5) / Math.max(1, model.fiberCount);
+      const dens = 1 + sampleFluidAt(fluid, 16, 8, frame, u, 0.4);
+      pos[idx + 2] +=
+        (sawOmegaRadPerS * whitney.fiberSawCoupling + whitney.fiberCarrySpeed) * dt * dens;
       pos[idx + 1] -= whitney.fiberGravity * dt;
 
       if (pos[idx + 2] > whitney.fiberWrapZ) {

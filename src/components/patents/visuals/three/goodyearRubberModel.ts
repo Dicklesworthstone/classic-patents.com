@@ -15,6 +15,7 @@
 
 import * as THREE from "three";
 import { goodyearUncoilFactor, stepGoodyearRubber } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1436);
@@ -417,16 +418,21 @@ export function updateGoodyearRubberKinematics(
 
   // Deform polymer chains: Affine extension and transverse Poisson thinning
   const uncoilFactor = goodyearUncoilFactor(stretch, rubber.uncoilMin);
+  const heat = heatFrames(12, 16, 2);
+  const heatFrame = Math.abs(Math.floor(timeSec * 6)) % 16;
   for (let c = 0; c < nodes.chains.length; c++) {
     const item = nodes.chains[c];
     item.mesh.scale.set(stretch, uncoilFactor, uncoilFactor);
-
+    const u = (c + 0.5) / Math.max(1, nodes.chains.length);
+    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, 0.35));
     item.mesh.position.y =
       Math.sin(timeSec * rubber.thermalWobbleOmega + c * rubber.thermalWobblePhasePitch) *
-      thermalAmplitude;
+      thermalAmplitude *
+      local;
     item.mesh.position.z =
       Math.cos(timeSec * rubber.thermalWobbleOmega + c * rubber.thermalWobblePhasePitch) *
-      thermalAmplitude;
+      thermalAmplitude *
+      local;
   }
 
   // Sulfur bridges distribution

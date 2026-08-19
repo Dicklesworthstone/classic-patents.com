@@ -15,6 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -80,6 +81,11 @@ export function DieselEngine3D() {
   const animRef = useRef<number | null>(null);
   const nodesRef = useRef<DieselEngineNodes | null>(null);
   const matsRef = useRef<DieselEngineMaterials | null>(null);
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -423,6 +429,10 @@ export function DieselEngine3D() {
           { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
           { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
           { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          {
+            label: "Gas crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

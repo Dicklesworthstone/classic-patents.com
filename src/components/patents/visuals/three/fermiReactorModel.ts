@@ -12,6 +12,12 @@
  */
 
 import * as THREE from "three";
+import {
+  heatFrames,
+  laplacianModeShape,
+  laplacianModes,
+  sampleHeatAt,
+} from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -323,14 +329,21 @@ export function updateFermiReactorKinematics(
   model.uraniumFuelMat.emissive = new THREE.Color(kEff > 1.002 ? 0xf97316 : 0x22c55e);
 
   if (showNeutronCascade) {
+    const heat = heatFrames(12, 16, 2);
+    const modes = laplacianModes(17, 3);
+    const heatFrame = Math.max(0, Math.min(15, Math.floor((kEff - 0.9) * 80)));
     const speed = neutronDisplaySpeed * delta;
     const pos = model.neutronPos;
     const vel = model.neutronVel;
     for (let i = 0; i < model.neutronCount; i++) {
       const idx = i * 3;
-      pos[idx] += vel[idx] * speed * 2.0;
-      pos[idx + 1] += vel[idx + 1] * speed * 2.0;
-      pos[idx + 2] += vel[idx + 2] * speed * 2.0;
+      const u = 0.5 + ((pos[idx] ?? 0) + 3.6) / 7.2;
+      const v = 0.5 + ((pos[idx + 2] ?? 0) + 3.6) / 7.2;
+      const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v));
+      const lattice = 1 + 0.35 * laplacianModeShape(modes, 17, 3, 0, i);
+      pos[idx] += (vel[idx] ?? 0) * speed * 2.0 * local;
+      pos[idx + 1] += (vel[idx + 1] ?? 0) * speed * 2.0 * lattice;
+      pos[idx + 2] += (vel[idx + 2] ?? 0) * speed * 2.0 * local;
 
       if (
         Math.abs(pos[idx]) > 3.6 ||

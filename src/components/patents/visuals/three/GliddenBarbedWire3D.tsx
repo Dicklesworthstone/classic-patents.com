@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -34,6 +35,7 @@ export const GliddenBarbedWire3D = memo(() => {
   });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     machineRpm: glidden.machineRpm,
@@ -89,6 +91,10 @@ export const GliddenBarbedWire3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -238,6 +244,10 @@ export const GliddenBarbedWire3D = memo(() => {
           },
           { label: "Tensile Strength", value: String(glidden.tensileStrengthLbs), unit: "lbs" },
           { label: "ω_flyer", value: glidden.flyerOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Flyer crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 function deterministicUnit(index: number, channel: number): number {
   let state = Math.imul(index + 1, 0x9e3779b1) ^ Math.imul(channel + 1, 0x85ebca6b);
@@ -426,9 +427,11 @@ export function updateMcCormickReaperKinematics(
   showStalks: boolean,
   isCutaway = false,
 ): void {
+  const reel = cyclicSymmetry(6, 0.4 + Math.abs(reelRadPerSec) * 0.05);
+  const flex = 1 + 0.18 * cyclicSol(reel, 0);
   model.driveWheelGroup.rotation.x = elapsedSeconds * wheelRadPerSec;
   model.reelGroup.rotation.x = elapsedSeconds * reelRadPerSec;
-  model.sickleBarGroup.position.x = Math.sin(elapsedSeconds * cutterRadPerSec) * 0.22;
+  model.sickleBarGroup.position.x = Math.sin(elapsedSeconds * cutterRadPerSec) * 0.22 * flex;
   model.stalksInstanced.visible = showStalks;
 
   // Cutaway mode: make wooden platform deck and divider boards translucent

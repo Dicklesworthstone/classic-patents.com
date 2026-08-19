@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepBellTelephone } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -36,6 +37,7 @@ export const BellTelephone3D = memo(() => {
   const [showAcousticWaves] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const bell = stepBellTelephone({
     voiceAmplitude: params.voiceAmplitude ?? 75,
@@ -106,6 +108,10 @@ export const BellTelephone3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -252,6 +258,10 @@ export const BellTelephone3D = memo(() => {
           { label: "Modulated Current", value: bell.modulatedMa.toFixed(2), unit: "mA" },
           { label: "Battery Voltage", value: batteryVoltage.toFixed(1), unit: "V" },
           { label: "Liquid Conductivity", value: liquidConductivity.toFixed(2), unit: "S/m" },
+          {
+            label: "Wave crate",
+            value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
+          },
         ]}
       />
     </div>

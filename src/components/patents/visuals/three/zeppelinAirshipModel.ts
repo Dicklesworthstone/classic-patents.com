@@ -14,6 +14,8 @@
  */
 
 import * as THREE from "three";
+import { stepZeppelinAirship } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface ZeppelinAirshipModelNodes {
   rootGroup: THREE.Group;
@@ -345,12 +347,22 @@ export function updateZeppelinAirshipKinematics(
   trimWeightPosM: number,
   isCutaway: boolean,
 ) {
+  const zeppelin = stepZeppelinAirship({});
+  const heat = heatFrames(12, 16, 2);
+  const lift =
+    1 + Math.abs(sampleHeatAt(heat, 12, 16, Math.abs(Math.floor(timeSec * 4)) % 16, 0.5, 0.3));
   // 1. Aerostatic Buoyancy Altitude & Gentle Flight Sway
-  nodes.hullGroup.position.y = hullStudioY + Math.sin(timeSec * 0.8) * 0.08;
-  nodes.hullGroup.rotation.z = (pitchTrimDeg * Math.PI) / 180 + Math.sin(timeSec * 0.4) * 0.01;
+  nodes.hullGroup.position.y =
+    hullStudioY + Math.sin(timeSec * zeppelin.swayOmega) * zeppelin.swayAmp * lift;
+  nodes.hullGroup.rotation.z =
+    (pitchTrimDeg * Math.PI) / 180 +
+    Math.sin(timeSec * zeppelin.pitchSwayOmega) * zeppelin.pitchSwayAmp;
 
   // 2. Sliding Trim Weight Translation along Keel
-  nodes.trimWeightMesh.position.x = Math.max(-5.0, Math.min(5.0, trimWeightPosM));
+  nodes.trimWeightMesh.position.x = Math.max(
+    zeppelin.trimMinX,
+    Math.min(zeppelin.trimMaxX, trimWeightPosM),
+  );
 
   // 3. Spin Propellers
   for (const prop of nodes.propellers) {

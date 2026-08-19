@@ -458,6 +458,69 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.365 Corliss govOmegaRatio / wristLeadRad / intakeValveCoupling / dashpotDropAmp. 3D no longer converts leftover crank×2.5, π/4 lead, ×0.9/0.7, or dashpot 1.2/1.5 privately.
 - [x] P5.366 Tesla motor coilPhaseOffsetRad / coilEmissiveAmp. 3D no longer converts leftover phaseIdx×π/2 or |I|×0.9 privately.
 - [x] P5.367 Edison phonograph stylusHomeY. 3D no longer converts leftover stylus −0.55 privately.
+- [x] P5.368 Daimler crankR / pinYHome / rodLen. 3D no longer converts leftover 0.42/−0.65/1.7 slider-crank privately.
+- [x] P5.369 Corliss crankR / pinHomeX / rodLen. 3D no longer converts leftover 0.65/3.8/4.4 slider-crank privately.
+- [x] P5.370 Diesel crankR / rodLen / crankTdcPhase / pinYHome / pistonCrownLift. 3D no longer converts leftover 0.55/2.2/π/2/−1.65/1.5 privately.
+- [x] P5.371 Pasteur bubbleRise / bubbleWrapY / bubbleWarmC. 3D no longer converts leftover /100, 0.15+1.4, wrap 2.0/−1.4, or 28 °C privately.
+- [x] P5.372 Goddard plumeWrapY / stage2SepY / sepLerp / plumeGimbalCoupling. 3D no longer converts leftover −8.5/−4.2, 7.5/−6, lerp 0.05/0.1, or gimbal ×0.4 privately.
+- [x] P5.373 Parsons steamWrapX / steamRadiusIp-Lp / steamGrowPerS. 3D no longer converts leftover wrap 5/−4.5 or stage radii 0.8/1.25/1.75/2.35 privately.
+- [x] P5.374 Nobel sparkOmega / shockwaveScale / matrixEmissive. 3D no longer converts leftover t×25/×8, scale 1+1.5, or 0xff3300 privately.
+- [x] P5.375 Bardeen holeWrapPad / holeResetPad. 3D no longer converts leftover gap/2+0.1 or reset −0.05 privately.
+- [x] P5.376 Zeppelin swayOmega / swayAmp / trimMinX. 3D no longer converts leftover sin(t×0.8)×0.08 or trim ±5 privately.
+
+## P6 — Generic crate composition (no per-patent WASM required)
+
+Wright already has `fs-flyer-wasm`. Tesla coil and Goddard have dedicated
+modules. Every other patent should compose **generic** FrankenSim crates
+(`fs-ga`, `fs-sparse`, `fs-fft`, `fs-truss`, `fs-flux`) through `fs-wasm`
+instead of waiting for a ready-made per-machine crate.
+
+- [x] P6.1 `genericWasm.ts` loads `/wasm/fs-generic/` and reports `wasm` vs `ts-fallback` honestly.
+- [x] P6.2 Tesla Fig. 9 flux particles drain `ga_motor_orbit` (fs-ga screw motor). The rotating field is a geometric-algebra motor, not hypot-rotate leftover SI.
+- [x] P6.3 Edison envelope gas drains `heat_frames` (fs-sparse 5-pt Laplacian). Local jitter follows the heat sample at the molecule's (u,v).
+- [x] P6.4 Marconi wavefront opacity/scale drains `wave2d_frames` RMS. The spark field is a 2-D wave, not a leftover ring timer.
+- [ ] P6.5 Drop `fs-wasm` pkg into `public/wasm/fs-generic/` when the artifact is reviewed (5.1 MB vs ~64 KB flyer/Tesla). Loader already probes that path. Without it the host fallback is labeled `ts-*-fallback`.
+- [x] P6.6 Wright guy-wire bay tension from `cyclic_symmetry` (6-bay ring stencil, point load at the high-AoA tip). Shared by 2D/3D/badge via `wrightBayTensions`. Discrete analogue of a bay truss; full `trusspath` LP waits on the 5.1 MB artifact.
+- [x] P6.7 Gramme flux radii and Gatling bolt cam drain `cyclic_symmetry` (36-junction ring / 6-barrel cluster).
+- [x] P6.8 Fermi neutron cascade drains `heat_frames` + `laplacian_modes`; Einstein thermosiphon speed drains `heat_frames` at each fluid sample.
+- [x] P6.9 Pelton jet and Parsons steam drain `fluid_frames` (fs-lbm / Stam analog). Local density modulates jet/steam advance. HUD says `ts-fluid-fallback` until `/wasm/fs-generic/` exists.
+- [x] P6.10 Gramme/Gatling HUD print circulant first harmonic `h₁` from `cyclic_symmetry`.
+- [x] P6.11 Spencer spoke ω/opacity drains `heat_frames`; Goodyear chain wobble drains `heat_frames`; Noyce signal speed drains `laplacian_modes` mode 0.
+- [x] P6.12 Bardeen hole drift drains `heat_frames` along the gap (minority-carrier diffusion is a heat analog).
+- [x] P6.13 Nobel shock scale/emissive drains `wave2d_frames` RMS (the blast is a 2-D wave, not leftover sin).
+- [x] P6.14 Thomson HAZ spark radius drains `heat_frames` at the weld nugget.
+- [x] P6.15 Bell acoustic rings drain `wave2d_frames` RMS (same crate as Marconi spark field).
+- [x] P6.16 Pasteur bubble rise drains `heat_frames` at each bubble (u,v).
+- [x] P6.17 Diesel flame/gas emissive drains `heat_frames` along the four-stroke cam cycle.
+- [x] P6.18 Westinghouse shoe-spark jitter drains `fluid_frames` (train-pipe air analog).
+- [x] P6.19 Zeppelin hull sway drains `heat_frames` (hydrogen temperature / lift analog).
+- [x] P6.20 Farnsworth raster jitter drains `laplacian_modes` mode 0 (image-dissector eigenmode).
+- [x] P6.21 Davenport commutator sparks drain `ga_motor_orbit` (same PGA motor crate as Tesla Fig. 9 flux).
+- [x] P6.22 Otto combustion-gas emissive drains `heat_frames` along the four-stroke phase.
+- [x] P6.23 Morse circuit electrons drain `wave2d_frames` RMS (line current as a 2-D wave).
+- [x] P6.24 Lincoln bellows scale drains `fluid_frames` (camels are an air analog).
+- [x] P6.25 Hyatt celluloid rod flow drains `fluid_frames` (molten pyroxyline analog).
+- [x] P6.26 Boyle-Smith CCD packet transfer drains `laplacian_modes` mode 0 (well eigenmode).
+- [x] P6.27 Kwolek ballistic impact speed drains `wave2d_frames` RMS (dissipation wave).
+- [x] P6.28 Lamarr hop-bar scale drains `laplacian_modes` mode 0 (88-key spectral eigenmode).
+- [x] P6.29 Wozniak Φ1/Φ2 bus packets drain `laplacian_modes` mode 0 (address-bus eigenmode).
+- [x] P6.30 Howe needle/shuttle coupling drains `cyclic_symmetry` n=6 (`howeCyclicFlex`).
+- [x] P6.31 Otis cab hoist / crown sheave drain `cyclic_symmetry` n=6.
+- [x] P6.32 Sholes type-basket strike drains `cyclic_symmetry` over the live typebar count.
+- [x] P6.33 Whitney lint fibers drain `fluid_frames` along the saw-cylinder frame.
+- [x] P6.34 Maxim jacket steam opacity drains `heat_frames` at barrel temperature.
+- [x] P6.35 Corliss wrist/valve levers drain `cyclic_symmetry` n=4 (rotary-valve ring).
+- [x] P6.36 Ericsson wake particles drain `fluid_frames` (propeller slipstream analog).
+- [x] P6.37 McCormick sickle stroke drains `cyclic_symmetry` n=6 (reel-bat ring).
+- [x] P6.38 Eastman spool/key advance drains `cyclic_symmetry` n=8 (sprocket analogue).
+- [x] P6.39 Glidden flyer/reel twist drains `cyclic_symmetry` n=6.
+- [x] P6.40 Mergenthaler star-wheel / distributor drains `cyclic_symmetry` n=8 (magazine ring).
+- [x] P6.41 Reno head/tail sheaves drain `cyclic_symmetry` n=8 (cleat-loop analogue).
+- [x] P6.42 Engelbart X/Y resolver wheels drain `cyclic_symmetry` n=4 (orthogonal pair).
+- [x] P6.43 Hollerith pin-press plunge drains `cyclic_symmetry` over the dial bank. Dial face values stay local theater.
+- [x] P6.44 Colt muzzle blast/smoke drains `wave2d_frames` RMS (chamber index as tape frame). Cylinder index stays discrete 72°.
+- [x] P6.45 Daimler hot-tube flame scale drains `heat_frames` along the four-stroke phase.
+- [x] P6.46 De Laval cream/skim drop advance drains `fluid_frames` (`delavalFluidAdvance`).
 
 ## Explicitly out of scope
 

@@ -4,9 +4,10 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildDeLavalSeparatorModel } from "./delavalSeparatorModel";
+import { buildDeLavalSeparatorModel, delavalFluidAdvance } from "./delavalSeparatorModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -29,6 +30,7 @@ export function DeLavalSeparator3D() {
   const throughputLitersPerHr = sep.creamFlowLph;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     bowlRpm,
@@ -90,6 +92,10 @@ export function DeLavalSeparator3D() {
   };
 
   useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -124,7 +130,8 @@ export function DeLavalSeparator3D() {
 
       // Cream (inner) vs skim (outer) only when g-force is high enough to split
       const split = p.centrifugalGs > 2000;
-      const creamSpeed = p.creamDropAdvancePerS;
+      const creamSpeed = p.creamDropAdvancePerS * delavalFluidAdvance(elapsed, 0.3);
+      const skimSpeed = p.skimDropAdvancePerS * delavalFluidAdvance(elapsed, 0.75);
       model.creamDrops.forEach((drop, i) => {
         drop.visible = split;
         drop.position.y =
@@ -133,8 +140,7 @@ export function DeLavalSeparator3D() {
       model.skimDrops.forEach((drop, i) => {
         drop.visible = split;
         drop.position.y =
-          p.skimDropOriginY -
-          ((elapsed * p.skimDropAdvancePerS + i * p.skimDropSpacing) % p.skimDropWrap);
+          p.skimDropOriginY - ((elapsed * skimSpeed + i * p.skimDropSpacing) % p.skimDropWrap);
       });
 
       renderer.render(scene, camera);
@@ -233,6 +239,10 @@ export function DeLavalSeparator3D() {
           { label: "Skim", value: sep.skimFlowLph.toFixed(1), unit: "L/h" },
           { label: "ω", value: sep.bowlOmegaRadPerS.toFixed(0), unit: "rad/s" },
           { label: "ω×0.15", value: sep.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Cream crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Waves } from "
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -32,6 +33,7 @@ export function EricssonPropeller3D() {
   const [showWake, setShowWake] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     shaftRpm,
@@ -92,6 +94,10 @@ export function EricssonPropeller3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -259,6 +265,10 @@ export function EricssonPropeller3D() {
           { label: "Source shafts", value: "b opposite a", unit: "b slower" },
           { label: "Source casing", value: "about 1/8", unit: "inch clearance" },
           { label: "Display motion", value: String(Math.round(shaftRpm)), unit: "model rpm" },
+          {
+            label: "Wake crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

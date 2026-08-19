@@ -17,6 +17,7 @@
 
 import * as THREE from "three";
 import { wozniakIsVideoPacket } from "@/physics/catalogKernels";
+import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -352,18 +353,20 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
   ) => {
     const bPos = busPos;
     const speed = busDisplaySpeed * delta;
+    const modes = laplacianModes(16, 3);
 
     for (let i = 0; i < busPacketCount; i++) {
       const idx = i * 3;
       const isPhi1Video = wozniakIsVideoPacket(i);
+      const mode = 1 + 0.35 * laplacianModeShape(modes, 16, 3, 0, i);
 
       if (isPhi1Video) {
-        bPos[idx] += speed * 1.5;
+        bPos[idx] += speed * 1.5 * mode;
         if (bPos[idx] > 3.8) {
           bPos[idx] = -2.8;
         }
       } else if (isCpuActive) {
-        bPos[idx + 2] += speed * 1.2;
+        bPos[idx + 2] += speed * 1.2 * mode;
         if (bPos[idx + 2] > 2.8) {
           bPos[idx + 2] = -2.2;
         }

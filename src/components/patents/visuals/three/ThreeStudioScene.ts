@@ -61,6 +61,9 @@ function createProceduralSkyTexture(
   isDark: boolean,
   _style: EnvironmentStyle,
 ): THREE.CanvasTexture {
+  if (typeof document === "undefined") {
+    return new THREE.Texture() as unknown as THREE.CanvasTexture;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;

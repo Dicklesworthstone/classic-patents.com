@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildMarconiRadioModel, updateMarconiRadioKinematics } from "./marconiRadioModel";
@@ -33,6 +34,7 @@ export function MarconiRadio3D() {
   const [showEmWavefronts] = useState<boolean>(true);
   const [isSparking] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Electromagnetic Wireless Physics (FrankenSim Monopole Radiation)
@@ -100,6 +102,10 @@ export function MarconiRadio3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -248,6 +254,10 @@ export function MarconiRadio3D() {
             label: "R_rad",
             value: `${radioPhysics.radiationResistanceOhms.toFixed(1)}`,
             unit: "Ω",
+          },
+          {
+            label: "Wave crate",
+            value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
           },
         ]}
       />

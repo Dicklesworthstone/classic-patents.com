@@ -4,6 +4,13 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
+import {
+  cyclicHarmonic,
+  cyclicSol,
+  cyclicSymmetry,
+  ensureGenericWasm,
+  genericKernelSource,
+} from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGatlingGunModel } from "./gatlingGunModel";
@@ -30,6 +37,7 @@ export function GatlingGun3D() {
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     crankRpm,
@@ -84,6 +92,10 @@ export function GatlingGun3D() {
   };
 
   useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  useEffect(() => {
     if (!containerRef.current) return;
 
     const studio = createThreeStudioScene({
@@ -121,9 +133,16 @@ export function GatlingGun3D() {
 
       // Kinematic Cam Track Bolt Reciprocation
       const currentAngle = model.barrelClusterGroup.rotation.x;
+      const ring = cyclicSymmetry(Math.max(4, model.bolts.length), 0.5 + p.crankRpm / 80);
+      let peak = 1e-9;
+      for (let i = 0; i < model.bolts.length; i++) {
+        peak = Math.max(peak, Math.abs(cyclicSol(ring, i)));
+      }
       model.bolts.forEach((bolt, idx) => {
         const barrelAngle = currentAngle + idx * p.barrelSpacingRad;
-        bolt.position.x = gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio);
+        const flex = cyclicSol(ring, idx) / peak;
+        bolt.position.x =
+          gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio) + flex * 0.04;
       });
 
       // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
@@ -242,6 +261,17 @@ export function GatlingGun3D() {
           { label: "Cooling", value: String(gatling.barrelCoolingIntervalS), unit: "s/bbl" },
           { label: "E", value: String(gatling.muzzleEnergyJoules), unit: "J" },
           { label: "ω", value: gatling.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          {
+            label: "Cluster crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
+          {
+            label: "h₁",
+            value: cyclicHarmonic(
+              cyclicSymmetry(Math.max(4, params.barrelCount ?? 6), 0.5 + crankRpm / 80),
+              1,
+            ).toFixed(3),
+          },
         ]}
       />
     </div>

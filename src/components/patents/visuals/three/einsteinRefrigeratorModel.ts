@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { einsteinFluidSign, stepEinsteinRefrigerator } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -333,10 +334,16 @@ export function updateEinsteinRefrigeratorKinematics(
   // Convection thermosiphon circulation
   const pos = model.fluidPositions;
   const speed = fluidDisplaySpeed * delta;
-  const wrapY = stepEinsteinRefrigerator({}).fluidWrapY;
+  const fridge = stepEinsteinRefrigerator({});
+  const wrapY = fridge.fluidWrapY;
+  const heat = heatFrames(12, 16, 2);
+  const heatFrame = Math.max(0, Math.min(15, Math.floor((fridge.coolingWatts / 80) * 8)));
   for (let i = 0; i < model.fluidCount; i++) {
     const idx = i * 3;
-    pos[idx + 1] += einsteinFluidSign(i) * speed;
+    const u = 0.5 + ((pos[idx] ?? 0) + 3) / 6;
+    const v = 0.5 + ((pos[idx + 1] ?? 0) + wrapY) / (2 * wrapY);
+    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v));
+    pos[idx + 1] += einsteinFluidSign(i) * speed * local;
     if (pos[idx + 1] > wrapY) pos[idx + 1] = -wrapY;
     if (pos[idx + 1] < -wrapY) pos[idx + 1] = wrapY;
   }

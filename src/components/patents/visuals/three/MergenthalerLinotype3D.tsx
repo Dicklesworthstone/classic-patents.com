@@ -3,6 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -42,6 +43,7 @@ export function MergenthalerLinotype3D() {
   const charsPerHour = linotypeIdle.charsPerHour;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     matrixRate,
@@ -94,6 +96,10 @@ export function MergenthalerLinotype3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -246,6 +252,10 @@ export function MergenthalerLinotype3D() {
           { label: "Solid", value: String(linotypeIdle.solidificationTimeMs), unit: "ms" },
           { label: "Hardness", value: String(linotypeIdle.brinellHardness), unit: "HB" },
           { label: "Dist", value: String(linotypeIdle.distributorFreqHz), unit: "Hz" },
+          {
+            label: "Mag crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

@@ -12,6 +12,7 @@
  */
 
 import * as THREE from "three";
+import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -372,6 +373,7 @@ export function updateLamarrFrequencyHoppingKinematics(
   model.drum2.rotation.y += delta * 1.5;
 
   const maxDisplayChannels = model.barMeshes.length;
+  const modes = laplacianModes(16, 3);
   for (let c = 0; c < maxDisplayChannels; c++) {
     const bar = model.barMeshes[c];
     if (c >= liveChannels) {
@@ -384,8 +386,9 @@ export function updateLamarrFrequencyHoppingKinematics(
     const isJamZone = isJammingActive && Math.abs(c - jamCenter) <= 2;
     const isActive = c === activeChan;
 
+    const mode = 1 + 0.35 * Math.abs(laplacianModeShape(modes, 16, 3, 0, c));
     if (isActive) {
-      bar.scale.y = 3.5;
+      bar.scale.y = 3.5 * mode;
       bar.position.y = 0.7;
       mat.color.setHex(0x38bdf8);
       mat.emissive.setHex(0x0284c7);

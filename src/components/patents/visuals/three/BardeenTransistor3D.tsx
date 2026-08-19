@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -31,6 +32,7 @@ export const BardeenTransistor3D = memo(() => {
   const [showHoleDrift] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // Transistor Physics Calculations (FrankenSim Germanium Minority Transport)
   const semiState = FrankenSimEngine.stepBardeenTransistor(
@@ -107,6 +109,10 @@ export const BardeenTransistor3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -246,6 +252,10 @@ export const BardeenTransistor3D = memo(() => {
           { label: "Collector I_c", value: collectorCurrentMa, unit: "mA" },
           { label: "Voltage Gain A_v", value: `${voltageGain.toFixed(1)}×` },
           { label: "Power Gain G_p", value: `${powerGainDb.toFixed(1)}`, unit: "dB" },
+          {
+            label: "Hole crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

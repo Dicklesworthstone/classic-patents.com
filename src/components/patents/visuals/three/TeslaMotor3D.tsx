@@ -3,8 +3,10 @@
 import { Camera, Eye, EyeOff, RotateCcw, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -23,6 +25,7 @@ export function TeslaMotor3D() {
   const [showMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const apparatus = stepTeslaMotorFig9(acFrequencyHz);
 
@@ -72,6 +75,10 @@ export function TeslaMotor3D() {
   };
 
   useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
@@ -103,6 +110,7 @@ export function TeslaMotor3D() {
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
     let bFieldAngle = 0;
+    let fieldTimeSec = 0;
     let lastFrameTimeMs: number | undefined;
 
     const animate = (frameTimeMs: number) => {
@@ -117,6 +125,7 @@ export function TeslaMotor3D() {
       // The shared display rate keeps the field motion legible in the source guide.
       const omegaDisplay = p.fieldDisplayOmegaRadPerS;
       bFieldAngle += omegaDisplay * delta;
+      fieldTimeSec += delta;
       const field = teslaBAt(bFieldAngle);
       bFieldArrow.setDirection(new THREE.Vector3(field.bx, 0, field.by));
 
@@ -126,6 +135,7 @@ export function TeslaMotor3D() {
         omegaDisplay,
         bFieldAngle,
         p.showMagneticFlux && sourceGuideAvailable,
+        fieldTimeSec,
       );
 
       bFieldArrow.visible = p.showMagneticFlux && sourceGuideAvailable;
@@ -276,6 +286,20 @@ export function TeslaMotor3D() {
             ))}
           </div>
         )}
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="fs-ga rotating-field motor"
+          chips={[
+            { label: "Crate", value: crateSource === "wasm" ? "fs-wasm" : "ts-ga-fallback" },
+            { label: "Field f", value: acFrequencyHz.toFixed(0), unit: "Hz" },
+            {
+              label: "ω_display",
+              value: apparatus.fieldDisplayOmegaRadPerS.toFixed(2),
+              unit: "rad/s",
+            },
+          ]}
+        />
       </div>
     </div>
   );

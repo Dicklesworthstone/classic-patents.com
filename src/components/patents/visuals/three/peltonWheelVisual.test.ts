@@ -20,6 +20,8 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(modelSource).toContain("buildPeltonWheelModel");
     expect(modelSource).toContain("updatePeltonWheelKinematics");
     expect(modelSource).toContain("jetDisplaySpeed");
+    expect(modelSource).toContain("fluidFrames");
+    expect(modelSource).toContain("sampleFluidAt");
     expect(modelSource).not.toContain("/ 90");
   });
 

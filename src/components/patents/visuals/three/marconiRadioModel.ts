@@ -14,6 +14,7 @@
  */
 
 import * as THREE from "three";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1208);
@@ -411,15 +412,18 @@ export function updateMarconiRadioKinematics(
   }
 
   // 3. Electromagnetic Wavefront Propagation
+  const wave = wave2dFrames(16, 24, 2);
+  const waveFrame = Math.floor(timeSec * Math.max(0.1, wavePhaseRate) * 4) % 24;
+  const waveEnergy = waveFrameRms(wave, 16, 24, waveFrame);
   for (let i = 0; i < nodes.waveCount; i++) {
     const ring = nodes.waveRings[i];
     if (ring) {
       ring.visible = showEmWavefronts && isSparking;
       const wavePhase = (timeSec * wavePhaseRate + i * 0.7) % 3.0;
-      ring.scale.setScalar(1.0 + wavePhase * 0.6);
+      ring.scale.setScalar(1.0 + wavePhase * 0.6 * (1 + waveEnergy));
       (ring.material as THREE.MeshBasicMaterial).opacity = Math.max(
         0,
-        waveOpacityBase - wavePhase * 0.24,
+        (waveOpacityBase - wavePhase * 0.24) * (0.35 + waveEnergy * 2),
       );
     }
   }

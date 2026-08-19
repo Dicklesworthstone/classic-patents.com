@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Wind, Zap } from "luci
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildParsonsTurbineModel, updateParsonsTurbineKinematics } from "./parsonsTurbineModel";
@@ -38,6 +39,7 @@ export function ParsonsTurbine3D() {
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     turbineRpm,
@@ -100,6 +102,10 @@ export function ParsonsTurbine3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -255,6 +261,10 @@ export function ParsonsTurbine3D() {
           { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
           { label: "u", value: String(parsons.bladeSpeedMps), unit: "m/s" },
           { label: "ω×0.08", value: parsons.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Steam crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

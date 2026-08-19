@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "luc
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildNobelDynamiteModel, updateNobelDynamiteKinematics } from "./nobelDynamiteModel";
@@ -30,6 +31,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const fuseTimerRef = useRef<number | null>(null);
 
   const live = useLiveSimParams({
@@ -110,6 +112,10 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -264,6 +270,10 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
           { label: "Cap Energy", value: String(nobel.capEnergyJoules ?? 1.2), unit: "J" },
           { label: "Transit Time", value: nobel.chargeTransitUs.toFixed(1), unit: "µs" },
           { label: "Explosive State", value: isFuseLit ? "DETONATION" : "STABLE" },
+          {
+            label: "Shock crate",
+            value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
+          },
         ]}
       />
     </div>

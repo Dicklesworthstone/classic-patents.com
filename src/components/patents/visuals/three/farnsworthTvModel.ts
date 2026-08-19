@@ -15,6 +15,7 @@
 import * as THREE from "three";
 import { farnsworthBeamFrac } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -456,6 +457,7 @@ export function updateFarnsworthTvKinematics(
     const simTimeSec = renderedSteps * (1 / 60);
     const hScan = Math.sin(simTimeSec * horizontalFreqKhz * tv.scanHCoupling) * tv.scanAmp;
     const vScan = Math.sin(simTimeSec * verticalFreqHz * tv.scanVCoupling) * tv.scanAmp;
+    const modes = laplacianModes(16, 3);
 
     for (let i = 0; i < model.beamPos.length / 3; i++) {
       const idx = i * 3;
@@ -463,9 +465,10 @@ export function updateFarnsworthTvKinematics(
 
       const pX = bPos[idx];
       const frac = farnsworthBeamFrac(pX, tv.beamPathOriginX, tv.beamPathSpanX);
+      const mode = 1 + 0.35 * laplacianModeShape(modes, 16, 3, 0, i);
 
-      bPos[idx + 1] = frac * vScan + model.beamJitter[idx + 1] * tv.beamJitterAmp;
-      bPos[idx + 2] = frac * hScan + model.beamJitter[idx + 2] * tv.beamJitterAmp;
+      bPos[idx + 1] = frac * vScan + model.beamJitter[idx + 1] * tv.beamJitterAmp * mode;
+      bPos[idx + 2] = frac * hScan + model.beamJitter[idx + 2] * tv.beamJitterAmp * mode;
 
       if (bPos[idx] > tv.beamWrapX) {
         bPos[idx] = tv.beamPathOriginX + model.beamJitter[idx];

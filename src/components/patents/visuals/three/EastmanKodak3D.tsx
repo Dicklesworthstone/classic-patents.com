@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEastmanKodakModel, updateEastmanKodakKinematics } from "./eastmanKodakModel";
@@ -39,6 +40,7 @@ export function EastmanKodak3D() {
   const shutterFractionSec = kodak.shutterReciprocal;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     shutterFractionSec,
@@ -95,6 +97,10 @@ export function EastmanKodak3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -236,6 +242,10 @@ export function EastmanKodak3D() {
           { label: "Hyperfocal", value: `${kodak.hyperfocalM}m`, unit: "" },
           { label: "DoF Near", value: `${kodak.dofNearM}m`, unit: "" },
           { label: "Focus", value: kodak.isInFocus ? "sharp" : "soft" },
+          {
+            label: "Spool crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

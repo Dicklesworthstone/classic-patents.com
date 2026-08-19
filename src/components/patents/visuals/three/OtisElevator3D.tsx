@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -38,6 +39,7 @@ export function OtisElevator3D() {
   const cabWeightLbs = otis.cabPayloadLbs;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const pawlEngagementMs = otis.pawlEngagementMs;
   const stoppingDistanceInches = otis.stoppingDistanceIn;
@@ -101,6 +103,10 @@ export function OtisElevator3D() {
       soundEngine.playSwitchClick();
     }
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -277,6 +283,10 @@ export function OtisElevator3D() {
           { label: "Arrest", value: String(otis.peakArrestForceKn), unit: "kN" },
           { label: "Mass", value: String(otis.hangingMassKg), unit: "kg" },
           { label: "T", value: String(otis.hoistTensionKn), unit: "kN" },
+          {
+            label: "Sheave crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

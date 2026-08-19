@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -329,10 +330,15 @@ export function updateEricssonPropellerKinematics(
     const wPos = model.wakePositions;
     const flowVelocity = wakeFlowSpeed * dt;
     const swirlVelocity = shaftOmegaRadPerS * wakeSwirlCoeff * dt * wakeSwirlScale;
+    const fluid = fluidFrames(16, 8);
+    const frame = Math.abs(Math.floor(model.forwardDrumGroup.rotation.x * 2)) % 8;
 
     for (let i = 0; i < model.wakeCount; i++) {
       const idx = i * 3;
-      wPos[idx] += flowVelocity; // Travel downstream (+X)
+      const u = (wPos[idx] - 2.2) / 8.3;
+      const v = (wPos[idx + 1] + 2) / 4;
+      const dens = 1 + sampleFluidAt(fluid, 16, 8, frame, u, v);
+      wPos[idx] += flowVelocity * dens; // Travel downstream (+X)
 
       // Swirl vortex
       const y = wPos[idx + 1];

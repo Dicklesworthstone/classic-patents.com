@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 export interface RenoEscalatorModelNodes {
   root: THREE.Group;
@@ -380,11 +381,13 @@ export function updateRenoEscalatorKinematics(
   });
 
   // 2. Head & Tail Sheaves Rotation
+  const sheave = cyclicSymmetry(8, 0.4 + Math.abs(sheaveOmegaRadPerS) * 0.05);
+  const flex = 1 + 0.12 * cyclicSol(sheave, 0);
   nodes.headSheaves.forEach((s) => {
-    s.rotation.y -= sheaveOmegaRadPerS * dt;
+    s.rotation.y -= sheaveOmegaRadPerS * dt * flex;
   });
   nodes.tailSheaves.forEach((s) => {
-    s.rotation.y -= sheaveOmegaRadPerS * dt;
+    s.rotation.y -= sheaveOmegaRadPerS * dt * flex;
   });
 
   // 3. Cutaway Balustrades Visibility

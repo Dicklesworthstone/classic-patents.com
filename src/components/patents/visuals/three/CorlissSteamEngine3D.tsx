@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX } from "lucide-
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepCorlissEngine, wrapCycleRad } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
@@ -26,6 +27,7 @@ export function CorlissSteamEngine3D() {
   const cutoffPct = params.cutoffPct ?? 25;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHp = corliss.indicatedHp;
@@ -88,6 +90,10 @@ export function CorlissSteamEngine3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -225,6 +231,10 @@ export function CorlissSteamEngine3D() {
           { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
           { label: "r_exp", value: String(corliss.expansionRatio) },
           { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          {
+            label: "Valve crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "luc
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -38,6 +39,7 @@ export function ThomsonWelding3D() {
   const [showSparks, setShowSparks] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     weldCurrentAmps,
@@ -96,6 +98,10 @@ export function ThomsonWelding3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -261,6 +267,10 @@ export function ThomsonWelding3D() {
           { label: "State", value: weld.isForged ? "forged" : "heating" },
           { label: "Burr", value: String(weld.upsetBurrWidthMm), unit: "mm" },
           { label: "Pulse", value: String(weld.weldPulseMs), unit: "ms" },
+          {
+            label: "HAZ crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

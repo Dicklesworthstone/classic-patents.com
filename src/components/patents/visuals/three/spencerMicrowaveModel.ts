@@ -15,6 +15,7 @@
  */
 
 import * as THREE from "three";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -338,8 +339,10 @@ export function updateSpencerMicrowaveKinematics(
 ): void {
   if (isOscillating) {
     model.spokePoints.visible = showSpokeWheel;
-    model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS;
-    model.materials.spokeMat.opacity = spokeOpacity;
+    const heat = heatFrames(12, 16, 2);
+    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, 0.3, 0.3));
+    model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
+    model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
   } else {
     model.spokePoints.visible = false;
   }

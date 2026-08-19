@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { morseElectronLaneZ, stepMorseTelegraph } from "@/physics/catalogKernels";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface MorseTelegraphModelNodes {
@@ -824,10 +825,12 @@ export function updateMorseTelegraphKinematics(
 
   // 4. Flowing Circuit Electrons
   const pos = nodes.electronPositions;
+  const field = wave2dFrames(16, 16, 2);
+  const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
   for (let i = 0; i < nodes.electronCount; i++) {
     const idx = i * 3;
     if (isKeyActive) {
-      pos[idx] += dt * electronDisplaySpeed;
+      pos[idx] += dt * electronDisplaySpeed * (1 + rms);
       if (pos[idx] > morse.electronWrapX) {
         pos[idx] = morse.electronOriginX;
       }

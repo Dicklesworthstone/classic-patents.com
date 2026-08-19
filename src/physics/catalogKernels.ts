@@ -103,6 +103,12 @@ export function dieselCamWindows(
     compressionBarAmp: 2.2,
     injectionBar: 45,
     idleBar: 1.5,
+    crankR: 0.55,
+    rodLen: 2.2,
+    rodMin: 0.1,
+    crankTdcPhase: Math.PI / 2,
+    pinYHome: -1.65,
+    pistonCrownLift: 1.5,
   };
 }
 
@@ -483,6 +489,18 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     schematicInletX1: 40,
     schematicInletX2: 75,
     schematicInletY: 140,
+    steamWrapX: 5.0,
+    steamResetX: -4.5,
+    steamRadiusHp: 0.8,
+    steamRadiusIpStart: -4.3,
+    steamRadiusIpEnd: -1.3,
+    steamRadiusIp: 1.25,
+    steamRadiusMpEnd: 1.7,
+    steamRadiusMp: 1.75,
+    steamRadiusLp: 2.35,
+    steamGrowPerS: 5.0,
+    steamShrinkPerS: 10.0,
+    steamShrinkSlack: 0.1,
   };
 }
 
@@ -671,6 +689,17 @@ export function stepNobelDynamite(params: {
     schematicCapW: 45,
     schematicCapH: 24,
     schematicFuseD: "M 305 150 Q 330 130 350 150 T 380 140",
+    sparkOpacity0: 0.7,
+    sparkOpacityAmp: 0.3,
+    sparkOmega: 25,
+    shockwaveOmega: 8,
+    matrixEmissive0: 0.4,
+    matrixEmissiveAmp: 0.6,
+    matrixEmissiveHex: 0xff3300,
+    shockwaveScale0: 1.0,
+    shockwaveScaleAmp: 1.5,
+    shockwaveOpacity0: 0.4,
+    shockwaveOpacityAmp: 0.35,
   };
 }
 
@@ -1002,6 +1031,10 @@ export function stepCorlissEngine(params: {
     exhaustValveCoupling: 0.7,
     dashpotDropAmp: 1.2,
     dashpotHomeY: 1.5,
+    crankR: 0.65,
+    pinHomeX: 3.8,
+    rodLen: 4.4,
+    rodMin: 0.1,
     spokeCount: 6,
     spokePitchDeg: 60,
     schematicValveR: 16,
@@ -1246,6 +1279,18 @@ export function goddardSchematicStack() {
     schematicFlameCx: 200,
     schematicFlameY: 275,
     schematicFlameHalfW: 10,
+    expansionRebuildDelta: 0.04,
+    stage2SepY: 7.5,
+    stage1SepY: -6.0,
+    sepLerp: 0.05,
+    stage2HomeY: 4.2,
+    stage1HomeY: 0,
+    dockLerp: 0.1,
+    plumeExitSpread0: 0.22,
+    plumeMinAr: 2,
+    plumeGimbalCoupling: 0.4,
+    plumeWrapY: -8.5,
+    plumeResetY: -4.2,
   };
 }
 
@@ -1294,6 +1339,17 @@ export function stepPasteurFermentation(params: {
     schematicYeastY: 195,
     schematicYeastW: 140,
     schematicYeastH: 25,
+    activityNormDivisor: 100,
+    bubbleRise0: 0.15,
+    bubbleRiseAmp: 1.4,
+    bubbleWrapY: 2.0,
+    bubbleResetY: -1.4,
+    bubbleVisibleThreshold: 0.12,
+    bubbleOpacity0: 0.2,
+    bubbleOpacityAmp: 0.75,
+    bubbleWarmC: 28,
+    bubbleWarmHex: 0xf87171,
+    bubbleCoolHex: 0xfef08a,
   };
 }
 
@@ -1573,6 +1629,12 @@ export function stepZeppelinAirship(params: {
     schematicGondolaY: 190,
     schematicGondolaW: 30,
     schematicGondolaH: 12,
+    swayOmega: 0.8,
+    swayAmp: 0.08,
+    pitchSwayOmega: 0.4,
+    pitchSwayAmp: 0.01,
+    trimMinX: -5.0,
+    trimMaxX: 5.0,
   };
 }
 
@@ -1667,6 +1729,10 @@ export function stepDaimlerEngine(params: {
     hotTubeBrightHex: 0xf97316,
     hotTubeWarmHex: 0xb45309,
     hotTubeColdHex: 0x334155,
+    crankR: 0.42,
+    pinYHome: -0.65,
+    rodLen: 1.7,
+    rodMin: 0.1,
   };
 }
 
@@ -2533,6 +2599,8 @@ export function stepBardeenTransistor(
     schematicEmitterLabelY: 64,
     schematicCollectorLabelX: 250,
     schematicCollectorLabelY: 64,
+    holeWrapPad: 0.1,
+    holeResetPad: 0.05,
   };
 }
 

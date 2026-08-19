@@ -15,6 +15,7 @@
  */
 
 import * as THREE from "three";
+import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { ccdGatePhase } from "@/physics/machineKernels";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -398,11 +399,13 @@ export function updateBoyleSmithCcdKinematics(
   materials.packetMat.opacity = wellsData.packetOpacity;
 
   const pPos = nodes.packetPos;
+  const modes = laplacianModes(16, 3);
   for (let i = 0; i < nodes.packetCount; i++) {
     const idx = i * 3;
     const pixelIdx = Math.floor(i / (nodes.packetCount / 3));
     const targetGateX = -3.6 + (pixelIdx * 3 + (activePhase - 1)) * 0.85;
-    pPos[idx] += (targetGateX - pPos[idx]) * 0.25;
+    const mode = 1 + 0.3 * laplacianModeShape(modes, 16, 3, 0, i);
+    pPos[idx] += (targetGateX - pPos[idx]) * 0.25 * mode;
   }
   nodes.packetPoints.geometry.attributes.position.needsUpdate = true;
 

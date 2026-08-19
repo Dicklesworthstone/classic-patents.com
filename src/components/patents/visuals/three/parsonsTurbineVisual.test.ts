@@ -22,6 +22,8 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildParsonsTurbineModel");
     expect(modelSource).toContain("updateParsonsTurbineKinematics");
+    expect(modelSource).toContain("fluidFrames");
+    expect(modelSource).toContain("sampleFluidAt");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

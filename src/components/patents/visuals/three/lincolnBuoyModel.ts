@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { lincolnInflationNorm, stepLincolnBuoy } from "@/physics/catalogKernels";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 
 export interface LincolnBuoyModel {
   rootGroup: THREE.Group;
@@ -375,8 +376,10 @@ export function updateLincolnBuoyKinematics(
 ): void {
   const lincoln = stepLincolnBuoy({});
   const infl = lincolnInflationNorm(bellowsInflationPct, lincoln.inflationNormDivisor);
-  const bellowsScaleY = lincoln.bellowsScaleY0 + infl * lincoln.bellowsScaleYAmp;
-  const bellowsScaleZ = lincoln.bellowsScaleZ0 + infl * lincoln.bellowsScaleZAmp;
+  const fluid = fluidFrames(16, 8);
+  const air = 1 + sampleFluidAt(fluid, 16, 8, 4, 0.25, 0.8);
+  const bellowsScaleY = lincoln.bellowsScaleY0 + infl * lincoln.bellowsScaleYAmp * air;
+  const bellowsScaleZ = lincoln.bellowsScaleZ0 + infl * lincoln.bellowsScaleZAmp * air;
 
   model.portBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);
   model.stbdBellowsBody.scale.set(1.0, bellowsScaleY, bellowsScaleZ);

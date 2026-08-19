@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEngelbartMouseModel, updateEngelbartMouseKinematics } from "./engelbartMouseModel";
@@ -26,6 +27,7 @@ export const EngelbartMouse3D = memo(() => {
   const [isClicking, setIsClicking] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const wheelRadiusMm = params.wheelRadius ?? 10;
   const mouse = stepEngelbartMouse({
@@ -103,6 +105,10 @@ export const EngelbartMouse3D = memo(() => {
     }
     setTimeout(() => setIsClicking(false), mouse.clickDisplayMs);
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -264,6 +270,10 @@ export const EngelbartMouse3D = memo(() => {
           { label: "Encoder Resolution", value: `${cpiResolution}`, unit: "CPI" },
           { label: "Pulse Rate", value: `${pulseRateHz.toFixed(0)}`, unit: "pulses/s", tone: "ok" },
           { label: "Wheel Angular Vel", value: `${mouse.omegaRadPerS.toFixed(1)}`, unit: "rad/s" },
+          {
+            label: "XY crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
     </div>

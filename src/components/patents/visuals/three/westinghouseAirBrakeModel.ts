@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { westinghouseSparkWheelX, westinghouseSparkWheelZ } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 
 export interface WestinghouseAirBrakeModelNodes {
   root: THREE.Group;
@@ -586,16 +587,19 @@ export function updateWestinghouseAirBrakeKinematics(
 
   if (isSparking) {
     const pos = nodes.frictionSparkPoints.geometry.attributes.position.array as Float32Array;
+    const fluid = fluidFrames(16, 8);
+    const frame = Math.abs(Math.floor(wheelAngle * 2)) % 8;
     for (let i = 0; i < 30; i++) {
       const wheelIndex = i % wh.sparkWheelCount;
       const wx = westinghouseSparkWheelX(wheelIndex, wh.sparkWheelXNear, wh.sparkWheelXFar);
       const wz = westinghouseSparkWheelZ(wheelIndex, wh.sparkWheelZNear, wh.sparkWheelZFar);
+      const dens = 1 + sampleFluidAt(fluid, 16, 8, frame, (wheelIndex + 0.5) / 4, 0.35);
       const hash1 = Math.sin(i * 78.233 + wheelAngle * 3.0);
       const hash2 = Math.cos(i * 45.197 + wheelAngle * 2.5);
       const hash3 = Math.sin(i * 12.989 + wheelAngle * 4.0);
-      pos[i * 3 + 0] = wx + hash1 * wh.sparkJitterXY;
-      pos[i * 3 + 1] = wh.sparkY + hash2 * wh.sparkJitterXY;
-      pos[i * 3 + 2] = wz + hash3 * wh.sparkJitterZ;
+      pos[i * 3 + 0] = wx + hash1 * wh.sparkJitterXY * dens;
+      pos[i * 3 + 1] = wh.sparkY + hash2 * wh.sparkJitterXY * dens;
+      pos[i * 3 + 2] = wz + hash3 * wh.sparkJitterZ * dens;
     }
     nodes.frictionSparkPoints.geometry.attributes.position.needsUpdate = true;
   }

@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Zap } from "lu
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -31,6 +32,7 @@ export function WhitneyCottonGin3D() {
   const [showFibers, setShowFibers] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const dailyOutputLbs = gin.outputLbsPerDay.toFixed(1);
   const laborMultiplier = String(gin.laborMultiplier);
@@ -91,6 +93,10 @@ export function WhitneyCottonGin3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -244,6 +250,10 @@ export function WhitneyCottonGin3D() {
           { label: "Lint", value: dailyOutputLbs, unit: "lb/day" },
           { label: "vs hand", value: `${laborMultiplier}×` },
           { label: "ω_crank", value: gin.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Lint crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

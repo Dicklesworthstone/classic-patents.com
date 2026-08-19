@@ -14,6 +14,7 @@
 
 import * as THREE from "three";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 
 export interface HyattCelluloidModelNodes {
   rootGroup: THREE.Group;
@@ -394,6 +395,8 @@ export function updateHyattCelluloidKinematics(
   isCutaway: boolean,
 ) {
   const hyatt = stepHyattCelluloid({});
+  const fluid = fluidFrames(16, 8);
+  const melt = 1 + sampleFluidAt(fluid, 16, 8, Math.abs(Math.floor(timeSec * 4)) % 8, 0.5, 0.4);
   nodes.ramPiston.position.x =
     hyatt.ramHomeX + Math.sin(timeSec * ramHz * hyatt.ramCycleTau) * ramStroke;
 
@@ -401,7 +404,7 @@ export function updateHyattCelluloidKinematics(
     ? Math.min(
         hyatt.flowMax,
         hyatt.flowViscosityRef / Math.max(hyatt.flowViscosityFloor, viscosityPaS),
-      )
+      ) * melt
     : hyatt.solidFlow;
   nodes.rodMesh.visible = isMelted;
   nodes.rodMesh.scale.x = flow;

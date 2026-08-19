@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -37,6 +38,7 @@ export function MaximMachineGun3D() {
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     fireRateRpm,
@@ -97,6 +99,10 @@ export function MaximMachineGun3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -266,6 +272,10 @@ export function MaximMachineGun3D() {
           { label: "Steam Evap", value: String(maxim.waterEvapRateGs), unit: "g/s" },
           { label: "Muzzle Energy", value: String(maxim.muzzleEnergyJoules), unit: "J" },
           { label: "ω_fire", value: maxim.fireOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Steam crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

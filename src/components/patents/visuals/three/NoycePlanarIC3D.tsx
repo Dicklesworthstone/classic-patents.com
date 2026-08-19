@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepNoyceIC } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildNoycePlanarICModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
@@ -30,6 +31,7 @@ export const NoycePlanarIC3D = memo(() => {
   const [showLogicSignals] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const noyce = stepNoyceIC({
     reverseBias: params.reverseBias ?? 5,
@@ -102,6 +104,10 @@ export const NoycePlanarIC3D = memo(() => {
       soundEngine.stopContinuousTone();
     };
   }, [isPlayingAudio, noyce.toneHz]);
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -242,6 +248,10 @@ export const NoycePlanarIC3D = memo(() => {
           { label: "Junction Cap", value: `${gateCapacitancePf.toFixed(2)}`, unit: "pF/mm²" },
           { label: "Prop Delay", value: `${gatePropagationDelayPs.toFixed(0)}`, unit: "ps" },
           { label: "Max Clock", value: `${maxClockGhz}`, unit: "GHz", tone: "ok" },
+          {
+            label: "Bus crate",
+            value: crateSource === "wasm" ? "fs-la" : "ts-laplace-fallback",
+          },
         ]}
       />
     </div>

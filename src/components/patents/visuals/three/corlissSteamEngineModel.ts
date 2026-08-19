@@ -17,6 +17,7 @@
 
 import * as THREE from "three";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 export interface CorlissEngineModel {
   rootGroup: THREE.Group;
@@ -406,6 +407,8 @@ export function updateCorlissEngineKinematics(
   isCutaway = false,
 ): { strokeX: number; wristAngle: number } {
   const corliss = stepCorlissEngine({});
+  const valves = cyclicSymmetry(4, 0.4 + Math.abs(wristAmp));
+  const valveFlex = 1 + 0.15 * cyclicSol(valves, 0);
   model.crankGroup.rotation.z = -crankAngle;
 
   const govAngle = crankAngle * corliss.govOmegaRatio;
@@ -414,13 +417,13 @@ export function updateCorlissEngineKinematics(
   model.governorBalls[1].position.x = govSpread;
 
   // Kinematics: crankpin position
-  const crankR = 0.65;
-  const pinX = 3.8 + Math.cos(crankAngle) * crankR;
+  const crankR = corliss.crankR;
+  const pinX = corliss.pinHomeX + Math.cos(crankAngle) * crankR;
   const pinY = Math.sin(crankAngle) * crankR;
 
   // Slider-crank crosshead position
-  const rodL = 4.4;
-  const strokeX = pinX - Math.sqrt(Math.max(0.1, rodL ** 2 - pinY ** 2));
+  const rodL = corliss.rodLen;
+  const strokeX = pinX - Math.sqrt(Math.max(corliss.rodMin, rodL ** 2 - pinY ** 2));
   model.crossheadGroup.position.x = strokeX;
 
   // Connecting rod pose
@@ -429,14 +432,16 @@ export function updateCorlissEngineKinematics(
   model.conRodGroup.rotation.z = rodAngle;
 
   // Central wrist plate harmonic oscillation (Claim 2)
-  const wristAngle = Math.sin(crankAngle + corliss.wristLeadRad) * wristAmp;
+  const wristAngle = Math.sin(crankAngle + corliss.wristLeadRad) * wristAmp * valveFlex;
   model.wristPlate.rotation.z = wristAngle;
 
   // 4 Rotary oscillating valve levers (Claim 1)
   model.valveLevers[0].rotation.z = wristAngle * corliss.intakeValveCoupling;
   model.valveLevers[1].rotation.z = -wristAngle * corliss.intakeValveCoupling;
-  model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling;
-  model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling;
+  model.valveLevers[2].rotation.z =
+    Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling * valveFlex;
+  model.valveLevers[3].rotation.z =
+    -Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling * valveFlex;
 
   // Dashpot rods drop motion
   const drop1 = Math.max(0, -wristAngle * corliss.dashpotDropAmp);

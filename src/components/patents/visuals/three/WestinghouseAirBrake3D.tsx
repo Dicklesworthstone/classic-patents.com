@@ -4,6 +4,7 @@ import { Activity, Camera, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -40,6 +41,7 @@ export function WestinghouseAirBrake3D() {
   const stoppingDistanceFt = westinghouse.stoppingDistanceFt;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     trainlinePressurePsi,
@@ -96,6 +98,10 @@ export function WestinghouseAirBrake3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -236,6 +242,10 @@ export function WestinghouseAirBrake3D() {
           { label: "Stop Dist.", value: `${stoppingDistanceFt.toFixed(0)} ft` },
           { label: "Fail-Safe", value: "Triple-Valve Armed" },
           { label: "ω_roll", value: westinghouse.rollingOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Air crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

@@ -18,7 +18,7 @@ import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
+import { buildHoweSewingMachineModel, howeCyclicFlex } from "./howeSewingMachineModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -152,10 +152,11 @@ export function HoweSewingMachine3D() {
       const stitch = stepHoweLockstitch(crankDeg);
 
       if (p.isCranking) {
+        const flex = howeCyclicFlex(p.crankOmegaRadPerS);
         model.flywheelGroup.rotation.x = elapsed * p.crankOmegaRadPerS;
-        model.needleArmGroup.rotation.z = stitch.needleStudioRotZ;
+        model.needleArmGroup.rotation.z = stitch.needleStudioRotZ * flex;
         model.needleArmGroup.position.y = stitch.needleStudioY;
-        model.shuttleGroup.position.z = stitch.shuttleStudioZ;
+        model.shuttleGroup.position.z = stitch.shuttleStudioZ * flex;
         model.clothMesh.position.z = -((elapsed * p.clothStudioAdvancePerS) % p.clothStudioWrap);
 
         // Acoustic clack synthesis on stitch cycle

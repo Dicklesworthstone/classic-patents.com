@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
@@ -31,6 +32,7 @@ export const EdisonBulb3D = memo(() => {
   const vacuumTorr = params.vacuumTorr ?? 1e-6;
   const [showGasMolecules] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const bulb = stepEdisonBulb({
@@ -94,6 +96,10 @@ export const EdisonBulb3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -238,6 +244,10 @@ export const EdisonBulb3D = memo(() => {
           { label: "Luminous Efficacy", value: `${bulb.luminousLmPerW.toFixed(2)}`, unit: "lm/W" },
           { label: "Design Life", value: `${bulb.designLifeHours}`, unit: "hrs" },
           { label: "Vacuum Level", value: vacuumTorr.toExponential(1), unit: "Torr" },
+          {
+            label: "Heat crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

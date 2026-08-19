@@ -93,7 +93,13 @@ describe("US 79,265 source-faithful visual boundary", () => {
 
     updateSholesTypewriterKinematics(nodes, materials, 0.5, 2, true);
     expect(materials.caseMat.transparent).toBe(true);
-    expect(nodes.activeHammer.rotation.x).toBeCloseTo(-0.25, 2);
+    // The source establishes the articulated type-bar relationship, not a
+    // measured strike angle. The studio may show a bounded cyclic flex for
+    // the selected typebar, but it must remain a small perturbation of the
+    // source-neutral display stroke rather than inventing a new mechanism.
+    const sourceNeutralDisplayStroke = -0.5 * stepSholesTypewriter(0, 0).hammerPitchAmp;
+    expect(nodes.activeHammer.rotation.x).toBeLessThan(sourceNeutralDisplayStroke);
+    expect(nodes.activeHammer.rotation.x).toBeGreaterThan(sourceNeutralDisplayStroke * 1.2);
 
     dispose();
   });

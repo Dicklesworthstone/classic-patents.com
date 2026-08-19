@@ -17,9 +17,11 @@ import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   buildSpencerMicrowaveModel,
   updateSpencerMicrowaveKinematics,
@@ -50,6 +52,7 @@ export function SpencerMicrowave3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // RF Cavity Physics Calculations (FrankenSim Hull Cutoff & Microwave Emission)
   const rfPhysics = FrankenSimEngine.stepSpencerMicrowave(
@@ -147,6 +150,10 @@ export function SpencerMicrowave3D() {
       soundEngine.stopContinuousTone();
     };
   }, [isPlayingAudio, isOscillating]);
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -350,6 +357,20 @@ export function SpencerMicrowave3D() {
           </div>
         )}
       </div>
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Spencer cavity magnetron"
+        chips={[
+          { label: "Anode", value: String(anodeVoltageKv), unit: "kV" },
+          { label: "B", value: String(magneticFieldGauss), unit: "G" },
+          { label: "RF", value: String(rfPowerWatts), unit: "W" },
+          { label: "f", value: String(rfPhysics.microwaveFreqMhz), unit: "MHz" },
+          {
+            label: "Spoke crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
+        ]}
+      />
     </div>
   );
 }

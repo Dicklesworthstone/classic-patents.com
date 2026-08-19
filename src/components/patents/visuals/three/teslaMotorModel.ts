@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { gaMotorFrameIndex, gaMotorOrbit } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9 } from "@/physics/teslaKernel";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
@@ -221,6 +222,7 @@ export function updateTeslaMotorKinematics(
   omegaDisplay: number,
   bFieldAngle: number,
   showMagneticFlux: boolean,
+  fieldTimeSec = 0,
 ): void {
   const tesla = stepTeslaMotorFig9(60);
   model.rotorGroup.rotation.y += omegaDisplay * delta;
@@ -231,14 +233,19 @@ export function updateTeslaMotorKinematics(
     material.emissive = new THREE.Color(tesla.coilEmissiveHex);
     material.emissiveIntensity = Math.abs(current) * tesla.coilEmissiveAmp;
   }
+  const orbit = gaMotorOrbit(model.fluxCount, 60);
+  const frame = gaMotorFrameIndex(fieldTimeSec, omegaDisplay, 60);
+  const base = 2 + frame * model.fluxCount * 3;
   for (let index = 0; index < model.fluxCount; index++) {
-    const offset = index * 3;
-    const x = model.fluxPositions[offset];
-    const z = model.fluxPositions[offset + 2];
-    const radius = Math.hypot(x, z);
-    const angle = Math.atan2(z, x) + omegaDisplay * delta;
-    model.fluxPositions[offset] = Math.cos(angle) * radius;
-    model.fluxPositions[offset + 2] = Math.sin(angle) * radius;
+    const src = base + index * 3;
+    const dst = index * 3;
+    const x = orbit[src] ?? 0;
+    const y = orbit[src + 1] ?? 0;
+    const z = orbit[src + 2] ?? 0;
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+    model.fluxPositions[dst] = (x - 1) * 2.8;
+    model.fluxPositions[dst + 1] = z * 0.45;
+    model.fluxPositions[dst + 2] = y * 2.8;
   }
   model.fluxPoints.geometry.attributes.position.needsUpdate = true;
   model.fluxPoints.visible = showMagneticFlux;

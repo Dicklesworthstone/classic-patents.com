@@ -13,6 +13,7 @@
  */
 
 import * as THREE from "three";
+import { gaMotorFrameIndex, gaMotorOrbit } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(2287);
@@ -513,11 +514,18 @@ export function updateDavenportMotorKinematics(
   if (showSparkParticles && shaftOmegaRadPerS > 0.5) {
     nodes.sparkPoints.visible = true;
     const pos = nodes.sparkPositions;
+    const orbit = gaMotorOrbit(nodes.sparkCount, 60);
+    const frame = gaMotorFrameIndex(nodes.rotorGroup.rotation.y, 1, 60);
+    const header = 2;
     for (let i = 0; i < nodes.sparkCount; i++) {
+      const src = header + (frame * nodes.sparkCount + i) * 3;
       const idx = i * 3;
-      pos[idx] = (lcg() > 0.5 ? 0.4 : -0.4) + (lcg() - 0.5) * 0.15;
-      pos[idx + 1] = 1.6 + (lcg() - 0.5) * 0.2;
-      pos[idx + 2] = (lcg() - 0.5) * 0.2;
+      const x = orbit[src] ?? 0;
+      const y = orbit[src + 1] ?? 0;
+      const z = orbit[src + 2] ?? 0;
+      pos[idx] = (x - 1) * 0.5;
+      pos[idx + 1] = 1.6 + z * 0.15;
+      pos[idx + 2] = y * 0.2;
     }
     nodes.sparkPoints.geometry.attributes.position.needsUpdate = true;
   } else {

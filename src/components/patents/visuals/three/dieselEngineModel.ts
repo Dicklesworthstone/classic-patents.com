@@ -16,6 +16,7 @@
 
 import * as THREE from "three";
 import { dieselCamWindows, wrapCycleRad } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface DieselEngineNodes {
   rootGroup: THREE.Group;
@@ -732,16 +733,17 @@ export function updateDieselEngineKinematics(
   governorBallSpread: number,
   pressureNeedleRadPerBar: number,
 ) {
-  const crankR = 0.55;
-  const rodLen = 2.2;
+  const cam = dieselCamWindows();
+  const crankR = cam.crankR;
+  const rodLen = cam.rodLen;
 
-  const pinX = Math.cos(crankAngleRad - Math.PI / 2) * crankR;
-  const pinY = Math.sin(crankAngleRad - Math.PI / 2) * crankR - 1.65;
+  const pinX = Math.cos(crankAngleRad - cam.crankTdcPhase) * crankR;
+  const pinY = Math.sin(crankAngleRad - cam.crankTdcPhase) * crankR + cam.pinYHome;
 
-  const crossheadY = pinY + Math.sqrt(Math.max(0.1, rodLen ** 2 - pinX ** 2));
+  const crossheadY = pinY + Math.sqrt(Math.max(cam.rodMin, rodLen ** 2 - pinX ** 2));
   nodes.crossheadGroup.position.y = crossheadY;
 
-  const pistonY = crossheadY + 1.5;
+  const pistonY = crossheadY + cam.pistonCrownLift;
   nodes.pistonGroup.position.y = pistonY;
 
   nodes.conRodGroup.position.set(0, crossheadY, 0);
@@ -751,7 +753,6 @@ export function updateDieselEngineKinematics(
   nodes.crankshaftGroup.rotation.z = crankAngleRad;
   nodes.flywheelGroup.rotation.z = crankAngleRad;
 
-  const cam = dieselCamWindows();
   const cycleAngle = wrapCycleRad(crankAngleRad * cam.camRatio, cam.camWrapRad);
 
   const isIntake = cycleAngle >= 0 && cycleAngle < cam.intakeCamEndRad;
@@ -781,11 +782,16 @@ export function updateDieselEngineKinematics(
   nodes.exhaustValve.position.y = -exhaustLift;
   nodes.exhaustRocker.rotation.z = exhaustLift * cam.exhaustRockerCoupling;
 
+  const heat = heatFrames(12, 16, 2);
+  const heatU = cycleAngle / Math.max(0.001, cam.camWrapRad);
+  const localHeat = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, heatU, 0.45));
+
   if (isInjection && isAutoIgnition) {
     nodes.flameMesh.visible = true;
     const pulse = Math.sin(((cycleAngle - cam.injectionCamStartRad) / injectionSpan) * Math.PI);
-    nodes.flameMesh.scale.setScalar(cam.flameScale0 + pulse * cam.flameScaleAmp);
-    materials.flameMat.emissiveIntensity = cam.flameEmissive0 + pulse * cam.flameEmissiveAmp;
+    nodes.flameMesh.scale.setScalar((cam.flameScale0 + pulse * cam.flameScaleAmp) * localHeat);
+    materials.flameMat.emissiveIntensity =
+      (cam.flameEmissive0 + pulse * cam.flameEmissiveAmp) * localHeat;
   } else {
     nodes.flameMesh.visible = false;
   }
@@ -804,19 +810,19 @@ export function updateDieselEngineKinematics(
     materials.gasMat.color = heatColor;
     materials.gasMat.emissive = heatColor;
     materials.gasMat.emissiveIntensity =
-      cam.compressionEmissive0 + compProgress * cam.compressionEmissiveAmp;
+      (cam.compressionEmissive0 + compProgress * cam.compressionEmissiveAmp) * localHeat;
   } else if (isInjection) {
     materials.gasMat.color = new THREE.Color(cam.gasInjectionColor);
     materials.gasMat.emissive = new THREE.Color(cam.gasInjectionEmissive);
-    materials.gasMat.emissiveIntensity = cam.injectionEmissive;
+    materials.gasMat.emissiveIntensity = cam.injectionEmissive * localHeat;
   } else if (isExhaust) {
     materials.gasMat.color = new THREE.Color(cam.gasExhaustColor);
     materials.gasMat.emissive = new THREE.Color(cam.gasExhaustEmissive);
-    materials.gasMat.emissiveIntensity = cam.exhaustEmissive;
+    materials.gasMat.emissiveIntensity = cam.exhaustEmissive * localHeat;
   } else {
     materials.gasMat.color = new THREE.Color(cam.gasIntakeColor);
     materials.gasMat.emissive = new THREE.Color(cam.gasIntakeEmissive);
-    materials.gasMat.emissiveIntensity = cam.intakeEmissive;
+    materials.gasMat.emissiveIntensity = cam.intakeEmissive * localHeat;
   }
 
   nodes.cylinderJacketMesh.visible = !cutawayMode;

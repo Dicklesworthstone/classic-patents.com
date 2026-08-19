@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 /**
@@ -763,9 +764,11 @@ export function updateColtRevolverKinematics(
 
   // Muzzle flash / smoke explosion during firing
   if (isFiring) {
+    const field = wave2dFrames(16, 16, 2);
+    const rms = waveFrameRms(field, 16, 16, ((currentChamberIndex % 16) + 16) % 16);
     model.blastMesh.visible = true;
-    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0.85;
-    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 1.0;
+    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0.55 + rms;
+    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 0.7 + rms;
   } else {
     model.blastMesh.visible = false;
     (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0;

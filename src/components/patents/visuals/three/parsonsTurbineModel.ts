@@ -14,6 +14,8 @@
  */
 
 import * as THREE from "three";
+import { stepParsonsTurbine } from "@/physics/catalogKernels";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1471);
@@ -340,27 +342,37 @@ export function updateParsonsTurbineKinematics(
   nodes.rotorGroup.rotation.x += displayOmegaRadPerS * dt;
 
   // 2. Steam Streamline Particle Advection
+  const parsons = stepParsonsTurbine({});
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(_timeSec * 4)) % 8;
   const pos = nodes.steamPositions;
   for (let i = 0; i < nodes.steamCount; i++) {
     const idx = i * 3;
-    pos[idx] += steamAdvancePerS * dt;
+    const u =
+      ((pos[idx] ?? 0) - parsons.steamResetX) /
+      Math.max(0.1, parsons.steamWrapX - parsons.steamResetX);
+    const v = 0.5 + ((pos[idx + 1] ?? 0) + 2.5) / 5;
+    const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
+    pos[idx] += steamAdvancePerS * dt * (1 + dens);
     let x = pos[idx];
 
-    if (x > 5.0) {
-      x = -4.5;
+    if (x > parsons.steamWrapX) {
+      x = parsons.steamResetX;
       pos[idx] = x;
     }
 
-    let maxR = 0.8;
-    if (x > -4.3 && x <= -1.3) maxR = 1.25;
-    else if (x > -1.3 && x <= 1.7) maxR = 1.75;
-    else if (x > 1.7 && x <= 5.0) maxR = 2.35;
+    let maxR = parsons.steamRadiusHp;
+    if (x > parsons.steamRadiusIpStart && x <= parsons.steamRadiusIpEnd)
+      maxR = parsons.steamRadiusIp;
+    else if (x > parsons.steamRadiusIpEnd && x <= parsons.steamRadiusMpEnd)
+      maxR = parsons.steamRadiusMp;
+    else if (x > parsons.steamRadiusMpEnd && x <= parsons.steamWrapX) maxR = parsons.steamRadiusLp;
 
     let r = nodes.steamRadii[i];
     if (r < maxR) {
-      r += (maxR - r) * 5.0 * dt;
-    } else if (r > maxR + 0.1) {
-      r -= (r - maxR) * 10.0 * dt;
+      r += (maxR - r) * parsons.steamGrowPerS * dt;
+    } else if (r > maxR + parsons.steamShrinkSlack) {
+      r -= (r - maxR) * parsons.steamShrinkPerS * dt;
     }
     nodes.steamRadii[i] = r;
 

@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { fourStrokeCycle, stepOttoEngine } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface OttoEngineModelNodes {
   root: THREE.Group;
@@ -741,11 +742,15 @@ export function updateOttoEngineKinematics(
   nodes.combustionVolumeMesh.scale.set(1, gasLength / otto.combustionLengthRef, 1);
   nodes.combustionVolumeMesh.position.x = otto.cylinderTdcX + gasLength / 2;
 
+  const heat = heatFrames(12, 16, 2);
+  const localHeat =
+    1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, cycle.cyclePhaseRad / (Math.PI * 2), 0.45));
+
   if (cycle.strokeIndex === 0) {
     // INTAKE
     materials.combustionGas.color.setHex(otto.intakeGasColor);
     materials.combustionGas.emissive.setHex(otto.intakeGasEmissive);
-    materials.combustionGas.emissiveIntensity = otto.intakeEmissive;
+    materials.combustionGas.emissiveIntensity = otto.intakeEmissive * localHeat;
     materials.combustionGas.opacity = otto.intakeOpacity;
   } else if (cycle.strokeIndex === 1) {
     // COMPRESSION
@@ -753,7 +758,7 @@ export function updateOttoEngineKinematics(
     materials.combustionGas.color.setHex(otto.compressionGasColor);
     materials.combustionGas.emissive.setHex(otto.compressionGasEmissive);
     materials.combustionGas.emissiveIntensity =
-      otto.compressionEmissive0 + compFraction * otto.compressionEmissiveAmp;
+      (otto.compressionEmissive0 + compFraction * otto.compressionEmissiveAmp) * localHeat;
     materials.combustionGas.opacity =
       otto.compressionOpacity0 + compFraction * otto.compressionOpacityAmp;
   } else if (cycle.strokeIndex === 2) {
@@ -762,13 +767,13 @@ export function updateOttoEngineKinematics(
     const intensity = Math.max(otto.expansionMin, 1 - expFraction * otto.expansionFade);
     materials.combustionGas.color.setHex(otto.powerGasColor);
     materials.combustionGas.emissive.setHex(otto.powerGasEmissive);
-    materials.combustionGas.emissiveIntensity = otto.expansionEmissive0 * intensity;
+    materials.combustionGas.emissiveIntensity = otto.expansionEmissive0 * intensity * localHeat;
     materials.combustionGas.opacity = otto.expansionOpacity0 * intensity;
   } else {
     // EXHAUST
     materials.combustionGas.color.setHex(otto.exhaustGasColor);
     materials.combustionGas.emissive.setHex(otto.exhaustGasEmissive);
-    materials.combustionGas.emissiveIntensity = otto.exhaustEmissive;
+    materials.combustionGas.emissiveIntensity = otto.exhaustEmissive * localHeat;
     materials.combustionGas.opacity = otto.exhaustOpacity;
   }
 }

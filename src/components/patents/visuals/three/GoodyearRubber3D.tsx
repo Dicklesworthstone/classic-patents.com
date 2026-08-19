@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -29,6 +30,7 @@ export function GoodyearRubber3D() {
   const showStressVectors = params.showStressVectors !== 0;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // Thermodynamic & Polymer Mechanics Calculations
   const rubberPhysics = FrankenSimEngine.stepGoodyearRubber(
@@ -118,6 +120,10 @@ export function GoodyearRubber3D() {
       soundEngine.playElastomerSnap(appliedTensileStretch);
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -278,6 +284,10 @@ export function GoodyearRubber3D() {
             unit: "°C",
           },
           { label: "Stretch λ", value: `${appliedTensileStretch.toFixed(2)}`, unit: "x" },
+          {
+            label: "Heat crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

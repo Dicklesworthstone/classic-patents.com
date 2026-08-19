@@ -17,6 +17,7 @@
 
 import * as THREE from "three";
 import { fourStrokeIndexFromRad, stepDaimlerEngine } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface DaimlerEngineModel {
   rootGroup: THREE.Group;
@@ -432,12 +433,12 @@ export function updateDaimlerEngineKinematics(
   model.crankshaftGroup.rotation.z = cycleAngle;
 
   // Kinematics: crankpin position
-  const crankR = 0.42;
-  const pinY = -0.65 + Math.sin(cycleAngle) * crankR;
+  const crankR = daimler.crankR;
+  const pinY = daimler.pinYHome + Math.sin(cycleAngle) * crankR;
   const pinX = Math.cos(cycleAngle) * crankR;
 
-  const rodLen = 1.7;
-  const pistonY = pinY + Math.sqrt(Math.max(0.1, rodLen ** 2 - pinX ** 2));
+  const rodLen = daimler.rodLen;
+  const pistonY = pinY + Math.sqrt(Math.max(daimler.rodMin, rodLen ** 2 - pinX ** 2));
   model.pistonGroup.position.y = pistonY;
 
   // Connecting rod pose
@@ -465,9 +466,13 @@ export function updateDaimlerEngineKinematics(
     if (powerProgress < seats.powerFlashWindowRad) {
       model.combustionFlame.visible = true;
       model.combustionFlame.position.y = pistonY + seats.flamePistonOffset;
+      const heat = heatFrames(12, 16, 2);
+      const localHeat =
+        1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, fourStrokePhase / (Math.PI * 2), 0.45));
       const flashScale =
-        seats.flameScale0 +
-        Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * seats.flameScaleAmp;
+        (seats.flameScale0 +
+          Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * seats.flameScaleAmp) *
+        localHeat;
       model.combustionFlame.scale.set(flashScale, flashScale, flashScale);
     } else {
       model.combustionFlame.visible = false;

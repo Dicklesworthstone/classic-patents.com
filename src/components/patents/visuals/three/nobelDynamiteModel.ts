@@ -14,6 +14,8 @@
  */
 
 import * as THREE from "three";
+import { stepNobelDynamite } from "@/physics/catalogKernels";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1323);
@@ -326,15 +328,23 @@ export function updateNobelDynamiteKinematics(
 
   // 2. Pulse Fuse Spark when lit
   if (isFuseLit) {
-    materials.sparkMat.opacity = 0.7 + Math.sin(timeSec * 25) * 0.3;
-    const wave = (Math.sin(timeSec * 8) + 1) * 0.5;
-    materials.kieselguhrMatrix.emissiveIntensity = 0.4 + wave * 0.6;
-    materials.kieselguhrMatrix.emissive.setHex(0xff3300);
+    const nobel = stepNobelDynamite({});
+    const field = wave2dFrames(16, 16, 2);
+    const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
+    materials.sparkMat.opacity =
+      nobel.sparkOpacity0 + Math.sin(timeSec * nobel.sparkOmega) * nobel.sparkOpacityAmp;
+    const wave = (Math.sin(timeSec * nobel.shockwaveOmega) + 1) * 0.5;
+    materials.kieselguhrMatrix.emissiveIntensity =
+      nobel.matrixEmissive0 + wave * nobel.matrixEmissiveAmp * (1 + rms);
+    materials.kieselguhrMatrix.emissive.setHex(nobel.matrixEmissiveHex);
 
     nodes.shockwaveMesh.visible = true;
-    const scale = 1.0 + wave * 1.5;
+    const scale = nobel.shockwaveScale0 + wave * nobel.shockwaveScaleAmp * (1 + rms);
     nodes.shockwaveMesh.scale.set(scale, scale, scale);
-    materials.shockwaveMat.opacity = Math.max(0, 0.4 - wave * 0.35);
+    materials.shockwaveMat.opacity = Math.max(
+      0,
+      nobel.shockwaveOpacity0 - wave * nobel.shockwaveOpacityAmp,
+    );
     materials.shockwaveMat.emissiveIntensity = shockwaveGlow;
   } else {
     materials.sparkMat.opacity = 0;

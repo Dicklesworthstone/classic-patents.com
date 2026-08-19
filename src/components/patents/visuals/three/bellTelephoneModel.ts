@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { bellWaveProgress, stepBellTelephone } from "@/physics/catalogKernels";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface BellTelephoneModel {
@@ -521,6 +522,8 @@ export function updateBellTelephoneKinematics(
   model.rodGroup.position.y = acousticVibe * displScale * bell.rodStudioCoupling;
 
   // Acoustic Wave Rings Propagation
+  const field = wave2dFrames(16, 24, 2);
+  const rms = waveFrameRms(field, 16, 24, Math.abs(Math.floor(timeSec * 8)) % 24);
   for (let i = 0; i < model.waveRings.length; i++) {
     const ring = model.waveRings[i];
     if (showAcousticWaves) {
@@ -533,10 +536,10 @@ export function updateBellTelephoneKinematics(
         bell.waveProgressWrap,
       );
       ring.position.x = bell.waveOriginX + progress * bell.waveTravelX;
-      const scale = bell.waveScale0 + progress * bell.waveScaleAmp;
+      const scale = (bell.waveScale0 + progress * bell.waveScaleAmp) * (1 + rms);
       ring.scale.set(scale, scale, scale);
       const ringMat = ring.material as THREE.MeshBasicMaterial;
-      ringMat.opacity = (1 - progress) * bell.waveOpacity0;
+      ringMat.opacity = (1 - progress) * bell.waveOpacity0 * (0.55 + rms);
     } else {
       ring.visible = false;
     }

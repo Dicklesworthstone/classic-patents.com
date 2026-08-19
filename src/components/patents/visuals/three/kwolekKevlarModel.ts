@@ -13,6 +13,7 @@
  */
 
 import * as THREE from "three";
+import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 
 export interface KwolekKevlarModel {
   root: THREE.Group;
@@ -317,7 +318,10 @@ export function updateKwolekKevlarKinematics(
   model.hBondsGroup.visible = showHydrogenBonds;
 
   if (isImpactTesting) {
-    model.bulletMesh.position.x -= delta * bulletDisplaySpeed;
+    const field = wave2dFrames(16, 16, 2);
+    const frame = Math.abs(Math.floor(model.bulletMesh.position.x * 2)) % 16;
+    const rms = waveFrameRms(field, 16, 16, frame);
+    model.bulletMesh.position.x -= delta * bulletDisplaySpeed * (1 + rms);
     if (model.bulletMesh.position.x < 1.0) {
       model.bulletMesh.position.x = 6.5;
     }

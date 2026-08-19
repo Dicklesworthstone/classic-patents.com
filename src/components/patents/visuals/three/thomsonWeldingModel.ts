@@ -17,6 +17,7 @@
 
 import * as THREE from "three";
 import { stepThomsonWelding, wrapCycleRad } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1458);
@@ -355,10 +356,13 @@ export function updateThomsonWeldingKinematics(
     const pos = geo.attributes.position.array as Float32Array;
 
     const weld = stepThomsonWelding({});
+    const heat = heatFrames(12, 16, 2);
+    const heatFrame = Math.abs(Math.floor(timeSec * 6)) % 16;
+    const nugget = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, 0.5, 0.5));
     for (let i = 0; i < SPARK_COUNT; i++) {
       const idx = i * 3;
       const seed = (i * 1.37 + timeSec * 4.5) % 1.0;
-      const radius = seed * 1.8;
+      const radius = seed * 1.8 * nugget;
       const angle = wrapCycleRad(i * weld.sparkGoldenAngleRad, weld.sparkWrapRad);
       pos[idx] = Math.cos(angle) * radius;
       pos[idx + 1] = 0.4 + Math.sin(seed * Math.PI) * 1.2 - seed ** 2 * 1.4;

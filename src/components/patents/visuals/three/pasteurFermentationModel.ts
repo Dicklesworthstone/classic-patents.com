@@ -15,6 +15,8 @@
  */
 
 import * as THREE from "three";
+import { stepPasteurFermentation } from "@/physics/catalogKernels";
+import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -378,22 +380,30 @@ export function updatePasteurFermentationKinematics(
   showBubbles: boolean,
   isCutaway: boolean,
 ) {
-  const activity = Math.max(0, yeastActivityPct / 100);
-  const rise = 0.15 + activity * 1.4;
+  const pasteur = stepPasteurFermentation({});
+  const activity = Math.max(0, yeastActivityPct / pasteur.activityNormDivisor);
+  const rise = pasteur.bubbleRise0 + activity * pasteur.bubbleRiseAmp;
   const pos = nodes.bubblePositions;
+  const heat = heatFrames(12, 16, 2);
 
   for (let i = 0; i < nodes.bubbleCount; i++) {
     const idx = i * 3;
-    pos[idx + 1] += rise * dt;
-    if (pos[idx + 1] > 2.0) {
-      pos[idx + 1] = -1.4;
+    const frame = Math.abs(Math.floor(pos[idx + 1] * 4)) % 16;
+    const u = (pos[idx] + 3) / 6;
+    const v = (pos[idx + 2] + 3) / 6;
+    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, frame, u, v));
+    pos[idx + 1] += rise * dt * local;
+    if (pos[idx + 1] > pasteur.bubbleWrapY) {
+      pos[idx + 1] = pasteur.bubbleResetY;
     }
   }
   nodes.bubblePoints.geometry.attributes.position.needsUpdate = true;
 
-  nodes.bubblePoints.visible = showBubbles && activity > 0.12;
-  materials.bubbleMat.opacity = 0.2 + activity * 0.75;
-  materials.bubbleMat.color.setHex(fermentationTempC > 28 ? 0xf87171 : 0xfef08a);
+  nodes.bubblePoints.visible = showBubbles && activity > pasteur.bubbleVisibleThreshold;
+  materials.bubbleMat.opacity = pasteur.bubbleOpacity0 + activity * pasteur.bubbleOpacityAmp;
+  materials.bubbleMat.color.setHex(
+    fermentationTempC > pasteur.bubbleWarmC ? pasteur.bubbleWarmHex : pasteur.bubbleCoolHex,
+  );
 
   // Cutaway Mode
   materials.tinnedCopper.opacity = isCutaway ? 0.35 : 1.0;

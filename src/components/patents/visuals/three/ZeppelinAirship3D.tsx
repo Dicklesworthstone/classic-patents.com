@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -37,6 +38,7 @@ export function ZeppelinAirship3D() {
   });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     airspeedKmh: zep.flightSpeedKmh,
@@ -94,6 +96,10 @@ export function ZeppelinAirship3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -235,6 +241,10 @@ export function ZeppelinAirship3D() {
           { label: "Pitch", value: String(zep.pitchTrimDeg), unit: "°" },
           { label: "Drag", value: String(zep.parasiteDragKn), unit: "kN" },
           { label: "Volume", value: String(Math.round(zep.hydrogenVolumeM3)), unit: "m³" },
+          {
+            label: "Lift crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

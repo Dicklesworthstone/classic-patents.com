@@ -16,6 +16,14 @@
  */
 
 import * as THREE from "three";
+import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
+
+/** Cream/skim drop advance from the Stam-style fluid tape. */
+export function delavalFluidAdvance(elapsedSec: number, laneU: number): number {
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(elapsedSec * 4)) % 8;
+  return 1 + sampleFluidAt(fluid, 16, 8, frame, laneU, 0.45);
+}
 
 export interface DeLavalSeparatorModel {
   rootGroup: THREE.Group;

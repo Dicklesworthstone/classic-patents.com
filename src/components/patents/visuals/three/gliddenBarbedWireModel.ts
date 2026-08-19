@@ -19,6 +19,7 @@
  */
 
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 export interface GliddenBarbedWireModelNodes {
   rootGroup: THREE.Group;
@@ -559,8 +560,10 @@ export function updateGliddenBarbedWireKinematics(
   isLocked: boolean,
   isCutaway: boolean,
 ) {
-  nodes.flyerGroup.rotation.x += flyerOmegaRadPerS * dt;
-  nodes.reelGroup.rotation.x += reelOmegaRadPerS * dt;
+  const flyer = cyclicSymmetry(6, 0.4 + Math.abs(flyerOmegaRadPerS) * 0.03);
+  const flex = 1 + 0.12 * cyclicSol(flyer, 0);
+  nodes.flyerGroup.rotation.x += flyerOmegaRadPerS * dt * flex;
+  nodes.reelGroup.rotation.x += reelOmegaRadPerS * dt * flex;
 
   materials.galvanizedSteel.color.setHex(isLocked ? 0xdde3ea : 0xf87171);
   if (materials.barbSteel) {

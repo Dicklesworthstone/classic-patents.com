@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Waves } from "
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
@@ -30,6 +31,7 @@ export function PeltonWheel3D() {
   const [showJet, setShowJet] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     headMeters,
@@ -94,6 +96,10 @@ export function PeltonWheel3D() {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -263,6 +269,10 @@ export function PeltonWheel3D() {
           { label: "η", value: String(hydraulicEfficiencyPct), unit: "%" },
           { label: "Shaft", value: String(powerKw), unit: "kW" },
           { label: "ω", value: pelton.runnerOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Jet crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

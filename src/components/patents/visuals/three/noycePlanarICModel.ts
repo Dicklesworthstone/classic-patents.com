@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -304,10 +305,12 @@ export function updateNoycePlanarIcKinematics(
 ) {
   const signalSpeed = signalDisplaySpeed * dt;
   const pos = nodes.signalPos;
+  const modes = laplacianModes(16, 3);
 
   for (let i = 0; i < nodes.signalCount; i++) {
     const idx = i * 3;
-    pos[idx] += signalSpeed;
+    const mode = 1 + 0.4 * laplacianModeShape(modes, 16, 3, 0, i);
+    pos[idx] += signalSpeed * mode;
     if (pos[idx] > 3.4) {
       pos[idx] = -3.4;
     }

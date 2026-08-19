@@ -3,6 +3,7 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -35,6 +36,7 @@ export const SholesTypewriter3D = memo(() => {
   const eventsPerSecond = sholesIdle.eventsPerSecond.toFixed(1);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     demonstrationCadence,
@@ -84,6 +86,10 @@ export const SholesTypewriter3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -218,6 +224,10 @@ export const SholesTypewriter3D = memo(() => {
           { label: "Typebars", value: "12", unit: "sample" },
           { label: "Escapement", value: "Ratchet I", unit: "step" },
           { label: "Platen Feed", value: "Line Space", unit: "auto" },
+          {
+            label: "Basket crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
         ]}
       />
       <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">

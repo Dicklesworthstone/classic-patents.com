@@ -4,6 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -40,6 +41,7 @@ export const PasteurFermentation3D = memo(() => {
   const [showBubbles] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
     fermentationTempC,
@@ -94,6 +96,10 @@ export const PasteurFermentation3D = memo(() => {
       soundEngine.playSwitchClick();
     });
   };
+
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -239,6 +245,10 @@ export const PasteurFermentation3D = memo(() => {
           { label: "Microbial Log Kill", value: pasteur.logReduction.toFixed(1) },
           { label: "Spoilage Survivors", value: `${pasteur.survivorPct}`, unit: "%" },
           { label: "Shelf Life", value: `${pasteur.shelfLifeMonths}`, unit: "months" },
+          {
+            label: "Wort crate",
+            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+          },
         ]}
       />
     </div>

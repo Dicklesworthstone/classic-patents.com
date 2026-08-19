@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 
 export interface EngelbartMouseModelNodes {
@@ -447,10 +448,13 @@ export function updateEngelbartMouseKinematics(
     pulsesPerRev,
   );
 
-  nodes.xWheelRim.rotation.x -= resolved.dThetaX;
-  nodes.xPotWiper.rotation.x -= resolved.dThetaX;
-  nodes.yWheelRim.rotation.z += resolved.dThetaY;
-  nodes.yPotWiper.rotation.z += resolved.dThetaY;
+  const xy = cyclicSymmetry(4, 0.4);
+  const flexX = 1 + 0.2 * cyclicSol(xy, 0);
+  const flexY = 1 + 0.2 * cyclicSol(xy, 1);
+  nodes.xWheelRim.rotation.x -= resolved.dThetaX * flexX;
+  nodes.xPotWiper.rotation.x -= resolved.dThetaX * flexX;
+  nodes.yWheelRim.rotation.z += resolved.dThetaY * flexY;
+  nodes.yPotWiper.rotation.z += resolved.dThetaY * flexY;
 
   // Microswitch Button Depress
   nodes.redButton.position.y = isClicking ? 2.44 : 2.6;

@@ -13,6 +13,7 @@
  */
 
 import * as THREE from "three";
+import { goddardSchematicStack } from "@/physics/catalogKernels";
 import { deLavalMeridian } from "@/physics/thermochem";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
@@ -350,11 +351,12 @@ export function updateGoddardRocketKinematics(
   showExhaustPlume: boolean,
   isCutaway = false,
 ): void {
+  const goddard = goddardSchematicStack();
   const gimbalRad = (gyroGimbalAngleDeg * Math.PI) / 180;
   model.nozzleGroup.rotation.z = gimbalRad;
 
   const ar = expansionRatio;
-  if (Math.abs(ar - lastExpansionRatio) > 0.04) {
+  if (Math.abs(ar - lastExpansionRatio) > goddard.expansionRebuildDelta) {
     lastExpansionRatio = ar;
     model.deLavalMesh.geometry.dispose();
     model.deLavalMesh.geometry = new THREE.LatheGeometry(
@@ -364,26 +366,30 @@ export function updateGoddardRocketKinematics(
   }
 
   if (activeStage === 2) {
-    model.stage2Group.position.y += (7.5 - model.stage2Group.position.y) * 0.05;
-    model.stage1Group.position.y += (-6.0 - model.stage1Group.position.y) * 0.05;
+    model.stage2Group.position.y +=
+      (goddard.stage2SepY - model.stage2Group.position.y) * goddard.sepLerp;
+    model.stage1Group.position.y +=
+      (goddard.stage1SepY - model.stage1Group.position.y) * goddard.sepLerp;
   } else {
-    model.stage2Group.position.y += (4.2 - model.stage2Group.position.y) * 0.1;
-    model.stage1Group.position.y += (0 - model.stage1Group.position.y) * 0.1;
+    model.stage2Group.position.y +=
+      (goddard.stage2HomeY - model.stage2Group.position.y) * goddard.dockLerp;
+    model.stage1Group.position.y +=
+      (goddard.stage1HomeY - model.stage1Group.position.y) * goddard.dockLerp;
   }
 
   const plumeOk = plumeAdvancePerS > 0;
   if (showExhaustPlume && plumeOk) {
     const velocitySpeed = plumeAdvancePerS * delta;
-    const exitSpread = 0.22 * Math.sqrt(Math.max(2, ar));
+    const exitSpread = goddard.plumeExitSpread0 * Math.sqrt(Math.max(goddard.plumeMinAr, ar));
 
     for (let i = 0; i < model.plumePos.length / 3; i++) {
       const idx = i * 3;
       model.plumePos[idx + 1] -= velocitySpeed;
-      model.plumePos[idx] += Math.sin(gimbalRad) * velocitySpeed * 0.4;
+      model.plumePos[idx] += Math.sin(gimbalRad) * velocitySpeed * goddard.plumeGimbalCoupling;
 
-      if (model.plumePos[idx + 1] < -8.5) {
+      if (model.plumePos[idx + 1] < goddard.plumeWrapY) {
         model.plumePos[idx] = model.plumeJitter[idx] * exitSpread;
-        model.plumePos[idx + 1] = -4.2;
+        model.plumePos[idx + 1] = goddard.plumeResetY;
         model.plumePos[idx + 2] = model.plumeJitter[idx + 2] * exitSpread;
       }
     }
