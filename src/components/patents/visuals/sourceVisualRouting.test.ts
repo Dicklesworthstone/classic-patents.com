@@ -12,6 +12,7 @@ describe("source-integrity visual routing", () => {
     for (const patentId of [
       "us-608969-parsons-turbine",
       "us-808897-carrier-air-conditioner",
+      "us-586193-marconi-radio",
       "us-3671542-kwolek-kevlar",
       "us-3858232-boyle-smith-ccd",
     ]) {
@@ -20,6 +21,7 @@ describe("source-integrity visual routing", () => {
     expect(dispatcherSource).toContain("<SourceVisualUnavailable");
     expect(dispatcherSource).toContain("a different Parsons patent");
     expect(dispatcherSource).toContain("inherited chilled-dew-point air-conditioning model");
+    expect(dispatcherSource).toContain("unreviewed antenna dimensions, power, range");
     expect(dispatcherSource).toContain("Information Storage Devices");
   });
 
@@ -36,14 +38,19 @@ describe("source-integrity visual routing", () => {
     const carrierBranch = dispatcherSource
       .split('case "us-808897-carrier-air-conditioner":')[1]
       ?.split('case "us-821393-wright-flyer":')[0];
+    const marconiBranch = dispatcherSource
+      .split('case "us-586193-marconi-radio":')[1]
+      ?.split('case "us-608969-parsons-turbine":')[0];
 
     expect(parsonsBranch).toBeDefined();
     expect(kwolekBranch).toBeDefined();
     expect(boyleBranch).toBeDefined();
     expect(carrierBranch).toBeDefined();
+    expect(marconiBranch).toBeDefined();
     expect(parsonsBranch).not.toContain("ParsonsTurbine");
     expect(kwolekBranch).not.toContain("KwolekKevlar");
     expect(boyleBranch).not.toContain("BoyleSmithCcd");
     expect(carrierBranch).not.toContain("CarrierAirConditioner");
+    expect(marconiBranch).not.toContain("MarconiRadio");
   });
 });

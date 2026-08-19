@@ -276,6 +276,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-608969-parsons-turbine",
     "us-1102653-goddard-rocket",
     "us-2981877-noyce-ic",
+    "us-586193-marconi-radio",
     "us-808897-carrier-air-conditioner",
     "us-3671542-kwolek-kevlar",
     "us-3858232-boyle-smith-ccd",
@@ -409,7 +410,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-542846-diesel-engine":
             return renderMode === "3d-physics" ? <DieselEngine3D /> : <DieselEngineSim />;
           case "us-586193-marconi-radio":
-            return renderMode === "3d-physics" ? <MarconiRadio3D /> : <MarconiRadioSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="US 586,193 concerns high-frequency signalling, metallic-powder receiver contacts, local circuits, and trembler reset. The inherited radio model adds unreviewed antenna dimensions, power, range, and modern monopole claims, so it is withheld until a source-specific instrument is independently accepted."
+                title="Spark-signal receiver visual under source review"
+              />
+            );
           case "us-608969-parsons-turbine":
             return (
               <SourceVisualUnavailable
