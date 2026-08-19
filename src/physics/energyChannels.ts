@@ -56,6 +56,12 @@ export function energyChannelsFor(
     // energy-flow measurement; leave this optional strip empty while held.
     return [];
   }
+  if (patentId === "us-3541541-engelbart-mouse") {
+    // The grant supplies no source-backed electrical or mechanical energy
+    // values. Keep the optional presentation strip empty while its full
+    // handwritten source edition remains under review.
+    return [];
+  }
   if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,
