@@ -12,6 +12,7 @@ import {
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
   stepLincolnBuoy as catalogStepLincolnBuoy,
+  goddardSchematicStack,
   rpmToOmega,
   stepBellTelephone,
   stepCorlissEngine,
@@ -84,6 +85,14 @@ export const LAMARR_SCHEMATIC_STAFF_PITCH_Y = 13;
 export const LAMARR_SCHEMATIC_HOP_ORIGIN_X = 80;
 export const LAMARR_SCHEMATIC_HOP_PITCH_X = 30;
 export const LAMARR_SCHEMATIC_HOP_SEQUENCE = [0, 3, 1, 7, 4, 9, 2, 6] as const;
+export const LAMARR_SCHEMATIC_STAFF_X1 = 70;
+export const LAMARR_SCHEMATIC_STAFF_X2 = 330;
+export const LAMARR_SCHEMATIC_BOX_X = 50;
+export const LAMARR_SCHEMATIC_BOX_Y = 60;
+export const LAMARR_SCHEMATIC_BOX_W = 300;
+export const LAMARR_SCHEMATIC_BOX_H = 160;
+export const LAMARR_SCHEMATIC_HOP_W = 22;
+export const LAMARR_SCHEMATIC_HOP_H = 11;
 
 export function lamarrPianoRollChannel(
   step: number,
@@ -331,6 +340,7 @@ export const FrankenSimEngine = {
             ? Number(((wasmRes.exhaust_velocity_mps / 2000) * 35).toFixed(3))
             : 0,
         chamberPressureAtm: Number((wasmRes.chamber_pressure_psi / 14.696).toFixed(1)),
+        ...goddardSchematicStack(),
       };
     }
 
@@ -361,6 +371,7 @@ export const FrankenSimEngine = {
       plumeAdvancePerS:
         exhaustVelocityMps >= 800 ? Number(((exhaustVelocityMps / 2000) * 35).toFixed(3)) : 0,
       chamberPressureAtm: Number((chamberPressurePsi / 14.696).toFixed(1)),
+      ...goddardSchematicStack(),
     };
   },
 
@@ -649,6 +660,14 @@ export const FrankenSimEngine = {
       schematicHopOriginX: LAMARR_SCHEMATIC_HOP_ORIGIN_X,
       schematicHopPitchX: LAMARR_SCHEMATIC_HOP_PITCH_X,
       schematicHopSequence: LAMARR_SCHEMATIC_HOP_SEQUENCE,
+      schematicStaffX1: LAMARR_SCHEMATIC_STAFF_X1,
+      schematicStaffX2: LAMARR_SCHEMATIC_STAFF_X2,
+      schematicBoxX: LAMARR_SCHEMATIC_BOX_X,
+      schematicBoxY: LAMARR_SCHEMATIC_BOX_Y,
+      schematicBoxW: LAMARR_SCHEMATIC_BOX_W,
+      schematicBoxH: LAMARR_SCHEMATIC_BOX_H,
+      schematicHopW: LAMARR_SCHEMATIC_HOP_W,
+      schematicHopH: LAMARR_SCHEMATIC_HOP_H,
     };
   },
 
@@ -743,7 +762,37 @@ export const FrankenSimEngine = {
       wheelHubSvgR: 16,
       spokeCount: 6,
       spokePitchDeg: 60,
+      schematicWheelCx: 330,
+      schematicWheelCy: 152,
       schematicWheelR: 35,
+      schematicPipeX1: 40,
+      schematicPipeX2: 360,
+      schematicPipeY: 230,
+      schematicValveX: 60,
+      schematicValveY: 70,
+      schematicValveW: 90,
+      schematicValveH: 110,
+      schematicPistonX: 70,
+      schematicPistonW: 70,
+      schematicPistonH: 14,
+      schematicPistonReleaseY: 85,
+      schematicPistonApplyY: 125,
+      schematicReservoirX: 180,
+      schematicReservoirY: 50,
+      schematicReservoirW: 100,
+      schematicReservoirH: 55,
+      schematicCylinderX: 180,
+      schematicCylinderY: 130,
+      schematicCylinderW: 80,
+      schematicCylinderH: 45,
+      schematicPistonBarX: 190,
+      schematicPistonBarY: 138,
+      schematicPistonBarW: 8,
+      schematicPistonBarH: 28,
+      schematicRodX1: 200,
+      schematicRodY: 152,
+      schematicRodX2: 280,
+      schematicShoeD: "M 285 130 Q 292 152 285 174",
     };
   },
 
@@ -814,6 +863,15 @@ export const FrankenSimEngine = {
       schematicShutterCx: 280,
       schematicShutterCy: 140,
       schematicShutterR: 20,
+      schematicBodyX: 80,
+      schematicBodyY: 50,
+      schematicBodyW: 240,
+      schematicBodyH: 180,
+      schematicConePoints: "150,140 260,100 260,180",
+      schematicFinderX: 270,
+      schematicFinderY: 130,
+      schematicFinderW: 20,
+      schematicFinderH: 20,
     };
   },
 
@@ -876,6 +934,21 @@ export const FrankenSimEngine = {
       schematicFlywheelCx: 200,
       schematicFlywheelCy: 240,
       schematicFlywheelR: 40,
+      schematicCylinderX: 130,
+      schematicCylinderY: 30,
+      schematicCylinderW: 140,
+      schematicCylinderH: 170,
+      schematicInjectorX: 185,
+      schematicInjectorY: 15,
+      schematicInjectorW: 30,
+      schematicInjectorH: 30,
+      schematicPistonX: 140,
+      schematicPistonY: 75,
+      schematicPistonW: 120,
+      schematicPistonH: 55,
+      schematicRodX: 200,
+      schematicRodY0: 130,
+      schematicRodY1: 230,
     };
   },
 

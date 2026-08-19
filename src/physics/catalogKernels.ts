@@ -71,6 +71,13 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     schematicRunnerR: 60,
     schematicBucketCount: 8,
     schematicBucketPitchDeg: 45,
+    schematicBucketRx: 8,
+    schematicBucketRy: 6,
+    schematicSplitDx: 4,
+    schematicNozzlePoints: "40,185 100,180 100,200 40,195",
+    schematicJetX1: 100,
+    schematicJetX2: 200,
+    schematicJetY: 190,
   };
 }
 
@@ -113,7 +120,25 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     schematicJunctionOuterR: 32,
     schematicJunctionCount: 12,
     schematicJunctionPitchDeg: 30,
+    schematicRingOuterR: 55,
+    schematicRingInnerR: 48,
+    schematicNorthPoleD: "M 60 100 Q 130 150 60 200",
+    schematicSouthPoleD: "M 340 100 Q 270 150 340 200",
+    schematicNorthLabelX: 90,
+    schematicSouthLabelX: 300,
+    schematicPoleLabelY: 155,
+    schematicBrushX: 194,
+    schematicBrushW: 12,
+    schematicBrushH: 6,
+    schematicBrushY0: 112,
+    schematicBrushY1: 182,
+    schematicBrushCount: 2,
   };
+}
+
+/** Commutator-brush seat on the schematic. Shared by the schematic. */
+export function grammeSchematicBrush(index: number, x = 194, y0 = 112, y1 = 182, w = 12, h = 6) {
+  return { x, y: index === 0 ? y0 : y1, w, h };
 }
 
 /** Schematic junction-rod seat. Shared by the schematic. */
@@ -149,6 +174,21 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     schematicFlywheelCy: 130,
     schematicFlywheelR: 45,
     schematicHubR: 6,
+    schematicCylinderX: 80,
+    schematicCylinderY: 70,
+    schematicCylinderW: 160,
+    schematicCylinderH: 120,
+    schematicValveX: 50,
+    schematicValveY: 90,
+    schematicValveW: 30,
+    schematicValveH: 40,
+    schematicPistonX: 120,
+    schematicPistonY: 95,
+    schematicPistonW: 70,
+    schematicPistonH: 70,
+    schematicRodX1: 170,
+    schematicRodX2: 280,
+    schematicRodY: 130,
   };
 }
 
@@ -187,6 +227,19 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     stageSvgOriginX: 135,
     stageSvgPitch: 16,
     schematicStageXs: [100, 120, 140, 170, 190, 210, 230, 260, 280, 300],
+    schematicRotorPoints:
+      "80,120 150,120 150,110 240,110 240,95 320,95 320,185 240,185 240,170 150,170 150,160 80,160",
+    schematicBladeY0: 85,
+    schematicBladeY1: 195,
+    schematicCasingX1: 60,
+    schematicCasingX2: 340,
+    schematicCasingY0: 80,
+    schematicCasingY1: 65,
+    schematicCasingY2: 200,
+    schematicCasingY3: 215,
+    schematicInletX1: 40,
+    schematicInletX2: 75,
+    schematicInletY: 140,
   };
 }
 
@@ -238,6 +291,12 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     schematicAftCy: 150,
     schematicAftRx: 14,
     schematicAftRy: 46,
+    schematicSternD: "M 60 80 L 140 140 L 140 160 L 60 220",
+    schematicShaftX1: 140,
+    schematicShaftX2: 340,
+    schematicShaftY: 150,
+    schematicForwardHelixD: "M 196 100 Q 210 150 224 200",
+    schematicAftHelixD: "M 294 104 Q 280 150 266 196",
     shroudSvgRx: 14,
     forwardShroudSvgRy: 60,
     aftShroudSvgRy: 55,
@@ -278,6 +337,21 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     schematicDiscOriginY: 100,
     schematicDiscPitchY: 20,
     schematicDiscCount: 5,
+    schematicBowlPoints: "140,80 260,80 230,200 170,200",
+    schematicDiscX0: 180,
+    schematicDiscCx: 200,
+    schematicDiscX1: 220,
+    schematicDiscLift: 10,
+    schematicSpindleX: 200,
+    schematicSpindleY0: 200,
+    schematicSpindleY1: 250,
+    schematicCreamX: 200,
+    schematicCreamY0: 80,
+    schematicCreamY1: 50,
+    schematicSkimX0: 150,
+    schematicSkimY0: 80,
+    schematicSkimX1: 120,
+    schematicSkimY1: 60,
   };
 }
 
@@ -324,6 +398,16 @@ export function stepNobelDynamite(params: {
     schematicKieselguhrPitchY: 25,
     schematicKieselguhrCols: 7,
     schematicKieselguhrRows: 3,
+    schematicCartridgeX: 70,
+    schematicCartridgeY: 110,
+    schematicCartridgeW: 220,
+    schematicCartridgeH: 80,
+    schematicGrainR: 4,
+    schematicCapX: 260,
+    schematicCapY: 138,
+    schematicCapW: 45,
+    schematicCapH: 24,
+    schematicFuseD: "M 305 150 Q 330 130 350 150 T 380 140",
   };
 }
 
@@ -399,6 +483,11 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     schematicBrushOuterR: 38,
     schematicBrushRayCount: 8,
     schematicBrushRayPitchDeg: 45,
+    schematicHopperPoints: "60,40 180,40 160,110 80,110",
+    schematicGrateD0: "M 160 80 C 180 120, 180 170, 160 210",
+    schematicGrateD1: "M 165 80 C 185 120, 185 170, 165 210",
+    schematicSawR: 48,
+    schematicBrushR: 36,
   };
 }
 
@@ -455,6 +544,20 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     schematicSicklePitchX: 20,
     schematicSickleCount: 8,
     schematicSickleY: 210,
+    schematicSickleX1: 160,
+    schematicSickleX2: 320,
+    schematicSickleTipDx: 6,
+    schematicSickleMidDx: 12,
+    schematicSickleLift: 10,
+    schematicBullCx: 100,
+    schematicBullCy: 180,
+    schematicBullR: 45,
+    schematicBullHubR: 12,
+    schematicArmW: 24,
+    schematicArmH: 8,
+    schematicArmOx: 12,
+    schematicArmOy: 4,
+    schematicPlatformPoints: "160,210 320,210 300,245 140,245",
     grainStemCount: 14,
     grainStemOriginX: 60,
     grainStemPitchX: 14,
@@ -529,7 +632,31 @@ export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque
     efficiencyPct: electricalWatts > 0 ? Math.round((shaftPowerW / electricalWatts) * 100) : 0,
     shaftOmegaRadPerS: shaft.omegaRadPerS,
     shaftOmegaDegPerS: shaft.omegaDegPerS,
+    schematicCenterX: 200,
+    schematicCenterY: 150,
+    schematicArmatureX: 160,
+    schematicArmatureY: 138,
+    schematicArmatureW: 80,
+    schematicArmatureH: 24,
+    schematicCommutatorR: 14,
+    schematicNorthD: "M 60 70 A 90 90 0 0 1 120 70 L 120 230 A 90 90 0 0 1 60 230 Z",
+    schematicSouthD: "M 340 70 A 90 90 0 0 0 280 70 L 280 230 A 90 90 0 0 0 340 230 Z",
+    schematicNorthLabelX: 90,
+    schematicSouthLabelX: 310,
+    schematicPoleLabelY: 155,
+    schematicLeftBrushX1: 180,
+    schematicLeftBrushX2: 150,
+    schematicRightBrushX1: 220,
+    schematicRightBrushX2: 250,
+    schematicBrushY: 150,
+    schematicArmatureLabelY: 120,
+    schematicCommutatorLabelY: 190,
   };
+}
+
+/** Rotating armature seat on the schematic. Shared by the schematic. */
+export function davenportSchematicArmature(x = 160, y = 138, w = 80, h = 24) {
+  return { x, y, w, h };
 }
 
 export function stepCorlissEngine(params: {
@@ -565,6 +692,16 @@ export function stepCorlissEngine(params: {
     schematicWristCx: 200,
     schematicWristCy: 150,
     schematicWristR: 32,
+    schematicCylinderX: 70,
+    schematicCylinderY: 60,
+    schematicCylinderW: 260,
+    schematicCylinderH: 180,
+    schematicLinkInnerX: 108,
+    schematicLinkOuterX: 292,
+    schematicLinkTopY: 130,
+    schematicLinkBotY: 170,
+    schematicLinkValveTopY: 92,
+    schematicLinkValveBotY: 208,
   };
 }
 
@@ -604,6 +741,19 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     schematicBarrelAmpY: 28,
     schematicBarrelCenterY: 150,
     schematicBarrelCount: count,
+    schematicBarrelX1: 180,
+    schematicBarrelX2: 350,
+    schematicBreechX: 70,
+    schematicBreechY: 105,
+    schematicBreechW: 110,
+    schematicBreechH: 90,
+    schematicCamD: "M 80 120 Q 120 160 170 120",
+    schematicHopperPoints: "100,50 140,50 130,105 110,105",
+    schematicCrankX0: 70,
+    schematicCrankX1: 40,
+    schematicCrankY: 150,
+    schematicCrankY1: 190,
+    schematicCrankR: 5,
   };
 }
 
@@ -644,6 +794,34 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     polymerOriginY: 150,
     polymerPitchX: 45,
     polymerPitchY: 25,
+    schematicJacketX: 70,
+    schematicJacketY: 100,
+    schematicJacketW: 180,
+    schematicJacketH: 80,
+    schematicCylinderX: 80,
+    schematicCylinderY: 110,
+    schematicCylinderW: 160,
+    schematicCylinderH: 60,
+    schematicRamX: 40,
+    schematicRamY: 125,
+    schematicRamW: 60,
+    schematicRamH: 30,
+    schematicMoldX: 295,
+    schematicMoldY: 110,
+    schematicMoldW: 60,
+    schematicMoldH: 60,
+    schematicNozzleX0: 250,
+    schematicNozzleX1: 290,
+    schematicNozzleY0: 120,
+    schematicNozzleY1: 160,
+    schematicNozzleMidY0: 135,
+    schematicNozzleMidY1: 145,
+    schematicJacketLabelX: 160,
+    schematicJacketLabelY: 90,
+    schematicRamLabelX: 70,
+    schematicRamLabelY: 170,
+    schematicMoldLabelX: 325,
+    schematicMoldLabelY: 100,
   };
 }
 
@@ -659,6 +837,43 @@ export function hyattPolymerSvg(
   return {
     xPos: originX + (index % cols) * pitchX,
     yPos: originY + Math.floor(index / cols) * pitchY,
+  };
+}
+
+/** Hydraulic ram seat on the schematic. Shared by the schematic. */
+export function hyattSchematicRam(x = 40, y = 125, w = 60, h = 30) {
+  return { x, y, w, h };
+}
+
+/** Split-mold seat on the schematic. Shared by the schematic. */
+export function hyattSchematicMold(x = 295, y = 110, w = 60, h = 60) {
+  return { x, y, w, h };
+}
+
+/** Printed-spec LOX–gasoline stack on the schematic. Shared by the schematic. */
+export function goddardSchematicStack() {
+  return {
+    schematicNoseCx: 200,
+    schematicNoseY0: 40,
+    schematicNoseY1: 90,
+    schematicNoseHalfW: 30,
+    schematicChamberX: 170,
+    schematicChamberY: 90,
+    schematicChamberW: 60,
+    schematicChamberH: 70,
+    schematicInjectorX: 174,
+    schematicInjectorY: 162,
+    schematicInjectorW: 52,
+    schematicInjectorH: 40,
+    schematicNozzleY0: 202,
+    schematicNozzleY1: 250,
+    schematicNozzleX0: 160,
+    schematicNozzleX1: 240,
+    schematicNozzleInnerX0: 174,
+    schematicNozzleInnerX1: 226,
+    schematicFlameCx: 200,
+    schematicFlameY: 275,
+    schematicFlameHalfW: 10,
   };
 }
 
@@ -694,7 +909,19 @@ export function stepPasteurFermentation(params: {
     schematicBubblePitchX: 25,
     schematicBubbleCount: 5,
     schematicBubbleY: 160,
+    schematicBubbleR: 4,
+    schematicVesselD: "M 120 100 L 120 210 C 120 235 280 235 280 210 L 280 100 Z",
+    schematicSwanD: "M 200 100 L 200 60 C 200 35 250 35 250 65 C 250 90 290 90 290 60",
+    schematicYeastX: 130,
+    schematicYeastY: 195,
+    schematicYeastW: 140,
+    schematicYeastH: 25,
   };
+}
+
+/** Yeast-bed seat on the schematic. Shared by the schematic. */
+export function pasteurSchematicYeast(x = 130, y = 195, w = 140, h = 25) {
+  return { x, y, w, h };
 }
 
 /** Anaerobic CO₂ bubble X on the schematic. Shared by the schematic. */
@@ -754,6 +981,13 @@ export function stepGliddenBarbedWire(params: {
     schematicSpurPitchX: 90,
     schematicSpurCount: 3,
     schematicSpurY: 140,
+    schematicWireD0: "M 40 140 Q 120 120 200 140 T 360 140",
+    schematicWireD1: "M 40 160 Q 120 180 200 160 T 360 160",
+    schematicSpurRx: 8,
+    schematicSpurRy: 14,
+    schematicBarbDx: 12,
+    schematicBarbY0: 120,
+    schematicBarbY1: 160,
   };
 }
 
@@ -798,6 +1032,17 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     schematicGrooveCount: 8,
     schematicGrooveY0: 110,
     schematicGrooveY1: 180,
+    schematicMandrelX: 100,
+    schematicMandrelW: 180,
+    schematicMandrelH: 70,
+    schematicLeadX1: 60,
+    schematicLeadX2: 320,
+    schematicLeadY: 145,
+    schematicDiaphragmCx: 190,
+    schematicDiaphragmCy: 90,
+    schematicDiaphragmR: 16,
+    schematicStylusY: 114,
+    schematicHornPoints: "190,80 150,30 230,30",
     leadScrewThreadCount: 40,
     leadScrewThreadOriginX: 90,
     leadScrewThreadPitchX: 10,
@@ -860,6 +1105,19 @@ export function stepThomsonWelding(params: {
     schematicWeldCx: 200,
     schematicWeldCy: 87,
     schematicWeldR: 6,
+    schematicBarD: "M 90 90 L 90 200 L 310 200 L 310 90",
+    schematicCoreX: 170,
+    schematicCoreY: 160,
+    schematicCoreW: 60,
+    schematicCoreH: 60,
+    schematicWeldLineX: 200,
+    schematicWeldLineY0: 72,
+    schematicWeldLineY1: 102,
+    schematicUpsetY: 87,
+    schematicUpsetLeftX1: 120,
+    schematicUpsetLeftX2: 135,
+    schematicUpsetRightX1: 280,
+    schematicUpsetRightX2: 265,
   };
 }
 
@@ -911,7 +1169,29 @@ export function stepZeppelinAirship(params: {
     schematicCellCount: 9,
     schematicCellOriginX: 70,
     schematicCellPitch: 32,
+    schematicHullCx: 200,
+    schematicHullCy: 140,
+    schematicHullRx: 170,
+    schematicHullRy: 50,
+    schematicCellCy: 140,
+    schematicCellRx: 12,
+    schematicCellRy: 42,
+    schematicKeelX1: 60,
+    schematicKeelX2: 340,
+    schematicKeelY: 180,
+    schematicTrimX: 220,
+    schematicTrimR: 5,
+    schematicGondolaXs: [120, 250],
+    schematicGondolaY: 190,
+    schematicGondolaW: 30,
+    schematicGondolaH: 12,
   };
+}
+
+/** Gondola seat on the schematic. Shared by the schematic. */
+export function zeppelinSchematicGondola(index: number, xs = [120, 250], y = 190) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i], y };
 }
 
 /** Schematic gas-cell seat. Shared by the schematic. */
@@ -957,6 +1237,21 @@ export function stepDaimlerEngine(params: {
     schematicFlywheelCy: 220,
     schematicFlywheelR: 50,
     schematicHubR: 6,
+    schematicCylinderX: 140,
+    schematicCylinderY: 30,
+    schematicCylinderW: 120,
+    schematicCylinderH: 140,
+    schematicHotTubeX: 90,
+    schematicHotTubeY: 45,
+    schematicHotTubeW: 50,
+    schematicHotTubeH: 14,
+    schematicPistonX: 150,
+    schematicPistonY: 70,
+    schematicPistonW: 100,
+    schematicPistonH: 45,
+    schematicRodX: 200,
+    schematicRodY0: 115,
+    schematicRodY1: 210,
   };
 }
 
@@ -1007,6 +1302,23 @@ export function stepHollerithTabulating(params: {
     schematicPinY0: 70,
     schematicPinY1: 105,
     schematicCupY: 142,
+    schematicCupR: 5,
+    schematicPressX: 60,
+    schematicPressY: 40,
+    schematicPressW: 280,
+    schematicPressH: 30,
+    schematicCardX: 70,
+    schematicCardY: 105,
+    schematicCardW: 260,
+    schematicCardH: 15,
+    schematicBedX: 60,
+    schematicBedY: 125,
+    schematicBedW: 280,
+    schematicBedH: 35,
+    schematicDialBoxX: 100,
+    schematicDialBoxY: 180,
+    schematicDialBoxW: 200,
+    schematicDialBoxH: 70,
   };
 }
 
@@ -1141,7 +1453,23 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
       (Math.min(1, Math.max(0.1, lowResistanceWatts / 150)) * 0.25).toFixed(3),
     ),
     bulbLightScale: 18,
+    schematicEnvelopeD:
+      "M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z",
+    schematicBaseD: "M 170 210 L 170 235 L 230 235 L 230 210 Z",
+    schematicFootX1: 160,
+    schematicFootX2: 240,
+    schematicFootY: 245,
+    schematicFilamentD: "M 185 220 L 185 140 C 185 90 215 90 215 140 L 215 220",
+    schematicTerminalXs: [185, 215],
+    schematicTerminalY: 220,
+    schematicTerminalR: 4,
   };
+}
+
+/** Carbon-filament terminal seat on the schematic. Shared by the schematic. */
+export function edisonSchematicTerminal(index: number, xs = [185, 215], y = 220, r = 4) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { cx: xs[i], cy: y, r };
 }
 
 export function stepBellTelephone(params: {
@@ -1190,6 +1518,18 @@ export function stepBellTelephone(params: {
     schematicHornCy: 70,
     schematicHornRx: 55,
     schematicHornRy: 16,
+    schematicTransmitterX: 160,
+    schematicTransmitterY: 70,
+    schematicTransmitterW: 80,
+    schematicTransmitterH: 70,
+    schematicAcidX: 175,
+    schematicAcidY: 145,
+    schematicAcidW: 50,
+    schematicAcidH: 28,
+    schematicBaseX: 150,
+    schematicBaseY: 200,
+    schematicBaseW: 100,
+    schematicBaseH: 18,
     scopeSampleCount: 60,
     scopeSamplePitchPx: 5,
     scopeTScale: 0.2,
@@ -1261,6 +1601,46 @@ export function stepMorseTelegraph(params: {
     keyOscillationRadPerS: Number(((wpm / 4) * Math.PI).toFixed(3)),
     armatureStrikeM: Number(Math.min(0.2, 0.08 + (forceN / 10) * 0.1).toFixed(4)),
     electronDisplaySpeed: 8,
+    schematicKeyX: 50,
+    schematicKeyY: 150,
+    schematicKeyW: 70,
+    schematicKeyH: 18,
+    schematicRelayX: 160,
+    schematicRelayY: 90,
+    schematicRelayW: 80,
+    schematicRelayH: 50,
+    schematicSounderX: 280,
+    schematicSounderY: 130,
+    schematicSounderW: 70,
+    schematicSounderH: 40,
+    schematicLeverX1: 85,
+    schematicLeverY1: 150,
+    schematicLeverX2: 120,
+    schematicLeverY2: 110,
+    schematicKeyRelayX1: 120,
+    schematicKeyRelayY1: 159,
+    schematicKeyRelayX2: 160,
+    schematicKeyRelayY2: 115,
+    schematicRelaySounderX1: 240,
+    schematicRelaySounderY1: 115,
+    schematicRelaySounderX2: 280,
+    schematicRelaySounderY2: 150,
+  };
+}
+
+/** Key, relay, or sounder seat on the schematic. Shared by the schematic. */
+export function morseSchematicInstrument(
+  id: "key" | "relay" | "sounder",
+  key = { x: 50, y: 150, w: 70, h: 18 },
+  relay = { x: 160, y: 90, w: 80, h: 50 },
+  sounder = { x: 280, y: 130, w: 70, h: 40 },
+) {
+  const seat = id === "key" ? key : id === "relay" ? relay : sounder;
+  const labelLift = id === "sounder" ? 4 : 5;
+  return {
+    ...seat,
+    labelX: seat.x + seat.w / 2,
+    labelY: Math.round(seat.y + seat.h / 2 + labelLift),
   };
 }
 
@@ -1293,6 +1673,34 @@ export function stepEngelbartMouse(params: {
     pointerSvgMaxX: 370,
     pointerSvgMinY: 30,
     pointerSvgMaxY: 270,
+    schematicXWheelX: 140,
+    schematicXWheelY: 130,
+    schematicXWheelW: 14,
+    schematicXWheelH: 60,
+    schematicYWheelX: 210,
+    schematicYWheelY: 150,
+    schematicYWheelW: 60,
+    schematicYWheelH: 14,
+    schematicButtonX: 180,
+    schematicButtonY: 40,
+    schematicButtonW: 40,
+    schematicButtonH: 20,
+    schematicBodyD:
+      "M 120 220 L 120 100 C 120 60 160 50 200 50 C 240 50 280 60 280 100 L 280 220 Z",
+  };
+}
+
+/** Orthogonal encoder wheel on the schematic. Shared by the schematic. */
+export function engelbartSchematicWheel(
+  axis: "x" | "y",
+  xWheel = { x: 140, y: 130, w: 14, h: 60 },
+  yWheel = { x: 210, y: 150, w: 60, h: 14 },
+) {
+  const seat = axis === "x" ? xWheel : yWheel;
+  return {
+    ...seat,
+    labelX: seat.x + seat.w / 2,
+    labelY: axis === "x" ? seat.y + seat.h + 15 : seat.y + seat.h + 16,
   };
 }
 
@@ -1336,7 +1744,30 @@ export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?:
     dramBaseAddr: 0x0400,
     dramAddrSpan: 0x0400,
     dramAddrStride: 0x31,
+    schematicChipSeats: {
+      cpu: { x: 50, y: 60, w: 80, h: 60 },
+      mux: { x: 170, y: 60, w: 60, h: 60 },
+      ram: { x: 270, y: 60, w: 85, h: 150 },
+      video: { x: 50, y: 150, w: 80, h: 60 },
+    },
+    schematicBusCpuMux: { x1: 130, y1: 90, x2: 170, y2: 90 },
+    schematicBusVideoMux: { x1: 130, y1: 180, x2: 170, y2: 105 },
+    schematicBusMuxRam: { x1: 230, y1: 90, x2: 270, y2: 90 },
   };
+}
+
+/** MOS 6502 / MUX / RAM / video-gen chip box on the schematic. Shared by the schematic. */
+export function wozniakSchematicChip(
+  id: "cpu" | "mux" | "ram" | "video",
+  seats: Record<"cpu" | "mux" | "ram" | "video", { x: number; y: number; w: number; h: number }> = {
+    cpu: { x: 50, y: 60, w: 80, h: 60 },
+    mux: { x: 170, y: 60, w: 60, h: 60 },
+    ram: { x: 270, y: 60, w: 85, h: 150 },
+    video: { x: 50, y: 150, w: 80, h: 60 },
+  },
+) {
+  const c = seats[id];
+  return { ...c, labelX: c.x + c.w / 2, labelY: Math.round(c.y + c.h / 2 + 5) };
 }
 
 /** Φ1/Φ2 bus owner and DRAM address for one host tick. Shared by 2D. */
@@ -1408,6 +1839,16 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     schematicAnodeCx: 110,
     schematicAnodeCy: 150,
     schematicCavityR: 26,
+    schematicOvenX: 50,
+    schematicOvenY: 55,
+    schematicOvenW: 300,
+    schematicOvenH: 190,
+    schematicAnodeR: 42,
+    schematicCavityDotR: 7,
+    schematicWaveguideD: "M 152 150 L 200 130 L 330 130 L 330 170 L 200 170 Z",
+    schematicLoadCx: 265,
+    schematicLoadCy: 150,
+    schematicLoadR: 16,
   };
 }
 
@@ -1481,6 +1922,12 @@ export function stepKevlarContinuum(
     schematicLatticeOriginY: 80,
     schematicLatticePitchX: 40,
     schematicLatticePitchY: 30,
+    schematicLatticeX1: 60,
+    schematicLatticeX2: 340,
+    schematicNodeR: 5,
+    schematicBondXs: [120, 200, 280],
+    schematicBondY0: 80,
+    schematicBondY1: 200,
   };
 }
 
@@ -1497,6 +1944,12 @@ export function kevlarSchematicLattice(
     cx: originX + col * pitchX,
     cy: originY + row * pitchY,
   };
+}
+
+/** H-bond column on the schematic. Shared by the schematic. */
+export function kevlarSchematicBond(index: number, xs = [120, 200, 280]) {
+  const i = ((index % xs.length) + xs.length) % xs.length;
+  return { x: xs[i] };
 }
 
 export function stepBardeenTransistor(
@@ -1529,7 +1982,29 @@ export function stepBardeenTransistor(
     holeStreamHubX: 130,
     holeStreamArcAmpPx: 10,
     holeStreamBaseY: 4,
+    schematicDieX: 110,
+    schematicDieY: 150,
+    schematicDieW: 180,
+    schematicDieH: 70,
+    schematicContactR: 4,
+    schematicEmitterX1: 160,
+    schematicEmitterY1: 70,
+    schematicEmitterX2: 175,
+    schematicEmitterY2: 150,
+    schematicCollectorX1: 240,
+    schematicCollectorY1: 70,
+    schematicCollectorX2: 225,
+    schematicCollectorY2: 150,
+    schematicEmitterLabelX: 150,
+    schematicEmitterLabelY: 64,
+    schematicCollectorLabelX: 250,
+    schematicCollectorLabelY: 64,
   };
+}
+
+/** n-Ge die seat on the schematic. Shared by the schematic. */
+export function bardeenSchematicDie(x = 110, y = 150, w = 180, h = 70) {
+  return { x, y, w, h, labelX: x + w / 2, labelY: y + h / 2 + 5 };
 }
 
 /** Minority-carrier path between the point contacts. Shared by 2D. */
@@ -1589,6 +2064,17 @@ export function stepMarconiRadio(
     schematicGapY: 175,
     schematicGapR: 10,
     schematicMastX: 120,
+    schematicMastY0: 50,
+    schematicMastY1: 200,
+    schematicAerialX1: 80,
+    schematicAerialX2: 160,
+    schematicAerialY: 55,
+    schematicLeadX2: 200,
+    schematicSparkDx: 10,
+    schematicEarthX: 210,
+    schematicEarthY: 210,
+    schematicEarthW: 80,
+    schematicEarthH: 20,
     mastSvgY: Number((210 - h * 1.6).toFixed(2)),
     fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
   };
@@ -1617,7 +2103,66 @@ export function stepColtRevolver(params: {
     cycleDisplayMs: 800,
     recoilKick: Number((0.05 + (muzzleVelocityMps / 400) * 0.1).toFixed(4)),
     recoilKickX: Number(((0.05 + (muzzleVelocityMps / 400) * 0.1) * 0.8).toFixed(4)),
+    schematicArborX1: 80,
+    schematicArborX2: 340,
+    schematicArborY: 110,
+    schematicBarrelX: 210,
+    schematicBarrelY: 68,
+    schematicBarrelW: 150,
+    schematicBarrelH: 28,
+    schematicBoreY: 82,
+    schematicBoreX2: 360,
+    schematicLugD: "M 210 96 L 250 96 L 250 128 L 210 128 Z",
+    schematicLugPinX: 224,
+    schematicLugPinY: 104,
+    schematicLugPinW: 12,
+    schematicLugPinH: 16,
+    schematicFrameD: "M 50 50 L 125 50 L 125 155 L 85 155 L 60 190 L 30 170 L 45 110 Z",
+    schematicCylinderX: 125,
+    schematicCylinderY: 60,
+    schematicCylinderW: 85,
+    schematicCylinderH: 100,
+    schematicTopBoreY: 74,
+    schematicBoreW: 80,
+    schematicBoreH: 16,
+    schematicBottomBoreY: 130,
+    schematicBoreMouthX: 195,
+    schematicBoreMouthR: 5,
+    schematicFlashX: 120,
+    schematicFlashY0: 65,
+    schematicFlashY1: 100,
+    schematicHammerPivotX: 80,
+    schematicHammerPivotY: 110,
+    schematicHammerD: "M 0 0 L -15 -35 L 6 -62 L 20 -58 L 10 -30 Z",
+    schematicPawlX1: 8,
+    schematicPawlY1: -20,
+    schematicPawlX2: 48,
+    schematicPawlY2: -16,
+    schematicRatchetR: 10,
+    schematicBoltX: 160,
+    schematicBoltY: 158,
+    schematicBoltW: 12,
+    schematicBoltH: 14,
+    schematicTriggerX: 95,
+    schematicTriggerW: 6,
+    schematicTriggerCockY: 155,
+    schematicTriggerRestY: 145,
+    schematicTriggerCockH: 20,
+    schematicTriggerRestH: 8,
   };
+}
+
+/** Folding-trigger seat on the schematic. Shared by the schematic. */
+export function coltSchematicTrigger(
+  isLocked: boolean,
+  x = 95,
+  w = 6,
+  cockY = 155,
+  restY = 145,
+  cockH = 20,
+  restH = 8,
+) {
+  return { x, y: isLocked ? cockY : restY, w, h: isLocked ? cockH : restH };
 }
 
 export function stepGoodyearRubber(
@@ -1668,7 +2213,22 @@ export function stepGoodyearRubber(
     schematicStrandCount: 4,
     schematicCrosslinkCount: 3,
     schematicCrosslinkR: 5,
+    schematicLinkCount: 3,
+    schematicLinkXs: [88, 155, 235, 315],
+    schematicLinkY0s: [120, 170, 110],
+    schematicLinkY1s: [125, 165, 120],
   };
+}
+
+/** Sulfur S–S link on the schematic. Shared by the schematic. */
+export function goodyearSchematicLink(
+  index: number,
+  xs = [88, 155, 235, 315],
+  y0s = [120, 170, 110],
+  y1s = [125, 165, 120],
+) {
+  const i = ((index % y0s.length) + y0s.length) % y0s.length;
+  return { x1: xs[i], y1: y0s[i], x2: xs[i + 1], y2: y1s[i] };
 }
 
 /** Sulfur-strand path on the schematic. Shared by the schematic. */
@@ -1714,7 +2274,40 @@ export function stepEinsteinRefrigerator(params: {
     heaterGlowIntensity: Number(((qIn / 250) * 0.95).toFixed(3)),
     generatorGlowIntensity: Number(((qIn / 300) * 0.7).toFixed(3)),
     evaporatorGlowIntensity: Number(Math.min(1.3, Math.max(0.08, -evapTempC / 35)).toFixed(3)),
+    schematicVesselLeftX: 70,
+    schematicVesselRightX: 240,
+    schematicVesselTopY: 50,
+    schematicVesselBottomY: 170,
+    schematicVesselW: 90,
+    schematicVesselH: 60,
+    schematicGenCondX1: 160,
+    schematicGenCondX2: 240,
+    schematicGenCondY: 80,
+    schematicCondEvapX: 285,
+    schematicCondEvapY1: 110,
+    schematicCondEvapY2: 170,
+    schematicEvapAbsX1: 240,
+    schematicEvapAbsX2: 160,
+    schematicEvapAbsY: 200,
+    schematicAbsGenX: 115,
+    schematicAbsGenY1: 170,
+    schematicAbsGenY2: 110,
   };
+}
+
+/** Generator / condenser / evaporator / absorber seat on the schematic. Shared by the schematic. */
+export function einsteinSchematicVessel(
+  id: "generator" | "condenser" | "evaporator" | "absorber",
+  leftX = 70,
+  rightX = 240,
+  topY = 50,
+  bottomY = 170,
+  w = 90,
+  h = 60,
+) {
+  const x = id === "generator" || id === "absorber" ? leftX : rightX;
+  const y = id === "generator" || id === "condenser" ? topY : bottomY;
+  return { x, y, w, h, labelX: x + w / 2, labelY: y + h / 2 + 5 };
 }
 
 export function stepLincolnBuoy(params: {
@@ -1758,6 +2351,12 @@ export function stepLincolnBuoy(params: {
     schematicChamberW: 70,
     schematicChamberH: 40,
     schematicTieXs: [115, 285],
+    schematicHullD: "M 50 110 L 90 80 L 310 80 L 350 110 L 340 140 L 60 140 Z",
+    schematicWaterX1: 50,
+    schematicWaterX2: 350,
+    schematicWaterY: 190,
+    schematicTieY0: 80,
+    schematicTieY1: 140,
   };
 }
 
@@ -1806,5 +2405,23 @@ export function stepMaximMachineGun(params: {
     schematicToggleCx: 280,
     schematicToggleCy: 105,
     schematicToggleR: 4,
+    schematicJacketX: 40,
+    schematicJacketY: 90,
+    schematicJacketW: 180,
+    schematicJacketH: 60,
+    schematicBarrelX1: 20,
+    schematicBarrelX2: 240,
+    schematicBarrelY: 120,
+    schematicBreechX: 220,
+    schematicBreechY: 80,
+    schematicBreechW: 140,
+    schematicBreechH: 80,
+    schematicToggleX0: 240,
+    schematicToggleY0: 120,
+    schematicToggleX1: 280,
+    schematicToggleY1: 105,
+    schematicToggleX2: 330,
+    schematicToggleY2: 120,
+    schematicFuseeD: "M 330 140 Q 350 150, 330 160 T 310 170",
   };
 }

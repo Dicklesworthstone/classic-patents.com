@@ -84,6 +84,11 @@ export function stepFermiKinetics(
     schematicCoreX1: 320,
     schematicCoreY0: 70,
     schematicCoreY1: 240,
+    schematicCoreW: 240,
+    schematicCoreH: 170,
+    schematicRodX: 195,
+    schematicRodW: 10,
+    schematicRodH: 160,
   };
 }
 

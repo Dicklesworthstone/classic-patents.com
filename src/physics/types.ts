@@ -130,6 +130,11 @@ export interface NuclearKineticsState {
   schematicCoreX1: number;
   schematicCoreY0: number;
   schematicCoreY1: number;
+  schematicCoreW: number;
+  schematicCoreH: number;
+  schematicRodX: number;
+  schematicRodW: number;
+  schematicRodH: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

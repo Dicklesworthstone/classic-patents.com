@@ -4,6 +4,7 @@ import { energyChannelsFor } from "./energyChannels";
 import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { formatSones, sonesFromDbSpl } from "./psycho";
 import { qtyDimension } from "./qty";
+import { TickScheduler } from "./tickScheduler";
 
 describe("Shared Physics Mathematical Utilities & Conversions", () => {
   test("blackbodyRgb computes CIE RGB approximations across temperature ranges", () => {
@@ -88,5 +89,26 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     const expanded = expandParamAliases("us-319596-maxim-machine-gun", { firingRate: 600 });
     expect(expanded.fireRateRpm).toBe(600);
     expect(expanded.firingRate).toBe(600);
+  });
+
+  test("TickScheduler manages fixed-step simulation time and bounds catch-up backlog", () => {
+    const scheduler = new TickScheduler(0.016, 0.0, 3);
+    let tickCount = 0;
+
+    // Standard 3-tick pump step (t = 0.032s)
+    const ran = scheduler.pump(0.032, () => {
+      tickCount += 1;
+    });
+    expect(ran).toBe(3);
+    expect(tickCount).toBe(3);
+    expect(scheduler.ticksRun).toBe(3);
+    expect(scheduler.reanchors).toBe(0);
+
+    // Extreme lag (1.0s backlog) — bounds catch-up and records reanchor
+    const lagRan = scheduler.pump(1.0, () => {
+      tickCount += 1;
+    });
+    expect(lagRan).toBeLessThanOrEqual(3);
+    expect(scheduler.reanchors).toBeGreaterThan(0);
   });
 });

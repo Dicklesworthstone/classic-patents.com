@@ -31,6 +31,15 @@ export function stepCcdWells(
   schematicGateOriginX: number;
   schematicGatePitch: number;
   schematicGateWidth: number;
+  schematicGateY: number;
+  schematicGateH: number;
+  schematicSubstrateX: number;
+  schematicSubstrateY: number;
+  schematicSubstrateW: number;
+  schematicSubstrateH: number;
+  schematicPolyY: number;
+  schematicPolyH: number;
+  schematicPacketD: string;
   packetCount: number;
   packetGateStride: number;
   packetSvgRx: number;
@@ -75,6 +84,15 @@ export function stepCcdWells(
     schematicGateOriginX: 70,
     schematicGatePitch: 45,
     schematicGateWidth: 36,
+    schematicGateY: 100,
+    schematicGateH: 40,
+    schematicSubstrateX: 60,
+    schematicSubstrateY: 160,
+    schematicSubstrateW: 280,
+    schematicSubstrateH: 50,
+    schematicPolyY: 140,
+    schematicPolyH: 20,
+    schematicPacketD: "M 88 180 Q 133 150 178 180",
     packetCount: 3,
     packetGateStride: 3,
     packetSvgRx: 16,
@@ -139,6 +157,19 @@ export function stepHoweSewingMachine(
     schematicNeedleX: 220,
     schematicNeedleY: 178,
     schematicNeedleR: 3,
+    schematicBedX: 70,
+    schematicBedY: 190,
+    schematicBedW: 260,
+    schematicBedH: 22,
+    schematicArmD: "M 90 190 L 90 90 L 220 90 L 220 130",
+    schematicShuttleArmDx: 22,
+    schematicShuttleArmDy: -18,
+    schematicNeedleY0: 130,
+    schematicNeedleY1: 175,
+    schematicFeedX: 200,
+    schematicFeedY: 200,
+    schematicFeedW: 40,
+    schematicFeedH: 12,
   };
 }
 
@@ -222,6 +253,12 @@ export function stepSholesTypewriter(
   schematicTypebarStartDeg: number;
   schematicTypebarPitchDeg: number;
   schematicTypebarCount: number;
+  schematicBasketR: number;
+  schematicHubR: number;
+  schematicPlatenX: number;
+  schematicPlatenY: number;
+  schematicPlatenW: number;
+  schematicPlatenH: number;
   ratchetToothCount: number;
   ratchetToothPitchDeg: number;
 } {
@@ -254,6 +291,12 @@ export function stepSholesTypewriter(
     schematicTypebarStartDeg: 20,
     schematicTypebarPitchDeg: 25,
     schematicTypebarCount: 14,
+    schematicBasketR: 65,
+    schematicHubR: 10,
+    schematicPlatenX: 130,
+    schematicPlatenY: 60,
+    schematicPlatenW: 140,
+    schematicPlatenH: 30,
     ratchetToothCount: 12,
     ratchetToothPitchDeg: 30,
   };
@@ -338,6 +381,18 @@ export function stepMergenthalerLinotype(params: {
   schematicMoldCx: number;
   schematicMoldCy: number;
   schematicMoldR: number;
+  schematicMagazinePoints: string;
+  schematicAssemblerX: number;
+  schematicAssemblerY: number;
+  schematicAssemblerW: number;
+  schematicAssemblerH: number;
+  schematicPumpX: number;
+  schematicPumpY: number;
+  schematicPumpW: number;
+  schematicPumpH: number;
+  schematicDistributorX1: number;
+  schematicDistributorX2: number;
+  schematicDistributorY: number;
 } {
   const rate = params.matrixRatePerMin ?? 60;
   const wedge = params.spacebandWedgeMm ?? 6.5;
@@ -380,6 +435,18 @@ export function stepMergenthalerLinotype(params: {
     schematicMoldCx: 280,
     schematicMoldCy: 180,
     schematicMoldR: 45,
+    schematicMagazinePoints: "120,40 240,40 210,130 90,130",
+    schematicAssemblerX: 70,
+    schematicAssemblerY: 145,
+    schematicAssemblerW: 160,
+    schematicAssemblerH: 25,
+    schematicPumpX: 260,
+    schematicPumpY: 172,
+    schematicPumpW: 40,
+    schematicPumpH: 16,
+    schematicDistributorX1: 80,
+    schematicDistributorX2: 320,
+    schematicDistributorY: 20,
   };
 }
 
@@ -421,6 +488,18 @@ export function stepRenoEscalator(params: {
   schematicCleatOriginY: number;
   schematicCleatPitchX: number;
   schematicCleatPitchY: number;
+  schematicCleatW: number;
+  schematicCleatH: number;
+  schematicInclineX1: number;
+  schematicInclineY1: number;
+  schematicInclineX2: number;
+  schematicInclineY2: number;
+  schematicHandrailX1: number;
+  schematicHandrailY1: number;
+  schematicHandrailX2: number;
+  schematicHandrailY2: number;
+  schematicCombUpper: string;
+  schematicCombLower: string;
 } {
   const passengers = params.passengerCount ?? 30;
   const angleDeg = params.inclineAngleDeg ?? 25;
@@ -454,6 +533,18 @@ export function stepRenoEscalator(params: {
     schematicCleatOriginY: 200,
     schematicCleatPitchX: 42,
     schematicCleatPitchY: 20,
+    schematicCleatW: 22,
+    schematicCleatH: 10,
+    schematicInclineX1: 40,
+    schematicInclineY1: 210,
+    schematicInclineX2: 340,
+    schematicInclineY2: 70,
+    schematicHandrailX1: 40,
+    schematicHandrailY1: 170,
+    schematicHandrailX2: 340,
+    schematicHandrailY2: 30,
+    schematicCombUpper: "330,65 360,65 345,78",
+    schematicCombLower: "30,205 60,205 45,218",
   };
 }
 
@@ -514,6 +605,30 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   schematicRailCount: number;
   schematicRailLeftX: number;
   schematicRailRightX: number;
+  schematicRailY0: number;
+  schematicRailY1: number;
+  schematicFrameX: number;
+  schematicFrameY: number;
+  schematicFrameW: number;
+  schematicFrameH: number;
+  schematicRopeX: number;
+  schematicRopeY0: number;
+  schematicRopeAttachY: number;
+  schematicToothIn: number;
+  schematicToothMid: number;
+  schematicToothH: number;
+  schematicCutY1: number;
+  schematicCutY2: number;
+  schematicCutDx: number;
+  schematicSpringX0: number;
+  schematicSpringX1: number;
+  schematicSpringY: number;
+  schematicPawlInnerX0: number;
+  schematicPawlInnerX1: number;
+  schematicPawlOuterBase0: number;
+  schematicPawlOuterBase1: number;
+  schematicPawlY0: number;
+  schematicPawlY1: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -544,7 +659,47 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     schematicRailCount: 6,
     schematicRailLeftX: 80,
     schematicRailRightX: 320,
+    schematicRailY0: 30,
+    schematicRailY1: 240,
+    schematicFrameX: 100,
+    schematicFrameY: 100,
+    schematicFrameW: 200,
+    schematicFrameH: 120,
+    schematicRopeX: 200,
+    schematicRopeY0: 20,
+    schematicRopeAttachY: 90,
+    schematicToothIn: 10,
+    schematicToothMid: 6,
+    schematicToothH: 12,
+    schematicCutY1: 40,
+    schematicCutY2: 55,
+    schematicCutDx: 5,
+    schematicSpringX0: 110,
+    schematicSpringX1: 290,
+    schematicSpringY: 100,
+    schematicPawlInnerX0: 110,
+    schematicPawlInnerX1: 290,
+    schematicPawlOuterBase0: 100,
+    schematicPawlOuterBase1: 300,
+    schematicPawlY0: 100,
+    schematicPawlY1: 105,
   };
+}
+
+/** Safety-pawl seat on the schematic. Shared by the schematic. */
+export function otisSchematicPawl(
+  side: "left" | "right",
+  pawlExt: number,
+  innerX0 = 110,
+  innerX1 = 290,
+  outerBase0 = 100,
+  outerBase1 = 300,
+  y0 = 100,
+  y1 = 105,
+) {
+  return side === "left"
+    ? { x1: innerX0, y1: y0, x2: outerBase0 - pawlExt, y2: y1 }
+    : { x1: innerX1, y1: y0, x2: outerBase1 + pawlExt, y2: y1 };
 }
 
 /** Guide-rail ratchet Y on the schematic. Shared by the schematic. */
