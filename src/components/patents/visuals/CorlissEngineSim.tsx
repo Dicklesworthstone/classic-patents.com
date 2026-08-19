@@ -222,8 +222,8 @@ export function CorlissEngineSim() {
                   key={`spoke-${spkAngle}`}
                   x1="0"
                   y1="0"
-                  x2={Math.cos((spkAngle * Math.PI) / 180) * 85}
-                  y2={Math.sin((spkAngle * Math.PI) / 180) * 85}
+                  x2={Math.cos((spkAngle * Math.PI) / 180) * corliss.flywheelSvgR}
+                  y2={Math.sin((spkAngle * Math.PI) / 180) * corliss.flywheelSvgR}
                   stroke="#718096"
                   strokeWidth="4"
                 />

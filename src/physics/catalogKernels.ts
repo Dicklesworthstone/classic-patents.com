@@ -334,6 +334,7 @@ export function stepCorlissEngine(params: {
     wristAmp: Number((0.18 + cutoff * 0.35).toFixed(4)),
     pistonStrokePx: 45,
     wristPlateAmpPx: 22,
+    flywheelSvgR: 85,
     intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
   };
 }
@@ -816,12 +817,34 @@ export function stepEngelbartMouse(params: {
     pathDisplayOmega: Number((v * 0.018).toFixed(4)),
     resolverSvgScale: 40,
     diameterToRadius: 2,
+    pointerSvgWidth: 400,
+    pointerSvgHeight: 300,
+    pointerSvgMinX: 30,
+    pointerSvgMaxX: 370,
+    pointerSvgMinY: 30,
+    pointerSvgMaxY: 270,
   };
 }
 
 /** Registry stores knife-edge radius; the 2D slider is labeled as diameter. */
 export function engelbartRadiusFromDiameterMm(diameterMm: number) {
   return Number((Math.max(0, diameterMm) / 2).toFixed(3));
+}
+
+export function engelbartPointerSvg(
+  clientX: number,
+  clientY: number,
+  rect: { left: number; top: number; width: number; height: number },
+  width = 400,
+  height = 300,
+  minX = 30,
+  maxX = 370,
+  minY = 30,
+  maxY = 270,
+) {
+  const svgX = Math.max(minX, Math.min(maxX, ((clientX - rect.left) / rect.width) * width));
+  const svgY = Math.max(minY, Math.min(maxY, ((clientY - rect.top) / rect.height) * height));
+  return { svgX, svgY };
 }
 
 export function stepWozniakApple(params: { crystalFreq?: number; ramCapacityKb?: number }) {

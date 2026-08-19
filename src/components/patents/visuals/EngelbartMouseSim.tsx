@@ -2,7 +2,11 @@
 
 import { MousePointer, Move, RotateCcw, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
-import { engelbartRadiusFromDiameterMm, stepEngelbartMouse } from "@/physics/catalogKernels";
+import {
+  engelbartPointerSvg,
+  engelbartRadiusFromDiameterMm,
+  stepEngelbartMouse,
+} from "@/physics/catalogKernels";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
@@ -37,8 +41,17 @@ export function EngelbartMouseSim() {
   const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
     if (!isDraggingRef.current || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const svgX = Math.max(30, Math.min(370, ((e.clientX - rect.left) / rect.width) * 400));
-    const svgY = Math.max(30, Math.min(270, ((e.clientY - rect.top) / rect.height) * 300));
+    const { svgX, svgY } = engelbartPointerSvg(
+      e.clientX,
+      e.clientY,
+      rect,
+      mouse.pointerSvgWidth,
+      mouse.pointerSvgHeight,
+      mouse.pointerSvgMinX,
+      mouse.pointerSvgMaxX,
+      mouse.pointerSvgMinY,
+      mouse.pointerSvgMaxY,
+    );
 
     const dx = svgX - prevPosRef.current.x;
     const dy = svgY - prevPosRef.current.y;

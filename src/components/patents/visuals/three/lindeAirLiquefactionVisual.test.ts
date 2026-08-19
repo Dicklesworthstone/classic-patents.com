@@ -38,7 +38,7 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
     expect(threeSource).not.toContain("performance.now()");
   });
 
-  test("exposes authentic camera presets and UI overlay for cryogenics observation", () => {
+  test("exposes source-named camera presets and a bounded apparatus overlay", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "LindeAirLiquefaction3D.tsx"),
       "utf8",
@@ -56,19 +56,16 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
     }
   });
 
-  test("computes genuine Joule-Thomson expansion and liquefaction yield in SI units", () => {
-    const result = FrankenSimEngine.stepLindeAirLiquefaction({
-      compressorPressureBar: 200,
-      heatExchangerPasses: 50,
-    });
-    expect(result.coldEndTempK).toBeLessThan(100);
-    expect(result.coldEndTempC).toBeLessThan(-170);
-    expect(result.jtDeltaTPerPass).toBeGreaterThan(10);
-    expect(result.isLiquefying).toBe(true);
-    expect(result.liquidYieldPct).toBeGreaterThan(5);
+  test("keeps the fallback inside the printed operating example and refuses invented outputs", () => {
+    const result = FrankenSimEngine.stepLindeAirLiquefaction();
+    expect(result.highPressureAtm).toBe(75);
+    expect(result.lowPressureAtm).toBe(25);
+    expect(result.pressureDifferenceAtm).toBe(50);
+    expect(result.coolerOutletC).toBe(10);
+    expect(result.modelBoundary).toContain("does not supply");
   });
 
-  test("builds and articulates procedural cryostat casing, counter-current triple concentric coil, JT valve, and liquid air dewar correctly", () => {
+  test("builds the source-named casing, G′, N/R′, and V′ diagram without a Dewar claim", () => {
     const model = buildLindeLiquefactionModel();
     expect(model.root.children.length).toBeGreaterThan(0);
     expect(model.nodes.counterCurrentCoilGroup).toBeDefined();
