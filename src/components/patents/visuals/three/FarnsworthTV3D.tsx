@@ -59,7 +59,7 @@ export function FarnsworthTV3D() {
     domain: "semiconductor_microarch",
     refusal: { isRefused: false },
     semi: {
-      biasVoltageVolts: acceleratingVoltageKv * 1000,
+      biasVoltageVolts: beamState.acceleratingVoltageVolts,
       currentGainAlpha: 0,
       holeDiffusionCoefficientCm2ps: 0,
       chargeTransferEfficiencyPct: 0,

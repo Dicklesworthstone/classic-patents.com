@@ -2,7 +2,7 @@
 
 import { RotateCcw } from "lucide-react";
 import { useState } from "react";
-import { stepSholesTypewriter } from "@/physics/machineKernels";
+import { sholesTypebarPose, stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function SholesTypewriterSim() {
@@ -126,22 +126,19 @@ export function SholesTypewriterSim() {
 
           {/* A deliberately small diagrammatic subset. The grant specifies one bar and key per type, not a number. */}
           <g id="typebar-basket">
-            {Array.from({ length: 12 }).map((_, i) => {
-              const bAngle = i * 30 + 15;
-              const xStart = 300 + Math.cos((bAngle * Math.PI) / 180) * 140;
-              const yStart = 200 + Math.sin((bAngle * Math.PI) / 180) * 70;
-              const isCurrentActive = i === activeKeyIndex;
+            {Array.from({ length: sholes.displayColumnWrap }).map((_, i) => {
+              const bar = sholesTypebarPose(i, activeKeyIndex);
               return (
-                <g key={`typebar-${bAngle}`}>
+                <g key={`typebar-${bar.bAngle}`}>
                   <line
-                    x1={xStart}
-                    y1={yStart}
-                    x2={isCurrentActive ? 300 : 300 + Math.cos((bAngle * Math.PI) / 180) * 25}
-                    y2={isCurrentActive ? 75 : 200 + Math.sin((bAngle * Math.PI) / 180) * 15}
-                    stroke={isCurrentActive ? "#D69E2E" : "#718096"}
-                    strokeWidth={isCurrentActive ? 3.5 : 2}
+                    x1={bar.xStart}
+                    y1={bar.yStart}
+                    x2={bar.xEnd}
+                    y2={bar.yEnd}
+                    stroke={bar.isActive ? "#D69E2E" : "#718096"}
+                    strokeWidth={bar.isActive ? 3.5 : 2}
                   />
-                  {isCurrentActive && (
+                  {bar.isActive && (
                     <circle
                       cx="300"
                       cy="75"
@@ -164,8 +161,8 @@ export function SholesTypewriterSim() {
                 key={`esc-tooth-${i * 30}`}
                 x1="0"
                 y1="0"
-                x2={Math.cos((i * 30 * Math.PI) / 180) * 18}
-                y2={Math.sin((i * 30 * Math.PI) / 180) * 18}
+                x2={Math.cos((i * 30 * Math.PI) / 180) * sholes.ratchetSvgR}
+                y2={Math.sin((i * 30 * Math.PI) / 180) * sholes.ratchetSvgR}
                 stroke="#1A1A1A"
                 strokeWidth="2"
               />

@@ -7,6 +7,8 @@ import {
   TESLA_FIELD_DISPLAY_SLOWDOWN,
   TESLA_FIELD_DISPLAY_TICK_MS,
   teslaBAt,
+  teslaPhaseVectors,
+  teslaStatorPole,
 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -151,33 +153,30 @@ export function TeslaMotorSim() {
 
             {/* Stator poles: 4 coils at 90° (2-phase) or 6 coils at 60° (3-phase) */}
             {Array.from({ length: coilCount }, (_, i) => {
-              const poles = coilCount;
-              const a = (i * 2 * Math.PI) / poles - Math.PI / 2;
               const phaseOff =
                 (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
               // A and A′ are opposite sides of the same winding (N vs S), not the same polarity.
               const polarity = i >= phaseCount ? -1 : 1;
               const current = polarity * Math.sin(rad + phaseOff);
-              const cx = 200 + Math.cos(a) * 108;
-              const cy = 150 + Math.sin(a) * 108;
+              const pole = teslaStatorPole(i, coilCount);
               const labels =
                 phaseCount === 2 ? ["A", "B", "A'", "B'"] : ["A", "B", "C", "A'", "B'", "C'"];
               return (
                 <g key={i}>
                   <rect
-                    x={cx - 18}
-                    y={cy - 12}
+                    x={pole.cx - 18}
+                    y={pole.cy - 12}
                     width="36"
                     height="24"
                     rx="4"
-                    transform={`rotate(${(a * 180) / Math.PI + 90} ${cx} ${cy})`}
+                    transform={`rotate(${pole.rotateDeg} ${pole.cx} ${pole.cy})`}
                     fill={current >= 0 ? "#f59e0b" : "#3b82f6"}
                     stroke="#fff"
                     strokeWidth="1"
                   />
                   <text
-                    x={cx}
-                    y={cy + 4}
+                    x={pole.cx}
+                    y={pole.cy + 4}
                     fill="#fff"
                     fontSize="9"
                     textAnchor="middle"
@@ -191,54 +190,36 @@ export function TeslaMotorSim() {
             })}
 
             {/* Phase contribution vectors (the currents that sum to the rotating field) */}
-            {phaseCount === 2
-              ? [
-                  { x: Math.cos(rad) * 52, y: 0, color: "#f59e0b" },
-                  { x: 0, y: Math.sin(rad) * 52, color: "#3b82f6" },
-                ].map((comp, i) => (
-                  <line
-                    key={i}
-                    x1="200"
-                    y1="150"
-                    x2={200 + comp.x}
-                    y2={150 + comp.y}
-                    stroke={comp.color}
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    opacity="0.55"
-                  />
-                ))
-              : [0, 1, 2].map((ph) => {
-                  const mag = Math.sin(rad - (ph * 2 * Math.PI) / 3) * 42;
-                  const ax = Math.cos((ph * 2 * Math.PI) / 3);
-                  const ay = Math.sin((ph * 2 * Math.PI) / 3);
-                  const colors = ["#f59e0b", "#3b82f6", "#10b981"];
-                  return (
-                    <line
-                      key={ph}
-                      x1="200"
-                      y1="150"
-                      x2={200 + ax * mag}
-                      y2={150 + ay * mag}
-                      stroke={colors[ph]}
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      opacity="0.5"
-                    />
-                  );
-                })}
+            {teslaPhaseVectors(rad, phaseCount).map((comp, i) => (
+              <line
+                key={i}
+                x1={apparatus.statorCenterX}
+                y1={apparatus.statorCenterY}
+                x2={apparatus.statorCenterX + comp.x}
+                y2={apparatus.statorCenterY + comp.y}
+                stroke={comp.color}
+                strokeWidth="2"
+                strokeLinecap="round"
+                opacity={phaseCount === 2 ? 0.55 : 0.5}
+              />
+            ))}
 
             {/* Resultant rotating B-field (constant magnitude for a balanced polyphase set) */}
             <line
               x1="200"
               y1="150"
-              x2={200 + bVectorX}
-              y2={150 + bVectorY}
+              x2={apparatus.statorCenterX + bVectorX}
+              y2={apparatus.statorCenterY + bVectorY}
               stroke="#fbbf24"
               strokeWidth="4"
               strokeLinecap="round"
             />
-            <circle cx={200 + bVectorX} cy={150 + bVectorY} r="5" fill="#f59e0b" />
+            <circle
+              cx={apparatus.statorCenterX + bVectorX}
+              cy={apparatus.statorCenterY + bVectorY}
+              r="5"
+              fill="#f59e0b"
+            />
 
             {/* Fig. 9 magnetic disk D inside the annular ring R. */}
             <g transform={`translate(200, 150) rotate(${angle})`}>
