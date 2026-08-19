@@ -1642,7 +1642,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Synchronized 88-key slotted player-piano rolls rapidly steer the radio carrier across 88 distinct frequencies, making torpedo steering signals mathematically immune to continuous-wave narrowband jamming.",
   },
-  "us-3541541-engelbart-mouse": {
+  "_legacy-unpublished-us-3541541-engelbart-mouse": {
     domain: "continuum_elasticity",
     domainTitle: "Orthogonal Coordinate Resolver Kinematics & Potentiometer D/A",
     equationName: "Dual Knife-Edge Orthogonal Coordinate Integration",
@@ -5087,4 +5087,64 @@ PATENT_PHYSICS_REGISTRY["us-2708656-fermi-reactor"] = {
   },
   pedagogicalInsight:
     "US 2,708,656 claims graphite or heavy-water lattices with discrete uranium fuel bodies and figure-defined criticality regions. Its 58-page scholarly edition remains under independent review, so this guide does not claim delayed-neutron kinetics, control-rod behavior, reactivity, power, temperature, radiation dose, or Chicago Pile-1 operating data.",
+};
+
+// The manuscript-facing Engelbart edition remains under root editorial hold.
+// Keep its public path to printed apparatus relations, not a synthetic mouse
+// performance model with unprinted dimensions, materials, or sample rates.
+PATENT_PHYSICS_REGISTRY["us-3541541-engelbart-mouse"] = {
+  domain: "source_review_hold",
+  domainTitle: "Source Guide: Two-Wheel Position Indicator",
+  equationName: "No quantitative pointing-device performance model published",
+  governingEquation:
+    "perpendicular position wheels → transducer means → flexible conductor → computer-controlled CRT cursor",
+  engineMethod: "No pointing-device performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–3: display system and two-wheel control",
+      "Figs. 4–5: potentiometer and shaft-encoder arrangements",
+      "Figs. 6–7: incremental-encoder arrangements",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Figures",
+        value: "7",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Printed Claims",
+        value: "8",
+        unit: "source text",
+        badgeColor: "indigo",
+      },
+      {
+        label: "Visual Status",
+        value: "withheld",
+        unit: "independent source review pending",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 3,541,541 describes a position indicator supported by two perpendicular wheels and a ball-bearing support, with potentiometer, shaft-encoder, and incremental-encoder alternatives. Its source edition remains under independent publication review, so this guide does not claim wheel material, radius, resolution, friction, pulse rate, cursor rate, sampling, click semantics, or later product history.",
 };

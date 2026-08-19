@@ -2489,7 +2489,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 9. Douglas Engelbart Computer Mouse (US 3,541,541)
-  "us-3541541-engelbart-mouse": [
+  "_legacy-unpublished-us-3541541-engelbart-mouse": [
     {
       id: "engelbart-coordinate-resolver",
       patentId: "us-3541541-engelbart-mouse",
@@ -18185,5 +18185,48 @@ ALL_COLORIZED_EQUATIONS["us-2708656-fermi-reactor"] = [
     claimRef: 1,
     historicalSignificance:
       "The card preserves the claim's construction and figure limitation without turning later reactor-engineering models into unreviewed patent measurements.",
+  },
+];
+
+// The public Engelbart route deliberately renders this direct, source-bounded
+// card instead of the retained non-serving resolution, friction, and voltage
+// performance cards above.
+ALL_COLORIZED_EQUATIONS["us-3541541-engelbart-mouse"] = [
+  {
+    id: "engelbart-source-position-signal-chain",
+    patentId: "us-3541541-engelbart-mouse",
+    title: "Claim 1: Perpendicular Wheels, Transducer Means, and Flexible Conductor",
+    category: "Source-Bound Position-Indicator Construction",
+    rawLatex:
+      "\\text{perpendicular position wheels} \\rightarrow \\text{transducer means} \\rightarrow \\text{flexible conductor} \\rightarrow \\text{computer display}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\text{perpendicular position wheels}} \\rightarrow \\textcolor{#059669}{\\text{transducer means}} \\rightarrow \\textcolor{#d97706}{\\text{flexible conductor}} \\rightarrow \\textcolor{#9333ea}{\\text{computer display}}",
+    plainEnglishSentence: [
+      {
+        text: "Claim 1 connects two position wheels whose axes are perpendicular to ",
+      },
+      { text: "transducer means", variableId: "transducer_means" },
+      {
+        text: ", then carries their position signals through a flexible conductor to the computer controlling the display.",
+      },
+    ],
+    variables: [
+      {
+        id: "transducer_means",
+        symbol: "transducer means",
+        name: "Claim 1 position-signal transducers",
+        color: "emerald",
+        role: "The claim requires transducer means connected to both position wheels to generate digital position-indicating signals.",
+        unit: "Claim 1 apparatus relation",
+        dimension: "source-defined component relation",
+        explanation:
+          "The specification illustrates potentiometer, shaft-encoder, and incremental-encoder choices. It does not give a wheel dimension, pulse rate, voltage, resolution, or cursor sampling rate.",
+      },
+    ],
+    pedagogicalNote:
+      "This card is limited to Claim 1's apparatus chain. The scholarly source edition remains under independent review, so the site does not present friction, material, voltage, resolution, display-rate, or later-product calculations as measurements in the grant.",
+    claimRef: 1,
+    historicalSignificance:
+      "The card preserves the printed claim relationship without turning a later pointing-device performance model into evidence from US 3,541,541.",
   },
 ];

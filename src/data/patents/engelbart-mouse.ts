@@ -275,52 +275,35 @@ An X-Y position indicator control for movement by the hand over any surface to m
   ],
   historicalContext: {
     problemStatement:
-      "In 1962, interacting with a computer was agonizingly slow and fatiguing. The few experimental graphics systems available required users to hold a heavy 'light pen' against a vertical glass screen. Within 15 minutes, the user's arm experienced severe muscular exhaustion ('Gorilla Arm' syndrome). Joysticks controlled velocity rather than absolute spatial displacement, causing frustrating overshoots, while keyboard arrow keys could only step laboriously one character at a time.",
+      "The specification identifies a display-location problem: a human operator needs to indicate precisely where to alter a CRT display.",
     priorArtLimitations: [
-      "Light pens required holding the arm unsupported in mid-air against vertical phosphor screens, causing rapid physical exhaustion.",
-      "Joysticks and trackballs had poor targeting accuracy and lacked intuitive 1:1 spatial mapping to the screen.",
-      "Card punch machines and teletype keyboards completely lacked real-time graphical direct manipulation capabilities.",
+      "The specification says a light-pencil detector is held against the tube while the tube is swept by the beam.",
+      "It says this can leave the operator without both hands free to enter changes and can cover part of the display area where changes are entered.",
     ],
     breakthroughInsight:
-      "Douglas Engelbart, director of the Augmentation Research Center (ARC) at SRI in Menlo Park, California, realized that the human hand operates with maximum precision when resting comfortably on a flat desk. Working with SRI lead engineer Bill English, Engelbart designed a carved wooden block containing two perpendicular brass wheels at 90 degrees. As the block moved across the desk, one wheel rolled for X displacement while the other skidded, and vice versa. Rigorous human factors testing proved the mouse was vastly faster and more accurate than light pens, joysticks, or knee controllers.",
-    patentWars: [
-      {
-        rivalName: "Xerox Corporation and Apple Computer",
-        rivalClaim:
-          "In 1971, Bill English moved from SRI to Xerox PARC and invented the ball mouse (replacing the two wheels with a single spherical ball driving internal rollers). Xerox claimed this mechanical improvement was proprietary.",
-        conflictDetails:
-          "In December 1979, Steve Jobs and Apple engineers visited Xerox PARC and witnessed Engelbart's GUI and mouse in action on the Xerox Alto. Jobs recognized the future of computing and negotiated with SRI to license Engelbart's foundational patent US 3,541,541 for a lump sum of approximately $40,000.",
-        resolution:
-          "Apple redesigned the mouse with industrial designer Dean Hovey to be reliable, easy to clean, and manufacturable for under $15, shipping it with the historic Apple Lisa in 1983 and the Macintosh in 1984.",
-        legalOutcome:
-          "SRI received royalties for the foundational patent, but Douglas Engelbart personally never received any royalties because the patent belonged to SRI.",
-      },
-    ],
+      "The grant moves the position-control mechanism to a supporting surface. Its preferred construction uses two perpendicular wheels and a third ball-bearing support, then sends position information through a wire to the computer controlling the CRT.",
+    patentWars: [],
     civilizationalImpact:
-      "On December 9, 1968, at the Fall Joint Computer Conference in San Francisco, Douglas Engelbart presented **'The Mother of All Demos.'** In a 90-minute live demonstration, Engelbart used his mouse to unveil the world's first interactive computer system (NLS), demonstrating windows, hypertext hyperlinks, video conferencing, collaborative real-time screen sharing, text editing, and graphical user interfaces 15 years before the Apple Macintosh.",
+      "The grant supplies a primary-source account of an early computer position-indicator architecture: surface motion becomes wheel rotation, a transducer signal, and a cursor position on a CRT. Broader accounts of later products and adoption require separate, cited historical research and are not asserted here.",
     funFact:
-      "Why is it called a 'mouse'? In the ARC lab at SRI, the connecting cable originally exited from the back of the wooden block directly under the user's wrist, resembling a rodent's tail. Engelbart recalled: 'Nobody can remember who started calling it a mouse. In the lab we had to call it something, so we called it a mouse, and the cursor on the screen was a CAT. The name stuck, and we never apologized for it!'",
+      "The grant itself calls the apparatus an “X-Y position indicator control,” not a mouse.",
     aftermath:
-      "Douglas Engelbart received the National Medal of Technology in 2000 and the Turing Award-equivalent Lemelson-MIT Prize ($500,000) in 1997. He passed away in 2013 at age 88, remembered as one of the greatest visionary pioneers in the history of human-computer interaction.",
+      "The document issued on November 17, 1970 with eight claims. The source record does not by itself establish later licensing, product, or royalty history.",
     sideNotes: [
-      "Engelbart also invented the five-key chord keyset, which allowed users to type binary character codes with one hand while continuously pointing with the mouse in the other.",
-      "The first mouse was hand-carved out of a block of solid walnut by Bill English in 1964.",
+      "The preferred embodiment permits the indicator to move on a desktop or another surface, and notes that it may even be moved by the feet.",
+      "The specification describes potentiometer, shaft-position-encoder, and incremental-encoder alternatives.",
     ],
   },
   tags: [
     "Douglas Engelbart",
-    "Computer Mouse",
+    "Position Indicator",
     "Human-Computer Interaction",
-    "GUI",
     "Stanford Research Institute",
-    "Silicon Valley",
-    "Apple Macintosh",
-    "Mother of All Demos",
+    "Cathode-Ray Tube",
+    "Position Transducer",
   ],
   stats: {
     totalClaims: 8,
     independentClaims: 3,
-    patentWarYears: "1967–1984",
-    impactScore: 100,
   },
 };

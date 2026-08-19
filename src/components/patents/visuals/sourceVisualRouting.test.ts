@@ -15,6 +15,7 @@ describe("source-integrity visual routing", () => {
       "us-586193-marconi-radio",
       "us-2292387-lamarr-frequency-hopping",
       "us-2708656-fermi-reactor",
+      "us-3541541-engelbart-mouse",
       "us-3671542-kwolek-kevlar",
       "us-3858232-boyle-smith-ccd",
     ]) {
@@ -28,6 +29,7 @@ describe("source-integrity visual routing", () => {
     expect(dispatcherSource).toContain(
       "unreviewed delayed-neutron kinetics, control-rod operation",
     );
+    expect(dispatcherSource).toContain("unreviewed materials, dimensions, sampling, friction");
     expect(dispatcherSource).toContain("Information Storage Devices");
   });
 
@@ -53,6 +55,9 @@ describe("source-integrity visual routing", () => {
     const fermiBranch = dispatcherSource
       .split('case "us-2708656-fermi-reactor":')[1]
       ?.split('case "us-2981877-noyce-ic":')[0];
+    const engelbartBranch = dispatcherSource
+      .split('case "us-3541541-engelbart-mouse":')[1]
+      ?.split('case "us-3671542-kwolek-kevlar":')[0];
 
     expect(parsonsBranch).toBeDefined();
     expect(kwolekBranch).toBeDefined();
@@ -61,6 +66,7 @@ describe("source-integrity visual routing", () => {
     expect(marconiBranch).toBeDefined();
     expect(lamarrBranch).toBeDefined();
     expect(fermiBranch).toBeDefined();
+    expect(engelbartBranch).toBeDefined();
     expect(parsonsBranch).not.toContain("ParsonsTurbine");
     expect(kwolekBranch).not.toContain("KwolekKevlar");
     expect(boyleBranch).not.toContain("BoyleSmithCcd");
@@ -68,5 +74,6 @@ describe("source-integrity visual routing", () => {
     expect(marconiBranch).not.toContain("MarconiRadio");
     expect(lamarrBranch).not.toContain("LamarrFrequencyHopping");
     expect(fermiBranch).not.toContain("FermiReactor");
+    expect(engelbartBranch).not.toContain("EngelbartMouse");
   });
 });

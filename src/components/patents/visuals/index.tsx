@@ -18,7 +18,6 @@ import { EastmanKodakSim } from "./EastmanKodakSim";
 import { EdisonBulbSim } from "./EdisonBulbSim";
 import { EdisonPhonographSim } from "./EdisonPhonographSim";
 import { EinsteinRefrigeratorSim } from "./EinsteinRefrigeratorSim";
-import { EngelbartMouseSim } from "./EngelbartMouseSim";
 import { EricssonPropellerSim } from "./EricssonPropellerSim";
 import { FarnsworthTVSim } from "./FarnsworthTVSim";
 import { GatlingGunSim } from "./GatlingGunSim";
@@ -114,10 +113,6 @@ const EdisonPhonograph3D = dynamic(
 );
 const EinsteinRefrigerator3D = dynamic(
   () => import("./three/EinsteinRefrigerator3D").then((mod) => mod.EinsteinRefrigerator3D),
-  { ssr: false, loading: ThreeLoading },
-);
-const EngelbartMouse3D = dynamic(
-  () => import("./three/EngelbartMouse3D").then((mod) => mod.EngelbartMouse3D),
   { ssr: false, loading: ThreeLoading },
 );
 const EricssonPropeller3D = dynamic(
@@ -273,6 +268,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
     "us-2292387-lamarr-frequency-hopping",
     "us-2708656-fermi-reactor",
     "us-808897-carrier-air-conditioner",
+    "us-3541541-engelbart-mouse",
     "us-3671542-kwolek-kevlar",
     "us-3858232-boyle-smith-ccd",
   ].includes(patentId);
@@ -472,7 +468,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-2981877-noyce-ic":
             return <NoycePlanarSourceVisual />;
           case "us-3541541-engelbart-mouse":
-            return renderMode === "3d-physics" ? <EngelbartMouse3D /> : <EngelbartMouseSim />;
+            return (
+              <SourceVisualUnavailable
+                detail="US 3,541,541 shows a CRT display system and a surface-supported control with two perpendicular position wheels, transducer alternatives, a flexible conductor, and display-control switches. The inherited model adds unreviewed materials, dimensions, sampling, friction, cursor-rate, and later-product claims, so it is withheld until a source-specific treatment has passed independent review."
+                title="Two-wheel position-indicator visual under source review"
+              />
+            );
           case "us-3671542-kwolek-kevlar":
             return (
               <SourceVisualUnavailable
