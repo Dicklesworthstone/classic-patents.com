@@ -282,6 +282,143 @@ export function wrightBayTensions(
   };
 }
 
+/** Pelton nozzle jet density from the Stam-style fluid tape. Shared by 2D/3D/schematic. */
+export function peltonJetCrate(headMeters: number): { jetCrateDensity: number } {
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(headMeters / 80)) % 8;
+  return {
+    jetCrateDensity: Number(sampleFluidAt(fluid, 16, 8, frame, 0.25, 0.95).toFixed(4)),
+  };
+}
+
+/** Parsons steam density at mid-stage. Shared by 2D/3D. */
+export function parsonsSteamCrate(rotorRpm: number): { steamCrateDensity: number } {
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(rotorRpm / 400)) % 8;
+  return {
+    steamCrateDensity: Number(sampleFluidAt(fluid, 16, 8, frame, 0.35, 0.5).toFixed(4)),
+  };
+}
+
+/** Edison filament heat sample. Shared by 2D/3D/schematic. */
+export function edisonHeatCrate(voltage: number): { filamentHeatSample: number } {
+  const heat = heatFrames(12, 16, 2);
+  const u = Math.max(0, Math.min(1, voltage / 130));
+  return {
+    filamentHeatSample: Number(sampleHeatAt(heat, 12, 16, 8, u, 0.3).toFixed(4)),
+  };
+}
+
+/** Marconi spark-field RMS. Shared by 2D/3D. */
+export function marconiWaveCrate(freqMhz: number): { sparkWaveRms: number } {
+  const wave = wave2dFrames(16, 16, 2);
+  const frame = Math.abs(Math.floor(freqMhz * 8)) % 16;
+  return {
+    sparkWaveRms: Number(waveFrameRms(wave, 16, 16, frame).toFixed(4)),
+  };
+}
+
+/** Bell acoustic-ring RMS. Shared by 2D/3D. */
+export function bellWaveCrate(freqHz: number): { acousticWaveRms: number } {
+  const wave = wave2dFrames(16, 16, 2);
+  const frame = Math.abs(Math.floor(freqHz / 27.5)) % 16;
+  return {
+    acousticWaveRms: Number(waveFrameRms(wave, 16, 16, frame).toFixed(4)),
+  };
+}
+
+/** De Laval cream/skim lane densities. Shared by 2D/3D. */
+export function delavalCreamCrate(bowlRpm: number): {
+  creamCrateDensity: number;
+  skimCrateDensity: number;
+} {
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(bowlRpm / 800)) % 8;
+  return {
+    creamCrateDensity: Number(sampleFluidAt(fluid, 16, 8, frame, 0.3, 0.45).toFixed(4)),
+    skimCrateDensity: Number(sampleFluidAt(fluid, 16, 8, frame, 0.75, 0.45).toFixed(4)),
+  };
+}
+
+/** Gatling barrel-cluster first harmonic. Shared by 2D/3D/HUD. */
+export function gatlingClusterCrate(
+  barrels: number,
+  crankRpm: number,
+): { clusterHarmonicH1: number } {
+  const ring = cyclicSymmetry(Math.max(4, barrels), 0.5 + crankRpm / 80);
+  return { clusterHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)) };
+}
+
+/** Gramme 36-junction ring first harmonic. Shared by 2D/3D/HUD. */
+export function grammeRingCrate(junctions: number, shaftRate: number): { ringHarmonicH1: number } {
+  const ring = cyclicSymmetry(Math.max(4, junctions), 0.4 + shaftRate);
+  return { ringHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)) };
+}
+
+function heatSampleU(u: number, v = 0.45): number {
+  const heat = heatFrames(12, 16, 2);
+  return Number(sampleHeatAt(heat, 12, 16, 8, Math.max(0, Math.min(1, u)), v).toFixed(4));
+}
+
+function waveRmsHint(hint: number): number {
+  const wave = wave2dFrames(16, 16, 2);
+  return Number(waveFrameRms(wave, 16, 16, Math.abs(Math.floor(hint)) % 16).toFixed(4));
+}
+
+function fluidDens(u: number, v: number, hint: number): number {
+  const fluid = fluidFrames(16, 8);
+  const frame = Math.abs(Math.floor(hint)) % 8;
+  return Number(sampleFluidAt(fluid, 16, 8, frame, u, v).toFixed(4));
+}
+
+export function cycleHeatCrate(ratio: number): { cycleHeatSample: number } {
+  return { cycleHeatSample: heatSampleU(ratio / 20, 0.45) };
+}
+
+export function jacketHeatCrate(tempC: number): { jacketHeatSample: number } {
+  return { jacketHeatSample: heatSampleU(tempC / 400, 0.4) };
+}
+
+export function wortHeatCrate(tempC: number): { wortHeatSample: number } {
+  return { wortHeatSample: heatSampleU((tempC + 10) / 80, 0.5) };
+}
+
+export function chainHeatCrate(tempC: number): { chainHeatSample: number } {
+  return { chainHeatSample: heatSampleU(tempC / 180, 0.35) };
+}
+
+export function liftHeatCrate(volumeM3: number): { liftHeatSample: number } {
+  return { liftHeatSample: heatSampleU(volumeM3 / 15000, 0.3) };
+}
+
+export function shockWaveCrate(ngPct: number): { shockWaveRms: number } {
+  return { shockWaveRms: waveRmsHint(ngPct / 5) };
+}
+
+export function lineWaveCrate(currentMa: number): { lineWaveRms: number } {
+  return { lineWaveRms: waveRmsHint(currentMa / 4) };
+}
+
+export function grooveWaveCrate(rpm: number): { grooveWaveRms: number } {
+  return { grooveWaveRms: waveRmsHint(rpm / 4) };
+}
+
+export function lintFluidCrate(rpm: number): { lintCrateDensity: number } {
+  return { lintCrateDensity: fluidDens(0.4, 0.4, rpm / 30) };
+}
+
+export function wakeFluidCrate(rpm: number): { wakeCrateDensity: number } {
+  return { wakeCrateDensity: fluidDens(0.55, 0.4, rpm / 20) };
+}
+
+export function meltFluidCrate(tempC: number): { meltCrateDensity: number } {
+  return { meltCrateDensity: fluidDens(0.5, 0.4, tempC / 12) };
+}
+
+export function bellowsFluidCrate(inflationPct: number): { bellowsCrateDensity: number } {
+  return { bellowsCrateDensity: fluidDens(0.25, 0.8, inflationPct / 12) };
+}
+
 export function waveFrameRms(
   frames: Float64Array,
   n: number,

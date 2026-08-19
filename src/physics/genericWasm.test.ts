@@ -1,19 +1,29 @@
 import { describe, expect, test } from "bun:test";
 import {
+  bellWaveCrate,
   cyclicHarmonic,
   cyclicSol,
   cyclicSymmetry,
+  delavalCreamCrate,
+  edisonHeatCrate,
   fluidFrames,
   gaMotorFrameIndex,
   gaMotorOrbit,
+  gatlingClusterCrate,
   genericKernelSource,
+  grammeRingCrate,
   heatFrames,
   laplacianModeShape,
   laplacianModes,
+  marconiWaveCrate,
+  parsonsSteamCrate,
+  peltonJetCrate,
   sampleFluidAt,
   sampleHeatAt,
+  wakeFluidCrate,
   wave2dFrames,
   waveFrameRms,
+  wortHeatCrate,
   wrightBayTensions,
 } from "./genericWasm";
 
@@ -94,5 +104,20 @@ describe("generic FrankenSim crate composition", () => {
     const src = sampleFluidAt(fluid, n, frames, 3, 0.25, 0.95);
     const far = sampleFluidAt(fluid, n, frames, 3, 0.85, 0.1);
     expect(src).toBeGreaterThan(far);
+  });
+
+  test("shared crate seats write finite named fields for 2D/3D/schematic", () => {
+    expect(peltonJetCrate(450).jetCrateDensity).toBeGreaterThan(0);
+    expect(parsonsSteamCrate(3000).steamCrateDensity).toBeGreaterThanOrEqual(0);
+    expect(Number.isFinite(edisonHeatCrate(110).filamentHeatSample)).toBe(true);
+    expect(marconiWaveCrate(0.85).sparkWaveRms).toBeGreaterThan(0);
+    expect(bellWaveCrate(440).acousticWaveRms).toBeGreaterThan(0);
+    const cream = delavalCreamCrate(6500);
+    expect(cream.creamCrateDensity).toBeGreaterThanOrEqual(0);
+    expect(cream.skimCrateDensity).toBeGreaterThanOrEqual(0);
+    expect(Number.isFinite(gatlingClusterCrate(6, 60).clusterHarmonicH1)).toBe(true);
+    expect(Number.isFinite(grammeRingCrate(36, 1).ringHarmonicH1)).toBe(true);
+    expect(Number.isFinite(wortHeatCrate(22).wortHeatSample)).toBe(true);
+    expect(wakeFluidCrate(120).wakeCrateDensity).toBeGreaterThanOrEqual(0);
   });
 });

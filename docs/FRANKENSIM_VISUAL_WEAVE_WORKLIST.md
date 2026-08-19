@@ -521,6 +521,10 @@ instead of waiting for a ready-made per-machine crate.
 - [x] P6.44 Colt muzzle blast/smoke drains `wave2d_frames` RMS (chamber index as tape frame). Cylinder index stays discrete 72°.
 - [x] P6.45 Daimler hot-tube flame scale drains `heat_frames` along the four-stroke phase.
 - [x] P6.46 De Laval cream/skim drop advance drains `fluid_frames` (`delavalFluidAdvance`).
+- [x] P6.47 Edison phonograph stylus drain `wave2d_frames` RMS (tinfoil groove as a 2-D wave). Display motion remains labeled illustrative.
+- [x] P6.48 Shared crate seats on the kernel step (wrightBayTensions pattern): `peltonJetCrate`, `parsonsSteamCrate`, `edisonHeatCrate`, `marconiWaveCrate`, `bellWaveCrate`, `delavalCreamCrate`, `gatlingClusterCrate`, `grammeRingCrate`. 2D, schematic, and 3D HUD read the same named fields. Pelton `jetOpacity` and Parsons `steamAdvancePerS` fold the crate so 3D already on those seats follows. De Laval 3D no longer double-applies a private fluid sample on top of the kernel cream/skim speeds.
+- [x] P6.49 Shared heat seats: `cycleHeatCrate` (Otto/Diesel), `jacketHeatCrate` (Daimler/Maxim), `wortHeatCrate` (Pasteur bath glow), `chainHeatCrate` (Goodyear), `liftHeatCrate` (Zeppelin). 2D gas/jacket/envelope opacity reads them.
+- [x] P6.50 Shared wave/fluid seats: `shockWaveCrate` (Nobel flash), `lineWaveCrate` (Morse wire), `grooveWaveCrate` (phonograph foil), `wakeFluidCrate` (Ericsson), `lintFluidCrate` (Whitney), `meltFluidCrate` (Hyatt steam), `bellowsFluidCrate` (Lincoln waterline).
 
 ## Explicitly out of scope
 

@@ -46,6 +46,7 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { cycleHeatCrate } from "./genericWasm";
 import { tryGoddardWasmStep } from "./goddardWasm";
 import {
   stepCcdWells,
@@ -977,6 +978,7 @@ export const FrankenSimEngine = {
       brakeEfficiencyPct,
       isAutoIgnition,
       engineRpm: rpm,
+      ...cycleHeatCrate(r),
       crankOmegaRadPerS: crank.omegaRadPerS,
       crankOmegaDegPerS: crank.omegaDegPerS,
       governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),

@@ -3,6 +3,28 @@
  * but previously missing from engine.ts. Badge and 3D must call these.
  */
 
+import {
+  bellowsFluidCrate,
+  bellWaveCrate,
+  chainHeatCrate,
+  cycleHeatCrate,
+  delavalCreamCrate,
+  edisonHeatCrate,
+  gatlingClusterCrate,
+  grammeRingCrate,
+  grooveWaveCrate,
+  jacketHeatCrate,
+  liftHeatCrate,
+  lineWaveCrate,
+  lintFluidCrate,
+  marconiWaveCrate,
+  meltFluidCrate,
+  parsonsSteamCrate,
+  peltonJetCrate,
+  shockWaveCrate,
+  wakeFluidCrate,
+  wortHeatCrate,
+} from "./genericWasm";
 import { vulcanKinetics } from "./thermochem";
 
 export function rpmToOmega(rpm: number) {
@@ -141,6 +163,7 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
   const etaPct = Math.max(40, Math.round(93 - Math.abs(speedRatio - 0.5) * 160));
   const hydroKw = (45 * 9.81 * h) / 1000;
   const runner = rpmToOmega(rpm);
+  const jetCrate = peltonJetCrate(h);
   return {
     jetVelocityMps: vJet,
     bucketSpeedMps: Number(uBucket.toFixed(2)),
@@ -157,7 +180,10 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     needleStudioX: Number((0.2 + (h / 1000) * 0.125).toFixed(4)),
     needleStudioY: Number((0.12 + (h / 1000) * 0.07).toFixed(4)),
     handwheelOmegaRadPerS: 0.5,
-    jetOpacity: Number((0.55 + (etaPct / 93) * 0.4).toFixed(3)),
+    jetOpacity: Number(
+      ((0.55 + (etaPct / 93) * 0.4) * (0.85 + jetCrate.jetCrateDensity)).toFixed(3),
+    ),
+    ...jetCrate,
     runnerSvgR: 75,
     hubSvgR: 18,
     bucketCount: 12,
@@ -212,6 +238,7 @@ export function stepGrammeDynamo(params: { shaftRate?: number }) {
     junctionPitchDeg: 360 / printedJunctionCount,
     inducedEmfIndex,
     collectionContinuityPct: Number((100 - 100 / printedJunctionCount).toFixed(1)),
+    ...grammeRingCrate(printedJunctionCount, shaftRate),
     displayDegPerFrame,
     displayRadPerFrame: Number(((displayDegPerFrame * Math.PI) / 180).toFixed(6)),
     fluxOpacity: Number(Math.min(0.95, 0.25 + (inducedEmfIndex / 160) * 0.7).toFixed(3)),
@@ -317,6 +344,7 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     thermalEfficiencyPct: Math.round((1 - 1 / cr ** 0.4) * 100),
     peakCompressionBar,
     peakFiringBar: Number((peakCompressionBar * 3.8).toFixed(1)),
+    ...cycleHeatCrate(cr),
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
     govDisplayOmegaRadPerS: Number(((rpm / 180) * 9).toFixed(3)),
@@ -443,6 +471,7 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
   // 3000 rpm is a blur in the studio; 0.08 keeps u/c readable.
   const displaySlowdown = 0.08;
   const shaftPowerKw = Math.round(28 * enthalpyKjKg * 0.84 * (rpm / 3000));
+  const steamCrate = parsonsSteamCrate(rpm);
   return {
     enthalpyKjKg,
     shaftPowerKw,
@@ -457,7 +486,10 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     displaySlowdown,
     displayOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown).toFixed(3)),
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
-    steamAdvancePerS: Number(((enthalpyKjKg / 550) * (rpm / 3000) * 12).toFixed(3)),
+    steamAdvancePerS: Number(
+      ((enthalpyKjKg / 550) * (rpm / 3000) * 12 * (1 + steamCrate.steamCrateDensity)).toFixed(3),
+    ),
+    ...steamCrate,
     steamOpacity: Number(Math.min(0.95, 0.25 + (shaftPowerKw / 14000) * 0.7).toFixed(3)),
     steamSwirlOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown * 0.5).toFixed(3)),
     shaftPowerMw: Number((shaftPowerKw / 1000).toFixed(1)),
@@ -556,6 +588,7 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeFlowSpeed: 6.5,
     wakeSwirlCoeff: 0.08,
     wakeOpacity: Number(Math.min(0.95, 0.3 + (thrustKn / 30) * 0.65).toFixed(3)),
+    ...wakeFluidCrate(rpm),
     bladeSvgRx: 10,
     forwardBladeSvgRy: 50,
     aftBladeSvgRy: 45,
@@ -594,12 +627,15 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
   // 6500 rpm is a blur; 0.15 keeps the nested discs readable.
   const displaySlowdown = 0.15;
   const creamFlowLph = Number((flow * 0.12).toFixed(1));
+  const creamCrate = delavalCreamCrate(rpm);
+  const creamDens = 1 + creamCrate.creamCrateDensity;
   return {
     gForce,
     fatYieldPct: Math.min(99.9, Number((95 + (gForce / 5000) * 4.5).toFixed(1))),
     creamFlowLph,
     skimFlowLph: Number((flow * 0.88).toFixed(1)),
-    creamDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6).toFixed(3)),
+    creamDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * creamDens).toFixed(3)),
+    ...creamCrate,
     bowlOmegaRadPerS: Number(bowlOmegaRadPerS.toFixed(2)),
     bowlOmegaDegPerS: Number((rpm * 6).toFixed(1)),
     displaySlowdown,
@@ -607,7 +643,7 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
     displayWrapDeg: 360,
     pulleyDisplayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown * 0.25).toFixed(3)),
-    skimDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * 0.85).toFixed(3)),
+    skimDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * 0.85 * creamDens).toFixed(3)),
     creamDropOriginY: 0.35,
     creamDropSpacing: 0.18,
     creamDropWrap: 1.8,
@@ -665,6 +701,7 @@ export function stepNobelDynamite(params: {
     flashDisplayMs: isInitiated
       ? Math.max(200, Math.round((0.2 / Math.max(1, detonationVelocityMps)) * 1e6))
       : 0,
+    ...shockWaveCrate(ng),
     shockwaveGlow: Number((1 + (detonationVelocityMps / 6000) * 1.5).toFixed(3)),
     stickDisplayOmegaRadPerS: 0.2,
     kieselguhrCount: 24,
@@ -752,6 +789,7 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     outputLbsPerDay: Math.round((rpm / 180) * 50),
     sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
     laborMultiplier: Math.round((rpm / 180) * 50),
+    ...lintFluidCrate(rpm),
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
     sawOmegaRadPerS: saw.omegaRadPerS,
@@ -1104,6 +1142,7 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     boltHomeX: -0.6,
     fireIntervalS: Number((cycleTimeMs / 1000).toFixed(4)),
     muzzleFlashDecayPerS: 8,
+    ...gatlingClusterCrate(count, rpm),
     clusterRadiusPx: 32,
     firingBottomDeg: 180,
     barrelSvgW: 260,
@@ -1177,6 +1216,7 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     ramStrokeStudio: isMelted ? Number((0.12 + press * 0.03).toFixed(3)) : 0.02,
     billetOpacity: Number((0.3 + (transparencyPct / 100) * 0.6).toFixed(3)),
     steamGlowOpacity: Number(Math.min(1, temp / 150).toFixed(3)),
+    ...meltFluidCrate(temp),
     ramStudioY: Number((70 + press * 2).toFixed(2)),
     polymerCount: 16,
     polymerCols: 4,
@@ -1314,6 +1354,7 @@ export function stepPasteurFermentation(params: {
     co2PressureBar: Number((1.8 * (yeastActivityPct / 100)).toFixed(2)),
     shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
     bathGlowOpacity: Number(Math.min(1, pTemp / 120).toFixed(3)),
+    ...wortHeatCrate(temp),
     microbeWobbleOmega: 3,
     microbeWobbleAmpPx: 3,
     microbeSvgOriginX: 230,
@@ -1457,6 +1498,7 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     mandrelOmegaRadPerS: mandrel.omegaRadPerS,
     mandrelOmegaDegPerS: mandrel.omegaDegPerS,
     stylusAmp: Number(((((vol / 75) * 25) / 1000) * 0.05).toFixed(5)),
+    ...grooveWaveCrate(rpm),
     stylusOmegaRadPerS: 45,
     axialDisplayWrapMm: 40,
     axialSvgPxPerMm: 2,
@@ -1597,6 +1639,7 @@ export function stepZeppelinAirship(params: {
     parasiteDragKn: Number(((0.5 * rhoAir * (speedKmh / 3.6) ** 2 * 85 * 0.025) / 1000).toFixed(2)),
     ambientAirDensityKgM3: Number(rhoAir.toFixed(3)),
     hydrogenVolumeM3: totalVolumeM3,
+    ...liftHeatCrate(totalVolumeM3),
     grossLiftKg: Math.round((grossBuoyancyKn / 9.81) * 1000),
     usefulPayloadKg: Math.max(0, Math.round((netLiftKn / 9.81) * 1000)),
     flightSpeedKmh: Number(speedKmh.toFixed(1)),
@@ -1682,6 +1725,7 @@ export function stepDaimlerEngine(params: {
     hotTubeGlow: Number(
       (tubeTemp >= 800 ? 2.8 : Math.max(0.15, (tubeTemp / 800) * 2.2)).toFixed(3),
     ),
+    ...jacketHeatCrate(tubeTemp),
     pistonStrokePx: 30,
     cycleWrapDeg: 720,
     crankWrapDeg: 360,
@@ -1936,6 +1980,7 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     lowResistanceTempK: Math.round(300 + lowResistanceWatts ** 0.45 * 160),
     lowResistanceFeederLossWatts: Number((lowResistanceAmps ** 2 * 0.4).toFixed(1)),
     incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
+    ...edisonHeatCrate(v),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
     schematicGlowOpacity: edisonSchematicGlowOpacity(tempK),
@@ -2049,6 +2094,7 @@ export function stepBellTelephone(params: {
     waveOpacity0: 0.65,
     electronWrapX: 2.0,
     electronResetX: -1.5,
+    ...bellWaveCrate(freqHz),
   };
 }
 
@@ -2128,6 +2174,7 @@ export function stepMorseTelegraph(params: {
     keyOscillationRadPerS: Number(((wpm / 4) * Math.PI).toFixed(3)),
     armatureStrikeM: Number(Math.min(0.2, 0.08 + (forceN / 10) * 0.1).toFixed(4)),
     electronDisplaySpeed: 8,
+    ...lineWaveCrate(currentMa),
     electronLaneZ: 0.3,
     electronOriginX: -3.6,
     electronWrapX: 3.6,
@@ -2680,6 +2727,7 @@ export function stepMarconiRadio(
     schematicEarthH: 20,
     mastSvgY: Number((210 - h * 1.6).toFixed(2)),
     fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
+    ...marconiWaveCrate(resonantFreqMhz),
   };
 }
 
@@ -2821,6 +2869,7 @@ export function stepGoodyearRubber(
       ? 0.005
       : Number(((temp / 140) * (isVulcanized ? 0.03 : 0.1)).toFixed(4)),
     clampStudioX: Number((4.5 * lambda).toFixed(4)),
+    ...chainHeatCrate(temp),
     chainStretchPx: Number(((lambda - 1) * 80).toFixed(2)),
     chainSagPx: 25,
     chainSagBezierScale: 1.5,
@@ -2978,6 +3027,7 @@ export function stepLincolnBuoy(params: {
     baseDraftFt,
     waterplaneAreaSqFt: Math.round(hullLengthFt * hullBeamFt * 0.78),
     paddleDisplayOmegaRadPerS: 1.2,
+    ...bellowsFluidCrate(infl),
     bellowsFlarePx: Number(((infl / 100) * 40).toFixed(2)),
     bellowsMidPx: Number(((infl / 100) * 35).toFixed(2)),
     bellowsDropPx: Number(((infl / 100) * 45).toFixed(2)),
@@ -3065,6 +3115,7 @@ export function stepMaximMachineGun(params: {
     crankThrowAmp: 0.75,
     steamOpacity:
       barrelTempC >= 95 ? Number(Math.min(0.85, (waterEvapRateGs / 15) * 0.75).toFixed(3)) : 0,
+    ...jacketHeatCrate(barrelTempC),
     schematicToggleCx: 280,
     schematicToggleCy: 105,
     schematicToggleR: 4,
