@@ -246,6 +246,16 @@ export function materialProbe(
       note: `${sew.stitchesPerMinute} spm · ω ${sew.crankOmegaDegPerS} °/s. Needle Y and shuttle X from stepHoweLockstitch.`,
     };
   }
+  if (patentId === "us-3541541-engelbart-mouse") {
+    return {
+      part: calloutLabel,
+      material: "Perpendicular position wheels, transducer means, and flexible conductor",
+      qty: "Claim 1",
+      value: "apparatus relation",
+      unit: "source guide",
+      note: "The held source edition identifies the component chain but supplies no wheel material, radius, friction, resolution, voltage, pulse rate, or cursor-speed value.",
+    };
+  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -1025,6 +1035,17 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     );
     return [{ label: "Shear", min: 1, max: 8, live: sew.lockstitchShearStrengthN, unit: "N" }];
   }
+  if (patentId === "us-3541541-engelbart-mouse") {
+    return [
+      {
+        label: "Source group",
+        min: 1,
+        max: 3,
+        live: Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1))),
+        unit: "facsimile guide",
+      },
+    ];
+  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -1405,6 +1426,15 @@ export function fidelityField(
       unit: "spm",
     };
   }
+  if (patentId === "us-3541541-engelbart-mouse") {
+    return {
+      part: "Source-bound position-indicator check",
+      model: "not computed",
+      reference: "complete manual edition withheld",
+      residual: "not applicable",
+      unit: "source boundary",
+    };
+  }
   if (patentId.includes("engelbart") || patentId.includes("3541541")) {
     const mouse = stepEngelbartMouse({
       mouseSpeed: params.mouseSpeed ?? 350,
@@ -1768,6 +1798,16 @@ export function datedScenarios(patentId: string): DatedScenario[] {
         date: "1846-09-10",
         name: "Howe lockstitch shop rate",
         writes: { crankRpm: 250, stitchPitchMm: 2.5, threadTensionGrams: 50 },
+      },
+    ];
+  }
+  if (patentId === "us-3541541-engelbart-mouse") {
+    return [
+      {
+        id: "engelbart-filing-1967",
+        date: "1967-06-21",
+        name: "Filed X-Y position indicator",
+        writes: { sourceFocus: 1 },
       },
     ];
   }
