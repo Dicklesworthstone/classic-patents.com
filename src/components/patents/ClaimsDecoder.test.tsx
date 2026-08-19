@@ -1,0 +1,55 @@
+import { describe, expect, test } from "bun:test";
+import { renderToStaticMarkup } from "react-dom/server";
+import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
+import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
+import { ClaimsDecoder } from "./ClaimsDecoder";
+
+describe("ClaimsDecoder component", () => {
+  test("renders claim tabs, original legal text, and plain-English translation cards for Wright Flyer", () => {
+    const html = renderToStaticMarkup(
+      <ClaimsDecoder claims={wrightFlyerPatent.claims} patentId={wrightFlyerPatent.id} />,
+    );
+
+    expect(html).toContain("Legal Claims Decoder");
+    expect(html).toContain("Claim #1");
+    expect(html).toContain("Claim #18");
+    expect(html).toContain("Independent Master Claim");
+    expect(html).toContain("Verbatim Historical Legal Text");
+    expect(html).toContain("Plain English Engineering Translation");
+    expect(html).toContain("Differential wing warping");
+  });
+
+  test("renders dependent claims and parent claim references for Bardeen Transistor", () => {
+    const html = renderToStaticMarkup(
+      <ClaimsDecoder
+        claims={bardeenTransistor2524035Patent.claims}
+        patentId={bardeenTransistor2524035Patent.id}
+      />,
+    );
+
+    expect(html).toContain("Claim #1");
+    expect(html).toContain("Claim #40");
+    expect(html).toContain("(Dep #1)");
+    expect(html).toContain("Key Protected Innovations:");
+    expect(html).toContain("Verbatim Historical Legal Text");
+  });
+
+  test("renders graceful message when no claims exist and claimStatus is provided", () => {
+    const html = renderToStaticMarkup(
+      <ClaimsDecoder
+        claims={[]}
+        claimStatus={{
+          hasExplicitClaims: false,
+          historicalNote: "Pre-1836 Patent Act specification without numbered claims.",
+          evidence: "Historical patent description without formal claims.",
+        }}
+      />,
+    );
+
+    expect(html).toContain("Formal Claims");
+    expect(html).toContain(
+      "This reviewed historical facsimile contains no separately numbered formal claims.",
+    );
+    expect(html).toContain("Historical patent description without formal claims.");
+  });
+});
