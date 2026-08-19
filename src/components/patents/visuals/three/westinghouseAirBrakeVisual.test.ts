@@ -72,6 +72,8 @@ describe("US 124,404 George Westinghouse Air Brake visual & kinematics boundary"
     expect(released.valveState).toBe("RELEASE");
     expect(released.shoeClampingForceKn).toBe(0);
     expect(released.wheelDisplayDegPerMph).toBe(8);
+    expect(released.flywheelSvgR).toBe(54);
+    expect(released.spokeCount).toBe(6);
 
     // Pressure drop (0 psi / pipe rupture) -> EMERGENCY clamping
     const emergency = FrankenSimEngine.stepWestinghouseAirBrake({

@@ -269,6 +269,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.176 Nobel nobelKieselguhrSvg / kieselguhr grid. 2D no longer converts leftover 200+(i%8)×32 or 135+⌊i/8⌋×32 privately.
 - [x] P5.177 Hyatt hyattPolymerSvg / polymer grid. 2D no longer converts leftover 220+(i%4)×45 or 150+⌊i/4⌋×25 privately.
 - [x] P5.178 Lamarr spectrumBarOriginX / spectrumBarPitchPx. 2D no longer converts leftover 20+i×4.5 privately.
+- [x] P5.179 Wozniak wozniakBusCycle / videoPhaseDivisor / dramBaseAddr / Span / Stride. 2D no longer converts leftover tick/2 or 0x0400 privately.
+- [x] P5.180 Bell bellScopeSample / scopeSampleCount / Pitch / TScale / BaselineY. 2D no longer converts leftover i×5 or t×0.2 privately.
+- [x] P5.181 Mergenthaler mergenthalerMatrixSvgX / matrixCount / Pitch / OriginX / Width. 2D no longer converts leftover i×18+5 privately.
+- [x] P5.182 Westinghouse flywheelSvgR / wheelRimSvgR / Hub / spokeCount. 2D no longer converts leftover spoke×54 privately.
+- [x] P5.183 Spencer spencerPopcornSvg / popcorn ellipse and radii. 2D no longer converts leftover i/12 or rad×0.6 privately.
+- [x] P5.184 Otis railSvgPitch. 2D no longer converts leftover rail i×20 privately.
 
 ## Explicitly out of scope
 
