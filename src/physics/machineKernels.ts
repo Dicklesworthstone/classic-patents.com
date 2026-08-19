@@ -393,6 +393,7 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   springBowSvgH: number;
   pawlSvgX: number;
   pawlSvgY: number;
+  railSvgPitch: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
