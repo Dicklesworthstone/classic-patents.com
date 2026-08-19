@@ -9,30 +9,34 @@ const paragraph = (inlines: CuratedSpecificationInlines) => ({
   kind: "paragraph" as const,
   inlines,
 });
-const claim = (number: number, value: string) => {
-  const inlines =
-    number === 1
-      ? value
-          .split("neutral gas or vapor")
-          .flatMap((part, index) =>
-            index === 0
-              ? [
-                  { kind: "text" as const, text: part },
-                  term(
-                    "neutral gas or vapor",
-                    "A gas or vapor that carries heat and dilutes the working charge without supplying the oxygen-and-fuel reaction that produces combustion.",
-                  ),
-                ]
-              : [{ kind: "text" as const, text: part }],
-          )
-      : text(value);
-  return { kind: "claim" as const, number, inlines };
-};
+const claim = (number: number, value: string) => ({
+  kind: "claim" as const,
+  number,
+  inlines: text(value),
+});
 const term = (value: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
   text: value,
   definition,
 });
+const firstClaim = {
+  kind: "claim" as const,
+  number: 1,
+  inlines: [
+    {
+      kind: "text" as const,
+      text: "1. The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and ",
+    },
+    term(
+      "neutral gas or vapor",
+      "A gas or vapor that carries heat and dilutes the working charge without supplying the oxygen-and-fuel reaction that produces combustion.",
+    ),
+    {
+      kind: "text" as const,
+      text: ", to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding against a resistance sufficiently to prevent an essential increase of temperature and pressure, then discontinuing the supply of fuel and further expanding without transfer of heat.",
+    },
+  ],
+};
 const preview = (figure: number, width: number, height: number) => ({
   src: `/patents/figures/us-542846-diesel-engine/fig-${figure}-source-crop-v1.png`,
   alt: `Source-facsimile crop of Fig. ${figure} from US 542,846.`,
@@ -463,10 +467,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         "It is especially to be remarked that the thermal results are independent of the kind of gas contained in the cylinder. It is sufficient if the quantity of air necessary for combustion is provided. The other considerable quantity of gas, which acts only as a carrier of heat, may consist in former combustion gases, added foreign gases, and vapors or aqueous vapor without altering the result. It follows from the above that closed engines might be arranged so as to take up at each stroke only a small quantity of fresh air for insuring the combustion, but which retain essentially always the same body of gas, a small exhaust of course excepted.",
       ),
     ),
-    claim(
-      1,
-      "1. The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and neutral gas or vapor, to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding against a resistance sufficiently to prevent an essential increase of temperature and pressure, then discontinuing the supply of fuel and further expanding without transfer of heat.",
-    ),
+    firstClaim,
     claim(
       2,
       "2. In an internal combustion engine, the combination with the cylinder and piston, of a valved suction inlet for air or a mixture of air and neutral gas, a valved fuel feed constructed to gradually discharge the fuel into the cylinder, and means in operative connection with the feed valve for opening the same at the commencement of the working stroke of the piston and for closing the same at a predetermined part of the stroke, substantially as described.",

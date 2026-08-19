@@ -46,6 +46,7 @@ describe("US 542,846 manual source edition", () => {
     expect(editionSource).not.toContain("SOURCE_FIGURE_CITATIONS");
     expect(editionSource).not.toMatch(/indexOf\s*\(/);
     expect(editionSource).not.toMatch(/replace\s*\(/);
+    expect(editionSource).not.toMatch(/\.split\s*\(/);
     const references = dieselEngineArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
