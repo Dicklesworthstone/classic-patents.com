@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import {
   bardeenHoleStream,
   bardeenLoadLine,
+  bellScopeSample,
   edisonSchematicGlowOpacity,
   hollerithCupSvg,
   hyattPolymerSvg,
@@ -13,6 +14,7 @@ import {
   pistonSvgDisplacement,
   rpmToOmega,
   sliderStrokeSvg,
+  spencerPopcornSvg,
   stepBardeenTransistor,
   stepBellTelephone,
   stepColtRevolver,
@@ -49,6 +51,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
   voltsToKv,
+  wozniakBusCycle,
 } from "./catalogKernels";
 
 describe("Catalog Kernels & Shared SI Stepping Functions", () => {
@@ -263,6 +266,18 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
       liquidConductivity: 1.2,
     });
     expect(res.modulatedMa).toBeGreaterThan(0);
+    expect(res.scopeSampleCount).toBe(60);
+    expect(
+      bellScopeSample(
+        0,
+        0,
+        res.scopeNorm,
+        res.scopeSineAmp,
+        res.scopeHarmonicAmp,
+        res.scopeSquareAmp,
+        "continuous-undulating",
+      ).x,
+    ).toBe(0);
     expect(res.currentBaselineMa).toBeGreaterThan(0);
   });
 
@@ -287,12 +302,17 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepWozniakApple({ crystalFreq: 14.318, ramCapacityKb: 48 });
     expect(res.cpuClockMhz).toBeCloseTo(1.02, 2);
     expect(res.cpuDutyPct).toBe(100);
+    expect(res.videoPhaseDivisor).toBe(2);
+    expect(wozniakBusCycle(0, 0).dramAddress).toBe("0x0400");
+    expect(wozniakBusCycle(1, 0).phase).toBe(1);
   });
 
   test("Spencer microwave cavity computes magnetron relativistic gyro-frequency and Poynting vector", () => {
     const res = stepSpencerMicrowave(2.2, 1450, 800);
     expect(res.microwaveFreqMhz).toBe(2450);
     expect(res.isOscillating).toBe(true);
+    expect(res.popcornKernelCount).toBe(12);
+    expect(spencerPopcornSvg(0, false, res.popcornKernelCount).px).toBeCloseTo(8, 0);
   });
 
   test("Kwolek Kevlar continuum computes anisotropic liquid crystal alignment and bullet arrest", () => {

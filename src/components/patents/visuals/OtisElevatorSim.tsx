@@ -134,7 +134,7 @@ export function OtisElevatorSim() {
               {Array.from({ length: 15 }).map((_, i) => (
                 <polygon
                   key={i}
-                  points={`24,${i * 20} 34,${i * 20 + 8} 24,${i * 20 + 16}`}
+                  points={`24,${i * otis.railSvgPitch} 34,${i * otis.railSvgPitch + 8} 24,${i * otis.railSvgPitch + 16}`}
                   fill="#94a3b8"
                   stroke="#cbd5e1"
                   strokeWidth="1.5"
@@ -166,7 +166,7 @@ export function OtisElevatorSim() {
               {Array.from({ length: 15 }).map((_, i) => (
                 <polygon
                   key={i}
-                  points={`0,${i * 20} -10,${i * 20 + 8} 0,${i * 20 + 16}`}
+                  points={`0,${i * otis.railSvgPitch} -10,${i * otis.railSvgPitch + 8} 0,${i * otis.railSvgPitch + 16}`}
                   fill="#94a3b8"
                   stroke="#cbd5e1"
                   strokeWidth="1.5"
