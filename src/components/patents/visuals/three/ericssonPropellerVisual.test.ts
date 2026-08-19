@@ -43,7 +43,7 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     }
   });
 
-  test("exposes authentic camera presets and UI overlay for screw propeller observation", () => {
+  test("exposes camera presets and a source-bounded UI overlay for screw propeller observation", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "EricssonPropeller3D.tsx"),
       "utf8",
@@ -61,23 +61,22 @@ describe("US 588 John Ericsson Screw Propeller visual & hydrodynamics boundary",
     }
 
     expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Ericsson Screw Propeller 3D");
+    expect(threeSource).toContain("Ericsson Spiral-Plate Reader Aid 3D");
+    expect(threeSource).toContain("Source-bounded reader aid");
+    expect(threeSource).toContain("Source spiral");
   });
 
-  test("computes genuine marine thrust, ship speed, and slip fraction in SI units", () => {
+  test("marks hydrodynamic output as illustrative while preserving the printed geometry", () => {
     const result = stepEricssonPropeller({ shaftRpm: 120, bladePitchAngleDeg: 35 });
-    expect(result.thrustKn).toBeGreaterThan(5);
-    expect(result.shipSpeedKnots).toBeGreaterThan(4);
-    expect(result.slipFraction).toBeGreaterThan(0);
-    expect(result.slipFraction).toBeLessThan(1);
-    expect(result.slipPct).toBeCloseTo(result.slipFraction * 100, 5);
-    expect(result.propulsiveEfficiencyPct).toBeCloseTo((1 - result.slipFraction) * 100, 5);
+    expect(result.isIllustrativeDisplayModel).toBe(true);
+    expect(result.sourceSpiralAdvanceDiameters).toBe(3);
+    expect(result.sourceCasingClearanceInches).toBe(0.125);
     expect(result.bladeSvgRx).toBe(10);
     expect(result.forwardBladeSvgRy).toBe(50);
     expect(result.aftBladeSvgRy).toBe(45);
     expect(result.wakeFlowSpeed).toBeCloseTo(6.5, 5);
     expect(result.wakeSwirlCoeff).toBeCloseTo(0.08, 5);
-    expect(result.wakeOpacity).toBeCloseTo(Math.min(0.95, 0.3 + (result.thrustKn / 30) * 0.65), 3);
+    expect(result.wakeOpacity).toBeGreaterThan(0);
   });
 
   test("builds and articulates procedural tandem drums, concentric shafts, and wake particles correctly", () => {
