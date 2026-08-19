@@ -1714,6 +1714,7 @@ function _renderHistoricalSchematic(
           </text>
         </g>
       );
+    }
     case "eastman-kodak":
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
