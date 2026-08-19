@@ -121,8 +121,10 @@ function conflictingBuilds(): string[] {
   return processList.split("\n").filter((line) => {
     const trimmed = line.trim();
     if (!trimmed) return false;
-    const pid = trimmed.split(/\s+/)[0];
-    if (pid === currentPid) return false;
+    const parts = trimmed.split(/\s+/);
+    const pid = parts[0];
+    const ppid = parts[1];
+    if (pid === currentPid || ppid === currentPid) return false;
     if (
       !/\b(?:next\s+(?:build|dev)|vercel\s+(?:build|deploy)|bun\s+(?:run\s+(?:build|dev)|scripts\/build\.ts))\b/.test(
         line,
@@ -138,8 +140,13 @@ function conflictingBuilds(): string[] {
 }
 
 function assertNoConflictingBuilds(stage: string) {
-  const conflicts = conflictingBuilds();
-  if (conflicts.length > 0) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    const conflicts = conflictingBuilds();
+    if (conflicts.length === 0) return;
+    if (attempt < 5) {
+      spawnSync("sleep", ["0.5"]);
+      continue;
+    }
     throw new Error(
       `${stage}: another Next process, build, or deployment is using shared artifacts. Wait for it to finish:\n${conflicts.join("\n")}`,
     );
