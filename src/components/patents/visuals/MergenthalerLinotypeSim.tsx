@@ -106,7 +106,7 @@ export function MergenthalerLinotypeSim() {
             <rect
               x="0"
               y="0"
-              width={lineLengthMm * 2.8}
+              width={lino.slugSvgWidth}
               height="50"
               rx="3"
               fill="#8B5A2B"

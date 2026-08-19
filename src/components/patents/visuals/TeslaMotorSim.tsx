@@ -23,7 +23,7 @@ export function TeslaMotorSim() {
 
   // Animation Loop for Stator Field & Rotor Rotation
   useEffect(() => {
-    const degPerTick = apparatus.fieldDisplayOmegaDegPerS * (TESLA_FIELD_DISPLAY_TICK_MS / 1000);
+    const degPerTick = apparatus.fieldDisplayOmegaDegPerS * apparatus.fieldDisplayTickS;
     const interval = setInterval(() => {
       setAngle((prev) => (prev + degPerTick) % 360);
     }, TESLA_FIELD_DISPLAY_TICK_MS);
@@ -62,8 +62,8 @@ export function TeslaMotorSim() {
   const rad = (angle * Math.PI) / 180;
   const field = teslaBAt(rad, phaseCount);
   const coilCount = field.coilCount;
-  const bVectorX = field.bx * 60;
-  const bVectorY = field.by * 60;
+  const bVectorX = field.bxSvg;
+  const bVectorY = field.bySvg;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">

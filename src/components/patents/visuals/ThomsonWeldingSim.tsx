@@ -193,7 +193,7 @@ export function ThomsonWeldingSim() {
             <ellipse
               cx="0"
               cy="0"
-              rx={upsetBurrWidthMm * 1.5}
+              rx={weld.burrSvgRx}
               ry="16"
               fill="#DD6B20"
               opacity={interfaceTempC > 900 ? 0.85 : 0}
