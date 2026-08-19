@@ -13,6 +13,10 @@ describe("PatentVisualDispatcher React SSR rendering", () => {
       const html = renderToStaticMarkup(element);
       expect(typeof html).toBe("string");
       expect(html.length).toBeGreaterThan(0);
+      expect(html).toContain("3D Physics Simulation");
+      expect(html).toContain("2D Technical Diagram");
+      expect(html).not.toContain("Pinned facsimile guide");
+      expect(html).not.toContain("source-crop");
     }
   });
 });

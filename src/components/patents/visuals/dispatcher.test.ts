@@ -27,4 +27,25 @@ describe("PatentVisualDispatcher coverage", () => {
     expect(indexSource).toContain('case "us-2524035-bardeen-transistor":');
     expect(indexSource).not.toContain('case "us-2569347-bardeen-transistor":');
   });
+
+  test("never routes the public interactive-sim tab to a facsimile crop or withheld placeholder", () => {
+    const switchBody = indexSource.split("switch (patentId)")[1] ?? "";
+    expect(switchBody).not.toContain("SourceVisual");
+    expect(switchBody).not.toContain("source-crop");
+    expect(switchBody).not.toContain("Pinned facsimile");
+    expect(switchBody).not.toContain("SourceVisualUnavailable");
+
+    const groups = switchBody.split(/case "/).slice(1);
+    const incomplete: string[] = [];
+    for (const group of groups) {
+      if (group.includes("No interactive physics module")) continue;
+      // Fall-through aliases share the next case's 3D/2D return.
+      if (!group.includes("return ")) continue;
+      if (!group.includes('renderMode === "3d-physics"')) {
+        const id = group.slice(0, group.indexOf('"'));
+        incomplete.push(id || group.slice(0, 40));
+      }
+    }
+    expect(incomplete).toEqual([]);
+  });
 });
