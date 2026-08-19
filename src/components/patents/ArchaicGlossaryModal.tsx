@@ -137,18 +137,26 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
     : "";
 
   const copyApa = () => {
-    if (typeof window !== "undefined" && apaCitation) {
-      navigator.clipboard.writeText(apaCitation);
-      setCopiedApa(true);
-      setTimeout(() => setCopiedApa(false), 2000);
+    if (typeof window !== "undefined" && apaCitation && navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(apaCitation)
+        .then(() => {
+          setCopiedApa(true);
+          setTimeout(() => setCopiedApa(false), 2000);
+        })
+        .catch(() => {});
     }
   };
 
   const copyBibtex = () => {
-    if (typeof window !== "undefined" && bibtexCitation) {
-      navigator.clipboard.writeText(bibtexCitation);
-      setCopiedCitation(true);
-      setTimeout(() => setCopiedCitation(false), 2000);
+    if (typeof window !== "undefined" && bibtexCitation && navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(bibtexCitation)
+        .then(() => {
+          setCopiedCitation(true);
+          setTimeout(() => setCopiedCitation(false), 2000);
+        })
+        .catch(() => {});
     }
   };
 
