@@ -155,7 +155,14 @@ export function SholesTypewriterSim() {
 
           {/* Ratchet I and bifurcated lever H are shown schematically, not to scale. */}
           <g transform="translate(140, 60)">
-            <circle cx="0" cy="0" r="18" fill="#C5A059" stroke="#5C4033" strokeWidth="2" />
+            <circle
+              cx="0"
+              cy="0"
+              r={sholes.ratchetSvgR}
+              fill="#C5A059"
+              stroke="#5C4033"
+              strokeWidth="2"
+            />
             {Array.from({ length: 12 }).map((_, i) => (
               <line
                 key={`esc-tooth-${i * 30}`}

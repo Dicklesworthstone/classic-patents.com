@@ -16,10 +16,6 @@ export function EricssonPropellerSim() {
   const animRef = useRef<number | null>(null);
 
   const screw = stepEricssonPropeller({ shaftRpm, bladePitchAngleDeg });
-  const pitchMeters = screw.pitchMeters;
-  const actualShipSpeedKnots = screw.shipSpeedKnots;
-  const thrustKiloNewtons = screw.thrustKn;
-  const theoreticalSpeedKnots = screw.theoreticalSpeedKnots;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -45,11 +41,11 @@ export function EricssonPropellerSim() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Ericsson Contra-Rotating Screw Propeller (US 588)
+            Ericsson Spiral-Plate Reader Aid (US 588)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Hydrodynamic Model — Concentric Shafts, Helical Copper Blades, and
-            Submerged Stern Thrust
+            Illustrative motion for the source's concentric shafts and opposed spiral plates. The grant
+            does not print a shaft rate, vessel speed, thrust, or efficiency.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -203,7 +199,7 @@ export function EricssonPropellerSim() {
             <circle cx="0" cy="0" r="8" fill="#222" />
           </g>
 
-          {/* Hydrodynamic Jet Wake & Thrust Vectors */}
+          {/* Reader-aid water-motion lines, not a measured wake. */}
           <g opacity="0.5" stroke="#63B3ED" strokeWidth="2" strokeDasharray="6 4">
             <line x1="410" y1="170" x2="560" y2="150" />
             <line x1="410" y1="200" x2="570" y2="200" />
@@ -217,7 +213,7 @@ export function EricssonPropellerSim() {
             fontWeight="bold"
             fontFamily="sans-serif"
           >
-            Helical Slipstream Wake
+            Reader-aid water path
           </text>
         </svg>
       </div>
@@ -226,34 +222,34 @@ export function EricssonPropellerSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Ship Speed
+            Source spiral advance
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {actualShipSpeedKnots} kn (theor. {theoreticalSpeedKnots})
+            one turn = 3 diameters
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Screw Pitch
+            Source shaft relation
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {pitchMeters} m ({bladePitchAngleDeg}°)
+            b opposite a; b slower
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Net Thrust
+            Source casing clearance
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {thrustKiloNewtons} kN
+            about 1/8 inch
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Slip Fraction
+            Reader-aid phase
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {screw.slipPct.toFixed(0)}%
+            {angleDeg.toFixed(0)}°
           </span>
         </div>
       </div>
@@ -262,8 +258,8 @@ export function EricssonPropellerSim() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Shaft Rotational Speed</span>
-            <span className="font-mono">{shaftRpm} RPM</span>
+            <span>Illustrative shaft motion</span>
+            <span className="font-mono">{shaftRpm} model RPM</span>
           </div>
           <input
             type="range"
@@ -277,8 +273,8 @@ export function EricssonPropellerSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Blade Pitch Angle</span>
-            <span className="font-mono">{bladePitchAngleDeg}°</span>
+            <span>Illustrative plate angle</span>
+            <span className="font-mono">{bladePitchAngleDeg} model degrees</span>
           </div>
           <input
             type="range"

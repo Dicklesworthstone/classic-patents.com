@@ -222,7 +222,9 @@ export function TeslaMotorSim() {
             />
 
             {/* Fig. 9 magnetic disk D inside the annular ring R. */}
-            <g transform={`translate(200, 150) rotate(${angle})`}>
+            <g
+              transform={`translate(${apparatus.statorCenterX}, ${apparatus.statorCenterY}) rotate(${angle})`}
+            >
               <circle
                 cx="0"
                 cy="0"
