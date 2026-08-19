@@ -74,6 +74,9 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(result.toggleUnlockForceN).toBeGreaterThan(100);
     expect(result.muzzleEnergyJoules).toBeGreaterThan(2000);
     expect(result.steamOpacity).toBeGreaterThan(0);
+    expect(result.toggleLiftAmp).toBe(0.32);
+    expect(result.toggleHomeY).toBe(0.12);
+    expect(result.crankThrowAmp).toBe(0.75);
   });
 
   test("builds and articulates procedural barrel, toggle lock, belt feed, and water jacket correctly", () => {

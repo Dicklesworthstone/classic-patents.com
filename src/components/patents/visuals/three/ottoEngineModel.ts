@@ -759,10 +759,7 @@ export function updateOttoEngineKinematics(
   } else if (cycle.strokeIndex === 2) {
     // POWER (Expansion & Combustion)
     const expFraction = (cyclePhase - cycle.powerStartRad) / cycle.strokeRad;
-    const intensity = Math.max(
-      otto.expansionMin,
-      otto.expansionEmissive0 / otto.expansionEmissive0 - expFraction * otto.expansionFade,
-    );
+    const intensity = Math.max(otto.expansionMin, 1 - expFraction * otto.expansionFade);
     materials.combustionGas.color.setHex(otto.powerGasColor);
     materials.combustionGas.emissive.setHex(otto.powerGasEmissive);
     materials.combustionGas.emissiveIntensity = otto.expansionEmissive0 * intensity;

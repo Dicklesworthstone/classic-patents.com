@@ -76,6 +76,9 @@ describe("US 105,338 John Wesley Hyatt Camphor-Pyroxyline Celluloid visual & pol
     expect(result.billetOpacity).toBeCloseTo(0.3 + (result.transparencyPct / 100) * 0.6, 3);
     expect(result.steamGlowOpacity).toBeCloseTo(95 / 150, 3);
     expect(result.ramStudioY).toBeCloseTo(90, 2);
+    expect(result.ramHomeX).toBe(1.8);
+    expect(result.ramCycleTau).toBeCloseTo(Math.PI * 2, 10);
+    expect(result.flowMax).toBe(1.4);
   });
 
   test("builds and articulates procedural bedplate, steam jacket, ram piston, extrusion nozzle, and billiard balls correctly", () => {

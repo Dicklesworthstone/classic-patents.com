@@ -1,4 +1,3 @@
-import { createLcg } from "@/utils/lcg";
 /**
  * edisonPhonographModel.ts
  *
@@ -9,6 +8,8 @@ import { createLcg } from "@/utils/lcg";
  */
 
 import * as THREE from "three";
+import { stepEdisonPhonograph } from "@/physics/catalogKernels";
+import { createLcg } from "@/utils/lcg";
 
 export interface EdisonPhonographModel {
   rootGroup: THREE.Group;
@@ -298,8 +299,9 @@ export function updateEdisonPhonographKinematics(
   model.rotationReferenceWheel.rotation.x += mandrelOmegaRadPerS * dt;
 
   // Illustrative display motion only. The source specifies no amplitude or frequency.
+  const phonograph = stepEdisonPhonograph({});
   const vibration = Math.sin(timeSec * stylusOmegaRadPerS) * stylusAmp;
-  model.stylus.position.y = -0.55 + vibration;
+  model.stylus.position.y = phonograph.stylusHomeY + vibration;
 
   // Cutaway Mode
   model.materials.illustrativeBase.opacity = isCutaway ? 0.35 : 1.0;

@@ -16,6 +16,7 @@
  */
 
 import * as THREE from "three";
+import { stepCorlissEngine } from "@/physics/catalogKernels";
 
 export interface CorlissEngineModel {
   rootGroup: THREE.Group;
@@ -404,9 +405,10 @@ export function updateCorlissEngineKinematics(
   wristAmp: number,
   isCutaway = false,
 ): { strokeX: number; wristAngle: number } {
+  const corliss = stepCorlissEngine({});
   model.crankGroup.rotation.z = -crankAngle;
 
-  const govAngle = crankAngle * 2.5;
+  const govAngle = crankAngle * corliss.govOmegaRatio;
   model.governorGroup.rotation.y = govAngle;
   model.governorBalls[0].position.x = -govSpread;
   model.governorBalls[1].position.x = govSpread;
@@ -427,20 +429,20 @@ export function updateCorlissEngineKinematics(
   model.conRodGroup.rotation.z = rodAngle;
 
   // Central wrist plate harmonic oscillation (Claim 2)
-  const wristAngle = Math.sin(crankAngle + Math.PI * 0.25) * wristAmp;
+  const wristAngle = Math.sin(crankAngle + corliss.wristLeadRad) * wristAmp;
   model.wristPlate.rotation.z = wristAngle;
 
   // 4 Rotary oscillating valve levers (Claim 1)
-  model.valveLevers[0].rotation.z = wristAngle * 0.9;
-  model.valveLevers[1].rotation.z = -wristAngle * 0.9;
-  model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * 0.7;
-  model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * 0.7;
+  model.valveLevers[0].rotation.z = wristAngle * corliss.intakeValveCoupling;
+  model.valveLevers[1].rotation.z = -wristAngle * corliss.intakeValveCoupling;
+  model.valveLevers[2].rotation.z = Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling;
+  model.valveLevers[3].rotation.z = -Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling;
 
   // Dashpot rods drop motion
-  const drop1 = Math.max(0, -wristAngle * 1.2);
-  const drop2 = Math.max(0, wristAngle * 1.2);
-  model.dashpotRods[0].position.y = 1.5 - drop1;
-  model.dashpotRods[1].position.y = 1.5 - drop2;
+  const drop1 = Math.max(0, -wristAngle * corliss.dashpotDropAmp);
+  const drop2 = Math.max(0, wristAngle * corliss.dashpotDropAmp);
+  model.dashpotRods[0].position.y = corliss.dashpotHomeY - drop1;
+  model.dashpotRods[1].position.y = corliss.dashpotHomeY - drop2;
 
   // Cutaway mode
   model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;

@@ -10,6 +10,49 @@ function deterministicUnit(index: number, channel: number): number {
   return (state >>> 0) / 0x1_0000_0000;
 }
 
+/**
+ * Procedural Weathered 1830s Farm Oak & Ash Timber Plank Texture
+ */
+function createWeatheredWoodTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Rustic weathered oak brown
+  ctx.fillStyle = "#59361e";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Longitudinal wood grain & saw kerf striations
+  for (let i = 0; i < 90; i++) {
+    const x = i * 5.7 + (deterministicUnit(i, 0) - 0.5) * 3;
+    const alpha = 0.08 + (i % 5 === 0 ? 0.14 : 0.04);
+    ctx.strokeStyle = `rgba(30, 15, 6, ${alpha})`;
+    ctx.lineWidth = 1.3 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 12, 170, x - 10, 340, x + 6, 512);
+    ctx.stroke();
+  }
+
+  // Weathering checks & wood pores
+  for (let p = 0; p < 240; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(20, 8, 3, 0.3)";
+    ctx.fillRect(px, py, 2.2, 5 + deterministicUnit(p, 3) * 7);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export interface McCormickReaperModel {
   rootGroup: THREE.Group;
   platformGroup: THREE.Group;
@@ -38,8 +81,12 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const woodTex = createWeatheredWoodTexture();
+  if (woodTex) texturesToDispose.push(woodTex);
+
   // --- 1. PBR MATERIALS ---
   const weatheredWood = new THREE.MeshStandardMaterial({
+    ...(woodTex ? { map: woodTex } : {}),
     color: 0x6b4226,
     roughness: 0.8,
     metalness: 0.05,

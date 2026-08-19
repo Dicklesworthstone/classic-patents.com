@@ -31,6 +31,7 @@ export interface KwolekKevlarModel {
     bondStickMat: THREE.MeshStandardMaterial;
     holeMat: THREE.MeshStandardMaterial;
     goldNozzleMat?: THREE.MeshStandardMaterial;
+    casingBrassMat?: THREE.MeshStandardMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -83,6 +84,13 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   });
   disposables.push(goldNozzleMat);
 
+  const casingBrassMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    roughness: 0.2,
+    metalness: 0.92,
+  });
+  disposables.push(casingBrassMat);
+
   const bulletMat = new THREE.MeshStandardMaterial({
     color: 0xb45309,
     metalness: 0.92,
@@ -133,6 +141,7 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   disposables.push(faceplateGeo);
   const faceplate = new THREE.Mesh(faceplateGeo, goldNozzleMat);
   faceplate.position.x = 0.82;
+  faceplate.castShadow = true;
   spinneretPack.add(faceplate);
 
   // 5 Precision Capillary Orifices
@@ -195,11 +204,13 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
       const stick1 = new THREE.Mesh(stickGeo, bondStickMat);
       stick1.rotation.z = Math.PI / 2;
       stick1.position.set(0.35, 0, 0);
+      stick1.castShadow = true;
       uGroup.add(stick1);
 
       const stick2 = new THREE.Mesh(stickGeo, bondStickMat);
       stick2.rotation.z = Math.PI / 2;
       stick2.position.set(-0.35, 0, 0);
+      stick2.castShadow = true;
       uGroup.add(stick2);
 
       chainGroup.add(uGroup);
@@ -226,12 +237,14 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
   }
   polymerGroup.add(hBondsGroup);
 
-  // Ballistic Copper-Jacketed Projectile
+  // Ballistic Copper-Jacketed Projectile with Ogive Nose and Boat-Tail Base
+  const bulletGroup = new THREE.Group();
+  bulletGroup.position.set(6.5, 0, 0);
+
   const bulletGeo = new THREE.ConeGeometry(0.48, 1.5, 28);
   disposables.push(bulletGeo);
   const bulletMesh = new THREE.Mesh(bulletGeo, bulletMat);
   bulletMesh.rotation.z = Math.PI / 2;
-  bulletMesh.position.set(6.5, 0, 0);
   bulletMesh.castShadow = true;
   root.add(bulletMesh);
 
@@ -280,6 +293,7 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
       bondStickMat,
       holeMat,
       goldNozzleMat,
+      casingBrassMat,
     },
     updateKinematics,
     dispose,

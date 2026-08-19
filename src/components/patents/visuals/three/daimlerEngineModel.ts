@@ -420,8 +420,13 @@ export function updateDaimlerEngineKinematics(
 ): { strokeIndex: number; pistonY: number } {
   // Hot-tube glow modulation
   model.materials.hotTubeMat.emissiveIntensity = hotTubeGlow;
+  const daimler = stepDaimlerEngine({});
   model.materials.hotTubeMat.emissive.setHex(
-    hotTubeTempC >= 800 ? 0xf97316 : hotTubeTempC >= 600 ? 0xb45309 : 0x334155,
+    hotTubeTempC >= daimler.hotTubeBrightC
+      ? daimler.hotTubeBrightHex
+      : hotTubeTempC >= daimler.hotTubeWarmC
+        ? daimler.hotTubeWarmHex
+        : daimler.hotTubeColdHex,
   );
 
   model.crankshaftGroup.rotation.z = cycleAngle;
@@ -441,39 +446,40 @@ export function updateDaimlerEngineKinematics(
   model.conRodGroup.rotation.z = rodAngle;
 
   // 4-Stroke Cycle Dynamics:
-  const seats = stepDaimlerEngine({});
+  const seats = daimler;
   const strokeIndex = fourStrokeIndexFromRad(fourStrokePhase, seats.strokeRad);
 
   if (strokeIndex === 0) {
     // Intake Stroke: automatic valve sucked open
     const intakeLift = Math.sin(fourStrokePhase) * seats.intakeLiftAmp;
-    model.intakeValve.position.y = 2.5 - intakeLift;
+    model.intakeValve.position.y = seats.valveHomeY - intakeLift;
     model.combustionFlame.visible = false;
   } else if (strokeIndex === 1) {
     // Compression Stroke
-    model.intakeValve.position.y = 2.5;
+    model.intakeValve.position.y = seats.valveHomeY;
     model.combustionFlame.visible = false;
   } else if (strokeIndex === 2) {
     // Power Stroke: combustion flash near top dead center
-    model.intakeValve.position.y = 2.5;
+    model.intakeValve.position.y = seats.valveHomeY;
     const powerProgress = fourStrokePhase - 2 * seats.strokeRad;
     if (powerProgress < seats.powerFlashWindowRad) {
       model.combustionFlame.visible = true;
-      model.combustionFlame.position.y = pistonY + 0.35;
+      model.combustionFlame.position.y = pistonY + seats.flamePistonOffset;
       const flashScale =
-        0.6 + Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * 0.4;
+        seats.flameScale0 +
+        Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * seats.flameScaleAmp;
       model.combustionFlame.scale.set(flashScale, flashScale, flashScale);
     } else {
       model.combustionFlame.visible = false;
     }
   } else {
     // Exhaust Stroke: cam-operated pushrod
-    model.intakeValve.position.y = 2.5;
+    model.intakeValve.position.y = seats.valveHomeY;
     model.combustionFlame.visible = false;
     const exhaustLift = Math.sin(fourStrokePhase - 3 * seats.strokeRad) * seats.exhaustLiftAmp;
-    model.exhaustPushrod.position.y = 0.2 + exhaustLift;
-    model.exhaustRocker.rotation.z = -exhaustLift * 1.5;
-    model.exhaustValve.position.y = 2.5 - exhaustLift;
+    model.exhaustPushrod.position.y = seats.exhaustPushrodHomeY + exhaustLift;
+    model.exhaustRocker.rotation.z = -exhaustLift * seats.exhaustRockerCoupling;
+    model.exhaustValve.position.y = seats.valveHomeY - exhaustLift;
   }
 
   // Cutaway transparency

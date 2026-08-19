@@ -45,10 +45,62 @@ export interface GatlingGunModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Civil War Artillery White Oak Timber Texture
+ */
+function createOakTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#6e3d1d";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 80; i++) {
+    const y = i * 6.5 + (deterministicUnit(i, 0) - 0.5) * 3;
+    const alpha = 0.08 + (i % 4 === 0 ? 0.12 : 0.03);
+    ctx.strokeStyle = `rgba(40, 20, 8, ${alpha})`;
+    ctx.lineWidth = 1.4 + (i % 3) * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(160, y + 10, 340, y - 10, 512, y + 5);
+    ctx.stroke();
+  }
+
+  for (let p = 0; p < 200; p++) {
+    const px = deterministicUnit(p, 1) * 512;
+    const py = deterministicUnit(p, 2) * 512;
+    ctx.fillStyle = "rgba(25, 10, 4, 0.28)";
+    ctx.fillRect(px, py, 4 + deterministicUnit(p, 3) * 6, 1.8);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildGatlingGunModel(): GatlingGunModel {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
+
+  const oakTex = createOakTexture();
+  if (oakTex) texturesToDispose.push(oakTex);
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -84,6 +136,7 @@ export function buildGatlingGunModel(): GatlingGunModel {
     ),
     oakWood: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(oakTex ? { map: oakTex } : {}),
         color: 0x6e3d1d,
         roughness: 0.75,
         metalness: 0.05,
@@ -428,6 +481,9 @@ export function buildGatlingGunModel(): GatlingGunModel {
     }
     for (const g of geometriesToDispose) {
       g.dispose();
+    }
+    for (const t of texturesToDispose) {
+      t.dispose();
     }
   };
 

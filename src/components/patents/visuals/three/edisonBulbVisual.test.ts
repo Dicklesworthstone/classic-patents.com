@@ -72,6 +72,8 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
       3,
     );
     expect(result.glowStopInner).toBeCloseTo(result.glowOpacity * 0.8, 3);
+    expect(result.glowThreshold).toBe(0.05);
+    expect(result.gasPhaseOmega).toBe(2);
     expect(result.schematicGlowFill).toBeCloseTo(result.schematicGlowOpacity * 0.3, 3);
   });
 

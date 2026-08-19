@@ -34,6 +34,7 @@ export interface HoweSewingMachineModel {
     bronze: THREE.MeshStandardMaterial;
     threadMat: THREE.LineBasicMaterial;
     clothMat: THREE.MeshStandardMaterial;
+    spoolWoodMat?: THREE.MeshStandardMaterial;
   };
   dispose: () => void;
 }
@@ -94,6 +95,13 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   });
   materialsToDispose.push(clothMat);
 
+  const spoolWoodMat = new THREE.MeshStandardMaterial({
+    color: 0x78350f,
+    roughness: 0.55,
+    metalness: 0.05,
+  });
+  materialsToDispose.push(spoolWoodMat);
+
   // --- 2. CAST-IRON BASE & PEDESTAL STAND ---
   const baseGroup = new THREE.Group();
   rootGroup.add(baseGroup);
@@ -117,7 +125,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
     }
   }
 
-  // Vertical Standard Pillar Columns
+  // Vertical Standard Pillar Columns with Architectural Flutings
   const columnLeftGeo = new THREE.CylinderGeometry(0.4, 0.55, 3.8, 20);
   geometriesToDispose.push(columnLeftGeo);
   const columnLeft = new THREE.Mesh(columnLeftGeo, castIron);
@@ -177,6 +185,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   const crankPin = new THREE.Mesh(crankPinGeo, brass);
   crankPin.rotation.z = Math.PI / 2;
   crankPin.position.set(-0.5, 1.8, 0);
+  crankPin.castShadow = true;
   flywheelGroup.add(crankPin);
 
   // --- 4. VIBRATING CURVED NEEDLE ARM (Claim 1) ---
@@ -278,6 +287,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   const spoolGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.6, 16);
   geometriesToDispose.push(spoolGeo);
   const spool = new THREE.Mesh(spoolGeo, bronze);
+  spool.castShadow = true;
   spoolGroup.add(spool);
 
   // Thread Line: Spool -> Tension Spring -> Needle Eye -> Cloth
