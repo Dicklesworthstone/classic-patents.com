@@ -197,14 +197,14 @@ export function EdisonPhonographSim() {
             <line
               x1="0"
               y1="0"
-              x2={Math.cos((cylinderAngleDeg * Math.PI) / 180) * 45}
-              y2={Math.sin((cylinderAngleDeg * Math.PI) / 180) * 45}
+              x2={Math.cos((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
+              y2={Math.sin((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
               stroke="#4A5568"
               strokeWidth="3"
             />
             <circle
-              cx={Math.cos((cylinderAngleDeg * Math.PI) / 180) * 45}
-              cy={Math.sin((cylinderAngleDeg * Math.PI) / 180) * 45}
+              cx={Math.cos((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
+              cy={Math.sin((cylinderAngleDeg * Math.PI) / 180) * phono.driveIndicatorSvgR}
               r="5"
               fill="#8B5A2B"
             />

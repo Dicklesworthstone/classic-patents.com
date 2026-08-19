@@ -116,7 +116,7 @@ export function GrammeDynamoSim() {
           {/* Toroidal Soft-Iron Ring Armature */}
           <g transform={`translate(300, 170) rotate(${angleDeg})`}>
             {/* Laminated Soft-Iron Torus */}
-            <circle cx="0" cy="0" r="100" fill="none" stroke="#4A5568" strokeWidth="30" />
+            <circle cx="0" cy="0" r={gramme.torusSvgR} fill="none" stroke="#4A5568" strokeWidth="30" />
 
             {/* Distributed Endless Helical Coils around Ring */}
             {Array.from({ length: printedJunctionCount }).map((_, i) => {
