@@ -37,6 +37,48 @@ function claimLiveState(
     const s = params.sulfurPct ?? 8;
     return s >= 2 && s <= 20 ? "held" : "broken";
   }
+  if (patentId.includes("bell-telephone") && claimNum <= 5) {
+    return (params.signalType ?? 1) >= 0.5 ? "held" : "broken";
+  }
+  if (patentId.includes("bardeen-transistor") && claimNum === 1) {
+    return (params.pointSpacingMicrons ?? 50) <= 100 ? "held" : "broken";
+  }
+  if (patentId.includes("noyce-ic") && claimNum === 1) {
+    return (params.junctionIsolationVoltage ?? 15) >= 4 ? "held" : "broken";
+  }
+  if (patentId.includes("goddard-rocket") && claimNum === 1) {
+    return (params.chamberPressure ?? 350) >= 120 ? "held" : "broken";
+  }
+  if (patentId.includes("spencer-microwave") && claimNum === 1) {
+    return (params.rfPowerSetting ?? 800) >= 200 ? "held" : "broken";
+  }
+  if (patentId.includes("kwolek-kevlar") && claimNum === 1) {
+    return (params.polymerConcentrationPct ?? 12) >= 8 ? "held" : "broken";
+  }
+  if (patentId.includes("boyle-smith-ccd") && claimNum === 1) {
+    return (params.gateVoltage ?? 8) >= 3 ? "held" : "broken";
+  }
+  if (patentId.includes("lamarr-frequency-hopping") && claimNum === 1) {
+    return (params.syncErrorMs ?? 0) <= 25 ? "held" : "broken";
+  }
+  if (patentId.includes("farnsworth-tv") && claimNum === 1) {
+    return (params.anodeVoltage ?? 1500) >= 400 ? "held" : "broken";
+  }
+  if (patentId.includes("einstein-refrigerator") && claimNum === 1) {
+    return (params.heatInputWatts ?? 250) >= 80 ? "held" : "broken";
+  }
+  if (patentId.includes("diesel-engine") && claimNum === 1) {
+    return (params.compressionRatio ?? 16) >= 12 ? "held" : "broken";
+  }
+  if (patentId.includes("otto-engine") && claimNum === 1) {
+    return (params.compressionRatio ?? 4.5) >= 2.5 ? "held" : "broken";
+  }
+  if (patentId.includes("parsons-turbine") && claimNum === 1) {
+    return (params.inletPressurePsi ?? 150) >= 40 ? "held" : "broken";
+  }
+  if (patentId.includes("engelbart-mouse") && claimNum === 1) {
+    return (params.mouseSpeed ?? 350) > 0 ? "held" : "broken";
+  }
   return null;
 }
 
