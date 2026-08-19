@@ -300,7 +300,7 @@ export const kwolekKevlarPatent: Patent = {
   id: "us-3671542-kwolek-kevlar",
   patentNumber: "US 3,671,542",
   title: "Optically Anisotropic Aromatic Polyamide Dopes",
-  shortTitle: "Kwolek Aromatic Polyamide Dopes",
+  shortTitle: "Kwolek Kevlar Aromatic Polyamide Dopes",
   subtitle: "Source edition withheld pending a complete 58-page manual transcription",
   inventors: ["Stephanie Louise Kwolek"],
   inventorLocation: "Wilmington, Delaware",
@@ -390,7 +390,7 @@ The full 58-page historical instrument is available through the original PDF. It
     civilizationalImpact:
       "The page remains a source-preservation record until its full historical and technical interpretation can be checked against the complete facsimile.",
   },
-  tags: ["Stephanie Louise Kwolek", "Aromatic polyamide dopes", "Polymer chemistry"],
+  tags: ["Stephanie Louise Kwolek", "Kevlar", "Aromatic polyamide dopes", "Polymer chemistry"],
   stats: {
     totalClaims: 2,
     independentClaims: 1,
