@@ -57,6 +57,8 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
     expect(result.kEffective).toBeLessThan(1.05);
     expect(result.thermalPowerWatts).toBeGreaterThan(0);
     expect(result.geigerIntervalMs).toBeGreaterThan(10);
+    expect(result.geigerIntervalS).toBeCloseTo(Math.max(0.05, result.geigerIntervalMs / 1000), 3);
+    expect(result.thermalFluxE7).toBeCloseTo(result.thermalNeutronFluxNPerCm2S / 1e7, 1);
     expect(result.rodStudioY).toBeCloseTo(-0.5 + 0.835 * 3.2, 3);
     expect(result.fuelGlowIntensity).toBeGreaterThan(0);
     expect(result.rodSvgY).toBeCloseTo(30 - 0.835 * 120, 2);

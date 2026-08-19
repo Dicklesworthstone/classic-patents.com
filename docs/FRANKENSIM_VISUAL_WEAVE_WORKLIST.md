@@ -227,6 +227,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.134 Lincoln sandbar/hull SVG Y, Zeppelin grossLiftTonnes, Goodyear chainStretchPx, Glidden twistWaveAmpPx, Tesla coil toneHz, and Noyce toneHz live on the shared steps. 2D/3D no longer convert leftover (8−depth)×12, draft×12, kg/1000, (λ−1)×80, twists×2, kHz×2, or 200+MHz×15 privately.
 - [x] P5.135 voltsToKv helper; Bardeen pointGapSvgPx; Farnsworth electronVelocityMegaMps / relativisticPct; Goddard chamberPressureAtm; Spencer anodeKv; Parsons shaftPowerMw; Thomson 2D reads jouleKw. 2D/3D/weave/badge no longer convert leftover gap×0.8, v/1e6, psi/14.696, V/1000, or kW/1000 privately.
 - [x] P5.136 Einstein evapTempF, Colt recoilKickX (engine wrapper spread), and Parsons inletBar live on the shared steps. 3D no longer converts leftover °C→°F, kick×0.8, or psi/14.5038 privately.
+- [x] P5.137 Fermi geigerIntervalS / thermalFluxE7 and CCD phaseDisplayS live on the shared steps. 3D no longer converts leftover ms/1000 privately.
+- [x] P5.138 Edison glowOpacity / lowResistanceGlowOpacity, Marconi mastSvgY / fundamentalHz, and Kevlar chainWaviness / chainEndX live on the shared steps. 2D no longer converts leftover W/150, h×1.6, MHz×1e6, (100−align)×0.25, or tension×0.28 privately.
 
 ## Explicitly out of scope
 

@@ -63,6 +63,7 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(result.luminousLmPerW).toBeGreaterThan(1.0);
     expect(result.incandescenceIntensity).toBeCloseTo(1, 3);
     expect(result.thermalJitterPerS).toBeGreaterThan(0);
+    expect(result.glowOpacity).toBeCloseTo(Math.min(1, Math.max(0.1, result.radiantWatts / 150)), 3);
   });
 
   test("builds and articulates procedural pear glass bulb, screw base, platinum leads, and horseshoe filament correctly", () => {

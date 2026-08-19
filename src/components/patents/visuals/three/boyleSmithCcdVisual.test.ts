@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
+import { stepCcdWells } from "@/physics/machineKernels";
 import { buildBoyleSmithCcdModel, updateBoyleSmithCcdKinematics } from "./boyleSmithCcdModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
@@ -64,6 +65,8 @@ describe("US 3,858,232 Willard Boyle & George Smith Charge-Coupled Device visual
   test("computes genuine charge transfer efficiency (CTE > 0.999), full well capacity, and packet charge in SI units", () => {
     const result = FrankenSimEngine.stepBoyleSmithCcd(1, 8, 850, 2.5);
     expect(result.chargeTransferEfficiencyPct).toBeGreaterThan(99.0);
+    const wells = stepCcdWells(1, 850, 2.5, 8);
+    expect(wells.phaseDisplayS).toBeCloseTo(wells.phaseDisplayMs / 1000, 4);
   });
 
   test("builds and articulates procedural silicon substrate, channel stops, gate oxide, 3-phase gates, and electron packets correctly", () => {
