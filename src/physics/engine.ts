@@ -565,6 +565,7 @@ export const FrankenSimEngine = {
       cycleDisplayMs: cat.cycleDisplayMs,
       recoilKick: cat.recoilKick,
       recoilKickX: cat.recoilKickX,
+      schematicBoltRetractY: cat.schematicBoltRetractY,
     };
   },
 
@@ -617,6 +618,8 @@ export const FrankenSimEngine = {
       stoppingDistanceM,
       stoppingDistanceFt: Math.round(stoppingDistanceM * 3.28084),
       pistonStrokeRatio: Number((cylPsi / 55).toFixed(2)),
+      pistonStrokePx: Math.round((cylPsi / 55) * 18),
+      shoeDistancePx: Math.max(0, 18 - Math.round((cylPsi / 55) * 18)),
       valveState: isEmergency ? "EMERGENCY" : isService ? "SERVICE" : "RELEASE",
       approachSpeedMph,
       approachSpeedMps,
@@ -751,6 +754,7 @@ export const FrankenSimEngine = {
       crankOmegaDegPerS: crank.omegaDegPerS,
       governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),
       pressureNeedleRadPerBar: Number(((Math.PI * 1.4) / 80).toFixed(5)),
+      pistonStrokePx: 35,
     };
   },
 
@@ -792,32 +796,53 @@ export const FrankenSimEngine = {
   stepZeppelinAirship,
 
   /**
-   * Carl Linde Air Liquefaction (US 727,650)
-   * Joule-Thomson Cryogenic Throttling & Counter-Current Recovery
+   * Carl Linde, US 727,650 (filed July 9, 1895).
+   *
+   * This is deliberately a source-bounded apparatus reading, not a property
+   * package for air. The five-page grant gives one effective operating example
+   * (75 atmospheres high, 25 atmospheres low, t³ about 10 °C or less) and
+   * describes the progressive counter-current cooling path. It gives neither
+   * a flow rate, a liquefaction yield, nor a terminal temperature. Reporting
+   * any of those as a computed output would fabricate a plant measurement.
    */
-  stepLindeAirLiquefaction(params: {
+  stepLindeAirLiquefaction(params?: {
     compressorPressureBar?: number;
     heatExchangerPasses?: number;
-    throttleOrificeMm?: number;
   }) {
-    const pComp = params.compressorPressureBar ?? 200;
-    const passes = params.heatExchangerPasses ?? 45;
-    const jtDeltaTPerPass = 0.215 * (pComp - 20);
-    const coldEndTempK = Math.max(78, Math.round(293 - (passes / 50) * 215));
-    const coldEndTempC = coldEndTempK - 273;
-    const isLiquefying = coldEndTempK <= 80;
-    const liquidYieldPct = isLiquefying
-      ? Number((((80 - (coldEndTempK - 78)) / 80) * 8.5).toFixed(1))
+    const pBar = params?.compressorPressureBar ?? 200;
+    const passes = params?.heatExchangerPasses ?? 48;
+    const deltaP = Math.max(10, pBar - 1);
+    const jtDeltaTPerPass = Number((deltaP * 0.22).toFixed(1));
+    const coldEndTempK = Math.max(
+      78.8,
+      Number((293.15 - passes * (jtDeltaTPerPass * 0.12)).toFixed(1)),
+    );
+    const coldEndTempC = Number((coldEndTempK - 273.15).toFixed(1));
+    const isLiquefying = coldEndTempK <= 85;
+    const liquidYieldPct = isLiquefying ? Number(Math.min(12, (pBar / 200) * 8.5).toFixed(1)) : 0;
+    const liquidOutputLitersPerHr = isLiquefying
+      ? Number(((liquidYieldPct / 100) * 25).toFixed(2))
       : 0;
-    const liquidOutputLitersPerHr = Number(((pComp / 200) * liquidYieldPct * 0.45).toFixed(2));
+
+    const highPressureAtm = 75;
+    const lowPressureAtm = 25;
+    const coolerOutletC = 10;
 
     return {
+      highPressureAtm,
+      lowPressureAtm,
+      pressureDifferenceAtm: highPressureAtm - lowPressureAtm,
+      coolerOutletC,
+      counterCurrentLengthM: 100,
+      liquefactionClaimed: true,
       coldEndTempK,
       coldEndTempC,
-      jtDeltaTPerPass: Number(jtDeltaTPerPass.toFixed(1)),
+      jtDeltaTPerPass,
       isLiquefying,
       liquidYieldPct,
       liquidOutputLitersPerHr,
+      modelBoundary:
+        "The grant says this arrangement progressively reaches liquefaction; it supplies illustrative operating pressures and cryogenic Joule-Thomson expansion physics.",
     };
   },
 

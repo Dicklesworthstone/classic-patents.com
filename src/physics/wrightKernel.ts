@@ -44,10 +44,34 @@ export interface WrightSiState {
   rightWingLiftPct: number;
   leftInducedDragNewtons: number;
   rightInducedDragNewtons: number;
+  airframeRollDeg: number;
+  canardSvgY: number;
+  leftLiftSvgY: number;
+  rightLiftSvgY: number;
+  leftDragSvgX: number;
+  rightDragSvgX: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
   return Math.round(wingWarpDeg * WRIGHT_COUPLING);
+}
+
+/** USPTO Fig. 4 schematic pose. Idle warp is 8° when the bus has not set wingWarp. */
+export function wrightSchematicPose(params: Record<string, number> = {}) {
+  const wingWarpDeg = params.wingWarp ?? 8;
+  const rudderDeg = params.rudder ?? params.rudderAngle ?? 4;
+  const coupled = (params.coupled ?? 1) >= 0.5;
+  const warpPx = Number(((wingWarpDeg / 15) * 12).toFixed(3));
+  return {
+    wingWarpDeg,
+    rudderDeg,
+    coupled,
+    adverse: !coupled && Math.abs(wingWarpDeg) > 6,
+    warpPx,
+    rasterSkew: Number(((wingWarpDeg / 15) * 8).toFixed(3)),
+    rudderAngle: Number((rudderDeg * 0.7).toFixed(3)),
+    strutDelta: Number((warpPx * 0.7).toFixed(3)),
+  };
 }
 
 export function readWrightControls(params: Record<string, number>): WrightControls {
@@ -118,6 +142,16 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     ),
     rightInducedDragNewtons: Number(
       ((rightLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons).toFixed(3),
+    ),
+    airframeRollDeg: Number((controls.wingWarpDeg * 0.9).toFixed(3)),
+    canardSvgY: Number((controls.elevatorDeg * -1.2).toFixed(3)),
+    leftLiftSvgY: Number(((leftLiftN / liftSpan) * 100 * 0.4).toFixed(2)),
+    rightLiftSvgY: Number(((rightLiftN / liftSpan) * 100 * 0.4).toFixed(2)),
+    leftDragSvgX: Number(
+      ((leftLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons * 2).toFixed(2),
+    ),
+    rightDragSvgX: Number(
+      ((rightLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons * 2).toFixed(2),
     ),
   };
 }

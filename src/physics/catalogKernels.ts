@@ -17,6 +17,26 @@ export function voltsToKv(volts: number) {
   return Number((Math.max(0, volts) / 1000).toFixed(3));
 }
 
+/** Slider-crank studio displacement: 0 at TDC, 2×strokePx at BDC. */
+export function pistonSvgDisplacement(crankAngleDeg: number, strokePx: number) {
+  const crankRad = ((crankAngleDeg % 360) * Math.PI) / 180;
+  return (1 - Math.cos(crankRad)) * strokePx;
+}
+
+/** Sinusoidal studio stroke used by the Corliss wrist-plate face. */
+export function sliderStrokeSvg(crankAngleDeg: number, strokePx: number) {
+  return Math.sin((crankAngleDeg * Math.PI) / 180) * strokePx;
+}
+
+/** Schematic glow for the Edison bulb drawing; not the 2D sim's power-based opacity. */
+export function edisonSchematicGlowOpacity(filamentTempK: number) {
+  return Number(Math.min(0.9, Math.max(0.2, (filamentTempK - 1800) / 1000)).toFixed(3));
+}
+
+export function edisonSchematicGlowFill(filamentTempK: number) {
+  return Number((edisonSchematicGlowOpacity(filamentTempK) * 0.3).toFixed(3));
+}
+
 export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: number }) {
   const h = params.headMeters ?? 450;
   const rpm = params.runnerRpm ?? 600;
@@ -84,6 +104,7 @@ export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: 
     crankOmegaDegPerS: crank.omegaDegPerS,
     govDisplayOmegaRadPerS: Number(((rpm / 180) * 9).toFixed(3)),
     flyballRadius: Number((0.18 + Math.min(0.15, (rpm / 300) * 0.14)).toFixed(4)),
+    pistonStrokePx: 35,
   };
 }
 
@@ -175,6 +196,12 @@ export function stepDeLavalSeparator(params: { bowlRpm?: number; rawMilkFlowLph?
     displayOmegaDegPerS: Number((rpm * 6 * displaySlowdown).toFixed(1)),
     pulleyDisplayOmegaRadPerS: Number((bowlOmegaRadPerS * displaySlowdown * 0.25).toFixed(3)),
     skimDropAdvancePerS: Number(((creamFlowLph / 300) * 1.6 * 0.85).toFixed(3)),
+    creamDropOriginY: 0.35,
+    creamDropSpacing: 0.18,
+    creamDropWrap: 1.8,
+    skimDropOriginY: -0.15,
+    skimDropSpacing: 0.2,
+    skimDropWrap: 2.0,
   };
 }
 
@@ -259,6 +286,7 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     cutterOmegaRadPerS: cutter.omegaRadPerS,
     cutterOmegaDegPerS: cutter.omegaDegPerS,
     reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),
+    cutterSvgAmp: 18,
   };
 }
 
@@ -304,6 +332,9 @@ export function stepCorlissEngine(params: {
     governorOmegaRadPerS: Number((crank.omegaRadPerS * 1.5).toFixed(3)),
     govSpread: Number((0.35 + Math.min(0.35, (rpm / 100) * 0.25)).toFixed(4)),
     wristAmp: Number((0.18 + cutoff * 0.35).toFixed(4)),
+    pistonStrokePx: 45,
+    wristPlateAmpPx: 22,
+    intakeOpenWindowDeg: Number((cutoff * 180).toFixed(2)),
   };
 }
 
@@ -312,14 +343,33 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
   const count = params.barrelCount ?? 6;
   const rof = Math.round(rpm * count);
   const crank = rpmToOmega(rpm);
+  const cycleTimeMs = Math.round(60000 / Math.max(1, rof));
   return {
     roundsPerMin: rof,
     barrelCoolingIntervalS: Number(((60 / Math.max(1, rof)) * count).toFixed(2)),
     muzzleEnergyJoules: 1850,
-    cycleTimeMs: Math.round(60000 / Math.max(1, rof)),
+    cycleTimeMs,
     crankOmegaRadPerS: crank.omegaRadPerS,
     crankOmegaDegPerS: crank.omegaDegPerS,
+    barrelSpacingRad: Number(((2 * Math.PI) / count).toFixed(5)),
+    barrelSpacingDeg: Number((360 / count).toFixed(3)),
+    firingWindowDeg: Number((180 / count).toFixed(3)),
+    camStrokeStudio: 0.38,
+    boltHomeX: -0.6,
+    fireIntervalS: Number((cycleTimeMs / 1000).toFixed(4)),
+    muzzleFlashDecayPerS: 8,
+    clusterRadiusPx: 32,
+    boltStrokePx: 90,
+    crankPinRadiusPx: 28,
   };
+}
+
+export function gatlingBoltStudioX(barrelAngleRad: number, homeX = -0.6, stroke = 0.38) {
+  return homeX + Math.cos(barrelAngleRad) * stroke;
+}
+
+export function gatlingBoltSvgX(angleDeg: number, strokePx = 90) {
+  return ((1 - Math.cos((angleDeg * Math.PI) / 180)) / 2) * strokePx;
 }
 
 export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPressureMpa?: number }) {
@@ -534,6 +584,7 @@ export function stepDaimlerEngine(params: {
     hotTubeGlow: Number(
       (tubeTemp >= 800 ? 2.8 : Math.max(0.15, (tubeTemp / 800) * 2.2)).toFixed(3),
     ),
+    pistonStrokePx: 30,
   };
 }
 
@@ -564,6 +615,22 @@ export function stepHollerithTabulating(params: {
     pressOmegaRadPerS: press.omegaRadPerS,
     pressOmegaDegPerS: press.omegaDegPerS,
     plungeAmp: Number((0.2 + (solenoidForceN / 40) * 0.35).toFixed(4)),
+    pocketSvgPitch: 18,
+    pocketSvgOriginX: 15,
+    dialNeedleRadiusPx: 14,
+    dialUnitsPerRev: 100,
+  };
+}
+
+export function hollerithPocketSvgX(pocketIndex: number, originX = 15, pitch = 18) {
+  return originX + pocketIndex * pitch;
+}
+
+export function hollerithDialNeedle(val: number, radiusPx = 14, unitsPerRev = 100) {
+  const ang = (val / unitsPerRev) * 2 * Math.PI;
+  return {
+    x: Math.cos(ang) * radiusPx,
+    y: Math.sin(ang) * radiusPx,
   };
 }
 
@@ -623,9 +690,19 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
+    schematicGlowOpacity: edisonSchematicGlowOpacity(tempK),
+    schematicGlowFill: Number((edisonSchematicGlowOpacity(tempK) * 0.3).toFixed(3)),
     glowOpacity: Number(Math.min(1, Math.max(0.1, powerWatts / 150)).toFixed(3)),
+    glowStopInner: Number((Math.min(1, Math.max(0.1, powerWatts / 150)) * 0.8).toFixed(3)),
+    glowStopOuter: Number((Math.min(1, Math.max(0.1, powerWatts / 150)) * 0.25).toFixed(3)),
     lowResistanceGlowOpacity: Number(
       Math.min(1, Math.max(0.1, lowResistanceWatts / 150)).toFixed(3),
+    ),
+    lowResistanceGlowStopInner: Number(
+      (Math.min(1, Math.max(0.1, lowResistanceWatts / 150)) * 0.8).toFixed(3),
+    ),
+    lowResistanceGlowStopOuter: Number(
+      (Math.min(1, Math.max(0.1, lowResistanceWatts / 150)) * 0.25).toFixed(3),
     ),
     bulbLightScale: 18,
   };
@@ -657,6 +734,7 @@ export function stepBellTelephone(params: {
     currentBaselineAmps,
     currentBaselineMa: Number((currentBaselineAmps * 1000).toFixed(1)),
     acousticFrequencyHz: freqHz,
+    voiceNorm: Number(voiceNorm.toFixed(4)),
     // 440 Hz shown at 1/20 so the diaphragm is visible. HUD states f.
     acousticDisplayOmegaRadPerS: Number(((2 * Math.PI * freqHz) / 20).toFixed(3)),
     electronDisplaySpeed: Number((currentBaselineAmps * 12).toFixed(3)),
@@ -665,6 +743,10 @@ export function stepBellTelephone(params: {
     toneGainSquare: Number(((db / 100) * 0.06).toFixed(4)),
     waveAdvancePerS: 3,
     diaphragmStudioScale: Number(((displUm / 10) * 0.08).toFixed(5)),
+    scopeNorm: Number((freqHz / 440).toFixed(4)),
+    scopeSineAmp: Number((db * 0.4).toFixed(2)),
+    scopeHarmonicAmp: Number((db * 0.15).toFixed(2)),
+    scopeSquareAmp: Number((db * 0.5).toFixed(2)),
   };
 }
 
@@ -771,6 +853,10 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     heatTickMs: 200,
     spokeDisplayOmegaRadPerS: isOscillating ? Number(((2450 / 2450) * 4.5).toFixed(3)) : 0,
     anodeKv: kv,
+    microwaveFreqHz: 2450e6,
+    magneticFluxDensityTesla: Number((b * 1e-4).toFixed(6)),
+    electricFieldVpm: Number(((kv * 1000) / 0.01).toFixed(1)),
+    voltageVolts: Number((kv * 1000).toFixed(1)),
     spokeOpacity: isOscillating
       ? Number(Math.min(0.95, 0.25 + (Math.round(rf * 1.8) / 2000) * 0.7).toFixed(3))
       : 0,
@@ -906,6 +992,7 @@ export function stepColtRevolver(params: {
     hoopStressMpa: Number(((pMpa * 4.5) / 3.8).toFixed(1)),
     indexAngleDeg: Number(((cockDeg / 45) * 72).toFixed(1)),
     isLocked: cockDeg >= 44,
+    schematicBoltRetractY: cockDeg > 2 && cockDeg < 44 ? 8 : 0,
     muzzleVelocityMps,
     muzzleEnergyJoules: Math.round(0.5 * 0.0052 * muzzleVelocityMps ** 2),
     powderGrains: Math.round((pMpa - 40) / 1.5 + 15),

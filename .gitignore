@@ -29,6 +29,7 @@ bun.lockb
 # OS
 .DS_Store
 *.pem
+/-.png
 
 # IDEs
 .vscode/

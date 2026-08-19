@@ -61,6 +61,7 @@ export function stepHoweSewingMachine(
     crankOmegaRadPerS: Number((stitchFrequencyHz * 2 * Math.PI).toFixed(3)),
     crankOmegaDegPerS: Number((stitchFrequencyHz * 360).toFixed(1)),
     crankDisplayTickMs: 30,
+    crankDisplayTickS: 0.03,
     clothStudioAdvancePerS: Number((stitchFrequencyHz * pitch * 0.1).toFixed(3)),
   };
 }
@@ -214,6 +215,13 @@ export function stepRenoEscalator(params: {
   sheaveOmegaRadPerS: number;
   treadSvgAdvancePerS: number;
   treadSvgWrapPx: number;
+  cleatSvgPitchPx: number;
+  cleatSvgWrapPx: number;
+  cleatSvgOriginX: number;
+  cleatSvgOriginY: number;
+  cleatSvgXScale: number;
+  cleatSvgYScale: number;
+  cleatSvgRotateDeg: number;
 } {
   const passengers = params.passengerCount ?? 30;
   const angleDeg = params.inclineAngleDeg ?? 25;
@@ -235,6 +243,30 @@ export function stepRenoEscalator(params: {
     sheaveOmegaRadPerS: Number((v / 0.45).toFixed(4)),
     treadSvgAdvancePerS: Number((v * 40).toFixed(3)),
     treadSvgWrapPx: 40,
+    cleatSvgPitchPx: 35,
+    cleatSvgWrapPx: 490,
+    cleatSvgOriginX: 80,
+    cleatSvgOriginY: 275,
+    cleatSvgXScale: 0.85,
+    cleatSvgYScale: 0.38,
+    cleatSvgRotateDeg: -25,
+  };
+}
+
+export function renoCleatSvg(
+  index: number,
+  treadOffset: number,
+  pitchPx = 35,
+  wrapPx = 490,
+  originX = 80,
+  originY = 275,
+  xScale = 0.85,
+  yScale = 0.38,
+) {
+  const basePos = (index * pitchPx + treadOffset) % wrapPx;
+  return {
+    x: originX + basePos * xScale,
+    y: originY - basePos * yScale,
   };
 }
 
@@ -253,6 +285,11 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   stoppingDistanceIn: number;
   springBowY: number;
   cabFallPx: number;
+  schematicSpringBowPx: number;
+  schematicPawlExtPx: number;
+  springBowSvgH: number;
+  pawlSvgX: number;
+  pawlSvgY: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -272,5 +309,10 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     stoppingDistanceIn: Number(((isSnapped ? 4.5 : 0) / 2.54).toFixed(1)),
     springBowY: isSnapped ? 0 : Number(((tensionPct / 100) * 0.22).toFixed(4)),
     cabFallPx: Number(((isSnapped ? 4.5 : 0) * (12 / 4.5)).toFixed(2)),
+    schematicSpringBowPx: isSnapped ? 0 : 15,
+    schematicPawlExtPx: isSnapped ? 15 : 4,
+    springBowSvgH: isSnapped ? 0 : 18,
+    pawlSvgX: isSnapped ? 18 : 4,
+    pawlSvgY: isSnapped ? 0 : 7.2,
   };
 }

@@ -62,5 +62,8 @@ export function stepFermiKinetics(
     ),
     fuelGlowIntensity: Number(Math.max(0, (kEffective - 0.98) * 8).toFixed(3)),
     rodSvgY: Number((30 - (Math.min(100, Math.max(0, rodWithdrawalPct)) / 100) * 120).toFixed(2)),
+    schematicRodY: Number(
+      (20 + ((100 - Math.min(100, Math.max(0, rodWithdrawalPct))) / 100) * 70).toFixed(2),
+    ),
   };
 }

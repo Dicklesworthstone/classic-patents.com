@@ -14,6 +14,10 @@ export const TESLA_FIELD_DISPLAY_TICK_MS = 30;
 export const TESLA_FIELD_DISPLAY_TICK_S = TESLA_FIELD_DISPLAY_TICK_MS / 1000;
 /** SVG length of the unit B-vector on the 2D rotating-field face. */
 export const TESLA_B_VECTOR_SVG_SCALE = 60;
+export const TESLA_SCHEMATIC_STROBE_LEN = 28;
+export const TESLA_SCHEMATIC_LIVE_LEN = 44;
+export const TESLA_SCHEMATIC_WHITNEY_POS = 70;
+export const TESLA_SCHEMATIC_WHITNEY_B = 80;
 
 export function teslaFieldDisplayOmegaRadPerS(freqHz: number): number {
   return (2 * Math.PI * Math.max(0, freqHz)) / TESLA_FIELD_DISPLAY_SLOWDOWN;
@@ -78,6 +82,12 @@ export interface TeslaFig9State {
   fieldDisplayOmegaDegPerS: number;
   fieldDisplayTickS: number;
   bVectorSvgScale: number;
+  schematicFieldIntensity: number;
+  schematicFillOpacity: number;
+  schematicStrobeLen: number;
+  schematicLiveLen: number;
+  schematicWhitneyPos: number;
+  schematicWhitneyB: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
 }
@@ -94,6 +104,12 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     fieldDisplayOmegaDegPerS: teslaFieldDisplayOmegaDegPerS(boundedHz),
     fieldDisplayTickS: TESLA_FIELD_DISPLAY_TICK_S,
     bVectorSvgScale: TESLA_B_VECTOR_SVG_SCALE,
+    schematicFieldIntensity: Number(Math.min(1, Math.max(0.3, boundedHz / 60)).toFixed(3)),
+    schematicFillOpacity: Number((0.1 * Math.min(1, Math.max(0.3, boundedHz / 60))).toFixed(4)),
+    schematicStrobeLen: TESLA_SCHEMATIC_STROBE_LEN,
+    schematicLiveLen: TESLA_SCHEMATIC_LIVE_LEN,
+    schematicWhitneyPos: TESLA_SCHEMATIC_WHITNEY_POS,
+    schematicWhitneyB: TESLA_SCHEMATIC_WHITNEY_B,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
   };

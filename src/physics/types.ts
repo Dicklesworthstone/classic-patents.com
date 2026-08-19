@@ -110,6 +110,7 @@ export interface NuclearKineticsState {
   rodStudioY: number;
   fuelGlowIntensity: number;
   rodSvgY: number;
+  schematicRodY: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms
