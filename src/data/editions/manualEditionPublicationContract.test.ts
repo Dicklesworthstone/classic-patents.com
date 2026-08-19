@@ -2,12 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionCoverage,
+  validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
+import { archivalEditionForPublication } from "./publicationApproval";
 
 const publicPath = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
@@ -79,6 +80,19 @@ describe("manual-edition publication contract", () => {
         violations.push(
           `${patent.id}: ${coverage.error ?? "reviewed-transcription coverage is invalid."}`,
         );
+      }
+
+      if (asset.pageAnchors) {
+        const anchors = validateReviewedTranscriptionPageAnchors(
+          transcript,
+          asset.pageCount,
+          asset.pageAnchors,
+        );
+        if (!anchors.valid) {
+          violations.push(
+            `${patent.id}: ${anchors.error ?? "reviewed-transcription page anchors are invalid."}`,
+          );
+        }
       }
 
       const sourcePdfPath = publicPath(patent.originalPdfUrl);

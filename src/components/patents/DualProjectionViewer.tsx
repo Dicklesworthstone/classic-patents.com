@@ -81,8 +81,13 @@ export function viewModeFromSearch(search: string): PatentViewMode | undefined {
   return isPatentViewMode(candidate) ? candidate : undefined;
 }
 
-export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
+export function archivalEditionForPublication(
+  patent: Pick<Patent, "id" | "archivalEdition" | "originalTextAsset">,
+) {
   return patent.archivalEdition &&
+    patent.originalTextAsset?.kind === "reviewed-transcription" &&
+    patent.originalTextAsset.pageAnchors &&
+    patent.originalTextAsset.pageAnchors.length > 0 &&
     !isArchivalEditionExplicitlyWithheld(patent.id) &&
     ARCHIVAL_PARALLEL_READINGS[patent.id]
     ? patent.archivalEdition

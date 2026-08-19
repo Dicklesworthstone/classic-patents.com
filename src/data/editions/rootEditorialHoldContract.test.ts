@@ -1,8 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
-import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "./publicationApproval";
+import {
+  archivalEditionForPublication,
+  ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
+} from "./publicationApproval";
 
 /**
  * Independent release sentinel for editions that have failed source QA.
@@ -12,14 +14,18 @@ import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "./publicationApproval";
  * release path instead of exposing an incomplete source face to visitors.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
+  "us-x72-whitney-cotton-gin",
   "us-313224-mergenthaler-linotype",
-  "us-395781-hollerith-tabulating",
   "us-2708656-fermi-reactor",
   "us-3671542-kwolek-kevlar",
   "us-3858232-boyle-smith-ccd",
 ] as const;
 
-const SOURCE_QA_RELEASED_EDITIONS = ["us-542846-diesel-engine", "us-586193-marconi-radio"] as const;
+const SOURCE_QA_RELEASED_EDITIONS = [
+  "us-3633-goodyear-rubber",
+  "us-135245-pasteur-fermentation",
+  "us-2292387-lamarr-frequency-hopping",
+] as const;
 
 describe("root editorial publication holds", () => {
   test("keeps every rejected edition unavailable through the actual visitor lookup", () => {
@@ -38,7 +44,7 @@ describe("root editorial publication holds", () => {
   });
 
   test("keeps records with known incomplete source ledgers unbound as a second fail-closed layer", () => {
-    for (const patentId of ["us-313224-mergenthaler-linotype", "us-395781-hollerith-tabulating"]) {
+    for (const patentId of ["us-313224-mergenthaler-linotype"]) {
       const patent = allPatents.find((candidate) => candidate.id === patentId);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
