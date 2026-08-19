@@ -217,6 +217,8 @@ describe("Physics Telemetry Data Registry", () => {
       },
     ]);
     expect(marconi.pedagogicalInsight).toContain("quarter-wave antenna geometry");
-    expect(marconi.pedagogicalInsight).toContain("operating frequency, spark voltage, power, range");
+    expect(marconi.pedagogicalInsight).toContain(
+      "operating frequency, spark voltage, power, range",
+    );
   });
 });

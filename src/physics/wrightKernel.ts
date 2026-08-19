@@ -74,6 +74,12 @@ export function wrightSchematicPose(params: Record<string, number> = {}) {
   };
 }
 
+/** Map a 0–1 pointer x to wing-warp degrees. Shared by the schematic. */
+export function wrightWarpFromPointerNx(nx: number, spanDeg = 30) {
+  const half = spanDeg / 2;
+  return Number(Math.max(-half, Math.min(half, (nx - 0.5) * spanDeg)).toFixed(3));
+}
+
 export function readWrightControls(params: Record<string, number>): WrightControls {
   const wingWarpDeg = params.wingWarp ?? 0;
   const coupled = (params.coupled ?? 1) >= 0.5;
