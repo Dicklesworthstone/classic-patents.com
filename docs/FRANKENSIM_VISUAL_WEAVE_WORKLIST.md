@@ -319,6 +319,55 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.226 Daimler schematicFlywheelCx/Cy/R. Schematic no longer converts leftover 200,220 r=50 privately.
 - [x] P5.227 Fermi schematicGridXs/Ys. Schematic no longer converts leftover 140/200/260 and 110/150/190 privately.
 - [x] P5.228 Westinghouse schematicWheelR. Schematic no longer converts leftover r=35 privately.
+- [x] P5.229 Mergenthaler schematicChuteX / mold. Schematic no longer converts leftover 140+i×40 or r=45 privately.
+- [x] P5.230 Corliss schematicValve / wrist. Schematic no longer converts leftover 100/300×85/215 or r=32 privately.
+- [x] P5.231 Howe schematicShuttle / needle. Schematic no longer converts leftover 300,150 r=32 or 220,178 privately.
+- [x] P5.232 Tesla teslaSchematicPoleRect. Schematic no longer converts leftover pole 180/58 and 266/130 privately.
+- [x] P5.233 Eastman schematicSpool / shutter. Schematic no longer converts leftover 110,90/190 r=22 or 280,140 r=20 privately.
+- [x] P5.234 Diesel schematicFlywheel. Schematic no longer converts leftover 200,240 r=40 privately.
+- [x] P5.235 Goodyear schematicStrand / Crosslink. Schematic no longer converts leftover 70/140/220/300 strands or 122/195/275 nodes privately.
+- [x] P5.236 Lincoln schematicChamber. Schematic no longer converts leftover 80/250 chambers privately.
+- [x] P5.237 Thomson schematicJawX / weld. Schematic no longer converts leftover 140+i×80 or r=6 privately.
+- [x] P5.238 Bell schematicElectrode / horn. Schematic no longer converts leftover 185/215 electrodes or 55×16 horn privately.
+- [x] P5.239 Tesla coil schematicSpark. Schematic no longer converts leftover 160/240 spark terminals privately.
+- [x] P5.240 Marconi schematicGap. Schematic no longer converts leftover 230/260 r=10 privately.
+- [x] P5.241 Farnsworth schematicCathode / collector / deflectors. Schematic no longer converts leftover 95,150 r=28 privately.
+- [x] P5.242 Maxim schematicToggle. Schematic no longer converts leftover 280,105 r=4 privately.
+- [x] P5.243 Wozniak wozniakSchematicChip / schematicChipSeats / bus. Schematic no longer converts leftover 50/170/270 chip boxes privately.
+- [x] P5.244 Engelbart engelbartSchematicWheel / schematic X/Y wheels / button / body. Schematic no longer converts leftover 140×130 14×60 or 210×150 60×14 privately.
+- [x] P5.245 Morse morseSchematicInstrument / key / relay / sounder / lever. Schematic no longer converts leftover 50×150 70×18 or 160×90 80×50 privately.
+- [x] P5.246 Goddard goddardSchematicStack. Schematic no longer converts leftover 200,40 nose or 170×90 60×70 chamber privately. WASM and host both spread the stack.
+- [x] P5.247 Hyatt hyattSchematicRam / Mold / jacket / nozzle. Schematic no longer converts leftover 40×125 ram or 295×110 mold privately.
+- [x] P5.248 Einstein einsteinSchematicVessel / generator / condenser / evaporator / absorber / pipes. Schematic no longer converts leftover 70/240 × 50/170 90×60 privately.
+- [x] P5.249 Bardeen bardeenSchematicDie / emitter-collector probes. Schematic no longer converts leftover 110×150 180×70 n-Ge die privately.
+- [x] P5.250 Davenport davenportSchematicArmature / stator poles / commutator. Schematic no longer converts leftover 160×138 80×24 armature privately.
+- [x] P5.251 Gramme schematicRingOuter/InnerR / poles / grammeSchematicBrush. Schematic no longer converts leftover r=55/48 or 194×112 brushes privately.
+- [x] P5.252 Pasteur schematicVesselD / SwanD / pasteurSchematicYeast / bubbleR. Schematic no longer converts leftover 120/280 vessel or 130×195 yeast bed privately.
+- [x] P5.253 Edison bulb schematicEnvelopeD / BaseD / filament / edisonSchematicTerminal. Schematic no longer converts leftover envelope or 185/215 terminals privately.
+- [x] P5.254 Colt schematic arbor / barrel / cylinder / hammer / coltSchematicTrigger. Schematic no longer converts leftover 210×68 barrel or 125×60 cylinder privately.
+- [x] P5.255 Fermi schematicRodX/W/H and schematicCoreW/H. Schematic no longer converts leftover 80×70 240×170 core or 195×10 rod privately.
+- [x] P5.256 Eastman schematicBody / cone / finder. Schematic no longer converts leftover 80×50 240×180 box or 270×130 finder privately.
+- [x] P5.257 Hollerith schematicPress / card / mercury bed / cupR / dial box. Schematic no longer converts leftover 60×40 press or 70×105 card privately.
+- [x] P5.258 Reno schematicIncline / handrail / comb / cleat W/H. Schematic no longer converts leftover 40,210–340,70 incline or 22×10 cleats privately.
+- [x] P5.259 Otis schematicRailY0/Y1 / frame / rope / tooth. Schematic no longer converts leftover 80/320×30–240 rails or 100×100 200×120 frame privately.
+- [x] P5.260 Diesel schematicCylinder / injector / piston / rod. Schematic no longer converts leftover 130×30 140×170 cylinder or 185×15 injector privately.
+- [x] P5.261 Otis otisSchematicPawl / cut-rope / spring. Schematic no longer converts leftover 110/290 spring or 100−pawlExt privately.
+- [x] P5.262 Zeppelin schematicHull / keel / trim / zeppelinSchematicGondola / cell rx-ry. Schematic no longer converts leftover 200,140 r=170/50 or 120/250 gondolas privately.
+- [x] P5.263 Maxim schematicJacket / breech / toggle arms / fusee. Schematic no longer converts leftover 40×90 180×60 jacket or 220×80 breech privately.
+- [x] P5.264 Daimler schematicCylinder / hot-tube / piston / rod. Schematic no longer converts leftover 140×30 120×140 bore or 90×45 hot-tube privately.
+- [x] P5.265 Westinghouse schematicPipe / valve / reservoir / cylinder / shoe / rod. Schematic no longer converts leftover 40–360 pipe or 60×70 valve privately.
+- [x] P5.266 Mergenthaler schematicMagazine / assembler / pump / distributor. Schematic no longer converts leftover 120,40 240,40 chute or 70×145 assembler privately.
+- [x] P5.267 Otto schematicCylinder / valve / piston / rod. Schematic no longer converts leftover 80×70 160×120 cylinder or 50×90 slide-valve privately.
+- [x] P5.268 CCD schematicSubstrate / poly / gate Y-H / packet path. Schematic no longer converts leftover 60×160 280×50 well or y=100 gates privately.
+- [x] P5.269 Kevlar schematicLatticeX / nodeR / kevlarSchematicBond. Schematic no longer converts leftover 60–340 rows or 120/200/280 H-bonds privately.
+- [x] P5.270 Edison phonograph schematicMandrel / lead / diaphragm / horn. Schematic no longer converts leftover 100×180 mandrel or 190,90 r=16 privately.
+- [x] P5.271 Bell schematicTransmitter / acid / base. Schematic no longer converts leftover 160×70 80×70 transmitter or 175×145 acid privately.
+- [x] P5.272 Lincoln schematicHullD / waterline / tie Y. Schematic no longer converts leftover hull path or 50–350 waterline privately.
+- [x] P5.273 Howe schematicBed / arm / shuttle arm / needle Y / feed. Schematic no longer converts leftover 70×190 bed or +22/−18 shuttle privately.
+- [x] P5.274 Pelton schematicBucketRx/Ry / split / nozzle / jet. Schematic no longer converts leftover r=8/6 or 40,185 nozzle privately.
+- [x] P5.275 De Laval schematicBowl / disc X / spindle / cream-skim. Schematic no longer converts leftover 140,80 bowl or 180/200/220 discs privately.
+- [x] P5.276 Thomson schematicBar / core / weld line / upset. Schematic no longer converts leftover 90–310 bar or 170×160 core privately.
+- [x] P5.277 Parsons schematicRotor / blade Y / casing / inlet. Schematic no longer converts leftover stepped-rotor points or 85–195 blades privately.
 
 ## Explicitly out of scope
 

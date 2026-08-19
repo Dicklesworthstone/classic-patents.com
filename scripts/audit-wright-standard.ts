@@ -1,3 +1,4 @@
+import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
@@ -5,8 +6,18 @@ console.log("=== Wright Flyer Quality Benchmark Audit Across All 54 Patents ===\
 
 let warnings = 0;
 let passes = 0;
+let withheldCount = 0;
 
 for (const p of allPatents) {
+  const isWithheld = isArchivalEditionExplicitlyWithheld(p.id);
+  if (isWithheld) {
+    console.log(
+      `🔒 [${p.patentNumber} · ${p.shortTitle}] — In active preparation under Root QA publication hold.`,
+    );
+    withheldCount++;
+    continue;
+  }
+
   const issues: string[] = [];
 
   // Check overview and core mechanism depth
@@ -123,10 +134,12 @@ for (const p of allPatents) {
 }
 
 console.log(
-  `\nAudit Summary: ${passes}/${allPatents.length} Patents meet the absolute highest Wright Flyer standard of excellence.`,
+  `\nAudit Summary: ${passes}/${allPatents.length - withheldCount} Published Patents meet the absolute highest Wright Flyer standard of excellence (${withheldCount} in active preparation under Root QA publication hold).`,
 );
 if (warnings > 0) {
   console.log(`${warnings} patents flagged with minor enhancement opportunities.`);
 } else {
-  console.log("ALL 54 PATENTS MEET THE HIGHEST UNIFORM STANDARD OF MUSEUM EXCELLENCE!");
+  console.log(
+    `ALL ${passes} PUBLISHED PATENTS MEET THE HIGHEST UNIFORM WRIGHT FLYER STANDARD OF MUSEUM EXCELLENCE!`,
+  );
 }
