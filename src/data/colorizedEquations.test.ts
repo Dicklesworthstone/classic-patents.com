@@ -283,4 +283,23 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
       expect(published).not.toContain(unsupportedPublicAssertion);
     }
   });
+
+  test("keeps Hollerith US 395,781 at its held Claim 1 record-card boundary", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-395781-hollerith-tabulating"];
+    expect(cards.map((card) => card.id)).toEqual(["hollerith-source-record-card-circuit-chain"]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("separate record-cards");
+    expect(cards[0]?.rawLatex).toContain("circuit-controlling index-points");
+
+    const published = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "288 grid positions",
+      "12v electrical circuit",
+      "80 cards/min",
+      "mercury-cup current",
+      "solenoid force",
+    ]) {
+      expect(published).not.toContain(unsupportedPublicAssertion);
+    }
+  });
 });
