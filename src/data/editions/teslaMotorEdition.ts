@@ -37,9 +37,12 @@ const FIGURE_8 = crop("fig-8-source-crop-v2", 700, 230, "Fig. 8");
 const FIGURE_1A = crop("fig-1a-source-crop-v2", 900, 220, "Fig. 1a");
 const FIGURE_2A = crop("fig-2a-source-crop-v2", 900, 220, "Fig. 2a");
 const FIGURE_3A = crop("fig-3a-source-crop-v2", 900, 220, "Fig. 3a");
-const FIGURE_4A = crop("fig-4a-source-crop-v2", 900, 220, "Fig. 4a");
-const FIGURE_5A = crop("fig-5a-source-crop-v2", 900, 220, "Fig. 5a");
-const FIGURE_6A = crop("fig-6a-source-crop-v2", 900, 150, "Fig. 6a");
+// The first v2 selections were too shallow for these closely stacked states.
+// These narrower, source-sheet v3 crops retain each complete state and its
+// printed label, rather than treating an adjacent state as the preview.
+const FIGURE_4A = crop("fig-4a-source-crop-v3", 800, 190, "Fig. 4a");
+const FIGURE_5A = crop("fig-5a-source-crop-v3", 800, 180, "Fig. 5a");
+const FIGURE_6A = crop("fig-6a-source-crop-v3", 800, 180, "Fig. 6a");
 const FIGURE_7A = crop("fig-7a-source-crop-v2", 900, 190, "Fig. 7a");
 const FIGURE_8A = crop("fig-8a-source-crop-v2", 900, 160, "Fig. 8a");
 const FIGURE_9 = crop("fig-9-source-crop-v1", 1120, 800, "Fig. 9");
