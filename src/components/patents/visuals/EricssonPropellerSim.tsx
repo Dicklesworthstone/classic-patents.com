@@ -20,7 +20,6 @@ export function EricssonPropellerSim() {
   const actualShipSpeedKnots = screw.shipSpeedKnots;
   const thrustKiloNewtons = screw.thrustKn;
   const theoreticalSpeedKnots = screw.theoreticalSpeedKnots;
-  const slipFraction = screw.slipFraction;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -254,7 +253,7 @@ export function EricssonPropellerSim() {
             Slip Fraction
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {(slipFraction * 100).toFixed(0)}%
+            {screw.slipPct.toFixed(0)}%
           </span>
         </div>
       </div>

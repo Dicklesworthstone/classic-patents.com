@@ -169,8 +169,8 @@ export function OttoEngineSim() {
                   key={`otto-spoke-${spkAngle}`}
                   x1="0"
                   y1="0"
-                  x2={Math.cos((spkAngle * Math.PI) / 180) * 80}
-                  y2={Math.sin((spkAngle * Math.PI) / 180) * 80}
+                  x2={Math.cos((spkAngle * Math.PI) / 180) * otto.flywheelSvgR}
+                  y2={Math.sin((spkAngle * Math.PI) / 180) * otto.flywheelSvgR}
                   stroke="#4A5568"
                   strokeWidth="4"
                 />

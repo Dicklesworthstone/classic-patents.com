@@ -24,7 +24,6 @@ export function BoyleSmithCcdSim() {
   }, [isPlaying, ccd.phaseDisplayMs]);
   const photoElectrons = ccd.photoElectrons;
   const outputSignalMillivolts = ccd.outputSignalMv;
-  const chargeTransferEfficiency = ccd.cte;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -250,7 +249,7 @@ export function BoyleSmithCcdSim() {
             <div>
               <span className="text-ink-400 block text-xs">TRANSFER EFFICIENCY</span>
               <span className="text-purple-400 font-bold text-sm sm:text-base">
-                {(chargeTransferEfficiency * 100).toFixed(3)}% CTE
+                {ccd.ctePct.toFixed(3)}% CTE
               </span>
             </div>
           </div>

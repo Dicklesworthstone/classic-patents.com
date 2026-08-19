@@ -11,7 +11,7 @@ export function SholesTypewriterSim() {
   const [activeKeyIndex, setActiveKeyIndex] = useState<number>(0);
 
   const sholes = stepSholesTypewriter(params.typingSpeedWpm ?? 40, 0);
-  const displayColumn = typedMarks.length % 12;
+  const displayColumn = typedMarks.length % sholes.displayColumnWrap;
 
   const handleKeyPress = (keyNumber: number) => {
     setActiveKeyIndex(keyNumber - 1);
@@ -52,7 +52,7 @@ export function SholesTypewriterSim() {
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
           {/* Paper Platen Roller & Escapement Carriage */}
-          <g transform={`translate(${200 - displayColumn * 6}, 40)`}>
+          <g transform={`translate(${200 - displayColumn * sholes.columnPitchPx}, 40)`}>
             <rect
               x="0"
               y="0"

@@ -125,7 +125,7 @@ export function EdisonPhonographSim() {
           ))}
 
           {/* Cylinder A and its metal-foil recording surface, translated by the source-specified thread. */}
-          <g transform={`translate(${160 + axialTravelMm * 2}, 130)`}>
+          <g transform={`translate(${160 + axialTravelMm * phono.axialSvgPxPerMm}, 130)`}>
             <rect
               x="0"
               y="0"

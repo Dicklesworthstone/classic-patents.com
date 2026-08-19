@@ -32,6 +32,7 @@ export function HoweSewingMachineSim() {
     shuttleX,
     loopOpen: isLoopFormed,
     loopWidth,
+    loopSvgControlX,
   } = stepHoweLockstitch(crankAngleDeg);
 
   return (
@@ -113,7 +114,7 @@ export function HoweSewingMachineSim() {
 
               {/* Upper Thread (Yellow) Through Eye */}
               <path
-                d={`M -50 -70 Q -20 -30 0 62 Q ${loopWidth * 1.5} 85 0 ${95 + needleY > 150 ? 95 : 62}`}
+                d={`M -50 -70 Q -20 -30 0 62 Q ${loopSvgControlX} 85 0 ${95 + needleY > 150 ? 95 : 62}`}
                 fill="none"
                 stroke="#f59e0b"
                 strokeWidth="2.5"

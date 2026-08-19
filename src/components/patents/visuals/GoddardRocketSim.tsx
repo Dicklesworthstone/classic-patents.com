@@ -27,7 +27,7 @@ export function GoddardRocketSim() {
   const specificImpulseSec = Math.round(res.specificImpulseSec);
   const exhaustVelocityMs = res.exhaustVelocityMps;
   const thrustPounds = res.thrustLbf;
-  const { optimalEpsilon, expansionEfficiency } = goddardNozzleMatch(
+  const { optimalEpsilon, expansionEfficiencyPct } = goddardNozzleMatch(
     altitudeMiles,
     nozzleExpansionRatio,
   );
@@ -350,8 +350,7 @@ export function GoddardRocketSim() {
                 accelerates exponentially under the Tsiolkovsky equation{" "}
                 <TextWithLatex text={"$\\Delta v = v_e \\ln(m_0/m_f)$"} />, enabling payloads to
                 escape Earth&apos;s gravitational well. At {altitudeMiles} miles the optimum nozzle
-                ratio is ~{optimalEpsilon.toFixed(0)}:1 ({(expansionEfficiency * 100).toFixed(0)}%
-                expansion match).
+                ratio is ~{optimalEpsilon.toFixed(0)}:1 ({expansionEfficiencyPct}% expansion match).
               </p>
             </div>
           </div>
