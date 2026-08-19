@@ -6,7 +6,7 @@ describe("Claims Decoder & Operative Legal Boundary", () => {
   test("ensures every catalog patent has valid numbered claims or explicit historical claimStatus", () => {
     for (const patent of allPatents) {
       expect(patent.claims).toBeDefined();
-      if (patent.archivalEdition?.claimStatus?.hasFormalNumberedClaims === false) {
+      if (patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile") {
         expect(patent.claims.length).toBe(0);
         expect(patent.archivalEdition.claimStatus.evidence).toBeDefined();
       } else {
