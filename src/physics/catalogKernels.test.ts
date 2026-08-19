@@ -1,8 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import {
+  bardeenHoleStream,
   bardeenLoadLine,
   edisonSchematicGlowOpacity,
   marconiMastHeightFromHz,
+  mccormickReelAngleDeg,
+  pasteurMicrobeSvg,
   phonographAxialTravelMm,
   pistonSvgDisplacement,
   rpmToOmega,
@@ -73,6 +76,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.etaPct).toBeGreaterThanOrEqual(40);
     expect(res.etaPct).toBeLessThanOrEqual(100);
     expect(res.shaftPowerKw).toBeGreaterThan(0);
+    expect(res.runnerSvgR).toBe(75);
+    expect(res.bucketCount).toBe(12);
   });
 
   test("Gramme dynamo computes 36-junction continuous EMF index", () => {
@@ -98,6 +103,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.shaftPowerKw).toBeGreaterThan(0);
     expect(res.stageCount).toBe(48);
     expect(res.enthalpyKjKg).toBeGreaterThan(0);
+    expect(res.stageRingSvgCount).toBe(22);
+    expect(res.stageSvgOriginX).toBe(135);
+    expect(res.stageSvgPitch).toBe(16);
   });
 
   test("Ericsson screw propeller keeps source facts distinct from its illustrative display model", () => {
@@ -132,12 +140,16 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.sawToothOuterSvgR).toBe(78);
     expect(res.brushSvgR).toBe(55);
     expect(res.bristleOuterSvgR).toBe(78);
+    expect(res.sawToothCount).toBe(16);
+    expect(res.bristleCount).toBe(24);
   });
 
   test("McCormick reaper computes sickle bar reciprocating frequency and harvest rate", () => {
     const res = stepMcCormickReaper({ forwardSpeedMph: 2.5 });
     expect(res.cutterHz).toBeGreaterThan(0);
     expect(res.groundSpeedMps).toBeGreaterThan(0);
+    expect(res.reelToCutterRatio).toBeCloseTo(res.reelOmegaRadPerS / res.cutterOmegaRadPerS, 5);
+    expect(mccormickReelAngleDeg(Math.PI, res.reelToCutterRatio)).toBeGreaterThan(0);
   });
 
   test("Davenport electric motor computes torque and rotational speed from battery electromotive force", () => {
@@ -172,6 +184,11 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     });
     expect(res.logReduction).toBeGreaterThan(4);
     expect(res.alcoholAbvPct).toBeGreaterThan(0);
+    expect(res.microbeCount).toBe(14);
+    expect(res.microbeWobbleOmega).toBe(3);
+    const microbe = pasteurMicrobeSvg(0, 0);
+    expect(microbe.xPos).toBe(230);
+    expect(microbe.yPos).toBe(140);
   });
 
   test("Glidden barbed wire computes tensile yield and barb lock security", () => {
@@ -197,6 +214,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepZeppelinAirship({ gasInflation: 95, flightAlt: 300, flightSpeedKnots: 28 });
     expect(res.grossLiftKg).toBeGreaterThan(10000);
     expect(res.netLiftKn).toBeDefined();
+    expect(res.gasCellCount).toBe(17);
+    expect(res.gasCellSvgOriginX).toBe(-215);
+    expect(res.gasCellSvgPitch).toBe(27);
   });
 
   test("Daimler internal combustion engine computes hot-tube ignition timing and brake power", () => {

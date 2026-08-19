@@ -22,7 +22,6 @@ import {
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
-  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
@@ -742,98 +741,53 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "Crossed electric and magnetic fields inside the cavity magnetron induce relativistic electron hub-and-spoke rotating clouds that excite 2.45 GHz standing microwaves, agitating water dipoles.",
   },
   "us-2981877-noyce-ic": {
-    domain: "semiconductor_carrier",
-    domainTitle: "Planar PN Barrier Depletion & Monolithic Silicon Interconnects",
-    equationName: "Depletion Region Barrier Capacitance",
-    governingEquation:
-      "W = \\sqrt{\\frac{2\\varepsilon_s (V_{bi} + V_R)}{q}\\left(\\frac{1}{N_A} + \\frac{1}{N_D}\\right)}",
-    engineMethod: "FrankenSimEngine.stepNoyceIC",
+    domain: "semiconductor_microarch",
+    domainTitle: "Source Guide: Oxide-Supported Semiconductor Leads",
+    equationName: "Claimed oxide-and-lead relation",
+    governingEquation: "retained oxide layer + adherent metal strip → insulated junction crossing",
+    engineMethod: "No numerical performance engine; source-figure guide only",
     controls: [
       {
-        id: "reverseBias",
-        label: "Reverse Bias Voltage (VR)",
+        id: "sourceFocus",
+        label: "Source figure relationship",
         min: 1,
-        max: 20,
-        step: 0.5,
-        defaultValue: 5.0,
-        unit: "V",
-      },
-      {
-        id: "oxideThickness",
-        label: "SiO2 Oxide Thickness",
-        min: 0.2,
-        max: 1.2,
-        step: 0.05,
-        defaultValue: 0.5,
-        unit: "µm",
-      },
-      {
-        id: "clockFrequencyMhz",
-        label: "Clock Frequency",
-        min: 1,
-        max: 50,
+        max: 4,
         step: 1,
-        defaultValue: 10,
-        unit: "MHz",
+        defaultValue: 1,
+        unit: "source figure",
       },
     ],
     computeMetrics: (p) => {
-      const ic = stepNoyceIC({
-        reverseBias: p.reverseBias,
-        oxideThickness: p.oxideThickness,
-        clockFrequencyMhz: p.clockFrequencyMhz,
-      });
-      const w = ic.depletionWidthUm.toFixed(2);
-      const propDelay = ic.propDelayNs.toFixed(2);
-      const cap = ic.junctionCapPfPerMm2.toFixed(1);
-
+      const focus = Math.max(1, Math.min(4, Math.round(p.sourceFocus ?? 1)));
+      const highlighted = [
+        "Figs. 1 and 2: nested transistor contacts",
+        "Figs. 3 and 4: multi-device structure",
+        "Fig. 5: equivalent circuit",
+        "Figs. 6 and 7: parallel-strip variant",
+      ][focus - 1];
       return [
         {
-          label: "Depletion Barrier (W)",
-          value: w,
-          unit: "µm",
+          label: "Highlighted Source Relation",
+          value: highlighted,
+          unit: "facsimile guide",
           badgeColor: "cyan",
-          progressPct: clampProgress((Number(w) / 2.5) * 100),
         },
         {
-          label: "Junction Capacitance",
-          value: cap,
-          unit: "pF/mm²",
+          label: "Insulating Support",
+          value: "oxide of the semiconductor",
+          unit: "source text",
           badgeColor: "amber",
-          progressPct: clampProgress((Number(cap) / 60) * 100),
         },
         {
-          label: "Propagation Delay (tpd)",
-          value: propDelay,
-          unit: "ns",
+          label: "Illustrated Oxide Thickness",
+          value: "about 1–2",
+          unit: "microns",
           badgeColor: "emerald",
-          progressPct: clampProgress((Number(propDelay) / 3.0) * 100),
-        },
-        {
-          label: "Max Clock",
-          value: `${ic.maxClockGhz} GHz`,
-          unit: "f_max",
-          badgeColor: "purple",
-          progressPct: Math.min(100, (ic.maxClockGhz / 0.3) * 100),
-        },
-        {
-          label: "Clock Period",
-          value: `${ic.clockPeriodNs}`,
-          unit: "ns",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (ic.clockPeriodNs / 1000) * 100),
-        },
-        {
-          label: "Breakdown Margin",
-          value: ic.breakdownMarginV.toFixed(1),
-          unit: "V",
-          badgeColor: "indigo",
-          progressPct: clampProgress((ic.breakdownMarginV / 35) * 100),
         },
       ];
     },
     pedagogicalInsight:
-      "Surface oxide passivation electrically insulates individual diffused transistor regions while vapor-deposited aluminum film leads unite components directly on a single monolithic silicon crystal.",
+      "The selector changes only the source figure relationship shown in the reader guide. US 2,981,877 prints oxide-supported lead geometries and one illustrative reverse-biased junction circuit; it does not supply a voltage, clock rate, depletion width, capacitance, breakdown value, or performance law for this display.",
   },
   "us-223898-edison-lightbulb": {
     domain: "thermodynamics_transport",
@@ -1234,7 +1188,10 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Direct electrical current passes through a soft iron horse-shoe electromagnet, overcoming mechanical spring tension to draw down the armature lever and press an embossed stylus into moving paper tape.",
   },
-  "us-3671542-kwolek-kevlar": {
+  // Preserved, non-public legacy model. US 3,671,542 is held below until its
+  // 58-page source edition is manually authored; do not route this simulation
+  // or its numerical material claims to the corrected public patent id.
+  "_legacy-unpublished-us-3671542-kwolek-kevlar": {
     domain: "continuum_elasticity",
     domainTitle: "Liquid-Crystalline Poly-Aramid Hydrogen-Bonded Lattice",
     equationName: "Tensile Modulus & Sonic Dispersion Velocity",
@@ -3412,104 +3369,53 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-808897-carrier-air-conditioner": {
     domain: "thermodynamics_transport",
-    domainTitle: "Psychrometric Moist Air Enthalpy & Dew-Point Dehumidification",
-    equationName: "Moist Air Enthalpy & Dew-Point Condensation",
+    domainTitle: "Source Guide: Wet Air Washer and Sinuous Separator",
+    equationName: "Claimed front-wet / rear-gutter plate relation",
     governingEquation:
-      "h = c_{pa} T + W(h_{fg0} + c_{pw}T) \\quad \\text{and} \\quad \\dot{m}_{\\text{cond}} = \\dot{m}_{\\text{air}}(W_{\\text{in}} - W_{\\text{dew}})",
-    engineMethod: "FrankenSimEngine.stepCarrierAirConditioner",
+      "fine spray + wet front plates + rear flanges and gutters → cleaned air stream",
+    engineMethod: "No numerical air-conditioning engine; source-figure guide only",
     controls: [
       {
-        id: "inletTemp",
-        label: "Summer Outdoor Temperature",
-        min: 25,
-        max: 42,
+        id: "sourceFocus",
+        label: "Source apparatus relationship",
+        min: 1,
+        max: 3,
         step: 1,
-        defaultValue: 35,
-        unit: "°C",
-      },
-      {
-        id: "inletRh",
-        label: "Outdoor Relative Humidity",
-        min: 40,
-        max: 95,
-        step: 5,
-        defaultValue: 75,
-        unit: "%",
-      },
-      {
-        id: "sprayTemp",
-        label: "Chilled Water Spray Temp",
-        min: 4,
-        max: 18,
-        step: 1,
-        defaultValue: 8,
-        unit: "°C",
-      },
-      {
-        id: "reheatTemp",
-        label: "Sensible Reheat Supply Temp",
-        min: 18,
-        max: 26,
-        step: 1,
-        defaultValue: 22,
-        unit: "°C",
+        defaultValue: 1,
+        unit: "source relationship",
       },
     ],
     computeMetrics: (p) => {
-      const tIn = p.inletTemp ?? 35;
-      const rhIn = p.inletRh ?? 75;
-      const tSpray = p.sprayTemp ?? 8;
-      const tReheat = p.reheatTemp ?? 22;
-      const a = 17.27;
-      const b = 237.7;
-      const alpha = (a * tIn) / (b + tIn) + Math.log(rhIn / 100);
-      const dewPoint = ((b * alpha) / (a - alpha)).toFixed(1);
-      const moistureRemoved =
-        tSpray < Number(dewPoint) ? ((Number(dewPoint) - tSpray) * 1.15).toFixed(1) : "0.0";
-      const finalRh = Math.round(
-        Math.min(
-          100,
-          Math.max(
-            20,
-            (100 * Math.exp((17.27 * tSpray) / (237.7 + tSpray))) /
-              Math.exp((17.27 * tReheat) / (237.7 + tReheat)),
-          ),
-        ),
-      );
+      const focus = Math.max(1, Math.min(3, Math.round(p.sourceFocus ?? 1)));
+      const highlighted = [
+        "Fig. 1: spray H, trap J, filter L, and fan K",
+        "Figs. 2–4: wet sinuous plates, flanges, and gutters",
+        "Figs. 5–6: whirling spray nozzle",
+      ][focus - 1];
 
       return [
         {
-          label: "Intake Dew Point",
-          value: `${dewPoint} °C`,
-          unit: "T_dew",
-          badgeColor: "amber",
-          progressPct: clampProgress((Number(dewPoint) / 40) * 100),
-        },
-        {
-          label: "Moisture Extracted",
-          value: `${moistureRemoved} g/kg`,
-          unit: "ΔW",
-          badgeColor: "emerald",
-          progressPct: clampProgress((Number(moistureRemoved) / 25) * 100),
-        },
-        {
-          label: "Supply Air Temp",
-          value: `${tReheat} °C`,
-          unit: "T_supply",
+          label: "Highlighted Source Relation",
+          value: highlighted,
+          unit: "facsimile guide",
           badgeColor: "cyan",
-          progressPct: clampProgress((tReheat / 30) * 100),
         },
         {
-          label: "Supply Room RH",
-          value: `${finalRh}%`,
-          unit: "RH_out",
-          badgeColor: finalRh >= 40 && finalRh <= 55 ? "emerald" : "indigo",
-          progressPct: clampProgress(finalRh),
+          label: "Treating Medium",
+          value: "water or other suitable liquid",
+          unit: "source text",
+          badgeColor: "amber",
+        },
+        {
+          label: "Claim Set",
+          value: "five separator-plate claims",
+          unit: "source text",
+          badgeColor: "emerald",
         },
       ];
     },
     pedagogicalInsight:
-      "Atomized water chilled below the intake air dew point condenses humidity directly into the spray droplets; inertial eliminators trap mist before steam coils reheat air to comfortable humidity.",
+      "The selector identifies printed parts and relations only. US 808,897 specifies a fine spray, wet front plate surfaces, sinuous passages, and rear flanges or gutters that separate liquid and captured impurities. It does not state chilled-water temperature, dew point, psychrometric enthalpy, refrigeration plant, reheat temperature, air-flow rate, humidity setpoint, or automatic control law for this display.",
   },
   "us-124404-westinghouse-air-brake": {
     domain: "thermo_fluid",
@@ -4805,10 +4711,212 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
 };
 
-// Ensure aliases and alternate catalog numbers resolve cleanly
-PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
-  PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
-PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
-  PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
-PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] =
-  PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];
+// US 608,969 is not the reaction-turbine patent represented by the alternate
+// catalog number above. Its printed claims cover marine turbine connections.
+PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] = {
+  domain: "source_bound_mechanics",
+  domainTitle: "Source Guide: Marine Turbine Pipe and Valve Arrangements",
+  equationName: "Claimed selectable series / parallel turbine connections",
+  governingEquation:
+    "plural screw-shafts + turbines + pipes and valves → series, simple-parallel, or compound-parallel operation",
+  engineMethod: "No numerical turbine-performance engine; source-figure guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Source turbine arrangement",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Fig. 1: eight turbines on four screw-shafts",
+      "Fig. 2: main and reversing turbines X and Y",
+      "Fig. 3: six turbines on three screw-shafts",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Arrangement",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Claimed Connection Modes",
+        value: "series; simple parallel; compound parallel",
+        unit: "source text",
+        badgeColor: "amber",
+      },
+      {
+        label: "Reversing-Turbine Condition",
+        value: "runs in condenser vacuum when idle",
+        unit: "Claim 2 / 3",
+        badgeColor: "emerald",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "The selector changes only the routing arrangement described by US 608,969. Its three claims cover screw-shafts, multiple turbines, and valve-and-pipe connections for series, simple-parallel, compound-parallel, and reversing operation. The grant does not state a blade profile, rotor speed, inlet pressure, stage count, enthalpy drop, shaft-power value, efficiency, Turbinia speed, or electric-generator performance for this display.",
+};
+PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] = {
+  domain: "source_bound_mechanics",
+  domainTitle: "Source-Bound Rocket Apparatus Guide",
+  equationName: "Claim 2 Tapered-Tube Minimum",
+  governingEquation: "L \\ge 3D",
+  engineMethod: "No performance engine: facsimile geometry and apparatus relations only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Source Apparatus Focus",
+      min: 1,
+      max: 4,
+      step: 1,
+      defaultValue: 1,
+      unit: "source component",
+    },
+  ],
+  computeMetrics: (params) => {
+    const sourceFocus = Math.max(1, Math.min(4, Math.round(params.sourceFocus ?? 1)));
+    const focusedComponent = [
+      "primary rocket",
+      "auxiliary rocket",
+      "spin-producing passages",
+      "gyroscopic camera support",
+    ][sourceFocus - 1] as string;
+
+    return [
+      {
+        label: "Claim 2 Tube-Length Floor",
+        value: "at least 3",
+        unit: "longest diameters",
+        badgeColor: "amber",
+        progressPct: 75,
+      },
+      {
+        label: "Propelling Charge",
+        value: "explosive disks",
+        unit: "source text",
+        badgeColor: "rose",
+      },
+      {
+        label: "Highlighted Apparatus",
+        value: focusedComponent,
+        unit: "source guide",
+        badgeColor: "cyan",
+        progressPct: sourceFocus * 25,
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 1,102,653 is presented here as a source-reading guide. Its printed specification gives a solid explosive charge, an elongated tapered tube, spin-producing passages, a forward auxiliary rocket, and a gyroscopically held instrument. It gives no liquid-propellant cycle, chamber pressure, mass flow, exit Mach number, or numerical thrust.",
+};
+// The corrected US 3,858,232 route is not the later three-phase CCD patent.
+// Keep it on an explicit source boundary while the full manual edition remains withheld.
+PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] = {
+  domain: "source_bound_mechanics",
+  domainTitle: "Source Guide: Charge-Coupled Information Storage",
+  equationName: "Printed storage-well and sequential-transfer relation",
+  governingEquation:
+    "establish next potential-energy minimum before removing prior minimum → stored minority-charge transfer",
+  engineMethod: "No quantitative CCD-performance engine; source-review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Source embodiment group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source figure group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Figs. 1–10: storage and transfer arrangements",
+      "Figs. 11–16: further device embodiments",
+      "Figs. 17–22: multichannel and related embodiments",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Title",
+        value: "Information Storage Devices",
+        unit: "source text",
+        badgeColor: "amber",
+      },
+      {
+        label: "Printed Claims",
+        value: "32",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 3,858,232 describes information storage using minority carriers in induced potential-energy minima and sequentially established neighboring minima for transfer. The original-text face remains withheld because its manual source edition and literal ledger are incomplete. This guide therefore does not claim a three-phase gate geometry, charge-transfer efficiency, clock rate, well capacity, doping level, image-sensor performance, noise value, or later product lineage.",
+};
+
+// US 3,671,542 has a pinned 58-page facsimile, but only its front sheet and
+// nine drawing sheets have been manually checked. Keep the public route on a
+// visible source boundary instead of recycling a later Kevlar performance model.
+PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] = {
+  domain: "source_authoring_hold",
+  domainTitle: "Source Edition Hold: Optically Anisotropic Aromatic Polyamide Dopes",
+  equationName: "No quantitative materials model published",
+  governingEquation: "optically anisotropic aromatic-polyamide dope → manual source review pending",
+  engineMethod: "No materials-performance engine; facsimile review guide only",
+  controls: [
+    {
+      id: "sourceFocus",
+      label: "Verified facsimile group",
+      min: 1,
+      max: 3,
+      step: 1,
+      defaultValue: 1,
+      unit: "source group",
+    },
+  ],
+  computeMetrics: (params) => {
+    const focus = Math.max(1, Math.min(3, Math.round(params.sourceFocus ?? 1)));
+    const highlighted = [
+      "Front sheet: abstract and two-claim notice",
+      "Figs. I–III: phase, optical, and diffraction plots",
+      "Figs. IV–IX: concentration and property plots",
+    ][focus - 1] as string;
+
+    return [
+      {
+        label: "Highlighted Source Group",
+        value: highlighted,
+        unit: "facsimile guide",
+        badgeColor: "cyan",
+      },
+      {
+        label: "Printed Claims",
+        value: "2",
+        unit: "source text",
+        badgeColor: "emerald",
+      },
+      {
+        label: "Manual Edition",
+        value: "withheld",
+        unit: "58-page review incomplete",
+        badgeColor: "amber",
+      },
+    ];
+  },
+  pedagogicalInsight:
+    "US 3,671,542 is presented here only as a facsimile-reading guide while the manual source edition is withheld. Its verified front sheet concerns optically anisotropic carbocyclic aromatic-polyamide dopes, and its nine drawing sheets contain phase and property plots. The full specification, examples, tables, and correction certificates have not yet been manually authored, so this route makes no claim about dry-jet geometry, strength, modulus, density, thermal limit, impact behavior, spinning rate, solvent operating point, or later Kevlar products.",
+};

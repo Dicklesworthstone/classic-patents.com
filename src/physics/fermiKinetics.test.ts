@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fermiKeff, stepFermiKinetics } from "./fermiKinetics";
+import { fermiKeff, fermiLatticeCell, stepFermiKinetics } from "./fermiKinetics";
 
 describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
   test("fermiKeff computes delayed-critical point near 83.5% rod withdrawal with pure moderator", () => {
@@ -33,5 +33,9 @@ describe("Enrico Fermi Chicago Pile-1 Nuclear Kinetics Kernel", () => {
     expect(res.precursorConcentrationGroup1to6.length).toBe(6);
     const sumBeta = res.precursorConcentrationGroup1to6.reduce((a, b) => a + b, 0);
     expect(sumBeta).toBeCloseTo(1.0, 2);
+    expect(res.latticeRows).toBe(5);
+    expect(res.latticeCols).toBe(7);
+    expect(fermiLatticeCell(0, 0).cx).toBe(80);
+    expect(fermiLatticeCell(0, 1).cx).toBe(120);
   });
 });

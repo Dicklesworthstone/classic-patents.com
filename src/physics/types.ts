@@ -111,6 +111,12 @@ export interface NuclearKineticsState {
   fuelGlowIntensity: number;
   rodSvgY: number;
   schematicRodY: number;
+  latticeRows: number;
+  latticeCols: number;
+  latticeOriginX: number;
+  latticeOriginY: number;
+  latticePitchX: number;
+  latticePitchY: number;
 }
 
 // 6. Continuum Mechanics, Polymers & Mechanisms

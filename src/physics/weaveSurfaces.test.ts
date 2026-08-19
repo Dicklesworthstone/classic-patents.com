@@ -63,6 +63,140 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
 
     const spencerHigh = smokePolicy("us-2495429-spencer-microwave", { rfPowerSetting: 800 });
     expect(spencerHigh.allowed).toBe(true);
+
+    const goddard = smokePolicy("us-1102653-goddard-rocket", {});
+    expect(goddard.allowed).toBe(false);
+    expect(goddard.reason).toContain("no numerical exhaust performance");
+  });
+
+  test("keeps Goddard US 1,102,653 source probes free of inherited liquid-rocket telemetry", () => {
+    const probe = materialProbe("us-1102653-goddard-rocket", "Tapered tube 11", {});
+    expect(probe).toMatchObject({
+      material: "Solid explosive disks and tapered discharge tube",
+      qty: "Claim 2",
+      value: "L ≥ 3D",
+      unit: "minimum geometry",
+    });
+    expect(probe?.note).toContain("no material, pressure, exhaust-speed, or thrust value");
+    expect(intervalGhosts("us-1102653-goddard-rocket", {})).toEqual([]);
+  });
+
+  test("keeps Noyce US 2,981,877 weave surfaces on the printed oxide-and-lead relation", () => {
+    const probe = materialProbe("us-2981877-noyce-ic", "Lead across junction", {});
+    expect(probe).toMatchObject({
+      material: "Oxide of the semiconductor supporting an adherent metal strip",
+      qty: "Claim 1",
+      value: "insulated crossing",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("no depletion width, breakdown voltage, capacitance, clock rate");
+    expect(intervalGhosts("us-2981877-noyce-ic", { sourceFocus: 4 })).toEqual([
+      { label: "Source Fig.", min: 1, max: 4, live: 4, unit: "guide selection" },
+    ]);
+    expect(fidelityField("us-2981877-noyce-ic", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-2981877-noyce-ic")).toEqual([
+      {
+        id: "noyce-filing-1959",
+        date: "1959-07-30",
+        name: "Filed semiconductor device-and-lead structure",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+  });
+
+  test("keeps Carrier US 808,897 weave surfaces on the printed wet-plate relation", () => {
+    const probe = materialProbe("us-808897-carrier-air-conditioner", "Separator plate", {});
+    expect(probe).toMatchObject({
+      material: "Wet sinuous separator plates with rear flanges and gutters",
+      qty: "Claim 1",
+      value: "front wet / rear separation",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("not a chilled-water temperature, dew point, air-flow rate");
+    expect(intervalGhosts("us-808897-carrier-air-conditioner", { sourceFocus: 2 })).toEqual([
+      { label: "Source relation", min: 1, max: 3, live: 2, unit: "guide selection" },
+    ]);
+    expect(fidelityField("us-808897-carrier-air-conditioner", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-808897-carrier-air-conditioner")).toEqual([
+      {
+        id: "carrier-filing-1904",
+        date: "1904-09-16",
+        name: "Filed air-purifying separator apparatus",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+  });
+
+  test("keeps Parsons US 608,969 weave surfaces on the printed marine-routing relation", () => {
+    const probe = materialProbe("us-608969-parsons-turbine", "Reversing turbine", {});
+    expect(probe).toMatchObject({
+      material: "Screw-shafts, turbine sets, and selectable steam-routing pipes and valves",
+      qty: "Claim 1",
+      value: "series / parallel selection",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("not a blade profile, pressure, rotor speed, stage count");
+    expect(intervalGhosts("us-608969-parsons-turbine", { sourceFocus: 3 })).toEqual([
+      { label: "Source arrangement", min: 1, max: 3, live: 3, unit: "guide selection" },
+    ]);
+    expect(datedScenarios("us-608969-parsons-turbine")).toEqual([
+      {
+        id: "parsons-filing-1898",
+        date: "1898-03-04",
+        name: "Filed marine turbine-connection arrangement",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+  });
+
+  test("keeps Boyle-Smith US 3,858,232 weave surfaces on the withheld source boundary", () => {
+    const probe = materialProbe("us-3858232-boyle-smith-ccd", "Storage minimum", {});
+    expect(probe).toMatchObject({
+      material:
+        "Semiconductor storage medium with sequentially established potential-energy minima",
+      qty: "Claim 2",
+      value: "stored charge → adjacent minimum",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("original-text face is withheld");
+    expect(intervalGhosts("us-3858232-boyle-smith-ccd", { sourceFocus: 2 })).toEqual([
+      { label: "Source group", min: 1, max: 3, live: 2, unit: "guide selection" },
+    ]);
+    expect(fidelityField("us-3858232-boyle-smith-ccd", {})).toMatchObject({
+      model: "not computed",
+      unit: "source boundary",
+    });
+    expect(datedScenarios("us-3858232-boyle-smith-ccd")).toEqual([
+      {
+        id: "boyle-smith-filing-1971",
+        date: "1971-11-09",
+        name: "Filed information-storage device",
+        writes: { sourceFocus: 1 },
+      },
+    ]);
+    expect(coupleLinks("us-3858232-boyle-smith-ccd", {})).toEqual([]);
+  });
+
+  test("keeps Kwolek US 3,671,542 weave surfaces on the incomplete-edition boundary", () => {
+    const probe = materialProbe("us-3671542-kwolek-kevlar", "Dope", {});
+    expect(probe).toMatchObject({
+      material: "Carbocyclic aromatic polyamide dope in a selected liquid medium",
+      qty: "Claim 1",
+      value: "optically anisotropic dope",
+      unit: "source relation",
+    });
+    expect(probe?.note).toContain("manual source edition is withheld");
+    expect(probe?.note).toContain("strength, modulus, density, thermal limit");
+    expect(intervalGhosts("us-3671542-kwolek-kevlar", {})).toEqual([]);
+    expect(fidelityField("us-3671542-kwolek-kevlar", {})).toBeNull();
+    expect(datedScenarios("us-3671542-kwolek-kevlar")).toEqual([]);
+    expect(coupleLinks("us-3671542-kwolek-kevlar", {})).toEqual([]);
   });
 
   test("computes spectral eigenmodes for resonant patents", () => {

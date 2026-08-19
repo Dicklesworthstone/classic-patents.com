@@ -65,5 +65,26 @@ export function stepFermiKinetics(
     schematicRodY: Number(
       (20 + ((100 - Math.min(100, Math.max(0, rodWithdrawalPct))) / 100) * 70).toFixed(2),
     ),
+    latticeRows: 5,
+    latticeCols: 7,
+    latticeOriginX: 80,
+    latticeOriginY: 60,
+    latticePitchX: 40,
+    latticePitchY: 38,
+  };
+}
+
+/** CP-1 graphite-block SVG seat. Shared by 2D. */
+export function fermiLatticeCell(
+  row: number,
+  col: number,
+  originX = 80,
+  originY = 60,
+  pitchX = 40,
+  pitchY = 38,
+) {
+  return {
+    cx: originX + col * pitchX,
+    cy: originY + row * pitchY,
   };
 }

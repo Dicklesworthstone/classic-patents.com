@@ -63,6 +63,9 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
     needleStudioY: Number((0.12 + (h / 1000) * 0.07).toFixed(4)),
     handwheelOmegaRadPerS: 0.5,
     jetOpacity: Number((0.55 + (etaPct / 93) * 0.4).toFixed(3)),
+    runnerSvgR: 75,
+    hubSvgR: 18,
+    bucketCount: 12,
   };
 }
 
@@ -143,6 +146,9 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     steamSwirlOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown * 0.5).toFixed(3)),
     shaftPowerMw: Number((shaftPowerKw / 1000).toFixed(1)),
     inletBar: Number((psi / 14.5038).toFixed(3)),
+    stageRingSvgCount: 22,
+    stageSvgOriginX: 135,
+    stageSvgPitch: 16,
   };
 }
 
@@ -244,6 +250,25 @@ export function stepNobelDynamite(params: {
       : 0,
     shockwaveGlow: Number((1 + (detonationVelocityMps / 6000) * 1.5).toFixed(3)),
     stickDisplayOmegaRadPerS: 0.2,
+    kieselguhrCount: 24,
+    kieselguhrCols: 8,
+    kieselguhrOriginX: 200,
+    kieselguhrOriginY: 135,
+    kieselguhrPitch: 32,
+  };
+}
+
+/** Kieselguhr grain seat on the 2D stick face. Shared by 2D. */
+export function nobelKieselguhrSvg(
+  index: number,
+  originX = 200,
+  originY = 135,
+  pitch = 32,
+  cols = 8,
+) {
+  return {
+    cx: originX + (index % cols) * pitch,
+    cy: originY + Math.floor(index / cols) * pitch,
   };
 }
 
@@ -275,6 +300,8 @@ export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridCleara
     sawToothOuterSvgR: 78,
     brushSvgR: 55,
     bristleOuterSvgR: 78,
+    sawToothCount: 16,
+    bristleCount: 24,
   };
 }
 
@@ -303,7 +330,13 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     cutterOmegaDegPerS: cutter.omegaDegPerS,
     reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),
     cutterSvgAmp: 18,
+    reelToCutterRatio: Number((reel.omegaRadPerS / Math.max(1e-6, cutter.omegaRadPerS)).toFixed(5)),
   };
+}
+
+/** Reel pose from the cutter-phase studio clock. Shared by 2D. */
+export function mccormickReelAngleDeg(cutterPhaseRad: number, reelToCutterRatio: number) {
+  return Number((((cutterPhaseRad * reelToCutterRatio * 180) / Math.PI) % 360).toFixed(2));
 }
 
 export function stepDavenportMotor(params: { batteryVoltage?: number; loadTorque?: number }) {
@@ -407,6 +440,27 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     billetOpacity: Number((0.3 + (transparencyPct / 100) * 0.6).toFixed(3)),
     steamGlowOpacity: Number(Math.min(1, temp / 150).toFixed(3)),
     ramStudioY: Number((70 + press * 2).toFixed(2)),
+    polymerCount: 16,
+    polymerCols: 4,
+    polymerOriginX: 220,
+    polymerOriginY: 150,
+    polymerPitchX: 45,
+    polymerPitchY: 25,
+  };
+}
+
+/** Camphor/celluloid chain node on the 2D ram face. Shared by 2D. */
+export function hyattPolymerSvg(
+  index: number,
+  originX = 220,
+  originY = 150,
+  pitchX = 45,
+  pitchY = 25,
+  cols = 4,
+) {
+  return {
+    xPos: originX + (index % cols) * pitchX,
+    yPos: originY + Math.floor(index / cols) * pitchY,
   };
 }
 
@@ -430,6 +484,34 @@ export function stepPasteurFermentation(params: {
     co2PressureBar: Number((1.8 * (yeastActivityPct / 100)).toFixed(2)),
     shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
     bathGlowOpacity: Number(Math.min(1, pTemp / 120).toFixed(3)),
+    microbeWobbleOmega: 3,
+    microbeWobbleAmpPx: 3,
+    microbeSvgOriginX: 230,
+    microbeSvgOriginY: 140,
+    microbeSvgPitchX: 32,
+    microbeSvgPitchY: 28,
+    microbeCols: 5,
+    microbeCount: 14,
+  };
+}
+
+/** Vat-face yeast/microbe seat. Shared by 2D. */
+export function pasteurMicrobeSvg(
+  index: number,
+  timerSeconds: number,
+  omega = 3,
+  ampPx = 3,
+  originX = 230,
+  originY = 140,
+  pitchX = 32,
+  pitchY = 28,
+  cols = 5,
+) {
+  const xPos = originX + (index % cols) * pitchX;
+  const yOffset = Math.sin(timerSeconds * omega + index) * ampPx;
+  return {
+    xPos,
+    yPos: originY + Math.floor(index / cols) * pitchY + yOffset,
   };
 }
 
@@ -567,6 +649,9 @@ export function stepZeppelinAirship(params: {
     hullStudioY: Number(((netLiftKn / 40) * 0.9).toFixed(4)),
     trimSvgX: Number(((trimM / 15) * 140 - 10).toFixed(2)),
     grossLiftTonnes: Number((Math.round((grossBuoyancyKn / 9.81) * 1000) / 1000).toFixed(1)),
+    gasCellCount: 17,
+    gasCellSvgOriginX: -215,
+    gasCellSvgPitch: 27,
   };
 }
 
@@ -638,6 +723,26 @@ export function stepHollerithTabulating(params: {
     pocketSvgOriginX: 15,
     dialNeedleRadiusPx: 14,
     dialUnitsPerRev: 100,
+    cupSvgOriginX: 20,
+    cupSvgOriginY: 100,
+    cupSvgPitchX: 25,
+    cupSvgPitchY: 30,
+    cupCols: 8,
+  };
+}
+
+/** Mercury-cup seat under the pin press. Shared by 2D. */
+export function hollerithCupSvg(
+  index: number,
+  originX = 20,
+  originY = 100,
+  pitchX = 25,
+  pitchY = 30,
+  cols = 8,
+) {
+  return {
+    cx: originX + (index % cols) * pitchX,
+    cy: originY + Math.floor(index / cols) * pitchY,
   };
 }
 
@@ -984,6 +1089,26 @@ export function stepBardeenTransistor(
     ),
     gapStudioUnits: Number((gap * 0.012).toFixed(4)),
     pointGapSvgPx: Number((gap * 0.8).toFixed(2)),
+    holeStreamCount: 12,
+    holeStreamHubX: 130,
+    holeStreamArcAmpPx: 10,
+    holeStreamBaseY: 4,
+  };
+}
+
+/** Minority-carrier path between the point contacts. Shared by 2D. */
+export function bardeenHoleStream(
+  index: number,
+  pointGapSvgPx: number,
+  count = 12,
+  hubX = 130,
+  baseY = 4,
+  arcAmpPx = 10,
+) {
+  const frac = index / Math.max(1, count);
+  return {
+    cx: Number((hubX - pointGapSvgPx + frac * (2 * pointGapSvgPx)).toFixed(2)),
+    cy: Number((baseY + Math.sin(frac * Math.PI) * arcAmpPx).toFixed(2)),
   };
 }
 

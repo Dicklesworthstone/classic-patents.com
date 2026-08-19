@@ -100,4 +100,103 @@ describe("Physics Telemetry Data Registry", () => {
       "no shaft rate, propeller dimensions, vessel speed",
     );
   });
+
+  test("keeps Goddard US 1,102,653 telemetry at the printed apparatus boundary", () => {
+    const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
+    expect(goddard.engineMethod).toContain("No performance engine");
+    expect(goddard.governingEquation).toBe("L \\ge 3D");
+    expect(goddard.controls.map((control) => control.unit)).toEqual(["source component"]);
+    expect(goddard.computeMetrics({ sourceFocus: 3 })).toMatchObject([
+      { label: "Claim 2 Tube-Length Floor", value: "at least 3", unit: "longest diameters" },
+      { label: "Propelling Charge", value: "explosive disks", unit: "source text" },
+      { label: "Highlighted Apparatus", value: "spin-producing passages", unit: "source guide" },
+    ]);
+    expect(goddard.pedagogicalInsight).toContain("no liquid-propellant cycle");
+  });
+
+  test("keeps Noyce US 2,981,877 at the printed oxide-and-lead construction boundary", () => {
+    const noyce = PATENT_PHYSICS_REGISTRY["us-2981877-noyce-ic"];
+    expect(noyce.engineMethod).toContain("No numerical performance engine");
+    expect(noyce.controls.map((control) => control.unit)).toEqual(["source figure"]);
+    expect(noyce.computeMetrics({ sourceFocus: 3 })).toMatchObject([
+      { label: "Highlighted Source Relation", value: "Fig. 5: equivalent circuit" },
+      { label: "Insulating Support", value: "oxide of the semiconductor", unit: "source text" },
+      { label: "Illustrated Oxide Thickness", value: "about 1–2", unit: "microns" },
+    ]);
+    expect(noyce.pedagogicalInsight).toContain("does not supply a voltage, clock rate");
+    expect(noyce.pedagogicalInsight).toContain("depletion width, capacitance");
+  });
+
+  test("keeps Carrier US 808,897 at the printed wet-plate separator boundary", () => {
+    const carrier = PATENT_PHYSICS_REGISTRY["us-808897-carrier-air-conditioner"];
+    expect(carrier.engineMethod).toContain("No numerical air-conditioning engine");
+    expect(carrier.controls.map((control) => control.unit)).toEqual(["source relationship"]);
+    expect(carrier.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Relation",
+        value: "Figs. 2–4: wet sinuous plates, flanges, and gutters",
+      },
+      { label: "Treating Medium", value: "water or other suitable liquid", unit: "source text" },
+      { label: "Claim Set", value: "five separator-plate claims", unit: "source text" },
+    ]);
+    expect(carrier.pedagogicalInsight).toContain("does not state chilled-water temperature");
+    expect(carrier.pedagogicalInsight).toContain("humidity setpoint, or automatic control law");
+  });
+
+  test("keeps Parsons US 608,969 at the printed marine-routing boundary", () => {
+    const parsons = PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"];
+    expect(parsons.engineMethod).toContain("No numerical turbine-performance engine");
+    expect(parsons.controls.map((control) => control.unit)).toEqual(["source figure"]);
+    expect(parsons.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Arrangement",
+        value: "Fig. 2: main and reversing turbines X and Y",
+      },
+      {
+        label: "Claimed Connection Modes",
+        value: "series; simple parallel; compound parallel",
+        unit: "source text",
+      },
+      {
+        label: "Reversing-Turbine Condition",
+        value: "runs in condenser vacuum when idle",
+        unit: "Claim 2 / 3",
+      },
+    ]);
+    expect(parsons.pedagogicalInsight).toContain("does not state a blade profile, rotor speed");
+    expect(parsons.pedagogicalInsight).toContain(
+      "Turbinia speed, or electric-generator performance",
+    );
+  });
+
+  test("keeps Boyle-Smith US 3,858,232 on the withheld information-storage boundary", () => {
+    const boyleSmith = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
+    expect(boyleSmith.engineMethod).toContain("No quantitative CCD-performance engine");
+    expect(boyleSmith.controls.map((control) => control.unit)).toEqual(["source figure group"]);
+    expect(boyleSmith.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      { label: "Highlighted Source Group", value: "Figs. 11–16: further device embodiments" },
+      { label: "Printed Title", value: "Information Storage Devices", unit: "source text" },
+      { label: "Printed Claims", value: "32", unit: "source text" },
+    ]);
+    expect(boyleSmith.pedagogicalInsight).toContain("original-text face remains withheld");
+    expect(boyleSmith.pedagogicalInsight).toContain(
+      "three-phase gate geometry, charge-transfer efficiency",
+    );
+  });
+
+  test("keeps Kwolek US 3,671,542 on its incomplete-edition source boundary", () => {
+    const kwolek = PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"];
+    expect(kwolek.engineMethod).toContain("No materials-performance engine");
+    expect(kwolek.controls.map((control) => control.unit)).toEqual(["source group"]);
+    expect(kwolek.computeMetrics({ sourceFocus: 2 })).toMatchObject([
+      {
+        label: "Highlighted Source Group",
+        value: "Figs. I–III: phase, optical, and diffraction plots",
+      },
+      { label: "Printed Claims", value: "2", unit: "source text" },
+      { label: "Manual Edition", value: "withheld", unit: "58-page review incomplete" },
+    ]);
+    expect(kwolek.pedagogicalInsight).toContain("not yet been manually authored");
+    expect(kwolek.pedagogicalInsight).toContain("strength, modulus, density, thermal limit");
+  });
 });

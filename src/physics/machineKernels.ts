@@ -24,6 +24,9 @@ export function stepCcdWells(
   phasePeriodNs: number;
   phaseDisplayMs: number;
   phaseDisplayS: number;
+  gateSvgCount: number;
+  gateSvgPitch: number;
+  gateSvgWidth: number;
 } {
   const f = Math.max(0.1, clockMhz);
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
@@ -56,7 +59,15 @@ export function stepCcdWells(
     // Visible bucket-brigade step. 500 ms/MHz ≡ 1500/(3f), not a leftover 2-phase 1/(2f).
     phaseDisplayMs: Math.max(40, Math.round(500 / f)),
     phaseDisplayS: Number((Math.max(40, Math.round(500 / f)) / 1000).toFixed(4)),
+    gateSvgCount: 9,
+    gateSvgPitch: 50,
+    gateSvgWidth: 45,
   };
+}
+
+/** Poly-silicon gate bar X on the 2D CCD face. Shared by 2D. */
+export function ccdGateSvgX(index: number, pitch = 50) {
+  return index * pitch;
 }
 
 /** Potential-well SVG depth from packet fill. Shared by 2D. */

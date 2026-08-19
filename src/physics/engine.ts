@@ -72,6 +72,51 @@ import type {
   UniversalPatentPhysicsTelemetry,
 } from "./types";
 
+/** US 2,292,387 88-key player-piano hop set. Shared by 2D / 3D. */
+export const LAMARR_BAND_MIN_MHZ = 302;
+export const LAMARR_BAND_MAX_MHZ = 520;
+export const LAMARR_PIANO_KEYS = 88;
+export const LAMARR_PIANO_ROLL_STEP = 37;
+export const LAMARR_JAM_CHANNEL_FRACTION = 0.3;
+
+export function lamarrPianoRollChannel(
+  step: number,
+  keys = LAMARR_PIANO_KEYS,
+  rollStep = LAMARR_PIANO_ROLL_STEP,
+) {
+  return ((Math.max(0, Math.floor(step)) * rollStep) % keys) + 1;
+}
+
+export function lamarrChannelFrequencyMhz(
+  channel: number,
+  channelCount = LAMARR_PIANO_KEYS,
+  minMhz = LAMARR_BAND_MIN_MHZ,
+  maxMhz = LAMARR_BAND_MAX_MHZ,
+) {
+  const denom = Math.max(1, channelCount - 1);
+  return Number((minMhz + ((Math.max(1, channel) - 1) * (maxMhz - minMhz)) / denom).toFixed(3));
+}
+
+export function lamarrDefaultJamChannel(
+  channelCount: number,
+  fraction = LAMARR_JAM_CHANNEL_FRACTION,
+) {
+  const n = Math.max(1, Math.round(channelCount));
+  return Math.min(n, Math.max(1, Math.floor(n * fraction)));
+}
+
+export function lamarrRadioChannel(
+  pianoKey: number,
+  liveChannels: number,
+  pianoKeys = LAMARR_PIANO_KEYS,
+) {
+  return Math.floor(((Math.max(1, pianoKey) - 1) / pianoKeys) * Math.max(1, liveChannels)) + 1;
+}
+
+export function lamarrPianoKeyHz(pianoKey: number, pianoKeys = LAMARR_PIANO_KEYS) {
+  return Number((220 + (Math.max(1, pianoKey) / pianoKeys) * 660).toFixed(1));
+}
+
 export const FrankenSimEngine = {
   /**
    * Wright Flyer (US 821,393) - 6-DoF Aerodynamics & Coupled Yaw/Roll
@@ -533,10 +578,6 @@ export const FrankenSimEngine = {
     );
   },
 
-  /**
-   * Hedy Lamarr & George Antheil Secret Communication (US 2,292,387)
-   * Slotted Frequency-Hopping Spread-Spectrum Anti-Jamming Dynamics
-   */
   stepLamarrFrequencyHopping(channelsCount: number = 88, hopRateHopsPerSec: number = 4) {
     const spreadSpectrumBandwidthMhz = channelsCount * 0.1; // 100 kHz channels across 8.8 MHz
     const narrowbandSignalBandwidthKhz = 10.0;
@@ -551,10 +592,19 @@ export const FrankenSimEngine = {
       channelsCount,
       hopRateHopsPerSec,
       spreadSpectrumBandwidthMhz,
+      spreadSpectrumBandwidthHz: Number((spreadSpectrumBandwidthMhz * 1e6).toFixed(0)),
       processingGainDb,
       antiJammingMarginDb,
       hopIntervalMs: Math.round(1000 / Math.max(1, hopRateHopsPerSec)),
       jamOccupancyPct: Number((100 / Math.max(1, channelsCount)).toFixed(2)),
+      bandMinMhz: LAMARR_BAND_MIN_MHZ,
+      bandMaxMhz: LAMARR_BAND_MAX_MHZ,
+      pianoKeys: LAMARR_PIANO_KEYS,
+      pianoRollStep: LAMARR_PIANO_ROLL_STEP,
+      jamChannelFraction: LAMARR_JAM_CHANNEL_FRACTION,
+      defaultJamChannel: lamarrDefaultJamChannel(channelsCount),
+      spectrumBarOriginX: 20,
+      spectrumBarPitchPx: 4.5,
     };
   },
 

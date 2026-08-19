@@ -31,7 +31,17 @@ export function energyChannelsFor(
       { name: "IR + cond.", watts: p - vis, tone: "loss" },
     ];
   }
-  if (patentId === "us-1155986-goddard-rocket" || patentId === "us-1102653-goddard-rocket") {
+  if (patentId === "us-1102653-goddard-rocket") {
+    // The published source gives no energy-flow values. Do not turn its geometry into a
+    // quantitative liquid-propellant model just to fill this optional presentation strip.
+    return [];
+  }
+  if (patentId === "us-3671542-kwolek-kevlar") {
+    // The source face is deliberately withheld while its manual edition is
+    // incomplete. Do not visualize an invented tensile or impact power flow.
+    return [];
+  }
+  if (patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,
       params.fuelFlowRateKgs ?? 1.8,
