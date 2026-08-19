@@ -51,6 +51,8 @@ export interface WrightSiState {
   leftDragSvgX: number;
   rightDragSvgX: number;
   rudderSvgScale: number;
+  hoverOmegaRadPerS: number;
+  hoverAmpM: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
@@ -161,5 +163,12 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
       ((rightLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons * 2).toFixed(2),
     ),
     rudderSvgScale: 1.2,
+    hoverOmegaRadPerS: 1.4,
+    hoverAmpM: 0.04,
   };
+}
+
+/** Studio hover bob on the live-flight 3D airframe. Shared by 3D. */
+export function wrightHoverY(elapsedS: number, omegaRadPerS = 1.4, ampM = 0.04) {
+  return Number((Math.sin(elapsedS * omegaRadPerS) * ampM).toFixed(4));
 }

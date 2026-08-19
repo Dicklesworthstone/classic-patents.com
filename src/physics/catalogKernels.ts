@@ -226,6 +226,14 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     aftBladeSvgRy: 45,
     bladeCount: 6,
     bladePitchDeg: 60,
+    schematicForwardCx: 210,
+    schematicForwardCy: 150,
+    schematicForwardRx: 14,
+    schematicForwardRy: 50,
+    schematicAftCx: 280,
+    schematicAftCy: 150,
+    schematicAftRx: 14,
+    schematicAftRy: 46,
   };
 }
 

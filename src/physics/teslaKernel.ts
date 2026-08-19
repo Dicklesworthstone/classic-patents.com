@@ -101,6 +101,12 @@ export interface TeslaFig9State {
   schematicStrobeOpacityStep: number;
   schematicStrobeStroke: number;
   schematicLiveStroke: number;
+  statorRingOuterSvgR: number;
+  statorRingInnerSvgR: number;
+  statorPoleSvgW: number;
+  statorPoleSvgH: number;
+  twoPhaseVectorOpacity: number;
+  threePhaseVectorOpacity: number;
   statorPoleSvgR: number;
   twoPhaseVectorSvgR: number;
   threePhaseVectorSvgR: number;
@@ -132,6 +138,12 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     schematicStrobeOpacityStep: TESLA_SCHEMATIC_STROBE_OPACITY_STEP,
     schematicStrobeStroke: TESLA_SCHEMATIC_STROBE_STROKE,
     schematicLiveStroke: TESLA_SCHEMATIC_LIVE_STROKE,
+    statorRingOuterSvgR: 110,
+    statorRingInnerSvgR: 95,
+    statorPoleSvgW: 36,
+    statorPoleSvgH: 24,
+    twoPhaseVectorOpacity: 0.55,
+    threePhaseVectorOpacity: 0.5,
     statorPoleSvgR: TESLA_STATOR_POLE_SVG_R,
     twoPhaseVectorSvgR: TESLA_TWO_PHASE_VECTOR_SVG_R,
     threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,
@@ -139,6 +151,26 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     statorCenterY: TESLA_STATOR_CENTER_Y,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
+  };
+}
+
+/** Electrical phase offset of one stator pole. Shared by teslaBAt and 2D. */
+export function teslaPolePhaseOff(poleIndex: number, phaseCount: 2 | 3) {
+  return (poleIndex % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+}
+
+/** Instantaneous pole current on the Fig. 9 ring. Shared by teslaBAt and 2D. */
+export function teslaPoleCurrent(
+  poleIndex: number,
+  phaseCount: 2 | 3,
+  omegaT: number,
+) {
+  const polarity = poleIndex >= phaseCount ? -1 : 1;
+  const phaseOff = teslaPolePhaseOff(poleIndex, phaseCount);
+  return {
+    polarity,
+    phaseOff,
+    current: polarity * Math.sin(omegaT + phaseOff),
   };
 }
 
@@ -218,9 +250,7 @@ export function teslaBAt(
   let fieldY = 0;
   for (let i = 0; i < coilCount; i++) {
     const a = (i * 2 * Math.PI) / coilCount - Math.PI / 2;
-    const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
-    const polarity = i >= phaseCount ? -1 : 1;
-    const current = polarity * Math.sin(omegaT + phaseOff);
+    const { current } = teslaPoleCurrent(i, phaseCount, omegaT);
     fieldX += current * Math.cos(a);
     fieldY += current * Math.sin(a);
   }
