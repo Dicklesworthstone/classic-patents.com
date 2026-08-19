@@ -131,8 +131,7 @@ export function materialProbe(
       qty: "Claim 1",
       value: "received oscillations → resettable contact",
       unit: "source relation",
-      note:
-        "The manual source edition remains under independent publication review. This guide does not assign an antenna geometry, frequency, voltage, power, range, radiation resistance, or detector threshold to the grant.",
+      note: "The manual source edition remains under independent publication review. This guide does not assign an antenna geometry, frequency, voltage, power, range, radiation resistance, or detector threshold to the grant.",
     };
   }
   if (patentId.includes("wright")) {
@@ -421,17 +420,6 @@ export function materialProbe(
       value: bell.modulatedMa.toFixed(2),
       unit: "mA",
       note: `Diaphragm ${bell.diaphragmUm} µm. ${bell.sensitivityMvPerPa} mV/Pa · ω ${bell.acousticDisplayOmegaRadPerS} rad/s.`,
-    };
-  }
-  if (patentId.includes("marconi")) {
-    const radio = stepMarconiRadio(params.aerialHeight, params.sparkGapMm, params.sparkVoltage);
-    return {
-      part: calloutLabel,
-      material: "Elevated aerial + earth plate",
-      qty: "f₀",
-      value: String(radio.resonantFreqKhz),
-      unit: "kHz",
-      note: `Quarter-wave mast ${params.aerialHeight ?? 88} m. R_rad ${radio.radiationResistanceOhms} Ω.`,
     };
   }
   if (patentId.includes("morse") || patentId.includes("1647")) {
@@ -1550,16 +1538,6 @@ export function whitneySamples(omegaT: number): { x: number; y: number; bx: numb
 export function spectralModes(patentId: string, params: Record<string, number>): SpectralMode[] {
   if (patentId === "us-586193-marconi-radio") {
     return [];
-  }
-  if (patentId.includes("marconi")) {
-    const radio = stepMarconiRadio(params.aerialHeight, params.sparkGapMm, params.sparkVoltage);
-    const f0 = radio.resonantFreqMhz * 1e6;
-    return [1, 3, 5, 7, 9].map((n) => ({
-      n,
-      freqHz: f0 * n,
-      amp: 1 / n,
-      name: n === 1 ? "λ/4" : `${n} f₀`,
-    }));
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     const f0 = FrankenSimEngine.stepTeslaCoilFromControls(params).resonantFreqHz;
