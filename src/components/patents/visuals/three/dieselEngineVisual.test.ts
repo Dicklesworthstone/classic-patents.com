@@ -65,6 +65,8 @@ describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () 
     expect(result.pistonStrokePx).toBe(35);
     expect(result.cycleWrapDeg).toBe(720);
     expect(result.injectionStartDeg).toBe(355);
+    expect(result.camRatio).toBe(0.5);
+    expect(result.injectionCamStartRad).toBeCloseTo((355 * 0.5 * Math.PI) / 180, 10);
     expect(result.compressionGlowStartDeg).toBe(270);
     expect(result.compressionGlowEndDeg).toBe(450);
     expect(result.crankCy).toBe(260);

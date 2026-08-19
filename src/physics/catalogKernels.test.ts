@@ -10,7 +10,9 @@ import {
   corlissSchematicValve,
   davenportPolarityReversed,
   davenportSchematicArmature,
+  degToRad,
   delavalSchematicDiscY,
+  dieselCamWindows,
   edisonFoilGrooveX,
   edisonLeadScrewThreadX,
   edisonSchematicGlowOpacity,
@@ -18,6 +20,8 @@ import {
   edisonSchematicTerminal,
   einsteinSchematicVessel,
   engelbartSchematicWheel,
+  fourStrokeCycle,
+  fourStrokeIndexFromRad,
   gatlingMuzzleFlash,
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
@@ -121,6 +125,13 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
 
     expect(voltsToKv(1500)).toBe(1.5);
     expect(voltsToKv(0)).toBe(0);
+    expect(degToRad(180)).toBeCloseTo(Math.PI, 10);
+    expect(fourStrokeIndexFromRad(Math.PI * 2.1)).toBe(2);
+    expect(fourStrokeIndexFromRad(Math.PI * 3.5)).toBe(3);
+    expect(fourStrokeCycle(0).strokeIndex).toBe(0);
+    expect(fourStrokeCycle(Math.PI * 4.1).cyclePhaseRad).toBeCloseTo(Math.PI * 0.1, 10);
+    expect(dieselCamWindows().intakeCamEndRad).toBeCloseTo(Math.PI / 2, 10);
+    expect(dieselCamWindows().injectionCamStartRad).toBeCloseTo(degToRad(355 * 0.5), 10);
 
     // Piston displacement: 0 at 0 deg, 2*stroke at 180 deg
     expect(pistonSvgDisplacement(0, 50)).toBe(0);
@@ -179,6 +190,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.peakFiringBar).toBeGreaterThan(res.peakCompressionBar);
     expect(res.flywheelSvgR).toBe(80);
     expect(res.cycleWrapDeg).toBe(720);
+    expect(res.cycleWrapRad).toBeCloseTo(Math.PI * 4, 10);
+    expect(res.camRatio).toBe(0.5);
     expect(res.flywheelRimR).toBe(90);
     expect(res.crankCx).toBe(460);
     expect(res.rodOriginX).toBe(167);

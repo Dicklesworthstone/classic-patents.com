@@ -429,6 +429,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.336 Howe crankOmegaDegPerS / clothStudioWrap / stitchFrequencyHz. 3D no longer converts leftover rad×180/π %360 or cloth %2 privately.
 - [x] P5.337 Kevlar kevlarChainPath / chainOffsetYs. 2D no longer converts leftover idx%2 waviness or M 30 Q 100 privately.
 - [x] P5.338 Lamarr hopSoundStride. 3D no longer converts leftover rollStep%3 privately.
+- [x] P5.339 fourStrokeCycle / fourStrokeIndexFromRad / dieselCamWindows. Otto / Daimler / Diesel 3D no longer convert leftover 4π wraps, strokeIndex / π % 4, or cam 0.5 × 2π privately. Diesel injection now uses the same 355–390° crank seats as 2D.
 
 ## Explicitly out of scope
 
