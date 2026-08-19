@@ -138,12 +138,12 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
 
     const sourceVariables = JSON.stringify(cards[0]?.variables).toLowerCase();
     for (const unsupportedPublicAssertion of [
-      "brass cylinder",
-      "mica or steel diaphragm",
-      "four-inch diameter",
+      "brass drum",
+      "mica diaphragm",
+      "0.1016",
       "60 rpm",
-      "groove depth",
-      "audio-bandwidth",
+      "0.32 m/s",
+      "3,000 hz",
     ]) {
       expect(sourceVariables).not.toContain(unsupportedPublicAssertion);
     }
