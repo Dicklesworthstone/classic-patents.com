@@ -10119,7 +10119,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 38. John Ericsson Screw Propeller (US 588)
-  "us-588-ericsson-propeller": [
+  // Preserved non-serving research draft. It is deliberately excluded from the
+  // US 588 route because it assigned unsupported performance quantities to the grant.
+  "_legacy-unpublished-us-588-ericsson-propeller": [
     {
       id: "ericsson-propeller-axial-thrust",
       patentId: "us-588-ericsson-propeller",
@@ -10521,6 +10523,103 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 588 made oceanic steam navigation practical, ended the era of side-paddle steamers, and directly led to Ericsson's design of the revolutionary ironclad USS Monitor.",
+    },
+  ],
+
+  // 38. John Ericsson Screw Propeller (US 588), source-bounded public cards.
+  "us-588-ericsson-propeller": [
+    {
+      id: "ericsson-source-helical-development",
+      patentId: "us-588-ericsson-propeller",
+      title: "Printed Spiral-Plate Development",
+      category: "Source Geometry",
+      rawLatex: "P = 3D",
+      colorizedLatex: "\\textcolor{#059669}{P} = 3\\,\\textcolor{#2563eb}{D}",
+      plainEnglishSentence: [
+        { text: "The source's " },
+        { text: "one-turn axial advance", variableId: "pitch_p" },
+        { text: " is three times the " },
+        { text: "model-cylinder diameter", variableId: "diameter_d" },
+        {
+          text: ". Ericsson uses that developed spiral to set the plate pieces for the two hoops.",
+        },
+      ],
+      variables: [
+        {
+          id: "pitch_p",
+          symbol: "P",
+          name: "Printed Spiral Advance",
+          color: "emerald",
+          role: "Axial advance of the developed spiral in one turn, stated as three cylinder diameters.",
+          unit: "three diameters per turn",
+          dimension: "[L]",
+          explanation:
+            "The specification gives this construction relation for the model cylinder in Figure 2; it does not give a propeller diameter or a vessel speed.",
+        },
+        {
+          id: "diameter_d",
+          symbol: "D",
+          name: "Model-Cylinder Diameter",
+          color: "sapphire",
+          role: "Diameter of the Figure 2 cylinder, equal to the diameter of the two hoops.",
+          unit: "relative source dimension",
+          dimension: "[L]",
+          explanation:
+            "No numeric diameter is printed in US 588, so this is a geometric relation rather than a measured length.",
+        },
+      ],
+      pedagogicalNote:
+        "Figure 2 is a construction diagram. It lets the reader recover the direction and shape of plates 1 through 5 and 9 through 13 without inventing a blade angle, shaft rate, disk area, thrust, or efficiency.",
+      claimRef: 1,
+      historicalSignificance:
+        "This card records the grant's explicit geometric rule, not a modern performance calculation.",
+    },
+    {
+      id: "ericsson-source-opposed-shaft-motion",
+      patentId: "us-588-ericsson-propeller",
+      title: "Printed Opposed Motion of the Concentric Shafts",
+      category: "Source Mechanism",
+      rawLatex: "\\omega_b \\text{ opposes } \\omega_a, \\quad |\\omega_b| < |\\omega_a|",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{\\omega_b}\\,\\text{ opposes }\\,\\textcolor{#2563eb}{\\omega_a}, \\quad |\\textcolor{#dc2626}{\\omega_b}| < |\\textcolor{#2563eb}{\\omega_a}|",
+      plainEnglishSentence: [
+        { text: "Shaft " },
+        { text: "b", variableId: "shaft_b" },
+        { text: " turns in the contrary direction to shaft " },
+        { text: "a", variableId: "shaft_a" },
+        {
+          text: " and at a lower speed, so the two plate-carrying hoops turn oppositely at unequal velocities.",
+        },
+      ],
+      variables: [
+        {
+          id: "shaft_a",
+          symbol: "\\omega_a",
+          name: "Axis a Motion",
+          color: "sapphire",
+          role: "Rotation of the axis carrying hoop A.",
+          unit: "direction and relative speed only",
+          dimension: "[T^-1]",
+          explanation:
+            "The grant identifies this direction relation through cranks and unequal cog wheels, but prints no revolutions per minute.",
+        },
+        {
+          id: "shaft_b",
+          symbol: "\\omega_b",
+          name: "Axis b Motion",
+          color: "crimson",
+          role: "Opposed rotation of the hollow axis carrying hoop B at the lower stated speed.",
+          unit: "direction and relative speed only",
+          dimension: "[T^-1]",
+          explanation:
+            "This relation is the source statement; it does not prove torque cancellation, wake recovery, or a numerical gear ratio.",
+        },
+      ],
+      pedagogicalNote:
+        "The legal text separates this arrangement from the already known idea of oblique spiral planes moving in contrary directions. Claim 2 then calls for the greater speed of the outer series in the current produced by the other series.",
+      claimRef: 2,
+      historicalSignificance:
+        "This card keeps the visitor on the grant's stated kinematic relation rather than attributing later contra-rotating-propeller performance claims to US 588.",
     },
   ],
 

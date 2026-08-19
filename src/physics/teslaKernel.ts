@@ -14,6 +14,11 @@ export const TESLA_FIELD_DISPLAY_TICK_MS = 30;
 export const TESLA_FIELD_DISPLAY_TICK_S = TESLA_FIELD_DISPLAY_TICK_MS / 1000;
 /** SVG length of the unit B-vector on the 2D rotating-field face. */
 export const TESLA_B_VECTOR_SVG_SCALE = 60;
+export const TESLA_STATOR_POLE_SVG_R = 108;
+export const TESLA_TWO_PHASE_VECTOR_SVG_R = 52;
+export const TESLA_THREE_PHASE_VECTOR_SVG_R = 42;
+export const TESLA_STATOR_CENTER_X = 200;
+export const TESLA_STATOR_CENTER_Y = 150;
 export const TESLA_SCHEMATIC_STROBE_LEN = 28;
 export const TESLA_SCHEMATIC_LIVE_LEN = 44;
 export const TESLA_SCHEMATIC_WHITNEY_POS = 70;
@@ -88,6 +93,11 @@ export interface TeslaFig9State {
   schematicLiveLen: number;
   schematicWhitneyPos: number;
   schematicWhitneyB: number;
+  statorPoleSvgR: number;
+  twoPhaseVectorSvgR: number;
+  threePhaseVectorSvgR: number;
+  statorCenterX: number;
+  statorCenterY: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
 }
@@ -110,8 +120,66 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     schematicLiveLen: TESLA_SCHEMATIC_LIVE_LEN,
     schematicWhitneyPos: TESLA_SCHEMATIC_WHITNEY_POS,
     schematicWhitneyB: TESLA_SCHEMATIC_WHITNEY_B,
+    statorPoleSvgR: TESLA_STATOR_POLE_SVG_R,
+    twoPhaseVectorSvgR: TESLA_TWO_PHASE_VECTOR_SVG_R,
+    threePhaseVectorSvgR: TESLA_THREE_PHASE_VECTOR_SVG_R,
+    statorCenterX: TESLA_STATOR_CENTER_X,
+    statorCenterY: TESLA_STATOR_CENTER_Y,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
+  };
+}
+
+/** Stator-coil SVG seat on the Fig. 9 ring. Shared by 2D. */
+export function teslaStatorPole(
+  poleIndex: number,
+  coilCount: number,
+  radius = TESLA_STATOR_POLE_SVG_R,
+  cx = TESLA_STATOR_CENTER_X,
+  cy = TESLA_STATOR_CENTER_Y,
+) {
+  const a = (poleIndex * 2 * Math.PI) / Math.max(1, coilCount) - Math.PI / 2;
+  return {
+    a,
+    cx: Number((cx + Math.cos(a) * radius).toFixed(2)),
+    cy: Number((cy + Math.sin(a) * radius).toFixed(2)),
+    rotateDeg: Number(((a * 180) / Math.PI + 90).toFixed(2)),
+  };
+}
+
+/** Phase-contribution vectors that sum to the rotating field. Shared by 2D. */
+export function teslaPhaseVectors(omegaT: number, phaseCount: 2 | 3 = 2) {
+  if (phaseCount === 2) {
+    const r = TESLA_TWO_PHASE_VECTOR_SVG_R;
+    return [
+      { x: Number((Math.cos(omegaT) * r).toFixed(2)), y: 0, color: "#f59e0b" },
+      { x: 0, y: Number((Math.sin(omegaT) * r).toFixed(2)), color: "#3b82f6" },
+    ];
+  }
+  const r = TESLA_THREE_PHASE_VECTOR_SVG_R;
+  return [0, 1, 2].map((ph) => {
+    const mag = Math.sin(omegaT - (ph * 2 * Math.PI) / 3) * r;
+    const ax = Math.cos((ph * 2 * Math.PI) / 3);
+    const ay = Math.sin((ph * 2 * Math.PI) / 3);
+    const colors = ["#f59e0b", "#3b82f6", "#10b981"];
+    return {
+      x: Number((ax * mag).toFixed(2)),
+      y: Number((ay * mag).toFixed(2)),
+      color: colors[ph],
+    };
+  });
+}
+
+/** kHz / kV / MV leftovers shared by WASM and host coil steps. */
+export function teslaCoilSiUnits(
+  resonantFreqKhz: number,
+  inputKv: number,
+  secondaryPotentialMv: number,
+) {
+  return {
+    resonantFreqHz: Number((Math.max(0, resonantFreqKhz) * 1000).toFixed(0)),
+    inputVoltageVolts: Number((Math.max(0, inputKv) * 1000).toFixed(0)),
+    secondaryPotentialVolts: Number((Math.max(0, secondaryPotentialMv) * 1e6).toFixed(0)),
   };
 }
 
