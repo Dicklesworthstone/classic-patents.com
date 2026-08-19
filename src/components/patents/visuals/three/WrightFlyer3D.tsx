@@ -7,7 +7,12 @@ import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/f
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
-import { readWrightControls, stepWrightFlyerSi, WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
+import {
+  readWrightControls,
+  stepWrightFlyerSi,
+  wrightHoverY,
+  WRIGHT_PATENT_ID,
+} from "@/physics/wrightKernel";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -244,7 +249,11 @@ export function WrightFlyer3D() {
           aero.quaternion[3],
           aero.quaternion[0],
         );
-        flyerGroup.position.y = Math.sin(elapsed * 1.4) * 0.04;
+        flyerGroup.position.y = wrightHoverY(
+          elapsed,
+          siNow.hoverOmegaRadPerS,
+          siNow.hoverAmpM,
+        );
       } else {
         aero = identityAeroBody();
         flyerGroup.quaternion.identity();

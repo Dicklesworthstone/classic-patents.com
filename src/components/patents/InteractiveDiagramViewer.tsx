@@ -69,6 +69,21 @@ import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
 import { wrightSchematicPose, wrightWarpFromPointerNx } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
 
+const SCHEMATIC_VIEW_W = 400;
+const SCHEMATIC_VIEW_H = 300;
+const SCHEMATIC_CALLOUT_SPACE = 100;
+const SCHEMATIC_RETICLE_INNER_R = 18;
+const SCHEMATIC_RETICLE_OUTER_R = 28;
+const SCHEMATIC_RETICLE_HAIR = 36;
+
+/** Map 0–100 callout space onto the 400×300 schematic viewBox. */
+function schematicCalloutSvg(xPct: number, yPct: number) {
+  return {
+    x: (xPct / SCHEMATIC_CALLOUT_SPACE) * SCHEMATIC_VIEW_W,
+    y: (yPct / SCHEMATIC_CALLOUT_SPACE) * SCHEMATIC_VIEW_H,
+  };
+}
+
 interface InteractiveDiagramViewerProps {
   drawings: PatentDrawing[];
   patentNumber: string;
@@ -3250,7 +3265,7 @@ export function InteractiveDiagramViewer({
             style={{ transform: `scale(${zoomLevel})` }}
           >
             <svg
-              viewBox="0 0 400 300"
+              viewBox={`0 0 ${SCHEMATIC_VIEW_W} ${SCHEMATIC_VIEW_H}`}
               className="w-full h-full select-none"
               onPointerDown={(e) => {
                 if (!patentId?.includes("wright")) return;
@@ -3301,24 +3316,28 @@ export function InteractiveDiagramViewer({
               {/* Animated Radar Target Reticle on selected pin */}
               {activePin && (
                 <g className="pointer-events-none transition-opacity duration-300">
+                  {(() => {
+                    const pin = schematicCalloutSvg(activePin.x, activePin.y);
+                    return (
+                      <>
                   <circle
-                    cx={activePin.x * 4}
-                    cy={activePin.y * 3}
-                    r="18"
+                    cx={pin.x}
+                    cy={pin.y}
+                    r={SCHEMATIC_RETICLE_INNER_R}
                     fill="none"
                     stroke="#f59e0b"
                     strokeWidth="1.5"
                     strokeDasharray="3 3"
                     className="animate-spin"
                     style={{
-                      transformOrigin: `${activePin.x * 4}px ${activePin.y * 3}px`,
+                      transformOrigin: `${pin.x}px ${pin.y}px`,
                       animationDuration: "10s",
                     }}
                   />
                   <circle
-                    cx={activePin.x * 4}
-                    cy={activePin.y * 3}
-                    r="28"
+                    cx={pin.x}
+                    cy={pin.y}
+                    r={SCHEMATIC_RETICLE_OUTER_R}
                     fill="none"
                     stroke="#f59e0b"
                     strokeWidth="1"
@@ -3326,23 +3345,26 @@ export function InteractiveDiagramViewer({
                   />
                   {/* Crosshairs */}
                   <line
-                    x1={activePin.x * 4 - 36}
-                    y1={activePin.y * 3}
-                    x2={activePin.x * 4 + 36}
-                    y2={activePin.y * 3}
+                    x1={pin.x - SCHEMATIC_RETICLE_HAIR}
+                    y1={pin.y}
+                    x2={pin.x + SCHEMATIC_RETICLE_HAIR}
+                    y2={pin.y}
                     stroke="#f59e0b"
                     strokeWidth="1"
                     strokeOpacity="0.6"
                   />
                   <line
-                    x1={activePin.x * 4}
-                    y1={activePin.y * 3 - 36}
-                    x2={activePin.x * 4}
-                    y2={activePin.y * 3 + 36}
+                    x1={pin.x}
+                    y1={pin.y - SCHEMATIC_RETICLE_HAIR}
+                    x2={pin.x}
+                    y2={pin.y + SCHEMATIC_RETICLE_HAIR}
                     stroke="#f59e0b"
                     strokeWidth="1"
                     strokeOpacity="0.6"
                   />
+                      </>
+                    );
+                  })()}
                 </g>
               )}
             </svg>
