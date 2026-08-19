@@ -19,6 +19,7 @@ import {
   gatlingSchematicBarrelY,
   gliddenSchematicSpurX,
   grammeSchematicJunction,
+  hollerithSchematicDialX,
   hollerithSchematicPinX,
   kevlarSchematicLattice,
   mccormickSchematicReelArm,
@@ -334,17 +335,30 @@ function _renderHistoricalSchematic(
         const y2 = apparatus.statorCenterY - by * len;
         return (
           <g key={`${bx.toFixed(3)}-${by.toFixed(3)}-${opacity}`} opacity={opacity}>
-            <line x1="200" y1="150" x2={x2} y2={y2} stroke="#ef4444" strokeWidth={width} />
+            <line
+              x1={apparatus.statorCenterX}
+              y1={apparatus.statorCenterY}
+              x2={x2}
+              y2={y2}
+              stroke="#ef4444"
+              strokeWidth={width}
+            />
           </g>
         );
       };
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <circle cx="200" cy="150" r="95" strokeWidth="2.5" stroke="#60a5fa" />
           <circle
-            cx="200"
-            cy="150"
-            r="65"
+            cx={apparatus.statorCenterX}
+            cy={apparatus.statorCenterY}
+            r={apparatus.schematicStatorOuterR}
+            strokeWidth="2.5"
+            stroke="#60a5fa"
+          />
+          <circle
+            cx={apparatus.statorCenterX}
+            cy={apparatus.statorCenterY}
+            r={apparatus.schematicStatorInnerR}
             strokeWidth="1.5"
             stroke="#3b82f6"
             fill="#1e3a8a"
@@ -395,15 +409,20 @@ function _renderHistoricalSchematic(
             strokeWidth="2"
           />
           <circle
-            cx="200"
-            cy="150"
-            r="42"
+            cx={apparatus.statorCenterX}
+            cy={apparatus.statorCenterY}
+            r={apparatus.schematicRotorR}
             fill="#047857"
             fillOpacity="0.2"
             stroke="#10b981"
             strokeWidth="2"
           />
-          <circle cx="200" cy="150" r="8" fill="#10b981" />
+          <circle
+            cx={apparatus.statorCenterX}
+            cy={apparatus.statorCenterY}
+            r={apparatus.schematicHubR}
+            fill="#10b981"
+          />
           {strobe.map((s, i) =>
             arrow(
               s.bx,
@@ -517,12 +536,26 @@ function _renderHistoricalSchematic(
             stroke="#60a5fa"
             strokeWidth="2"
           />
-          <line x1="80" y1="110" x2="320" y2="110" stroke="#475569" />
-          <line x1="80" y1="150" x2="320" y2="150" stroke="#475569" />
-          <line x1="80" y1="190" x2="320" y2="190" stroke="#475569" />
-          <line x1="140" y1="70" x2="140" y2="240" stroke="#475569" />
-          <line x1="200" y1="70" x2="200" y2="240" stroke="#475569" />
-          <line x1="260" y1="70" x2="260" y2="240" stroke="#475569" />
+          {kinetics.schematicGridYs.map((y) => (
+            <line
+              key={`h-${y}`}
+              x1={kinetics.schematicCoreX0}
+              y1={y}
+              x2={kinetics.schematicCoreX1}
+              y2={y}
+              stroke="#475569"
+            />
+          ))}
+          {kinetics.schematicGridXs.map((x) => (
+            <line
+              key={`v-${x}`}
+              x1={x}
+              y1={kinetics.schematicCoreY0}
+              x2={x}
+              y2={kinetics.schematicCoreY1}
+              stroke="#475569"
+            />
+          ))}
           {/* Uranium fuel slug matrix with dynamic criticality color */}
           {Array.from({ length: kinetics.schematicSlugRows }, (_, row) =>
             Array.from({ length: kinetics.schematicSlugCols }, (_, col) => {
@@ -1749,9 +1782,19 @@ function _renderHistoricalSchematic(
             fill="#581c87"
             fillOpacity="0.2"
           />
-          <circle cx="140" cy="215" r="18" stroke="#c084fc" />
-          <circle cx="200" cy="215" r="18" stroke="#c084fc" />
-          <circle cx="260" cy="215" r="18" stroke="#c084fc" />
+          {Array.from({ length: hollerith.schematicDialCount }, (_, i) => (
+            <circle
+              key={i}
+              cx={hollerithSchematicDialX(
+                i,
+                hollerith.schematicDialOriginX,
+                hollerith.schematicDialPitchX,
+              )}
+              cy={hollerith.schematicDialY}
+              r={hollerith.schematicDialR}
+              stroke="#c084fc"
+            />
+          ))}
           <text x="200" y="270" fill="#c084fc" fontSize="9" textAnchor="middle">
             Solenoid Ratchet Dial Accumulators
           </text>
