@@ -798,13 +798,14 @@ export function stepKevlarContinuum(
   const sonic = Math.sqrt((elasticModulusGpa * 1e9) / 1440);
   const strainPct = (v / sonic) * 100;
   const tensileStrengthGpa = Number(Math.min(3.6, 0.5 + draw * 0.45).toFixed(2));
+  const alignmentPct = Math.min(100, Math.round((draw / 8.0) * 100));
   return {
     tensileStressMpa: Math.round((strainPct / 100) * elasticModulusGpa * 1000),
     tensileStrainPct: Number(strainPct.toFixed(2)),
     elasticModulusGpa,
     tensileStrengthGpa,
     sonicVelocityMps: Math.round(sonic),
-    alignmentPct: Math.min(100, Math.round((draw / 8.0) * 100)),
+    alignmentPct,
     residualStrengthGpa: Number((tensileStrengthGpa * (1 - load / 220)).toFixed(2)),
     impactDisplayMs: Math.round(Math.max(400, 1e6 / Math.max(50, v))),
     chainWiggleOmegaRadPerS: Number((draw >= 4 ? 2 : 1.5).toFixed(3)),
@@ -812,9 +813,7 @@ export function stepKevlarContinuum(
     shearRatePerS: Number((50 + ((draw - 2) / 7) * 950).toFixed(1)),
     shearAlignment: Number(Math.min(1, (50 + ((draw - 2) / 7) * 950) / 600).toFixed(3)),
     bulletDisplaySpeed: Number(((v / 400) * 15).toFixed(3)),
-    chainWaviness: Number(
-      ((100 - Math.min(100, Math.round((draw / 8.0) * 100))) * 0.25 * (1 - load / 180)).toFixed(3),
-    ),
+    chainWaviness: Number(((100 - alignmentPct) * 0.25 * (1 - load / 180)).toFixed(3)),
     chainEndX: Number((350 + load * 0.28).toFixed(2)),
   };
 }
