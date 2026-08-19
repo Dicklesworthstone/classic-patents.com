@@ -6,6 +6,7 @@ import {
   edisonSchematicGlowOpacity,
   hollerithCupSvg,
   hyattPolymerSvg,
+  kevlarSchematicLattice,
   marconiMastHeightFromHz,
   mccormickReelAngleDeg,
   nobelKieselguhrSvg,
@@ -52,6 +53,7 @@ import {
   stepZeppelinAirship,
   voltsToKv,
   wozniakBusCycle,
+  zeppelinSchematicCell,
 } from "./catalogKernels";
 
 describe("Catalog Kernels & Shared SI Stepping Functions", () => {
@@ -159,6 +161,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.groundSpeedMps).toBeGreaterThan(0);
     expect(res.reelToCutterRatio).toBeCloseTo(res.reelOmegaRadPerS / res.cutterOmegaRadPerS, 5);
     expect(mccormickReelAngleDeg(Math.PI, res.reelToCutterRatio)).toBeGreaterThan(0);
+    expect(res.reelArmCount).toBe(4);
+    expect(res.reelArmSvgLen).toBe(95);
   });
 
   test("Davenport electric motor computes torque and rotational speed from battery electromotive force", () => {
@@ -227,6 +231,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(res.grossLiftKg).toBeGreaterThan(10000);
     expect(res.netLiftKn).toBeDefined();
     expect(res.gasCellCount).toBe(17);
+    expect(res.schematicCellCount).toBe(9);
+    expect(zeppelinSchematicCell(1).cx).toBe(102);
     expect(res.gasCellSvgOriginX).toBe(-215);
     expect(res.gasCellSvgPitch).toBe(27);
   });
@@ -318,6 +324,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
   test("Kwolek Kevlar continuum computes anisotropic liquid crystal alignment and bullet arrest", () => {
     const res = stepKevlarContinuum(6.5, 450, 30);
     expect(res.alignmentPct).toBeGreaterThan(70);
+    expect(res.schematicLatticeRows).toBe(5);
+    expect(kevlarSchematicLattice(0, 1).cx).toBe(120);
     expect(res.tensileStrengthGpa).toBeGreaterThan(2);
   });
 

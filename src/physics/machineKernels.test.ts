@@ -2,10 +2,10 @@ import { describe, expect, test } from "bun:test";
 import {
   ccdGateSvgX,
   ccdSchematicGateX,
-  renoSchematicCleat,
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
   mergenthalerMatrixSvgX,
+  renoSchematicCleat,
   sholesTypebarPose,
   stepCcdWells,
   stepEngelbartResolver,

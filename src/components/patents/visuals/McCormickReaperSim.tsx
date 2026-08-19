@@ -133,7 +133,14 @@ export function McCormickReaperSim() {
               const armAngle = i * (360 / reaper.reelArmCount);
               return (
                 <g key={`reel-arm-${armAngle}`} transform={`rotate(${armAngle})`}>
-                  <line x1="0" y1="0" x2={reaper.reelArmSvgLen} y2="0" stroke="#8B5A2B" strokeWidth="3.5" />
+                  <line
+                    x1="0"
+                    y1="0"
+                    x2={reaper.reelArmSvgLen}
+                    y2="0"
+                    stroke="#8B5A2B"
+                    strokeWidth="3.5"
+                  />
                   <rect
                     x="85"
                     y="-12"
