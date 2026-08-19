@@ -1,6 +1,16 @@
 import { pasteurFermentationArchivalEdition } from "@/data/editions/pasteurFermentationEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = pasteurFermentationArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Pasteur manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const pasteurFermentationPatent: Patent = {
   id: "us-135245-pasteur-fermentation",
   patentNumber: "US 135,245",
@@ -29,6 +39,26 @@ export const pasteurFermentationPatent: Patent = {
     reviewedBy: "CopperLotus, manual facsimile review",
     reviewedAt: "2026-08-17",
     sourcePdfSha256: "7c9145e813b652e9da76472a8e6d0b2fa3088aeb1cea34b5ae3163f4d673a649",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "L. PASTEUR. Brewing Beer and Ale. No. 135,245. Patented Jan. 28, 1873.",
+        sourceRelationship:
+          "The single drawing sheet carries the printed inventor, title, number, date, Figs. 1–2, and execution signatures.",
+      },
+      {
+        page: 2,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship:
+          "The first specification page contains the formal masthead and begins the two-column description.",
+      },
+      {
+        page: 3,
+        exactSourceText: "to cool them and their contents.",
+        sourceRelationship:
+          "The second specification page continues the cooling sentence, then contains the claim, execution, and witnesses.",
+      },
+    ],
   },
   originalText: `LOUIS PASTEUR, OF PARIS, FRANCE.
 
@@ -108,8 +138,7 @@ The full manual transcription, including both figures, complete specification, o
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "Subjecting the wort to a process for the expulsion of the air and cooling it off, substantially as and for the purposes set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "The claim covers the paired process of removing air from wort and cooling it. The specification supplies the disclosed means: carbonic-acid gas in a closed vessel and exterior water spray.",
       keyInnovations: [

@@ -6,6 +6,8 @@ import {
   davenportElectricMotorArchivalEdition,
   davenportElectricMotorParallelReadings,
 } from "@/data/editions/davenportElectricMotorEdition";
+import { davenportElectricMotorPatent } from "@/data/patents/davenport-electric-motor";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 
 describe("davenportElectricMotorArchivalEdition", () => {
   test("is a complete manual edition pinned to the US 132 facsimile", () => {
@@ -36,6 +38,9 @@ describe("davenportElectricMotorArchivalEdition", () => {
     if (claim?.kind !== "claim") throw new Error("US 132 is missing its sole printed claim.");
     expect(claim.inlines.map((inline) => inline.text).join("")).toBe(
       "Applying magnetic and electro-magnetic power as a moving principle for machinery in the manner above described, or in any other substantially the same in principle.",
+    );
+    expect(davenportElectricMotorPatent.claims[0]?.originalText).toBe(
+      claim.inlines.map((inline) => inline.text).join(""),
     );
     expect(
       existsSync(
@@ -81,5 +86,17 @@ describe("davenportElectricMotorArchivalEdition", () => {
       ),
     ).toBe(true);
     expect(davenportElectricMotorParallelReadings[14]).toBeUndefined();
+  });
+
+  test("keeps all three visual facsimile pages aligned to their reviewed-ledger sections", () => {
+    const sourceAsset = davenportElectricMotorPatent.originalTextAsset;
+    if (!sourceAsset) throw new Error("US 132 is missing its reviewed transcription asset.");
+    const ledger = readFileSync(
+      join(process.cwd(), "public/patents/transcripts/us-132-davenport-electric-motor.txt"),
+      "utf8",
+    );
+    expect(validateReviewedTranscriptionPageAnchors(ledger, 3, sourceAsset.pageAnchors)).toEqual({
+      valid: true,
+    });
   });
 });

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { isArchivalEditionExplicitlyWithheld } from "../src/data/editions/publicationApproval";
 import { allPatents } from "../src/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
@@ -120,14 +121,16 @@ for (const patent of allPatents) {
     }
   }
 
-  if (patent.plainEnglishExplanation.mechanicalBreakdown.length < 3) {
+  const isWithheld = isArchivalEditionExplicitlyWithheld(pId);
+
+  if (!isWithheld && patent.plainEnglishExplanation.mechanicalBreakdown.length < 3) {
     console.warn(
       `⚠️ [${pId}] mechanicalBreakdown has fewer than 3 cards (${patent.plainEnglishExplanation.mechanicalBreakdown.length})`,
     );
     warnings++;
   }
 
-  if (patent.plainEnglishExplanation.scientificPrinciples.length < 2) {
+  if (!isWithheld && patent.plainEnglishExplanation.scientificPrinciples.length < 2) {
     console.warn(
       `⚠️ [${pId}] scientificPrinciples has fewer than 2 principles (${patent.plainEnglishExplanation.scientificPrinciples.length})`,
     );

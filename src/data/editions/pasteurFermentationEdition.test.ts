@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { parsePatentCatalog } from "@/data/patents/schema";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 import { pasteurFermentationPatent } from "../patents/pasteur-fermentation";
 import { pasteurFermentationArchivalEdition } from "./pasteurFermentationEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
@@ -20,6 +23,15 @@ describe("pasteurFermentationArchivalEdition", () => {
         .map((block) => block.number),
     ).toEqual([1]);
     expect(pasteurFermentationPatent.claims.map((claim) => claim.number)).toEqual([1]);
+    const sourceClaim = pasteurFermentationArchivalEdition.blocks.find(
+      (block) => block.kind === "claim" && block.number === 1,
+    );
+    if (sourceClaim?.kind !== "claim") {
+      throw new Error("Pasteur archival edition is missing its sole claim.");
+    }
+    expect(pasteurFermentationPatent.claims[0]?.originalText).toBe(
+      sourceClaim.inlines.map((inline) => inline.text).join(""),
+    );
   });
 
   test("provides a non-lossy authored companion for every and only paragraph block", () => {
@@ -65,5 +77,22 @@ describe("pasteurFermentationArchivalEdition", () => {
     expect(pasteurFermentationPatent.stats).toMatchObject({ totalClaims: 1, independentClaims: 1 });
     expect(pasteurFermentationPatent.filingDate).toBeNull();
     expect(parsePatentCatalog([pasteurFermentationPatent])).toHaveLength(1);
+  });
+
+  test("keeps the visual page-to-ledger sequence aligned with all three facsimile pages", () => {
+    const sourceAsset = pasteurFermentationPatent.originalTextAsset;
+    if (!sourceAsset) {
+      throw new Error("Pasteur canonical record is missing its reviewed source asset.");
+    }
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-135245-pasteur-fermentation-reviewed.txt",
+      ),
+      "utf8",
+    );
+    expect(validateReviewedTranscriptionPageAnchors(ledger, 3, sourceAsset.pageAnchors)).toEqual({
+      valid: true,
+    });
   });
 });

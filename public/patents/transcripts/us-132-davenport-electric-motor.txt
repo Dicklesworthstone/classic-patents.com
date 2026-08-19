@@ -2,6 +2,10 @@
 
 T. DAVENPORT. Electric Motor. No. 132. Patented Feb. 25, 1837.
 
+Drawing sheet: frames A, B, and C; galvanic battery D through I; copper plates K and L; galvanic magnets M through P; copper wire Q; shaft R; artificial magnets S and T; wooden wheel V; pole numbers 1 through 6; inventor and witness signatures.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
 UNITED STATES PATENT OFFICE.
 THOS. DAVENPORT, OF BRANDON, VERMONT.
 
@@ -14,8 +18,6 @@ To all whom it may concern:
 Be it known that I, THOMAS DAVENPORT, of the town of Brandon, in the county of Rutland, State of Vermont, have made a discovery, being an Application of Magnetism and Electro-Magnetism to Propelling Machinery, which is described as follows, reference being had to the annexed drawings of the same, making part of this specification.
 
 The machine for applying the power of magnetism and electro-magnetism is described as follows:
-
---- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
 
 The frame A may be made of a circular or any other figure, divided into two or more platforms, B and C, upon which the apparatus rests, of a size and strength adapted for the purpose intended.
 
@@ -31,9 +33,11 @@ There being a corresponding number of copper plates or conductors placed below t
 
 Now, in order to put the machine in motion, the galvanic magnet No. 2, being changed by the galvanic current passing from the copper plate of the battery along the conductors and wires, becomes a north pole, while at the same time the magnet No. 4 is changed by the galvanic current passing from the zinc plate of the battery, and becomes a south pole. Of course the south pole of the artificial magnet No. 6 will attract the north pole of the galvanic magnet No. 2 and will move it a quarter of a circle. The south pole of the galvanic magnet No. 4, being at the same time attracted by the north pole No. 5, causes the said magnet No. 4 also to perform a quarter of a circle. The momentum of the galvanic arms will carry them past the centers of the poles Nos. 5 and 6, at which time the several wires from the galvanic magnets will have changed their positions in relation to the copper plates or conductors.
 
+For instance, the north pole No. 2 having now become a south pole by reason of its wire being brought in contact with the conductors of the zinc plate, and No. 4 having in like manner become a north pole, its wire having changed its position from the zinc plate to the copper plate, the poles of the galvanic magnets are, of course, now repelled by the poles
+
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
 
-For instance, the north pole No. 2 having now become a south pole by reason of its wire being brought in contact with the conductors of the zinc plate, and No. 4 having in like manner become a north pole, its wire having changed its position from the zinc plate to the copper plate, the poles of the galvanic magnets are, of course, now repelled by the poles that before attracted them; and in this manner the operation is continued, producing a rotary motion in the shaft, which motion is conveyed to machinery for the purpose of propelling the same.
+that before attracted them; and in this manner the operation is continued, producing a rotary motion in the shaft, which motion is conveyed to machinery for the purpose of propelling the same.
 
 The discovery here claimed, and desired to be secured by Letters Patent, consists in-
 
