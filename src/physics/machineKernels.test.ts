@@ -3,6 +3,7 @@ import {
   ccdGateSvgX,
   ccdWellSvgDepth,
   LINOTYPE_CHARS_PER_LINE,
+  mergenthalerMatrixSvgX,
   sholesTypebarPose,
   stepCcdWells,
   stepEngelbartResolver,
@@ -88,6 +89,8 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(res.brinellHardness).toBe(24);
     expect(res.solidificationTimeMs).toBe(450);
     expect(res.slugSvgWidth).toBeGreaterThan(250);
+    expect(res.matrixCount).toBe(8);
+    expect(mergenthalerMatrixSvgX(0, res.matrixSvgOriginX, res.matrixSvgPitch)).toBe(5);
   });
 
   test("stepRenoEscalator computes inclined cleat deck throughput, motor torque, and comb-plate clearance", () => {
@@ -117,6 +120,7 @@ describe("Machine Kernels & Mechanical Kinematics", () => {
     expect(snapped.isPawlEngaged).toBe(true);
     expect(snapped.springDeflectionCm).toBe(0);
     expect(snapped.stoppingDistanceCm).toBe(4.5);
+    expect(snapped.railSvgPitch).toBe(20);
     expect(snapped.peakArrestForceKn).toBeGreaterThan(15);
     expect(snapped.pawlEngagementMs).toBe(38);
   });
