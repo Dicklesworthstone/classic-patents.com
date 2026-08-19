@@ -3,8 +3,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 // Mock next/navigation
 mock.module("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
   usePathname: () => "/",
   useRouter: () => ({ push: () => {}, replace: () => {} }),
+  notFound: () => {
+    throw new Error("NEXT_NOT_FOUND");
+  },
 }));
 
 import { PatentSearchPalette } from "./PatentSearchPalette";
