@@ -11,10 +11,18 @@ import {
   ZoomOut,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  edisonSchematicGlowFill,
+  edisonSchematicGlowOpacity,
+  stepColtRevolver,
+} from "@/physics/catalogKernels";
+import { FrankenSimEngine } from "@/physics/engine";
 import { stepFermiKinetics } from "@/physics/fermiKinetics";
-import { teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
+import { stepOtisElevator } from "@/physics/machineKernels";
+import { stepTeslaMotorFig9, teslaBAt, teslaFig4Strobe } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { materialProbe, whitneySamples } from "@/physics/weaveSurfaces";
+import { wrightSchematicPose } from "@/physics/wrightKernel";
 import type { PatentDrawing } from "@/types/patent";
 
 interface InteractiveDiagramViewerProps {
@@ -110,11 +118,11 @@ function renderHistoricalSchematic(
   const kind = resolveSchematicKind(svgType, figureNumber, patentNumber, patentId);
   switch (kind) {
     case "wright-flyer": {
-      const warp = ((params?.wingWarp ?? 8) / 15) * 12;
-      const rudderAngle = (params?.rudder ?? params?.rudderAngle ?? 4) * 0.7;
-      const coupled = (params?.coupled ?? 1) >= 0.5;
-      const adverse = !coupled && Math.abs(params?.wingWarp ?? 8) > 6;
-      const rasterSkew = ((params?.wingWarp ?? 8) / 15) * 8;
+      const pose = wrightSchematicPose(params);
+      const warp = pose.warpPx;
+      const rudderAngle = pose.rudderAngle;
+      const adverse = pose.adverse;
+      const rasterSkew = pose.rasterSkew;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <g
@@ -159,9 +167,9 @@ function renderHistoricalSchematic(
           {/* Vertical Struts with Universal Pivots */}
           <line
             x1="80"
-            y1={95 - warp * 0.7}
+            y1={95 - pose.strutDelta}
             x2="80"
-            y2={185 - warp * 0.7}
+            y2={185 - pose.strutDelta}
             strokeWidth="2"
             stroke="#bae6fd"
           />
@@ -169,16 +177,16 @@ function renderHistoricalSchematic(
           <line x1="240" y1="90" x2="240" y2="180" strokeWidth="2" stroke="#bae6fd" />
           <line
             x1="320"
-            y1={95 + warp * 0.7}
+            y1={95 + pose.strutDelta}
             x2="320"
-            y2={185 + warp * 0.7}
+            y2={185 + pose.strutDelta}
             strokeWidth="2"
             stroke="#bae6fd"
           />
           {/* Diagonal Guy-Wires */}
           <line
             x1="80"
-            y1={95 - warp * 0.7}
+            y1={95 - pose.strutDelta}
             x2="160"
             y2="180"
             strokeDasharray="3 2"
@@ -188,7 +196,7 @@ function renderHistoricalSchematic(
             x1="160"
             y1="90"
             x2="80"
-            y2={185 - warp * 0.7}
+            y2={185 - pose.strutDelta}
             strokeDasharray="3 2"
             stroke="#7dd3fc"
           />
@@ -196,13 +204,13 @@ function renderHistoricalSchematic(
             x1="240"
             y1="90"
             x2="320"
-            y2={185 + warp * 0.7}
+            y2={185 + pose.strutDelta}
             strokeDasharray="3 2"
             stroke="#7dd3fc"
           />
           <line
             x1="320"
-            y1={95 + warp * 0.7}
+            y1={95 + pose.strutDelta}
             x2="240"
             y2="180"
             strokeDasharray="3 2"
@@ -252,7 +260,7 @@ function renderHistoricalSchematic(
     }
     case "tesla-motor": {
       const freq = params?.frequency ?? 60;
-      const fieldIntensity = Math.min(1, Math.max(0.3, freq / 60));
+      const apparatus = stepTeslaMotorFig9(freq);
       const omegaT = ((params?.omegaT ?? 0) * Math.PI) / 180;
       const live = teslaBAt(omegaT, 2);
       const strobe = teslaFig4Strobe(2);
@@ -276,7 +284,7 @@ function renderHistoricalSchematic(
             strokeWidth="1.5"
             stroke="#3b82f6"
             fill="#1e3a8a"
-            fillOpacity={0.1 * fieldIntensity}
+            fillOpacity={apparatus.schematicFillOpacity}
           />
           <rect
             x="180"
@@ -332,15 +340,17 @@ function renderHistoricalSchematic(
             strokeWidth="2"
           />
           <circle cx="200" cy="150" r="8" fill="#10b981" />
-          {strobe.map((s, i) => arrow(s.bx, s.by, 28, 0.18 + i * 0.04, 1.2))}
-          {arrow(live.bx, live.by, 44, 1, 2.5)}
+          {strobe.map((s, i) =>
+            arrow(s.bx, s.by, apparatus.schematicStrobeLen, 0.18 + i * 0.04, 1.2),
+          )}
+          {arrow(live.bx, live.by, apparatus.schematicLiveLen, 1, 2.5)}
           {whitney.map((w, i) => (
             <line
               key={`wh-${i}`}
-              x1={200 + w.x * 70}
-              y1={150 - w.y * 70}
-              x2={200 + w.x * 70 + w.bx * 80}
-              y2={150 - w.y * 70 - w.by * 80}
+              x1={200 + w.x * apparatus.schematicWhitneyPos}
+              y1={150 - w.y * apparatus.schematicWhitneyPos}
+              x2={200 + w.x * apparatus.schematicWhitneyPos + w.bx * apparatus.schematicWhitneyB}
+              y2={150 - w.y * apparatus.schematicWhitneyPos - w.by * apparatus.schematicWhitneyB}
               stroke="#a78bfa"
               strokeWidth="1.2"
               opacity="0.7"
@@ -380,13 +390,13 @@ function renderHistoricalSchematic(
       );
     case "edison-bulb": {
       const filamentTemp = params?.filamentTemp ?? 2100;
-      const glowOpacity = Math.min(0.9, Math.max(0.2, (filamentTemp - 1800) / 1000));
+      const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
             d="M 150 190 C 120 160 120 100 160 70 C 200 40 240 70 280 100 C 280 160 250 190 230 210 L 170 210 Z"
             fill="#fef08a"
-            fillOpacity={glowOpacity * 0.3}
+            fillOpacity={edisonSchematicGlowFill(filamentTemp)}
             stroke="#eab308"
             strokeWidth="2"
           />
@@ -405,9 +415,10 @@ function renderHistoricalSchematic(
     }
     case "fermi-reactor": {
       const rodWithdrawal = params?.rodWithdrawal ?? 83.5;
-      const rodY = 20 + ((100 - rodWithdrawal) / 100) * 70;
       const modPurity = params?.moderatorPurity ?? 99.5;
-      const keff = stepFermiKinetics(rodWithdrawal, modPurity).kEffective;
+      const kinetics = stepFermiKinetics(rodWithdrawal, modPurity);
+      const rodY = kinetics.schematicRodY;
+      const keff = kinetics.kEffective;
       const fuelGlow = keff > 1.002 ? "#ef4444" : keff >= 0.998 ? "#10b981" : "#3b82f6";
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -1058,9 +1069,10 @@ function renderHistoricalSchematic(
       );
     case "colt-revolver": {
       const cockDeg = params?.cockingAngle ?? 45;
-      const rotDeg = (cockDeg / 45) * 72;
-      const isFullCock = cockDeg >= 44;
-      const boltRetractY = cockDeg > 2 && cockDeg < 44 ? 8 : 0;
+      const colt = stepColtRevolver({ cockingAngleDeg: cockDeg });
+      const rotDeg = colt.indexAngleDeg;
+      const isFullCock = colt.isLocked;
+      const boltRetractY = colt.schematicBoltRetractY;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Central Arbor Pin Axis */}
@@ -1188,9 +1200,10 @@ function renderHistoricalSchematic(
     }
     case "otis-elevator": {
       const tension = params?.cableTension ?? 100;
-      const isCut = tension < 15;
-      const springBow = isCut ? 0 : 15;
-      const pawlExt = isCut ? 15 : 4;
+      const otis = stepOtisElevator({ cableTensionPct: tension });
+      const isCut = otis.isSnapped;
+      const springBow = otis.schematicSpringBowPx;
+      const pawlExt = otis.schematicPawlExtPx;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Guide Rail Ratchets */}
@@ -1272,9 +1285,9 @@ function renderHistoricalSchematic(
     }
     case "westinghouse-air-brake": {
       const pipePsi = params?.trainPipePressure ?? 70;
-      const isRel = pipePsi >= 65;
-      const _isEmerg = pipePsi < 10;
-      const cylPsi = Math.max(0, Math.min(55, Math.round((70 - pipePsi) * 1.1)));
+      const wh = FrankenSimEngine.stepWestinghouseAirBrake({ trainPipePressurePsi: pipePsi });
+      const isRel = wh.valveState === "RELEASE";
+      const cylPsi = wh.brakeCylinderPressurePsi;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Continuous Train Pipe */}
@@ -1342,9 +1355,9 @@ function renderHistoricalSchematic(
             fill="#7f1d1d"
             fillOpacity="0.2"
           />
-          <rect x={190 + (cylPsi / 55) * 18} y="138" width="8" height="28" fill="#ef4444" />
+          <rect x={190 + wh.pistonStrokePx} y="138" width="8" height="28" fill="#ef4444" />
           <line
-            x1="200 + (cylPsi / 55) * 18"
+            x1={200 + wh.pistonStrokePx}
             y1="152"
             x2="280"
             y2="152"
@@ -2770,13 +2783,13 @@ export function InteractiveDiagramViewer({
 
   useEffect(() => {
     if (!isTeslaMotorSchematic) return;
-    const freq = livePhysicsParams.frequency ?? 60;
+    const apparatus = stepTeslaMotorFig9(livePhysicsParams.frequency ?? 60);
     let raf = 0;
     let last = performance.now();
     const loop = (now: number) => {
       const dt = (now - last) / 1000;
       last = now;
-      setTeslaOmegaDeg((prev) => (prev + freq * 4.444 * dt) % 360);
+      setTeslaOmegaDeg((prev) => (prev + apparatus.fieldDisplayOmegaDegPerS * dt) % 360);
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
