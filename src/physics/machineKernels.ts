@@ -16,6 +16,10 @@ export function stepCcdWells(
   cte: number;
   ctePct: number;
   packetOpacity: number;
+  wellSvgDepthBase: number;
+  wellSvgDepthSpan: number;
+  wellSvgDepthMax: number;
+  wellSvgDepths: [number, number, number];
   outputSignalMv: number;
   phasePeriodNs: number;
   phaseDisplayMs: number;
@@ -38,6 +42,14 @@ export function stepCcdWells(
     cte,
     ctePct: Number((cte * 100).toFixed(4)),
     packetOpacity: Number((0.35 + cte * 0.55).toFixed(4)),
+    wellSvgDepthBase: 12,
+    wellSvgDepthSpan: 65,
+    wellSvgDepthMax: 70,
+    wellSvgDepths: [
+      ccdWellSvgDepth(wells[0], fullWellElectrons),
+      ccdWellSvgDepth(wells[1], fullWellElectrons),
+      ccdWellSvgDepth(wells[2], fullWellElectrons),
+    ] as [number, number, number],
     outputSignalMv,
     // Real 3-phase gate step: T = 1/(3f).
     phasePeriodNs: Number((1000 / (f * 3)).toFixed(1)),
@@ -45,6 +57,21 @@ export function stepCcdWells(
     phaseDisplayMs: Math.max(40, Math.round(500 / f)),
     phaseDisplayS: Number((Math.max(40, Math.round(500 / f)) / 1000).toFixed(4)),
   };
+}
+
+/** Potential-well SVG depth from packet fill. Shared by 2D. */
+export function ccdWellSvgDepth(
+  charge: number,
+  fullWellElectrons: number,
+  base = 12,
+  span = 65,
+  maxDepth = 70,
+) {
+  return Number(
+    (base + Math.min(maxDepth, (Math.max(0, charge) / Math.max(1, fullWellElectrons)) * span)).toFixed(
+      2,
+    ),
+  );
 }
 
 export function stepHoweSewingMachine(
