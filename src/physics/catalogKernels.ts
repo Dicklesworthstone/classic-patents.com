@@ -12,6 +12,11 @@ export function rpmToOmega(rpm: number) {
   };
 }
 
+/** Registry anode voltages are volts; magnetron / dissector kernels take kilovolts. */
+export function voltsToKv(volts: number) {
+  return Number((Math.max(0, volts) / 1000).toFixed(3));
+}
+
 export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: number }) {
   const h = params.headMeters ?? 450;
   const rpm = params.runnerRpm ?? 600;
@@ -111,6 +116,8 @@ export function stepParsonsTurbine(params: { rotorRpm?: number; inletPressurePsi
     steamAdvancePerS: Number(((enthalpyKjKg / 550) * (rpm / 3000) * 12).toFixed(3)),
     steamOpacity: Number(Math.min(0.95, 0.25 + (shaftPowerKw / 14000) * 0.7).toFixed(3)),
     steamSwirlOmegaRadPerS: Number((rotorOmegaRadPerS * displaySlowdown * 0.5).toFixed(3)),
+    shaftPowerMw: Number((shaftPowerKw / 1000).toFixed(1)),
+    inletBar: Number((psi / 14.5038).toFixed(3)),
   };
 }
 
@@ -201,16 +208,23 @@ export function stepNobelDynamite(params: {
   };
 }
 
-export function stepWhitneyCottonGin(params: { crankRpm?: number }) {
+export function stepWhitneyCottonGin(params: { crankRpm?: number; seedGridClearance?: number }) {
   const rpm = params.crankRpm ?? 180;
-  const sawRpm = Math.round(rpm * 3.5);
-  const brushRpm = Math.round(rpm * 12.0);
+  const grateClearanceMm = params.seedGridClearance ?? 3.2;
+  const sawToCrankRatio = 3.5;
+  const brushToCrankRatio = 12.0;
+  const sawRpm = Math.round(rpm * sawToCrankRatio);
+  const brushRpm = Math.round(rpm * brushToCrankRatio);
   const crank = rpmToOmega(rpm);
   const saw = rpmToOmega(sawRpm);
   const brush = rpmToOmega(brushRpm);
   return {
     sawRpm,
     brushRpm,
+    sawToCrankRatio,
+    brushToCrankRatio,
+    grateClearanceMm,
+    grateStrokePx: Number((grateClearanceMm * 2.5).toFixed(2)),
     outputLbsPerDay: Math.round((rpm / 180) * 50),
     sawTipSpeedMps: Number(((sawRpm * 2 * Math.PI * 0.125) / 60).toFixed(2)),
     laborMultiplier: Math.round((rpm / 180) * 50),
@@ -244,6 +258,7 @@ export function stepMcCormickReaper(params: { forwardSpeedMph?: number }) {
     reelOmegaRadPerS: reel.omegaRadPerS,
     cutterOmegaRadPerS: cutter.omegaRadPerS,
     cutterOmegaDegPerS: cutter.omegaDegPerS,
+    reelBarPct: Number(Math.min(100, (reelRpm / 80) * 100).toFixed(1)),
   };
 }
 
@@ -323,6 +338,8 @@ export function stepHyattCelluloid(params: { steamTempC?: number; hydraulicPress
     ramHz: isMelted ? Number(Math.max(0.08, extrusionRateCmPerMin / 19).toFixed(3)) : 0.08,
     ramStrokeStudio: isMelted ? Number((0.12 + press * 0.03).toFixed(3)) : 0.02,
     billetOpacity: Number((0.3 + (transparencyPct / 100) * 0.6).toFixed(3)),
+    steamGlowOpacity: Number(Math.min(1, temp / 150).toFixed(3)),
+    ramStudioY: Number((70 + press * 2).toFixed(2)),
   };
 }
 
@@ -345,6 +362,7 @@ export function stepPasteurFermentation(params: {
     alcoholAbvPct: Number((5.2 * (yeastActivityPct / 100)).toFixed(1)),
     co2PressureBar: Number((1.8 * (yeastActivityPct / 100)).toFixed(2)),
     shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
+    bathGlowOpacity: Number(Math.min(1, pTemp / 120).toFixed(3)),
   };
 }
 
@@ -375,6 +393,7 @@ export function stepGliddenBarbedWire(params: {
     flyerOmegaRadPerS: flyer.omegaRadPerS,
     flyerOmegaDegPerS: flyer.omegaDegPerS,
     reelOmegaRadPerS: Number((flyer.omegaRadPerS * 0.2).toFixed(3)),
+    twistWaveAmpPx: Number((twists * 2).toFixed(2)),
   };
 }
 
@@ -406,7 +425,17 @@ export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeD
     mandrelOmegaDegPerS: mandrel.omegaDegPerS,
     stylusAmp: Number(((((vol / 75) * 25) / 1000) * 0.05).toFixed(5)),
     stylusOmegaRadPerS: 45,
+    axialDisplayWrapMm: 40,
   };
+}
+
+/** Cylinder-angle display travel along the US 200,521 lead screw, wrapped to the studio track. */
+export function phonographAxialTravelMm(
+  cylinderAngleDeg: number,
+  leadScrewPitchMm: number,
+  wrapMm = 40,
+) {
+  return Number((((cylinderAngleDeg / 360) * leadScrewPitchMm) % wrapMm).toFixed(1));
 }
 
 export function stepThomsonWelding(params: {
@@ -466,6 +495,7 @@ export function stepZeppelinAirship(params: {
     propellerDisplayOmegaRadPerS: Number(((propellerRpm / 60) * 8).toFixed(3)),
     hullStudioY: Number(((netLiftKn / 40) * 0.9).toFixed(4)),
     trimSvgX: Number(((trimM / 15) * 140 - 10).toFixed(2)),
+    grossLiftTonnes: Number((Math.round((grossBuoyancyKn / 9.81) * 1000) / 1000).toFixed(1)),
   };
 }
 
@@ -557,6 +587,7 @@ export function stepNoyceIC(params: {
     clockFrequencyMhz: clockMhz,
     clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz)).toFixed(2)),
     signalDisplaySpeed: Number((clockMhz * 0.45).toFixed(3)),
+    toneHz: Number((200 + clockMhz * 15).toFixed(1)),
   };
 }
 
@@ -590,6 +621,10 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
+    glowOpacity: Number(Math.min(1, Math.max(0.1, powerWatts / 150)).toFixed(3)),
+    lowResistanceGlowOpacity: Number(
+      Math.min(1, Math.max(0.1, lowResistanceWatts / 150)).toFixed(3),
+    ),
     bulbLightScale: 18,
   };
 }
@@ -733,6 +768,7 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     popcornHeatStepC: isOscillating ? Number(((rf * 1.8) / 450).toFixed(3)) : 0,
     heatTickMs: 200,
     spokeDisplayOmegaRadPerS: isOscillating ? Number(((2450 / 2450) * 4.5).toFixed(3)) : 0,
+    anodeKv: kv,
     spokeOpacity: isOscillating
       ? Number(Math.min(0.95, 0.25 + (Math.round(rf * 1.8) / 2000) * 0.7).toFixed(3))
       : 0,
@@ -776,6 +812,10 @@ export function stepKevlarContinuum(
     shearRatePerS: Number((50 + ((draw - 2) / 7) * 950).toFixed(1)),
     shearAlignment: Number(Math.min(1, (50 + ((draw - 2) / 7) * 950) / 600).toFixed(3)),
     bulletDisplaySpeed: Number(((v / 400) * 15).toFixed(3)),
+    chainWaviness: Number(
+      ((100 - Math.min(100, Math.round((draw / 8.0) * 100))) * 0.25 * (1 - load / 180)).toFixed(3),
+    ),
+    chainEndX: Number((350 + load * 0.28).toFixed(2)),
   };
 }
 
@@ -804,6 +844,7 @@ export function stepBardeenTransistor(
       (currentGainAlpha * (_ie / 2.5) * (holeDiffusionCoefficient / 49) * 3.5).toFixed(3),
     ),
     gapStudioUnits: Number((gap * 0.012).toFixed(4)),
+    pointGapSvgPx: Number((gap * 0.8).toFixed(2)),
   };
 }
 
@@ -842,6 +883,9 @@ export function stepMarconiRadio(
     wavePhaseRate: Number((Math.max(0.2, resonantFreqMhz) / 0.85).toFixed(3)),
     waveAdvancePx: Number(((Math.max(0.2, resonantFreqMhz) / 0.85) * 4).toFixed(3)),
     mastStudioScale: Number(Math.max(0.25, h / 88).toFixed(4)),
+    toneEnergy: Number(Math.min(1, peakRfPowerKw / 80).toFixed(3)),
+    mastSvgY: Number((210 - h * 1.6).toFixed(2)),
+    fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
   };
 }
 
@@ -866,6 +910,7 @@ export function stepColtRevolver(params: {
     powderGrains: Math.round((pMpa - 40) / 1.5 + 15),
     cycleDisplayMs: 800,
     recoilKick: Number((0.05 + (muzzleVelocityMps / 400) * 0.1).toFixed(4)),
+    recoilKickX: Number(((0.05 + (muzzleVelocityMps / 400) * 0.1) * 0.8).toFixed(4)),
   };
 }
 
@@ -911,6 +956,7 @@ export function stepGoodyearRubber(
       ? 0.005
       : Number(((temp / 140) * (isVulcanized ? 0.03 : 0.1)).toFixed(4)),
     clampStudioX: Number((4.5 * lambda).toFixed(4)),
+    chainStretchPx: Number(((lambda - 1) * 80).toFixed(2)),
   };
 }
 
@@ -927,6 +973,7 @@ export function stepEinsteinRefrigerator(params: {
   const coolingWatts = Math.round(qIn * cop);
   return {
     evapTempC: Number(evapTempC.toFixed(1)),
+    evapTempF: Math.round((evapTempC * 9) / 5 + 32),
     coolingWatts,
     cop,
     pressureAtm: press,
@@ -970,6 +1017,10 @@ export function stepLincolnBuoy(params: {
     bellowsFlarePx: Number(((infl / 100) * 40).toFixed(2)),
     bellowsMidPx: Number(((infl / 100) * 35).toFixed(2)),
     bellowsDropPx: Number(((infl / 100) * 45).toFixed(2)),
+    sandbarShoulderY: Number((240 - (8.0 - depth) * 12).toFixed(2)),
+    sandbarPeakY: Number((230 - (8.0 - depth) * 14).toFixed(2)),
+    sandbarInnerY: Number((245 - (8.0 - depth) * 14).toFixed(2)),
+    hullStudioY: Number((150 - (6.0 - hullDraftFt) * 12).toFixed(2)),
   };
 }
 
@@ -1002,6 +1053,9 @@ export function stepMaximMachineGun(params: {
     muzzleEnergyJoules,
     cycleIntervalMs,
     recoilStrokeMm: stroke,
+    recoilStrokeM: Number((stroke / 1000).toFixed(5)),
+    recoilStudioStroke: Number(Math.max(0.06, (stroke / 1000) * 5.0).toFixed(4)),
+    recoilSvgAmp: Number((stroke / 2).toFixed(2)),
     fireOmegaRadPerS: rpmToOmega(rpm).omegaRadPerS,
     fireOmegaDegPerS: rpmToOmega(rpm).omegaDegPerS,
     steamOpacity:

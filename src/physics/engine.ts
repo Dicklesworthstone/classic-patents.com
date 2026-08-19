@@ -249,6 +249,7 @@ export const FrankenSimEngine = {
           wasmRes.exhaust_velocity_mps >= 800
             ? Number(((wasmRes.exhaust_velocity_mps / 2000) * 35).toFixed(3))
             : 0,
+        chamberPressureAtm: Number((wasmRes.chamber_pressure_psi / 14.696).toFixed(1)),
       };
     }
 
@@ -278,6 +279,7 @@ export const FrankenSimEngine = {
       expansionRatio,
       plumeAdvancePerS:
         exhaustVelocityMps >= 800 ? Number(((exhaustVelocityMps / 2000) * 35).toFixed(3)) : 0,
+      chamberPressureAtm: Number((chamberPressurePsi / 14.696).toFixed(1)),
     };
   },
 
@@ -308,6 +310,7 @@ export const FrankenSimEngine = {
       collectorCurrentMa: cat.collectorCurrentMa,
       holeDriftSpeed: cat.holeDriftSpeed,
       gapStudioUnits: cat.gapStudioUnits,
+      pointGapSvgPx: cat.pointGapSvgPx,
     };
   },
 
@@ -372,6 +375,8 @@ export const FrankenSimEngine = {
       photocathodeCurrentUa: Number((Math.max(0, incidentLux) * 0.045).toFixed(1)),
       rasterAdvance: Number(Math.max(1, velocityMps / 2.1e7).toFixed(2)),
       electronDisplaySpeed: Number(((velocityMps / 2e7) * 45).toFixed(3)),
+      electronVelocityMegaMps: Number((velocityMps / 1e6).toFixed(1)),
+      relativisticPct: Number((relativisticBeta * 100).toFixed(1)),
     };
   },
 
@@ -412,6 +417,10 @@ export const FrankenSimEngine = {
           Math.min(2.2, Math.max(0.35, (wasmRes.streamer_length_inches * scale) / 48)).toFixed(2),
         ),
         streamerStudioLength: Number(((wasmRes.streamer_length_meters * scale) / 1.5).toFixed(3)),
+        toneEnergy: Number(
+          Math.min(1, Math.round(wasmRes.secondary_potential_mv * scale * 1000) / 1500).toFixed(3),
+        ),
+        toneHz: Number((wasmRes.resonant_freq_khz * 2).toFixed(1)),
       };
     }
 
@@ -431,6 +440,8 @@ export const FrankenSimEngine = {
       secondaryPotentialKv: Math.round(secondaryPotentialMv * 1000),
       streamerScale: Number(Math.min(2.2, Math.max(0.35, streamerLengthInches / 48)).toFixed(2)),
       streamerStudioLength: Number(((streamerLengthInches * 2.54) / 100 / 1.5).toFixed(3)),
+      toneEnergy: Number(Math.min(1, Math.round(secondaryPotentialMv * 1000) / 1500).toFixed(3)),
+      toneHz: Number((resonantFreqKhz * 2).toFixed(1)),
     };
   },
 
@@ -553,6 +564,7 @@ export const FrankenSimEngine = {
       powderGrains: cat.powderGrains,
       cycleDisplayMs: cat.cycleDisplayMs,
       recoilKick: cat.recoilKick,
+      recoilKickX: cat.recoilKickX,
     };
   },
 
@@ -617,6 +629,7 @@ export const FrankenSimEngine = {
       rollingOmegaRadPerS: Number(
         ((approachSpeedMps / wheelRadiusM) * (1 - clampRatio * 0.95)).toFixed(3),
       ),
+      wheelDisplayDegPerMph: 8,
     };
   },
 

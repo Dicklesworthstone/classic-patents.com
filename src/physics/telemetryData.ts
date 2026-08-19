@@ -33,6 +33,7 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
+  voltsToKv,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -671,7 +672,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const v = p.anodeVoltage ?? 2200;
       const rfWatts = p.rfPowerSetting ?? 800;
       const rf = FrankenSimEngine.stepSpencerMicrowave(
-        v / 1000,
+        voltsToKv(v),
         p.magneticFieldGauss ?? 1450,
         rfWatts,
       );
@@ -1846,8 +1847,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const vFreq = p.verticalFreqHz ?? 60;
       const lux = p.lightIntensityLux ?? 500;
       const gauss = FrankenSimEngine.farnsworthDeflectionGauss(i);
-      const beam = FrankenSimEngine.stepFarnsworthTv(v / 1000, gauss, lux);
-      const beamVelocity = (beam.electronVelocityMps / 1e6).toFixed(2);
+      const beam = FrankenSimEngine.stepFarnsworthTv(voltsToKv(v), gauss, lux);
+      const beamVelocity = beam.electronVelocityMegaMps.toFixed(1);
       const derivedScanLines = Math.round((hFreq * 1000) / vFreq);
       const photoUa = beam.photocathodeCurrentUa.toFixed(1);
 

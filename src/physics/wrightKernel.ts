@@ -35,6 +35,15 @@ export interface WrightSiState {
   cradleStudioX: number;
   leftBayTension: number;
   rightBayTension: number;
+  liftVectorLength: number;
+  dragVectorLength: number;
+  warpLiftN: number;
+  leftLiftN: number;
+  rightLiftN: number;
+  leftWingLiftPct: number;
+  rightWingLiftPct: number;
+  leftInducedDragNewtons: number;
+  rightInducedDragNewtons: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
@@ -69,6 +78,10 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
   const parasiticDragNewtons = q * 4.2;
   const totalDragNewtons = inducedDragNewtons + parasiticDragNewtons;
   const speedRatio = controls.airspeedMph / 30;
+  const warpLiftN = controls.wingWarpDeg * 18.5;
+  const leftLiftN = Math.max(0, liftNewtons / 2 - warpLiftN / 2);
+  const rightLiftN = Math.max(0, liftNewtons / 2 + warpLiftN / 2);
+  const liftSpan = Math.max(1, liftNewtons);
   const adverseYawNm = -controls.wingWarpDeg * 1.7 * speedRatio;
   const rudderYawNm = controls.rudderDeg * 3.8 * speedRatio;
   const netYawNm = adverseYawNm + rudderYawNm;
@@ -93,5 +106,18 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     cradleStudioX: Number((-0.35 + (controls.wingWarpDeg / 15) * 0.12).toFixed(4)),
     leftBayTension: Number(Math.max(0, liftNewtons / 2200 + controls.wingWarpDeg / 15).toFixed(4)),
     rightBayTension: Number(Math.max(0, liftNewtons / 2200 - controls.wingWarpDeg / 15).toFixed(4)),
+    liftVectorLength: Number(Math.max(0.5, liftNewtons / 1100).toFixed(4)),
+    dragVectorLength: Number(Math.max(0.3, totalDragNewtons / 400).toFixed(4)),
+    warpLiftN,
+    leftLiftN,
+    rightLiftN,
+    leftWingLiftPct: Number(((leftLiftN / liftSpan) * 100).toFixed(2)),
+    rightWingLiftPct: Number(((rightLiftN / liftSpan) * 100).toFixed(2)),
+    leftInducedDragNewtons: Number(
+      ((leftLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons).toFixed(3),
+    ),
+    rightInducedDragNewtons: Number(
+      ((rightLiftN / Math.max(1, liftNewtons)) ** 2 * inducedDragNewtons).toFixed(3),
+    ),
   };
 }

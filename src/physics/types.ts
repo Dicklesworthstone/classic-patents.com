@@ -77,6 +77,7 @@ export interface SemiconductorState {
   collectorCurrentMa: number;
   holeDriftSpeed?: number;
   gapStudioUnits?: number;
+  pointGapSvgPx?: number;
 }
 
 // 4. Thermodynamics, Heat & Phase Transport
@@ -103,6 +104,8 @@ export interface NuclearKineticsState {
   thermalPowerWatts: number; // W
   controlRodInsertionFraction: number;
   geigerIntervalMs: number;
+  geigerIntervalS: number;
+  thermalFluxE7: number;
   neutronDisplaySpeed: number;
   rodStudioY: number;
   fuelGlowIntensity: number;

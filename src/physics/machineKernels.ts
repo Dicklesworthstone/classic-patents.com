@@ -17,6 +17,7 @@ export function stepCcdWells(
   outputSignalMv: number;
   phasePeriodNs: number;
   phaseDisplayMs: number;
+  phaseDisplayS: number;
 } {
   const f = Math.max(0.1, clockMhz);
   const cte = Math.max(0.999, 0.99995 - clockMhz * 1e-5);
@@ -38,6 +39,7 @@ export function stepCcdWells(
     phasePeriodNs: Number((1000 / (f * 3)).toFixed(1)),
     // Visible bucket-brigade step. 500 ms/MHz ≡ 1500/(3f), not a leftover 2-phase 1/(2f).
     phaseDisplayMs: Math.max(40, Math.round(500 / f)),
+    phaseDisplayS: Number((Math.max(40, Math.round(500 / f)) / 1000).toFixed(4)),
   };
 }
 
@@ -206,6 +208,9 @@ export function stepRenoEscalator(params: {
   speedFpm: number;
   cleatOffset: number;
   cleatPitch: number;
+  sheaveOmegaRadPerS: number;
+  treadSvgAdvancePerS: number;
+  treadSvgWrapPx: number;
 } {
   const passengers = params.passengerCount ?? 30;
   const angleDeg = params.inclineAngleDeg ?? 25;
@@ -224,6 +229,9 @@ export function stepRenoEscalator(params: {
     speedFpm: Math.round((v * 60) / 0.3048),
     cleatOffset: (((v * elapsedS) % cleatPitch) + cleatPitch) % cleatPitch,
     cleatPitch,
+    sheaveOmegaRadPerS: Number((v / 0.45).toFixed(4)),
+    treadSvgAdvancePerS: Number((v * 40).toFixed(3)),
+    treadSvgWrapPx: 40,
   };
 }
 
@@ -241,6 +249,7 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   cabPayloadLbs: number;
   stoppingDistanceIn: number;
   springBowY: number;
+  cabFallPx: number;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
@@ -259,5 +268,6 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     cabPayloadLbs: Math.round((params.cabPayloadKg ?? 650) * 2.20462),
     stoppingDistanceIn: Number(((isSnapped ? 4.5 : 0) / 2.54).toFixed(1)),
     springBowY: isSnapped ? 0 : Number(((tensionPct / 100) * 0.22).toFixed(4)),
+    cabFallPx: Number(((isSnapped ? 4.5 : 0) * (12 / 4.5)).toFixed(2)),
   };
 }

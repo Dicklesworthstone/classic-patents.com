@@ -38,6 +38,7 @@ import {
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
+  voltsToKv,
 } from "./catalogKernels";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -305,7 +306,7 @@ export function materialProbe(
     };
   }
   if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
-    const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
+    const anodeKv = voltsToKv(params.anodeVoltage ?? 1500);
     const gauss = FrankenSimEngine.farnsworthDeflectionGauss(params.coilCurrent);
     const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return {
@@ -842,7 +843,7 @@ export function materialProbe(
   }
   if (patentId.includes("spencer") || patentId.includes("2495429")) {
     const rf = stepSpencerMicrowave(
-      (params.anodeVoltage ?? 2200) / 1000,
+      voltsToKv(params.anodeVoltage ?? 2200),
       params.magneticFieldGauss,
       params.rfPowerSetting,
     );
@@ -1038,7 +1039,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "H", min: 1, max: 20, live: kodak.hyperfocalM, unit: "m" }];
   }
   if (patentId.includes("farnsworth") || patentId.includes("1773980")) {
-    const anodeKv = (params.anodeVoltage ?? 1500) / 1000;
+    const anodeKv = voltsToKv(params.anodeVoltage ?? 1500);
     const gauss = FrankenSimEngine.farnsworthDeflectionGauss(params.coilCurrent);
     const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
@@ -1215,7 +1216,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId.includes("spencer") || patentId.includes("2495429")) {
     const rf = stepSpencerMicrowave(
-      (params.anodeVoltage ?? 2200) / 1000,
+      voltsToKv(params.anodeVoltage ?? 2200),
       params.magneticFieldGauss,
       params.rfPowerSetting,
     );

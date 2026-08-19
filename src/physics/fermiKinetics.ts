@@ -37,20 +37,24 @@ export function stepFermiKinetics(
       : Math.max(1, Math.round(20 * (kEffective / 0.99)));
   const reactivityDollars = Number(((kEffective - 1.0) / (kEffective * 0.0065)).toFixed(2));
   const reactorPeriodSeconds = reactivityDollars > 0 ? 0.08 / (reactivityDollars * 0.0065) : -999;
+  const thermalNeutronFluxNPerCm2S = thermalPowerWatts * 3.2e7;
+  const geigerIntervalMs =
+    reactorPeriodSeconds > 0
+      ? Math.max(50, Math.min(800, Math.round(reactorPeriodSeconds * 20)))
+      : 800;
 
   return {
     kEffective,
     reactivityDollars,
-    thermalNeutronFluxNPerCm2S: thermalPowerWatts * 3.2e7,
+    thermalNeutronFluxNPerCm2S,
     delayedNeutronFractionBeta: 0.0065,
     precursorConcentrationGroup1to6: [0.033, 0.219, 0.196, 0.395, 0.115, 0.042],
     reactorPeriodSeconds,
     thermalPowerWatts,
     controlRodInsertionFraction: 1 - rodWithdrawalPct / 100,
-    geigerIntervalMs:
-      reactorPeriodSeconds > 0
-        ? Math.max(50, Math.min(800, Math.round(reactorPeriodSeconds * 20)))
-        : 800,
+    geigerIntervalMs,
+    geigerIntervalS: Number(Math.max(0.05, geigerIntervalMs / 1000).toFixed(3)),
+    thermalFluxE7: Number((thermalNeutronFluxNPerCm2S / 1e7).toFixed(1)),
     // Studio neutron scatter: 4 units/s at k=1. Not a physical v_thermal.
     neutronDisplaySpeed: Number((kEffective * 4).toFixed(3)),
     rodStudioY: Number(
