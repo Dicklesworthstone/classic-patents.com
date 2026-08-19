@@ -82,9 +82,9 @@ export function KwolekKevlarSim() {
           <svg viewBox="0 0 380 200" className="w-full max-w-md h-auto select-none">
             {/* Molecular polymer chains */}
             {[-60, -30, 0, 30, 60].map((offsetY, idx) => {
-              const waviness = (100 - polymerAlignment) * 0.25 * (1 - tensileTension / 180);
+              const waviness = kevlar.chainWaviness;
               const yBase = 100 + offsetY;
-              const xEnd = 350 + tensileTension * 0.28;
+              const xEnd = kevlar.chainEndX;
               return (
                 <g key={idx}>
                   {/* PPTA Polymer Backbone — tension lengthens and straightens the chain */}

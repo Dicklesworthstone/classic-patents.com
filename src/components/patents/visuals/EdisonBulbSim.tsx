@@ -43,7 +43,7 @@ export function EdisonBulbSim() {
 
   const getGlowOpacity = () => {
     if (isBurnedOut) return 0;
-    return Math.min(1, Math.max(0.1, powerWatts / 150));
+    return resistanceMode === "high-resistance" ? bulb.glowOpacity : bulb.lowResistanceGlowOpacity;
   };
 
   return (
