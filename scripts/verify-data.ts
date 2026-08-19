@@ -21,6 +21,7 @@ import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
 import {
   validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "../src/data/patents/sourceTextValidation";
 import type { CuratedSpecificationBlock, CuratedSpecificationInlines } from "../src/types/patent";
@@ -34,8 +35,8 @@ const MAX_PDF_TEXT_BUFFER_BYTES = 64 * 1024 * 1024;
 const REQUIRED_ROOT_QA_WITHHOLDS = [
   "us-313224-mergenthaler-linotype",
   "us-395781-hollerith-tabulating",
+  "us-542846-diesel-engine",
   "us-586193-marconi-radio",
-  "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
   "us-3541541-engelbart-mouse",
   "us-3671542-kwolek-kevlar",
@@ -368,6 +369,19 @@ async function main() {
           const normalizedLedger = normalizeReviewedLedgerText(
             fs.readFileSync(reviewedLedgerPath, "utf8"),
           );
+          if (reviewedAsset.pageAnchors) {
+            const pageAnchorValidation = validateReviewedTranscriptionPageAnchors(
+              fs.readFileSync(reviewedLedgerPath, "utf8"),
+              reviewedAsset.pageCount,
+              reviewedAsset.pageAnchors,
+            );
+            if (!pageAnchorValidation.valid) {
+              fail(
+                pageAnchorValidation.error ??
+                  "manual reviewed-transcription page-anchor evidence is invalid.",
+              );
+            }
+          }
           for (const claim of patent.claims) {
             if (!normalizedLedger.includes(normalizeReviewedLedgerText(claim.originalText))) {
               fail(`Claim #${claim.number} is absent from the reviewed-transcription ledger.`);

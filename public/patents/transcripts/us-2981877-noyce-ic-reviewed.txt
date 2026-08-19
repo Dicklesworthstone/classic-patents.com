@@ -132,8 +132,8 @@ The invention in its broader aspects is not limited to the specific examples ill
 
 10. A semiconductor device comprising a body of extrinsic semiconductor having a surface, said body containing adjacent P-type and N-type regions with a dished junction therebetween, said junction having an edge that extends to said surface and there forms an elongated, closed figure, first and second contacts in the form of parallel metal strips adherent to said surface, said first contact being wholly within and said second contact wholly without said edge of the junction, an insulating layer consisting of oxide of said semiconductor on said surface and extending across said junction, and a metal strip adherent to said insulating layer and extending thereover across said junction to connect physically and electrically with said first contact.
 
-References Cited in the file of this patent:
-UNITED STATES PATENTS:
+References Cited in the file of this patent
+UNITED STATES PATENTS
 2,813,326. Liebowitz. Nov. 19, 1957.
 2,836,878. Shepard. June 3, 1958.
 2,842,723. Koch et al. July 8, 1958.

@@ -4,7 +4,11 @@ import {
 } from "@/data/editions/dieselEngineEdition";
 import type { Patent } from "@/types/patent";
 
-export const dieselEnginePatent: Patent = {
+// Retained research material for a later-engine interpretation. It is
+// deliberately non-exported: US 542,846 must not present later Diesel-cycle
+// dimensions, rates, materials, efficiency, or history as statements of the
+// 1895 grant while its full source edition is under independent repair.
+const _legacyUnpublishedDieselEnginePatent: Patent = {
   id: "us-542846-diesel-engine",
   patentNumber: "US 542,846",
   title: "Method of and Apparatus for Converting Heat into Work",
@@ -263,6 +267,112 @@ export const dieselEnginePatent: Patent = {
     "Maritime Propulsion",
     "Gilded Age",
   ],
+  stats: {
+    totalClaims: 3,
+    independentClaims: 3,
+  },
+};
+
+/**
+ * Source-bounded catalog record for the 1895 grant. The ten-page manuscript
+ * and its current ledger failed independent facsimile acceptance, so do not
+ * attach an `archivalEdition` or `originalTextAsset` until a fresh literal
+ * transcription, figures, and paragraph companions pass review.
+ */
+export const dieselEnginePatent: Patent = {
+  id: "us-542846-diesel-engine",
+  patentNumber: "US 542,846",
+  title: "Method of and Apparatus for Converting Heat into Work",
+  shortTitle: "Controlled-Combustion Heat-Engine Process",
+  subtitle: "Compression before gradual fuel admission and continued expansion",
+  inventors: ["Rudolf Diesel"],
+  inventorLocation: "Berlin, Germany",
+  grantDate: "1895-07-16",
+  filingDate: "1892-08-26",
+  era: "Gilded Age & Grid (1870–1900)",
+  category: "materials",
+  categoryLabel: "Heat-Engine Process & Apparatus",
+  summary:
+    "US 542,846 claims a process and apparatus for converting fuel heat into work. Its first claim compresses air, or air mixed with neutral gas or vapor, to a temperature above the fuel's ignition point; fuel is then introduced gradually during expansion, admission stops, and expansion continues without heat transfer. The grant also claims timed gradual fuel feed and a compressor-reservoir-expansion-chamber arrangement.",
+  heroQuote:
+    "The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and neutral gas or vapor, to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding.",
+  originalPdfUrl: "/patents/pdfs/us-542846-diesel-engine.pdf",
+  googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
+  usptoClassification: "Heat-engine process and apparatus; source classification review pending",
+  originalText: `UNITED STATES PATENT OFFICE.
+RUDOLF DIESEL, OF BERLIN, GERMANY.
+
+METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.
+
+SPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895.
+Application filed August 26, 1892, serial No. 444,246. (No model.)
+
+To all whom it may concern:
+Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, of which the following is a specification.
+
+My invention has reference to improvements in the methods of and apparatus for converting heat into work.
+
+[Curated source excerpt only. The complete ten-page manual source face remains withheld until its literal ledger, figures, annotations, and paragraph companions pass independent facsimile acceptance.]`,
+  plainEnglishExplanation: {
+    overview:
+      "The grant addresses how a heat engine should add fuel after air has first been compressed. Its legal process is not a description of a later standard diesel engine: it specifies a sequence of compression, gradual fuel admission during expansion, cut-off, and further expansion.",
+    coreMechanism:
+      "Claim 1 begins by compressing air, or air mixed with neutral gas or vapor, until the resulting temperature exceeds the proposed fuel's ignition point. Fuel then enters gradually as the gases expand against a resistance chosen to avoid an essential rise of temperature and pressure. Admission ends, and the gases expand further without heat transfer. Claims 2 and 3 add respectively timed feed-valve gear and a particular compressor, reservoir, and expansion-chamber combination. The source does not provide a modern engine's fixed compression ratio, injection pressure, geometry, shaft speed, efficiency, material specification, or performance curve.",
+    mechanicalBreakdown: [
+      {
+        title: "Compression Before Fuel Admission",
+        summary:
+          "The process claim calls for air, or air mixed with neutral gas or vapor, to be compressed before fuel is gradually introduced.",
+        technicalDetails:
+          "The required condition is qualitative and fuel-specific: compression must produce a temperature above the ignition point of the fuel to be consumed. The grant does not state one universal compression ratio, cylinder dimension, or pressure value.",
+        archaicTerm: "neutral gas or vapor",
+        modernEquivalent: "a non-fuel gas or vapor present with the compressed air",
+      },
+      {
+        title: "Timed Gradual Fuel Feed",
+        summary:
+          "Claim 2 combines a cylinder and piston with a valved air inlet, a gradual fuel feed, and operating means that open and close the feed during the working stroke.",
+        technicalDetails:
+          "The claim requires feed-valve timing, not a stated nozzle geometry, droplet size, air-blast pressure, rail pressure, or electronically controlled injector. Its legal limit is the gradual admission and cut-off arrangement described in the grant.",
+        archaicTerm: "valved fuel feed",
+        modernEquivalent: "timed fuel-admission valve",
+      },
+      {
+        title: "Compressor, Reservoir, and Expansion Chamber",
+        summary:
+          "Claim 3 names a combustion cylinder with cut-off, an air compressor, a reservoir connected to both compressor and cylinder, and an exhaust-gas expansion chamber.",
+        technicalDetails:
+          "These are a claimed apparatus combination. The document does not provide a receiver volume, compressor size, exhaust-flow rate, construction material, or power output for the arrangement.",
+        archaicTerm: "reservoir",
+        modernEquivalent: "compressed-gas storage vessel",
+      },
+    ],
+    scientificPrinciples: [],
+    whyItMattersToday:
+      "The grant is a primary source for a particular controlled-combustion process and several apparatus combinations. Broader claims about later diesel-engine hardware, performance, industry, or historical disputes require separate cited research and are not presented here as facts established by US 542,846.",
+  },
+  claims: _legacyUnpublishedDieselEnginePatent.claims,
+  drawings: [],
+  historicalContext: {
+    problemStatement:
+      "The specification contrasts its controlled fuel-admission process with engine cycles in which combustion after ignition is left to itself, producing a marked increase of pressure and temperature.",
+    priorArtLimitations: [
+      "The specification says earlier combustion was left uncontrolled after ignition.",
+      "It identifies high combustion temperature and hot exhaust as disadvantages of the earlier described cycle.",
+    ],
+    breakthroughInsight:
+      "The claimed sequence separates prior compression from gradual fuel admission during expansion, then requires cut-off and further expansion without heat transfer.",
+    patentWars: [],
+    civilizationalImpact:
+      "US 542,846 records a late-nineteenth-century heat-engine process and three claims. The source facsimile alone does not establish later performance figures, manufacturing details, market adoption, or litigation history.",
+    aftermath:
+      "The grant issued on July 16, 1895. Its full ten-page source edition remains withheld while the literal transcription, figure references, and non-lossy companion readings are repaired and independently reviewed.",
+    sideNotes: [
+      "The pinned facsimile contains theoretical cycle diagrams in Figs. 1 through 3 and apparatus drawings in Figs. 4 through 10.",
+      "Claim 1 is a process claim; Claims 2 and 3 are apparatus-combination claims.",
+    ],
+  },
+  tags: ["Rudolf Diesel", "Heat engines", "Combustion", "Patent source review"],
   stats: {
     totalClaims: 3,
     independentClaims: 3,

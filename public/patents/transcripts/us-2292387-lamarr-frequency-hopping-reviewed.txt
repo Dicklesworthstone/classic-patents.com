@@ -1,45 +1,44 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 7 ---
 
-Patented Aug. 11, 1942                                                2,292,387
+Aug. 11, 1942.                         H. K. MARKEY ET AL                         2,292,387
+SECRET COMMUNICATION SYSTEM
+Filed June 10, 1941.                                                     2 Sheets-Sheet 1
 
-                     UNITED STATES PATENT OFFICE
-                              2,292,387
-                     SECRET COMMUNICATION SYSTEM
+Fig. 1.
+Fig. 2.
+Fig. 3.
 
-            Hedy Kiesler Markey and George Antheil, Los Angeles, Calif.
-Application June 10, 1941, Serial No. 397,412. 6 Claims. (Cl. 250-2)
-
-                                 Fig. 1.
-                                 Fig. 2.
-                                 Fig. 3.
-                                 Fig. 4.
-
-[Drawing Sheet 1: Transmitter circuit, carrier oscillator, slotted record strip, and tuning motor synchronization.]
-
-Inventors:
 Hedy Kiesler Markey
 George Antheil
+By Lyon Lyon
+Attorneys
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 7 ---
 
-Aug. 11, 1942.                   H. K. MARKEY ET AL                  2,292,387
-                             SECRET COMMUNICATION SYSTEM
-Filed June 10, 1941                                                    2 Sheets-Sheet 2
+Aug. 11, 1942.                         H. K. MARKEY ET AL                         2,292,387
+SECRET COMMUNICATION SYSTEM
+Filed June 10, 1941.                                                     2 Sheets-Sheet 2
 
-                                 Fig. 5.
-                                 Fig. 6.
-                                 Fig. 7.
+Fig. 7.
+Fig. 4.
+Fig. 5.
+Fig. 6.
 
-[Drawing Sheet 2: Torpedo receiver circuitry, pneumatic selector head, steering solenoids, and decoy channel indicators.]
-
-Inventors:
 Hedy Kiesler Markey
 George Antheil
+By Lyon Lyon
+Attorneys
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 7 ---
 
-[FIGS. 4-7: Record strip, switching head, starting pin, and torpedo course
-Drawing sheet 2 of 2. Fig. 4 shows the record strip; Figs. 5 and 6 the record-responsive switch and its starting pin; Fig. 7 a plan of a torpedo-course correction.]
+Patented Aug. 11, 1942.                                               2,292,387
+
+UNITED STATES PATENT OFFICE.
+2,292,387
+SECRET COMMUNICATION SYSTEM
+Hedy Kiesler Markey, Los Angeles, and George Antheil, Manhattan Beach, Calif.
+Application June 10, 1941, Serial No. 397,412.
+6 Claims. (Cl. 250-2.)
 
 This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.
 

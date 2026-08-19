@@ -28,6 +28,18 @@ export const gliddenBarbedWirePatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "19c3874222e125ad1be8df9b1e4e59df4d7ff6452876588666a3c9ddf2cb0cc1",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "J. F. GLIDDEN.",
+        sourceRelationship: "Printed drawing sheet carrying Figures 1 through 3.",
+      },
+      {
+        page: 2,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship: "Patent-office specification, single claim, execution, and witnesses.",
+      },
+    ],
   },
   archivalEdition: gliddenBarbedWireArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE.
@@ -50,7 +62,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
       {
         title: "Two long fence-wire strands",
         summary:
-          "The patented fence wire has at least two strands, marked a and a-prime, that are twisted together after the spur wires are placed.",
+          "The patented fence wire has at least two strands, marked a and z, that are twisted together after the spur wires are placed.",
         technicalDetails:
           "The second strand is not merely extra tensile material. Its position in the twist clamps each short spur wire against the first strand. The claim makes that relationship explicit: the other strand is twisted upon its fellow and holds the spur in position.",
         archaicTerm: "fence-wire",
@@ -113,7 +125,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
       number: 1,
       isIndependent: true,
       originalText:
-        "A twisted fence-wire having the transverse spur-wire D bent at its middle portion about one of the wire strands a of said fence-wire, and clamped in position and place by the other wire strand a′, twisted upon its fellow, substantially as specified.",
+        "A twisted fence-wire having the transverse spur-wire D bent at its middle portion about one of the wire strands a of said fence-wire, and clamped in position and place by the other wire strand z, twisted upon its fellow, substantially as specified.",
       plainEnglish:
         "The protected combination is a two-strand twisted fence wire in which a short crosswise spur wire is bent around one strand and the other strand clamps it in place. The legal work of the claim is the locking relationship, not every fence that happens to have sharp projections.",
       keyInnovations: [

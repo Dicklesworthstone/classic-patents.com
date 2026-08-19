@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
+import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
 import {
   lamarrFrequencyHoppingArchivalEdition,
   lamarrFrequencyHoppingParallelReadings,
@@ -41,6 +42,14 @@ describe("US 2,292,387 manual source edition", () => {
     );
   });
 
+  test("retains a non-lossy, claim-specific reading for every substantial legal combination", () => {
+    for (const claim of lamarrPatent.claims) {
+      const sourceWords = claim.originalText.trim().split(/\s+/).length;
+      const readingWords = claim.plainEnglish.trim().split(/\s+/).length;
+      if (sourceWords >= 75) expect(readingWords / sourceWords).toBeGreaterThanOrEqual(0.3);
+    }
+  });
+
   test("pairs every source paragraph and points every figure reference at local crops", () => {
     const paragraphIndexes = lamarrFrequencyHoppingArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
@@ -67,6 +76,22 @@ describe("US 2,292,387 manual source edition", () => {
     }
   });
 
+  test("keeps every substantial source paragraph paired with a non-lossy reading", () => {
+    for (const [index, block] of lamarrFrequencyHoppingArchivalEdition.blocks.entries()) {
+      if (block.kind !== "paragraph") continue;
+      const sourceWords = block.inlines
+        .map((inline) => inline.text)
+        .join(" ")
+        .trim()
+        .split(/\s+/).length;
+      const readingWords = lamarrFrequencyHoppingParallelReadings[index]
+        .join(" ")
+        .trim()
+        .split(/\s+/).length;
+      if (sourceWords >= 100) expect(readingWords / sourceWords).toBeGreaterThanOrEqual(0.3);
+    }
+  });
+
   test("publishes a reviewed ledger and validates source text", () => {
     if (lamarrPatent.archivalEdition)
       expect(lamarrPatent.archivalEdition).toBe(lamarrFrequencyHoppingArchivalEdition);
@@ -77,6 +102,43 @@ describe("US 2,292,387 manual source edition", () => {
         pageCount: 7,
         sourcePdfSha256: lamarrFrequencyHoppingArchivalEdition.sourcePdfSha256,
       });
+
+    const asset = lamarrPatent.originalTextAsset;
+    if (asset?.kind !== "reviewed-transcription") {
+      throw new Error("US 2,292,387 must retain its reviewed transcription asset.");
+    }
+    const ledger = readFileSync(resolve(process.cwd(), `public${asset.url}`), "utf8");
+    expect(
+      validateReviewedTranscriptionPageAnchors(ledger, asset.pageCount, asset.pageAnchors),
+    ).toEqual({ valid: true });
+  });
+
+  test("preserves the printed formal matter and never substitutes editorial drawing summaries", () => {
+    expect(lamarrFrequencyHoppingArchivalEdition.blocks[0]).toMatchObject({
+      kind: "masthead",
+      lines: [
+        "Patented Aug. 11, 1942.",
+        "2,292,387.",
+        "UNITED STATES PATENT OFFICE.",
+        "SECRET COMMUNICATION SYSTEM",
+        "Hedy Kiesler Markey, Los Angeles, and George Antheil, Manhattan Beach, Calif.",
+        "Application June 10, 1941, Serial No. 397,412.",
+        "6 Claims. (Cl. 250-2.)",
+      ],
+    });
+
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-2292387-lamarr-frequency-hopping-reviewed.txt",
+      ),
+      "utf8",
+    );
+    expect(ledger).toContain("2 Sheets-Sheet 1");
+    expect(ledger).toContain("2 Sheets-Sheet 2");
+    expect(ledger).toContain("By Lyon Lyon");
+    expect(ledger).not.toContain("[Drawing Sheet");
+    expect(ledger).not.toContain("[FIGS. 4-7:");
   });
 
   test("keeps fabricated preamble and synthetic claims out of visitor-facing data", () => {

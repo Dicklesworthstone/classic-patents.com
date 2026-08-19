@@ -4,7 +4,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { gliddenBarbedWirePatent } from "@/data/patents/glidden-barbed-wire";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
 import {
   gliddenBarbedWireArchivalEdition,
   gliddenBarbedWireParallelReadings,
@@ -40,6 +43,9 @@ describe("US 157,124 manual source edition", () => {
     if (!asset) throw new Error("US 157,124 is missing its reviewed source ledger.");
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(ledger, 2)).toEqual({ valid: true });
+    expect(
+      validateReviewedTranscriptionPageAnchors(ledger, asset.pageCount, asset.pageAnchors),
+    ).toEqual({ valid: true });
     const normalizedLedger = normalized(
       ledger.replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, ""),
     );
@@ -96,6 +102,33 @@ describe("US 157,124 manual source edition", () => {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
+  });
+
+  test("keeps the source drawing-sheet header and printed z strand instead of editorial replacements", () => {
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-157124-glidden-barbed-wire-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const sourceFace = JSON.stringify(gliddenBarbedWireArchivalEdition.blocks);
+    const visible = JSON.stringify({
+      ledger,
+      sourceFace,
+      claims: gliddenBarbedWirePatent.claims,
+      explanation: gliddenBarbedWirePatent.plainEnglishExplanation,
+    });
+
+    expect(ledger).toContain("J. F. GLIDDEN.");
+    expect(ledger).toContain("FIG. 1.");
+    expect(ledger).toContain("FIG. 2.");
+    expect(ledger).toContain("FIG. 3.");
+    expect(ledger).not.toContain("[DRAWING SHEET]");
+    expect(visible).toContain("other wire strand z");
+    expect(visible).toContain("two strands, a and z");
+    expect(visible).not.toContain("a′");
+    expect(visible).not.toContain("a-prime");
   });
 
   test("removes invented claims, materials, and dimensions from the public record", () => {

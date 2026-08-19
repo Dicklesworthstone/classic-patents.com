@@ -4,7 +4,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { archivalEditionForPublication } from "@/components/patents/DualProjectionViewer";
 import { allPatents } from "@/data/patents";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
 
 const BARE_DRAWING_REFERENCE =
   /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|(?:section|division)\s+\d+)\b/i;
@@ -100,6 +103,18 @@ describe("manual edition coverage audit", () => {
         violations.push(
           `${patent.id}: ${ledger.error ?? "reviewed-transcription ledger is invalid."}`,
         );
+      }
+      if (asset.pageAnchors) {
+        const anchors = validateReviewedTranscriptionPageAnchors(
+          readFileSync(transcriptPath, "utf8"),
+          asset.pageCount,
+          asset.pageAnchors,
+        );
+        if (!anchors.valid) {
+          violations.push(
+            `${patent.id}: ${anchors.error ?? "reviewed-transcription page anchors are invalid."}`,
+          );
+        }
       }
 
       const sourcePdfPath = join(process.cwd(), "public", patent.originalPdfUrl.replace(/^\//, ""));

@@ -12,6 +12,10 @@ function normalizedLength(value: string): number {
   return value.replace(/[^\p{L}\p{N}]+/gu, "").length;
 }
 
+function normalizeAnchorText(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
 /**
  * Verifies the page ledger emitted by generate-pdf-text-transcripts.ts.
  *
@@ -90,6 +94,82 @@ export function validateReviewedTranscription(
     "reviewed transcription",
     true,
   );
+}
+
+/**
+ * Validates optional, manually authored facsimile-page anchors.
+ *
+ * A PDF scan cannot establish editorial fidelity by itself: text extraction
+ * is research evidence, not source truth. The editor therefore records a
+ * literal phrase seen during visual review and the page's source role. This
+ * gate makes that evidence executable by requiring the phrase to appear under
+ * the corresponding ledger marker. It catches page shifts without turning
+ * OCR or the PDF text layer into an authority.
+ */
+export function validateReviewedTranscriptionPageAnchors(
+  text: string,
+  expectedPageCount: number,
+  anchors:
+    | readonly {
+        page: number;
+        exactSourceText: string;
+        sourceRelationship: string;
+      }[]
+    | undefined,
+): SourceTextValidationResult {
+  const ledger = validateReviewedTranscription(text, expectedPageCount);
+  if (!ledger.valid) return ledger;
+
+  if (!anchors) {
+    return {
+      valid: false,
+      error: "The reviewed transcription has no manually authored facsimile page anchors.",
+    };
+  }
+  if (anchors.length !== expectedPageCount) {
+    return {
+      valid: false,
+      error: `The reviewed transcription has ${anchors.length} page anchor(s), expected ${expectedPageCount}.`,
+    };
+  }
+
+  const markers = [...text.matchAll(reviewedMarkerPattern)];
+  for (const [index, anchor] of anchors.entries()) {
+    const expectedPage = index + 1;
+    if (!Number.isSafeInteger(anchor.page) || anchor.page !== expectedPage) {
+      return {
+        valid: false,
+        error: `The reviewed transcription page-anchor ledger is invalid at anchor ${expectedPage}; expected source page ${expectedPage}.`,
+      };
+    }
+
+    const phrase = normalizeAnchorText(anchor.exactSourceText);
+    if (!phrase) {
+      return {
+        valid: false,
+        error: `The reviewed transcription source page ${expectedPage} has an empty exact-source anchor.`,
+      };
+    }
+    if (!anchor.sourceRelationship.trim()) {
+      return {
+        valid: false,
+        error: `The reviewed transcription source page ${expectedPage} has no source-page relationship.`,
+      };
+    }
+
+    const marker = markers[index];
+    const start = (marker?.index ?? 0) + (marker?.[0].length ?? 0);
+    const end = markers[index + 1]?.index ?? text.length;
+    const ledgerPage = normalizeAnchorText(text.slice(start, end));
+    if (!ledgerPage.includes(phrase)) {
+      return {
+        valid: false,
+        error: `The reviewed transcription source page ${expectedPage} does not contain its exact-source anchor.`,
+      };
+    }
+  }
+
+  return { valid: true };
 }
 
 /**

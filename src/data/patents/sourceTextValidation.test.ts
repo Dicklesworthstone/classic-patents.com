@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionCoverage,
+  validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "./sourceTextValidation";
 
@@ -98,5 +99,62 @@ describe("source-PDF text layer validation", () => {
     expect(source.error).toContain("begin");
     expect(reviewed.valid).toBeFalse();
     expect(reviewed.error).toContain("begin");
+  });
+
+  it("rejects a visually authored anchor when its ledger page has shifted", () => {
+    const shiftedLedger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "",
+      "2 Sheets-Sheet 1",
+      "",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "",
+      "UNITED STATES PATENT OFFICE.",
+    ].join("\n");
+
+    expect(
+      validateReviewedTranscriptionPageAnchors(shiftedLedger, 2, [
+        {
+          page: 1,
+          exactSourceText: "UNITED STATES PATENT OFFICE.",
+          sourceRelationship: "Patent-office masthead and opening specification.",
+        },
+        {
+          page: 2,
+          exactSourceText: "2 Sheets-Sheet 1",
+          sourceRelationship: "Printed drawing sheet 1 of 1.",
+        },
+      ]),
+    ).toEqual({
+      valid: false,
+      error: "The reviewed transcription source page 1 does not contain its exact-source anchor.",
+    });
+  });
+
+  it("accepts a complete, manually anchored reviewed ledger", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+      "",
+      "2 Sheets-Sheet 1",
+      "",
+      "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+      "",
+      "UNITED STATES PATENT OFFICE.",
+    ].join("\n");
+
+    expect(
+      validateReviewedTranscriptionPageAnchors(ledger, 2, [
+        {
+          page: 1,
+          exactSourceText: "2 Sheets-Sheet 1",
+          sourceRelationship: "Printed drawing sheet 1 of 1.",
+        },
+        {
+          page: 2,
+          exactSourceText: "UNITED STATES PATENT OFFICE.",
+          sourceRelationship: "Patent-office masthead and opening specification.",
+        },
+      ]),
+    ).toEqual({ valid: true });
   });
 });

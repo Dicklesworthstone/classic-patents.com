@@ -9,7 +9,7 @@ const claimDecoders: Readonly<Record<number, Omit<PatentClaim, "number" | "origi
   1: {
     isIndependent: true,
     plainEnglish:
-      "The principal apparatus claim covers a transmitting station and receiving station that each move a record past selective actuators, keeping the receiver tuned to the transmitter's changing carrier frequency.",
+      "This principal claim requires both ends of the radio link. The transmitter generates and sends one of several carrier frequencies, while its first moving record strip passes differently characterized longitudinal recordings over selective actuators that choose the carrier frequency. The receiver has tuning means for those same carrier frequencies and a second moving strip with its own selective actuators. The two strips move in synchronism, so their corresponding record positions keep the receiver tuned to the transmitter as the carrier changes over time.",
     keyInnovations: [
       "synchronized record strips",
       "selective frequency tuning",
@@ -27,13 +27,13 @@ const claimDecoders: Readonly<Record<number, Omit<PatentClaim, "number" | "origi
     isIndependent: false,
     dependsOn: [1],
     plainEnglish:
-      "This specifies a slotted ribbon and movable tuning elements selected by the lateral position of those slots.",
+      "This dependent claim chooses a particular physical form for claim 1's record: a ribbon with longitudinal slots placed at different lateral positions. Its reader has several movable elements, each associated with a different generator or receiver tuning state. The lateral position of a slot selects which element moves, and therefore which frequency-setting element is engaged.",
     keyInnovations: ["slotted ribbon", "movable tuning elements"],
   },
   4: {
     isIndependent: true,
     plainEnglish:
-      "This applies the synchronized frequency-changing system to a movable craft whose receiver turns received signals into movement control.",
+      "This second independent claim applies the synchronized record system to a control station and a movable craft. At the station, an oscillator and tuning means are selected by a first moving record strip, then transmit radio signals at the selected oscillator frequency. On the craft, a receiver and its tuning means are selected by a second record strip moving in synchronism with the first. The craft also has movement-determining mechanism that responds to received radio signals, joining frequency-selected reception to physical control rather than claiming a transmitter alone.",
     keyInnovations: [
       "movable craft control",
       "synchronized radio receiver",
@@ -94,6 +94,46 @@ export const lamarrPatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (MossyFortress)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "8204e975e2ea96f34973b87f3cab20d28604e52596c116af367facb74e319292",
+    pageAnchors: [
+      {
+        page: 1,
+        exactSourceText: "2 Sheets-Sheet 1",
+        sourceRelationship: "Printed drawing sheet 1 of 2; Figures 1 through 3.",
+      },
+      {
+        page: 2,
+        exactSourceText: "2 Sheets-Sheet 2",
+        sourceRelationship: "Printed drawing sheet 2 of 2; Figures 4 through 7.",
+      },
+      {
+        page: 3,
+        exactSourceText: "UNITED STATES PATENT OFFICE.",
+        sourceRelationship: "Patent-office masthead and opening specification page.",
+      },
+      {
+        page: 4,
+        exactSourceText: "Under the particular circumstances of Fig. 7,",
+        sourceRelationship:
+          "Specification continuation: torpedo course correction and transmitting station.",
+      },
+      {
+        page: 5,
+        exactSourceText: "It will be obvious that by so positioning the perforations",
+        sourceRelationship:
+          "Specification continuation: record-controlled tuning and receiving station.",
+      },
+      {
+        page: 6,
+        exactSourceText: "The switch 42 is closed to light the lamp 43",
+        sourceRelationship:
+          "Specification continuation: warning lamp, false channels, and claims 1–2.",
+      },
+      {
+        page: 7,
+        exactSourceText: "Apparatus as described in claim 1, in which said record strip comprises",
+        sourceRelationship: "Claims 3–6 and the inventors’ signatures.",
+      },
+    ],
   },
   originalText:
     "Reviewed excerpt only. The complete, hand-prepared source reading is available in the Original Patent Text view. This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.",

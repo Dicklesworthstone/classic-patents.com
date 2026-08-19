@@ -294,7 +294,6 @@ export const edisonPhonographArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     paragraph(text("I claim as my invention—")),
-    { kind: "heading", level: 2, text: "Claims" },
     claim(
       1,
       "The method herein specified of reproducing the human voice or other sounds by causing the sound-vibrations to be recorded, substantially as specified, and obtaining motion from that record, substantially as set forth, for the reproduction of the sound-vibrations.",
@@ -400,11 +399,11 @@ export const edisonPhonographParallelReadings: Readonly<Record<number, readonly 
   28: [
     "This is the exact transition from the descriptive specification to the numbered claims. Edison declares the following claims as his invention before Claim 1 begins.",
   ],
-  34: [
+  33: [
     "Edison signs the completed specification on December 15, 1877. That execution date is distinct from the stated December 24 application filing date and February 19 grant date.",
   ],
-  35: ["The initials and surname identify Edison as the signing inventor."],
-  36: [
+  34: ["The initials and surname identify Edison as the signing inventor."],
+  35: [
     "George T. Pinckney and Charles H. Smith are printed as witnesses to the signed instrument.",
   ],
 };

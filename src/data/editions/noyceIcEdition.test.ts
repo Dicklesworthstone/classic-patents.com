@@ -39,6 +39,16 @@ describe("US 2,981,877 manual source edition", () => {
     expect(JSON.stringify(noyceIcPatent.archivalEdition)).not.toContain("source-pdf-text-layer");
   });
 
+  test("retains the citation headings' source punctuation", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-2981877-noyce-ic-reviewed.txt`,
+      "utf8",
+    );
+    expect(ledger).toContain("References Cited in the file of this patent\nUNITED STATES PATENTS");
+    expect(ledger).not.toContain("References Cited in the file of this patent:");
+    expect(ledger).not.toContain("UNITED STATES PATENTS:");
+  });
+
   test("preserves the printed drawing-sheet formal matter and labels rather than editorial summaries", () => {
     const ledger = readFileSync(
       `${process.cwd()}/public/patents/transcripts/us-2981877-noyce-ic-reviewed.txt`,

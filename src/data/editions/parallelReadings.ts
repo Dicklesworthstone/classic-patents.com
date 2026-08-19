@@ -13,7 +13,6 @@ import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
-import { dieselEngineParallelReadings } from "./dieselEngineEdition";
 import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
 import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
@@ -26,6 +25,7 @@ import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
+import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
@@ -88,7 +88,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
-  "us-542846-diesel-engine": dieselEngineParallelReadings,
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
@@ -98,6 +97,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
+  "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,

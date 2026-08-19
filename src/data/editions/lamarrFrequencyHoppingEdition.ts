@@ -83,27 +83,29 @@ export const lamarrFrequencyHoppingArchivalEdition: CuratedSpecificationEdition 
     {
       kind: "masthead",
       lines: [
+        "Patented Aug. 11, 1942.",
+        "2,292,387.",
         "UNITED STATES PATENT OFFICE.",
-        "HEDY KIESLER MARKEY, OF LOS ANGELES, CALIFORNIA, AND GEORGE ANTHEIL, OF MANHATTAN BEACH, CALIFORNIA.",
-        "SECRET COMMUNICATION SYSTEM.",
-        "2,292,387. Patented Aug. 11, 1942.",
-        "Application June 10, 1941. Serial No. 397,412. 6 Claims. (Cl. 250-2.)",
+        "SECRET COMMUNICATION SYSTEM",
+        "Hedy Kiesler Markey, Los Angeles, and George Antheil, Manhattan Beach, Calif.",
+        "Application June 10, 1941, Serial No. 397,412.",
+        "6 Claims. (Cl. 250-2.)",
       ],
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIGS. 1-3",
-      title: "Transmitting station, receiving station, and starting circuit",
+      title: "2 Sheets-Sheet 1",
       description: text(
-        "Drawing sheet 1 of 2. H. K. Markey et al., Secret Communication System, filed June 10, 1941. Fig. 1 shows the transmitting station; Fig. 2 the receiving station; Fig. 3 the circuit that releases the two records together.",
+        "Aug. 11, 1942. H. K. MARKEY ET AL. 2,292,387. SECRET COMMUNICATION SYSTEM. Filed June 10, 1941.",
       ),
     },
     {
       kind: "figure-sheet",
       figureLabel: "FIGS. 4-7",
-      title: "Record strip, switching head, starting pin, and torpedo course",
+      title: "2 Sheets-Sheet 2",
       description: text(
-        "Drawing sheet 2 of 2. Fig. 4 shows the record strip; Figs. 5 and 6 the record-responsive switch and its starting pin; Fig. 7 a plan of a torpedo-course correction.",
+        "Aug. 11, 1942. H. K. MARKEY ET AL. 2,292,387. SECRET COMMUNICATION SYSTEM. Filed June 10, 1941.",
       ),
     },
     p([
@@ -475,21 +477,26 @@ export const lamarrFrequencyHoppingParallelReadings: Readonly<Record<number, rea
   ],
   5: [
     "The core scheme is two physically matched records. Each record selects the current RF channel at its own station. A player-piano roll offers many independently positionable tracks: 88 is an example from the contemporary piano mechanism, not a claim that every implementation must have 88 channels.",
+    "The records are long perforated paper rolls, one at the transmitter and one at the receiver. Their corresponding longitudinal rows choose tuning states from time to time; without the matching rolls, an opponent cannot tell which carrier will carry a control impulse. The grant also says the rolls may be substantial in length and driven slowly or quickly, so they can last for a torpedo-control operation.",
   ],
   6: [
     "Matching motor speed keeps the records in phase. The inventors also allow periodic radio synchronization, rather than requiring perfect free-running clocks for an entire mission.",
   ],
   7: [
     "These are the seven figures the specification will use: transmitter, receiver, release circuit, punched strip, pneumatic selector, pin detail, and a torpedo-course example.",
+    "More precisely, Fig. 1 is the transmitting station, Fig. 2 the receiving station, and Fig. 3 the circuit for starting both motors at once. Fig. 4 is the perforated strip, Fig. 5 its record-responsive switching head, Fig. 6 the perpendicular section through that head and strip, and Fig. 7 the torpedo-course diagram.",
   ],
   8: [
     "Figure 7 supplies the application context. The mother ship starts at 10a and finishes at 10b; the torpedo changes from paths 12 through 16 while the target moves from 17a to 17b.",
+    "The figure also distinguishes the target's position at the moment of impact, 17b, from its expected original-course position, 17c. That matters because the drawing is not a generic battle illustration: it introduces the moving-target and water-current problem that later steering commands address.",
   ],
   9: [
     "The same system can be operated from the ship or, if fitted with matching synchronous gear, an observing airplane.",
+    "The observer in airplane 18 may report the torpedo's course to mother ship 10a, or the airplane may itself control the torpedo if it carries the necessary synchronous transmitting equipment. The source describes those alternatives rather than asserting that a particular aircraft or observation method is required.",
   ],
   10: [
     "The plotted geometry explains why a guidance command is needed: target motion and water current make the original torpedo path miss. Radio commands change its path in successive increments.",
+    "At discharge, enemy ship 17 travels roughly parallel to the mother ship, so the torpedo is aimed ahead to account for the ship's speed and the water-current arrows 19. Once the ship turns, the initial path 12 no longer intercepts it. The claimed radio-control arrangement lets the operator redirect the torpedo successively through paths 13, 14, 15, and 16 to reach 17b.",
   ],
   11: [
     "Remote steering itself was old. The asserted problem is that a fixed-frequency control signal can be found and imitated by an enemy.",
@@ -499,54 +506,70 @@ export const lamarrFrequencyHoppingParallelReadings: Readonly<Record<number, rea
   ],
   13: [
     "The transmitter has a variable RF oscillator, modulator, amplifier, and antenna. Seven selectable capacitors give seven example oscillator frequencies; the exact oscillator circuitry is outside the claimed contribution.",
+    "The listed parts are oscillator 20, modulator 21, amplifier 22, and antenna 23. Seven tuning condensers 24a through 24g have different capacities, depicted by different plate spacings, and automatic switches 31 independently connect them to the oscillator. The inventors intentionally leave the internal construction of those conventional radio elements outside this particular invention.",
   ],
   14: [
     "Two separate audio-frequency modulation tones encode left and right commands. Key L uses 100 cycles; key R uses 500 cycles. The RF carrier is whatever frequency the record has selected at that instant.",
+    "Pressing either key closes main contacts 32 from oscillator 20 to modulator 21. L also closes contacts 33, supplying the 100-cycle oscillator 34; R instead closes contacts 35, supplying the 500-cycle oscillator 36. The modulated carrier then goes through amplifier 22 and antenna 23, so a steering command combines the currently selected carrier with one of the two printed tone labels.",
   ],
   15: [
     "The moving strip has eight longitudinal tracks. A through G select the seven tuning capacitors; H drives a warning lamp. The passage of holes over the control head converts the stored pattern into switching events.",
+    "Strip 37 travels from supply roll 38 across control head 39 to take-up spool 40, which constant-speed clock motor 41 drives. Rows A through G operate the seven switches 31 for condensers 24a through 24g. Row H instead controls auxiliary switch 42, which lights lamp 43 from battery 44, allowing the record to communicate a transmitter-side warning as well as tune the oscillator.",
   ],
   16: [
     "The illustrated reader is pneumatic. Paper over an orifice lets suction hold a piston up and keeps its electrical switch open. A hole admits air, releases suction, and lets a spring close that switch. This makes the strip a mechanical program for the oscillator tuning.",
+    "The strip runs over shoe 45, whose passages 46 line up with rows A through H. Each passage reaches suction manifold 48 through restricted passage 47, tube 49, and pump 50, while tube 51 joins it to a cylinder 52 and piston 53. The piston lies above insulated movable spring 54 of switch 31; shoulders 56 hold it up against cylinder block 57 until compression spring 53a is allowed to drive it down against contact spring 58.",
   ],
   17: [
     "A sequence of holes in different rows closes different capacitor switches in sequence. Because the sequence need not repeat periodically, a listener cannot simply time one hop and predict the next.",
+    "With solid paper over a passage, manifold suction lifts the piston against its compression spring and leaves the related switch open. A perforation admits air into passage 46, breaks the suction, and lets spring 53a close that switch. Thus the lateral row and longitudinal order of the holes select which condenser joins oscillator 20; the source emphasizes that the resulting sequence may be arbitrary rather than periodic.",
   ],
   18: [
     "The torpedo receiver selects the matching RF channel, amplifies and detects its modulation, then separates the 100-cycle and 500-cycle command tones. Separate rectifier-and-magnet paths turn each tone into a direction command.",
+    "At the receiver, antenna 60 feeds signal selector 61, amplifier 64, and detector 65. Four condensers 24'd through 24'g tune selector 61 to the receiver's four illustrated carrier states. The detector output reaches filters 166 and 566, tuned respectively to 100 and 500 cycles; rectifiers 168 and 568 energize magnets 169 and 569, which move common armature 72 onto contacts 170 or 570.",
   ],
   19: [
     "A 100-cycle command pulls a pawl through one ratchet tooth, turning the rudder one fixed increment left. A brief radio pulse therefore produces a discrete steering step rather than requiring a continuous radio command.",
+    "When key L's 100-cycle tone reaches filter 166, magnet 169 closes armature 72 on contact 170 and energizes solenoid 175 from battery 74. Its plunger 176 pulls pawl 177 into teeth 178 on rudder wheel 79. Spring 180 normally clears the pawl and cam face 181 guides it into engagement; wheel 79 turns rudder post 82 and rudder 83 left by one tooth, then the released mechanism returns to neutral.",
   ],
   20: [
     "The 500-cycle path is mechanically mirrored so that its pawl turns the rudder right. A friction brake holds the resulting rudder position between commands while still allowing the next pawl stroke.",
+    "A 500-cycle command passes filter 566 and energizes magnet 569, so armature 72 closes contact 570 and drives solenoid 575. Pawl 577 engages oppositely directed teeth 578 and therefore shifts rudder 83 right instead of left. Brake drum 84, brake-band 85, pinion 86, and gear segment 87 resist unwanted rudder motion after either step but do not prevent a pawl from making the next commanded change.",
   ],
   21: [
     "The receiver has a duplicate strip and matching clock motor. Its four selectable receiver channels follow four of the transmitter's seven example channels. The patent deliberately permits the receiver record to be identical even when some rows are unused.",
+    "Receiver contacts 31' are actuated by record strip 37', control head 39', and clock motor 41', which runs at the same speed as transmitter motor 41. The receiving head and switches use the same Fig. 5 and Fig. 6 construction. Although the source illustrates only condensers 24'd through 24'g at the receiver, it expressly says the receiver strip may be identical to the transmitter strip and unused rows can be rendered ineffective separately.",
   ],
   22: [
     "The two records must begin together as well as run at equal speed. Pins hold both at their special starting holes; releasing both solenoids when the torpedo is fired starts the patterns in phase.",
+    "At each station, pin 100 moves vertically in head 45 and enters special starting hole 101 in its strip. Compression spring 102 normally urges the pin down, clear of moving paper; energized solenoid 103 and plunger 104 instead hold it up in the hole. This explicit start-stop arrangement complements the equal-speed motors, because matching rates alone would not correct an initial phase offset.",
   ],
   23: [
     "The tethered firing circuit holds both pins engaged before launch. Breaking the conductors at firing de-energizes both solenoids, releasing transmitter and torpedo records together.",
+    "Before firing, the source places transmitter apparatus from Fig. 1 on the mother ship and receiver apparatus from Fig. 2 on the torpedo. Battery 105 energizes the two solenoids 103 in series through conductors 106 running between them, holding both strips at their starting holes. Launch breaks those conductors, interrupts the series circuit, and releases both strips at the same instant to begin their motion in phase.",
   ],
   24: [
     "Three transmitter channels have no matching receiver channel. They are decoys: pulses sent there can be heard by an enemy but cannot move the torpedo. The lamp marks the moments when a real command would not be received.",
   ],
   25: [
     "Row H makes the lamp illuminate during changes between usable channels and throughout decoy channels. The operator can intentionally emit decoy pulses while knowing the lamp means they will not steer the torpedo.",
+    "An H-row aperture over its associated passage 46 closes switch 42 and lights lamp 43. The holes begin and end each D, E, F, or G perforation and span the spaces between them, when one or more A, B, or C perforations may select false channels. The lamp therefore warns during every useful-channel transition as well as while the transmitter remains on a receiver-inaccessible channel.",
   ],
   26: [
     "The eight rows in the drawing are a compact example. The specification expressly points to 88-row player-piano records and allows identical transmitter and receiver strips with receiver passages blocked for false channels.",
+    "The grant permits the receiver's false-signal perforations either to be absent or to remain on an otherwise identical strip. In the latter case, passages 46 in the receiving head can be blocked, or the matching receiver contact springs 54 and 58 can be left disconnected. These alternatives preserve the common physical record while ensuring that rows assigned only to decoys cannot tune a usable receiver channel.",
   ],
   27: [
     "Short, incremental commands reduce interception opportunities. An intercepted pulse also does not disclose whether it was a real steering command or a decoy.",
+    "One momentary closure of L or R moves rudder 83 by one increment, so the system need not transmit a long control signal. The patent says a short impulse may go undiscovered; even if an adversary receives it, the adversary cannot tell whether it was effective or a false signal. It also states that the record sequence can avoid ever tuning the receiver to the same frequency twice.",
   ],
   28: [
     "More modulation tones can control more than one steering axis. The inventors give 100, 500, 1,000, and 2,000 cycles as an example of four command channels, enough for two rudders.",
+    "The illustrated torpedo uses one steering dimension, but the source says a larger number of modulation frequencies and appropriate receiver filters can command additional functions. Its concrete example assigns 100, 500, 1,000, and 2,000 cycles to four modulation waves, allowing two rudders and therefore vertical as well as horizontal control for an aerial torpedo or another craft. It does not prescribe a maximum number of control channels.",
   ],
   29: [
     'The system is not limited to the displayed modulation method. Here, "carrier wave" means the unmodulated RF wave when phase or frequency modulation is used. The legal scope is then stated in the claims.',
+    "The displayed arrangement uses the conventional modulation method, but the specification expressly allows frequency modulation and phase modulation. For those alternatives, its claim language uses carrier wave to mean the underlying unmodulated RF wave. The inventors then reserve the formal boundary of their invention to the appended claims rather than to every construction detail shown in the drawings.",
   ],
   30: [
     "Various other departures from the exact system described will be apparent to those skilled in the art, and the invention is therefore to be limited only as set forth in the appended claims.",

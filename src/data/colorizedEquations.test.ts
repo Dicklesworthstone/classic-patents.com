@@ -110,6 +110,30 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Diesel US 542,846 on its printed Claim 1 process sequence", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "diesel-source-claim-one-controlled-combustion-sequence",
+    ]);
+    expect(cards[0]?.claimRef).toBe(1);
+    expect(cards[0]?.rawLatex).toContain("gradual fuel admission during expansion");
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "18:1",
+      "680",
+      "65",
+      "210",
+      "common rail",
+      "brake thermal efficiency",
+      "droplet diameter",
+      "65 bar",
+      "cylinder dimension",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
   test("keeps Carrier US 808,897 on its printed wet-plate separator relation", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-808897-carrier-air-conditioner"];
     expect(cards.map((card) => card.id)).toEqual(["carrier-source-wet-plate-separator"]);

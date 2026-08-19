@@ -81,6 +81,11 @@ describe("edisonPhonographArchivalEdition", () => {
       expect(ledger).toContain(sourceLine);
       expect(editionText).toContain(sourceLine);
     }
+    expect(
+      edisonPhonographArchivalEdition.blocks.some(
+        (block) => block.kind === "heading" && block.text === "Claims",
+      ),
+    ).toBe(false);
     expect(edisonPhonographParallelReadings[12]?.join(" ")).toContain("Pin 2");
     expect(edisonPhonographParallelReadings[12]?.join(" ")).not.toContain("Pin Z");
 

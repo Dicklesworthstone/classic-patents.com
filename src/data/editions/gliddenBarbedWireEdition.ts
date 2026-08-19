@@ -72,17 +72,18 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "FIGURES 1-3",
-      title: "Glidden's fence section, section view, and barb detail",
+      title: "Wire-Fences",
       description: [
-        { kind: "text", text: "The printed drawing sheet contains " },
-        figure("Fig. 1"),
-        { kind: "text", text: ", " },
-        figure("Fig. 2"),
-        { kind: "text", text: ", and " },
-        figure("Fig. 3"),
         {
           kind: "text",
-          text: ". Each reference opens a crop made directly from the pinned facsimile.",
+          text: "J. F. GLIDDEN. Wire-Fences. No. 157,124. Patented Nov. 24, 1874. ",
+        },
+        figure("Fig. 1", "FIG. 1. "),
+        figure("Fig. 2", "FIG. 2. "),
+        figure("Fig. 3", "FIG. 3."),
+        {
+          kind: "text",
+          text: " The drawing sheet carries the inventor, attorney, and witness signatures as handwriting; the pinned facsimile remains their authoritative visual record.",
         },
       ],
     },
@@ -132,7 +133,7 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
       },
     ]),
     p(
-      "The fence-wire is composed at least of two strands, a and a′, which are designed to be twisted together after the spur-wires have been arranged in place.",
+      "The fence-wire is composed at least of two strands, a and z, which are designed to be twisted together after the spur-wires have been arranged in place.",
     ),
     paragraph([
       { kind: "text", text: "The letter D indicates the " },
@@ -143,7 +144,7 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
       },
     ]),
     p(
-      "The spurs having thus been arranged on one of the wire strands are fixed in position and place by approaching the other wire strand a′ on the side of the bend from which the spurs extend, and then twisting the two strands a a′ together by means of the wire key above mentioned or otherwise. This operation locks each spur wire at its allotted place, and prevents it from moving therefrom in either direction. It clamps the bend of the spur-wire upon the wire a, thereby holding it against rotary vibration. Finally, the spur ends extending out between the strands on each side, and where the wires are more closely approximated in the twist, form shoulders or stops, s, which effectually prevent such rotation in either direction.",
+      "The spurs having thus been arranged on one of the wire strands are fixed in position and place by approaching the other wire strand z on the side of the bend from which the spurs extend, and then twisting the two strands a z together by means of the wire key above mentioned or otherwise. This operation locks each spur wire at its allotted place, and prevents it from moving therefrom in either direction. It clamps the bend of the spur-wire upon the wire a, thereby holding it against rotary vibration. Finally, the spur ends extending out between the strands on each side, and where the wires are more closely approximated in the twist, form shoulders or stops, s, which effectually prevent such rotation in either direction.",
     ),
     p(
       "Should the spurs, from the untwisting of the strands, become loose and easily movable on their bearings, a few turns of the twisting-key will make them firm, besides straightening up the fence-wire.",
@@ -151,7 +152,7 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
     p("What I claim as my invention, and desire to secure by Letters Patent, is—"),
     claim(
       1,
-      "A twisted fence-wire having the transverse spur-wire D bent at its middle portion about one of the wire strands a of said fence-wire, and clamped in position and place by the other wire strand a′, twisted upon its fellow, substantially as specified.",
+      "A twisted fence-wire having the transverse spur-wire D bent at its middle portion about one of the wire strands a of said fence-wire, and clamped in position and place by the other wire strand z, twisted upon its fellow, substantially as specified.",
     ),
     p("JOSEPH F. GLIDDEN."),
     p("Witnesses: G. L. CHAPIN. J. H. ELLIOTT."),
@@ -176,7 +177,7 @@ export const gliddenBarbedWireParallelReadings: Readonly<Record<number, readonly
     "Letters A, B, and C identify the fence wire, fence posts, and twisting key in the drawing. The key is a shank passing through the post. Its eye holds the end of the fence wire; its outer thumb-piece supplies a handhold and bears against the post so tension cannot pull the key inward through its hole.",
   ],
   7: [
-    "The fence wire has at least two strands, called a and a-prime. Glidden arranges the spur wires first and twists the two long strands together afterward. That sequence is essential: the second strand becomes the clamp that fixes the spur wire against the first strand.",
+    "The fence wire has at least two strands, called a and z. Glidden arranges the spur wires first and twists the two long strands together afterward. That sequence is essential: the second strand becomes the clamp that fixes the spur wire against the first strand.",
   ],
   8: [
     "Each spur wire is a short piece bent at its middle around strand a. Several turns produce a longer coil, or bearing-head, rather than a single loose loop. That longer bearing is intended to keep the projecting ends from being shaken sideways or pressed down against the fence wire by cattle.",

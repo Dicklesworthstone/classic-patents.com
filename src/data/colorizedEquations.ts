@@ -5810,7 +5810,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 
   // 19. Rudolf Diesel Internal Combustion Engine (US 542,846)
-  "us-542846-diesel-engine": [
+  "_legacy-unpublished-us-542846-diesel-engine": [
     {
       id: "diesel-carnot-ideal-efficiency",
       patentId: "us-542846-diesel-engine",
@@ -15619,6 +15619,61 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 };
+
+// The public US 542,846 route renders only this source-bounded Claim 1 card.
+// The retained legacy cards above describe a later performance model and must
+// remain unreachable until a source-specific visual and manuscript pass review.
+ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"] = [
+  {
+    id: "diesel-source-claim-one-controlled-combustion-sequence",
+    patentId: "us-542846-diesel-engine",
+    title: "Claim 1: Controlled Fuel Admission During Expansion",
+    category: "Source-Bound Heat-Engine Process",
+    rawLatex:
+      "\\text{compressed air} \\rightarrow \\text{gradual fuel admission during expansion} \\rightarrow \\text{cut-off} \\rightarrow \\text{further expansion without heat transfer}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{\\text{compressed air}} \\rightarrow \\textcolor{#d97706}{\\text{gradual fuel admission during expansion}} \\rightarrow \\textcolor{#dc2626}{\\text{cut-off}} \\rightarrow \\textcolor{#059669}{\\text{further expansion without heat transfer}}",
+    plainEnglishSentence: [
+      { text: "Claim 1 requires " },
+      {
+        text: "air compressed above the proposed fuel's ignition point",
+        variableId: "compressed_air",
+      },
+      { text: ". Fuel is then admitted " },
+      { text: "gradually while the gases expand", variableId: "controlled_admission" },
+      { text: ", its supply is discontinued, and the gases expand further without heat transfer." },
+    ],
+    variables: [
+      {
+        id: "compressed_air",
+        symbol: "compressed air",
+        name: "Air compressed before fuel admission",
+        color: "sapphire",
+        role: "Claim 1 requires compression to a temperature above the ignition point of the fuel to be consumed.",
+        unit: "Claim 1 process condition",
+        dimension: "source-stated condition",
+        explanation:
+          "The grant supplies a required relation between compression temperature and the chosen fuel's ignition point. It does not supply a universal numerical compression ratio or pressure.",
+      },
+      {
+        id: "controlled_admission",
+        symbol: "gradual admission",
+        name: "Fuel admission during expansion",
+        color: "amber",
+        role: "Fuel is gradually introduced while the compressed gases expand against a resistance that prevents an essential increase of temperature and pressure.",
+        unit: "Claim 1 process step",
+        dimension: "source-stated sequence",
+        explanation:
+          "This is the process limitation at the center of Claim 1. It is not a source-backed injection pressure, atomization model, fixed timing value, or performance calculation.",
+      },
+    ],
+    pedagogicalNote:
+      "This card is limited to the ordered Claim 1 process. The ten-page manuscript is under independent source repair, so the site does not infer a numerical diesel cycle, compression ratio, pressure, temperature, speed, material, efficiency, power output, or later engine configuration from this grant.",
+    claimRef: 1,
+    historicalSignificance:
+      "The card identifies the legal sequence printed in Claim 1 rather than presenting a later-engine performance narrative as if it were a measurement in US 542,846.",
+  },
+];
 
 /**
  * Universal fallback builder that constructs a valid ColorizedEquation from

@@ -14,8 +14,8 @@ import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "./publicationApproval";
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-313224-mergenthaler-linotype",
   "us-395781-hollerith-tabulating",
+  "us-542846-diesel-engine",
   "us-586193-marconi-radio",
-  "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
   "us-3541541-engelbart-mouse",
   "us-3671542-kwolek-kevlar",
@@ -43,6 +43,7 @@ describe("root editorial publication holds", () => {
       "us-313224-mergenthaler-linotype",
       "us-395781-hollerith-tabulating",
       "us-3541541-engelbart-mouse",
+      "us-542846-diesel-engine",
     ]) {
       const patent = allPatents.find((candidate) => candidate.id === patentId);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();

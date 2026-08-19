@@ -62,15 +62,13 @@ describe("US 2,524,035 manual source edition", () => {
     );
     expect(recordSource).not.toContain("Array.from({ length: 40 }");
     expect(recordSource).not.toContain("const claimText =");
-    expect(recordSource).not.toContain("claimText(");
-    expect(recordSource).not.toContain("block.inlines.map");
-    expect(recordSource).toContain("const MANUALLY_REVIEWED_CLAIM_TEXT");
+    expect(recordSource).not.toContain("const MANUALLY_REVIEWED_CLAIM_TEXT");
+    expect(recordSource).toContain("function manualClaimText");
+    expect(recordSource).toContain("bardeenTransistorArchivalEdition.blocks.find");
     expect(recordSource).not.toContain("Semiconductor carrier control");
     expect(recordSource).not.toContain(`Claim \${number} limitation`);
     for (const claim of bardeenTransistor2524035Patent.claims) {
-      expect(recordSource).toContain(
-        `originalText: MANUALLY_REVIEWED_CLAIM_TEXT[${claim.number}],`,
-      );
+      expect(recordSource).toContain(`originalText: manualClaimText(${claim.number}),`);
       expect(claim.keyInnovations.length).toBeGreaterThan(0);
       expect(claim.keyInnovations).not.toContain(`Claim ${claim.number} limitation`);
     }
