@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildEdisonIndicatorModel } from "./edisonIndicatorModel";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "overview" | "bulb" | "galvanometer" | "regulation";
@@ -22,6 +22,7 @@ const CAMERA_PRESETS: Record<
 
 export default function EdisonIndicator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
@@ -45,15 +46,15 @@ export default function EdisonIndicator3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const studio = createThreeStudioScene({ container });
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: CAMERA_PRESETS.overview.pos,
+      targetPos: CAMERA_PRESETS.overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
     const model = buildEdisonIndicatorModel();
     studio.scene.add(model.root);
-
-    // Initial camera placement
-    const initialPreset = CAMERA_PRESETS.overview;
-    studio.camera.position.set(...initialPreset.pos);
-    studio.camera.lookAt(...initialPreset.target);
-    studio.controls.target.set(...initialPreset.target);
 
     let rafId = 0;
     const animate = () => {
@@ -74,11 +75,14 @@ export default function EdisonIndicator3D() {
       cancelAnimationFrame(rafId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 
   const setView = (preset: CameraPreset) => {
     setActivePreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   return (

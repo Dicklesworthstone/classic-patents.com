@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
+import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
+
+const CAMERA_OVERVIEW = {
+  pos: [10, 8, 14] as [number, number, number],
+  target: [3, 0.4, 0] as [number, number, number],
+};
 
 export function MaimanRubyLaser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,6 +23,14 @@ export function MaimanRubyLaser3D() {
   const rodLength = params.rodLengthCm ?? 5.0;
   const outputReflectivity = params.outputMirrorReflectivity ?? 0.92;
   const temperature = params.crystalTemperatureKelvin ?? 300;
+
+  const live = useLiveSimParams({
+    pumpEnergyJoules: pumpEnergy,
+    flashDurationMs: flashDuration,
+    rodLengthCm: rodLength,
+    outputMirrorReflectivity: outputReflectivity,
+    crystalTemperatureKelvin: temperature,
+  });
 
   const metrics = stepMaimanRubyLaser({
     pumpEnergyJoules: pumpEnergy,
@@ -40,96 +53,49 @@ export function MaimanRubyLaser3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 800;
-    const height = container.clientHeight || 500;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: CAMERA_OVERVIEW.pos,
+      targetPos: CAMERA_OVERVIEW.target,
+      environmentStyle: "studio",
+    });
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x070b14);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(10, 8, 14);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
-
-    const orbitControls = new OrbitControls(camera, renderer.domElement);
-    orbitControls.enableDamping = true;
-    orbitControls.dampingFactor = 0.05;
-    orbitControls.target.set(3, 0.4, 0);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight1.position.set(12, 18, 15);
-    scene.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.6);
-    dirLight2.position.set(-10, -5, -10);
-    scene.add(dirLight2);
-
-    // Grid Floor
-    const grid = new THREE.GridHelper(30, 30, 0x334155, 0x1e293b);
-    grid.position.y = -1.8;
-    scene.add(grid);
-
-    // 3D Laser Model
     const laserModel = createMaimanRubyLaserModel();
-    scene.add(laserModel.nodes.group);
+    studio.scene.add(laserModel.nodes.group);
 
-    let animId: number;
+    let animId = 0;
     let frame = 0;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       frame += 1;
       const time = frame / 60;
+      const p = live.current;
 
       laserModel.update(
         {
-          pumpEnergyJoules: pumpEnergy,
-          flashDurationMs: flashDuration,
-          rodLengthCm: rodLength,
-          outputMirrorReflectivity: outputReflectivity,
-          crystalTemperatureKelvin: temperature,
+          pumpEnergyJoules: p.pumpEnergyJoules,
+          flashDurationMs: p.flashDurationMs,
+          rodLengthCm: p.rodLengthCm,
+          outputMirrorReflectivity: p.outputMirrorReflectivity,
+          crystalTemperatureKelvin: p.crystalTemperatureKelvin,
         },
         time,
         isFiringRef.current,
       );
 
-      orbitControls.update();
-      renderer.render(scene, camera);
+      studio.controls.update();
+      studio.renderer.render(studio.scene, studio.camera);
     };
 
     animate();
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-
-    window.addEventListener("resize", handleResize);
-
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
       laserModel.dispose();
-      orbitControls.dispose();
-      renderer.forceContextLoss();
-      renderer.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
     };
-  }, [pumpEnergy, flashDuration, rodLength, outputReflectivity, temperature]);
+  }, [live]);
 
   return (
     <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
