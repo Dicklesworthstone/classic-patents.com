@@ -74,7 +74,7 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
       expect(reference.figurePreviews?.length).toBeGreaterThan(0);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toMatch(
-          /^\/patents\/figures\/us-593138-tesla-coil\/fig-[1-3]-source-crop-v2\.png$/,
+          /^\/patents\/figures\/us-593138-tesla-coil\/fig-[1-2]-source-crop-v2\.png$|^\/patents\/figures\/us-593138-tesla-coil\/fig-3-source-crop-v3\.png$/,
         );
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
         previewSources.add(preview.src);
@@ -83,7 +83,7 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
     expect([...previewSources].sort()).toEqual([
       "/patents/figures/us-593138-tesla-coil/fig-1-source-crop-v2.png",
       "/patents/figures/us-593138-tesla-coil/fig-2-source-crop-v2.png",
-      "/patents/figures/us-593138-tesla-coil/fig-3-source-crop-v2.png",
+      "/patents/figures/us-593138-tesla-coil/fig-3-source-crop-v3.png",
     ]);
   });
 
@@ -102,6 +102,6 @@ describe("US 593,138 Electrical Transformer manual source edition", () => {
     );
     expect(provenance).toContain("Two complete visual passes");
     expect(provenance).toContain("Claims 1–4");
-    expect(provenance).toContain("fig-3-source-crop-v2.png");
+    expect(provenance).toContain("fig-3-source-crop-v3.png");
   });
 });

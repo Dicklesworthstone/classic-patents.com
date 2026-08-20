@@ -1,8 +1,9 @@
-import { eInkArchivalEdition } from "@/data/editions/eInkEdition";
 import type { Patent } from "@/types/patent";
+import { eInkArchivalEdition } from "../editions/eInkEdition";
 
 export const eInkPatent: Patent = {
   id: "us-6120588-eink",
+  archivalEdition: eInkArchivalEdition,
   patentNumber: "US 6,120,588",
   title: "Electronically Addressable Display with Visually Contrastive Particles and Fluid",
   shortTitle: "E-Ink Microencapsulated Electronic Paper",
@@ -21,7 +22,6 @@ export const eInkPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-6120588-eink.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6120588A/en",
   usptoClassification: "G02F 1/167 (Electrophoretic displays; Electronic ink)",
-  archivalEdition: eInkArchivalEdition,
   originalText: `UNITED STATES PATENT
 Jacobson et al.
 Patent No.: US 6,120,588

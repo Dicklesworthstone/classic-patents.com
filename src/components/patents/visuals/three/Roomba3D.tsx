@@ -8,7 +8,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildRoombaModel } from "./RoombaModel";
 
-const EXHIBIT_ID = "us-6594844";
+const EXHIBIT_ID = "us-6594844-roomba";
 
 export function Roomba3D() {
   const containerRef = useRef<HTMLDivElement>(null);

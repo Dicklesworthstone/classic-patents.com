@@ -386,4 +386,15 @@ export const edisonIndicatorPatent: Patent = {
     totalClaims: 8,
     independentClaims: 8,
   },
+  tags: [
+    "edison effect",
+    "thermionic emission",
+    "vacuum tube",
+    "diode",
+    "electronics",
+    "voltage regulator",
+    "instrumentation",
+    "physics",
+    "electrification",
+  ],
 };

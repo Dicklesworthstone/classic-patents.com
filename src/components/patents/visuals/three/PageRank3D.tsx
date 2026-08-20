@@ -8,7 +8,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildPageRankModel } from "./PageRankModel";
 
-const EXHIBIT_ID = "us-6285999";
+const EXHIBIT_ID = "us-6285999-pagerank";
 
 export function PageRank3D() {
   const containerRef = useRef<HTMLDivElement>(null);

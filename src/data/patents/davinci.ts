@@ -1,8 +1,9 @@
-import { daVinciArchivalEdition } from "@/data/editions/daVinciEdition";
 import type { Patent } from "@/types/patent";
+import { daVinciArchivalEdition } from "../editions/daVinciEdition";
 
 export const daVinciPatent: Patent = {
   id: "us-6331181-davinci",
+  archivalEdition: daVinciArchivalEdition,
   patentNumber: "US 6,331,181",
   title: "Surgical Robotic Tools, Data Architecture, and Use",
   shortTitle: "Intuitive Surgical Da Vinci System",
@@ -22,7 +23,6 @@ export const daVinciPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US6331181B1/en",
   usptoClassification:
     "A61B 34/30 (Medical robots; Telemanipulators for minimally invasive surgery)",
-  archivalEdition: daVinciArchivalEdition,
   originalText: `UNITED STATES PATENT
 Tierney et al.
 Patent No.: US 6,331,181 B1

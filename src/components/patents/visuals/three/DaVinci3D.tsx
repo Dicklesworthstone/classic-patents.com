@@ -8,7 +8,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildDaVinciModel } from "./DaVinciModel";
 
-const EXHIBIT_ID = "us-6331181";
+const EXHIBIT_ID = "us-6331181-davinci";
 
 export function DaVinci3D() {
   const containerRef = useRef<HTMLDivElement>(null);

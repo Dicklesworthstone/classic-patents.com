@@ -2,15 +2,19 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-export const pagerankParallelReadings: Record<string, string> = {
-  "pagerank-abstract":
+export const pagerankParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
     "This invention provides a mathematical method for calculating the objective importance of web documents by analyzing the hyperlink citation network. Ranks are iteratively derived from citing pages and a random surfer jump probability.",
-  "pagerank-p1":
+  ],
+  4: [
     "Search engines typically index documents by keyword frequency, which is easily spammed and does not correlate with document authority or quality.",
-  "pagerank-p2":
+  ],
+  6: [
     "The PageRank algorithm models an idealized random web surfer who follows links with probability d and randomly jumps to any document with probability (1-d)/N.",
-  "pagerank-claim1":
-    "A computer-implemented method of assigning an objective rank to a document by summing the weighted ranks of all documents that link to it, divided by each document's total outbound link count.",
+  ],
+  9: [
+    "Inventor: Lawrence Page, Stanford, CA. Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA.",
+  ],
 };
 
 export const pagerankArchivalEdition: CuratedSpecificationEdition = {

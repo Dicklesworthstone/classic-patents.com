@@ -58,7 +58,7 @@ export const daVinciRegistryEntry = {
         label: "Tremor Attenuation",
         value: filterOn ? "94.5" : "0.0",
         unit: "%",
-        badgeColor: (filterOn ? "green" : "red") as any,
+        badgeColor: filterOn ? "emerald" : "rose",
         progressPct: filterOn ? 94.5 : 0,
       },
     ];

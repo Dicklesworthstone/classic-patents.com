@@ -8,7 +8,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildMultiTouchModel } from "./MultiTouchModel";
 
-const EXHIBIT_ID = "us-7479949";
+const EXHIBIT_ID = "us-7479949-multitouch";
 
 export function MultiTouch3D() {
   const containerRef = useRef<HTMLDivElement>(null);

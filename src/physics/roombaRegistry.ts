@@ -32,7 +32,7 @@ export const roombaRegistryEntry = {
         label: "Linear Velocity",
         value: v.toFixed(2),
         unit: "m/s",
-        badgeColor: "green" as const,
+        badgeColor: "emerald" as const,
         progressPct: (v / 1.0) * 100,
       },
     ];

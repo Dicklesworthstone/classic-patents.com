@@ -2,15 +2,19 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-export const daVinciParallelReadings: Record<string, string> = {
-  "davinci-abstract":
+export const daVinciParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
     "A robotic surgical telepresence system maps macroscopic surgeon hand movements to miniature internal instruments with variable motion scaling and digital tremor elimination.",
-  "davinci-p1":
+  ],
+  4: [
     "Minimally invasive laparoscopic surgery traditionally restricts surgeon dexterity to straight, unarticulated shafts with inverted fulcrum movements.",
-  "davinci-p2":
+  ],
+  6: [
     "The EndoWrist articulated mechanism restores full 7-DOF wrist articulation inside the patient, while computer processing filters 6-10 Hz physiological hand tremors.",
-  "davinci-claim1":
-    "A master-slave robotic surgical telemanipulator comprising a master controller, an articulated slave tool with an internal wrist assembly, and a controller applying motion scaling and filtering to drive the surgical end effector.",
+  ],
+  9: [
+    "Inventors: Michael D. Tierney, J. Kenneth Salisbury, Robert G. Younge. Assignee: Intuitive Surgical, Inc., Sunnyvale, CA.",
+  ],
 };
 
 export const daVinciArchivalEdition: CuratedSpecificationEdition = {

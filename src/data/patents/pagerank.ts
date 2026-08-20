@@ -1,8 +1,9 @@
-import { pagerankArchivalEdition } from "@/data/editions/pagerankEdition";
 import type { Patent } from "@/types/patent";
+import { pagerankArchivalEdition } from "../editions/pagerankEdition";
 
 export const pagerankPatent: Patent = {
   id: "us-6285999-pagerank",
+  archivalEdition: pagerankArchivalEdition,
   patentNumber: "US 6,285,999",
   title: "Method for Node Ranking in a Linked Database",
   shortTitle: "Google PageRank Algorithm",
@@ -21,7 +22,6 @@ export const pagerankPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-6285999-pagerank.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6285999B1/en",
   usptoClassification: "G06F 17/30 (Information retrieval; Database structures)",
-  archivalEdition: pagerankArchivalEdition,
   originalText: `UNITED STATES PATENT
 US 6,285,999 B1
 Date of Patent: Sep. 4, 2001

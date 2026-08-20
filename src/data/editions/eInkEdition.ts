@@ -2,15 +2,19 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-export const eInkParallelReadings: Record<string, string> = {
-  "eink-abstract":
+export const eInkParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
     "An electrophoretic display utilizes microcapsules containing charged pigment particles suspended in a dielectric fluid, driven by an electric field to reflect or absorb ambient light.",
-  "eink-p1":
+  ],
+  4: [
     "Emissive displays such as CRTs and back-lit LCDs consume high continuous power and suffer from poor readability in direct sunlight.",
-  "eink-p2":
+  ],
+  6: [
     "By applying an electrostatic potential across microencapsulated electrophoretic cells, positively charged white particles and negatively charged black particles migrate reversibly to create bistable electronic paper.",
-  "eink-claim1":
-    "An electrophoretic display medium comprising a plurality of microcapsules containing a dielectric fluid and a plurality of visually contrastive charged particles responsive to an addressing electric field.",
+  ],
+  9: [
+    "Inventors: Joseph M. Jacobson, Barrett Comiskey, Paul Drzaic. Assignee: E Ink Corporation, Cambridge, MA.",
+  ],
 };
 
 export const eInkArchivalEdition: CuratedSpecificationEdition = {

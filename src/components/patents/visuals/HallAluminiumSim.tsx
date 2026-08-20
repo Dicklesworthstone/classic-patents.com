@@ -559,9 +559,10 @@ export function HallAluminiumSim() {
             <strong className="font-sans font-bold text-parchment-100 not-italic">
               Electrochemical Reaction:{" "}
             </strong>
-            {
-              "$2\\text{Al}_2\\text{O}_3 + 3\\text{C} \\rightarrow 4\\text{Al}_{(l)} + 3\\text{CO}_{2(g)}$. Cryolite ($\\text{Na}_3\\text{AlF}_6$) dissolves alumina at 950°C, allowing Faraday reduction of aluminium without consuming the fluoride solvent. Liquid aluminium metal ($\\rho = 2.28\\text{ g/cm}^3$) sinks beneath the lighter molten electrolyte ($\\rho = 2.10\\text{ g/cm}^3$), shielding it from air re-oxidation."
-            }
+            2Al₂O₃ + 3C → 4Al(l) + 3CO₂(g). Cryolite (Na₃AlF₆) dissolves alumina at ~950°C, allowing
+            Faraday electrodeposition of aluminium without consuming the fluoride solvent. Liquid
+            aluminium metal (ρ = 2.28 g/cm³) sinks beneath the lighter molten electrolyte (ρ = 2.10
+            g/cm³), shielding it from air re-oxidation.
           </div>
         </div>
       </div>

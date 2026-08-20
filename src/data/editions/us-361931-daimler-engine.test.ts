@@ -54,7 +54,7 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
       4: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
       "4a": "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",
       "4b": "/patents/figures/us-361931-daimler-engine/fig-4b-source-crop-v1.png",
-      5: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v1.png",
+      5: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v2.png",
       6: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",
     } as const;
     const previewSources = new Set<string>();

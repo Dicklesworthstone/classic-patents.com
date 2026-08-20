@@ -44,10 +44,10 @@ const FIGURES = {
     height: 360,
   },
   5: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v1.png",
+    src: "/patents/figures/us-361931-daimler-engine/fig-5-source-crop-v2.png",
     alt: "Fig. 5 from the US 361,931 source facsimile: high-pressure gas-holder section.",
-    width: 1100,
-    height: 380,
+    width: 820,
+    height: 290,
   },
   6: {
     src: "/patents/figures/us-361931-daimler-engine/fig-6-source-crop-v1.png",

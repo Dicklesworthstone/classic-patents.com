@@ -201,7 +201,7 @@ export function updateHallAluminiumVisual(
   },
   elapsedSeconds: number,
 ) {
-  // Deterministic bubble evolution animation without Math.random
+  // Deterministic bubble evolution animation
   const positions = model.bubbleParticles.geometry.attributes.position.array as Float32Array;
   const count = positions.length / 3;
   const currentFactor = telemetry.currentAmperes / 300000;

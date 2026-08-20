@@ -1,8 +1,9 @@
-import { multiTouchArchivalEdition } from "@/data/editions/multiTouchEdition";
 import type { Patent } from "@/types/patent";
+import { multiTouchArchivalEdition } from "../editions/multiTouchEdition";
 
 export const multiTouchPatent: Patent = {
   id: "us-7479949-multitouch",
+  archivalEdition: multiTouchArchivalEdition,
   patentNumber: "US 7,479,949",
   title:
     "Touch Screen Device, Method, and Graphical User Interface for Determining Commands by Applying Heuristics",
@@ -31,7 +32,6 @@ export const multiTouchPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-7479949-multitouch.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US7479949B2/en",
   usptoClassification: "G06F 3/0488 (Touch-screen gestures; Multi-touch heuristics)",
-  archivalEdition: multiTouchArchivalEdition,
   originalText: `UNITED STATES PATENT
 Jobs et al.
 Patent No.: US 7,479,949 B2

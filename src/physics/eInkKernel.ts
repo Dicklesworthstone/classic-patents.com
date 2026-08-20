@@ -1,7 +1,7 @@
 export interface EInkControls {
   electrodeVoltageVolts: number; // Applied driving voltage [-15V .. +15V]
   fluidViscosityCp: number; // Fluid dynamic viscosity in cP (mPa·s) [1.0 .. 5.0]
-  particleChargeCoupled: number; // Zeta potential / effective charge multiplier [0.5 .. 2.0]
+  particleChargeCoupled?: number; // Zeta potential / effective charge multiplier [0.5 .. 2.0]
 }
 
 export interface EInkState {

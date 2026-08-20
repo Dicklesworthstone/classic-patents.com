@@ -15,8 +15,8 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
-const sourceCrop = (figure: 1 | 2 | 3, width: number, height: number) => ({
-  src: `/patents/figures/us-593138-tesla-coil/fig-${figure}-source-crop-v2.png`,
+const sourceCrop = (figure: 1 | 2 | 3, width: number, height: number, version: 2 | 3 = 2) => ({
+  src: `/patents/figures/us-593138-tesla-coil/fig-${figure}-source-crop-v${version}.png`,
   alt: `Source-facsimile crop of Figure ${figure} from US 593,138.`,
   width,
   height,
@@ -26,7 +26,7 @@ const figures = {
   "Figure 1": [sourceCrop(1, 1100, 1450)],
   "Fig. 1": [sourceCrop(1, 1100, 1450)],
   "Fig. 2": [sourceCrop(2, 1100, 700)],
-  "Fig. 3": [sourceCrop(3, 1100, 650)],
+  "Fig. 3": [sourceCrop(3, 900, 500, 3)],
 } as const;
 
 const figure = (

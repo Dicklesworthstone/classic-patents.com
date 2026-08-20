@@ -51,14 +51,14 @@ export const eInkRegistryEntry = {
         label: "Surface Reflectance",
         value: `${out.surfaceReflectancePercent}`,
         unit: "%",
-        badgeColor: (out.surfaceReflectancePercent > 40 ? "cyan" : "gray") as any,
+        badgeColor: out.surfaceReflectancePercent > 40 ? "cyan" : "indigo",
         progressPct: out.surfaceReflectancePercent,
       },
       {
         label: "Drift Velocity",
         value: `${out.driftVelocityMms.toFixed(2)}`,
         unit: "mm/s",
-        badgeColor: "green" as const,
+        badgeColor: "emerald" as const,
         progressPct: Math.min(100, (out.driftVelocityMms / 2.0) * 100),
       },
     ];

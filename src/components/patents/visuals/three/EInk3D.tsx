@@ -8,7 +8,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildEInkModel } from "./EInkModel";
 
-const EXHIBIT_ID = "us-6120588";
+const EXHIBIT_ID = "us-6120588-eink";
 
 export function EInk3D() {
   const containerRef = useRef<HTMLDivElement>(null);

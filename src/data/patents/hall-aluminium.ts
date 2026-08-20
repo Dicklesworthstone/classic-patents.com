@@ -170,7 +170,7 @@ export const hallAluminiumPatent: Patent = {
         summary:
           "Gravity-separated liquid aluminium layer collecting at the bottom of the cell beneath the protective electrolyte.",
         technicalDetails:
-          "At 950°C, molten aluminium has a density of $2.30\\text{ g/cm}^3$, while the cryolite bath has a density of $2.10\\text{ g/cm}^3$. The positive buoyancy difference ($Delta \\rho = 0.20\\text{ g/cm}^3$) causes the metal to settle rapidly beneath the salt, shielding it from air oxidation and allowing clean tapping.",
+          "At 950°C, molten aluminium has a density of $2.30\\text{ g/cm}^3$, while the cryolite bath has a density of $2.10\\text{ g/cm}^3$. The positive buoyancy difference ($\\Delta \\rho = 0.20\\text{ g/cm}^3$) causes the metal to settle rapidly beneath the salt, shielding it from air oxidation and allowing clean tapping.",
         archaicTerm: "pool of molten metal at the bottom of the pot",
         modernEquivalent: "Submerged liquid aluminium metal pad",
       },
@@ -190,7 +190,7 @@ export const hallAluminiumPatent: Patent = {
         principle: "Faraday's Laws of Electrolysis",
         formula: "m = \\frac{I \\cdot t \\cdot M}{z \\cdot F} \\cdot \\eta_{\\text{current}}",
         explanation:
-          "The mass of aluminium deposited at the cathode ($m$) is directly proportional to electrical current ($I$), time ($t$), and the molar mass of aluminium ($M = 26.98\\text{ g/mol}$), inversely proportional to the valence change ($z = 3$) and Faraday's constant ($F = 96,485\\text{ C/mol}$), scaled by current efficiency ($eta \\approx 85\\text{--}95\\%$) which yields approximately 0.335 grams of aluminium per ampere-hour.",
+          "The mass of aluminium deposited at the cathode ($m$) is directly proportional to electrical current ($I$), time ($t$), and the molar mass of aluminium ($M = 26.98\\text{ g/mol}$), inversely proportional to the valence change ($z = 3$) and Faraday's constant ($F = 96,485\\text{ C/mol}$), scaled by current efficiency ($\\eta \\approx 85\\text{--}95\\%$) which yields approximately 0.335 grams of aluminium per ampere-hour.",
       },
       {
         principle: "Thermodynamic Decomposition Potential & Gibbs Free Energy",

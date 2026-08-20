@@ -61,7 +61,7 @@ export const multiTouchRegistryEntry = {
         label: "Capacitance Shunt",
         value: `-${out.mutualCapacitanceDeltaPf.toFixed(2)}`,
         unit: "pF",
-        badgeColor: "green" as const,
+        badgeColor: "emerald" as const,
         progressPct: Math.min(100, (out.mutualCapacitanceDeltaPf / 1.5) * 100),
       },
     ];

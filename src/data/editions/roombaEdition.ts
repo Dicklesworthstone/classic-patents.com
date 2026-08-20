@@ -2,15 +2,19 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-export const roombaParallelReadings: Record<string, string> = {
-  "roomba-abstract":
+export const roombaParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  2: [
     "An autonomous robotic cleaner uses a deterministic spiral pattern for open floors and a randomized bump-and-turn behavior to systematically traverse and vacuum an enclosed room.",
-  "roomba-p1":
+  ],
+  4: [
     "Prior robot vacuum attempts relied on expensive laser or optical beacons, making them cost-prohibitive for domestic consumer households.",
-  "roomba-p2":
+  ],
+  6: [
     "By alternating between spiral expansion and randomized bump-turn angles, the robot achieves high statistical surface coverage without requiring a persistent internal global map.",
-  "roomba-claim1":
-    "An autonomous coverage robot comprising a drive system, obstacle sensors, and a control system executing an outward spiral cleaning mode until a bumper collision initiates an obstacle escape maneuver.",
+  ],
+  9: [
+    "Inventors: Joseph L. Jones, Philip R. Mass, Rodney A. Brooks. Assignee: iRobot Corporation, Burlington, MA.",
+  ],
 };
 
 export const roombaArchivalEdition: CuratedSpecificationEdition = {

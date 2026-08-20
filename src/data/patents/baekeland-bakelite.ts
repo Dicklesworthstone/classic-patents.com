@@ -73,7 +73,7 @@ export const baekelandBakelitePatent: Patent = {
         summary:
           "Controlled addition of formaldehyde to phenol under mild heating yields low-molecular-weight mono- and di-methylolphenols. The mixture spontaneously stratifies into two layers: an upper aqueous waste layer and a dense lower liquid resin. This intermediate can be poured, shaped, or dissolved in alcohol and acetone.",
         technicalDetails:
-          "Equimolar or formaldehyde-rich ratios undergo nucleophilic addition: $\text{C}_6\text{H}_5\text{OH} + \text{HCHO} \rightarrow \text{HOC}_6\text{H}_4\text{CH}_2\text{OH}$. The reaction produces one mole of condensation water per methylene bridge: $n ,\text{Phenol} + (n+1),\text{HCHO} \rightarrow \text{Prepolymer} + n ,\text{H}_2\text{O}$.",
+          "Equimolar or formaldehyde-rich ratios undergo nucleophilic addition: $\\text{C}_6\\text{H}_5\\text{OH} + \\text{HCHO} \\rightarrow \\text{HOC}_6\\text{H}_4\\text{CH}_2\\text{OH}$. The reaction produces one mole of condensation water per methylene bridge: $n\\,\\text{Phenol} + (n+1)\\,\\text{HCHO} \\rightarrow \\text{Prepolymer} + n\\,\\text{H}_2\\text{O}$.",
         archaicTerm: "Oily or viscous dehydration product",
         modernEquivalent: "Fusible A-stage resole prepolymer liquid",
       },
@@ -82,7 +82,7 @@ export const baekelandBakelitePatent: Patent = {
         summary:
           "A sealed, steam-jacketed iron pressure vessel capable of maintaining 50–100 psi of compressed air while heating to 110–140 °C. The external pressure suppresses the boiling point of trapped moisture and unreacted formaldehyde, preventing explosive foaming and porosity.",
         technicalDetails:
-          "According to the Clausius-Clapeyron relation $ln(P_2/P_1) = -\frac{Delta H_{\text{vap}}}{R}left(\frac{1}{T_2}-\frac{1}{T_1}\right)$, water vapor pressure reaches 3.6 bar at 140 °C. Applying $P_{\text{applied}} > P_{\text{vapor}}(T)$ prevents steam bubble nucleation, guaranteeing a void-free density of 1.30–1.45 g/cm³.",
+          "According to the Clausius-Clapeyron relation $\\ln(P_2/P_1) = -\\frac{\\Delta H_{\\text{vap}}}{R}\\left(\\frac{1}{T_2}-\\frac{1}{T_1}\\right)$, water vapor pressure reaches 3.6 bar at 140 °C. Applying $P_{\\text{applied}} > P_{\\text{vapor}}(T)$ prevents steam bubble nucleation, guaranteeing a void-free density of 1.30–1.45 g/cm³.",
         archaicTerm: "Closed vessel under pressure",
         modernEquivalent: "High-pressure thermal curing autoclave (Bakelizer)",
       },
@@ -100,7 +100,7 @@ export const baekelandBakelitePatent: Patent = {
         summary:
           "Under sustained heat and pressure, methylol groups condense with active aromatic hydrogen atoms at ortho and para positions, forming robust methylene (-CH₂-) and ether (-CH₂-O-CH₂-) bridges across adjacent benzene rings.",
         technicalDetails:
-          "Crosslink density reaches $\rho_x > 10^{21} \text{ bonds/cm}^3$, creating an infinite macromolecular diamond-like covalent lattice with glass transition temperature $T_g > 200,^circ\text{C}$ and infinite molecular weight ($M_w \rightarrow infty$).",
+          "Crosslink density reaches $\\rho_x > 10^{21}\\text{ bonds/cm}^3$, creating an infinite macromolecular diamond-like covalent lattice with glass transition temperature $T_g > 200^\\circ\\text{C}$ and infinite molecular weight ($M_w \\rightarrow \\infty$).",
         archaicTerm: "Hard, compact, insoluble and infusible body",
         modernEquivalent: "Fully crosslinked C-stage phenolic thermoset polymer",
       },
@@ -108,21 +108,21 @@ export const baekelandBakelitePatent: Patent = {
     scientificPrinciples: [
       {
         principle: "Step-Growth Polycondensation Kinetics",
-        formula: "\bar{X}_n = \frac{1}{1 - p}",
+        formula: "\\bar{X}_n = \\frac{1}{1 - p}",
         explanation:
-          "Carothers' equation governs the degree of polymerization where $p$ is the fractional conversion of functional groups. Because phenol has a functionality $f=3$ (ortho/ortho/para) and formaldehyde has $f=2$, the critical gel point conversion occurs at $p_c = \frac{2}{f} = 0.67$. Beyond this threshold, an infinite crosslinked gel network forms irreversibly.",
+          "Carothers' equation governs the degree of polymerization where $p$ is the fractional conversion of functional groups. Because phenol has a functionality $f=3$ (ortho/ortho/para) and formaldehyde has $f=2$, the critical gel point conversion occurs at $p_c = \\frac{2}{f} = 0.67$. Beyond this threshold, an infinite crosslinked gel network forms irreversibly.",
       },
       {
         principle: "Vapor Pressure Suppression via External Pressure",
         formula:
-          "P_{\text{autoclave}} > P_{\text{sat}}(T) = P_0 expleft(-\frac{Delta H_{\text{vap}}}{R T}\right)",
+          "P_{\\text{autoclave}} > P_{\\text{sat}}(T) = P_0 \\exp\\left(-\\frac{\\Delta H_{\\text{vap}}}{R T}\\right)",
         explanation:
           "At curing temperatures of 130–140 °C, the vapor pressure of water is 2.7–3.6 atmospheres. Applying 5–7 atmospheres of pneumatic pressure in the Bakelizer completely suppresses vaporization, forcing moisture to stay dissolved and preventing voids, bubbles, or structural porosity.",
       },
       {
         principle: "Dielectric Breakdown and Thermal Insulation",
         formula:
-          "E_{\text{breakdown}} = \frac{V_{\text{arc}}}{d} approx 10\text{--}15,\text{kV/mm}",
+          "E_{\\text{breakdown}} = \\frac{V_{\\text{arc}}}{d} \\approx 10\\text{--}15\\text{ kV/mm}",
         explanation:
           "Because the cured phenolic matrix contains no mobile electrons or free ions and cannot soften when hot, it exhibits exceptional dielectric breakdown resistance and zero tracking under electrical arcs, making it the premier insulator for early electrical grids, automotive distributors, and radio housings.",
       },
