@@ -25,7 +25,9 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Visual Boundary", () => {
     expect(studioCode).toContain("useLiveSimParams");
     expect(studioCode).not.toContain("OrbitControls");
     expect(studioCode).not.toContain("new THREE.WebGLRenderer");
-    expect(studioCode).not.toContain("pumpEnergy, flashDuration, rodLength, outputReflectivity, temperature");
+    expect(studioCode).not.toContain(
+      "pumpEnergy, flashDuration, rodLength, outputReflectivity, temperature",
+    );
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
