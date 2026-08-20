@@ -26,6 +26,8 @@ describe("US 2,495,429 Percy Spencer Microwave Cavity Magnetron visual & RF phys
     expect(modelSource).toContain("buildSpencerMicrowaveModel");
     expect(modelSource).toContain("updateSpencerMicrowaveKinematics");
     expect(threeSource).not.toContain("useGLTF");
+    expect(modelSource).not.toContain("delta * 4.5");
+    expect(modelSource).toContain("spokeDisplayOmegaRadPerS");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

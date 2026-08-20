@@ -314,6 +314,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     isJammingActive: boolean,
     jamCenter: number,
     isCutaway = false,
+    drumDisplayOmegaRadPerS = 0,
   ) => {
     updateLamarrFrequencyHoppingKinematics(
       model,
@@ -323,6 +324,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
       isJammingActive,
       jamCenter,
       isCutaway,
+      drumDisplayOmegaRadPerS,
     );
   };
 
@@ -368,9 +370,10 @@ export function updateLamarrFrequencyHoppingKinematics(
   isJammingActive: boolean,
   jamCenter: number,
   isCutaway = false,
+  drumDisplayOmegaRadPerS = 0,
 ): void {
-  model.drum1.rotation.y += delta * 1.5;
-  model.drum2.rotation.y += delta * 1.5;
+  model.drum1.rotation.y += delta * drumDisplayOmegaRadPerS;
+  model.drum2.rotation.y += delta * drumDisplayOmegaRadPerS;
 
   const maxDisplayChannels = model.barMeshes.length;
   const modes = laplacianModes(16, 3);

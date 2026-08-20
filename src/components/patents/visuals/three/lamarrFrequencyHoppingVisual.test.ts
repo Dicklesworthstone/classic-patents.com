@@ -77,6 +77,11 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(result.pianoKeys).toBe(88);
     expect(result.pianoRollStep).toBe(37);
     expect(result.hopSoundStride).toBe(3);
+    expect(result.drumDisplayOmegaRadPerS).toBeCloseTo(1.5, 3);
+    expect(FrankenSimEngine.stepLamarrFrequencyHopping(88, 8).drumDisplayOmegaRadPerS).toBeCloseTo(
+      3.0,
+      3,
+    );
     expect(result.spectrumBarOriginX).toBe(20);
     expect(result.spectrumBarPitchPx).toBe(4.5);
     expect(result.schematicStaffCount).toBe(11);
@@ -99,8 +104,14 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
       "utf8",
     );
     expect(threeSource).toContain("spreadSpectrumBandwidthHz");
+    expect(threeSource).toContain("drumDisplayOmegaRadPerS");
     expect(threeSource).not.toContain("* 1e6");
     expect(threeSource).not.toContain("liveChannels * 0.3");
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "lamarrFrequencyHoppingModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("delta * 1.5");
 
     const schematicSource = readFileSync(
       join(process.cwd(), "src", "components", "patents", "InteractiveDiagramViewer.tsx"),
@@ -125,8 +136,9 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(model.hopPoints).toBeDefined();
 
     // Test kinematics update & cutaway
-    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 22, 44, true, 13, true);
+    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 22, 44, true, 13, true, 1.5);
     expect(model.barMeshes[22].scale.y).toBeGreaterThan(1.0);
+    expect(model.drum1.rotation.y).toBeCloseTo(1.5 / 60, 5);
     expect(model.materials.torpedoBayMat.opacity).toBe(0.35);
 
     model.dispose();

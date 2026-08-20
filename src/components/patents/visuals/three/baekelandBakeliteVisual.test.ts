@@ -20,6 +20,8 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     expect(modelSource).not.toContain("GLTFLoader");
     expect(studioSource).not.toContain(".gltf");
     expect(studioSource).not.toContain(".glb");
+    expect(modelSource).not.toContain("timeSec * 0.2");
+    expect(modelSource).toContain("networkDisplayOmegaRadPerS");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -67,6 +69,8 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     expect(lowCure.conversionP).toBeLessThan(0.667);
     expect(lowCure.isGelled).toBe(false);
     expect(lowCure.resinStage).toBe("A-stage (Resole Liquid)");
+    expect(pressurized.networkDisplayOmegaRadPerS).toBe(0);
+    expect(lowCure.networkDisplayOmegaRadPerS).toBe(0.2);
   });
 
   test("builds and articulates procedural autoclave shell, steam jacket, mold ram, and molecular crosslinks correctly", () => {
@@ -98,5 +102,6 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
       1.5,
     );
     expect(model.materials.bakeliteResin.color.getHex()).toBe(0x5c2b0e); // C-stage unfoamed color
+    expect(model.nodes.molecularNetworkGroup.rotation.y).toBe(0);
   });
 });

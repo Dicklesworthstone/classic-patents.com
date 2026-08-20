@@ -366,7 +366,7 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
 
     // Update molecular network opacity & rotation
     materials.methyleneBond.opacity = Math.max(0.1, sim.crosslinkDensity / 1.85);
-    molecularNetworkGroup.rotation.y = timeSec * 0.2;
+    molecularNetworkGroup.rotation.y = timeSec * sim.networkDisplayOmegaRadPerS;
 
     // Clamping ram stroke
     ramGroup.position.y = 0.35 - (pressPsi / 120) * 0.06;

@@ -58,6 +58,12 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Visual Boundary", (
     expect(res.opticalDensity).toBeGreaterThan(1.0);
     expect(res.fuserBondQualityPct).toBeGreaterThan(80);
     expect(res.tonerMassDensityMgPerCm2).toBeGreaterThan(0.8);
+    expect(res.copiesPerMin).toBe(45);
+    expect(res.drumDisplayOmegaRadPerS).toBeCloseTo(0.8, 3);
+    expect(res.fuserDisplayOmegaRadPerS).toBeCloseTo(1.6, 3);
+    const sulfur = stepCarlsonElectrophotography({ photoconductorType: "sulfur" });
+    expect(sulfur.copiesPerMin).toBe(12);
+    expect(sulfur.drumDisplayOmegaRadPerS).toBeCloseTo((12 / 45) * 0.8, 3);
   });
 
   test("builds and articulates procedural photoreceptor drum, corona wire, developer box, and fuser rolls", () => {
@@ -71,6 +77,12 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Visual Boundary", (
     expect(nodes.fuserUpperRoll).toBeDefined();
     expect(nodes.materials.length).toBeGreaterThan(5);
 
+    const selenium = stepCarlsonElectrophotography({
+      coronaVoltageKv: 6.5,
+      exposureLuxSec: 12,
+      layerThicknessUm: 30,
+      fuserTemperatureC: 185,
+    });
     articulateCarlsonElectrophotographyModel(
       nodes,
       {
@@ -78,10 +90,17 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Visual Boundary", (
         contrastPotentialV: 550,
         opticalDensity: 1.45,
         fuserTemperatureC: 185,
+        drumDisplayOmegaRadPerS: selenium.drumDisplayOmegaRadPerS,
+        fuserDisplayOmegaRadPerS: selenium.fuserDisplayOmegaRadPerS,
       },
       1.0,
     );
 
+    expect(nodes.drumGroup.rotation.z).toBeCloseTo(selenium.drumDisplayOmegaRadPerS, 3);
     expect(nodes.fuserHeatLight.intensity).toBeGreaterThan(1.5);
+    const modelSource = readFileSync(modelPath, "utf-8");
+    const studioSource = readFileSync(studioPath, "utf-8");
+    expect(modelSource).not.toContain("timeSec * 0.8");
+    expect(studioSource).toContain("drumDisplayOmegaRadPerS");
   });
 });

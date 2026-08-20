@@ -297,13 +297,15 @@ export function articulateCarlsonElectrophotographyModel(
     contrastPotentialV: number;
     opticalDensity: number;
     fuserTemperatureC: number;
+    drumDisplayOmegaRadPerS: number;
+    fuserDisplayOmegaRadPerS: number;
   },
   timeSec: number,
 ) {
-  // 1. Drum continuous rotation
-  nodes.drumGroup.rotation.z = timeSec * 0.8;
-  nodes.fuserUpperRoll.rotation.z = -timeSec * 1.6;
-  nodes.fuserLowerRoll.rotation.z = timeSec * 1.6;
+  // 1. Drum / fuser rotation from kernel ω (selenium 45 cpm → 0.8 / 1.6 rad/s)
+  nodes.drumGroup.rotation.z = timeSec * telemetry.drumDisplayOmegaRadPerS;
+  nodes.fuserUpperRoll.rotation.z = -timeSec * telemetry.fuserDisplayOmegaRadPerS;
+  nodes.fuserLowerRoll.rotation.z = timeSec * telemetry.fuserDisplayOmegaRadPerS;
 
   // 2. Corona ionization intensity
   const cMat = nodes.coronaWireMesh.material as THREE.MeshStandardMaterial;

@@ -44,12 +44,13 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
   test("animates rolls and rabble deterministically without errors", () => {
     const model = buildCortPuddlingRollingModel();
     // Step animation at t = 1.0s, coming to nature = true, rollOmega = 3.14 rad/s
-    model.updateAnimation(1.0, true, 3.14);
+    const rabbleOmega = (15 * 2 * Math.PI) / 60;
+    model.updateAnimation(1.0, true, 3.14, rabbleOmega);
     expect(model.topRollGroup.rotation.x).toBeCloseTo(-3.14, 2);
     expect(model.bottomRollGroup.rotation.x).toBeCloseTo(3.14, 2);
 
     // Step animation at t = 2.0s
-    model.updateAnimation(2.0, false, 3.14);
+    model.updateAnimation(2.0, false, 3.14, rabbleOmega);
     expect(model.topRollGroup.rotation.x).toBeCloseTo(-6.28, 2);
     model.dispose();
   });
@@ -62,6 +63,10 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(threeSource).toContain("outputs.rollOmegaRadPerS");
     expect(threeSource).toContain("outputs.rabbleOmegaRadPerS");
     expect(threeSource).toContain("useLiveSimParams");
+    const modelSource = await Bun.file(
+      new URL("./cortPuddlingRollingModel.ts", import.meta.url),
+    ).text();
+    expect(modelSource).not.toContain("(15 * 2 * Math.PI) / 60");
   });
 
   test("properly cleans up WebGL geometries and materials on disposal", () => {

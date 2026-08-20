@@ -465,7 +465,7 @@ export function updateSpencerMicrowaveKinematics(
     model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
 
     if (model.modeStirrer) {
-      model.modeStirrer.rotation.x += delta * 4.5;
+      model.modeStirrer.rotation.x += delta * spokeDisplayOmegaRadPerS * local;
     }
   } else {
     model.spokePoints.visible = false;

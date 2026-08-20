@@ -496,16 +496,29 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   };
 }
 
+export interface CorlissKinematicState {
+  crankAngleRad: number;
+  governorOmegaRadPerS: number;
+  cutoffFraction: number;
+  isCutaway: boolean;
+  dt?: number;
+  govSpread: number;
+  wristAmp: number;
+  wristLeadRad?: number;
+}
+
 /**
  * Updates Corliss engine 4-valve kinematics, wrist-plate oscillation, dashpot trips, and flyball governor.
+ * Governor ω, ball spread, and wrist amplitude come from `stepCorlissEngine` — not leftover rpm/60.
  */
 export function updateCorlissEngineKinematics(
   model: CorlissEngineModel,
-  crankAngleRad: number,
-  rpm: number,
-  cutoffFraction: number,
-  isCutaway: boolean,
+  state: CorlissKinematicState,
 ) {
+  const { crankAngleRad, governorOmegaRadPerS, cutoffFraction, isCutaway, govSpread, wristAmp } =
+    state;
+  const dt = state.dt ?? 1 / 60;
+  const wristLeadRad = state.wristLeadRad ?? Math.PI * 0.25;
   const crankRadius = 0.9;
   const conRodLength = 4.4;
 
@@ -525,7 +538,7 @@ export function updateCorlissEngineKinematics(
   model.conRodGroup.rotation.z = conRodAngle;
 
   // 4. Corliss Wrist Plate Harmonic Oscillation (Claim 2)
-  const wristAngle = Math.sin(crankAngleRad + 0.3) * 0.35;
+  const wristAngle = Math.sin(crankAngleRad + wristLeadRad) * wristAmp;
   model.wristPlate.rotation.z = wristAngle;
 
   // 5. Four Rotary Valve Levers & Pneumatic Dashpot Drop-Cutoff (Claim 1)
@@ -561,11 +574,9 @@ export function updateCorlissEngineKinematics(
   });
 
   // 7. Centrifugal Flyball Governor Rotation & Ball Lift
-  model.governorGroup.rotation.y += (rpm / 60) * 0.2;
-  const govSpeedNorm = Math.min(1.0, rpm / 120);
-  const ballSpread = 0.35 + govSpeedNorm * 0.25;
-  if (model.governorBalls[0]) model.governorBalls[0].position.x = -ballSpread;
-  if (model.governorBalls[1]) model.governorBalls[1].position.x = ballSpread;
+  model.governorGroup.rotation.y += governorOmegaRadPerS * dt;
+  if (model.governorBalls[0]) model.governorBalls[0].position.x = -govSpread;
+  if (model.governorBalls[1]) model.governorBalls[1].position.x = govSpread;
 
   // 8. Cutaway Mode
   model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;

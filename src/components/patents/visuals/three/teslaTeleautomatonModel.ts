@@ -514,6 +514,7 @@ export function updateTeslaTeleautomatonKinematics(
   showRadioWaves: boolean,
   cutawayMode: boolean,
   steppingDiskIndex = 0,
+  cohererDisplayOmegaRadPerS = 0,
 ) {
   // 1. Aquatic Wave Buoyancy Motion (Pitch, Roll, Heave)
   const heaveY = Math.sin(timeSec * 1.5) * 0.06;
@@ -532,7 +533,7 @@ export function updateTeslaTeleautomatonKinematics(
   nodes.rudderGroup.rotation.y = rudderRad;
 
   // 4. Decoherer & Stepping Disk Kinematics
-  nodes.rotatingCoherer.rotation.x += dt * 1.5;
+  nodes.rotatingCoherer.rotation.x += dt * cohererDisplayOmegaRadPerS;
   nodes.steppingDiskLogic.rotation.z = (steppingDiskIndex % 8) * (Math.PI / 4);
 
   // 5. Cutaway Shell Toggle

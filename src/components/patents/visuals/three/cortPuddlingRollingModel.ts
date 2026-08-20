@@ -32,7 +32,7 @@ export interface CortModel {
     timeSec: number,
     isComingToNature: boolean,
     rollOmegaRadPerS: number,
-    rabbleOmegaRadPerS?: number,
+    rabbleOmegaRadPerS: number,
   ) => void;
   dispose: () => void;
 }
@@ -388,7 +388,7 @@ export function buildCortPuddlingRollingModel(): CortModel {
       timeSec: number,
       isComingToNature: boolean,
       rollOmegaRadPerS: number,
-      rabbleOmegaRadPerS = (15 * 2 * Math.PI) / 60,
+      rabbleOmegaRadPerS: number,
     ) {
       // 1. Rabble stirring oscillation from the kernel ω, not leftover 3 / 4.
       const rabbleAngle = Math.sin(timeSec * rabbleOmegaRadPerS) * 0.15;

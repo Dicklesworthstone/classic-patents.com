@@ -47,6 +47,14 @@ describe("GB 913 James Watt Separate Condenser visual & thermodynamics boundary"
     expect(vizSource).toContain("setCutaway");
     expect(vizSource).toContain("controls.setView");
     expect(vizSource).toContain("useLiveSimParams");
+    expect(vizSource).toContain("cycleOmegaRadPerS");
+    expect(vizSource).not.toContain("spm / 60");
+    const simSource = readFileSync(
+      resolve(root, "src/components/patents/visuals/WattSeparateCondenserSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("outputs.cycleOmegaRadPerS");
+    expect(simSource).not.toContain("spm / 60");
   });
 
   test("computes genuine Rankine cycle power, separate condenser vacuum, and coal economy in SI units", () => {

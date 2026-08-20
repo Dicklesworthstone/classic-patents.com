@@ -66,6 +66,10 @@ describe("US 2,543,181 Edwin Land Polaroid Instant Photography Visual Boundary",
     expect(shadowState.positiveSilverDensity).toBeGreaterThan(highlightState.positiveSilverDensity);
     expect(highlightState.negativeSilverDensity).toBeGreaterThan(shadowState.negativeSilverDensity);
     expect(shadowState.transferEfficiencyPercent).toBeGreaterThan(80);
+    expect(shadowState.rollerDisplayOmegaRadPerS).toBe(3);
+    expect(stepLandPolaroidInstantFilm({ developmentTimeSec: 0 }).rollerDisplayOmegaRadPerS).toBe(
+      0,
+    );
   });
 
   it("builds and articulates procedural camera body, bellows, rollers, pod, and print slide", () => {
@@ -74,6 +78,13 @@ describe("US 2,543,181 Edwin Land Polaroid Instant Photography Visual Boundary",
 
     expect(model.rollerTop.rotation.x).toBeCloseTo(3.0, 1);
     expect(model.rupturablePod.scale.y).toBeLessThan(1.0); // Pod crushed
+    model.update(1.0, { developmentTimeSec: 0, exposureFraction: 0.5 });
+    expect(model.rollerTop.rotation.x).toBeCloseTo(0, 5);
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/landPolaroidModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("timeSec * 3");
     model.dispose();
   });
 });

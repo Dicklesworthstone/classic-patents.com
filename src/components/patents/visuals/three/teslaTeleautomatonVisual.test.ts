@@ -92,6 +92,12 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(detuned.relayEnergized).toBe(false);
     expect(detuned.propellerOmegaRadPerS).toBe(0);
     expect(detuned.motorThrustN).toBe(0);
+    expect(detuned.cohererDisplayOmegaRadPerS).toBe(0);
+    const locked = FrankenSimEngine.stepTeslaTeleautomaton({
+      transmitterFreqKhz: 150,
+      propellerThrottlePct: 75,
+    });
+    expect(locked.cohererDisplayOmegaRadPerS).toBe(1.5);
   });
 
   test("builds and articulates procedural robotic boat hierarchy correctly", () => {
@@ -104,7 +110,7 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
       transmitterFreqKhz: 150,
       propellerThrottlePct: 75,
     }).propellerOmegaRadPerS;
-    updateTeslaTeleautomatonKinematics(nodes, materials, 0.1, 1.0, omega, 20, true, true, 3);
+    updateTeslaTeleautomatonKinematics(nodes, materials, 0.1, 1.0, omega, 20, true, true, 3, 1.5);
     expect(nodes.rudderGroup.rotation.y).toBeCloseTo((20 * Math.PI) / 180, 2);
     expect(nodes.cutawayHullMesh.visible).toBe(true);
     expect(nodes.hullMesh.visible).toBe(false);
@@ -117,5 +123,6 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     );
     expect(modelSource).not.toContain("(propellerRpm * 2 * Math.PI) / 60");
     expect(modelSource).not.toContain("timeSec * 0.8");
+    expect(modelSource).not.toContain("dt * 1.5");
   });
 });

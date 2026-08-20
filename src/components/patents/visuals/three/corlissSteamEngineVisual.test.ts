@@ -81,17 +81,36 @@ describe("US 6,162 George Corliss Steam Engine visual & kinematics boundary", ()
     expect(model.materials.castIron).toBeDefined();
 
     const corliss = stepCorlissEngine({ steamPressurePsi: 100, engineRpm: 65, cutoffPct: 25 });
-    const { strokeX, wristAngle } = updateCorlissEngineKinematics(
-      model,
-      Math.PI / 4,
-      corliss.govSpread,
-      corliss.wristAmp,
-      true,
-    );
+    const { strokeX, wristAngle } = updateCorlissEngineKinematics(model, {
+      crankAngleRad: Math.PI / 4,
+      governorOmegaRadPerS: corliss.governorOmegaRadPerS,
+      cutoffFraction: 0.25,
+      isCutaway: true,
+      dt: 1 / 60,
+      govSpread: corliss.govSpread,
+      wristAmp: corliss.wristAmp,
+      wristLeadRad: corliss.wristLeadRad,
+    });
 
     expect(strokeX).toBeDefined();
-    expect(wristAngle).toBeDefined();
+    expect(wristAngle).toBeCloseTo(
+      Math.sin(Math.PI / 4 + corliss.wristLeadRad) * corliss.wristAmp,
+      5,
+    );
+    expect(model.governorBalls[0]?.position.x).toBeCloseTo(-corliss.govSpread, 4);
     expect(model.materials.mahogany.opacity).toBe(0.35);
+
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "CorlissSteamEngine3D.tsx"),
+      "utf8",
+    );
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "corlissSteamEngineModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("(rpm / 60) * 0.2");
+    expect(modelSource).not.toContain("rpm / 120");
+    expect(threeSource).toContain("governorOmegaRadPerS");
 
     model.dispose();
   });

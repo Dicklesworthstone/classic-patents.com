@@ -174,9 +174,9 @@ export function createLandPolaroidModel(_initialInput?: LandPolaroidInput): Land
   const update = (timeSec: number, input: LandPolaroidInput) => {
     const state = stepLandPolaroidInstantFilm(input);
 
-    // Rollers counter-rotation
-    rollerTop.rotation.x = timeSec * 3;
-    rollerBottom.rotation.x = -timeSec * 3;
+    // Rollers counter-rotation from kernel ω (0 when development time is 0)
+    rollerTop.rotation.x = timeSec * state.rollerDisplayOmegaRadPerS;
+    rollerBottom.rotation.x = -timeSec * state.rollerDisplayOmegaRadPerS;
 
     // Pod crushing animation
     const isRuptured = (input.developmentTimeSec ?? 30) > 0;
