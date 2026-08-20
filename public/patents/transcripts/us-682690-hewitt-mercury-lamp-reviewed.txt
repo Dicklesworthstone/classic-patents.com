@@ -1,0 +1,1388 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 13 ---
+
+No. 682,690. Patented Sept. 17, 1901.
+P. C. HEWITT.
+ELECTRIC LAMP.
+(Application filed Apr. 5, 1900.)
+(No Model.) 3 Sheets-Sheet 1.
+
+[Figure 1: Side elevation of tubular mercury-vapor lamp with condensing chamber 8, mercury cathode 1, iron anode 2, and high-voltage inductive starting circuit 13]
+[Figure 2: Detail cross-section of mercury electrode]
+[Figure 3: Circuit diagram of lamp with inductive transformer and ballast]
+
+Witnesses: Henry Noel Potter, Wm. H. Capel.
+Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 13 ---
+
+No. 682,690. Patented Sept. 17, 1901.
+P. C. HEWITT.
+ELECTRIC LAMP.
+(Application filed Apr. 5, 1900.)
+(No Model.) 3 Sheets-Sheet 2.
+
+[Figure 4: Operating circuit diagram showing converter transformer, magnetic interrupter, and series automatic cutout switch]
+[Figure 4a: Detail of automatic cutout contact]
+
+Witnesses: Henry Noel Potter, Wm. H. Capel.
+Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 13 ---
+
+No. 682,690. Patented Sept. 17, 1901.
+P. C. HEWITT.
+ELECTRIC LAMP.
+(Application filed Apr. 5, 1900.)
+(No Model.) 3 Sheets-Sheet 3.
+
+[Figure 5: Alternative lamp structure with double mercury electrodes and vertical cooling jacket]
+[Figure 6: Multi-tube series lamp system with common inductive ballast]
+
+Witnesses: Henry Noel Potter, Wm. H. Capel.
+Inventor: Peter Cooper Hewitt, by Kerr, Page & Cooper, Att'ys.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 13 ---
+
+~ UNTTED STATES
+
+PATENT @Errea
+
+PETER COOPER nEwITT, OE NEW YORK, N. Y., AssieNoR To PETER
+COOPER nEwiTT, TRUSTEE-OE SAME PLAOE.
+
+ELECTRIC- LAMP.
+SPECIFICATION forming part of Letters Patent No. 682,690, dated September 17', 1901.
+Application filed April 5. 1900. Serial No. 11,605. (No model.)
+
+IO
+
+To“ all whom, it may concern.
+
+cury electrodes; but prior to my invention
+
+Be it known that I, PETER COOPER HEWITT,
+aI citizen of the United States, and a _resident
+of New York, in the county of New York and
+State of New York, have invented certain new
+
+no such devices, so far as I am aware, have
+
+been produced which are suitable for com
+
+and useful Improvements in Electric Lamps,
+
+mercial use. They have usually been started 55
+by bringing the two bodies of mercury con
+stituting the electrodes into actual contact
+
+of which the following is a specification.
+My invention> relates to methods of and ap
+
+the electric current then being caused to arc
+
+paratus for electric lighting.
+
+across from one electrode to the other.
+
+The general purpose of the invention is to
+
+with/each other and then separating them,
+Such
+
+method of starting has been found impracti
+
+produce light by converting electric energy cable for any extended use and requires the
+into light through the agency of vapors or presence of a considerable outside resistance
+gases as efficiently as possible and with sim to prevent an excessive current-flow when
+the bodies of mercury are in contact, and` 65
+ple and durable apparatus.
+In the ordinary conversion of electric en even when startedv they have been incapable
+ergy into light a large amount of the energ of commercial operation with ef?ciency or for
+is wasted in heat, and while the development
+of heat is usually, if not always, attendant
+upon the development of commercial light,
+yet from theoretical considerations it may be
+assumed that the efficiency of a light-produc
+
+any considerable period of time. These and
+other difficulties have rendered such devices
+impracticable for use upon circuits in which
+the electromotive force is liable to vary, as .
+
+in the ordinary commercial systems of elec,
+
+ing device, other things being equal, would be tric lighting, or even in connection with other
+
+increased in approximate proportion as the circuits, such as those supplied by storage
+batteries, and they have little or no value eX 75
+development of heat is suppressed.
+cept, perhaps, for special scientific or labora
+My
+invention
+aims,
+among
+other
+things,
+to
+2.5
+produce light by the conversion of electrical tory experiments. These devices,so far as I am
+energy with the coincident production of as aware, have been essentially arc-lamps, as dis
+moderate an amount of heat as practicable, tinguished from those in which the current
+passing from one electrode to the other does.
+not
+form an arc. The exact distinctions be
+this
+property
+in
+a
+greater
+degree
+than
+matter
+30
+in any other state, and therefore they oifer a tween an arc and conduction not involving an
+field of operation in which the highest effi arc are somewhat difficult to define, although
+ciencies can be obtained if proper means are . not difficult to detect in practical operation.
+devised for rendering the gases or vapors It is noticeable, however, that in the case of an 85
+35 light-emitting underthe influence of elec are there is intense heating of both the positive
+and I have found that gases or vapors possess
+
+tricity.
+
+'
+
+'
+
+and negative> electrodes, but particularly of
+
+It has been proposed to obtain light by the the positive electrode„and the current passes
+passage of alternating or intermitted electric
+
+from the electrodes into the conducting-vapor -
+
+currents of very high frequency through a at definite points or positions, whereas in the 90
+more or less rare?ied gas contained within
+
+other form of conduction the effect is to pro
+
+hermetically-closed tubes, such gas being so duce a halo around the electrode, as if the
+acted upon by the currents as to become lu current passed evenly from the electrode, ex
+minous. This'class of apparatus, commonly cept that a dark space appears at or around
+the electrode. This space and its appearance 95
+seem to differ with-different vapors used; but
+ity as a means of illumination. _It has also there is always a marked and well-defined
+been proposed in some instances to pass elec difference between it and an arc, and when
+tric currents through two electrodes consist in the process of manufacture the last trace
+ing of bodies of mercury contained in her of arc disappears it is plainly noticeable. In IOO
+
+known as “ Geissler tubes,” has been found
+
+45 for various causes to have no commercial util
+
+50 metically-closed tubes and to obtain light the other form of conduction little or no heat
+from the electric arc between the two mer is developed at the points where the current
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 13 ---
+
+682,690
+passes from the electrode into the vapor.
+
+tion of the resistance of the lamp, and as the
+
+Moreover, in the case of the arc there appears
+
+electromotive force at its terminals increases
+the total opposition to the passage of current 70
+may be made to increase also. rI‘his may be
+due in a measure at least to the fact that the
+
+to be a narrowing at or near an electrode,
+
+whereas in the other form of conduction the
+
+body of light is of practically the same di
+mensions‘throughout the space between the greater amount of current flowing under the
+electrodes or between points in close prox increasing pressure tends to develop a higher
+imity to the electrodes. An arc, moreover, temperature, which in turn tends to increase 75
+
+IO
+
+is striated, a condition which does not appear
+to be present in the other form of conduction.
+
+the resistance of the lamp, so that a balance
+
+arc in any one place with a given flow of elec
+tric energy appears to be far in excess of that
+produced by a flow of the same amount of
+energy in the other form of conduction.
+
+lation as the only one or as being- necessary,
+
+can be eüected, rendering the lamp self-regu
+Again, the temperature established by the lating. I do not, however, desire to be un
+
+The lamps which I have produced do not
+operate upon the arc principle, but possess
+the characteristics of this special form of con
+duction. It is, moreover, essential that the
+proper adjustment of the resistance of the
+vapor path should be obtained, and I have
+
+derstood as advancing this theory of its regu
+but merely one which may be advanced from
+the results obtained.
+Some materials when in a gaseous or vap
+
+orized state possess the capacity of emitting
+light under the iníiuence of electric currents
+in a much higher degree than others. The
+vapor of mercury is eíiicient as a light-yield
+
+ing material, and owing to its molecular
+found that this result can be secured in the weight and its low boiling or vaporizing point
+
+case of vapors conducting in this manner, so it is well suited to the purposes of my inven
+that the electromotive force with which the tion. Moreover, it readily serves under the
+25 lamp is adapted to be operated can be pre influence of the current to transfer the heat
+determined with as great a degree of accuracy generated in the lamp to convenient points
+as is usual in the manufacture of the ordi for radiation. Some of the materials nor
+nary incandescent lamps having carbon üla mally existing in the form of gases may, how 95
+ments, and the manner in which the resist ever, be used-such, for instance, as nitrogen.
+30 ance shall vary can be controlled in vapor The amount of light, however, which may be
+lamps with a much wider range of control obtained from nitrogen per unit of length ap
+lable resistance than is the case with a carbon
+ñlament, as the resistance of the carbon is a
+
+pears to be less than that which can be ob
+
+prior to my invention that such a control of
+resistance on the part of a vapor was possi
+ble or practicable, and, as a matter of fact,
+
+in the forms of lamp hereinbefore referred
+
+and white, but wanting in red rays, so that
+while useful for many purposes it maybe un 105
+desirable for others. Lithium and similar
+materials yield spectra with red and other col
+
+to, wherein an are is established between
+bodies of mercury, such control has not been
+
+ors. Nitrogen and othergases develop red rays
+in abundance, and when combined with the
+
+tained from mercury vapors, other things be TOO
+fixed factor, while the vapor resistance may ing equal. The spectrum is also a matter to
+35 be selected t0 vary at will within wide limits. be considered in determining the material to
+It does not appear to have been appreciated be used. Mercury gives a light which is clear
+
+obtained.
+mercury rays a beautiful result is obtained. IIO
+Underproperconditions certain vapors and The selection of the material for the vapor or
+45 also certain materials which normally exist gas must be determined by the conditions and
+in the form of gases may be caused to remain requirements. The invention will be more
+in such condition as to convey electric cur
+particularly described with reference to mer
+rents under the iniiuence of moderate elec cury vapor as a matter of convenience and 115
+tromotive forces after a current-dow has once
+
+SO been established. By properlycorrelatingthe
+
+clearness, being among the most convenient
+
+resistances between the respective electrodes
+
+to practice the art.
+The lamp should be constructed to utilize
+
+and the vapor or gas and the resistance of the
+
+as far as possible all the resistance of the
+
+vaporor gas path itself and providinga proper lamp in the conversion of the electrical energy
+heat-radiating capacity a lamp may be pro into light; but as there may be more oi-_less
+55 duced which will take considerable currents heat developed the structure should be such
+at moderate electromotive forces and be self
+regulating to such a degree as to permit of its
+use upon commercial circuits even though
+their electromotive forces may iiuctuate
+
+as will radiate the heat at .a suitable rate.
+
+column reduced as much as possible, so that
+
+practicable to cause the radiation to take
+
+Usually it is advantageous to employ a cool
+ing-chamber at some portion of the device 125
+outside the path of the current. In the case
+through wide limits. To render the lamp as of mercury, for instance, an enlargement of
+stable and self-regulating as possible upon the the tube may project a distance beyond one
+circuit, it should have the resistance between of the electrodes, so that the excess of heat
+the respective electrodes and the gas or vapor will be radiated. In some instances it is
+
+65 these resistances relative to the resistance of place through the walls of the tube surround
+the gas column shall be small.
+
+The gas or
+
+vapor path then constitu tes the principal por
+
+ing the gas column at a suflicient rate to
+
+meet the requirements.
+
+If the temperature
+
+„
+
+.
+
+„a
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 13 ---
+
+3
+
+682,690
+
+of the lamp is allowed to become too high, the have found it sometimes advantageous to use
+lamp is liable to extinguish itself.- When a interrupted currents of high voltage,A flowing
+íixed gas is used or vapors under such condi in a given direction and to first constitute one 70
+tions t'hat their densities cannot be unduly of the electrodes the anode and the other
+increased by heat in the tube, then the cool the cathode and then to reversethe direc
+ing-chamber may be dispensed with. The tion of the currents. I usually employ solid
+lamp may be made of such a size as to render materials-such, for instance, as pure iron or
+other suitable substance-for one or both of 75
+a special cooling-chamber unnecessary.
+The ability to start the lamp readily is of the electrodes, and by thus constituting the
+
+the utmost importance, gases appearing to
+present a greater resistance to the passage
+of the current before the current is passing
+than after, and I have found that certain
+materials added to the lamp before or /while
+15 in the process of manufacture produce a
+condition which makes it possible to start a
+
+respective electrodes alternately anodes and
+cathodes during the process of exhaustion
+I am enabled to heat each of them to a very
+
+high temperature, and thus drive out any
+occluded gases and foreign materials and
+produce any chemical reactions in themthat
+might otherwise occur later on and ruin the
+
+current underamoderate increase of electric efficiency of the tube. While the lamp is
+pressure, and thereupon the continuous or thus being treated and exhausted I connect 85
+an alternating current of 10W pressure readily the electrodes through a variable resistance
+traverses the lamp, producing an intense en with a suitable source of current of moderate
+
+during light. I have obtained excellent re electromotive force-such, for instance, as one
+sults by the use of an independent substance hundred and ten or two hundred and twenty
+
+for effecting the starting of the lamp, which volts-the applicationof the high potential 90
+produces a preliminary condition favoring ‘ being also continued. In practice I find that
+25 the passage of current. One of the sub the lamp should berun on t-he pump with a
+stances which I have used is sulfur or its current at least equal to or, better, in_excess
+com pounds-for example, a small quantity of of the current it is intended to afterward op
+the sulfid of mercury introduced at the same
+time as the- mercury when mercury is em
+
+eratewith. As the lamp approaches comple 95
+
+tion it suddenly becomes intensely luminous
+The tube con by reason of the passage of `a considerable
+taining these materials is then heated by any current of moderate potential from this
+suitable means, the air, moisture, and for source. The high-voltage current may then
+eign gases being pumped out by a suitable be temporarily Withdrawn and the lamp fur ICO
+
+30 ployed for forming the vapor.
+
+air»pump.
+
+I have found it advantageous ther treated by current of low potential.
+
+35 during the process of exhaustion to heat the Usually, however,l it is desirable to use vthe
+tube by convenient means until a vacuum currents of interrupted high potentialA at in
+is formed and to then subject the contents tervals, as they are useful for heating the
+of the tube to the action of an electric cur
+
+electrodes and effecting the chemical changes 105
+
+rent of high voltage. I am able to thus pro as -above referred to. When the lamp ceases
+duce more or less heat throughout the length to give off further foreign gases, it may be
+of the tube and produce such chemical reac sealed‘off, and it is then in condition for op
+tions as may occur under the influence of the
+current and drive out foreign or- deleterious
+
+eration.
+
+,
+
+„
+
+`
+
+y
+
+When no starting material is present in the IIC
+
+gases and substances, leaving fairly pure lamp, it is possible to start by heating it~by
+45 mercury and a resultant sulfur compound,
+
+any convenient means-such, for instance, as
+
+the exact nature of which I am not preparedv a Bunsen burner or an electric heating-coil
+
+to state With defìniteness, although from such of any convenient construction-and simul
+tests as I have been able to apply it would taneously applying to the terminals a diüer 115
+seem probable that it _is a compound of mer ence of potential substantially equivalent to
+50 cury and sulfur containing a less proportion that upon which the lampis designed to op
+
+of sulfur than exists in the form of sulfid of erate and at the same time aboosted electro
+Its effects seemY ,quite different motive force to enable the regular current to
+from that produced -by pure red or black pass; but in the case of gases, owing to the 120
+sultids of mercury such as I have been able electric phenomena the exact nature of which
+55 to make or procure in the markets. With I am not as yet able to state, the lamp lights
+this material present in the tube it is pos up, and when once lighted will continue in
+sible at starting cool to transmit an alter operation as long as required. When, how
+nating or intermittent current from one end ever, the starting material is used, the lamp 125
+of the tube to the other with a much lower elec may be started Without preliminary heating
+tromotive force than is required if the sulfur by means of electriccurrents of the proper
+compound or its equivalent Were not present. electromotive force, usually higher than that
+It >seems also desirable to free the tube -as far upon which the lamp is normally intended to
+
+mercury.
+
+as possible from certain foreign substances, run. This maybe conveniently done by plac ISO
+
+and particularly from oxygen, and I some ing in the circuit leading to the lamp the sec
+65 times treat the tube with a bath of heated ondary coil ofla transformer, the primary of
+hydrogen before placing on the pump and which'is connected with the supply-circuit
+also when the lamp is being exhausted. I through a suitable circuit-interrupter, or an
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 13 ---
+
+á
+
+682,690
+
+an organization of apparatus for exhausting
+and treating the lamp during exhaustion.
+first cause a current to pass through the space
+Referring to the figures, 1 represents _a glass
+between the electrodes, which then appears tube of such dimensions as may be required
+to afford a path for the operating-currents say, for example, a tube of three-quarters of
+of moderate potential. The readiness with an inch in diameter and two or three feet in
+which currents of lower electromotive force length and having a wall of such thickness
+alternating current from a suitable trans
+former may be used, the purpose being to
+
+are caused to iiow when a lamp provided with
+
+as not to be fragile.
+
+The particular dimen
+
+lthe starting material has been subjected for sions of the tube to be chosen are determined 75
+IO
+
+an extremely short period to a higher elec
+tromotive force would indicate that the start
+ing is not in this case due to the heat devel
+opment of the current, but to some other elec
+
+by the electromotive force and the current
+with which it is to be operated and other con
+siderations which will be hereinafter pointed
+' out.
+This tube is provided with two elec
+
+trolytic or electrochemical action, the exact
+
+trodes, (indicated at 2 and 5, respectively.)
+
+nature of which it is diiiicult to determine.
+
+If the lamp is to be run by continuous current,
+the electrode 2 is usually the anode and the
+electrode 5 the cathode. In the drawings I
+
+For the purpose of constructing the 'lamp it
+is not essential that the theory of the action
+should be determined.
+have shown the electrode 2 as being of an in~
+I have found that other materials than sul verted-cup shape; but other forms may be 85
+fur and mercury may be used to produce the employed-such, for instance, as a closed
+
+starting material in the lamp.
+
+For instance, spherical, oval, cylindrical, and other shapes.
+
+I have employed selenium and mercury with
+good results and also phosphorus and mer
+cury' and other material. After the lamp is
+25 started it is probable that the starting ma
+
+I have obtained excellent results by using a
+pure iron for this electrode; but other metals
+may be substituted. It is suspended within 90
+or near the neck of an enlargement or cham
+
+ber 4, which I usually employ, this chamber
+carrier, but that it is forced out of the path serving to increase the heat-radiating capac
+of the current or undergoes a change; but ity of the lamp and to retain impurities.
+when the lamp is again cooled it resumes the The electrode 2 is suspended by leading-in 95
+terial does not continue to act as a current
+
+30 proper relation and condition to be availed
+of for again starting. I have found it ad
+vantageous when the lamp is to be started
+without heating and by means of moderately
+
+conductor 7, of platinum or other suitable
+
+material, extending through the glass Wall,
+and I usually provide a long seal 10 for pro
+tecting more or less of the leading-in con
+
+high voltage currents to surround the glass ductor Within the lamp. The electrode 5 is IOS
+35 or wall in the neighborhood of one of the
+
+shown in this instance as being a small quan
+
+tity of mercury. A leading-in conductor 8
+current lamp each of the electrodes, by a connects with this electrode. Surrounding
+band of conducting or semiconducting ina the lower end of the tube, adjacent to and
+terial-such, for instance, as foil--~which in usually projecting a slight distance, say, one 105
+turn is placed in electrical connection with eighth of an inch above the level ot' the lower
+the other electrode or grounded by means electrode, there is placed a thin band 9 of
+electrodes, or in the case of an altern ating
+
+of a small conductor.
+
+This device appears
+
+conducting material-'~such,-for instance, as
+
+foil-and this is electrically connected .by a
+at least the surface tension or static charge conductor 13 with the leading -in Wire 7. IIO
+45 which gathers about the electrode during When the lamp is to be operated by alter
+the application of the starting-current, and nating electric currents, it may be useful to
+it reduces the effective starting resistance place a circular band in similar relation to
+of the lamp. A lamp which could be started the other electrode and connect it with the
+only by extremely high potential currents, leading-in conductor 8.
+115
+The lamp is started by means either of first
+50 if at all, without this band may be started
+without difficulty when it is present. When heating it-eas, for instance, with the ñame of
+the lamp is once in operation under the in a B unsen burner or other convenient means
+fluence of alternating or continuous cur
+or by applying to the terminals an electromo
+rents of low pressures, the presence of the tive force of higher potentialwsuch, for in 120
+55 conducting - band seems to no longer ex stance, as may be obtained by a' rapidly al
+ercise its function to the same degree, al ternating or intermittent current. In Fig. 3
+though it may remain Without interfering I have represented a system of circuits and
+with the operation of the lamp, as it is insu apparatus for securing an intermittent cur
+lated from the neighboring terminal of the rent of higher potential from the same main 125
+lamp.
+circuit 1i 15,upon which the lamp is to be run.
+In the accompanying drawings, illustrating The apparatus consists in this instance of a
+my invention, Figure 1 represents one form converter having a core 16, provided with two
+of a complete lamp. Fig. 2 illustrates a modi coils 17 and 18. One terminal of the coil 17
+fied form of electrode. Figs. 3, 4, and 5 illus is connected with the conductor 14. The re
+trate systems of circuits for operating the maining terminal is connected with an insu
+to lessen or neutralize to a certain extent
+
+lamp. Fig. _6 illustrates, partly in diagram,
+
+lated contact 2O on an armature 21, which is
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 13 ---
+
+' $82,690
+
+operated by the core 16. yAcontact-point 22, is usually desirable,` though not necessary,
+against which the point 20 normally rests, is to so connect the terminals thatv the electro
+connected with one terminal of a circuit-in motive forces shall be in the same direction
+terrupting device 19. The remaining termi that is to say, the positive side of the main
+nal of this circuit-interrupting device is con
+
+circuit being connected with the elect-rode2 'i ~
+
+nected, through a suitable key or switch 23, the positive side of the higher potential cir-`
+with the conductor 15. One terminal of the
+coil 18 is connected with the conductor`14,
+j and the remaining terminal is connected with
+the leading-in wire 7. The leading-in Wire8
+is connected with the main line 15. When
+the current is turned on--as, for instance, by
+
+cuit is connected with the same electrode.`
+The connections may, however, be in oppo 75
+site directions. With alternating currents, ~
+
+the electrode 2 being alternately anode and
+cathode, the connections lnay be followed'ou
+on the same principle.
+
+y
+
+>
+
+rThe circuit-interrupter» 19 which I have
+rapidly-intermitted currents to pass through shown is an adaptation of adevice commonly
+
+' the line-switch 2341-.the'interrupter 19 causes
+
+15 the coil 17. __This- induces a current of any known asa“ Vtïehnelt ” interrupter. It con~
+desired potential in the coil 18. The effect sists of two electrodes 28 and 29, of 1ead,sepof this high potential is to produce within the arated by a jar 30,0f non-conducting material,
+lamp such an electrical or electrochemical 'having small perforations 31 and immersed
+condition as will result in effecting a passage in sulfuric acid contained within a vessel 32.
+
+of the currents of normal potential which are
+
+An electrode 2S is placed within the jar and
+
+--
+
+simultaneousl§1 applied by the main circuit an electrode 29 outside of it. The action of
+14 15. When currents commence to flow the electric currentis to generate gases which
+through the lamp from the conductors 14 15 forming Within the perforations temporarily 90
+under the influence of the normal electromo interrupt the circuit, and the gases disap#
+
+25 tive force upon the main circuit, the core 16 pearing the circuit is again completed with
+attracts the armature 21, separating the con great rapidity. Other forms of circuit-inter
+tacts 20 22. The same movement of this ar rupting devices, however, may be employed.
+Unless special means are provided to pre-` 95
+mature may operate to close a shunt-circuit
+24 around the coil 18 through a resistance 25 vent it a lamp of this character using mer
+30 offering sufficient resistance to the flow of cur cury vapor is liable to have a more or less
+rent to cause enough current to still How tiickering effect, probably due to the shifting
+through the coil 18 to hold the armature 2l in of the position at which the current enters
+
+its forward position'so long as the lamp con the cathode. I have succeeded _in obviating IOO
+tinues to operate. In this figure I have shown such flickering in various ways. The tend
+35 this as accomplished by an insulated contact ency of the current seems to be to remain
+26, carried by the armature 21, coming into in the gas or vapor until it reaches the por
+contact with a point 27, this point being con tion of the cathode most distant from the
+nected with the conductor 24, while the insu anode, and if a small body of mercury sur IOS
+lated point 2G is connected by the conductor rounds thecathode it will unless means' are
+provided to-prevent it wander over the surface
+27 with the opposite end of the coil 18.
+During the starting of the lamp by the ap of the mercury, and thus produce the iiick
+
+plication of higher potential currents a high ering. I find that by sufficiently obstructing
+static charge appears to occur near the elec~ the path beyond the portion of the cathode IIO
+
+trode 5 and upon the outer surface of the
+45 lamp, and this is removed or reduced by the
+presence of the band 9, connected through
+the conductor 13 to theleading-in wire 7. In
+practice I have found that with this band re
+moved or the conductor 13 interrupted it is
+
+nearest the anode the current will be forced to
+enter the cathode at a more or less fixed point,
+
+and thus become steady and obviate the flick
+
+ering. A cylinder of porcelain or other suit
+able substance 6, as shown in Fig. 2, ymay be 115
+placed in the mercury, leaving only a perfora
+
+exceedingly difflcult,if not impossible, to start tion through which the current must pass.
+Where the cathode is at the end of the tube,
+this difficulty may be overcome to a large
+The exact position at which extent by making it concave and arranging IZO
+
+the lamp with currents of reasonable electro
+motive force unless the lamp is heated by ar
+
+tificial means.
+the band 9 may be located appears to differ it so that the current will enter it on _the con
+
+55 somewhat> in diüerent cases, probably owing cave surface.
+I have used in some instances in place of
+to the good conductivity of the gas coming
+from or forming` part oi’ the electrode. The the form of apparatus above described for ~
+
+proper position is usually slightly beyond the producing the higher potential starting-cur 125
+
+effective joint between the electrode and the rent a simple spark-coil, as shown in Fig. 4,
+comprising a core 40, with av primary coil 41,
+gas.
+It should be noted that the potential of the adapted to be connected,by means of a switch
+main circuit 1415 is applied to the lamp dur 42, between the main conductors 14 and 15,
+ing the time that the higher potential start and also provided with a secondary coil 43,
+ing-current is applied, and if an intermittent one terminal of which is connected with the '
+current in distinction from an alternating electrode 5 of the lamp and the remaining
+current is employed and a continuous cur terminal with the main conductor 15. A
+rent is to be used for operating the lamp it switch 44 is included in the conductor 45,
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 13 ---
+
+6
+
+682,690 -
+
+which leads from the electrode 2 to the main
+conductor 14.
+
+The coils 4l and 43 are so pro
+
+portioned as to produce a higher difference
+of potential at the terminals of the coil 43
+upon breaking the circuit of the coil 4l, and
+the discharge from this coil suffices to pro
+duce in the vapor path of the lamp the proper
+conditions for permitting the current from
+the main circuit to fiow through the lamp by
+IO
+
+way of the conductor 45 and the coil 43.
+In Fig. 5 -a modification in the circuit or
+ganization is shown in which a three-wire sys
+tem of distribution is represented by the con
+
+Where and be of other form, provided it is out
+of the vapor~path~
+It may sometimes be desirable to insert a
+
+small balancing or -steadying resistance in
+series with the lamp. This resistance is of
+importance mainly on starting certain kinds
+of lamps, which when cold, owing to the start
+ing material or other construction,would take
+too much current until they have acquired 75
+their working condition. \Vhen a given elec
+tromotive force is applied to the terminals of
+the lamp, such steadying resistance does not
+cause any material reduction of potential at
+
+ductors 50, 5l, and 52. The diii‘îerence of po the terminals of the lamp until current com
+tential upon the outside conductors 50 and mences to flow, and thereafter the greater the
+52 beingassumed to be twice that between the amount of current flowing the greater Will be
+middle or neutral conductor 5l and the re
+the resistance opposed to the flow of current,
+spective outside conductors, the purpose is and thus the difference of potential at the ter
+to applythe higher diüerence of potential to minals of the lamp will be held down. The
+the lamp upon starting and automatically coils of the starting mechanism are therefore
+shifting the lamp to the lower potential when usually not objectionable when left in circuit,
+current commences to flow.
+
+For this purpose
+
+for their resistance in a large measure com
+
+anysuitable form of circuit-changing switch pensates for moderate changes of voltage
+may be employed. In the drawings I have upon the circuit in which the lamp may be 90
+
+shown a magnet 53, having its coil included
+in the conductor 54, leading to one terminal
+of the lamp. The armature 55 of this mag
+net is connected by a conductor 5G with the
+'neutral cond uctor 5l. It is normally held
+30 away from the magnet, so that an insulated
+contact 57 is pressed back by a contact-point
+
+58, which in turn is connected by a conductor
+5Sn with the main conductor 52. The insu
+
+placed and also prevents too great a rush of
+
+current when the lamp iirst starts, for when
+the lamp starts it is relatively cold and is ca
+pable of absorbing heat rapidly and may take
+a correspondingly large amount of current. 95
+This might in some cases melt the leadingin
+wires or crack the glass were it not prevent
+ed by some such means as the steadying re
+sistance. I have shown such a steadying re~
+
+lated contact 57 is connected by a conductor
+35 59 with the remaining terminal of the lamp.
+
+sistance at ll in Fig. 3; but when the lamp IOO
+is running the steadying resistance causes
+When the lamp is started, its terminals are but slight loss, as the amount of current is
+in connection with the two conductors 50 and less.
+52; but current [lowing through the conduc
+Referring to Fig. 6, the method of manu
+tor 54 in suiiicient quantity to operate the facturing the lamp will be described more in 105
+
+lamp causes the magnet to draw the arma~
+
+ture 55 forward, closing the contact between
+
+detail. The tube, properly shaped and pre
+pared, is first thoroughly cleansed with acids,
+
+the spring-contact 57 and armature 55 and
+
+alkalies, and water.
+
+I have found it conven
+
+simultaneously breaking the contact between ient to first rinse the tube with dilute hydro
+the point 58 and the spring-contact 57, thus iiuoric acid and then wash with distilled water, IIO
+45 shifting the lamp to the lower voltage-circuit. and therefore, if desired, it may be further
+A resistance may be included in the conduc
+tor 58”' to prevent a short circuit upon the
+conductors 5l 52 when the armature is being
+drawn forward.
+50
+
+As already stated in connection with Fig.
+
+l, the condensing and impurity-containing
+chamber 4 or its equivalent performs an im
+
+portant function in the operation of the lamp.
+As the lamp commences to operate heat accu
+55 mulates, and the increasing temperature ap
+pears to soon result in increased resistance
+`on the part of the vapor path. If the heat is
+
+Washed by a bath of hot hydrogen. In case
+mercury is to be used for providing the cou
+
+ducting Vapor, a small quantity of it is placed
+within the tube, and if the sultid of mercury 115
+is to be used for forming the starting mate~
+rial a small quantity of that Substance is
+added. Pure sulfur may be introduced in
+stead of sulfid of mercury; but I have found
+that it usually is more difficult to secure the
+desired results with it than with the sulfid of
+mercury. The lamp is then sealed onto a
+
+suitable exhaust-pump GO of any suitable
+not conducted away after the lamp has character through an exhausting-tube 6l,
+reached its proper working condition with the and the process of exhaustion is commenced. 125
+same rapidity that it is generated, the lamp Meanwhile artificial heat is applied to the
+mayextinguishitself. Thechamber4isthere tube-as, for instance, by a Bunsen burner
+
+fore constructed with sufficient radiating sur
+face to get rid of the excess heat and keep
+the lamp in the proper condition. The cham
+
+62 or an electric heater or in some other con
+
+venient manner. After the free gases and
+air have been exhausted, an electric current
+
+65 ber 4 need not, however, necessarily surround of higher potential is applied to the terminals
+the electrode 2; but it may be located else
+
+of the lamp--as, for instance, by a system of
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 13 ---
+
+~
+
+682,690->
+
+circuits and apparatus 'such as describedin
+connection with Fig. 4-and the passage of
+thisA current through the lamp produces an
+effect somewhat similar to that noticeable in
+-Geisslertubes The operation of the exhaust
+pnmp is continued,and a difference of poten
+tial approximately equal to that under which
+v the lamp is intended to be operated is applied
+to the terminals of >the lamp. As the lamp
+YIO
+
+,
+
+is obtain ed whenthe lamp is'c`onstructe_d,'and
+the lamp being made'l self - regulating the
+
+temperature controls and is controlled bythe
+
+quantity >of current >íio‘wing.,v r»I have also
+Y
+
+,
+
+7C?
+
+found that with the inercuryvapors the lamp "
+
+r
+
+operates successfully without-the enlarge
+ment 4, if the diameter of thetube is an inch`
+or more, or even smaller. t
+
+In certain otherv applications tiled byime
+
+approaches completion `it suddenly becomes April 5, 1900,> Serial Nos. 11,606 and 11,607, ¿- ,
+intensely luminous by reason of the passage >and Serial Nos. 44,647, 44,648, and¿_44,649, l - “
+of a current of considerable quantity. Ifthe tiled January 25, 1901.», claims are madeïto'
+higher potential'current employed is an in certain features which aredisclosed herein.>> u
+The invention claimedl is"
+terrupted current, it is desirable to reverse
+,l.> A lamp for producing light by electric Y Y
+theterminals of the-lamp‘with reference to
+that current one or more times, for the cath energy consisting of an i'nclosing chamber, a
+ode is thereby readily heated to a Very high `gas or vapor contained therein capable, un
+i
+
+>
+
+fnfvßo
+
+temperature, which >aids in driving off any der proper conditions, of conducting currents
+
+occluded `gases and impurities. A circuit-re- » -of considerable quantity under the intiuence
+
+verser 63 may be employed for that purpose.
+
+.g5
+
+of moderate ‘difference of potentiaL-and -a ` ~
+
+In'th'e form of apparatus shown in Fig. 6 starting material also contained Within'the.
+
+the connections of the spark-'coil are some chamber and serving to‘ convey a starting-4
+what different from those of the similar coil current under the influence of ahigher dif
+
+shown in Fig. 4; but the principle of opera
+
+ference
+
+of
+
+potential.
+
+‘
+
+~
+
+.
+
+'
+
+-
+
+'
+
+p
+
+'
+
+v
+
+2. In a gas or vapor lamp, the combination
+tion is the same, and the action of the appa
+ratus can easily be determined by reference with a conducting vapor or gas constituting
+to the description of it in connection with the sole path for the current while the lamp
+
+Fig. 4. In place of the switch 44 (shown in
+Fig. 4) I substitute a variable resistance`44f‘,
+the object of Which is to permit of Varying
+the current passing through thev tube 1 dur-`
+ing the process of manufacture. The switch
+
+is in operation, of a start-ing material serving
+to permit the initial passage of the electric
+
+42 may be replaced by an automatic circuit
+
+trodes within the same, means for securing
+
+current through the lamp.
+
+.
+
+3. An ‘electric lamp consisting of a her
+
+metically-sealed inclosingl chamber, elec
+
+interrupter-snch asillnstrated, for instance, electrical connection therewith, respectively,- IOO
+
+35 in connection with Fig. 3.
+
+'
+
+through the walls of the chamber, a Vapor or
+
+The process of exhausting the lamp does gas contained within the chamber having,
+
+not appear to remove the starting material,
+although apparently a different chemical com
+pound is formed, and it is possible that some
+of the ~sulfur is thrown off or formed into
+some other combination and Withdrawn from
+the tube. In any event sufficient of the start
+ing material remains in the tube to permit
+
+when traversed by anelectric current, are
+sistance so varying with increments of cur
+rent as to render it substantiallyself-regulat
+
+ing, and a steadying resistance in series with
+the lamp.
+
+»
+
+4. In an electric Vapor or gas
+
+'
+
+lamppthe.
+
+combination of two electrodes located at orl
+near the respective ends of the lamp, a con kIIO
+pleted. The amount of sultid of mercury to ducting medium between the electrodes con
+be introduced may be varied within wide sisting o_f a vapor’or gas which is -light-emit->
+limits. I have usedin a lamp of approxi ting under the infiuence of electric currents
+
+t-he ready starting of the lamp when it is com
+
+mately the dimensions hereinbefore referred of moderate potential, means for applying a `
+preliminary higher diüeren'ce of potential to 115
+the terminals of the lamp for creating a con*
+the
+point
+of
+a
+pocket-knife
+and
+be
+plainly
+50
+visible. Too much does not seem to exercise dition on the part of the conducting-vapor
+any very bad effect, except retardin g theproc which will permit it to conduct currentsof
+ess of exhaustion and possibly to blacken or moderate potential, and means for thereafter
+coat the glass somewhat. `ÑVhen the pump operatin g the lamp by the currents of moder
+to a quantity as small as may be taken upon
+
+ceases to Withdraw any gases other t-han'the
+55 mercury-vapors,
+the lamp is completed and
+
+ate potential.
+
+l
+
+'
+
+5. In an electric lamp, the combination of
+an inclosing chamber, two electrodes, a con
+may be sealed off the pump at 6l.
+While I have described the lamp more par duct-ing medium between the electrodes con
+ticularly With reference to mercury vapors, sisting of a vapor or gas which is light-emit-r 125
+I desire it to be distinctly understood that I tingunder t-he inñuence of electric currents
+do not limit myself to those vapors nor to ma
+
+of moderate potential, means for applying a ‘
+
+in the forms of solids or liquids„for perma
+
+nals of the lamp for producing a condition onv
+
+terials which at ordinary temperatures exist higher difference ofpotential to the termi
+
+nent gases may be employed. Usually with the part of the vapor or gas which will ren
+permanent gases the necessity of the cham der it conductive for currents of considerable
+ber 4 is obviated, for the proper gas density quantity and moderate potential, and means»
+
+-`
+
+--- REVIEWED TRANSCRIPTION PAGE 11 OF 13 ---
+
+8
+
+682,690
+
+for relieving the static charge at or near one
+of the electrodes caused by the action ot‘ the
+
+higher dilîerence of potential.
+
+off thereby in injurious quantities by the op
+eration of the lamp.
+12. An electrode for electric lamps employ 70
+
+6. In an electric lamp, the combination of ing a vapor or gas as a conducting medium
+au inclosing chamber, two electrodes, a con consisting of a quantity ot‘ mercury and a
+duct-ing medium between the electrodes con non-conducting wall constricting the path of
+sisting ot' a vapor or gas which is light-emit the electric current between said vapor or
+ting under the influence of electric currents gas and said mercury.
+75
+of moderate potential, means for applying a
+13. The combination with an electric lamp
+
+IO
+
+higher difference of potential to the termi wherein light -is produced by the passage of
+nals of the lamp for producing a condition electric energy through a hermetically-in
+
+on the part of the vapor or gas Which will closed gas or vapor, a source of electric cur
+render it conductive for currents of consid rents of moderate difference of potential,
+erable quantity and moderate potential, and connections from said source with the termi
+Is means for relieving the static charge at or nals of the lamp, a potential-raising device
+near one of the'electrodes caused by the ac also connected with said source of electric
+„ tion of the higher difference of potential con
+
+sisting of a band of conducting material lo
+cated near, but out of contact with, that elec
+
+currents, and means for applying the higher
+difference of potential produced by said de 85
+vice to the terminals ot' the lamp While the
+
+trode, and electrically connected with the moderate potential is also applied.
+
+other electrode.
+14. The combination with an electric lamp
+7. A lamp for producinglight by means of in which light is produced by electric‘energy
+electric energy consisting of an inclosing traversing a hermetically-inclosed vapor or 90
+
+chamber, a gas or vapor contained therein ca
+
+gas, a source of electric currents of moderate
+
+25 pable, under the proper conditions, of con
+
+electromotive force,electric connections there
+
+ducting currents of considerable quantity and from to the terminals of the lamp, and a po
+moderate electromotive force, a starting ma tential-raising transformer having its second
+terial Within the chamber facilitating the pas ary coil connected in the circuit leading to 95
+sage of current therethrough under the in the lamp and its primary coil connected with
+30 fluence of higher differences of potential, a the source of currents of moderate difference
+conducting-band surrounding the inclosing of potential, substantially as and for the pur
+chamber near one of the electrodes of the
+
+lamp, and electric connections for leading oí
+the electric charge produced therein under
+35 the influence of the electric currents of high
+differences of potential.
+8. An electric lamp consisting of a trans
+parent tube, a gas or vapor column contained
+therein, an electrode at the lower end thereof
+consisting wholly or in part of liquid, a me
+tallic electrode at or near the upper end of
+
+pose described.
+15. The combination of an electric vapor or IOO
+
+gas lamp having a gas or vapor path adapted
+to be rendered luminous by the passage of
+an electric current, said vapor path having
+a resistance so varying with increments of
+currents employed for its operation as to ren 105
+
+der it substantially self-regulating, a circuit
+of low potential for the normal operation of
+the lamp, and a local circuit of higher poten
+said tube, a cooling and impurity-containing tial part of which local circuit forms part of
+chamber surrounding the upper electrode, the circuit of low potential, the vapor path IIO
+and means for securing electric connections forming a part of both circuits.
+45 with the respective electrodes through »the
+16. The combination with an electric lamp
+Wall of the lamp.
+in which light is produced by electric energy
+9. An electric lamp consisting of a trans acting on a hermetically-inclosed vapor or
+parent inclosing chamber, an electrode at or gas, a source of electric currents of moderate 115
+near one end of the chamber consisting electromotiveforce,electric connectionsthere
+50 Wholly or in part of mercury, an electrode at from to the terminals of the lamp, and a po
+or near the other end of the chamber consist
+
+tential-raising transformer having its second
+
+ing of a body of iron, and means for form ary coil connected in the circuit leading to
+ing electrical connections with said electrodes the lamp and its primary coil connected with 120
+through the wall of said chamber.
+the source of currents of moderate difference
+55
+10. Au electric lamp consisting of an in of potential, with means on starting for shitt
+
+closing chamber, electrodes within said cham
+ber connected with each other through an in
+tervening gas or vapor column, and a static
+charge dissipator located near one of the elec
+
+trodes but insulated therefrom and electric
+ally connected with the other electrode.
+11. An electric lamp consisting of an in
+
+ing from the higher potential to the lower
+potential circuit, substantially as and for the
+purpose described.
+125
+17. The combination in an electric lamp in
+
+which light is produced by electric energy
+acting on a vapor or gas, a source of electric
+
+currents of moderate electromotive force,
+
+closing chamber and two electrodes at or near
+
+electric connections therefrom to the termi
+the respective ends of said chamber, one of nals of the lamp, a potential-raising trans
+65 said electrodes consisting of a solid body of former having its secondary coil connected in
+
+not readily vaporizable material free from the circuit leading to the lamp and its pri
+carbon and other materials liable to be given mary coil connected with the source of cur»
+
+--- REVIEWED TRANSCRIPTION PAGE 12 OF 13 ---
+
+Q,
+rents of moderate potential, and an automatic .por or gas path, of a source of high difference
+circuit-interrupter for -opening the circuit of of potential and a source of moderate differ
+the primaryfcoil'when currents of consider ence of potential, means for connecting the 70
+able quantity traverse the lamp under the in-v lamp with the source of high difference of
+fluence of the normal electrornotive force from potential for starting the lamp and with the
+said source.
+.
+source of moderate difference of potential for
+18.Y The combination With an electric lamp operating the lamp.
+in which light _is produced by electric energy
+23. The combination with an electric lamp, 75
+IO
+
+acting on a vapor or gas column, a source of
+
+two sources of electromotive force, means for
+
+electric currents of moderate electromotive
+
+connecting said sources in series for starting
+
+force, velectric connections therefrom to the the lamp, and means for connecting the lamp
+terminals of the lamp, a potential- raising With one of said sources for operating it When
+transformer having its secondary coil con started.
+24. The combination with an electric lamp
+nected in the circuit leading to the lamp andl
+its primary coil connected with the source of having a light-emitting material consisting
+currents of moderate difference of potential, of a hermetically¿inclosed vapor or gas capa
+
+ble of emitting light under the iniluence of
+
+and means for producing rapid variations of
+current in the primary coil, thereby super
+posing a higher electromotive force upon the
+moderate electromotive force applied to the
+
+currents of moderate potential, a source of
+electric currents, means for connecting thev
+lamp with said source, means for creating
+
+lamp.
+
+from the moderate potentialcurrents of higher
+
+19. The combination with an electric lamp potential, means for applying the higher po
+in which light is produced by the conduction tential to the lamp for startingit, and means 90
+of currents through a path of vapor or gas, for discontinuing the high potential when
+g
+25 of a source of electric currents, connections the lamp is started.
+25. The combination With an electric lamp
+therefrom with the terminals of the lamp, a
+converter having its secondary coil connected comprising an inclosing chamber and a vapor
+in said circuit with the lamp and having its or gas forming a path for the current between 95
+primary coil connected with said source, the electrodes of the lamp, of a transformer,
+30 means for rapidly magnetizing and demag meansfor causing independent variations in
+netizing the core of said transformer, a resist the current traversing the primary coil of the
+ance shunt-circuit around the secondary coil transformer, and circuit connections through
+of the transformer, and means for closing the the secondary coil of the transformer with a IOO
+connections of said shunt-circuit when the source of electric currents. ‘
+
+26. The combination with an electric lamp
+V35 lamp is in operation. ,
+20. Thecombination with an electric lamp comprising an inclosing chamber and a vapor
+in which light is produced by the conduction or gas forming a path for the currentbetween
+of currents through a path of vapor or gas, the electrodes of the lamp, of a transformer, 105
+of a source of electric currents, connections means for causing independent variations in
+therefrom With the terminals of the lamp, a the current traversing the primary coil of the
+converter having its secondary coil connect transformer, connections through the second
+ed in circuit with the lamp, and having its ary coil of the transformer with a source of
+primary coil connected with said source, electric currents, and means for interrupting
+means for rapidly magnetizing and demag the i’ioW of currents through the primary coil.
+27. The combination with an electric lamp
+45 netizing the core of said transformer, a resist
+ance shunt-circuit around the secondary coil having a heremetically-inclosed gas or vapor>
+of the transformer, means for closing the con path, ofV a circuit leading to the terminals
+nections of said shunt-circuitwhen the lamp thereof, a transformer the secondary coil of 115
+is in operation, and means for simultaneously which is included in said circuit, means for
+50 interrupting the connections of the primary causing a rapidly-varying current to traverse
+the primary of the transformer, and ~means '
+circuit.
+2l. The combination in an electric lamp in- for interrupting the circuit of said primary
+which a starting-current of higher electro coil, by the action of current _íiowing through
+motive force is required, of a transformer for the lamp.
+28. The combination with an electric lamp
+55 producing such higher electromotive force
+having its secondary coil connected with the of the character described, of a circuit lead
+terminals of the lamp and its primary coil ing to the terminals thereof, a transformer
+connected with a source of electric currents, the secondary coil of which is included in said 125
+connections from said source through the sec circuit, means for causing a varying current
+ondary coil, and a circuit-interrupting device to traverse the primary of the transformer,
+for the primary coil operated by the magneti means for interrupting the circuit of said
+zation of the core of the converter under the primary coil by the action of currents of lower
+
+influence of operating-currents traversing the potential flowing through the lamp, and
+
+lamp.
+
+65
+
+'
+
+22. The combination With a lamp for pro
+
+means for cutting the secondary coil out of
+
+circuit when the lamp is operating.
+
+29. The combination With a lamp of the
+ducing light by the conduction of electric
+currents through a hermetically-inclosed va character described, of a permanent source
+
+--- REVIEWED TRANSCRIPTION PAGE 13 OF 13 ---
+
+682,690
+of electric current connected to the terminals vice, a source of current, a transformer hav
+of the said lamp through the secondary of a ing one coil connected in series With the trans
+transformer, a second circuit from the said lating device and with the source of current,
+source, including the primary of the said means for creating independent time Varia
+transformer, and means for Varying the cur tions in the supply-current traversing the
+rent in the said primary and afterward cutting other coil, whereby the electromotive force 25
+out the circuit of the primary by the action of the current in the first-named coil is modi'
+of the current passing through the lamp.
+ñed, and a deVic'e for automatically cutting
+30. The combination with an electric lamp, out the means for creating the independent
+of a main supply-circuit, connections there
+
+time variations, through the instrumentality
+
+from through the secondary coil of a traus- ' of currents passing through the translating
+
+former With the terminals of the lamp, a pri
+mary coil for the transformer, a circuit-inter
+
+device.
+
+Signed at New York, in the county of New
+rupter, means for connecting said primary York and State of New York, this 21st day of
+coil and circuit-interrupter with the supply March, A. D. 1900.
+_
+circuit, and means for interrupting the pri
+PETER COOPER I-IFÀVITT.
+mary-coil circuit by the action of currents
+VVituesses:
+supplying the lamp.
+HENRY NOEL POTTER,
+31. The combination of a translating de
+
+WM. 1I. CAPEL.
