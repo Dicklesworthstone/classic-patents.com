@@ -5,20 +5,17 @@
  * (US Patent 78,317 - "Improved Explosive Compound").
  *
  * Reconstructs the revolutionary high-explosive safety invention:
- * 1. Paraffin-coated wax-paper cartridge tube with authentic crimped pleated end folds and cutaway cross-section.
+ * 1. Paraffin-coated wax-paper cartridge tube with authentic crimped pleated end folds, printed stencil, and cutaway cross-section.
  * 2. Porous diatomaceous earth (kieselguhr) absorbent core saturated with liquid nitroglycerin (Claim 1).
  * 3. Microscopic siliceous diatom fossil grains holding the liquid by capillary action.
  * 4. Seamless copper blasting cap detonator loaded with mercury fulminate (Claim 2).
  * 5. Braided safety fuse with dynamic burning spark particles and detonation shockwave emission.
- * 6. Historical wooden storage crate with sawdust bedding.
+ * 6. Historical pine wooden storage crate with dovetail joints and stenciled warning lettering.
  */
 
 import * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(1323);
 
 export interface NobelDynamiteModelNodes {
   rootGroup: THREE.Group;
@@ -52,10 +49,105 @@ export interface NobelDynamiteModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural texture and geometry distribution.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Waxed Kraft Paper Cartridge Texture with Vintage Stenciling
+ */
+function createWaxPaperTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Rich amber-orange waxed paraffin kraft paper base
+  ctx.fillStyle = "#cd6e1a";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Wax marbling & paper fibers
+  for (let i = 0; i < 150; i++) {
+    const y = i * 3.4 + (deterministicUnit(i, 0) - 0.5) * 2;
+    ctx.strokeStyle = `rgba(180, 83, 9, ${0.15 + deterministicUnit(i, 1) * 0.15})`;
+    ctx.lineWidth = 1 + deterministicUnit(i, 2) * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y);
+    ctx.stroke();
+  }
+
+  // Stenciled Vintage Identification Text
+  ctx.save();
+  ctx.translate(256, 256);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillStyle = "rgba(40, 20, 5, 0.75)";
+  ctx.font = "bold 26px serif";
+  ctx.textAlign = "center";
+  ctx.fillText("NOBEL'S DYNAMITE", 0, -20);
+  ctx.font = "bold 16px sans-serif";
+  ctx.fillText("PATENTED MAY 26, 1868", 0, 10);
+  ctx.fillText("HIGH EXPLOSIVE — DANGER", 0, 32);
+  ctx.restore();
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Vintage Pine Crate Wood Texture with Stenciling
+ */
+function createCrateWoodTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#855a36";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Pine wood grain
+  for (let i = 0; i < 80; i++) {
+    const y = i * 6.4 + (deterministicUnit(i, 0) - 0.5) * 4;
+    ctx.strokeStyle = `rgba(55, 30, 15, ${0.2 + deterministicUnit(i, 1) * 0.25})`;
+    ctx.lineWidth = 1.2 + deterministicUnit(i, 2) * 2;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(170, y + 8, 340, y - 8, 512, y + 4);
+    ctx.stroke();
+  }
+
+  // Stenciled Crate Warning
+  ctx.fillStyle = "rgba(20, 10, 5, 0.75)";
+  ctx.font = "bold 28px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("NITRO-GLYCERIN CO.", 256, 180);
+  ctx.font = "bold 22px sans-serif";
+  ctx.fillText("HANDLE WITH CARE", 256, 230);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
+  const texturesToDispose: THREE.Texture[] = [];
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -66,9 +158,16 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
     return mat;
   };
 
+  const waxPaperTex = createWaxPaperTexture();
+  if (waxPaperTex) texturesToDispose.push(waxPaperTex);
+
+  const crateWoodTex = createCrateWoodTexture();
+  if (crateWoodTex) texturesToDispose.push(crateWoodTex);
+
   // --- Museum-Grade Materials ---
   const waxPaper = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(waxPaperTex ? { map: waxPaperTex } : {}),
       color: 0xcd6e1a,
       roughness: 0.45,
       metalness: 0.08,
@@ -111,7 +210,8 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
 
   const crateWood = trackMat(
     new THREE.MeshStandardMaterial({
-      color: 0x785338,
+      ...(crateWoodTex ? { map: crateWoodTex } : {}),
+      color: 0x855a36,
       roughness: 0.78,
       metalness: 0.03,
     }),
@@ -230,8 +330,12 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
   const grainInst = new THREE.InstancedMesh(grainGeo, materials.grainMat, grainCount);
   const dummy = new THREE.Object3D();
   for (let i = 0; i < grainCount; i++) {
-    dummy.position.set((lcg() - 0.5) * 1.8, (lcg() - 0.5) * 4.2, lcg() * 0.95);
-    dummy.rotation.set(lcg() * Math.PI, lcg() * Math.PI, 0);
+    dummy.position.set(
+      (deterministicUnit(i, 0) - 0.5) * 1.8,
+      (deterministicUnit(i, 1) - 0.5) * 4.2,
+      deterministicUnit(i, 2) * 0.95,
+    );
+    dummy.rotation.set(deterministicUnit(i, 3) * Math.PI, deterministicUnit(i, 4) * Math.PI, 0);
     dummy.updateMatrix();
     grainInst.setMatrixAt(i, dummy.matrix);
   }
@@ -299,12 +403,9 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
   };
 
   const dispose = () => {
-    for (const m of materialsToDispose) {
-      m.dispose();
-    }
-    for (const g of geometriesToDispose) {
-      g.dispose();
-    }
+    for (const m of materialsToDispose) m.dispose();
+    for (const g of geometriesToDispose) g.dispose();
+    for (const t of texturesToDispose) t.dispose();
   };
 
   return { rootGroup, nodes, materials, dispose };

@@ -9,7 +9,7 @@
  * 2. Twin enclosed counterbalanced disc flywheels with integral crankpin and curved surface cam groove.
  * 3. Cam-actuated exhaust valve pushrod and rocker arm driven directly from the flywheel cam track.
  * 4. Vertical water-cooled cylinder with cast jacket, water banjos, and ribbed cylinder head.
- * 5. Trunk piston with compression rings, wrist pin, and forged steel H-beam connecting rod.
+ * 5. Trunk piston with compression rings, wrist pin, and forged bronze H-beam connecting rod.
  * 6. Incandescent platinum hot-tube igniter with external brass burner chimney / torch lamp.
  * 7. Automatic spring-loaded intake poppet valve, float carburetor, and output drive pulley.
  * 8. Real-time kinematic articulation: crankshaft, connecting rod, piston, valve pushrod, and combustion flash.
@@ -46,14 +46,58 @@ export interface DaimlerEngineModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Cast-Iron Crankcase Machine Paint Texture
+ */
+function createCastIronTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#334155";
+  ctx.fillRect(0, 0, 512, 512);
+
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const d = imgData.data;
+  for (let i = 0; i < 512 * 512; i++) {
+    const n = (deterministicUnit(i, 0) - 0.5) * 18;
+    d[i * 4 + 0] = Math.max(0, Math.min(255, d[i * 4 + 0] + n));
+    d[i * 4 + 1] = Math.max(0, Math.min(255, d[i * 4 + 1] + n));
+    d[i * 4 + 2] = Math.max(0, Math.min(255, d[i * 4 + 2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildDaimlerEngineModel(): DaimlerEngineModel {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const castIronTex = createCastIronTexture();
+  if (castIronTex) texturesToDispose.push(castIronTex);
+
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
+    ...(castIronTex ? { map: castIronTex } : {}),
     color: 0x334155,
     roughness: 0.55,
     metalness: 0.8,
@@ -298,80 +342,76 @@ export function buildDaimlerEngineModel(): DaimlerEngineModel {
   conRodGroup.add(bigEnd);
 
   // --- 6. HOT-TUBE IGNITER & TORCH BURNER CHIMNEY ---
-  const igniterGroup = new THREE.Group();
-  igniterGroup.position.set(0.72, 2.5, 0);
-  rootGroup.add(igniterGroup);
+  const hotTubeGroup = new THREE.Group();
+  hotTubeGroup.position.set(0.72, 2.35, 0);
+  rootGroup.add(hotTubeGroup);
 
-  // Glowing Platinum Hot-Tube (Claim 1)
-  const hotTubeGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.45, 12);
-  geometriesToDispose.push(hotTubeGeo);
-  const hotTubeMesh = new THREE.Mesh(hotTubeGeo, hotTubeMat);
+  // Incandescent Platinum Hot-Tube (US Patent 361,931)
+  const tubeGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.55, 16);
+  geometriesToDispose.push(tubeGeo);
+  const hotTubeMesh = new THREE.Mesh(tubeGeo, hotTubeMat);
   hotTubeMesh.rotation.z = Math.PI / 2;
-  igniterGroup.add(hotTubeMesh);
+  hotTubeGroup.add(hotTubeMesh);
 
-  // Brass Burner Lamp Chimney Enclosure
-  const chimneyGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.8, 16);
+  // External Brass Burner Lamp / Chimney Shield
+  const chimneyGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.85, 16, 1, true);
   geometriesToDispose.push(chimneyGeo);
   const chimney = new THREE.Mesh(chimneyGeo, brass);
-  chimney.position.set(0.25, 0.1, 0);
+  chimney.position.x = 0.35;
   chimney.castShadow = true;
-  igniterGroup.add(chimney);
+  hotTubeGroup.add(chimney);
 
-  // Burner Torch Flame
-  const flameGeo = new THREE.ConeGeometry(0.08, 0.35, 12);
+  // Torch burner flame
+  const flameGeo = new THREE.ConeGeometry(0.09, 0.35, 12);
   geometriesToDispose.push(flameGeo);
   const burnerFlame = new THREE.Mesh(flameGeo, flameMat);
-  burnerFlame.position.set(0.25, -0.2, 0);
-  igniterGroup.add(burnerFlame);
+  burnerFlame.position.set(0.35, -0.15, 0);
+  hotTubeGroup.add(burnerFlame);
 
-  // Internal Combustion Flash Volume
-  const combGeo = new THREE.SphereGeometry(0.48, 16, 16);
-  geometriesToDispose.push(combGeo);
-  const combustionFlame = new THREE.Mesh(combGeo, flameMat);
-  combustionFlame.position.set(0, 2.0, 0);
-  combustionFlame.visible = false;
-  rootGroup.add(combustionFlame);
-
-  // --- 7. VALVES & CAM-OPERATED PUSHROD LINKAGE ---
-  // Cam Follower Pushrod on the side
+  // --- 7. POPPET VALVES, PUSHROD & ROCKER ARM ---
   const exhaustPushrod = new THREE.Group();
-  exhaustPushrod.position.set(0.65, 0.2, 0.6);
+  exhaustPushrod.position.set(0.8, 0.4, 0.62);
   rootGroup.add(exhaustPushrod);
 
-  const pushrodGeo = new THREE.CylinderGeometry(0.035, 0.035, 2.2, 8);
-  geometriesToDispose.push(pushrodGeo);
-  const pushrod = new THREE.Mesh(pushrodGeo, polishedSteel);
-  exhaustPushrod.add(pushrod);
+  const rodGeo = new THREE.CylinderGeometry(0.035, 0.035, 2.4, 10);
+  geometriesToDispose.push(rodGeo);
+  const rodMesh = new THREE.Mesh(rodGeo, polishedSteel);
+  exhaustPushrod.add(rodMesh);
 
-  // Rocker Arm on Cylinder Top
   const exhaustRocker = new THREE.Group();
-  exhaustRocker.position.set(0.4, 2.6, 0.6);
+  exhaustRocker.position.set(0.55, 2.65, 0.62);
   rootGroup.add(exhaustRocker);
 
-  const rockerGeo = new THREE.BoxGeometry(0.5, 0.06, 0.08);
-  geometriesToDispose.push(rockerGeo);
-  const rocker = new THREE.Mesh(rockerGeo, bronze);
-  exhaustRocker.add(rocker);
+  const rockerArmGeo = new THREE.BoxGeometry(0.65, 0.08, 0.12);
+  geometriesToDispose.push(rockerArmGeo);
+  const rockerArm = new THREE.Mesh(rockerArmGeo, polishedSteel);
+  exhaustRocker.add(rockerArm);
 
-  // Exhaust Poppet Valve
   const exhaustValve = new THREE.Group();
-  exhaustValve.position.set(0.2, 2.5, 0.6);
+  exhaustValve.position.set(0.2, 2.3, 0.62);
   rootGroup.add(exhaustValve);
 
-  const exValveGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.3, 12);
-  geometriesToDispose.push(exValveGeo);
-  const exValveMesh = new THREE.Mesh(exValveGeo, polishedSteel);
-  exhaustValve.add(exValveMesh);
+  const valveStemGeo = new THREE.CylinderGeometry(0.028, 0.028, 0.6, 8);
+  geometriesToDispose.push(valveStemGeo);
+  const valveStem = new THREE.Mesh(valveStemGeo, polishedSteel);
+  exhaustValve.add(valveStem);
 
-  // Automatic Intake Valve & Carburetor Box
   const intakeValve = new THREE.Group();
-  intakeValve.position.set(-0.5, 2.5, 0);
+  intakeValve.position.set(-0.35, 2.3, 0);
   rootGroup.add(intakeValve);
 
-  const carbBoxGeo = new THREE.BoxGeometry(0.45, 0.5, 0.45);
-  geometriesToDispose.push(carbBoxGeo);
-  const carbBox = new THREE.Mesh(carbBoxGeo, brass);
-  intakeValve.add(carbBox);
+  const inStemGeo = new THREE.CylinderGeometry(0.028, 0.028, 0.5, 8);
+  geometriesToDispose.push(inStemGeo);
+  const inStem = new THREE.Mesh(inStemGeo, brass);
+  intakeValve.add(inStem);
+
+  // Combustion chamber expansion flash flame
+  const cFlameGeo = new THREE.SphereGeometry(0.48, 16, 16);
+  geometriesToDispose.push(cFlameGeo);
+  const combustionFlame = new THREE.Mesh(cFlameGeo, flameMat);
+  combustionFlame.position.set(0, 2.1, 0);
+  combustionFlame.visible = false;
+  rootGroup.add(combustionFlame);
 
   // --- DISPOSE CLEANUP ---
   const dispose = () => {
@@ -409,87 +449,73 @@ export function buildDaimlerEngineModel(): DaimlerEngineModel {
 }
 
 /**
- * Updates Daimler high-speed engine 4-stroke cycle kinematics, valves, and combustion.
+ * Updates full 4-stroke thermodynamic kinematics and flame flashes for Daimler Standuhr.
  */
 export function updateDaimlerEngineKinematics(
   model: DaimlerEngineModel,
-  cycleAngle: number,
-  fourStrokePhase: number,
-  hotTubeTempC: number,
-  hotTubeGlow: number,
-  isCutaway = false,
-): { strokeIndex: number; pistonY: number } {
-  // Hot-tube glow modulation
-  model.materials.hotTubeMat.emissiveIntensity = hotTubeGlow;
-  const daimler = stepDaimlerEngine({});
-  model.materials.hotTubeMat.emissive.setHex(
-    hotTubeTempC >= daimler.hotTubeBrightC
-      ? daimler.hotTubeBrightHex
-      : hotTubeTempC >= daimler.hotTubeWarmC
-        ? daimler.hotTubeWarmHex
-        : daimler.hotTubeColdHex,
-  );
+  crankAngleRad: number,
+  cycleAngleRadOrRpm: number,
+  hotTubeTempCOrCutaway?: number | boolean,
+  _hotTubeGlow?: number,
+  isCutawayFlag?: boolean,
+): { strokeIndex: number; pistonY: number; isPower: boolean } {
+  let cycleAngle = ((crankAngleRad % (Math.PI * 4)) + Math.PI * 4) % (Math.PI * 4);
+  let isCutaway = false;
 
-  model.crankshaftGroup.rotation.z = cycleAngle;
-
-  // Kinematics: crankpin position
-  const crankR = daimler.crankR;
-  const pinY = daimler.pinYHome + Math.sin(cycleAngle) * crankR;
-  const pinX = Math.cos(cycleAngle) * crankR;
-
-  const rodLen = daimler.rodLen;
-  const pistonY = pinY + Math.sqrt(Math.max(daimler.rodMin, rodLen ** 2 - pinX ** 2));
-  model.pistonGroup.position.y = pistonY;
-
-  // Connecting rod pose
-  model.conRodGroup.position.set(pinX, pinY, 0);
-  const rodAngle = Math.atan2(pistonY - pinY, -pinX) - Math.PI / 2;
-  model.conRodGroup.rotation.z = rodAngle;
-
-  // 4-Stroke Cycle Dynamics:
-  const seats = daimler;
-  const strokeIndex = fourStrokeIndexFromRad(fourStrokePhase, seats.strokeRad);
-
-  if (strokeIndex === 0) {
-    // Intake Stroke: automatic valve sucked open
-    const intakeLift = Math.sin(fourStrokePhase) * seats.intakeLiftAmp;
-    model.intakeValve.position.y = seats.valveHomeY - intakeLift;
-    model.combustionFlame.visible = false;
-  } else if (strokeIndex === 1) {
-    // Compression Stroke
-    model.intakeValve.position.y = seats.valveHomeY;
-    model.combustionFlame.visible = false;
-  } else if (strokeIndex === 2) {
-    // Power Stroke: combustion flash near top dead center
-    model.intakeValve.position.y = seats.valveHomeY;
-    const powerProgress = fourStrokePhase - 2 * seats.strokeRad;
-    if (powerProgress < seats.powerFlashWindowRad) {
-      model.combustionFlame.visible = true;
-      model.combustionFlame.position.y = pistonY + seats.flamePistonOffset;
-      const heat = heatFrames(12, 16, 2);
-      const localHeat =
-        1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, fourStrokePhase / (Math.PI * 2), 0.45));
-      const flashScale =
-        (seats.flameScale0 +
-          Math.sin((powerProgress / seats.powerFlashWindowRad) * Math.PI) * seats.flameScaleAmp) *
-        localHeat;
-      model.combustionFlame.scale.set(flashScale, flashScale, flashScale);
-    } else {
-      model.combustionFlame.visible = false;
-    }
-  } else {
-    // Exhaust Stroke: cam-operated pushrod
-    model.intakeValve.position.y = seats.valveHomeY;
-    model.combustionFlame.visible = false;
-    const exhaustLift = Math.sin(fourStrokePhase - 3 * seats.strokeRad) * seats.exhaustLiftAmp;
-    model.exhaustPushrod.position.y = seats.exhaustPushrodHomeY + exhaustLift;
-    model.exhaustRocker.rotation.z = -exhaustLift * seats.exhaustRockerCoupling;
-    model.exhaustValve.position.y = seats.valveHomeY - exhaustLift;
+  if (typeof hotTubeTempCOrCutaway === "boolean") {
+    isCutaway = hotTubeTempCOrCutaway;
+  } else if (typeof isCutawayFlag === "boolean") {
+    isCutaway = isCutawayFlag;
+    cycleAngle = ((cycleAngleRadOrRpm % (Math.PI * 4)) + Math.PI * 4) % (Math.PI * 4);
   }
 
-  // Cutaway transparency
+  const crankRadius = 0.42;
+  const conRodLength = 1.7;
+
+  // 1. Crankshaft & Counterbalanced Flywheel Rotation
+  model.flywheelGroup.rotation.z = -crankAngleRad;
+
+  // 2. Kinematic Piston Reciprocation
+  const pinX = Math.cos(crankAngleRad) * crankRadius;
+  const pinY = Math.sin(crankAngleRad) * crankRadius - 0.65;
+  const pistonY = pinY + Math.sqrt(conRodLength ** 2 - pinX ** 2);
+  model.pistonGroup.position.y = pistonY;
+
+  // 3. Articulate Connecting Rod
+  model.conRodGroup.position.set(0, pistonY, 0);
+  const conRodAngle = Math.asin(pinX / conRodLength);
+  model.conRodGroup.rotation.z = conRodAngle;
+
+  // 4. Four-Stroke Valve & Combustion Kinematics
+  const stroke = fourStrokeIndexFromRad(cycleAngle);
+
+  // Intake valve lift during stroke 0 (Intake)
+  const isIntake = stroke === 0;
+  model.intakeValve.position.y = isIntake ? 2.22 : 2.3;
+
+  // Exhaust valve lift during stroke 3 (Exhaust)
+  const isExhaust = stroke === 3;
+  model.exhaustValve.position.y = isExhaust ? 2.22 : 2.3;
+  model.exhaustPushrod.position.y = isExhaust ? 0.48 : 0.4;
+  model.exhaustRocker.rotation.z = isExhaust ? -0.12 : 0;
+
+  // Power stroke combustion flame (stroke 2)
+  const isPower = stroke === 2;
+  const daimler = stepDaimlerEngine({});
+  const heat = heatFrames(12, 16, 2);
+  const frame = Math.abs(Math.floor(cycleAngle * 4)) % 16;
+  const flash = 1 + Math.abs(sampleHeatAt(heat, 12, 16, frame, 0.5, 0.5));
+  model.combustionFlame.visible = isPower;
+  if (isPower) {
+    const scale = daimler.combustionScale0 + flash * daimler.combustionScaleAmp;
+    model.combustionFlame.scale.set(scale, scale, scale);
+    model.combustionFlame.position.y = pistonY + daimler.combustionPistonOffsetY;
+  }
+
+  // 5. Cutaway Mode
+  model.casingCutaway.visible = !isCutaway;
   model.materials.castIron.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.castIron.transparent = isCutaway;
 
-  return { strokeIndex, pistonY };
+  return { strokeIndex: stroke, pistonY, isPower };
 }

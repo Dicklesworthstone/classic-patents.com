@@ -17,10 +17,7 @@
 import * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
-
-const lcg = createLcg(2000);
 
 export interface PasteurFermentationModelNodes {
   rootGroup: THREE.Group;
@@ -58,6 +55,91 @@ export interface PasteurFermentationModelResult {
 
 const BUBBLE_COUNT = 60;
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Tinned Copper Vat Texture with Hammered Sheen & Rivet Lines
+ */
+function createTinnedCopperTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#c88238";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Hammered planishing facets
+  for (let i = 0; i < 200; i++) {
+    const cx = deterministicUnit(i, 0) * 512;
+    const cy = deterministicUnit(i, 1) * 512;
+    const rad = 6 + deterministicUnit(i, 2) * 12;
+    ctx.fillStyle = `rgba(234, 138, 58, ${0.15 + deterministicUnit(i, 3) * 0.15})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Vertical riveted seam
+  ctx.fillStyle = "rgba(70, 30, 10, 0.4)";
+  ctx.fillRect(250, 0, 12, 512);
+  for (let y = 10; y < 512; y += 24) {
+    ctx.fillStyle = "#fef08a";
+    ctx.beginPath();
+    ctx.arc(256, y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(40, 15, 5, 0.6)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 1);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Cast-Iron Tripod Base Texture
+ */
+function createCastIronTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#22272e";
+  ctx.fillRect(0, 0, 512, 512);
+
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const d = imgData.data;
+  for (let i = 0; i < 512 * 512; i++) {
+    const n = (deterministicUnit(i, 0) - 0.5) * 20;
+    d[i * 4 + 0] = Math.max(0, Math.min(255, d[i * 4 + 0] + n));
+    d[i * 4 + 1] = Math.max(0, Math.min(255, d[i * 4 + 1] + n));
+    d[i * 4 + 2] = Math.max(0, Math.min(255, d[i * 4 + 2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildPasteurFermentationModel(): PasteurFermentationModelResult {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
@@ -73,12 +155,19 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
     return mat;
   };
 
+  const copperTex = createTinnedCopperTexture();
+  if (copperTex) texturesToDispose.push(copperTex);
+
+  const ironTex = createCastIronTexture();
+  if (ironTex) texturesToDispose.push(ironTex);
+
   const bubbleGlowTex = createGlowPointTexture();
   texturesToDispose.push(bubbleGlowTex);
 
   // --- Museum Materials ---
   const tinnedCopper = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(copperTex ? { map: copperTex } : {}),
       color: 0xc88238,
       roughness: 0.28,
       metalness: 0.9,
@@ -95,6 +184,7 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
 
   const castIron = trackMat(
     new THREE.MeshStandardMaterial({
+      ...(ironTex ? { map: ironTex } : {}),
       color: 0x22272e,
       roughness: 0.65,
       metalness: 0.85,
@@ -331,10 +421,10 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   const bubblePositions = new Float32Array(BUBBLE_COUNT * 3);
   for (let i = 0; i < BUBBLE_COUNT; i++) {
     const idx = i * 3;
-    const r = lcg() * 1.8;
-    const a = lcg() * Math.PI * 2;
+    const r = deterministicUnit(i, 0) * 1.8;
+    const a = deterministicUnit(i, 1) * Math.PI * 2;
     bubblePositions[idx] = Math.cos(a) * r;
-    bubblePositions[idx + 1] = -1.4 + lcg() * 3.2;
+    bubblePositions[idx + 1] = -1.4 + deterministicUnit(i, 2) * 3.2;
     bubblePositions[idx + 2] = Math.sin(a) * r;
   }
   bubbleGeo.setAttribute("position", new THREE.BufferAttribute(bubblePositions, 3));
