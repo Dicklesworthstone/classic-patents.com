@@ -55,6 +55,10 @@ export interface WattCondenserOutputs {
 
   // Air Pump Work
   airPumpPowerKw: number;
+
+  // Cycle kinematics (shared by 2D / 3D — do not recompute spm/60 on the faces)
+  frequencyHz: number;
+  cycleOmegaRadPerS: number;
 }
 
 export const WATT_DEFAULT_CONTROLS: Required<WattCondenserControls> = {
@@ -145,6 +149,7 @@ export function stepWattCondenser(controls: WattCondenserControls = {}): WattCon
   const pistonPistonForceKn = (imepKpa * 1000 * pistonAreaM2) / 1000;
   const workPerStrokeJoules = imepKpa * 1000 * displacedVolumeM3;
   const frequencyHz = strokesPerMinute / 60.0;
+  const cycleOmegaRadPerS = 2 * Math.PI * frequencyHz;
   const indicatedPowerKw = (workPerStrokeJoules * frequencyHz) / 1000.0;
   const indicatedHorsepower = indicatedPowerKw * 1.34102;
 
@@ -226,5 +231,7 @@ export function stepWattCondenser(controls: WattCondenserControls = {}): WattCon
     waterPumpedM3PerHour,
     waterPumpedGallonsPerHour,
     airPumpPowerKw,
+    frequencyHz: Number(frequencyHz.toFixed(6)),
+    cycleOmegaRadPerS: Number(cycleOmegaRadPerS.toFixed(6)),
   };
 }

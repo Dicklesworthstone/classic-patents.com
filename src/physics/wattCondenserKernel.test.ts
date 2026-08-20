@@ -29,6 +29,10 @@ describe("James Watt Separate Condenser Physics Kernel (GB 913 / 1769)", () => {
     // Substantial mine water pumping delivery (> 15,000 gallons/hour at 183m)
     expect(out.waterPumpedGallonsPerHour).toBeGreaterThan(10000);
     expect(out.coalSavedTonsPerYear).toBeGreaterThan(100);
+
+    // Cycle ω is owned by the kernel (14 spm → 14/60 Hz). Faces must not recompute spm/60.
+    expect(out.frequencyHz).toBeCloseTo(14 / 60, 6);
+    expect(out.cycleOmegaRadPerS).toBeCloseTo((14 * 2 * Math.PI) / 60, 6);
   });
 
   test("demonstrates Newcomen thermal quench penalty when separate condenser is disabled", () => {

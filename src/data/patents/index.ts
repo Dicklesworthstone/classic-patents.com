@@ -5,6 +5,7 @@ import { bardeenTransistor2524035Patent } from "./bardeen-transistor-2524035";
 import { bellPhotophonePatent } from "./bell-photophone";
 import { bellTelephonePatent } from "./bell-telephone";
 import { boyleSmithCcdPatent } from "./boyle-smith-ccd";
+import { carlsonElectrophotographyPatent } from "./carlson-electrophotography";
 import { carrierAirConditionerPatent } from "./carrier-air-conditioner";
 import { coltRevolverPatent } from "./colt-revolver";
 import { corlissSteamEnginePatent } from "./corliss-steam-engine";

@@ -3623,6 +3623,8 @@ export function stepCarlsonElectrophotography(params: {
 
   // Process speed (feet per minute / copies per minute)
   const copiesPerMin = pcType === "selenium" || pcType === "opc" ? 45 : 12;
+  const drumDisplayOmegaRadPerS = Number(((copiesPerMin / 45) * 0.8).toFixed(3));
+  const fuserDisplayOmegaRadPerS = Number(((copiesPerMin / 45) * 1.6).toFixed(3));
 
   return {
     coronaVoltageKv: vCoronaKv,
@@ -3639,6 +3641,8 @@ export function stepCarlsonElectrophotography(params: {
     fuserTemperatureC: tFuserC,
     fuserBondQualityPct,
     copiesPerMin,
+    drumDisplayOmegaRadPerS,
+    fuserDisplayOmegaRadPerS,
   };
 }
 
@@ -3718,6 +3722,8 @@ export function stepBaekelandBakelite(
 
   // Heat deflection temperature (°C)
   const heatDeflectionTempC = Math.round(isGelled ? 90 + crosslinkDensity * 55 : 45);
+  // C-stage thermoset locks the methylene network; leftover 0.2 rad/s kept spinning it.
+  const networkDisplayOmegaRadPerS = conversionP >= 0.85 ? 0 : 0.2;
 
   return {
     curingTempC: tempC,
@@ -3738,6 +3744,7 @@ export function stepBaekelandBakelite(
     dielectricBreakdownKvPerMm,
     densityGPerCm3,
     heatDeflectionTempC,
+    networkDisplayOmegaRadPerS,
   };
 }
 
@@ -4096,6 +4103,7 @@ export function stepTeslaTeleautomaton(
   const propellerRpm = relayEnergized ? Number((600 * (throttlePct / 100)).toFixed(1)) : 0;
   const propellerOmegaRadPerS = rpmToOmega(propellerRpm).omegaRadPerS;
   const steppingDiskIndex = pulseCount % 8;
+  const cohererDisplayOmegaRadPerS = relayEnergized ? 1.5 : 0;
 
   return {
     isResonant,
@@ -4106,6 +4114,7 @@ export function stepTeslaTeleautomaton(
     propellerRpm,
     propellerOmegaRadPerS,
     steppingDiskIndex,
+    cohererDisplayOmegaRadPerS,
     rfFrequencyKhz: fKhz,
     rudderAngleDeg: rudderDeg,
     propellerThrottlePct: throttlePct,
@@ -4260,6 +4269,7 @@ export interface LandPolaroidState {
   meniscusSpreadUniformityPercent: number;
   printCompletionPercent: number;
   unexposedSilverComplexedRatio: number;
+  rollerDisplayOmegaRadPerS: number;
 }
 
 export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolaroidState {
@@ -4311,6 +4321,7 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
 
   // Overall print completion percentage
   const printCompletionPercent = Number(Math.min(100, (time / 60) * 100).toFixed(1));
+  const rollerDisplayOmegaRadPerS = time > 0 ? 3 : 0;
 
   return {
     negativeSilverDensity,
@@ -4320,6 +4331,7 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
     meniscusSpreadUniformityPercent,
     printCompletionPercent,
     unexposedSilverComplexedRatio,
+    rollerDisplayOmegaRadPerS,
   };
 }
 

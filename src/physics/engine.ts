@@ -657,6 +657,8 @@ export const FrankenSimEngine = {
       processingGainDb,
       antiJammingMarginDb,
       hopIntervalMs: Math.round(1000 / Math.max(1, hopRateHopsPerSec)),
+      // Player-piano drums: leftover 1.5 rad/s at the registry 4 hops/s.
+      drumDisplayOmegaRadPerS: Number(((hopRateHopsPerSec * 1.5) / 4).toFixed(3)),
       hopSoundStride: 3,
       jamOccupancyPct: Number((100 / Math.max(1, channelsCount)).toFixed(2)),
       bandMinMhz: LAMARR_BAND_MIN_MHZ,

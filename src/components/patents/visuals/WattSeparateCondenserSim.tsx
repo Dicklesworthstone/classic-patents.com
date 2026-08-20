@@ -51,9 +51,7 @@ export function WattSeparateCondenserSim() {
 
   const outputs = useMemo(() => stepWattCondenser(controls), [controls]);
 
-  const spm = controls.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute;
-  const cycleFreq = spm / 60;
-  const cyclePhase = (animTime * cycleFreq * 2 * Math.PI) % (2 * Math.PI);
+  const cyclePhase = (animTime * outputs.cycleOmegaRadPerS) % (2 * Math.PI);
   // Piston stroke position [-1, 1]
   const pistonPos = Math.sin(cyclePhase);
   const isExhaustStroke = Math.cos(cyclePhase) > 0;
