@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { stepRoomba } from "@/physics/roombaKernel";
+import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 interface RoombaSimProps {
@@ -9,13 +9,7 @@ interface RoombaSimProps {
   initialTurnRate?: number;
 }
 
-// Furniture obstacles: [x, y, w, h] in room coordinates [-2.5 to 2.5, -1.5 to 1.5]
-const ROOM_OBSTACLES = [
-  { x: -1.2, y: -0.6, w: 0.8, h: 0.6, label: "Coffee Table" },
-  { x: 1.0, y: 0.5, w: 0.6, h: 0.6, label: "Armchair" },
-];
-
-export function RoombaSim({ initialWheelSpeed = 0.28, initialTurnRate = 2.4 }: RoombaSimProps) {
+export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: RoombaSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const speedId = useId();
   const turnId = useId();
@@ -40,8 +34,8 @@ export function RoombaSim({ initialWheelSpeed = 0.28, initialTurnRate = 2.4 }: R
     let state = stepRoomba({
       wheelSpeedMps: wheelSpeed,
       turnRateRadSec: turnRate,
-      roomWidth: 5.0,
-      roomHeight: 3.2,
+      roomWidth: ROOMBA_ROOM.width,
+      roomHeight: ROOMBA_ROOM.height,
     });
 
     const render = () => {
@@ -50,29 +44,12 @@ export function RoombaSim({ initialWheelSpeed = 0.28, initialTurnRate = 2.4 }: R
           {
             wheelSpeedMps: wheelSpeed,
             turnRateRadSec: turnRate,
-            roomWidth: 5.0,
-            roomHeight: 3.2,
+            roomWidth: ROOMBA_ROOM.width,
+            roomHeight: ROOMBA_ROOM.height,
           },
           state,
-          0.02,
+          1 / 60,
         );
-
-        // Check obstacle collisions
-        for (const obs of ROOM_OBSTACLES) {
-          const halfW = obs.w / 2 + 0.17;
-          const halfH = obs.h / 2 + 0.17;
-          if (
-            state.x > obs.x - halfW &&
-            state.x < obs.x + halfW &&
-            state.y > obs.y - halfH &&
-            state.y < obs.y + halfH
-          ) {
-            if (state.mode !== "backup" && state.mode !== "turn") {
-              state.mode = "backup";
-              state.timeInMode = 0;
-            }
-          }
-        }
 
         // Add trail point
         trailRef.current.push({ x: state.x, y: state.y });
@@ -133,9 +110,10 @@ export function RoombaSim({ initialWheelSpeed = 0.28, initialTurnRate = 2.4 }: R
       ctx.lineWidth = 4;
       ctx.strokeRect(aX, aY, aW, aH);
 
-      // Scale factors: 5.0m mapped to aW, 3.2m mapped to aH
-      const toScreenX = (rx: number) => aX + aW / 2 + (rx / 2.5) * (aW / 2 - 12);
-      const toScreenY = (ry: number) => aY + aH / 2 - (ry / 1.6) * (aH / 2 - 12);
+      const halfW = ROOMBA_ROOM.width / 2;
+      const halfH = ROOMBA_ROOM.height / 2;
+      const toScreenX = (rx: number) => aX + aW / 2 + (rx / halfW) * (aW / 2 - 12);
+      const toScreenY = (ry: number) => aY + aH / 2 - (ry / halfH) * (aH / 2 - 12);
 
       // Cleaned Vacuum Trail Ribbon (Light blue swath)
       if (trailRef.current.length > 1) {
@@ -152,11 +130,11 @@ export function RoombaSim({ initialWheelSpeed = 0.28, initialTurnRate = 2.4 }: R
       }
 
       // Draw Furniture Obstacles
-      for (const obs of ROOM_OBSTACLES) {
+      for (const obs of ROOMBA_FURNITURE) {
         const ox = toScreenX(obs.x);
         const oy = toScreenY(obs.y);
-        const ow = (obs.w / 5.0) * aW;
-        const oh = (obs.h / 3.2) * aH;
+        const ow = (obs.w / ROOMBA_ROOM.width) * aW;
+        const oh = (obs.h / ROOMBA_ROOM.height) * aH;
 
         ctx.fillStyle = "#334155";
         ctx.fillRect(ox - ow / 2, oy - oh / 2, ow, oh);

@@ -18,6 +18,8 @@ describe("Alexander Graham Bell Photophone 3D Model & Physics Visual Test Suite"
     expect(simSource).toContain('usePatentPhysics("us-235199-bell-photophone")');
     expect(threeSource).not.toContain("setVoiceSplDb");
     expect(simSource).not.toContain("setTransmissionDistanceM");
+    expect(threeSource).not.toContain("[cameraPreset, live]");
+    expect(threeSource).toContain("controls.setView");
   });
 
   test("creates valid Three.js model hierarchy with transmitter, beam, and receiver dish", () => {

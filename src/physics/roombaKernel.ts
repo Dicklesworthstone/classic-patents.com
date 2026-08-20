@@ -5,6 +5,38 @@ export interface RoombaControls {
   roomHeight: number;
 }
 
+/** Shared arena. 2D and 3D must step the same box (not 5×3.2 vs 4×4). */
+export const ROOMBA_ROOM = { width: 4, height: 4 } as const;
+
+/** Named furniture AABBs in room metres. Kernel owns the bump; faces only draw. */
+export const ROOMBA_FURNITURE: readonly {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
+}[] = [
+  { x: -1.2, y: -0.6, w: 0.8, h: 0.6, label: "Coffee Table" },
+  { x: 1.0, y: 0.5, w: 0.6, h: 0.6, label: "Armchair" },
+];
+
+const ROOMBA_BUMPER_M = 0.17;
+
+function hitsFurniture(x: number, y: number): boolean {
+  const r = ROOMBA_BUMPER_M;
+  for (const obs of ROOMBA_FURNITURE) {
+    if (
+      x > obs.x - obs.w / 2 - r &&
+      x < obs.x + obs.w / 2 + r &&
+      y > obs.y - obs.h / 2 - r &&
+      y < obs.y + obs.h / 2 + r
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export interface RoombaState {
   x: number;
   y: number;
@@ -36,14 +68,17 @@ export function stepRoomba(c: RoombaControls, s?: RoombaState, dt: number = 1 / 
 
   const speed = c.wheelSpeedMps;
   const turnSpeed = c.turnRateRadSec;
+  const roomWidth = c.roomWidth ?? ROOMBA_ROOM.width;
+  const roomHeight = c.roomHeight ?? ROOMBA_ROOM.height;
 
   state.timeInMode += dt;
 
   const isBumping =
-    state.x > c.roomWidth / 2 - 0.17 ||
-    state.x < -c.roomWidth / 2 + 0.17 ||
-    state.y > c.roomHeight / 2 - 0.17 ||
-    state.y < -c.roomHeight / 2 + 0.17;
+    state.x > roomWidth / 2 - ROOMBA_BUMPER_M ||
+    state.x < -roomWidth / 2 + ROOMBA_BUMPER_M ||
+    state.y > roomHeight / 2 - ROOMBA_BUMPER_M ||
+    state.y < -roomHeight / 2 + ROOMBA_BUMPER_M ||
+    hitsFurniture(state.x, state.y);
 
   if (isBumping && state.mode !== "backup" && state.mode !== "turn") {
     state.mode = "backup";

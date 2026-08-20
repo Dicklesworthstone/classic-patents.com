@@ -30,6 +30,7 @@ const DE_FOREST_ID = "us-879532-de-forest-audion";
 const CARLSON_ID = "us-2297691-carlson-electrophotography";
 const TOWNES_ID = "us-2929922-townes-laser";
 const MAIMAN_ID = "us-3353115-maiman-ruby-laser";
+const BOYLE_SMITH_CCD_ID = "us-3858232-boyle-smith-ccd";
 const KILBY_ID = "us-3138743-kilby-integrated-circuit";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
@@ -321,6 +322,46 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isTransistorActive,
         tone: "held",
         caption: `Gold flying wire bonds linking isolated component mesas into a functional bistable flip-flop/oscillator.`,
+      },
+    ];
+  }
+
+  if (patentId === BOYLE_SMITH_CCD_ID) {
+    const vGate = params.gateVoltageV ?? 10;
+    const isBiased = vGate >= 5;
+
+    return [
+      {
+        id: "ccd-potential-wells",
+        phrase:
+          "potential energy minima in a semiconductor for storing discrete packets of minority charge carriers",
+        active: isBiased,
+        tone: isBiased ? "live" : "broken",
+        caption: `Gate Bias V_G=${vGate} V: MOS gate electrodes induce deep potential wells in single-conductivity silicon substrate.`,
+      },
+      {
+        id: "ccd-sequential-transfer",
+        phrase:
+          "sequentially biasing said plurality of electrodes to translate said charge packets along a continuous channel",
+        active: true,
+        tone: "live",
+        caption: `Three-Phase Clocking: Overlapping pulsed electric fields translate stored photoelectrons from well to well with CTE > 99.99%.`,
+      },
+      {
+        id: "ccd-single-conductivity-channel",
+        phrase:
+          "said channel consisting essentially of semiconductor material of a single conductivity type",
+        active: true,
+        tone: "live",
+        caption: `Continuous Single-Conductivity Channel: Eliminates isolated p-n junction diffusions, enabling high packing density.`,
+      },
+      {
+        id: "ccd-charge-detection",
+        phrase:
+          "detecting means coupled to said semiconductor for converting said charge packets into output electrical signals",
+        active: true,
+        tone: "live",
+        caption: `Floating Diffusion Readout Node: Converts transported electron packets into low-noise voltage signals.`,
       },
     ];
   }

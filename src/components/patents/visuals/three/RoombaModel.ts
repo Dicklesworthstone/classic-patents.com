@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { ROOMBA_FURNITURE, ROOMBA_ROOM } from "@/physics/roombaKernel";
 
 export function buildRoombaModel() {
   const root = new THREE.Group();
@@ -26,11 +27,27 @@ export function buildRoombaModel() {
 
   mainGroup.add(bodyMesh);
 
-  const floorGeo = new THREE.PlaneGeometry(4, 4);
+  const floorGeo = new THREE.PlaneGeometry(ROOMBA_ROOM.width, ROOMBA_ROOM.height);
   const floorMesh = new THREE.Mesh(floorGeo, materials.floor);
   floorMesh.rotation.x = -Math.PI / 2;
   floorMesh.receiveShadow = true;
   root.add(floorMesh);
+
+  const furnitureMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.85,
+    metalness: 0.05,
+  });
+  const furnitureGeos: THREE.BoxGeometry[] = [];
+  for (const obs of ROOMBA_FURNITURE) {
+    const geo = new THREE.BoxGeometry(obs.w, 0.35, obs.h);
+    furnitureGeos.push(geo);
+    const mesh = new THREE.Mesh(geo, furnitureMat);
+    mesh.position.set(obs.x, 0.175, obs.y);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    root.add(mesh);
+  }
 
   // Path trail
   const maxPoints = 4000;
@@ -69,6 +86,10 @@ export function buildRoombaModel() {
       floorGeo.dispose();
       pathGeo.dispose();
       pathMat.dispose();
+      furnitureMat.dispose();
+      for (const geo of furnitureGeos) {
+        geo.dispose();
+      }
       Object.values(materials).forEach((m) => {
         m.dispose();
       });

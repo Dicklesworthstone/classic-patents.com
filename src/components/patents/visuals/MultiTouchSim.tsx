@@ -23,6 +23,7 @@ export function MultiTouchSim({
   const fingerCount = Math.round(params.fingerCount ?? initialFingerCount);
   const separationMm = params.fingerSeparationMm ?? initialSeparationMm;
   const pressureGrams = params.touchPressureGrams ?? initialPressureGrams;
+  const gestureVelocityMmS = params.gestureVelocityMmS ?? 15;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
@@ -39,7 +40,7 @@ export function MultiTouchSim({
         fingerCount,
         fingerSeparationMm: separationMm,
         touchPressureGrams: pressureGrams,
-        gestureVelocityMmS: 25.0,
+        gestureVelocityMmS,
       },
       0,
     );
@@ -52,7 +53,7 @@ export function MultiTouchSim({
             fingerCount,
             fingerSeparationMm: separationMm,
             touchPressureGrams: pressureGrams,
-            gestureVelocityMmS: 25.0,
+            gestureVelocityMmS,
           },
           timeSec,
           state,
@@ -302,7 +303,7 @@ export function MultiTouchSim({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [fingerCount, separationMm, pressureGrams, isPlaying]);
+  }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying]);
 
   return (
     <div className="w-full flex flex-col gap-4 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 text-neutral-100 shadow-xl">

@@ -3,7 +3,7 @@ import { stepDaVinci } from "@/physics/daVinciKernel";
 import { stepEInk } from "@/physics/eInkKernel";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { stepPageRank } from "@/physics/pageRankKernel";
-import { stepRoomba } from "@/physics/roombaKernel";
+import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKernel";
 import { buildDaVinciModel } from "./DaVinciModel";
 import { buildEInkModel } from "./EInkModel";
 import { buildMultiTouchModel } from "./MultiTouchModel";
@@ -36,21 +36,60 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       let state = stepRoomba({
         wheelSpeedMps: 0.3,
         turnRateRadSec: 1.5,
-        roomWidth: 4,
-        roomHeight: 4,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
       });
       expect(state.mode).toBe("spiral");
 
       // Step forward 100 ticks
       for (let i = 0; i < 100; i++) {
         state = stepRoomba(
-          { wheelSpeedMps: 0.3, turnRateRadSec: 1.5, roomWidth: 4, roomHeight: 4 },
+          {
+            wheelSpeedMps: 0.3,
+            turnRateRadSec: 1.5,
+            roomWidth: ROOMBA_ROOM.width,
+            roomHeight: ROOMBA_ROOM.height,
+          },
           state,
           1 / 60,
         );
       }
       expect(Math.abs(state.x)).toBeGreaterThan(0);
       expect(state.displayX).toBe(state.x);
+    });
+
+    test("kernel owns furniture bumps so 2D cannot privately mutate mode", async () => {
+      let state = stepRoomba({
+        wheelSpeedMps: 0.4,
+        turnRateRadSec: 1.5,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+      });
+      const table = ROOMBA_FURNITURE[0];
+      state = {
+        ...state,
+        x: table.x,
+        y: table.y,
+        mode: "straight",
+        timeInMode: 0.2,
+      };
+      state = stepRoomba(
+        {
+          wheelSpeedMps: 0.4,
+          turnRateRadSec: 1.5,
+          roomWidth: ROOMBA_ROOM.width,
+          roomHeight: ROOMBA_ROOM.height,
+        },
+        state,
+        1 / 60,
+      );
+      expect(state.mode).toBe("backup");
+
+      const simSource = await Bun.file(new URL("../RoombaSim.tsx", import.meta.url)).text();
+      expect(simSource).toContain("ROOMBA_ROOM");
+      expect(simSource).toContain("ROOMBA_FURNITURE");
+      expect(simSource).not.toContain('state.mode = "backup"');
+      expect(simSource).not.toContain("roomWidth: 5.0");
     });
 
     test("builds procedural Roomba chassis, arena, and path trail tracer", () => {
@@ -123,6 +162,14 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(blackState.electricFieldVperUm).toBe(-0.3);
     });
 
+    test("2D capsule particles drain kernel Y without Math.random in the frame loop", async () => {
+      const simSource = await Bun.file(new URL("../EInkSim.tsx", import.meta.url)).text();
+      expect(simSource).not.toContain("Math.random(");
+      expect(simSource).toContain("whiteParticleNormY");
+      expect(simSource).toContain("blackParticleNormY");
+      expect(simSource).toContain("particleChargeCoupled");
+    });
+
     test("builds transparent microcapsule, particle arrays, and ITO electrode plates", () => {
       const model = buildEInkModel();
       expect(model.root).toBeDefined();
@@ -136,13 +183,24 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
   describe("US 7,479,949 Apple Multi-Touch Heuristics", () => {
     test("calculates mutual capacitance shunt and pinch-to-zoom affine scale", () => {
       const pinchZoom = stepMultiTouch(
-        { fingerCount: 2, fingerSeparationMm: 100, touchPressureGrams: 80, gestureVelocityMmS: 15 },
+        {
+          fingerCount: 2,
+          fingerSeparationMm: 100,
+          touchPressureGrams: 80,
+          gestureVelocityMmS: 15,
+        },
         1.0,
       );
       expect(pinchZoom.gestureMode).toBe("Pinch-to-Zoom");
       expect(pinchZoom.zoomScale).toBe(2.0); // 100mm / 50mm baseline = 2.0x
       expect(pinchZoom.sensorMatrix.length).toBe(4);
       expect(pinchZoom.sensorMatrix[0].length).toBe(4);
+    });
+
+    test("2D gesture velocity is the registry seat, not leftover 25 mm/s", async () => {
+      const simSource = await Bun.file(new URL("../MultiTouchSim.tsx", import.meta.url)).text();
+      expect(simSource).toContain("params.gestureVelocityMmS ?? 15");
+      expect(simSource).not.toContain("gestureVelocityMmS: 25");
     });
 
     test("builds glass screen, ITO capacitive grid, dual touch rings, and document plane", () => {

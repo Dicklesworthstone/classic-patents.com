@@ -3,9 +3,21 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { createYaleLockModel } from "./yaleLockModel";
+
+type CameraPreset = "iso" | "cutaway" | "keyway" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [5.0, 3.5, 6.0], target: [0, 0, 0] },
+  cutaway: { pos: [0, 0, 7.5], target: [0, 0, 0] },
+  keyway: { pos: [-6.5, 0, 0], target: [0, 0, 0] },
+  top: { pos: [0, 7.5, 0.1], target: [0, 0, 0] },
+};
 
 interface YaleLock3DProps {
   initialKeyInsertion?: number;
@@ -17,6 +29,7 @@ export function YaleLock3D({
   initialAppliedTorque = 0.15,
 }: YaleLock3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const insertionId = useId();
   const torqueId = useId();
 
@@ -25,7 +38,13 @@ export function YaleLock3D({
   const appliedTorqueNm = params.appliedTorqueNm ?? initialAppliedTorque;
   const [useAuthorizedKey, setUseAuthorizedKey] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [cameraPreset, setCameraPreset] = useState<"iso" | "cutaway" | "keyway" | "top">("iso");
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("iso");
+
+  const handlePresetChange = (preset: CameraPreset) => {
+    setCameraPreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const activeKeyBittings = useMemo(() => {
     return useAuthorizedKey ? DEFAULT_LOCK_BITTINGS_MM : [5.0, 3.0, 5.5, 2.5, 5.0];
@@ -47,11 +66,14 @@ export function YaleLock3D({
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [5.0, 3.5, 6.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
+      environmentStyle: "studio",
     });
+    studioRef.current = studio;
 
     const model = createYaleLockModel();
     studio.scene.add(model.group);
@@ -65,32 +87,13 @@ export function YaleLock3D({
     };
     animate();
 
-    // Preset camera transitions
-    const applyCamera = (preset: typeof cameraPreset) => {
-      if (preset === "iso") {
-        studio.camera.position.set(5.0, 3.5, 6.0);
-        studio.controls.target.set(0, 0, 0);
-      } else if (preset === "cutaway") {
-        studio.camera.position.set(0, 0, 7.5);
-        studio.controls.target.set(0, 0, 0);
-      } else if (preset === "keyway") {
-        studio.camera.position.set(-6.5, 0, 0);
-        studio.controls.target.set(0, 0, 0);
-      } else if (preset === "top") {
-        studio.camera.position.set(0, 7.5, 0.1);
-        studio.controls.target.set(0, 0, 0);
-      }
-      studio.controls.update();
-    };
-
-    applyCamera(cameraPreset);
-
     return () => {
       cancelAnimationFrame(rafId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
-  }, [cameraPreset, live]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
@@ -110,7 +113,7 @@ export function YaleLock3D({
           <div className="flex items-center bg-neutral-950 p-1 rounded-lg border border-neutral-800 text-xs">
             <button
               type="button"
-              onClick={() => setCameraPreset("iso")}
+              onClick={() => handlePresetChange("iso")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "iso"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -121,7 +124,7 @@ export function YaleLock3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("cutaway")}
+              onClick={() => handlePresetChange("cutaway")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "cutaway"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -132,7 +135,7 @@ export function YaleLock3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("top")}
+              onClick={() => handlePresetChange("top")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "top"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -143,7 +146,7 @@ export function YaleLock3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("keyway")}
+              onClick={() => handlePresetChange("keyway")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "keyway"
                   ? "bg-amber-500/30 text-amber-300 font-bold"

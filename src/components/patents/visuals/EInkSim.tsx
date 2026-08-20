@@ -17,43 +17,49 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
   const { params, updateParam } = usePatentPhysics("us-6120588-eink");
   const voltage = params.electrodeVoltageVolts ?? initialVoltage;
   const viscosity = params.fluidViscosityCp ?? initialViscosity;
+  const chargeCoupled = params.particleChargeCoupled ?? 1.0;
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
-  // Microcapsule particles simulation array
+  // Microcapsule particles. Layout is a hash of particle index (Wright streamlines).
   const particlesRef = useRef<
     Array<{
+      index: number;
+      restX: number;
       x: number;
       y: number; // -1 (bottom) to +1 (top)
       type: "white" | "black";
-      vx: number;
-      vy: number;
       size: number;
     }>
   >([]);
 
   if (particlesRef.current.length === 0) {
+    const unitHash = (i: number, salt: number) => {
+      const n = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+      return n - Math.floor(n);
+    };
     const pts = [];
-    // 35 white particles (positive charge)
     for (let i = 0; i < 35; i++) {
+      const restX = (i % 2 === 0 ? 0.25 : 0.75) + (unitHash(i, 1) - 0.5) * 0.16;
       pts.push({
-        x: 0.1 + Math.random() * 0.8,
-        y: -0.6 + Math.random() * 0.4,
+        index: i,
+        restX,
+        x: restX,
+        y: 0.8,
         type: "white" as const,
-        vx: 0,
-        vy: 0,
-        size: 7 + Math.random() * 3,
+        size: 7 + unitHash(i, 3) * 3,
       });
     }
-    // 35 black particles (negative charge)
     for (let i = 0; i < 35; i++) {
+      const index = i + 35;
+      const restX = (i % 2 === 0 ? 0.25 : 0.75) + (unitHash(index, 1) - 0.5) * 0.16;
       pts.push({
-        x: 0.1 + Math.random() * 0.8,
-        y: 0.2 + Math.random() * 0.4,
+        index,
+        restX,
+        x: restX,
+        y: -0.8,
         type: "black" as const,
-        vx: 0,
-        vy: 0,
-        size: 7 + Math.random() * 3,
+        size: 7 + unitHash(index, 3) * 3,
       });
     }
     particlesRef.current = pts;
@@ -66,28 +72,36 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
     if (!ctx) return;
 
     let animId: number;
-    let state = stepEInk({ electrodeVoltageVolts: voltage, fluidViscosityCp: viscosity }, 0.016);
+    let timeSec = 0;
+    let state = stepEInk(
+      {
+        electrodeVoltageVolts: voltage,
+        fluidViscosityCp: viscosity,
+        particleChargeCoupled: chargeCoupled,
+      },
+      0.016,
+    );
 
     const render = () => {
       if (isPlaying) {
+        timeSec += 0.016;
         state = stepEInk(
-          { electrodeVoltageVolts: voltage, fluidViscosityCp: viscosity },
+          {
+            electrodeVoltageVolts: voltage,
+            fluidViscosityCp: viscosity,
+            particleChargeCoupled: chargeCoupled,
+          },
           0.016,
           state,
         );
 
-        // Update particle positions based on electrophoretic mobility
-        const vy = (voltage / 15.0) * (2.0 / viscosity) * 0.018;
-
+        // Same kernel Y the 3D meshes lerp toward. Jitter is a hash of index + time.
         for (const p of particlesRef.current) {
-          // White particles (+) move up if top is negative (voltage > 0)
-          // Black particles (-) move down if top is negative
-          const dir = p.type === "white" ? vy : -vy;
-          p.y += dir + (Math.random() - 0.5) * 0.002; // Brownian motion perturbation
+          const targetY = p.type === "white" ? state.whiteParticleNormY : state.blackParticleNormY;
+          const jitterY = Math.sin(p.index * 5.1 + timeSec * 2.3) * 0.04;
+          p.y += (targetY + jitterY - p.y) * 0.18;
           p.y = Math.max(-0.88, Math.min(0.88, p.y));
-
-          // Slight lateral Brownian drift constrained within capsule circle
-          p.x += (Math.random() - 0.5) * 0.003;
+          p.x = p.restX + Math.cos(p.index * 4.3 + timeSec * 1.7) * 0.02;
           p.x = Math.max(0.12, Math.min(0.88, p.x));
         }
       }
@@ -313,7 +327,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [voltage, viscosity, isPlaying]);
+  }, [voltage, viscosity, chargeCoupled, isPlaying]);
 
   return (
     <div className="w-full flex flex-col gap-4 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 text-neutral-100 shadow-xl">

@@ -4,8 +4,20 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+
+type CameraPreset = "overview" | "transmitter" | "receiver" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  overview: { pos: [0, 4.0, 12.0], target: [0, 1.0, 0] },
+  transmitter: { pos: [-3.5, 2.5, 4.0], target: [-5.0, 1.2, 0] },
+  receiver: { pos: [3.5, 2.5, 4.0], target: [5.0, 1.2, 0] },
+  top: { pos: [0, 14.0, 0.1], target: [0, 1.0, 0] },
+};
 
 interface BellPhotophone3DProps {
   initialVoiceSplDb?: number;
@@ -19,6 +31,7 @@ export function BellPhotophone3D({
   initialSolarWPerM2 = 950,
 }: BellPhotophone3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const voiceId = useId();
   const distId = useId();
   const solarId = useId();
@@ -28,9 +41,13 @@ export function BellPhotophone3D({
   const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
   const [isAudioActive, setIsAudioActive] = useState<boolean>(true);
-  const [cameraPreset, setCameraPreset] = useState<"overview" | "transmitter" | "receiver" | "top">(
-    "overview",
-  );
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
+
+  const handlePresetChange = (preset: CameraPreset) => {
+    setCameraPreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const photoState = useMemo(() => {
     return stepBellPhotophone({
@@ -46,11 +63,14 @@ export function BellPhotophone3D({
     const container = containerRef.current;
     if (!container) return;
 
+    const overview = CAMERA_PRESETS.overview;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [0, 4.0, 12.0],
-      targetPos: [0, 1.0, 0],
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
     });
+    studioRef.current = studio;
 
     const model = createBellPhotophoneModel();
     studio.scene.add(model.group);
@@ -66,31 +86,13 @@ export function BellPhotophone3D({
     };
     animate();
 
-    const applyCamera = (preset: typeof cameraPreset) => {
-      if (preset === "overview") {
-        studio.camera.position.set(0, 4.0, 12.0);
-        studio.controls.target.set(0, 1.0, 0);
-      } else if (preset === "transmitter") {
-        studio.camera.position.set(-3.5, 2.5, 4.0);
-        studio.controls.target.set(-5.0, 1.2, 0);
-      } else if (preset === "receiver") {
-        studio.camera.position.set(3.5, 2.5, 4.0);
-        studio.controls.target.set(5.0, 1.2, 0);
-      } else if (preset === "top") {
-        studio.camera.position.set(0, 14.0, 0.1);
-        studio.controls.target.set(0, 1.0, 0);
-      }
-      studio.controls.update();
-    };
-
-    applyCamera(cameraPreset);
-
     return () => {
       cancelAnimationFrame(rafId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
-  }, [cameraPreset, live]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
@@ -111,7 +113,7 @@ export function BellPhotophone3D({
           <div className="flex items-center bg-neutral-950 p-1 rounded-lg border border-neutral-800 text-xs">
             <button
               type="button"
-              onClick={() => setCameraPreset("overview")}
+              onClick={() => handlePresetChange("overview")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "overview"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -122,7 +124,7 @@ export function BellPhotophone3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("transmitter")}
+              onClick={() => handlePresetChange("transmitter")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "transmitter"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -133,7 +135,7 @@ export function BellPhotophone3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("receiver")}
+              onClick={() => handlePresetChange("receiver")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "receiver"
                   ? "bg-amber-500/30 text-amber-300 font-bold"
@@ -144,7 +146,7 @@ export function BellPhotophone3D({
             </button>
             <button
               type="button"
-              onClick={() => setCameraPreset("top")}
+              onClick={() => handlePresetChange("top")}
               className={`px-2.5 py-1 rounded font-mono ${
                 cameraPreset === "top"
                   ? "bg-amber-500/30 text-amber-300 font-bold"

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createThreeStudioScene } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
-import { type RoombaState, stepRoomba } from "@/physics/roombaKernel";
+import { ROOMBA_ROOM, type RoombaState, stepRoomba } from "@/physics/roombaKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildRoombaModel } from "./RoombaModel";
@@ -43,8 +43,8 @@ export function Roomba3D() {
           {
             wheelSpeedMps: p.wheelSpeedMps ?? 0.3,
             turnRateRadSec: p.turnRateRadSec ?? 1.5,
-            roomWidth: 4,
-            roomHeight: 4,
+            roomWidth: ROOMBA_ROOM.width,
+            roomHeight: ROOMBA_ROOM.height,
           },
           currentState,
           1 / 120,

@@ -19,6 +19,8 @@ describe("Linus Yale Jr. Lock 3D Model & Physics Visual Test Suite", () => {
     expect(threeSource).toContain('updateParam("keyInsertion"');
     expect(simSource).toContain('updateParam("appliedTorqueNm"');
     expect(threeSource).not.toContain("setKeyInsertion");
+    expect(threeSource).not.toContain("[cameraPreset, live]");
+    expect(threeSource).toContain("controls.setView");
   });
 
   test("creates valid Three.js model hierarchy with 5 pin stacks", () => {
