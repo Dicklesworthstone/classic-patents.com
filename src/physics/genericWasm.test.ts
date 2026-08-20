@@ -1,25 +1,37 @@
 import { describe, expect, test } from "bun:test";
 import {
   bellWaveCrate,
+  corlissValveCrate,
   cyclicHarmonic,
   cyclicSol,
   cyclicSymmetry,
   delavalCreamCrate,
+  eastmanSprocketCrate,
   edisonHeatCrate,
+  engelbartXyCrate,
   fluidFrames,
   gaMotorFrameIndex,
   gaMotorOrbit,
   gatlingClusterCrate,
   genericKernelSource,
+  gliddenFlyerCrate,
   grammeRingCrate,
   heatFrames,
+  hollerithBankCrate,
+  howeCyclicFlex,
+  howeShaftCrate,
   laplacianModeShape,
   laplacianModes,
   marconiWaveCrate,
+  mccormickReelCrate,
+  mergenthalerMagCrate,
+  otisSheaveCrate,
   parsonsSteamCrate,
   peltonJetCrate,
+  renoSheaveCrate,
   sampleFluidAt,
   sampleHeatAt,
+  sholesBasketCrate,
   wakeFluidCrate,
   wave2dFrames,
   waveFrameRms,
@@ -117,6 +129,17 @@ describe("generic FrankenSim crate composition", () => {
     expect(cream.skimCrateDensity).toBeGreaterThanOrEqual(0);
     expect(Number.isFinite(gatlingClusterCrate(6, 60).clusterHarmonicH1)).toBe(true);
     expect(Number.isFinite(grammeRingCrate(36, 1).ringHarmonicH1)).toBe(true);
+    expect(eastmanSprocketCrate(2).sprocketFlex).toBeGreaterThan(0);
+    expect(gliddenFlyerCrate(31.4).flyerFlex).toBeGreaterThan(0);
+    expect(renoSheaveCrate(1.2).sheaveFlex).toBeGreaterThan(0);
+    expect(mccormickReelCrate(1.2).reelFlex).toBeGreaterThan(0);
+    expect(howeShaftCrate(6).shaftFlex).toBeCloseTo(howeCyclicFlex(6), 4);
+    expect(otisSheaveCrate().sheaveFlex).toBeGreaterThan(0);
+    expect(engelbartXyCrate().flexX).toBeGreaterThan(0);
+    expect(sholesBasketCrate(24, 3).strikeFlex).toBeGreaterThan(0);
+    expect(hollerithBankCrate(10).pressFlex).toBeGreaterThan(0);
+    expect(mergenthalerMagCrate().magFlex).toBeGreaterThan(0);
+    expect(Number.isFinite(corlissValveCrate(1.2).exhaustHarmonic)).toBe(true);
     expect(Number.isFinite(wortHeatCrate(22).wortHeatSample)).toBe(true);
     expect(wakeFluidCrate(120).wakeCrateDensity).toBeGreaterThanOrEqual(0);
   });

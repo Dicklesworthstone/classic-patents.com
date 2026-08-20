@@ -3172,3 +3172,342 @@ export function stepMaximMachineGun(params: {
     schematicFuseeD: "M 330 140 Q 350 150, 330 160 T 310 170",
   };
 }
+
+export function stepHallAluminium(params: {
+  currentAmperes?: number;
+  bathTemperatureCelsius?: number;
+  aluminaConcentrationPct?: number;
+}) {
+  const I = params.currentAmperes ?? 300000;
+  const T = params.bathTemperatureCelsius ?? 960;
+  const cAl2O3 = params.aluminaConcentrationPct ?? 5.5;
+
+  // Faraday's Constant F = 96485 C/mol, M(Al) = 26.9815 g/mol, z = 3
+  // Theoretical Al yield = (I * 3600 * 26.9815) / (3 * 96485 * 1000) kg/hr = I * 0.0003355 kg/hr
+  const currentEfficiency = Math.max(
+    0.8,
+    Math.min(0.96, 0.94 - Math.max(0, T - 960) * 0.001 - Math.max(0, 4.0 - cAl2O3) * 0.02),
+  );
+  const alRateKgPerHour = I * 0.0003355 * currentEfficiency;
+  const co2RateKgPerHour = (alRateKgPerHour * (3 * 44.01)) / (4 * 26.9815);
+
+  // E_rev = 1.18 V (with carbon oxidation at 960 °C), overpotential eta = 0.55 V, R_bath ~ 9.0 uOhm
+  const rBathOhm = 0.000009;
+  const cellVoltage = 1.18 + 0.55 + I * rBathOhm;
+  const electricalPowerKw = (I * cellVoltage) / 1000;
+  const specificEnergyKwhPerKg = electricalPowerKw / Math.max(1, alRateKgPerHour);
+
+  return {
+    currentAmperes: I,
+    bathTemperatureCelsius: T,
+    aluminaConcentrationPct: cAl2O3,
+    currentEfficiencyPct: Number((currentEfficiency * 100).toFixed(1)),
+    aluminiumProductionRateKgPerHour: Number(alRateKgPerHour.toFixed(1)),
+    co2EmissionRateKgPerHour: Number(co2RateKgPerHour.toFixed(1)),
+    totalCellVoltage: Number(cellVoltage.toFixed(2)),
+    electricalPowerKw: Math.round(electricalPowerKw),
+    specificEnergyKwhPerKg: Number(specificEnergyKwhPerKg.toFixed(2)),
+    liquidAluminiumDensityGPerCm3: 2.28,
+    moltenBathDensityGPerCm3: 2.1,
+  };
+}
+
+export interface EdisonIndicatorKernelInput {
+  mainsVoltageV?: number;
+  plateBiasPolarity?: "positive" | "negative" | "neutral" | number;
+  vacuumPressureTorr?: number;
+  galvanometerTorsionNullV?: number;
+}
+
+export interface EdisonIndicatorKernelOutput {
+  mainsVoltageV: number;
+  filamentPowerW: number;
+  filamentTemperatureK: number;
+  filamentResistanceOhm: number;
+  emissionCurrentMicroAmps: number;
+  thermionicCurrentDensityA_m2: number;
+  plateBiasPolarity: string;
+  galvoDeflectionDeg: number;
+  regulatorState: "nominal" | "high_voltage_trip" | "low_voltage_trip";
+  spaceChargeFactor: number;
+  rectificationRatio: number;
+}
+
+export function stepEdisonIndicator(
+  params: EdisonIndicatorKernelInput,
+): EdisonIndicatorKernelOutput {
+  const vLine = params.mainsVoltageV ?? 110;
+  const nullV = params.galvanometerTorsionNullV ?? 110;
+  let bias: string;
+  if (typeof params.plateBiasPolarity === "number") {
+    bias =
+      params.plateBiasPolarity > 0
+        ? "positive"
+        : params.plateBiasPolarity < 0
+          ? "negative"
+          : "neutral";
+  } else {
+    bias = params.plateBiasPolarity ?? "positive";
+  }
+
+  // Carbon filament hot resistance R(V) ~ 200 Ohm at 110 V with mild non-linear coefficient
+  const rFilament = 200 * (1 + 0.0012 * (vLine - 110));
+  const powerW = (vLine * vLine) / rFilament;
+
+  // Stefan-Boltzmann radiation balance P = eps * sigma * A * T^4 -> T ~ T_nom * (P / P_nom)^0.25
+  const tFilamentK = Math.round(2150 * (powerW / 60.5) ** 0.25);
+
+  // Richardson-Dushman: J = A * T^2 * exp(-Phi / (k_B * T))
+  // Carbon work function Phi = 4.60 eV, k_B = 8.617333e-5 eV/K
+  const phiEv = 4.6;
+  const kbEv = 8.617333e-5;
+  const exponent = -phiEv / (kbEv * Math.max(1000, tFilamentK));
+  const richardsonA = 1.2e6; // A/(m^2*K^2)
+  const currentDensity = richardsonA * tFilamentK * tFilamentK * Math.exp(exponent);
+
+  // Emitter effective surface area ~ 1.5 cm^2 = 1.5e-4 m^2
+  const emitterAreaM2 = 0.00015;
+  const saturatedEmissionUa = currentDensity * emitterAreaM2 * 1e6;
+
+  // Plate collection factor depending on polarity
+  let emissionCurrentMicroAmps: number;
+  let rectificationRatio = 10000;
+  if (bias === "positive") {
+    // Unidirectional electron collection swept by positive potential
+    emissionCurrentMicroAmps = saturatedEmissionUa;
+  } else if (bias === "negative") {
+    // Electrostatic repulsion yields near zero current (leakage only)
+    emissionCurrentMicroAmps = saturatedEmissionUa * 0.000001;
+    rectificationRatio = 100000;
+  } else {
+    // Neutral plate floating
+    emissionCurrentMicroAmps = saturatedEmissionUa * 0.01;
+  }
+
+  // Torsional center-zero galvanometer deflection: 0 deg at nullV (110 V)
+  // Scaled linearly around nominal with sensitivity ~ 0.5 deg / Volt
+  const nominalEmissionUa =
+    richardsonA * 2150 * 2150 * Math.exp(-phiEv / (kbEv * 2150)) * emitterAreaM2 * 1e6;
+  const rawDeflection =
+    bias === "positive"
+      ? ((emissionCurrentMicroAmps - nominalEmissionUa) / nominalEmissionUa) * 15.0
+      : -15.0;
+  const galvoDeflectionDeg = Number(Math.max(-25.0, Math.min(25.0, rawDeflection)).toFixed(1));
+
+  let regulatorState: "nominal" | "high_voltage_trip" | "low_voltage_trip" = "nominal";
+  if (vLine > nullV + 2.5) {
+    regulatorState = "high_voltage_trip";
+  } else if (vLine < nullV - 2.5) {
+    regulatorState = "low_voltage_trip";
+  }
+
+  return {
+    mainsVoltageV: vLine,
+    filamentPowerW: Number(powerW.toFixed(1)),
+    filamentTemperatureK: tFilamentK,
+    filamentResistanceOhm: Number(rFilament.toFixed(1)),
+    emissionCurrentMicroAmps: Number(emissionCurrentMicroAmps.toFixed(2)),
+    thermionicCurrentDensityA_m2: Number(currentDensity.toFixed(4)),
+    plateBiasPolarity: bias,
+    galvoDeflectionDeg,
+    regulatorState,
+    spaceChargeFactor: Number(
+      Math.min(1.0, 0.4 + (emissionCurrentMicroAmps / 100) * 0.6).toFixed(2),
+    ),
+    rectificationRatio,
+  };
+}
+
+export interface DeForestAudionKernelInput {
+  filamentCurrentA?: number;
+  gridBiasV?: number;
+  rfInputMv?: number;
+  plateVoltageV?: number;
+  loadResistanceKOhms?: number;
+}
+
+export interface DeForestAudionKernelOutput {
+  filamentCurrentA: number;
+  filamentPowerW: number;
+  filamentGlowRadiusPx: number;
+  gridBiasV: number;
+  plateVoltageV: number;
+  plateCurrentMa: number;
+  effectiveDrivingPotentialV: number;
+  transconductanceMicroMhos: number;
+  plateResistanceKOhms: number;
+  voltageGain: number;
+  audioOutputMilliWatts: number;
+  detectedRfAmplitudeMv: number;
+}
+
+export function stepDeForestAudion(
+  params: DeForestAudionKernelInput = {},
+): DeForestAudionKernelOutput {
+  const filamentCurrentA = params.filamentCurrentA ?? 0.85;
+  const gridBiasV = params.gridBiasV ?? -1.5;
+  const rfInputMv = params.rfInputMv ?? 250;
+  const plateVoltageV = params.plateVoltageV ?? 45;
+  const loadResistanceKOhms = params.loadResistanceKOhms ?? 20;
+
+  // Filament physics (P = I^2 * R, R_fil ~ 5.5 Ohm)
+  const filamentResistanceOhm = 5.5;
+  const filamentPowerW = filamentCurrentA * filamentCurrentA * filamentResistanceOhm;
+  const emissionFactor = Math.max(0, Math.min(1.5, (filamentCurrentA / 0.85) ** 4.0));
+
+  // Triode amplification factor mu ~ 10 for early De Forest grid audion
+  const mu = 10.0;
+  const k = 0.00032; // Perveance constant
+
+  // Effective driving potential V_eff = V_g + V_p / mu
+  const vEff = gridBiasV + plateVoltageV / mu;
+  const rawCurrentMa = vEff > 0 ? k * vEff ** 1.5 * 1000 * emissionFactor : 0.01 * emissionFactor;
+  const plateCurrentMa = Math.max(0, Math.min(15.0, rawCurrentMa));
+
+  // Dynamic transconductance gm = dIp / dVg = 1.5 * k * sqrt(V_eff)
+  const gm_A_per_V = vEff > 0 ? 1.5 * k * Math.sqrt(vEff) * emissionFactor : 0.00005;
+  const transconductanceMicroMhos = Math.round(gm_A_per_V * 1e6);
+
+  // Dynamic plate resistance rp = mu / gm (in kOhms)
+  const rpOhm = gm_A_per_V > 1e-6 ? mu / gm_A_per_V : 200000;
+  const plateResistanceKOhms = Number((rpOhm / 1000).toFixed(1));
+
+  // Stage voltage gain Av = mu * R_L / (r_p + R_L)
+  const rLoadOhm = loadResistanceKOhms * 1000;
+  const voltageGain = Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(1));
+
+  // Audio output power in telephone receiver T: P_out = (v_in * Av)^2 / (2 * R_L)
+  const vInRms = rfInputMv / 1000 / Math.SQRT2;
+  const vOutRms = vInRms * voltageGain;
+  const audioOutputWatts = (vOutRms * vOutRms) / rLoadOhm;
+  const audioOutputMilliWatts = Number((audioOutputWatts * 1000).toFixed(2));
+
+  const filamentGlowRadiusPx = Math.round(8 + (filamentCurrentA / 1.0) * 12);
+
+  return {
+    filamentCurrentA,
+    filamentPowerW: Number(filamentPowerW.toFixed(2)),
+    filamentGlowRadiusPx,
+    gridBiasV,
+    plateVoltageV,
+    plateCurrentMa: Number(plateCurrentMa.toFixed(2)),
+    effectiveDrivingPotentialV: Number(vEff.toFixed(2)),
+    transconductanceMicroMhos,
+    plateResistanceKOhms,
+    voltageGain,
+    audioOutputMilliWatts,
+    detectedRfAmplitudeMv: Number((rfInputMv * (voltageGain / 5.0)).toFixed(0)),
+  };
+}
+
+export type { ArkwrightWaterFrameControls, ArkwrightWaterFrameOutputs } from "./arkwrightKernel";
+export { stepArkwrightWaterFrame } from "./arkwrightKernel";
+export type { WattCondenserControls, WattCondenserOutputs } from "./wattCondenserKernel";
+export { stepWattCondenser } from "./wattCondenserKernel";
+
+export interface BaekelandBakeliteControls {
+  curingTempC?: number;
+  autoclavePressurePsi?: number;
+  catalystPct?: number;
+  curingTimeMin?: number;
+  fillerPct?: number;
+}
+
+export function stepBaekelandBakelite(
+  curingTempC?: number,
+  autoclavePressurePsi?: number,
+  catalystPct?: number,
+  curingTimeMin?: number,
+  fillerPct?: number,
+) {
+  const tempC = Math.max(20, Math.min(220, curingTempC ?? 130));
+  const tempK = tempC + 273.15;
+  const pressPsi = Math.max(0, Math.min(150, autoclavePressurePsi ?? 75));
+  const catPct = Math.max(0, Math.min(10, catalystPct ?? 1.5));
+  const timeMin = Math.max(1, Math.min(240, curingTimeMin ?? 60));
+  const filler = Math.max(0, Math.min(70, fillerPct ?? 45));
+
+  // Vapor pressure of water at temperature (Antoine equation in bar / psi)
+  // log10(P_mmHg) = 8.07131 - 1730.63 / (233.426 + T_C)
+  const pMmHg = 10 ** (8.07131 - 1730.63 / (233.426 + tempC));
+  const waterVaporPressurePsi = Number(((pMmHg / 760) * 14.6959).toFixed(1));
+  const waterVaporPressureBar = Number(((pMmHg / 760) * 1.01325).toFixed(2));
+  const appliedPressureBar = Number((pressPsi * 0.0689476).toFixed(2));
+
+  // Boiling / foaming suppression: external pressure must exceed vapor pressure of volatile water/formaldehyde
+  const isFoamingSuppressed = pressPsi >= waterVaporPressurePsi * 0.95;
+  const voidPorosityPct = isFoamingSuppressed
+    ? Number(Math.max(0.1, 0.8 - pressPsi * 0.008).toFixed(1))
+    : Number(Math.min(45, (waterVaporPressurePsi - pressPsi) * 1.2 + 8).toFixed(1));
+
+  // Step-growth condensation kinetics (Arrhenius)
+  // k = A * exp(-Ea / RT) * (1 + 0.8 * catalyst)
+  // Ea ≈ 75 kJ/mol, A ≈ 8.0e8 min^-1
+  const R = 8.314; // J/(mol*K)
+  const Ea = 75000; // J/mol
+  const kRate = 8.0e8 * Math.exp(-Ea / (R * tempK)) * (1 + 0.8 * catPct);
+
+  // Fractional conversion p (2nd-order polycondensation with t): p = (k*t) / (1 + k*t)
+  const kt = kRate * timeMin;
+  const conversionP = Number(Math.min(0.995, kt / (1 + kt)).toFixed(3));
+
+  // Critical Carothers gel point for phenol (f=3) and formaldehyde (f=2): p_c = 2/f = 0.667
+  const gelPointThreshold = 0.667;
+  const isGelled = conversionP >= gelPointThreshold;
+
+  // Resin stage classification
+  let resinStage:
+    | "A-stage (Resole Liquid)"
+    | "B-stage (Resitol Gel)"
+    | "C-stage (Bakelite Thermoset)" = "A-stage (Resole Liquid)";
+  if (conversionP >= 0.85) {
+    resinStage = "C-stage (Bakelite Thermoset)";
+  } else if (conversionP >= gelPointThreshold) {
+    resinStage = "B-stage (Resitol Gel)";
+  }
+
+  // Crosslink density (10^21 bonds/cm^3)
+  const crosslinkDensity = isGelled
+    ? Number((((conversionP - gelPointThreshold) / (1 - gelPointThreshold)) * 1.85).toFixed(2))
+    : 0;
+
+  // Mechanical properties (affected by cure conversion, filler ratio, and porosity)
+  const baseTensileMpa = 25 + crosslinkDensity * 22;
+  const fillerStrengthening = 1 + (filler / 45) * 0.4;
+  const porosityPenalty = Math.max(0.1, 1 - (voidPorosityPct / 100) * 2.2);
+  const tensileStrengthMpa = Number(
+    (baseTensileMpa * fillerStrengthening * porosityPenalty).toFixed(1),
+  );
+
+  // Dielectric breakdown strength (kV/mm)
+  const baseDielectric = isGelled ? 12.0 + (filler / 45) * 3.5 : 2.5;
+  const dielectricBreakdownKvPerMm = Number((baseDielectric * porosityPenalty).toFixed(1));
+
+  // Density (g/cm^3)
+  const solidDensity = 1.25 + (filler / 100) * 0.35;
+  const densityGPerCm3 = Number((solidDensity * (1 - voidPorosityPct / 100)).toFixed(2));
+
+  // Heat deflection temperature (°C)
+  const heatDeflectionTempC = Math.round(isGelled ? 90 + crosslinkDensity * 55 : 45);
+
+  return {
+    curingTempC: tempC,
+    autoclavePressurePsi: pressPsi,
+    appliedPressureBar,
+    waterVaporPressurePsi,
+    waterVaporPressureBar,
+    catalystPct: catPct,
+    curingTimeMin: timeMin,
+    fillerPct: filler,
+    conversionP,
+    resinStage,
+    isGelled,
+    isFoamingSuppressed,
+    voidPorosityPct,
+    crosslinkDensity,
+    tensileStrengthMpa,
+    dielectricBreakdownKvPerMm,
+    densityGPerCm3,
+    heatDeflectionTempC,
+  };
+}

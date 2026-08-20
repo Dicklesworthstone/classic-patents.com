@@ -385,6 +385,118 @@ export function grammeRingCrate(
   };
 }
 
+function rateKappa(base: number, rate: number, coupling: number) {
+  return Number((base + Math.abs(rate) * coupling).toFixed(4));
+}
+
+function cyclicStudioFlex(n: number, kappa: number, amp: number, index = 0) {
+  return Number((1 + amp * cyclicFlex(n, kappa, index)).toFixed(4));
+}
+
+/** Eastman n=8 sprocket analogue. Shared by 3D. */
+export function eastmanSprocketCrate(filmAdvanceSpeedRadPerS: number): {
+  sprocketKappa: number;
+  sprocketFlex: number;
+} {
+  const sprocketKappa = rateKappa(0.4, filmAdvanceSpeedRadPerS, 0.05);
+  return { sprocketKappa, sprocketFlex: cyclicStudioFlex(8, sprocketKappa, 0.12) };
+}
+
+/** Glidden n=6 flyer/reel twist. Shared by 3D. */
+export function gliddenFlyerCrate(flyerOmegaRadPerS: number): {
+  flyerKappa: number;
+  flyerFlex: number;
+} {
+  const flyerKappa = rateKappa(0.4, flyerOmegaRadPerS, 0.03);
+  return { flyerKappa, flyerFlex: cyclicStudioFlex(6, flyerKappa, 0.12) };
+}
+
+/** Reno n=8 cleat-loop sheave. Shared by 3D. */
+export function renoSheaveCrate(sheaveOmegaRadPerS: number): {
+  sheaveKappa: number;
+  sheaveFlex: number;
+} {
+  const sheaveKappa = rateKappa(0.4, sheaveOmegaRadPerS, 0.05);
+  return { sheaveKappa, sheaveFlex: cyclicStudioFlex(8, sheaveKappa, 0.12) };
+}
+
+/** McCormick n=6 reel-bat ring. Shared by 3D. */
+export function mccormickReelCrate(reelRadPerSec: number): {
+  reelKappa: number;
+  reelFlex: number;
+} {
+  const reelKappa = rateKappa(0.4, reelRadPerSec, 0.05);
+  return { reelKappa, reelFlex: cyclicStudioFlex(6, reelKappa, 0.18) };
+}
+
+/** Howe n=6 needle/shuttle coupling. Shared by 3D. */
+export function howeShaftCrate(shaftRate: number): { shaftKappa: number; shaftFlex: number } {
+  const shaftKappa = rateKappa(0.35, shaftRate, 0.04);
+  return { shaftKappa, shaftFlex: cyclicStudioFlex(6, shaftKappa, 0.12) };
+}
+
+/** Six-bar lockstitch analogue of the needle/shuttle coupling. Shared by 3D. */
+export function howeCyclicFlex(shaftRate: number) {
+  return howeShaftCrate(shaftRate).shaftFlex;
+}
+
+/** Otis n=6 crown-sheave analogue. Shared by 3D. */
+export function otisSheaveCrate(): { sheaveKappa: number; sheaveFlex: number } {
+  const sheaveKappa = 0.4;
+  return { sheaveKappa, sheaveFlex: cyclicStudioFlex(6, sheaveKappa, 0.15) };
+}
+
+/** Engelbart n=4 orthogonal-wheel analogue. Shared by 3D. */
+export function engelbartXyCrate(): { xyKappa: number; flexX: number; flexY: number } {
+  const xyKappa = 0.4;
+  return {
+    xyKappa,
+    flexX: cyclicStudioFlex(4, xyKappa, 0.2, 0),
+    flexY: cyclicStudioFlex(4, xyKappa, 0.2, 1),
+  };
+}
+
+/** Sholes type-basket strike. Shared by 3D. */
+export function sholesBasketCrate(
+  typeBarCount: number,
+  displayTypebarIndex: number,
+): { basketKappa: number; strikeFlex: number } {
+  const basketKappa = 0.35;
+  return {
+    basketKappa,
+    strikeFlex: cyclicStudioFlex(Math.max(4, typeBarCount), basketKappa, 0.2, displayTypebarIndex),
+  };
+}
+
+/** Hollerith dial-bank press. Shared by 3D. */
+export function hollerithBankCrate(dialCount: number): { bankKappa: number; pressFlex: number } {
+  const bankKappa = 0.35;
+  return {
+    bankKappa,
+    pressFlex: cyclicStudioFlex(Math.max(4, dialCount), bankKappa, 0.12),
+  };
+}
+
+/** Mergenthaler n=8 magazine ring. Shared by 3D. */
+export function mergenthalerMagCrate(): { magKappa: number; magFlex: number } {
+  const magKappa = 0.4;
+  return { magKappa, magFlex: cyclicStudioFlex(8, magKappa, 0.15) };
+}
+
+/** Corliss n=4 rotary-valve ring. Shared by 3D. */
+export function corlissValveCrate(crankAngleRad: number): {
+  valveKappa: number;
+  exhaustHarmonic: number;
+} {
+  const valveKappa = 2;
+  const index = Math.abs(Math.floor(crankAngleRad * 2)) % 4;
+  const ring = cyclicSymmetry(4, valveKappa);
+  return {
+    valveKappa,
+    exhaustHarmonic: Number((0.05 * cyclicSol(ring, index)).toFixed(4)),
+  };
+}
+
 function heatSampleU(u: number, v = 0.45): number {
   const heat = heatFrames(12, 16, 2);
   return Number(sampleHeatAt(heat, 12, 16, 8, Math.max(0, Math.min(1, u)), v).toFixed(4));

@@ -6,17 +6,20 @@
  * interactive parameter controllers, and 60-FPS computed telemetry states for every classic patent.
  */
 
+import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
+  stepEdisonIndicator,
   stepEinsteinRefrigerator as stepEinsteinRefrigeratorSi,
   stepEngelbartMouse,
   stepGatlingGun,
   stepGliddenBarbedWire,
   stepGrammeDynamo,
+  stepHallAluminium,
   stepHyattCelluloid,
   stepLincolnBuoy as stepLincolnBuoySi,
   stepMcCormickReaper,
@@ -33,8 +36,10 @@ import {
   stepZeppelinAirship,
   voltsToKv,
 } from "./catalogKernels";
+import { stepEInk } from "./eInkKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
   stepCcdWells,
   stepHoweSewingMachine,
@@ -42,8 +47,10 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "./machineKernels";
-
+import { stepMultiTouch } from "./multiTouchKernel";
+import { stepPageRank } from "./pageRankKernel";
 import { goddardNozzleMatch } from "./thermochem";
+import { stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface PhysicsControl {
@@ -4836,7 +4843,759 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Parsons divided high-pressure steam expansion across multiple expanding annular rows of reaction blades, keeping tip velocity manageable while directly driving high-speed electrical alternators.",
   },
+  "gb-913-watt-separate-condenser": {
+    domain: "thermodynamics",
+    domainTitle: "Thermodynamic Steam Cycles & Separate Condenser",
+    equationName: "Thermal Efficiency & In-Cylinder Quench Reduction",
+    engineMethod: "stepWattCondenser",
+    governingEquation:
+      "\\eta_{\\text{th}} = \\frac{W_{\\text{net}}}{Q_{\\text{in}}} = \\frac{\\text{IMEP} \\cdot V_{\\text{disp}}}{Q_{\\text{steam}} + Q_{\\text{quench}}}",
+    controls: [
+      {
+        id: "boilerPressurePsi",
+        label: "Boiler Gauge Pressure",
+        min: 0.5,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 3.0,
+        unit: "psi",
+      },
+      {
+        id: "condenserTempC",
+        label: "Condenser Cistern Temp",
+        min: 10,
+        max: 60,
+        step: 1,
+        defaultValue: 35,
+        unit: "°C",
+      },
+      {
+        id: "cylinderBoreInches",
+        label: "Cylinder Bore",
+        min: 20,
+        max: 72,
+        step: 2,
+        defaultValue: 38,
+        unit: "in",
+      },
+      {
+        id: "pistonStrokeFeet",
+        label: "Stroke Length",
+        min: 4,
+        max: 10,
+        step: 0.5,
+        defaultValue: 6.0,
+        unit: "ft",
+      },
+      {
+        id: "strokesPerMinute",
+        label: "Cadence",
+        min: 6,
+        max: 24,
+        step: 1,
+        defaultValue: 14,
+        unit: "spm",
+      },
+      {
+        id: "hasSeparateCondenser",
+        label: "Watt Condenser (vs Newcomen)",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+      },
+    ],
+    computeMetrics: (p) => {
+      const watt = stepWattCondenser({
+        boilerPressurePsi: p.boilerPressurePsi,
+        condenserTempC: p.condenserTempC,
+        cylinderBoreInches: p.cylinderBoreInches,
+        pistonStrokeFeet: p.pistonStrokeFeet,
+        strokesPerMinute: p.strokesPerMinute,
+        hasSeparateCondenser: (p.hasSeparateCondenser ?? 1) > 0.5,
+        hasSteamJacket: true,
+      });
+
+      return [
+        {
+          label: "Indicated Power",
+          value: `${watt.indicatedHorsepower.toFixed(1)} hp (${watt.indicatedPowerKw.toFixed(1)} kW)`,
+          unit: "hp",
+          badgeColor: "emerald",
+          progressPct: Math.min(100, (watt.indicatedHorsepower / 50.0) * 100),
+        },
+        {
+          label: "Condenser Vacuum",
+          value: `${watt.vacuumDepthInchesHg.toFixed(1)} inHg (${watt.condenserPressureAbsKpa.toFixed(1)} kPa)`,
+          unit: "inHg",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (watt.vacuumDepthInchesHg / 29.92) * 100),
+        },
+        {
+          label: "Thermal Efficiency",
+          value: `${watt.thermalEfficiencyPct.toFixed(2)}%`,
+          unit: "%",
+          badgeColor: "amber",
+          progressPct: Math.min(100, (watt.thermalEfficiencyPct / 6.0) * 100),
+        },
+        {
+          label: "Coal Burn Rate",
+          value: `${watt.coalConsumptionKgPerHour.toFixed(1)} kg/hr`,
+          unit: "kg/h",
+          badgeColor: "rose",
+          progressPct: Math.min(100, (watt.coalConsumptionKgPerHour / 150.0) * 100),
+        },
+        {
+          label: "Mine Water Lift (183m)",
+          value: `${Math.round(watt.waterPumpedGallonsPerHour).toLocaleString()} gal/hr`,
+          unit: "gph",
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (watt.waterPumpedM3PerHour / 120.0) * 100),
+        },
+        {
+          label: "Coal Savings / Year",
+          value: `${Math.round(watt.coalSavedTonsPerYear).toLocaleString()} tons`,
+          unit: "tons/yr",
+          badgeColor: "emerald",
+          progressPct: Math.min(100, (watt.coalSavedTonsPerYear / 1500.0) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "By condensing steam in an external cold chamber while keeping the main working cylinder continuously hot via a steam jacket, Watt eliminated Newcomen's massive cyclic thermal quench penalty, reducing fuel consumption by over 75%.",
+  },
+  "gb-931-arkwright-water-frame": {
+    domain: "mechanics",
+    domainTitle: "Differential Roller Drafting & Flyer Twist Kinetics",
+    equationName: "Draft Attenuation, Flyer Twist, and Yarn Tenacity",
+    governingEquation:
+      "D = \\frac{v_{\\text{delivery}}}{v_{\\text{feed}}} = \\frac{r_4 \\omega_4}{r_1 \\omega_1} \\quad \\text{and} \\quad \\text{TPM} = \\frac{\\Omega_{\\text{flyer}}}{v_{\\text{delivery}}}",
+    engineMethod: "stepArkwrightWaterFrame",
+    controls: [
+      {
+        id: "waterWheelRpm",
+        label: "Water Wheel Speed",
+        min: 60,
+        max: 260,
+        step: 10,
+        defaultValue: 180,
+        unit: "RPM",
+      },
+      {
+        id: "totalDraftRatio",
+        label: "Draft Ratio (D)",
+        min: 3.0,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 6.0,
+        unit: "×",
+      },
+      {
+        id: "rollerClampingWeightKg",
+        label: "Roller Pressure Weight",
+        min: 1.0,
+        max: 6.0,
+        step: 0.5,
+        defaultValue: 3.5,
+        unit: "kg",
+      },
+      {
+        id: "stapleLengthMm",
+        label: "Cotton Staple Length",
+        min: 20,
+        max: 38,
+        step: 1,
+        defaultValue: 28,
+        unit: "mm",
+      },
+      {
+        id: "inputRovingCountNe",
+        label: "Input Roving Count",
+        min: 0.5,
+        max: 2.0,
+        step: 0.1,
+        defaultValue: 1.0,
+        unit: "Ne",
+      },
+    ],
+    computeMetrics: (p) => {
+      const arkwright = stepArkwrightWaterFrame({
+        waterWheelRpm: p.waterWheelRpm,
+        totalDraftRatio: p.totalDraftRatio,
+        rollerClampingWeightKg: p.rollerClampingWeightKg,
+        stapleLengthMm: p.stapleLengthMm,
+        inputRovingCountNe: p.inputRovingCountNe,
+      });
+
+      return [
+        {
+          label: "Flyer Spindle Speed",
+          value: `${Math.round(arkwright.flyerSpindleRpm).toLocaleString()} RPM`,
+          unit: `${arkwright.spindleOmegaRadPerSec.toFixed(0)} rad/s`,
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (arkwright.flyerSpindleRpm / 4500.0) * 100),
+        },
+        {
+          label: "Yarn Count (English)",
+          value: `${arkwright.outputYarnCountNe.toFixed(1)} Ne`,
+          unit: `${arkwright.yarnLinearDensityTex.toFixed(1)} Tex`,
+          badgeColor: "amber",
+          progressPct: Math.min(100, (arkwright.outputYarnCountNe / 16.0) * 100),
+        },
+        {
+          label: "Imparted Twist",
+          value: `${Math.round(arkwright.twistTurnsPerMeter).toLocaleString()} TPM`,
+          unit: `${arkwright.twistTurnsPerInch.toFixed(1)} TPI`,
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (arkwright.twistTurnsPerMeter / 800.0) * 100),
+        },
+        {
+          label: "Fiber Parallelization",
+          value: `${arkwright.fiberParallelizationPct.toFixed(1)}%`,
+          unit: "slip-free",
+          badgeColor: "emerald",
+          progressPct: arkwright.fiberParallelizationPct,
+        },
+        {
+          label: "Yarn Breaking Strength",
+          value: `${arkwright.yarnBreakingForceN.toFixed(2)} N`,
+          unit: arkwright.isWarpGradeWaterTwist ? "Warp-Grade" : "Weft-Only",
+          badgeColor: arkwright.isWarpGradeWaterTwist ? "emerald" : "rose",
+          progressPct: Math.min(100, (arkwright.yarnBreakingForceN / 4.0) * 100),
+        },
+        {
+          label: "Cromford Mill Output",
+          value: `${arkwright.millProductionKgPerDay.toFixed(1)} kg/day`,
+          unit: "96 spindles",
+          badgeColor: "purple",
+          progressPct: Math.min(100, (arkwright.millProductionKgPerDay / 15.0) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Arkwright's differential drawing rollers stretched roving into fine, parallel fibers without hand human touch, while the high-velocity flyer imparted intense helical twist, creating the world's first industrial warp-grade all-cotton yarn.",
+  },
+  "us-x1-hopkins-potash": {
+    domain: "thermochemistry",
+    domainTitle: "Potash Calcination & Leaching Kinetics",
+    equationName: "Thermal Decarbonization & Potash Mass Balance",
+    engineMethod: "stepHopkinsPotash",
+    governingEquation:
+      "m_{\\text{potash}} = m_{\\text{raw}} \\cdot \\eta_{\\text{calc}} \\cdot \\frac{M_{\\text{K}_2\\text{CO}_3}}{M_{\\text{ash}}}",
+    controls: [
+      {
+        id: "roastTempC",
+        label: "Furnace Temp",
+        min: 500,
+        max: 950,
+        step: 25,
+        defaultValue: 750,
+        unit: "°C",
+      },
+      {
+        id: "roastTimeHours",
+        label: "Roasting Time",
+        min: 0.5,
+        max: 6.0,
+        step: 0.5,
+        defaultValue: 2.5,
+        unit: "hrs",
+      },
+      {
+        id: "ashBatchKg",
+        label: "Raw Ash Batch",
+        min: 50,
+        max: 500,
+        step: 25,
+        defaultValue: 200,
+        unit: "kg",
+      },
+      {
+        id: "waterTempC",
+        label: "Water Temp",
+        min: 20,
+        max: 100,
+        step: 5,
+        defaultValue: 80,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (p) => {
+      const hopkins = stepHopkinsPotash({
+        roastTempC: p.roastTempC,
+        roastTimeHours: p.roastTimeHours,
+        ashBatchKg: p.ashBatchKg,
+        waterTempC: p.waterTempC,
+      });
+      return [
+        {
+          label: "Pearl Ash Yield",
+          value: `${hopkins.pearlAshYieldKg.toFixed(1)} kg`,
+          unit: "K₂CO₃",
+          badgeColor: "emerald",
+          progressPct: clampProgress((hopkins.pearlAshYieldKg / 50) * 100),
+        },
+        {
+          label: "Carbon Combustion",
+          value: `${hopkins.decarbonizationPct.toFixed(1)}%`,
+          unit: "η_comb",
+          badgeColor: "amber",
+          progressPct: clampProgress(hopkins.decarbonizationPct),
+        },
+        {
+          label: "Potash Purity",
+          value: `${hopkins.pearlAshPurityPct.toFixed(1)}%`,
+          unit: "purity",
+          badgeColor: "cyan",
+          progressPct: clampProgress(hopkins.pearlAshPurityPct),
+        },
+        {
+          label: "Dissolved K₂CO₃",
+          value: `${hopkins.leyConcentrationGpl.toFixed(1)} g/L`,
+          unit: "conc",
+          badgeColor: "purple",
+          progressPct: clampProgress((hopkins.leyConcentrationGpl / 200) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Samuel Hopkins burned raw wood ashes before leaching to incinerate combustible organic impurities, doubling pearl ash yield and producing high-purity potassium carbonate.",
+  },
+  "us-400766-hall-aluminium": {
+    domain: "materials_nanotech",
+    domainTitle: "Hall-Héroult Molten Salt Electrolysis & Cryolite Dissolution",
+    equationName: "Faraday's Law of Electrolysis & Cell Voltage",
+    governingEquation:
+      "m_{\\text{Al}} = \\frac{I \\cdot t \\cdot M}{z \\cdot F} \\eta_{\\text{curr}} \\quad \\text{and} \\quad V_{\\text{cell}} = E_{\\text{rev}} + \\eta + I R_{\\text{bath}}",
+    engineMethod: "FrankenSimEngine.stepHallAluminium",
+    controls: [
+      {
+        id: "currentAmperes",
+        label: "Cell DC Current",
+        min: 100000,
+        max: 500000,
+        step: 10000,
+        defaultValue: 300000,
+        unit: "A",
+      },
+      {
+        id: "bathTemperatureCelsius",
+        label: "Cryolite Bath Temp",
+        min: 920,
+        max: 1020,
+        step: 5,
+        defaultValue: 960,
+        unit: "°C",
+      },
+      {
+        id: "aluminaConcentrationPct",
+        label: "Alumina (Al₂O₃) Conc",
+        min: 2,
+        max: 8,
+        step: 0.5,
+        defaultValue: 5.5,
+        unit: "%",
+      },
+    ],
+    computeMetrics: (p) => {
+      const hall = stepHallAluminium({
+        currentAmperes: p.currentAmperes,
+        bathTemperatureCelsius: p.bathTemperatureCelsius,
+        aluminaConcentrationPct: p.aluminaConcentrationPct,
+      });
+      return [
+        {
+          label: "Al Production Rate",
+          value: `${hall.aluminiumProductionRateKgPerHour.toFixed(1)} kg/h`,
+          unit: "m_Al",
+          badgeColor: "cyan",
+          progressPct: clampProgress((hall.aluminiumProductionRateKgPerHour / 160) * 100),
+        },
+        {
+          label: "Current Efficiency",
+          value: `${hall.currentEfficiencyPct.toFixed(1)}%`,
+          unit: "η_curr",
+          badgeColor: "emerald",
+          progressPct: clampProgress(hall.currentEfficiencyPct),
+        },
+        {
+          label: "Total Cell Voltage",
+          value: `${hall.totalCellVoltage.toFixed(2)} V`,
+          unit: "V_cell",
+          badgeColor: "amber",
+          progressPct: clampProgress((hall.totalCellVoltage / 6) * 100),
+        },
+        {
+          label: "Specific Energy",
+          value: `${hall.specificEnergyKwhPerKg.toFixed(2)} kWh/kg`,
+          unit: "E_spec",
+          badgeColor: "purple",
+          progressPct: clampProgress((hall.specificEnergyKwhPerKg / 20) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Charles Martin Hall discovered that dissolving alumina in molten cryolite lowers the smelting melting point by over 1000 °C, enabling high-yield electrochemical reduction of pure aluminium at industrial scale.",
+  },
+  "us-307031-edison-indicator": {
+    domain: "electromagnetism",
+    domainTitle: "Thermionic Vacuum Emission & Closed-Loop Voltage Regulation",
+    equationName: "Richardson-Dushman Law & Galvanometer Balance",
+    governingEquation:
+      "J = A T^2 e^{-\\frac{\\Phi}{k_B T}} \\quad \\text{and} \\quad \\theta_{\\text{galvo}} = S_V (V_{\\text{mains}} - V_0)",
+    engineMethod: "FrankenSimEngine.stepEdisonIndicator",
+    controls: [
+      {
+        id: "mainsVoltageV",
+        label: "Mains Line Voltage",
+        min: 90,
+        max: 130,
+        step: 1,
+        defaultValue: 110,
+        unit: "V",
+      },
+      {
+        id: "plateBiasPolarity",
+        label: "Plate Bias (1=Pos, -1=Neg)",
+        min: -1,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "bias",
+      },
+      {
+        id: "galvanometerTorsionNullV",
+        label: "Torsion Null Reference",
+        min: 105,
+        max: 115,
+        step: 1,
+        defaultValue: 110,
+        unit: "V₀",
+      },
+    ],
+    computeMetrics: (p) => {
+      const edison = stepEdisonIndicator({
+        mainsVoltageV: p.mainsVoltageV,
+        plateBiasPolarity: p.plateBiasPolarity,
+        galvanometerTorsionNullV: p.galvanometerTorsionNullV,
+      });
+      return [
+        {
+          label: "Thermionic Current",
+          value: `${edison.emissionCurrentMicroAmps.toFixed(1)} µA`,
+          unit: "I_vac",
+          badgeColor: "amber",
+          progressPct: clampProgress((edison.emissionCurrentMicroAmps / 40) * 100),
+        },
+        {
+          label: "Cathode Temp",
+          value: `${edison.filamentTemperatureK} K`,
+          unit: "T_fil",
+          badgeColor: "amber",
+          progressPct: clampProgress(((edison.filamentTemperatureK - 1800) / 600) * 100),
+        },
+        {
+          label: "Needle Deflection",
+          value: `${edison.galvoDeflectionDeg > 0 ? "+" : ""}${edison.galvoDeflectionDeg.toFixed(1)}°`,
+          unit: "θ",
+          badgeColor: "indigo",
+          progressPct: clampProgress(((edison.galvoDeflectionDeg + 25) / 50) * 100),
+        },
+        {
+          label: "Regulator Trip",
+          value:
+            edison.regulatorState === "nominal"
+              ? "Center Nominal"
+              : edison.regulatorState === "high_voltage_trip"
+                ? "Trip: High V"
+                : "Trip: Low V",
+          unit: "status",
+          badgeColor:
+            edison.regulatorState === "nominal"
+              ? "emerald"
+              : edison.regulatorState === "high_voltage_trip"
+                ? "rose"
+                : "indigo",
+          progressPct: edison.regulatorState === "nominal" ? 50 : 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The Edison Effect demonstrated that electrons thermionically boil off an incandescing cathode across an absolute vacuum, creating a unidirectional current exponentially sensitive to line voltage fluctuations.",
+  },
+  "us-6285999-pagerank": {
+    domain: "network_dynamics",
+    domainTitle: "Markov Chain Stationary Distributions & Link Centrality",
+    equationName: "PageRank Stationary Probability Distribution",
+    governingEquation:
+      "\\mathbf{r} = d \\cdot \\mathbf{M} \\mathbf{r} + \\frac{1-d}{N} \\mathbf{1}",
+    engineMethod: "stepPageRank",
+    controls: [
+      {
+        id: "dampingFactor",
+        label: "Damping Factor (d)",
+        min: 0.0,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 0.85,
+        unit: "",
+      },
+    ],
+    computeMetrics: (p) => {
+      const out = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 });
+      const maxRank = Math.max(...out.ranks);
+      return [
+        {
+          label: "Max Node Centrality",
+          value: maxRank.toFixed(3),
+          unit: "PR",
+          badgeColor: "cyan",
+          progressPct: clampProgress(maxRank * 100),
+        },
+        {
+          label: "Random Jump Probability",
+          value: `${((1 - (p.dampingFactor ?? 0.85)) * 100).toFixed(1)}%`,
+          unit: "1-d",
+          badgeColor: "amber",
+          progressPct: clampProgress((1 - (p.dampingFactor ?? 0.85)) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "PageRank calculates the objective importance of web documents by solving for the dominant eigenvector of a link transition matrix adjusted by a random surfer damping probability.",
+  },
+  "us-6594844-roomba": {
+    domain: "autonomous_robotics",
+    domainTitle: "Deterministic Expanding Coverage & Deflection Heuristics",
+    equationName: "Differential Drive Kinematics & Archimedean Spiral",
+    governingEquation:
+      "r(t) = r_0 + \\frac{v}{2\\pi} t, \\quad \\mathbf{x}(t+\\Delta t) = \\mathbf{x}(t) + \\mathbf{v}_{drive} \\Delta t",
+    engineMethod: "stepRoomba",
+    controls: [
+      {
+        id: "wheelSpeedMps",
+        label: "Drive Speed",
+        min: 0.1,
+        max: 1.0,
+        step: 0.1,
+        defaultValue: 0.3,
+        unit: "m/s",
+      },
+      {
+        id: "turnRateRadSec",
+        label: "Turn Deflection Rate",
+        min: 0.5,
+        max: 3.0,
+        step: 0.5,
+        defaultValue: 1.5,
+        unit: "rad/s",
+      },
+    ],
+    computeMetrics: (p) => {
+      const v = p.wheelSpeedMps ?? 0.3;
+      return [
+        {
+          label: "Linear Velocity",
+          value: `${v.toFixed(2)} m/s`,
+          unit: "v",
+          badgeColor: "emerald",
+          progressPct: clampProgress((v / 1.0) * 100),
+        },
+        {
+          label: "Angular Deflection Rate",
+          value: `${(p.turnRateRadSec ?? 1.5).toFixed(1)} rad/s`,
+          unit: "ω",
+          badgeColor: "cyan",
+          progressPct: clampProgress(((p.turnRateRadSec ?? 1.5) / 3.0) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The Roomba achieves complete floor coverage without persistent global mapping by combining expanding Archimedean spiral cleaning with randomized bump-and-turn deflection heuristics.",
+  },
+  "us-6331181-davinci": {
+    domain: "medical_robotics",
+    domainTitle: "Master-Slave Telepresence & Tremor Cancellation",
+    equationName: "Scaled Inverse Kinematics & Butterworth Tremor Filtering",
+    governingEquation:
+      "\\mathbf{x}_{slave}(t) = \\frac{1}{K} \\cdot \\mathcal{F}^{-1}\\{ H_{LPF}(j\\omega) \\cdot \\mathcal{F}\\{\\mathbf{x}_{master}(t)\\} \\}",
+    engineMethod: "stepDaVinci",
+    controls: [
+      {
+        id: "motionScaleRatio",
+        label: "Motion Scaling (Master:Slave)",
+        min: 1,
+        max: 10,
+        step: 1,
+        defaultValue: 3,
+        unit: ":1",
+      },
+      {
+        id: "tremorFilterEnabled",
+        label: "Tremor Cancellation (8Hz LPF)",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "",
+      },
+      {
+        id: "gripAngleDeg",
+        label: "EndoWrist Grip Angle",
+        min: 0,
+        max: 60,
+        step: 5,
+        defaultValue: 30,
+        unit: "°",
+      },
+    ],
+    computeMetrics: (p) => {
+      const scale = p.motionScaleRatio ?? 3;
+      const filterOn = (p.tremorFilterEnabled ?? 1) > 0.5;
+      return [
+        {
+          label: "Motion Scale Ratio",
+          value: `${scale}:1`,
+          unit: "K",
+          badgeColor: "cyan",
+          progressPct: clampProgress((scale / 10) * 100),
+        },
+        {
+          label: "Tremor Attenuation",
+          value: filterOn ? "94.5%" : "0.0%",
+          unit: "atten",
+          badgeColor: filterOn ? "emerald" : "rose",
+          progressPct: filterOn ? 94.5 : 0,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The Da Vinci telemanipulator translates macroscopic surgeon hand motions into sub-millimeter surgical actions via electronic motion scaling and 8Hz physiological tremor filtration.",
+  },
+  "us-6120588-eink": {
+    domain: "colloidal_physics",
+    domainTitle: "Electrophoretic Particle Mobility & Optical Contrast",
+    equationName: "Stokes-Einstein Electrophoretic Drift",
+    governingEquation: "v = \\mu_e \\cdot E = \\frac{q}{6 \\pi \\eta r_p} \\cdot \\frac{V}{d}",
+    engineMethod: "stepEInk",
+    controls: [
+      {
+        id: "electrodeVoltageVolts",
+        label: "Electrode Potential",
+        min: -15,
+        max: 15,
+        step: 1,
+        defaultValue: 15,
+        unit: "V",
+      },
+      {
+        id: "fluidViscosityCp",
+        label: "Dielectric Fluid Viscosity",
+        min: 0.5,
+        max: 5.0,
+        step: 0.5,
+        defaultValue: 2.0,
+        unit: "cP",
+      },
+    ],
+    computeMetrics: (p) => {
+      const v = p.electrodeVoltageVolts ?? 15;
+      const out = stepEInk(
+        {
+          electrodeVoltageVolts: v,
+          fluidViscosityCp: p.fluidViscosityCp ?? 2.0,
+          particleChargeCoupled: 1.0,
+        },
+        1.0,
+      );
+      return [
+        {
+          label: "Surface Reflectance",
+          value: `${out.surfaceReflectancePercent}%`,
+          unit: "R_top",
+          badgeColor: out.surfaceReflectancePercent > 40 ? "cyan" : "indigo",
+          progressPct: clampProgress(out.surfaceReflectancePercent),
+        },
+        {
+          label: "Electric Field Intensity",
+          value: `${out.electricFieldVperUm.toFixed(2)} V/μm`,
+          unit: "E",
+          badgeColor: "amber",
+          progressPct: clampProgress((Math.abs(out.electricFieldVperUm) / 0.3) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "E-Ink achieves bistable electronic paper by electrophoretically driving charged titanium dioxide white particles and carbon black pigment particles through a dielectric fluid inside microcapsules.",
+  },
+  "us-7479949-multitouch": {
+    domain: "hci_sensing",
+    domainTitle: "Mutual Capacitance Matrices & Gesture Affine Transformations",
+    equationName: "Multi-Touch Affine Scaling & Mutual Capacitance Shunt",
+    governingEquation:
+      "S(t) = \\frac{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}, \\quad \\Delta C_m = -\\frac{\\varepsilon_0 \\varepsilon_r A_{finger}}{d}",
+    engineMethod: "stepMultiTouch",
+    controls: [
+      {
+        id: "fingerSeparationMm",
+        label: "Finger Separation Distance",
+        min: 15,
+        max: 120,
+        step: 5,
+        defaultValue: 50,
+        unit: "mm",
+      },
+      {
+        id: "fingerCount",
+        label: "Active Touch Contacts",
+        min: 0,
+        max: 2,
+        step: 1,
+        defaultValue: 2,
+        unit: "pts",
+      },
+    ],
+    computeMetrics: (p) => {
+      const sep = p.fingerSeparationMm ?? 50;
+      const count = p.fingerCount ?? 2;
+      const out = stepMultiTouch(
+        {
+          fingerCount: count,
+          fingerSeparationMm: sep,
+          touchPressureGrams: 80,
+          gestureVelocityMmS: 15,
+        },
+        0.0,
+      );
+      return [
+        {
+          label: "Affine Scale Factor",
+          value: `${out.zoomScale.toFixed(2)}x`,
+          unit: "S",
+          badgeColor: "cyan",
+          progressPct: clampProgress((out.zoomScale / 2.5) * 100),
+        },
+        {
+          label: "Capacitance Shunt",
+          value: `-${out.mutualCapacitanceDeltaPf.toFixed(2)} pF`,
+          unit: "ΔC_m",
+          badgeColor: "emerald",
+          progressPct: clampProgress((out.mutualCapacitanceDeltaPf / 1.5) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "The iPhone multi-touch architecture converts multi-point mutual capacitance drops into real-time affine transformations, enabling fluid pinch-to-zoom magnification and geometric gesture recognition.",
+  },
 };
+
+// Aliases for standard catalog IDs without suffix
+PATENT_PHYSICS_REGISTRY["us-6285999"] = PATENT_PHYSICS_REGISTRY["us-6285999-pagerank"];
+PATENT_PHYSICS_REGISTRY["us-6594844"] = PATENT_PHYSICS_REGISTRY["us-6594844-roomba"];
+PATENT_PHYSICS_REGISTRY["us-6331181"] = PATENT_PHYSICS_REGISTRY["us-6331181-davinci"];
+PATENT_PHYSICS_REGISTRY["us-6120588"] = PATENT_PHYSICS_REGISTRY["us-6120588-eink"];
+PATENT_PHYSICS_REGISTRY["us-7479949"] = PATENT_PHYSICS_REGISTRY["us-7479949-multitouch"];
 
 // Catalog page ids share the same kernel seats as their leftover/legacy keys.
 // The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.

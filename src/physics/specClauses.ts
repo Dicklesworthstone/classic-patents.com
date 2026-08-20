@@ -17,9 +17,93 @@ export interface SpecClause {
 const WRIGHT_ID = "us-821393-wright-flyer";
 const TESLA_ID = "us-381968-tesla-motor";
 const FERMI_ID = "us-2708656-fermi-reactor";
+const WATT_ID = "gb-913-watt-separate-condenser";
+const ARKWRIGHT_ID = "gb-931-arkwright-water-frame";
 const MARCONI_ID = "us-586193-marconi-radio";
+const BAEKELAND_ID = "us-942699-baekeland-bakelite";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
+  if (patentId === ARKWRIGHT_ID) {
+    const draftRatio = params.totalDraftRatio ?? 6.0;
+    const clampingWeight = params.rollerClampingWeightKg ?? 3.5;
+    const waterWheelRpm = params.waterWheelRpm ?? 180;
+    const isHighDraft = draftRatio >= 4.0;
+    const isClamped = clampingWeight >= 2.0;
+    const isSpinning = waterWheelRpm > 50;
+
+    return [
+      {
+        id: "differential-rollers",
+        phrase:
+          "turning with different degrees of velocity, draws out and attenuates the cotton fibers",
+        active: isHighDraft,
+        tone: isHighDraft ? "held" : "live",
+        caption: `Draft Ratio D=${draftRatio.toFixed(1)}×: Front delivery rollers turn faster than feed rollers, attenuating roving mechanically.`,
+      },
+      {
+        id: "weighted-pressing",
+        phrase:
+          "lead weights and pressing levers, which hang upon the bearings of the upper rollers",
+        active: isClamped,
+        tone: isClamped ? "held" : "broken",
+        caption: `Clamping Weight=${clampingWeight.toFixed(1)} kg: Deadweights prevent fiber slippage between leather top rollers and fluted cylinders.`,
+      },
+      {
+        id: "high-speed-flyers",
+        phrase:
+          "high-speed steel flyers, having two curved arms with small wire guide loops or eyes",
+        active: isSpinning,
+        tone: isSpinning ? "held" : "broken",
+        caption: `Flyer Speed=${Math.round(waterWheelRpm * 18.5)} RPM: Rapidly revolving flyers impart helical twist, converting roving into warp-grade water twist yarn.`,
+      },
+      {
+        id: "heart-cam-traverse",
+        phrase: "heart-wheel or cam... raises and lowers the rail supporting the bobbins",
+        active: isSpinning,
+        tone: "live",
+        caption:
+          "Heart-cam continuously oscillates the bobbin rail to wind yarn in uniform cylindrical layers.",
+      },
+    ];
+  }
+
+  if (patentId === WATT_ID) {
+    const hasCondenser = (params.hasSeparateCondenser ?? 1) >= 0.5;
+    const condTemp = params.condenserTempC ?? 35;
+    return [
+      {
+        id: "cylinder-hot",
+        phrase: "kept as hot as the steam that enters it",
+        active: hasCondenser,
+        tone: hasCondenser ? "held" : "broken",
+        caption: hasCondenser
+          ? "Principle 1: Concentric steam jacket maintains cylinder walls at boiling temperature (100°C+)."
+          : "Newcomen mode: Cylinder is quenched to 35°C on every single stroke, causing 75% fuel waste.",
+      },
+      {
+        id: "separate-condenser",
+        phrase: "condensed in vessels distinct from the steam vessels or cylinders",
+        active: hasCondenser,
+        tone: "live",
+        caption: `Principle 2: Separate vessel condenser active at ${condTemp}°C with cold water injection.`,
+      },
+      {
+        id: "air-pump",
+        phrase: "drawn out of the steam vessels or condensers by means of pumps",
+        active: hasCondenser,
+        tone: "live",
+        caption:
+          "Principle 3: Reciprocating beam air pump evacuates non-condensable gases and water.",
+      },
+      {
+        id: "oil-packing",
+        phrase: "employ oils, wax, resinous bodies, fat of animals, quicksilver",
+        active: true,
+        tone: "held",
+        caption: "Principle 7: Piston sealed with tallow and wax to prevent cold water chilling.",
+      },
+    ];
+  }
   if (patentId === WRIGHT_ID) {
     const coupled = (params.coupled ?? 1) >= 0.5;
     return [
@@ -92,6 +176,34 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
           keff >= 0.998
             ? `k_eff = ${keff.toFixed(4)}: chain reaction holds.`
             : `k_eff = ${keff.toFixed(4)}: subcritical.`,
+      },
+    ];
+  }
+
+  if (patentId === BAEKELAND_ID) {
+    const temp = params.curingTempC ?? 130;
+    const press = params.autoclavePressurePsi ?? 75;
+    const time = params.curingTimeMin ?? 60;
+    const isPressurized = press >= 45;
+    const isHotEnough = temp >= 110;
+    const isCured = isHotEnough && time >= 45;
+
+    return [
+      {
+        id: "autoclave-pressure",
+        phrase:
+          "closed vessel in case the temperature exceed 90°-100° C.; without this precaution vapors of formaldehyde and the like escape causing foam and air bubbles",
+        active: isPressurized,
+        tone: isPressurized ? "held" : "broken",
+        caption: `P_autoclave = ${press} psi: Super-atmospheric pressure suppresses boiling of water and formaldehyde, preventing foam and porosity.`,
+      },
+      {
+        id: "infusible-curing",
+        phrase:
+          "converted into a hard, insoluble and infusible body by the combined action of heat and pressure",
+        active: isCured,
+        tone: isCured ? "held" : "live",
+        caption: `T = ${temp} °C, t = ${time} min: Thermal condensation drives complete 3D covalent crosslinking into insoluble C-stage Bakelite.`,
       },
     ];
   }

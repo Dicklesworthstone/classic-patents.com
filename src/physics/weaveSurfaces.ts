@@ -10,8 +10,10 @@ import {
   stepCorlissEngine,
   stepDaimlerEngine,
   stepDavenportMotor,
+  stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonBulb,
+  stepEdisonIndicator,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
@@ -20,6 +22,7 @@ import {
   stepGliddenBarbedWire,
   stepGoodyearRubber,
   stepGrammeDynamo,
+  stepHallAluminium,
   stepHollerithTabulating,
   stepHyattCelluloid,
   stepLincolnBuoy,
@@ -33,6 +36,7 @@ import {
   stepPeltonWheel,
   stepSpencerMicrowave,
   stepThomsonWelding,
+  stepWattCondenser,
   stepWhitneyCottonGin,
   stepWozniakApple,
   stepZeppelinAirship,
@@ -2101,6 +2105,41 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
       params.expansionRatio ?? 3.5,
     );
     return [{ from: "chem. enthalpy", to: "exhaust KE", watts: rocket.exhaustKineticWatts }];
+  }
+  if (patentId.includes("400766") || patentId.includes("hall-aluminium")) {
+    const hall = stepHallAluminium({
+      currentAmperes: params.currentAmperes,
+      bathTemperatureCelsius: params.bathTemperatureCelsius,
+      aluminaConcentrationPct: params.aluminaConcentrationPct,
+    });
+    return [{ from: "bus", to: "cell", watts: hall.electricalPowerKw * 1000 }];
+  }
+  if (patentId.includes("879532") || patentId.includes("audion")) {
+    const tube = stepDeForestAudion({
+      filamentCurrentA: params.filamentCurrentA,
+      gridBiasV: params.gridBiasV,
+      rfInputMv: params.rfInputMv,
+      plateVoltageV: params.plateVoltageV,
+      loadResistanceKOhms: params.loadResistanceKOhms,
+    });
+    return [{ from: "filament", to: "audio", watts: tube.audioOutputMilliWatts / 1000 }];
+  }
+  if (patentId.includes("307031") || patentId.includes("edison-indicator")) {
+    const lamp = stepEdisonIndicator({
+      mainsVoltageV: params.mainsVoltageV,
+      galvanometerTorsionNullV: params.galvanometerTorsionNullV,
+    });
+    return [{ from: "mains", to: "filament", watts: lamp.filamentPowerW }];
+  }
+  if (patentId.includes("gb-913") || patentId.includes("watt-separate-condenser")) {
+    const watt = stepWattCondenser({
+      boilerPressurePsi: params.boilerPressurePsi,
+      condenserTempC: params.condenserTempC,
+      cylinderBoreInches: params.cylinderBoreInches,
+      pistonStrokeFeet: params.pistonStrokeFeet,
+      strokesPerMinute: params.strokesPerMinute,
+    });
+    return [{ from: "furnace", to: "indicated", watts: watt.indicatedPowerKw * 1000 }];
   }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     // stepTeslaCoil owns streamer length, secondary potential, and a 0–1 toneEnergy.

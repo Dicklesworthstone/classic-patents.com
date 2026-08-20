@@ -72,9 +72,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(edisonChannels[1].tone).toBe("loss");
 
     const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
-    expect(goddardChannels.length).toBe(2);
+    expect(goddardChannels.length).toBe(3);
     expect(goddardChannels[0]?.name).toBe("Chem. enthalpy");
     expect(goddardChannels[1]?.name).toBe("Exhaust KE");
+    expect(goddardChannels[2]?.name).toBe("Heat leak");
     expect(energyChannelsFor("us-2981877-noyce-ic", {})).toEqual([]);
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Latent sink");
     expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
@@ -108,6 +109,21 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     });
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]?.watts).toBeGreaterThan(0);
     expect(energyChannelsFor("us-588-ericsson-propeller", {})[0]?.name).toBe("Thrust · v");
+    expect(energyChannelsFor("us-400766-hall-aluminium", {})[0]).toMatchObject({
+      name: "Cell",
+      tone: "in",
+    });
+    expect(energyChannelsFor("us-400766-hall-aluminium", {})[0]?.watts).toBeGreaterThan(0);
+    expect(energyChannelsFor("us-879532-de-forest-audion", {}).map((c) => c.name)).toEqual([
+      "Filament",
+      "Audio",
+    ]);
+    expect(energyChannelsFor("us-307031-edison-indicator", {})[0]?.name).toBe("Filament");
+    expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
+      "Furnace",
+      "Indicated",
+      "Air pump",
+    ]);
   });
 
   test("canonicalizeParam and expandParamAliases normalize 3D private slider keys", () => {

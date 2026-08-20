@@ -3,15 +3,19 @@ import {
   stepCorlissEngine,
   stepDaimlerEngine,
   stepDavenportMotor,
+  stepDeForestAudion,
   stepEdisonBulb,
+  stepEdisonIndicator,
   stepEinsteinRefrigerator,
   stepEricssonPropeller,
+  stepHallAluminium,
   stepMarconiRadio,
   stepMaximMachineGun,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPeltonWheel,
   stepThomsonWelding,
+  stepWattCondenser,
 } from "./catalogKernels";
 
 import { FrankenSimEngine } from "./engine";
@@ -236,6 +240,48 @@ export function energyChannelsFor(
     });
     const v = screw.shipSpeedKnots * 0.514444;
     return [{ name: "Thrust · v", watts: screw.thrustKn * 1000 * v, tone: "useful" }];
+  }
+  if (patentId === "us-400766-hall-aluminium") {
+    const hall = stepHallAluminium({
+      currentAmperes: params.currentAmperes,
+      bathTemperatureCelsius: params.bathTemperatureCelsius,
+      aluminaConcentrationPct: params.aluminaConcentrationPct,
+    });
+    return [{ name: "Cell", watts: hall.electricalPowerKw * 1000, tone: "in" }];
+  }
+  if (patentId === "us-879532-de-forest-audion") {
+    const tube = stepDeForestAudion({
+      filamentCurrentA: params.filamentCurrentA,
+      gridBiasV: params.gridBiasV,
+      rfInputMv: params.rfInputMv,
+      plateVoltageV: params.plateVoltageV,
+      loadResistanceKOhms: params.loadResistanceKOhms,
+    });
+    return [
+      { name: "Filament", watts: tube.filamentPowerW, tone: "in" },
+      { name: "Audio", watts: tube.audioOutputMilliWatts / 1000, tone: "useful" },
+    ];
+  }
+  if (patentId === "us-307031-edison-indicator") {
+    const lamp = stepEdisonIndicator({
+      mainsVoltageV: params.mainsVoltageV,
+      galvanometerTorsionNullV: params.galvanometerTorsionNullV,
+    });
+    return [{ name: "Filament", watts: lamp.filamentPowerW, tone: "in" }];
+  }
+  if (patentId === "gb-913-watt-separate-condenser") {
+    const watt = stepWattCondenser({
+      boilerPressurePsi: params.boilerPressurePsi,
+      condenserTempC: params.condenserTempC,
+      cylinderBoreInches: params.cylinderBoreInches,
+      pistonStrokeFeet: params.pistonStrokeFeet,
+      strokesPerMinute: params.strokesPerMinute,
+    });
+    return [
+      { name: "Furnace", watts: watt.heatInputRateKw * 1000, tone: "in" },
+      { name: "Indicated", watts: watt.indicatedPowerKw * 1000, tone: "useful" },
+      { name: "Air pump", watts: watt.airPumpPowerKw * 1000, tone: "loss" },
+    ];
   }
   return [];
 }
