@@ -42,6 +42,8 @@ describe("US 36,836 Richard Gatling Revolving Battery Gun visual & ballistics bo
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Gatling Gun 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Gatling rotary rate of fire and cooling intervals in SI units", () => {

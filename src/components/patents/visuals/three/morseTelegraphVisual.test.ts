@@ -63,6 +63,8 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Morse Telegraph 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine line resistance, loop current, and electromagnetic holding force in SI units", () => {

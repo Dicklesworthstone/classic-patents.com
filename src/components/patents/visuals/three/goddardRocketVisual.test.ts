@@ -22,4 +22,20 @@ describe("US 1,102,653 Robert H. Goddard Rocket visual simulation", () => {
     expect(modelSource).toContain("buildGoddardRocketModel");
     expect(modelSource).toContain("updateGoddardRocketKinematics");
   });
+
+  test("3D camera chips drain studio.controls.setView instead of a leftover camera ref", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three/GoddardRocket3D.tsx"), "utf8");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
+    for (const preset of [
+      "iso",
+      "de_laval_nozzle",
+      "combustion_chamber",
+      "gimbal_actuator",
+      "interstage",
+      "top",
+    ]) {
+      expect(threeSource).toContain(preset);
+    }
+  });
 });

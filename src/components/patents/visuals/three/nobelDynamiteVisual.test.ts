@@ -62,6 +62,8 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Nobel Dynamite 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine detonation velocity, blast overpressure, and energy in SI units", () => {

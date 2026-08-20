@@ -58,6 +58,8 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Albert Einstein & Leo Szilard (US 1,781,541)");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Dalton partial pressure, sub-zero evaporator temp, and COP in SI units", () => {

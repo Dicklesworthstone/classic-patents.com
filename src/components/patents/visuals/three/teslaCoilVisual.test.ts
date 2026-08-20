@@ -35,6 +35,8 @@ describe("US 593,138 Nikola Tesla High-Frequency Electrical Transformer visual &
     }
 
     expect(threeSource).toContain("Interpretive Transformer Telemetry");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine secondary potential, streamer length, and resonant frequency in SI units", () => {
