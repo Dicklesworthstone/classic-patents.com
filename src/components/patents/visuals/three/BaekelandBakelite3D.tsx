@@ -10,13 +10,24 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 const EXHIBIT_ID = "us-942699-baekeland-bakelite";
 
+type CameraPreset = "iso" | "autoclave" | "mold" | "molecular" | "gauges";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [4.5, 3.2, 5.5], target: [0, 1.6, 0] },
+  autoclave: { pos: [0, 1.8, 4.0], target: [0, 1.4, 0] },
+  mold: { pos: [0, 1.4, 1.6], target: [0, 1.3, 0] },
+  molecular: { pos: [0, 4.2, 2.5], target: [0, 3.4, 0] },
+  gauges: { pos: [0, 2.8, 1.8], target: [0, 2.4, 0] },
+};
+
 export function BaekelandBakelite3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [activePreset, setActivePreset] = useState<
-    "iso" | "autoclave" | "mold" | "molecular" | "gauges"
-  >("iso");
+  const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
 
   const { params } = usePatentPhysics(EXHIBIT_ID);
   const live = useLiveSimParams(params);
@@ -32,10 +43,11 @@ export function BaekelandBakelite3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [4.5, 3.2, 5.5],
-      targetPos: [0, 1.6, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       environmentStyle: "studio",
     });
     studioRef.current = studio;
@@ -67,34 +79,11 @@ export function BaekelandBakelite3D() {
     };
   }, [live]);
 
-  const setPreset = (preset: "iso" | "autoclave" | "mold" | "molecular" | "gauges") => {
+  const setPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
-    const studio = studioRef.current;
-    if (!studio) return;
-
-    switch (preset) {
-      case "iso":
-        studio.camera.position.set(4.5, 3.2, 5.5);
-        studio.controls.target.set(0, 1.6, 0);
-        break;
-      case "autoclave":
-        studio.camera.position.set(0, 1.8, 4.0);
-        studio.controls.target.set(0, 1.4, 0);
-        break;
-      case "mold":
-        setCutaway(true);
-        studio.camera.position.set(0, 1.4, 1.6);
-        studio.controls.target.set(0, 1.3, 0);
-        break;
-      case "molecular":
-        studio.camera.position.set(0, 4.2, 2.5);
-        studio.controls.target.set(0, 3.4, 0);
-        break;
-      case "gauges":
-        studio.camera.position.set(0, 2.8, 1.8);
-        studio.controls.target.set(0, 2.4, 0);
-        break;
-    }
+    if (preset === "mold") setCutaway(true);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const tempC = (params.curingTempC as number) ?? 130;

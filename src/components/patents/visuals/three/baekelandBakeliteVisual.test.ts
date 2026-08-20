@@ -42,6 +42,8 @@ describe("US 942,699 Leo Hendrik Baekeland Bakelite visual & polymer mechanics b
     expect(studioSource).toContain('"molecular"');
     expect(studioSource).toContain('"gauges"');
     expect(studioSource).toContain("setCutaway");
+    expect(studioSource).toContain("controls.setView");
+    expect(studioSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine step-growth polycondensation kinetics, gel point, and autoclave pressure in SI units", () => {

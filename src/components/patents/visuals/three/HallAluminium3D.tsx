@@ -51,17 +51,16 @@ export default function HallAluminium3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    const studio = createThreeStudioScene({ container });
+    const overview = CAMERA_PRESETS.overview;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+    });
     studioRef.current = studio;
 
     const model = createHallAluminiumModel();
     studio.scene.add(model.root);
-
-    // Initial camera placement
-    const initialPreset = CAMERA_PRESETS.overview;
-    studio.camera.position.set(...initialPreset.pos);
-    studio.camera.lookAt(...initialPreset.target);
-    studio.controls.target.set(...initialPreset.target);
 
     let rafId = 0;
     let virtualTime = 0;
@@ -96,14 +95,8 @@ export default function HallAluminium3D() {
 
   const setView = (preset: CameraPreset) => {
     setActivePreset(preset);
-    const studio = studioRef.current;
-    if (!studio) return;
-
     const targetPreset = CAMERA_PRESETS[preset];
-    studio.camera.position.set(...targetPreset.pos);
-    studio.camera.lookAt(...targetPreset.target);
-    studio.controls.target.set(...targetPreset.target);
-    studio.controls.update();
+    studioRef.current?.controls.setView(targetPreset.pos, targetPreset.target);
   };
 
   return (

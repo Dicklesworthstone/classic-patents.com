@@ -23,6 +23,8 @@ describe("US 400,766 Charles Martin Hall Aluminium Smelting Visual Boundary", ()
     expect(componentSource).not.toContain(".gltf");
     expect(componentSource).not.toContain(".glb");
     expect(componentSource).not.toContain("GLTFLoader");
+    expect(componentSource).toContain("controls.setView");
+    expect(componentSource).not.toContain("camera.position.set");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
