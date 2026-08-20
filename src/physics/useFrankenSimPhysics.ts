@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "./engine";
 import { TickScheduler } from "./tickScheduler";
 import type { UniversalPatentPhysicsTelemetry } from "./types";
@@ -133,7 +133,9 @@ export function useFrankenSimPhysics(
   }, [transport]);
 
   const updateTelemetry = useCallback(
-    (updater: (prev: UniversalPatentPhysicsTelemetry) => Partial<UniversalPatentPhysicsTelemetry>) => {
+    (
+      updater: (prev: UniversalPatentPhysicsTelemetry) => Partial<UniversalPatentPhysicsTelemetry>,
+    ) => {
       transport.lastFrame.telemetry = {
         ...transport.lastFrame.telemetry,
         ...updater(transport.lastFrame.telemetry),
@@ -141,7 +143,7 @@ export function useFrankenSimPhysics(
       };
       setFrame({ ...transport.lastFrame });
     },
-    [transport]
+    [transport],
   );
 
   return {
