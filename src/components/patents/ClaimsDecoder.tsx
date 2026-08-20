@@ -19,7 +19,11 @@ function claimLiveState(
   params: Record<string, number>,
 ): "held" | "broken" | null {
   if (!patentId) return null;
-  if (patentId === WRIGHT_PATENT_ID || patentId.includes("wright")) {
+  if (
+    patentId === WRIGHT_PATENT_ID ||
+    patentId.includes("wright-flyer") ||
+    patentId.includes("821393")
+  ) {
     if (claimNum === 1 || claimNum === 2) {
       return (params.coupled ?? 1) >= 0.5 ? "held" : "broken";
     }

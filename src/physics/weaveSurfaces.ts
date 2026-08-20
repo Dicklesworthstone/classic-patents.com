@@ -129,7 +129,7 @@ export function materialProbe(
   params: Record<string, number>,
 ): MaterialProbe | null {
   const label = calloutLabel.toLowerCase();
-  if (patentId.includes("wright")) {
+  if (patentId.includes("wright-flyer") || patentId.includes("821393")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     if (label.includes("wing") || label.includes("aeroplane") || label.includes("rib")) {
       return {
@@ -417,7 +417,10 @@ export function materialProbe(
       note: `${fh.spreadSpectrumBandwidthMhz.toFixed(1)} MHz hop set. Margin ${fh.antiJammingMarginDb} dB.`,
     };
   }
-  if (patentId.includes("bell") || patentId.includes("174465")) {
+  if (
+    (patentId.includes("bell") && patentId.includes("telephone")) ||
+    patentId.includes("174465")
+  ) {
     const bell = stepBellTelephone({
       voiceAmplitude: params.voiceAmplitude,
       airGap: params.airGap,
@@ -951,7 +954,7 @@ export function materialProbe(
 }
 
 export function intervalGhosts(patentId: string, params: Record<string, number>): IntervalGhost[] {
-  if (patentId.includes("wright")) {
+  if (patentId.includes("wright-flyer") || patentId.includes("821393")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return [
       { label: "Lift", min: 800, max: 2500, live: si.liftNewtons, unit: "N" },
@@ -977,7 +980,10 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     );
     return [{ label: "v_e", min: 800, max: 2800, live: rocket.exhaustVelocityMps, unit: "m/s" }];
   }
-  if (patentId.includes("bell") || patentId.includes("174465")) {
+  if (
+    (patentId.includes("bell") && patentId.includes("telephone")) ||
+    patentId.includes("174465")
+  ) {
     return [{ label: "Voice", min: 40, max: 95, live: params.voiceAmplitude ?? 75, unit: "dB" }];
   }
   if (
@@ -1324,7 +1330,7 @@ export function fidelityField(
   patentId: string,
   params: Record<string, number>,
 ): FidelityField | null {
-  if (patentId.includes("wright")) {
+  if (patentId.includes("wright-flyer") || patentId.includes("821393")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     return {
       part: "Gross lift vs Kitty Hawk weight",
@@ -1675,7 +1681,7 @@ export function spectralModes(patentId: string, params: Record<string, number>):
 }
 
 export function datedScenarios(patentId: string): DatedScenario[] {
-  if (patentId.includes("wright")) {
+  if (patentId.includes("wright-flyer") || patentId.includes("821393")) {
     return [
       {
         id: "kh-1903-12-17",
@@ -1701,7 +1707,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("bell")) {
+  if (
+    (patentId.includes("bell") && patentId.includes("telephone")) ||
+    patentId.includes("174465")
+  ) {
     return [
       {
         id: "centennial-1876",
@@ -1976,7 +1985,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
 }
 
 export function coupleLinks(patentId: string, params: Record<string, number>): CoupleLink[] {
-  if (patentId.includes("wright")) {
+  if (patentId.includes("wright-flyer") || patentId.includes("821393")) {
     const si = stepWrightFlyerSi(readWrightControls(params));
     const v = (params.airspeed ?? 28) * 0.44704;
     return [{ from: "thrust · v", to: "induced drag", watts: si.inducedDragNewtons * v }];

@@ -21,7 +21,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
-  // Microcapsule particles. Layout is a hash of particle index (Wright streamlines).
+  // Microcapsule particles. Layout is an electrophoretic suspension distribution.
   const particlesRef = useRef<
     Array<{
       index: number;

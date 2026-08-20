@@ -80,13 +80,7 @@ export function WattSeparateCondenserSim() {
         <div className="flex items-center gap-2 bg-stone-950/80 p-1.5 rounded-xl border border-stone-800">
           <button
             type="button"
-            onClick={() =>
-              setControls((prev) => ({
-                ...prev,
-                hasSeparateCondenser: true,
-                hasSteamJacket: true,
-              }))
-            }
+            onClick={() => updateParam("hasSeparateCondenser", 1)}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
               controls.hasSeparateCondenser
                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/30"
@@ -97,13 +91,7 @@ export function WattSeparateCondenserSim() {
           </button>
           <button
             type="button"
-            onClick={() =>
-              setControls((prev) => ({
-                ...prev,
-                hasSeparateCondenser: false,
-                hasSteamJacket: false,
-              }))
-            }
+            onClick={() => updateParam("hasSeparateCondenser", 0)}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
               !controls.hasSeparateCondenser
                 ? "bg-rose-600 text-white shadow-lg shadow-rose-900/30"
@@ -545,9 +533,7 @@ export function WattSeparateCondenserSim() {
             max="10.0"
             step="0.5"
             value={controls.boilerPressurePsi ?? 3}
-            onChange={(e) =>
-              updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))
-            }
+            onChange={(e) => updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
         </div>
@@ -564,9 +550,7 @@ export function WattSeparateCondenserSim() {
             max="60"
             step="1"
             value={controls.condenserTempC ?? 35}
-            onChange={(e) =>
-              updateParam("condenserTempC", Number.parseFloat(e.target.value))
-            }
+            onChange={(e) => updateParam("condenserTempC", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
         </div>
@@ -585,9 +569,7 @@ export function WattSeparateCondenserSim() {
             max="72"
             step="2"
             value={controls.cylinderBoreInches ?? 38}
-            onChange={(e) =>
-              updateParam("cylinderBoreInches", Number.parseFloat(e.target.value))
-            }
+            onChange={(e) => updateParam("cylinderBoreInches", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
         </div>
@@ -606,9 +588,7 @@ export function WattSeparateCondenserSim() {
             max="24"
             step="1"
             value={controls.strokesPerMinute ?? 14}
-            onChange={(e) =>
-              updateParam("strokesPerMinute", Number.parseFloat(e.target.value))
-            }
+            onChange={(e) => updateParam("strokesPerMinute", Number.parseFloat(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />
         </div>

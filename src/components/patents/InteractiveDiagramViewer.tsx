@@ -6220,7 +6220,7 @@ export function InteractiveDiagramViewer({
               viewBox={`0 0 ${SCHEMATIC_VIEW_W} ${SCHEMATIC_VIEW_H}`}
               className="w-full h-full select-none"
               onPointerDown={(e) => {
-                if (!patentId?.includes("wright")) return;
+                if (!patentId?.includes("wright-flyer") && !patentId?.includes("821393")) return;
                 const rect = e.currentTarget.getBoundingClientRect();
                 const nx = (e.clientX - rect.left) / rect.width;
                 updateParam("wingWarp", wrightWarpFromPointerNx(nx));
