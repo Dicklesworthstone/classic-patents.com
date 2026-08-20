@@ -1,7 +1,20 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { buildWattRotaryEngineModel } from "./wattRotaryEngineModel";
 
 describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
+  test("3D studio mounts through createThreeStudioScene instead of a private Scene/Renderer", () => {
+    const studioSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/WattRotaryEngine3D.tsx"),
+      "utf8",
+    );
+    expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).not.toContain("OrbitControls");
+    expect(studioSource).not.toContain("new THREE.WebGLRenderer");
+    expect(studioSource).toContain("controls.setView");
+  });
+
   test("builds complete procedural node graph with all authentic engine assemblies", () => {
     const model = buildWattRotaryEngineModel();
 

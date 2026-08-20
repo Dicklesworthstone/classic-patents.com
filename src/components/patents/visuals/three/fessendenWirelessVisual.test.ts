@@ -22,6 +22,9 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(studioSource).toContain('usePatentPhysics("us-706737-fessenden-wireless")');
     expect(studioSource).toContain('updateParam("carrierFrequencyKhz"');
     expect(studioSource).not.toContain("setCarrierFreqKhz");
+    expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).not.toContain("OrbitControls");
+    expect(studioSource).not.toContain("cameraPreset, live");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

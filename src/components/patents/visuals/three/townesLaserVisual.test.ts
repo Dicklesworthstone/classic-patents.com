@@ -22,6 +22,9 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(studioSource).not.toContain("GLTFLoader");
     expect(studioSource).toContain('usePatentPhysics("us-2929922-townes-laser")');
     expect(studioSource).toContain('from "./useLiveSimParams"');
+    expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).not.toContain("OrbitControls");
+    expect(studioSource).not.toContain("[cameraPreset, live]");
     const simSource = readFileSync(
       join(rootDir, "src/components/patents/visuals/TownesLaserSim.tsx"),
       "utf-8",

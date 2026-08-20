@@ -495,6 +495,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.402 Da Vinci 2D master-speed and EndoWrist grip sliders hoist onto `us-6331181-davinci`. 3D already read `masterInputSpeedMps` / `gripAngleDeg`; 2D no longer keeps a private 0.6 m/s / 30° copy. Registry grows the master-velocity control so the badge follows the same keys.
 - [x] P5.403 Cort mill / rabble kinematics drain the kernel. `stepCortPuddlingRolling` emits `rollOmegaRadPerS` and `rabbleOmegaRadPerS`. 3D no longer converts leftover `(30 * 2π) / 60` privately; the grooved-roll and billet advance follow that ω. 3D, Baekeland, Hall, and Watt rotary drain `useLiveSimParams` instead of render-time ref writes.
 - [x] P5.404 Peer De Forest 2D+3D, Arkwright 2D+3D, and Watt separate-condenser 2D+3D stay off this drain. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.405 Owned raw Scene/Renderer/OrbitControls 3Ds mount through `createThreeStudioScene`: Watt rotary, Kilby, Land Polaroid, Rillieux, Townes, Carlson, Fessenden, Hewitt, Haber. Camera presets use `studio.controls.setView` and no longer remount WebGL. Auto-orbit is a model turntable (studio spherical controls have no OrbitControls autoRotate). Fessenden keeps its resonant PointLight on the studio scene. Peer De Forest and unpublished Maiman stay on private renderers.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

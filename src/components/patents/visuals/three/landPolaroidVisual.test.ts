@@ -13,6 +13,8 @@ describe("US 2,543,181 Edwin Land Polaroid Instant Photography Visual Boundary",
     expect(studioSource).toContain('from "./useLiveSimParams"');
     expect(studioSource).toContain("model.update(timeRef.current, live.current)");
     expect(studioSource).not.toContain("cameraPreset]");
+    expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).not.toContain("OrbitControls");
   });
 
   it("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
