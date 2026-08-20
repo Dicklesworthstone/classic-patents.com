@@ -4274,3 +4274,89 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
     unexposedSilverComplexedRatio,
   };
 }
+
+
+export interface MaimanRubyLaserControls {
+  pumpEnergyJoules?: number;
+  flashDurationMs?: number;
+  rodLengthCm?: number;
+  outputMirrorReflectivity?: number;
+  crystalTemperatureKelvin?: number;
+}
+
+export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
+  const pumpEnergy = controls.pumpEnergyJoules ?? 150; // 50 to 500 Joules
+  const flashMs = controls.flashDurationMs ?? 1.0; // 0.5 to 3.0 ms
+  const rodLength = controls.rodLengthCm ?? 5.0; // cm
+  const r2 = controls.outputMirrorReflectivity ?? 0.92; // 0.70 to 0.98
+  const tempK = controls.crystalTemperatureKelvin ?? 300; // 100 to 350 K
+
+  // Cr3+ total doping density in 0.05% pink ruby
+  const nTotal = 1.58e19; // ions/cm^3
+
+  // Temperature-dependent stimulated emission cross-section (cm^2)
+  // sigma = 2.5e-20 cm^2 at 300K, increases at lower temperatures
+  const sigma21 = 2.5e-20 * (300 / Math.max(80, tempK));
+
+  // Metastable 2E lifetime (ms): ~4.3 ms at 77K, ~3.0 ms at 300K
+  const tauMetastableMs = 3.0 * Math.pow(300 / Math.max(80, tempK), 0.35);
+
+  // Optical pumping efficiency and absorbed pump rate into level 3
+  const pumpCouplingEfficiency = 0.08; // 8% electrical-to-absorbed optical in green/violet bands
+  const rodVolumeCm3 = Math.PI * Math.pow(0.45, 2) * rodLength; // radius ~0.45 cm
+  const photonEnergyPumpJoules = (6.626e-34 * 3e8) / (520e-9); // ~3.8e-19 J for ~520 nm green pump photon
+  const totalPumpPhotons = (pumpEnergy * pumpCouplingEfficiency) / photonEnergyPumpJoules;
+  const pumpRatePerCm3 = totalPumpPhotons / (rodVolumeCm3 * (flashMs * 1e-3));
+
+  // Population inversion threshold (3-level: N2 must exceed N1 by deltaN_th)
+  const r1 = 0.999;
+  const internalLossAlpha = 0.03; // cm^-1 scattering/absorption loss
+  const cavityLoss = internalLossAlpha + (1 / (2 * rodLength)) * Math.log(1 / (r1 * r2));
+  const deltaNThreshold = cavityLoss / sigma21; // ions/cm^3
+
+  // Required pump energy threshold
+  const thresholdPumpEnergyJoules = Number(
+    ((nTotal / 2 + deltaNThreshold) * rodVolumeCm3 * photonEnergyPumpJoules / (pumpCouplingEfficiency * (1 - Math.exp(-flashMs / tauMetastableMs)))).toFixed(1)
+  );
+
+  // Excited state population N2
+  const effectiveExcitation = (pumpEnergy / Math.max(1, thresholdPumpEnergyJoules)) * (nTotal / 2);
+  const n2 = Math.min(nTotal * 0.95, Math.max(1e17, effectiveExcitation));
+  const n1 = Math.max(0, nTotal - n2);
+  const populationInversionDensity = Number((n2 - n1).toExponential(3));
+  const populationInversionRatio = Number((n2 / Math.max(1, n1)).toFixed(2));
+
+  // Lasing threshold state
+  const isLasing = pumpEnergy >= thresholdPumpEnergyJoules;
+  const netRoundTripGainDb = Number((4.343 * 2 * (sigma21 * (n2 - n1) - cavityLoss) * rodLength).toFixed(2));
+
+  // Laser output pulse energy and peak power
+  const slopeEfficiency = 0.012; // 1.2% slope efficiency
+  const laserPulseEnergyJoules = isLasing ? Number((slopeEfficiency * (pumpEnergy - thresholdPumpEnergyJoules)).toFixed(3)) : 0;
+  const pulseDurationUs = 250; // typical spiked relaxation burst duration (us)
+  const laserPeakPowerKw = isLasing ? Number(((laserPulseEnergyJoules / (pulseDurationUs * 1e-6)) / 1000).toFixed(2)) : 0;
+
+  // Wavelength at temperature: 694.3 nm at 300K, shifts to 693.4 nm at 77K
+  const emissionWavelengthNm = Number((694.3 - 0.005 * (300 - tempK)).toFixed(2));
+
+  // Cavity longitudinal mode spacing (GHz)
+  const refractiveIndexRuby = 1.76;
+  const modeSpacingGhz = Number(((3e8 / (2 * refractiveIndexRuby * (rodLength * 1e-2))) / 1e9).toFixed(2));
+
+  // Colidar ranging distance resolution (cm) for 20 ns pulse
+  const colidarDistanceResolutionCm = 15; // c * 1ns = 30 cm roundtrip -> 15 cm
+
+  return {
+    isLasing,
+    populationInversionRatio,
+    populationInversionDensity,
+    thresholdPumpEnergyJoules,
+    laserPulseEnergyJoules,
+    laserPeakPowerKw,
+    netRoundTripGainDb,
+    emissionWavelengthNm,
+    modeSpacingGhz,
+    colidarDistanceResolutionCm,
+    metastableLifetimeMs: Number(tauMetastableMs.toFixed(2)),
+  };
+}

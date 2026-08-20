@@ -14,6 +14,7 @@ import {
  * release path instead of exposing an incomplete source face to visitors.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
+  "us-3237-rillieux-evaporator",
   "us-x72-whitney-cotton-gin",
   "us-313224-mergenthaler-linotype",
   "us-2708656-fermi-reactor",
