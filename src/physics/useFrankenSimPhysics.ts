@@ -24,7 +24,11 @@ class PatentTransport {
   private listeners = new Set<TapeListener>();
   private tickS: number;
 
-  constructor(patentId: string, tickS = 1 / 60) {
+  constructor(
+    patentId: string,
+    tickS = 1 / 60,
+    initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
+  ) {
     this.patentId = patentId;
     this.tickS = tickS;
     const nowS = typeof performance !== "undefined" ? performance.now() / 1000 : 0;
@@ -36,7 +40,7 @@ class PatentTransport {
       atMs: nowS * 1000,
       digest: "00000000",
       provenance: "HONEST_PLACEHOLDER",
-      telemetry: FrankenSimEngine.createTelemetryEnvelope(patentId, {}),
+      telemetry: FrankenSimEngine.createTelemetryEnvelope(patentId, initialTelemetry),
     };
   }
 
@@ -79,10 +83,13 @@ class TransportBus {
   private rafId: number | null = null;
   private updaters = new Map<string, () => Partial<UniversalPatentPhysicsTelemetry> | null>();
 
-  getTransport(patentId: string): PatentTransport {
+  getTransport(
+    patentId: string,
+    initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
+  ): PatentTransport {
     let t = this.transports.get(patentId);
     if (!t) {
-      t = new PatentTransport(patentId);
+      t = new PatentTransport(patentId, 1 / 60, initialTelemetry);
       this.transports.set(patentId, t);
     }
     this.startPump();
@@ -116,9 +123,9 @@ export const globalTransportBus = new TransportBus();
 
 export function useFrankenSimPhysics(
   patentId: string,
-  _initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
+  initialTelemetry: Partial<UniversalPatentPhysicsTelemetry> = {},
 ) {
-  const transport = globalTransportBus.getTransport(patentId);
+  const transport = globalTransportBus.getTransport(patentId, initialTelemetry);
   const [frame, setFrame] = useState<TransportTapeFrame>(transport.lastFrame);
 
   const telemetryRef = useRef(frame.telemetry);
