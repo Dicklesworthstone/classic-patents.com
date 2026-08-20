@@ -37,7 +37,12 @@ const FIGURE_CROPS = {
   11: crop(11, 650, 560, "Fig. 11"),
   12: crop(12, 940, 720, "Fig. 12"),
   13: crop(13, 500, 720, "Fig. 13"),
-  14: crop(14, 1000, 1500, "Fig. 14"),
+  14: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v3.png",
+    alt: "Source-facsimile crop of Fig. 14 from US 120,057, rotated clockwise for normal left-to-right reading.",
+    width: 1500,
+    height: 1000,
+  },
 } as const;
 
 type FigureNumber = keyof typeof FIGURE_CROPS;

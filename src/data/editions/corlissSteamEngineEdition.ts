@@ -9,7 +9,7 @@ const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", 
 const dims: Record<string, [number, number]> = {
   "1": [720, 840],
   "2": [720, 936],
-  "3": [720, 823],
+  "3": [823, 720],
   "4": [720, 1057],
   "5": [720, 1057],
   "8": [720, 1057],
@@ -18,6 +18,10 @@ const dims: Record<string, [number, number]> = {
 
 const figure = (number: number | string): CuratedSpecificationInline => {
   const [w, h] = dims[number.toString()] || [720, 720];
+  const sourcePreview =
+    number.toString() === "3"
+      ? "/patents/figures/us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
+      : `/patents/figures/us-6162-corliss-steam-engine-fig-${number}-preview.png`;
   return {
     kind: "reference",
     text: `Fig. ${number}`,
@@ -26,7 +30,7 @@ const figure = (number: number | string): CuratedSpecificationInline => {
     label: `Open the source-faithful crop for Figure ${number} of US 6,162`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-6162-corliss-steam-engine-fig-${number}-preview.png`,
+        src: sourcePreview,
         alt: `Figure ${number} from George H. Corliss's US 6,162 steam-engine patent.`,
         width: w,
         height: h,

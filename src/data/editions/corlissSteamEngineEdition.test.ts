@@ -37,7 +37,10 @@ describe("corlissSteamEngineArchivalEdition", () => {
   test("makes every printed figure group an explicit preview reference", () => {
     const publicText = JSON.stringify(corlissSteamEngineArchivalEdition.blocks);
     for (const figure of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
-      const filename = `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
+      const filename =
+        figure === 3
+          ? "us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
+          : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
       expect(publicText).toContain(filename);
       expect(existsSync(resolve(process.cwd(), "public/patents/figures", filename))).toBe(true);
     }
