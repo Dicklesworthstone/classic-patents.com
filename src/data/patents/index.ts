@@ -72,6 +72,8 @@ import { wrightFlyerPatent } from "./wright-flyer";
 import { yaleLockPatent } from "./yale-lock";
 import { zeppelinAirshipPatent } from "./zeppelin-airship";
 
+export { carlsonElectrophotographyPatent };
+
 export const allPatents: Patent[] = parsePatentCatalog([
   wattSeparateCondenserPatent,
   arkwrightWaterFramePatent,
