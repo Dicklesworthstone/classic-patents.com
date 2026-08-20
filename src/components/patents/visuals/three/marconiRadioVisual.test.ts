@@ -59,6 +59,8 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Marconi Wireless Radio 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine quarter-wave monopole RF resonant frequency and radiation resistance in SI units", () => {

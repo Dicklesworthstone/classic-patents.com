@@ -108,31 +108,24 @@ export function GoddardRocket3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(13, 10, 16);
-        controls.target.set(0, 0, 0);
+        controls.setView([13, 10, 16], [0, 0, 0]);
         break;
       case "de_laval_nozzle":
-        camera.position.set(0, -3.2, 5.0);
-        controls.target.set(0, -3.0, 0);
+        controls.setView([0, -3.2, 5.0], [0, -3.0, 0]);
         break;
       case "combustion_chamber":
-        camera.position.set(0, -0.5, 4.5);
-        controls.target.set(0, -1.0, 0);
+        controls.setView([0, -0.5, 4.5], [0, -1.0, 0]);
         break;
       case "gimbal_actuator":
-        camera.position.set(2.8, -2.4, 3.5);
-        controls.target.set(0, -2.5, 0);
+        controls.setView([2.8, -2.4, 3.5], [0, -2.5, 0]);
         break;
       case "interstage":
-        camera.position.set(2.8, 1.8, 4.2);
-        controls.target.set(0, 1.5, 0);
+        controls.setView([2.8, 1.8, 4.2], [0, 1.5, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

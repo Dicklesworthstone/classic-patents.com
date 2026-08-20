@@ -54,31 +54,24 @@ export const SholesTypewriter3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.0, 7.5, 10.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.0, 7.5, 10.5], [0, 0, 0]);
         break;
       case "type_basket":
-        camera.position.set(0, 2.2, 3.5);
-        controls.target.set(0, 0.4, 0);
+        controls.setView([0, 2.2, 3.5], [0, 0.4, 0]);
         break;
       case "platen_carriage":
-        camera.position.set(0, 3.2, 2.8);
-        controls.target.set(0, 1.8, -0.4);
+        controls.setView([0, 3.2, 2.8], [0, 1.8, -0.4]);
         break;
       case "keyboard":
-        camera.position.set(0, 1.5, 4.2);
-        controls.target.set(0, -0.8, 1.4);
+        controls.setView([0, 1.5, 4.2], [0, -0.8, 1.4]);
         break;
       case "escapement_ratchet":
-        camera.position.set(3.5, 2.8, 1.5);
-        controls.target.set(2.8, 1.8, -0.2);
+        controls.setView([3.5, 2.8, 1.5], [2.8, 1.8, -0.2]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

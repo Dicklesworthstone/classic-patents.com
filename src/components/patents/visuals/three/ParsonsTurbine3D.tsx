@@ -70,31 +70,24 @@ export function ParsonsTurbine3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(12.5, 8.0, 14.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([12.5, 8.0, 14.0], [0, 0, 0]);
         break;
       case "turbine_stages":
-        camera.position.set(0, 2.0, 5.0);
-        controls.target.set(0, 0.5, 0);
+        controls.setView([0, 2.0, 5.0], [0, 0.5, 0]);
         break;
       case "rotor_blades":
-        camera.position.set(2.8, 1.8, 3.5);
-        controls.target.set(1.5, 0.4, 0);
+        controls.setView([2.8, 1.8, 3.5], [1.5, 0.4, 0]);
         break;
       case "governor":
-        camera.position.set(-4.5, 2.2, 3.5);
-        controls.target.set(-3.5, 1.0, 0);
+        controls.setView([-4.5, 2.2, 3.5], [-3.5, 1.0, 0]);
         break;
       case "bearing_pedestal":
-        camera.position.set(5.5, 2.5, 3.8);
-        controls.target.set(5.5, -1.0, 0);
+        controls.setView([5.5, 2.5, 3.8], [5.5, -1.0, 0]);
         break;
       case "top":
-        camera.position.set(0, 14.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 14.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -20,6 +19,18 @@ type CameraPreset =
   | "gas_cells"
   | "control_fins"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [16.0, 9.0, 18.0], target: [0, 0, 0] },
+  girders_frame: { pos: [0, 2.0, 6.5], target: [0, 0, 0] },
+  engine_gondola: { pos: [-4.5, -2.5, 4.0], target: [-3.5, -2.2, 0] },
+  gas_cells: { pos: [3.5, 2.5, 5.0], target: [2.0, 0, 0] },
+  control_fins: { pos: [-8.5, 1.5, 3.5], target: [-6.5, 0, 0] },
+  top: { pos: [0, 22.0, 0.1], target: [0, 0, 0] },
+};
 
 export function ZeppelinAirship3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -55,42 +66,12 @@ export function ZeppelinAirship3D() {
     propellerOmegaRadPerS: zep.propellerDisplayOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(16.0, 9.0, 18.0);
-        controls.target.set(0, 0, 0);
-        break;
-      case "girders_frame":
-        camera.position.set(0, 2.0, 6.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "engine_gondola":
-        camera.position.set(-4.5, -2.5, 4.0);
-        controls.target.set(-3.5, -2.2, 0);
-        break;
-      case "gas_cells":
-        camera.position.set(3.5, 2.5, 5.0);
-        controls.target.set(2.0, 0, 0);
-        break;
-      case "control_fins":
-        camera.position.set(-8.5, 1.5, 3.5);
-        controls.target.set(-6.5, 0, 0);
-        break;
-      case "top":
-        camera.position.set(0, 22.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -107,15 +88,15 @@ export function ZeppelinAirship3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [16.0, 9.0, 18.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildZeppelinAirshipModel();
     scene.add(rootGroup);
@@ -153,6 +134,7 @@ export function ZeppelinAirship3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

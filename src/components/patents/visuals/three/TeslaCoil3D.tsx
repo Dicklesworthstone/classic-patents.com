@@ -95,27 +95,21 @@ export function TeslaCoil3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 9, 14);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 9, 14], [0, 0, 0]);
         break;
       case "toroid_breakout":
-        camera.position.set(0, 4.2, 4.5);
-        controls.target.set(0, 2.5, 0);
+        controls.setView([0, 4.2, 4.5], [0, 2.5, 0]);
         break;
       case "primary_spiral":
-        camera.position.set(0, -1.2, 5.5);
-        controls.target.set(0, -2.4, 0);
+        controls.setView([0, -1.2, 5.5], [0, -2.4, 0]);
         break;
       case "spark_gap":
-        camera.position.set(2.8, -2.2, 3.8);
-        controls.target.set(2.4, -3.2, 0);
+        controls.setView([2.8, -2.2, 3.8], [2.4, -3.2, 0]);
         break;
       case "top":
-        camera.position.set(0, 13.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   // Audio synthesis

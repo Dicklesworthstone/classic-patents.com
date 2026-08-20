@@ -78,31 +78,24 @@ export function LincolnBuoy3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(14, 10, 16);
-        controls.target.set(0, 0, 0);
+        controls.setView([14, 10, 16], [0, 0, 0]);
         break;
       case "bellows_chambers":
-        camera.position.set(0, -0.8, 6.5);
-        controls.target.set(0, -0.5, 0);
+        controls.setView([0, -0.8, 6.5], [0, -0.5, 0]);
         break;
       case "pilothouse":
-        camera.position.set(-5.5, 5.0, 5.0);
-        controls.target.set(-3.2, 3.5, 0);
+        controls.setView([-5.5, 5.0, 5.0], [-3.2, 3.5, 0]);
         break;
       case "paddlewheel":
-        camera.position.set(8.5, 1.2, 3.5);
-        controls.target.set(6.8, 0, 0);
+        controls.setView([8.5, 1.2, 3.5], [6.8, 0, 0]);
         break;
       case "keel":
-        camera.position.set(0, -4.5, 8.5);
-        controls.target.set(0, -1.0, 0);
+        controls.setView([0, -4.5, 8.5], [0, -1.0, 0]);
         break;
       case "top":
-        camera.position.set(0, 13.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

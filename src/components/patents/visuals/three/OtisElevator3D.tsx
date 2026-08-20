@@ -63,31 +63,24 @@ export function OtisElevator3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.0, 6.5, 11.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.0, 6.5, 11.5], [0, 0, 0]);
         break;
       case "safety_pawls":
-        camera.position.set(2.8, 2.2, 3.2);
-        controls.target.set(1.8, 1.8, 0);
+        controls.setView([2.8, 2.2, 3.2], [1.8, 1.8, 0]);
         break;
       case "leaf_spring":
-        camera.position.set(0, 4.2, 3.8);
-        controls.target.set(0, 2.5, 0);
+        controls.setView([0, 4.2, 3.8], [0, 2.5, 0]);
         break;
       case "cab":
-        camera.position.set(0, 0.5, 4.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 0.5, 4.5], [0, 0, 0]);
         break;
       case "crown_sheave":
-        camera.position.set(0, 6.8, 3.5);
-        controls.target.set(0, 5.6, 0);
+        controls.setView([0, 6.8, 3.5], [0, 5.6, 0]);
         break;
       case "top":
-        camera.position.set(0, 13.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const cutRope = () => {

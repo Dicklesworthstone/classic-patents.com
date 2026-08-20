@@ -63,31 +63,24 @@ export function RenoEscalator3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.5, 6.5, 10.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.5, 6.5, 10.5], [0, 0, 0]);
         break;
       case "comb_plates":
-        camera.position.set(5.5, 3.2, 2.5);
-        controls.target.set(4.2, 2.1, 0);
+        controls.setView([5.5, 3.2, 2.5], [4.2, 2.1, 0]);
         break;
       case "cleated_deck":
-        camera.position.set(0, 2.4, 3.8);
-        controls.target.set(0, 0.4, 0);
+        controls.setView([0, 2.4, 3.8], [0, 0.4, 0]);
         break;
       case "handrail":
-        camera.position.set(-2.5, 2.2, 3.2);
-        controls.target.set(-1.0, 1.2, 1.4);
+        controls.setView([-2.5, 2.2, 3.2], [-1.0, 1.2, 1.4]);
         break;
       case "drive_machinery":
-        camera.position.set(6.5, 2.2, 2.8);
-        controls.target.set(5.2, 1.5, 0);
+        controls.setView([6.5, 2.2, 2.8], [5.2, 1.5, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -21,29 +20,45 @@ type CameraPreset =
   | "winding_key"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [8.5, 6.5, 9.5], target: [0, 0, 0] },
+  roll_film: { pos: [0, 2.0, 3.2], target: [0, 0.4, 0] },
+  barrel_shutter: { pos: [2.8, 1.2, 3.0], target: [1.4, 0, 0] },
+  lens_aperture: { pos: [3.5, 0.5, 2.0], target: [2.2, 0, 0] },
+  winding_key: { pos: [-2.5, 3.2, 1.0], target: [-1.6, 2.1, -1.2] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
 export function EastmanKodak3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [isCutaway, setIsCutaway] = useState<boolean>(true);
 
   // Photographic Optics Parameters
   const { params } = usePatentPhysics("us-388850-eastman-kodak");
-  const shutterSpeedSec = (() => {
-    const raw = params.shutterSpeed ?? 0.05;
-    return raw > 1 ? 1 / raw : raw;
-  })();
+  const filmExposures = params.rollExposures ?? 100;
+  const shutterSpeedReciprocal = params.shutterSpeedSec ? 1 / params.shutterSpeedSec : 25;
+  const focalLengthMm = params.focalLengthMm ?? 57;
+  const fStop = params.fStop ?? 9.0;
+
   const kodak = FrankenSimEngine.stepEastmanKodak({
-    shutterSpeedSec,
-    apertureFNumber: params.apertureStop ?? 9,
-    subjectDistanceM: params.subjectDist ?? 3,
+    shutterSpeedSec: params.shutterSpeedSec ?? 0.05,
+    apertureFNumber: fStop,
   });
-  const shutterFractionSec = kodak.shutterReciprocal;
+
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const live = useLiveSimParams({
-    shutterFractionSec,
+    filmExposures,
+    shutterSpeedReciprocal,
+    focalLengthMm,
+    fStop,
     isAudioMuted,
     isCutaway,
     exposureValueEv: kodak.exposureValueEv,
@@ -54,42 +69,10 @@ export function EastmanKodak3D() {
     supplySpoolOmegaRadPerS: kodak.supplySpoolOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(8.5, 6.5, 9.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "roll_film":
-        camera.position.set(0, 2.0, 3.2);
-        controls.target.set(0, 0.4, 0);
-        break;
-      case "barrel_shutter":
-        camera.position.set(2.8, 1.2, 3.0);
-        controls.target.set(1.4, 0, 0);
-        break;
-      case "lens_aperture":
-        camera.position.set(3.5, 0.5, 2.0);
-        controls.target.set(2.2, 0, 0);
-        break;
-      case "winding_key":
-        camera.position.set(-2.5, 3.2, 1.0);
-        controls.target.set(-1.6, 2.1, -1.2);
-        break;
-      case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -106,16 +89,17 @@ export function EastmanKodak3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [8.5, 6.5, 9.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
+    // Build procedural 3D model
     const { rootGroup, nodes, materials, dispose } = buildEastmanKodakModel();
     scene.add(rootGroup);
 
@@ -149,6 +133,7 @@ export function EastmanKodak3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -234,7 +219,7 @@ export function EastmanKodak3D() {
         visible={showUiOverlay}
         title="Eastman roll-film camera"
         chips={[
-          { label: "Shutter", value: `1/${shutterFractionSec}`, unit: "s" },
+          { label: "Shutter", value: `1/${kodak.shutterReciprocal}`, unit: "s" },
           { label: "Aperture", value: "f/9", unit: "" },
           { label: "Capacity", value: String(kodak.rollCapacity), unit: "exp" },
           { label: "Format", value: `${kodak.filmFormatInches}"`, unit: "dia" },

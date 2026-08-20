@@ -78,31 +78,24 @@ export function WestinghouseAirBrake3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(8.5, 5.5, 9.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([8.5, 5.5, 9.5], [0, 0, 0]);
         break;
       case "selecting_cock":
-        camera.position.set(0.2, 2.2, 2.8);
-        controls.target.set(0, 0.9, 0.825);
+        controls.setView([0.2, 2.2, 2.8], [0, 0.9, 0.825]);
         break;
       case "trip_apparatus":
-        camera.position.set(-3.2, 1.2, 2.6);
-        controls.target.set(-3.6, 0.2, 0.85);
+        controls.setView([-3.2, 1.2, 2.6], [-3.6, 0.2, 0.85]);
         break;
       case "brake_cylinder":
-        camera.position.set(2.6, 1.8, 2.2);
-        controls.target.set(1.4, 0.5, 0);
+        controls.setView([2.6, 1.8, 2.2], [1.4, 0.5, 0]);
         break;
       case "reservoir":
-        camera.position.set(-2.4, 1.8, 2.2);
-        controls.target.set(-1.5, 0.5, 0);
+        controls.setView([-2.4, 1.8, 2.2], [-1.5, 0.5, 0]);
         break;
       case "signaling_gauge":
-        camera.position.set(4.2, 1.8, 1.8);
-        controls.target.set(3.4, 0.8, 0.4);
+        controls.setView([4.2, 1.8, 1.8], [3.4, 0.8, 0.4]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

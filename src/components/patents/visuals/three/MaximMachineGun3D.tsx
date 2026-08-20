@@ -67,31 +67,24 @@ export function MaximMachineGun3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(8.5, 5.5, 9.5);
-        controls.target.set(0.5, 0.2, 0);
+        controls.setView([8.5, 5.5, 9.5], [0.5, 0.2, 0]);
         break;
       case "toggle_lock":
-        camera.position.set(-0.8, 1.8, 2.6);
-        controls.target.set(-0.6, 0.4, 0);
+        controls.setView([-0.8, 1.8, 2.6], [-0.6, 0.4, 0]);
         break;
       case "water_jacket":
-        camera.position.set(2.2, 1.8, 3.2);
-        controls.target.set(1.8, 0.4, 0);
+        controls.setView([2.2, 1.8, 3.2], [1.8, 0.4, 0]);
         break;
       case "belt_feed":
-        camera.position.set(-0.3, 1.6, 2.4);
-        controls.target.set(-0.3, 0.5, 0);
+        controls.setView([-0.3, 1.6, 2.4], [-0.3, 0.5, 0]);
         break;
       case "spade_grips":
-        camera.position.set(-3.5, 1.2, 1.8);
-        controls.target.set(-1.8, 0.4, 0);
+        controls.setView([-3.5, 1.2, 1.8], [-1.8, 0.4, 0]);
         break;
       case "top":
-        camera.position.set(0.5, 11.5, 0.1);
-        controls.target.set(0.5, 0.2, 0);
+        controls.setView([0.5, 11.5, 0.1], [0.5, 0.2, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

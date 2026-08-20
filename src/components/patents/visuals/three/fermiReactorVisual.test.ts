@@ -49,6 +49,8 @@ describe("US 2,708,656 Enrico Fermi Chicago Pile-1 Nuclear Reactor visual & kine
       expect(threeSource).toContain(preset);
     }
     expect(threeSource).toContain("isCutaway");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine four-factor formula, effective neutron multiplication (k_eff), and thermal power in SI units", () => {

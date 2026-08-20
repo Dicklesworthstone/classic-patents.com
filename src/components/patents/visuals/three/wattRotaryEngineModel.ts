@@ -7,6 +7,12 @@
 
 import * as THREE from "three";
 
+export type WattRotaryPose = {
+  beamAngleDeg: number;
+  planetOrbitAngleDeg: number;
+  sunShaftAngleDeg: number;
+};
+
 export interface WattRotaryModelNodes {
   root: THREE.Group;
   beamGroup: THREE.Group;
@@ -21,7 +27,7 @@ export interface WattRotaryModelNodes {
   calloutSprites: THREE.Sprite[];
   setCutaway: (cutaway: boolean) => void;
   setShowCallouts: (show: boolean) => void;
-  updateAnimation: (timeSec: number, spm: number, gearRatio: number) => void;
+  updateAnimation: (pose: WattRotaryPose) => void;
   dispose: () => void;
 }
 
@@ -371,38 +377,26 @@ export function buildWattRotaryEngineModel(): WattRotaryModelNodes {
     }
   };
 
-  const updateAnimation = (timeSec: number, spm: number, gearRatio: number) => {
-    const omegaCycle = (spm * 2 * Math.PI) / 60;
-    const phase = (timeSec * omegaCycle) % (2 * Math.PI);
-    const speedMult = 1 + gearRatio;
+  const updateAnimation = (pose: WattRotaryPose) => {
+    const beamAngle = (pose.beamAngleDeg * Math.PI) / 180;
+    const phase = (pose.planetOrbitAngleDeg * Math.PI) / 180;
+    const sunAngle = -((pose.sunShaftAngleDeg * Math.PI) / 180);
 
-    // Rock Walking Beam
-    const maxAngle = 0.38; // ~22 deg
-    const beamAngle = maxAngle * Math.sin(phase);
     beamGroup.rotation.z = beamAngle;
-
-    // Move Steam Piston
     pistonGroup.position.y = 1.3 - beamAngle * 2.2;
 
-    // Orbit Planet Gear around Sun at (sunPosX, sunPosY)
     const planetX = sunPosX + rOrbit * Math.sin(phase);
     const planetY = sunPosY - rOrbit * Math.cos(phase);
     planetGearGroup.position.set(planetX, planetY, 0);
 
-    // Rotate Connecting Rod to track Planet Center
     const rightBeamEndX = Math.cos(beamAngle) * 2.2;
     const rightBeamEndY = 3.2 + Math.sin(beamAngle) * 2.2;
     connectingRodGroup.position.set(rightBeamEndX, rightBeamEndY, 0);
     const rodDx = planetX - rightBeamEndX;
     const rodDy = planetY - rightBeamEndY;
-    const rodAngle = Math.atan2(rodDx, -rodDy);
-    connectingRodGroup.rotation.z = rodAngle;
+    connectingRodGroup.rotation.z = Math.atan2(rodDx, -rodDy);
 
-    // Rotate Radius Link
     radiusLinkGroup.rotation.z = -phase;
-
-    // Rotate Sun Gear and Flywheel (2:1 multiplication)
-    const sunAngle = -phase * speedMult;
     sunGearGroup.rotation.z = sunAngle;
     flywheelGroup.rotation.z = sunAngle;
   };

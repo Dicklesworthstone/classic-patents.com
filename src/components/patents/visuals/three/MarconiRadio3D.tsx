@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -20,6 +19,18 @@ type CameraPreset =
   | "aerial_monopole"
   | "morse_key"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [13, 10, 16], target: [0, 0, 0] },
+  spark_gap: { pos: [0, -0.8, 3.8], target: [0, -1.8, 0] },
+  induction_coil: { pos: [0, -1.2, -4.5], target: [0, -2.1, -1.8] },
+  aerial_monopole: { pos: [-3.5, 3.5, 6.5], target: [-3.5, 2.5, 0] },
+  morse_key: { pos: [3.0, -1.5, 2.5], target: [3.0, -2.4, -0.5] },
+  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
+};
 
 export function MarconiRadio3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,42 +70,12 @@ export function MarconiRadio3D() {
     mastStudioScale: radioPhysics.mastStudioScale,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(13, 10, 16);
-        controls.target.set(0, 0, 0);
-        break;
-      case "spark_gap":
-        camera.position.set(0, -0.8, 3.8);
-        controls.target.set(0, -1.8, 0);
-        break;
-      case "induction_coil":
-        camera.position.set(0, -1.2, -4.5);
-        controls.target.set(0, -2.1, -1.8);
-        break;
-      case "aerial_monopole":
-        camera.position.set(-3.5, 3.5, 6.5);
-        controls.target.set(-3.5, 2.5, 0);
-        break;
-      case "morse_key":
-        camera.position.set(3.0, -1.5, 2.5);
-        controls.target.set(3.0, -2.4, -0.5);
-        break;
-      case "top":
-        camera.position.set(0, 13.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -111,15 +92,15 @@ export function MarconiRadio3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [13, 10, 16],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildMarconiRadioModel();
     scene.add(rootGroup);
@@ -158,6 +139,7 @@ export function MarconiRadio3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

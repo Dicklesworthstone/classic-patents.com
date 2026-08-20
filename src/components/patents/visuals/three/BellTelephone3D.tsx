@@ -2,16 +2,11 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import {
-  type BellTelephoneModel,
-  buildBellTelephoneModel,
-  updateBellTelephoneKinematics,
-} from "./bellTelephoneModel";
+import { buildBellTelephoneModel, updateBellTelephoneKinematics } from "./bellTelephoneModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -25,8 +20,21 @@ type CameraPreset =
   | "diaphragm_wire"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 8, 14], target: [0, 0, 0] },
+  speaking_horn: { pos: [-4.5, 1.8, 4.0], target: [-1.4, 0.5, 0] },
+  liquid_transmitter: { pos: [3.5, 1.2, 3.8], target: [2.0, -1.0, 0] },
+  battery_cells: { pos: [-3.5, 0.5, 4.5], target: [-2.5, -1.5, 1.8] },
+  diaphragm_wire: { pos: [-0.5, 1.5, 2.8], target: [0, 0, 0] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
 export const BellTelephone3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
@@ -34,7 +42,6 @@ export const BellTelephone3D = memo(() => {
   const acousticFrequencyHz = params.acousticFrequencyHz ?? 440;
   const batteryVoltage = params.batteryVoltage ?? 6.0;
   const liquidConductivity = params.liquidConductivity ?? 1.2;
-  const [showAcousticWaves] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
@@ -46,62 +53,24 @@ export const BellTelephone3D = memo(() => {
     liquidConductivity,
     acousticFrequencyHz,
   });
-  const voiceAmplitude = bell.voiceNorm;
 
   const live = useLiveSimParams({
-    acousticFrequencyHz,
-    voiceAmplitude,
     voiceAmplitudeDb: params.voiceAmplitude ?? 75,
-    showAcousticWaves,
-    currentBaselineAmps: bell.currentBaselineAmps,
-    diaphragmUm: bell.diaphragmUm,
-    diaphragmStudioScale: bell.diaphragmStudioScale,
-    modulatedMa: bell.modulatedMa,
+    airGapMm: params.airGap ?? 0.35,
+    acousticFrequencyHz,
     acousticDisplayOmegaRadPerS: bell.acousticDisplayOmegaRadPerS,
-    electronDisplaySpeed: bell.electronDisplaySpeed,
+    diaphragmStudioScale: bell.diaphragmStudioScale,
     electronStudioSpeed: bell.electronStudioSpeed,
     waveAdvancePerS: bell.waveAdvancePerS,
+    showAcousticWaves: true,
     isCutaway,
     isAudioMuted,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const modelRef = useRef<BellTelephoneModel | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(11, 8, 14);
-        controls.target.set(0, 0, 0);
-        break;
-      case "speaking_horn":
-        camera.position.set(-4.5, 1.8, 4.0);
-        controls.target.set(-1.4, 0.5, 0);
-        break;
-      case "liquid_transmitter":
-        camera.position.set(3.5, 1.2, 3.8);
-        controls.target.set(2.0, -1.0, 0);
-        break;
-      case "battery_cells":
-        camera.position.set(-3.5, 0.5, 4.5);
-        controls.target.set(-2.5, -1.5, 1.8);
-        break;
-      case "diaphragm_wire":
-        camera.position.set(-0.5, 1.5, 2.8);
-        controls.target.set(0, 0, 0);
-        break;
-      case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -118,18 +87,17 @@ export const BellTelephone3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 8, 14],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const model = buildBellTelephoneModel();
-    modelRef.current = model;
     scene.add(model.rootGroup);
 
     // Animation Loop
@@ -164,6 +132,7 @@ export const BellTelephone3D = memo(() => {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

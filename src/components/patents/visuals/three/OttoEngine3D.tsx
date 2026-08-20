@@ -74,31 +74,24 @@ export function OttoEngine3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(8.5, 6.0, 9.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([8.5, 6.0, 9.5], [0, 0, 0]);
         break;
       case "slide_valve":
-        camera.position.set(-4.5, 2.0, 2.8);
-        controls.target.set(-3.2, 0.4, 0.7);
+        controls.setView([-4.5, 2.0, 2.8], [-3.2, 0.4, 0.7]);
         break;
       case "cylinder_piston":
-        camera.position.set(-1.2, 2.8, 4.0);
-        controls.target.set(-1.6, 0, 0);
+        controls.setView([-1.2, 2.8, 4.0], [-1.6, 0, 0]);
         break;
       case "lay_shaft":
-        camera.position.set(1.2, 2.2, 3.4);
-        controls.target.set(0.5, 0.4, 1.0);
+        controls.setView([1.2, 2.2, 3.4], [0.5, 0.4, 1.0]);
         break;
       case "governor":
-        camera.position.set(-1.2, 1.8, 2.6);
-        controls.target.set(-1.2, 0.8, 1.25);
+        controls.setView([-1.2, 1.8, 2.6], [-1.2, 0.8, 1.25]);
         break;
       case "flywheels":
-        camera.position.set(4.5, 3.2, 5.5);
-        controls.target.set(2.4, 0, 0);
+        controls.setView([4.5, 3.2, 5.5], [2.4, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

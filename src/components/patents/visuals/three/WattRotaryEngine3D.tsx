@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWattRotaryEngineModel, type WattRotaryModelNodes } from "./wattRotaryEngineModel";
@@ -104,8 +104,12 @@ export function WattRotaryEngine3D() {
 
       if (modelRef.current) {
         if (isPlayingRef.current) {
-          const p = live.current;
-          modelRef.current.updateAnimation(virtualTimeSec, p.strokeRateSpm, p.gearRatioNpOverNs);
+          const out = stepWattRotaryEngine(readWattRotaryControls(live.current), virtualTimeSec);
+          modelRef.current.updateAnimation({
+            beamAngleDeg: out.beamAngleDeg,
+            planetOrbitAngleDeg: out.planetOrbitAngleDeg,
+            sunShaftAngleDeg: out.sunShaftAngleDeg,
+          });
         }
         modelRef.current.setCutaway(cutawayRef.current);
         modelRef.current.setShowCallouts(showCalloutsRef.current);

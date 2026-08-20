@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -18,8 +17,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "commutator" | "stator_magnets" | "rotor" | "brushes" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.0, 7.5, 10.5], target: [0, 0, 0] },
+  commutator: { pos: [0, 2.5, 3.8], target: [0, 1.2, 0] },
+  stator_magnets: { pos: [3.2, 1.5, 3.5], target: [1.5, 0, 0] },
+  rotor: { pos: [0, 4.0, 1.5], target: [0, 0, 0] },
+  brushes: { pos: [-1.8, 2.2, 2.5], target: [-0.5, 1.6, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
 export function DavenportElectricMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
@@ -45,42 +57,10 @@ export function DavenportElectricMotor3D() {
     shaftOmegaRadPerS: davenport.shaftOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(9.0, 7.5, 10.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "commutator":
-        camera.position.set(0, 2.5, 3.8);
-        controls.target.set(0, 1.2, 0);
-        break;
-      case "stator_magnets":
-        camera.position.set(3.2, 1.5, 3.5);
-        controls.target.set(1.5, 0, 0);
-        break;
-      case "rotor":
-        camera.position.set(0, 4.0, 1.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "brushes":
-        camera.position.set(-1.8, 2.2, 2.5);
-        controls.target.set(-0.5, 1.6, 0);
-        break;
-      case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -97,36 +77,34 @@ export function DavenportElectricMotor3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.0, 7.5, 10.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildDavenportMotorModel();
     scene.add(rootGroup);
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = 1 / 60;
-      timeSec += dt;
       const p = live.current;
 
       updateDavenportMotorKinematics(
         nodes,
         materials,
         dt,
-        timeSec,
-        p.shaftOmegaRadPerS ?? 0,
-        p.showSparkParticles,
+        p.shaftOmegaRadPerS,
+        p.showSparkParticles ? 1.0 : 0.0,
+        p.supplyVoltage > 0 ? 0.8 : 0.2,
         p.isCutaway,
       );
 
@@ -139,6 +117,7 @@ export function DavenportElectricMotor3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

@@ -62,6 +62,8 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Zeppelin LZ-1 Airship 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine Zeppelin gross buoyancy and net lift in SI units", () => {

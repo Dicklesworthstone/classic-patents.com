@@ -64,31 +64,24 @@ export function PeltonWheel3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.5, 7.5, 11.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.5, 7.5, 11.5], [0, 0, 0]);
         break;
       case "split_bucket":
-        camera.position.set(-1.0, 2.5, 3.5);
-        controls.target.set(-0.5, 1.8, 0);
+        controls.setView([-1.0, 2.5, 3.5], [-0.5, 1.8, 0]);
         break;
       case "needle_nozzle":
-        camera.position.set(-3.5, 0.5, 3.8);
-        controls.target.set(-2.2, -0.4, 0);
+        controls.setView([-3.5, 0.5, 3.8], [-2.2, -0.4, 0]);
         break;
       case "runner_wheel":
-        camera.position.set(0, 1.0, 4.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 1.0, 4.5], [0, 0, 0]);
         break;
       case "tailrace":
-        camera.position.set(0, -3.2, 5.0);
-        controls.target.set(0, -2.0, 0);
+        controls.setView([0, -3.2, 5.0], [0, -2.0, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

@@ -59,31 +59,24 @@ export const GliddenBarbedWire3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.5, 6.5, 10.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.5, 6.5, 10.5], [0, 0, 0]);
         break;
       case "barb_lock":
-        camera.position.set(0, 1.2, 3.2);
-        controls.target.set(0, 0.4, 0);
+        controls.setView([0, 1.2, 3.2], [0, 0.4, 0]);
         break;
       case "twisting_helix":
-        camera.position.set(-2.5, 1.8, 3.5);
-        controls.target.set(-1.0, 0, 0);
+        controls.setView([-2.5, 1.8, 3.5], [-1.0, 0, 0]);
         break;
       case "takeup_drum":
-        camera.position.set(3.5, 2.0, 4.0);
-        controls.target.set(2.2, 0, 0);
+        controls.setView([3.5, 2.0, 4.0], [2.2, 0, 0]);
         break;
       case "feed_spools":
-        camera.position.set(-4.8, 2.0, 3.2);
-        controls.target.set(-3.8, 0, -1.2);
+        controls.setView([-4.8, 2.0, 3.2], [-3.8, 0, -1.2]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

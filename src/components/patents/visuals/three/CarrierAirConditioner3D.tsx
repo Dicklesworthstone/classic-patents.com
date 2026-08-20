@@ -2,13 +2,11 @@
 
 import { Camera, Eye, EyeOff, Volume2, VolumeX, Waves, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildCarrierAirConditionerModel,
-  type CarrierAirConditionerModelResult,
   updateCarrierAirConditionerKinematics,
 } from "./carrierAirConditionerModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -24,8 +22,21 @@ type CameraPreset =
   | "pump_sump"
   | "dampers";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.5, 6.5, 10.5], target: [0, 0, 0] },
+  spray_chamber: { pos: [-2.2, 1.8, 3.2], target: [-1.8, 0.4, 0] },
+  baffle_plates: { pos: [1.2, 1.8, 2.8], target: [0.6, 0.4, 0] },
+  blower_fan: { pos: [4.2, 1.8, 3.5], target: [3.2, 0.4, 0] },
+  pump_sump: { pos: [-2.4, -0.6, 3.5], target: [-1.8, -1.1, 0.8] },
+  dampers: { pos: [-5.5, 1.5, 2.5], target: [-4.0, 0.4, 0] },
+};
+
 export function CarrierAirConditioner3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
 
@@ -57,42 +68,10 @@ export function CarrierAirConditioner3D() {
     finalRhPct: carrier.finalRhPct,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(9.5, 6.5, 10.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "spray_chamber":
-        camera.position.set(-2.2, 1.8, 3.2);
-        controls.target.set(-1.8, 0.4, 0);
-        break;
-      case "baffle_plates":
-        camera.position.set(1.2, 1.8, 2.8);
-        controls.target.set(0.6, 0.4, 0);
-        break;
-      case "blower_fan":
-        camera.position.set(4.2, 1.8, 3.5);
-        controls.target.set(3.2, 0.4, 0);
-        break;
-      case "pump_sump":
-        camera.position.set(-2.4, -0.6, 3.5);
-        controls.target.set(-1.8, -1.1, 0.8);
-        break;
-      case "dampers":
-        camera.position.set(-5.5, 1.5, 2.5);
-        controls.target.set(-4.0, 0.4, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -105,48 +84,47 @@ export function CarrierAirConditioner3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.5, 6.5, 10.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
-    // Build procedural 3D model
-    const airModel: CarrierAirConditionerModelResult = buildCarrierAirConditionerModel();
-    scene.add(airModel.root);
+    const { root, nodes, materials, dispose } = buildCarrierAirConditionerModel();
+    scene.add(root);
 
     // Animation Loop
     let reqId: number;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const dt = 1 / 60;
       const p = live.current;
 
       updateCarrierAirConditionerKinematics(
-        airModel.nodes,
-        airModel.materials,
-        delta,
+        nodes,
+        materials,
+        dt,
         p.airflowCfm,
         p.sprayWaterTempC,
         p.showSprayMist,
         p.cutawayMode,
       );
 
-      controls.update();
       renderer.render(scene, camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
-      airModel.dispose();
+      dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

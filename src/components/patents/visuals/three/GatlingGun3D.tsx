@@ -59,31 +59,24 @@ export function GatlingGun3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.0, 5.0, 10.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.0, 5.0, 10.0], [0, 0, 0]);
         break;
       case "barrels":
-        camera.position.set(4.5, 1.2, 3.8);
-        controls.target.set(2.4, 0.4, 0);
+        controls.setView([4.5, 1.2, 3.8], [2.4, 0.4, 0]);
         break;
       case "breech_cam":
-        camera.position.set(-2.0, 1.8, 3.2);
-        controls.target.set(-0.8, 0.4, 0);
+        controls.setView([-2.0, 1.8, 3.2], [-0.8, 0.4, 0]);
         break;
       case "hopper":
-        camera.position.set(-0.8, 3.8, 2.2);
-        controls.target.set(-0.6, 1.4, 0);
+        controls.setView([-0.8, 3.8, 2.2], [-0.6, 1.4, 0]);
         break;
       case "crank":
-        camera.position.set(-3.6, 1.2, 2.8);
-        controls.target.set(-2.4, 0.4, 0.85);
+        controls.setView([-3.6, 1.2, 2.8], [-2.4, 0.4, 0.85]);
         break;
       case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   useEffect(() => {

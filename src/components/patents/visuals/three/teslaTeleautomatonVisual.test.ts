@@ -62,6 +62,9 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
 
     expect(threeSource).toContain("cutawayMode");
     expect(threeSource).toContain("Tesla Wireless Teleautomation");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
+    expect(threeSource).not.toContain("propellerRpm ?? 450");
   });
 
   test("computes genuine Tesla RF resonance, coherer demodulation, and steering radius in SI units", () => {
@@ -77,6 +80,9 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(tuned.turningRadiusM).toBeLessThan(100);
 
     // Off-frequency at 120 kHz
+    expect(tuned.propellerOmegaRadPerS).toBeGreaterThan(40);
+    expect(tuned.propellerRpm).toBeCloseTo(450, 0);
+
     const detuned = FrankenSimEngine.stepTeslaTeleautomaton({
       transmitterFreqKhz: 120,
       rudderAngleDeg: 0,
@@ -84,6 +90,8 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(detuned.isResonant).toBe(false);
     expect(detuned.cohererOhms).toBeGreaterThan(10000);
     expect(detuned.relayEnergized).toBe(false);
+    expect(detuned.propellerOmegaRadPerS).toBe(0);
+    expect(detuned.motorThrustN).toBe(0);
   });
 
   test("builds and articulates procedural robotic boat hierarchy correctly", () => {
@@ -92,10 +100,22 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(nodes.rfWaveRings.length).toBe(4);
 
     // Rudder articulation at 20 deg
-    updateTeslaTeleautomatonKinematics(nodes, materials, 0.1, 1.0, 450, 20, true, true);
+    const omega = FrankenSimEngine.stepTeslaTeleautomaton({
+      transmitterFreqKhz: 150,
+      propellerThrottlePct: 75,
+    }).propellerOmegaRadPerS;
+    updateTeslaTeleautomatonKinematics(nodes, materials, 0.1, 1.0, omega, 20, true, true, 3);
     expect(nodes.rudderGroup.rotation.y).toBeCloseTo((20 * Math.PI) / 180, 2);
     expect(nodes.cutawayHullMesh.visible).toBe(true);
     expect(nodes.hullMesh.visible).toBe(false);
     expect(materials.rfEnergy.opacity).toBeGreaterThan(0);
+    expect(nodes.steppingDiskLogic.rotation.z).toBeCloseTo(3 * (Math.PI / 4), 5);
+
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "teslaTeleautomatonModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("(propellerRpm * 2 * Math.PI) / 60");
+    expect(modelSource).not.toContain("timeSec * 0.8");
   });
 });

@@ -107,31 +107,24 @@ export function LamarrFrequencyHopping3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(12, 9, 15);
-        controls.target.set(0, 0, 0);
+        controls.setView([12, 9, 15], [0, 0, 0]);
         break;
       case "roll":
-        camera.position.set(0, 3.2, 4.0);
-        controls.target.set(0, 1.4, 0);
+        controls.setView([0, 3.2, 4.0], [0, 1.4, 0]);
         break;
       case "waterfall":
-        camera.position.set(0, -3.2, 5.0);
-        controls.target.set(0, -1.8, 0);
+        controls.setView([0, -3.2, 5.0], [0, -1.8, 0]);
         break;
       case "escapement":
-        camera.position.set(-4.5, 1.5, 3.5);
-        controls.target.set(-3.0, 0.4, 0);
+        controls.setView([-4.5, 1.5, 3.5], [-3.0, 0.4, 0]);
         break;
       case "torpedo":
-        camera.position.set(8, 3, 9);
-        controls.target.set(0, 0.5, 0);
+        controls.setView([8, 3, 9], [0, 0.5, 0]);
         break;
       case "top":
-        camera.position.set(0, 10.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 10.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const handleToggleSound = () => {

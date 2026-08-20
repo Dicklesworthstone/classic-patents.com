@@ -64,6 +64,8 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Pasteur Fermentation Vat 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine log reduction, yeast activity, and alcohol yield in SI units", () => {

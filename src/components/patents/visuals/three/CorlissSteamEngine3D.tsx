@@ -2,8 +2,7 @@
 
 import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
-import { stepCorlissEngine, wrapCycleRad } from "@/physics/catalogKernels";
+import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -15,8 +14,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wrist_plate" | "dashpots" | "flywheel" | "governor" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [12.0, 9.0, 13.0], target: [0, 0, 0] },
+  wrist_plate: { pos: [-2.0, 1.8, 4.5], target: [-1.8, 0.4, 0] },
+  dashpots: { pos: [-2.2, -0.8, 3.8], target: [-2.0, -1.8, 0] },
+  flywheel: { pos: [4.5, 2.5, 6.0], target: [3.8, 0.5, 0] },
+  governor: { pos: [-1.0, 3.2, 4.0], target: [-1.0, 1.8, 1.2] },
+  top: { pos: [0, 14.0, 0.1], target: [0, 0, 0] },
+};
+
 export function CorlissSteamEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   // Thermodynamic Simulation Parameters
   const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
@@ -48,42 +60,10 @@ export function CorlissSteamEngine3D() {
     crankWrapRad: corliss.crankWrapRad,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(12.0, 9.0, 13.0);
-        controls.target.set(0, 0, 0);
-        break;
-      case "wrist_plate":
-        camera.position.set(-2.0, 1.8, 4.5);
-        controls.target.set(-1.8, 0.4, 0);
-        break;
-      case "dashpots":
-        camera.position.set(-2.2, -0.8, 3.8);
-        controls.target.set(-2.0, -1.8, 0);
-        break;
-      case "flywheel":
-        camera.position.set(4.5, 2.5, 6.0);
-        controls.target.set(3.8, 0.5, 0);
-        break;
-      case "governor":
-        camera.position.set(-1.0, 3.2, 4.0);
-        controls.target.set(-1.0, 1.8, 1.2);
-        break;
-      case "top":
-        camera.position.set(0, 14.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
   const toggleSound = () => {
     toggleEngine(() => {
@@ -99,15 +79,15 @@ export function CorlissSteamEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [12.0, 9.0, 13.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     // Build procedural 3D model
     const model = buildCorlissEngineModel();
@@ -115,17 +95,16 @@ export function CorlissSteamEngine3D() {
 
     // Animation Loop
     let reqId: number;
-    let crankAngle = 0;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
+      const crankAngle = timeSec * p.crankOmegaRadPerS;
 
-      const omegaRadPerSec = p.crankOmegaRadPerS;
-      crankAngle = wrapCycleRad(crankAngle + omegaRadPerSec * delta, p.crankWrapRad);
-
-      updateCorlissEngineKinematics(model, crankAngle, p.govSpread, p.wristAmp, p.isCutaway);
+      updateCorlissEngineKinematics(model, crankAngle, p.engineRpm, p.cutoffPct / 100, p.isCutaway);
 
       renderer.render(scene, camera);
     };
@@ -136,6 +115,7 @@ export function CorlissSteamEngine3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

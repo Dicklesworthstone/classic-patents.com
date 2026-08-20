@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { buildWattRotaryEngineModel } from "./wattRotaryEngineModel";
 
 describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
@@ -13,6 +14,9 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
     expect(studioSource).not.toContain("OrbitControls");
     expect(studioSource).not.toContain("new THREE.WebGLRenderer");
     expect(studioSource).toContain("controls.setView");
+    expect(studioSource).toContain("readWattRotaryControls");
+    expect(studioSource).toContain("planetOrbitAngleDeg");
+    expect(studioSource).not.toContain("p.strokeRateSpm, p.gearRatioNpOverNs");
   });
 
   test("builds complete procedural node graph with all authentic engine assemblies", () => {
@@ -53,19 +57,24 @@ describe("James Watt 1781 Rotary Motion 3D WebGL Procedural Model", () => {
 
   test("updates kinematics and epicyclic gear doubling deterministically across time steps", () => {
     const model = buildWattRotaryEngineModel();
+    const controls = readWattRotaryControls({ strokeRateSpm: 20, gearRatioNpOverNs: 1.0 });
 
-    // At t=0
-    model.updateAnimation(0, 20, 1.0);
+    model.updateAnimation(stepWattRotaryEngine(controls, 0));
     const initialSunAngle = model.sunGearGroup.rotation.z;
-    const _initialPlanetY = model.planetGearGroup.position.y;
 
-    // At quarter cycle (t = 0.75s for 20 SPM -> cycle period = 3s)
-    model.updateAnimation(0.75, 20, 1.0);
+    const quarter = stepWattRotaryEngine(controls, 0.75);
+    model.updateAnimation(quarter);
     const quarterSunAngle = model.sunGearGroup.rotation.z;
     const quarterPlanetX = model.planetGearGroup.position.x;
 
     expect(quarterSunAngle).not.toBe(initialSunAngle);
-    expect(quarterPlanetX).toBeGreaterThan(2.2); // planet moves to the right of sun shaft
+    expect(quarterPlanetX).toBeGreaterThan(2.2);
+
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/wattRotaryEngineModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("(spm * 2 * Math.PI) / 60");
 
     model.dispose();
   });

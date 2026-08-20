@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -23,6 +22,18 @@ type CameraPreset =
   | "sampling_valve"
   | "cotton_filter"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.0, 7.0, 10.5], target: [0, 0, 0] },
+  gooseneck_airlock: { pos: [0, 4.5, 3.5], target: [0, 3.0, 0] },
+  cooling_coil: { pos: [2.8, 0, 3.5], target: [0, -0.5, 0] },
+  sampling_valve: { pos: [0, -0.8, 3.8], target: [0, -1.2, 1.2] },
+  cotton_filter: { pos: [2.8, 3.5, 1.8], target: [2.2, 3.2, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
 
 export const PasteurFermentation3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -53,42 +64,12 @@ export const PasteurFermentation3D = memo(() => {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(9.0, 7.0, 10.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "gooseneck_airlock":
-        camera.position.set(0, 4.5, 3.5);
-        controls.target.set(0, 3.0, 0);
-        break;
-      case "cooling_coil":
-        camera.position.set(2.8, 0, 3.5);
-        controls.target.set(0, -0.5, 0);
-        break;
-      case "sampling_valve":
-        camera.position.set(0, -0.8, 3.8);
-        controls.target.set(0, -1.2, 1.2);
-        break;
-      case "cotton_filter":
-        camera.position.set(2.8, 3.5, 1.8);
-        controls.target.set(2.2, 3.2, 0);
-        break;
-      case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -105,15 +86,15 @@ export const PasteurFermentation3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.0, 7.0, 10.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
     scene.add(rootGroup);
@@ -148,6 +129,7 @@ export const PasteurFermentation3D = memo(() => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

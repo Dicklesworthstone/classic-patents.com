@@ -64,31 +64,24 @@ export function EdisonPhonograph3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.5, 7.0, 11.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.5, 7.0, 11.0], [0, 0, 0]);
         break;
       case "stylus_groove":
-        camera.position.set(0, 2.2, 3.2);
-        controls.target.set(0, 1.2, 0.8);
+        controls.setView([0, 2.2, 3.2], [0, 1.2, 0.8]);
         break;
       case "tinfoil_cylinder":
-        camera.position.set(-1.8, 1.8, 3.8);
-        controls.target.set(-0.4, 0.8, 0);
+        controls.setView([-1.8, 1.8, 3.8], [-0.4, 0.8, 0]);
         break;
       case "speaking_tube":
-        camera.position.set(2.8, 3.0, 4.0);
-        controls.target.set(0, 1.8, 1.8);
+        controls.setView([2.8, 3.0, 4.0], [0, 1.8, 1.8]);
         break;
       case "illustrative_drive":
-        camera.position.set(-4.5, 2.0, 3.5);
-        controls.target.set(-3.5, 0.5, 0);
+        controls.setView([-4.5, 2.0, 3.5], [-3.5, 0.5, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

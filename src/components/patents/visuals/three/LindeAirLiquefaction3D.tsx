@@ -55,31 +55,24 @@ export function LindeAirLiquefaction3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(7.5, 4.5, 8.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([7.5, 4.5, 8.5], [0, 0, 0]);
         break;
       case "regulating_valve":
-        camera.position.set(0, -0.8, 3.2);
-        controls.target.set(0, -1.6, 0);
+        controls.setView([0, -0.8, 3.2], [0, -1.6, 0]);
         break;
       case "counter_current_apparatus":
-        camera.position.set(2.8, 1.8, 3.2);
-        controls.target.set(0, 0.8, 0);
+        controls.setView([2.8, 1.8, 3.2], [0, 0.8, 0]);
         break;
       case "vessel_v_prime":
-        camera.position.set(0, -2.0, 3.4);
-        controls.target.set(0, -2.4, 0);
+        controls.setView([0, -2.0, 3.4], [0, -2.4, 0]);
         break;
       case "regulator":
-        camera.position.set(1.4, 5.0, 3.0);
-        controls.target.set(0, 4.2, 0);
+        controls.setView([1.4, 5.0, 3.0], [0, 4.2, 0]);
         break;
       case "top":
-        camera.position.set(0, 9.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 9.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

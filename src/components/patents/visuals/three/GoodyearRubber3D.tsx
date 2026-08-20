@@ -88,31 +88,24 @@ export function GoodyearRubber3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 8, 13);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 8, 13], [0, 0, 0]);
         break;
       case "chains":
-        camera.position.set(0, 1.5, 7.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 1.5, 7.5], [0, 0, 0]);
         break;
       case "bridges":
-        camera.position.set(1.8, 0.8, 3.8);
-        controls.target.set(1.5, 0, 0);
+        controls.setView([1.8, 0.8, 3.8], [1.5, 0, 0]);
         break;
       case "clamps":
-        camera.position.set(-6, 2.5, 5);
-        controls.target.set(-4.5, 0, 0);
+        controls.setView([-6, 2.5, 5], [-4.5, 0, 0]);
         break;
       case "stress_vectors":
-        camera.position.set(6, 2.0, 4);
-        controls.target.set(4.5, 0, 0);
+        controls.setView([6, 2.0, 4], [4.5, 0, 0]);
         break;
       case "top":
-        camera.position.set(0, 15, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 15, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

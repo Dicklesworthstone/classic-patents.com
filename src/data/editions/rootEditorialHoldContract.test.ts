@@ -23,6 +23,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-135245-pasteur-fermentation",
   "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
+  "us-313224-mergenthaler-linotype",
 ] as const;
 
 describe("root editorial publication holds", () => {

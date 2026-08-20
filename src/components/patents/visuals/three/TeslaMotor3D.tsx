@@ -13,6 +13,18 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "stator_coils" | "disk" | "shaft" | "generator" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [13, 10, 15], target: [0, 0, 0] },
+  stator_coils: { pos: [0, 4.2, 5.8], target: [0, 0, 0] },
+  disk: { pos: [0, 1.8, 3.8], target: [0, -0.4, 0] },
+  shaft: { pos: [5.5, 1.5, 3.5], target: [2.0, -0.4, 0] },
+  generator: { pos: [-5.5, 2.5, 3.5], target: [-2.5, 0.5, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
 export function TeslaMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,42 +48,12 @@ export function TeslaMotor3D() {
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(13, 10, 15);
-        controls.target.set(0, 0, 0);
-        break;
-      case "stator_coils":
-        camera.position.set(0, 4.2, 5.8);
-        controls.target.set(0, 0, 0);
-        break;
-      case "disk":
-        camera.position.set(0, 1.8, 3.8);
-        controls.target.set(0, -0.4, 0);
-        break;
-      case "shaft":
-        camera.position.set(5.5, 1.5, 3.5);
-        controls.target.set(2.0, -0.4, 0);
-        break;
-      case "generator":
-        camera.position.set(-5.5, 2.5, 3.5);
-        controls.target.set(-2.5, 0.5, 0);
-        break;
-      case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
@@ -82,15 +64,15 @@ export function TeslaMotor3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [13, 10, 15],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // --- 3D STATOR & ROTOR ASSEMBLY ---
     const fig9Model = buildTeslaMotorModel();
@@ -151,6 +133,7 @@ export function TeslaMotor3D() {
       fig9Model.dispose();
       bFieldArrow.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 

@@ -60,31 +60,24 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(8.5, 6.0, 9.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([8.5, 6.0, 9.5], [0, 0, 0]);
         break;
       case "blasting_cap":
-        camera.position.set(0, 3.2, 3.0);
-        controls.target.set(0, 2.0, 0);
+        controls.setView([0, 3.2, 3.0], [0, 2.0, 0]);
         break;
       case "matrix_cutaway":
-        camera.position.set(0, 0, 3.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 0, 3.5], [0, 0, 0]);
         break;
       case "fuse":
-        camera.position.set(0, 4.8, 2.5);
-        controls.target.set(0, 3.5, 0);
+        controls.setView([0, 4.8, 2.5], [0, 3.5, 0]);
         break;
       case "detonation_wave":
-        camera.position.set(3.5, 2.0, 4.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([3.5, 2.0, 4.5], [0, 0, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const igniteFuse = () => {

@@ -59,31 +59,24 @@ export const HyattCelluloid3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.5, 7.5, 12.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.5, 7.5, 12.0], [0, 0, 0]);
         break;
       case "hydraulic_ram":
-        camera.position.set(-3.5, 2.0, 4.5);
-        controls.target.set(-2.0, 0, 0);
+        controls.setView([-3.5, 2.0, 4.5], [-2.0, 0, 0]);
         break;
       case "steam_jacket":
-        camera.position.set(0, 1.2, 4.2);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 1.2, 4.2], [0, 0, 0]);
         break;
       case "nozzle_die":
-        camera.position.set(3.8, 1.5, 3.5);
-        controls.target.set(2.5, -0.4, 0);
+        controls.setView([3.8, 1.5, 3.5], [2.5, -0.4, 0]);
         break;
       case "billiard_balls":
-        camera.position.set(4.8, -0.5, 2.5);
-        controls.target.set(4.2, -1.6, 0);
+        controls.setView([4.8, -0.5, 2.5], [4.2, -1.6, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

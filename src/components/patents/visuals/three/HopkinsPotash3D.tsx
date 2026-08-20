@@ -57,31 +57,24 @@ export function HopkinsPotash3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(4.5, 3.2, 4.8);
-        controls.target.set(0, 0.5, 0);
+        controls.setView([4.5, 3.2, 4.8], [0, 0.5, 0]);
         break;
       case "furnace":
-        camera.position.set(-1.6, 1.4, 2.5);
-        controls.target.set(-1.6, 0.6, 0);
+        controls.setView([-1.6, 1.4, 2.5], [-1.6, 0.6, 0]);
         break;
       case "leaching":
-        camera.position.set(-0.4, 1.3, 2.2);
-        controls.target.set(-0.4, 0.5, 0);
+        controls.setView([-0.4, 1.3, 2.2], [-0.4, 0.5, 0]);
         break;
       case "crystallizer":
-        camera.position.set(0.8, 1.4, 2.2);
-        controls.target.set(0.8, 0.5, 0);
+        controls.setView([0.8, 1.4, 2.2], [0.8, 0.5, 0]);
         break;
       case "ingot":
-        camera.position.set(1.8, 1.0, 1.8);
-        controls.target.set(1.8, 0.25, 0);
+        controls.setView([1.8, 1.0, 1.8], [1.8, 0.25, 0]);
         break;
       case "top":
-        camera.position.set(0, 6.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 6.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   useEffect(() => {

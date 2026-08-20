@@ -56,31 +56,24 @@ export const GrammeDynamo3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.0, 7.5, 11.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.0, 7.5, 11.5], [0, 0, 0]);
         break;
       case "ring_armature":
-        camera.position.set(0, 0.8, 4.2);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 0.8, 4.2], [0, 0, 0]);
         break;
       case "collector_rods":
-        camera.position.set(-2.8, 1.2, 3.2);
-        controls.target.set(-1.4, 0, 0);
+        controls.setView([-2.8, 1.2, 3.2], [-1.4, 0, 0]);
         break;
       case "pole_pieces":
-        camera.position.set(2.8, 2.5, 3.8);
-        controls.target.set(1.2, 0, 0);
+        controls.setView([2.8, 2.5, 3.8], [1.2, 0, 0]);
         break;
       case "bearing_pedestal":
-        camera.position.set(-4.5, 1.0, 2.5);
-        controls.target.set(-3.8, -0.6, 0);
+        controls.setView([-4.5, 1.0, 2.5], [-3.8, -0.6, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

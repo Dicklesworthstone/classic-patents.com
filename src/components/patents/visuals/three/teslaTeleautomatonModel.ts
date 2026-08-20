@@ -509,10 +509,11 @@ export function updateTeslaTeleautomatonKinematics(
   materials: TeslaTeleautomatonMaterials,
   dt: number,
   timeSec: number,
-  propellerRpm: number,
+  propellerOmegaRadPerS: number,
   rudderAngleDeg: number,
   showRadioWaves: boolean,
   cutawayMode: boolean,
+  steppingDiskIndex = 0,
 ) {
   // 1. Aquatic Wave Buoyancy Motion (Pitch, Roll, Heave)
   const heaveY = Math.sin(timeSec * 1.5) * 0.06;
@@ -523,9 +524,8 @@ export function updateTeslaTeleautomatonKinematics(
   nodes.hullGroup.rotation.z = pitchX;
   nodes.hullGroup.rotation.x = rollZ;
 
-  // 2. Propeller Spin
-  const propOmega = (propellerRpm * 2 * Math.PI) / 60;
-  nodes.propellerGroup.rotation.x += propOmega * dt;
+  // 2. Propeller spin from the shared kernel ω
+  nodes.propellerGroup.rotation.x += propellerOmegaRadPerS * dt;
 
   // 3. Rudder Steering Articulation
   const rudderRad = (rudderAngleDeg * Math.PI) / 180;
@@ -533,7 +533,7 @@ export function updateTeslaTeleautomatonKinematics(
 
   // 4. Decoherer & Stepping Disk Kinematics
   nodes.rotatingCoherer.rotation.x += dt * 1.5;
-  nodes.steppingDiskLogic.rotation.z = Math.floor(timeSec * 0.8) * (Math.PI / 4);
+  nodes.steppingDiskLogic.rotation.z = (steppingDiskIndex % 8) * (Math.PI / 4);
 
   // 5. Cutaway Shell Toggle
   nodes.hullMesh.visible = !cutawayMode;

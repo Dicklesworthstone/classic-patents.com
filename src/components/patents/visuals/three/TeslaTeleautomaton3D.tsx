@@ -2,8 +2,7 @@
 
 import { Camera, Eye, EyeOff, Radio, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
-import { FrankenSimEngine } from "@/physics/engine";
+import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -24,75 +23,55 @@ type CameraPreset =
   | "antenna_mast"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [7.5, 5.0, 8.5], target: [0, 0, 0] },
+  coherer_switch: { pos: [1.4, 1.6, 2.2], target: [0.6, 0.35, 0] },
+  stepping_disk: { pos: [0.5, 1.8, 2.4], target: [0, 0.35, 0] },
+  propeller_rudder: { pos: [-5.5, 0.8, 3.2], target: [-4.0, -0.4, 0] },
+  antenna_mast: { pos: [0.8, 4.2, 4.0], target: [0, 2.4, 0] },
+  top: { pos: [0, 9.5, 0.1], target: [0, 0, 0] },
+};
+
 export function TeslaTeleautomaton3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
 
-  // Wireless Teleautomation Robotics Parameters
   const { params } = usePatentPhysics("us-613809-tesla-teleautomaton");
-  const rudderAngleDeg = params.rudderAngle ?? params.rudderAngleDeg ?? 15;
-  const propellerRpm = params.propellerRpm ?? 450;
+  const rudderAngleDeg = params.rudderAngle ?? 15;
   const transmitterFreqKhz = params.rfFrequency ?? 150;
+  const propellerThrottlePct = params.propellerThrottlePct ?? 75;
+  const pulseCount = params.pulseCount ?? 3;
   const [showRadioWaves, setShowRadioWaves] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const tele = FrankenSimEngine.stepTeslaTeleautomaton({
-    transmitterFreqKhz,
-    rudderAngleDeg,
+  const tele = stepTeslaTeleautomaton({
+    rfFrequency: transmitterFreqKhz,
+    rudderAngle: rudderAngleDeg,
+    propellerThrottlePct,
+    pulseCount,
   });
 
   const live = useLiveSimParams({
     rudderAngleDeg,
-    propellerRpm,
     transmitterFreqKhz,
+    propellerThrottlePct,
+    pulseCount,
     showRadioWaves,
     cutawayMode,
     isAudioMuted,
-    isResonant: tele.isResonant,
-    cohererOhms: tele.cohererOhms,
-    relayEnergized: tele.relayEnergized,
-    motorThrustN: tele.motorThrustN,
-    turningRadiusM: tele.turningRadiusM,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(7.5, 5.0, 8.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "coherer_switch":
-        camera.position.set(1.4, 1.6, 2.2);
-        controls.target.set(0.6, 0.35, 0);
-        break;
-      case "stepping_disk":
-        camera.position.set(0.5, 1.8, 2.4);
-        controls.target.set(0, 0.35, 0);
-        break;
-      case "propeller_rudder":
-        camera.position.set(-5.5, 0.8, 3.2);
-        controls.target.set(-4.0, -0.4, 0);
-        break;
-      case "antenna_mast":
-        camera.position.set(0.8, 4.2, 4.0);
-        controls.target.set(0, 2.4, 0);
-        break;
-      case "top":
-        camera.position.set(0, 9.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -105,15 +84,15 @@ export function TeslaTeleautomaton3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [7.5, 5.0, 8.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Procedural Tesla Teleautomaton Vessel Model
     const vesselModel: TeslaTeleautomatonModelResult = buildTeslaTeleautomatonModel();
@@ -128,16 +107,23 @@ export function TeslaTeleautomaton3D() {
       const delta = 1 / 60;
       timeSec += delta;
       const p = live.current;
+      const out = stepTeslaTeleautomaton({
+        rfFrequency: p.transmitterFreqKhz,
+        rudderAngle: p.rudderAngleDeg,
+        propellerThrottlePct: p.propellerThrottlePct,
+        pulseCount: p.pulseCount,
+      });
 
       updateTeslaTeleautomatonKinematics(
         vesselModel.nodes,
         vesselModel.materials,
         delta,
         timeSec,
-        p.propellerRpm,
-        p.rudderAngleDeg,
+        out.propellerOmegaRadPerS,
+        out.rudderAngleDeg,
         p.showRadioWaves,
         p.cutawayMode,
+        out.steppingDiskIndex,
       );
 
       controls.update();
@@ -150,6 +136,7 @@ export function TeslaTeleautomaton3D() {
       cancelAnimationFrame(reqId);
       vesselModel.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -253,6 +240,7 @@ export function TeslaTeleautomaton3D() {
           },
           { label: "Coherer R", value: `${tele.cohererOhms} Ω` },
           { label: "Rudder", value: `${rudderAngleDeg}°` },
+          { label: "Prop ω", value: `${tele.propellerOmegaRadPerS.toFixed(1)} rad/s` },
           { label: "Thrust", value: `${tele.motorThrustN} N` },
           {
             label: "Turn Radius",

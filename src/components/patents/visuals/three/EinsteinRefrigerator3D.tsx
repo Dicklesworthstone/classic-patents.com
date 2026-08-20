@@ -79,31 +79,24 @@ export function EinsteinRefrigerator3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 8, 14);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 8, 14], [0, 0, 0]);
         break;
       case "generator":
-        camera.position.set(3.8, 0.4, 3.8);
-        controls.target.set(3.4, -0.8, 0);
+        controls.setView([3.8, 0.4, 3.8], [3.4, -0.8, 0]);
         break;
       case "condenser":
-        camera.position.set(2.4, 3.6, 3.0);
-        controls.target.set(2.2, 2.6, 0);
+        controls.setView([2.4, 3.6, 3.0], [2.2, 2.6, 0]);
         break;
       case "evaporator":
-        camera.position.set(-2.8, 2.8, 3.8);
-        controls.target.set(-2.8, 1.8, 0);
+        controls.setView([-2.8, 2.8, 3.8], [-2.8, 1.8, 0]);
         break;
       case "absorber":
-        camera.position.set(-3.2, -0.6, 3.6);
-        controls.target.set(-2.8, -1.4, 0);
+        controls.setView([-3.2, -0.6, 3.6], [-2.8, -1.4, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

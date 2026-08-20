@@ -97,31 +97,24 @@ export function FarnsworthTV3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(13, 9, 15);
-        controls.target.set(0, 0, 0);
+        controls.setView([13, 9, 15], [0, 0, 0]);
         break;
       case "photocathode":
-        camera.position.set(-5.8, 1.4, 2.5);
-        controls.target.set(-4.8, 0, 0);
+        controls.setView([-5.8, 1.4, 2.5], [-4.8, 0, 0]);
         break;
       case "aperture":
-        camera.position.set(4.8, 1.5, 2.2);
-        controls.target.set(4.0, 0, 0);
+        controls.setView([4.8, 1.5, 2.2], [4.0, 0, 0]);
         break;
       case "coils":
-        camera.position.set(0, 3.8, 3.2);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 3.8, 3.2], [0, 0, 0]);
         break;
       case "electron_gun":
-        camera.position.set(3.6, 2.2, 3.2);
-        controls.target.set(3.2, 0, 0);
+        controls.setView([3.6, 2.2, 3.2], [3.2, 0, 0]);
         break;
       case "top":
-        camera.position.set(0, 9.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 9.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

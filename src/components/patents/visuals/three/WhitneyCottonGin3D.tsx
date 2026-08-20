@@ -61,31 +61,24 @@ export function WhitneyCottonGin3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.5, 7.5, 11.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.5, 7.5, 11.5], [0, 0, 0]);
         break;
       case "grate_saws":
-        camera.position.set(0, 1.2, 4.8);
-        controls.target.set(0, 0.4, 0);
+        controls.setView([0, 1.2, 4.8], [0, 0.4, 0]);
         break;
       case "brush_drum":
-        camera.position.set(-3.2, 1.8, 3.8);
-        controls.target.set(-1.0, 0, 0);
+        controls.setView([-3.2, 1.8, 3.8], [-1.0, 0, 0]);
         break;
       case "hopper":
-        camera.position.set(0, 6.2, 2.5);
-        controls.target.set(0, 1.5, 0);
+        controls.setView([0, 6.2, 2.5], [0, 1.5, 0]);
         break;
       case "crank_drive":
-        camera.position.set(5.5, 0.8, 2.5);
-        controls.target.set(3.5, 0, 0);
+        controls.setView([5.5, 0.8, 2.5], [3.5, 0, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

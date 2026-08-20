@@ -53,6 +53,8 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(threeSource).not.toContain("squirrel_cage");
     expect(threeSource).not.toContain("Source Guide");
     expect(threeSource).not.toContain("pole count");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("keeps the Fig. 9 display relationship separate from an unprinted performance claim", () => {

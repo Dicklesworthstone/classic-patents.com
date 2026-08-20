@@ -112,31 +112,24 @@ export function SpencerMicrowave3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(12, 10, 15);
-        controls.target.set(0, 0, 0);
+        controls.setView([12, 10, 15], [0, 0, 0]);
         break;
       case "cavity_resonator":
-        camera.position.set(0, 3.2, 5.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 3.2, 5.5], [0, 0, 0]);
         break;
       case "electron_spokes":
-        camera.position.set(0, 7.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 7.5, 0.1], [0, 0, 0]);
         break;
       case "waveguide_launch":
-        camera.position.set(4.5, 2.5, 3.5);
-        controls.target.set(3.0, 0, 0);
+        controls.setView([4.5, 2.5, 3.5], [3.0, 0, 0]);
         break;
       case "strapping_rings":
-        camera.position.set(0, 3.2, 3.8);
-        controls.target.set(0, 1.8, 0);
+        controls.setView([0, 3.2, 3.8], [0, 1.8, 0]);
         break;
       case "top":
-        camera.position.set(0, 13.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   // Audio Magnetron Hum

@@ -63,33 +63,26 @@ export const EngelbartMouse3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 9, 13);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 9, 13], [0, 0, 0]);
         break;
       case "wheels":
-        camera.position.set(0, -6, 9);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, -6, 9], [0, 0, 0]);
         break;
       case "xray":
         setIsXRayMode(true);
-        camera.position.set(4, 7, 9);
-        controls.target.set(0, 1.2, 0);
+        controls.setView([4, 7, 9], [0, 1.2, 0]);
         break;
       case "microswitch":
-        camera.position.set(3, 4, -4);
-        controls.target.set(1.3, 2.0, -2.0);
+        controls.setView([3, 4, -4], [1.3, 2.0, -2.0]);
         break;
       case "potentiometers":
         setIsXRayMode(true);
-        camera.position.set(-3, 3, 2);
-        controls.target.set(0, 0.5, 0);
+        controls.setView([-3, 3, 2], [0, 0.5, 0]);
         break;
       case "top":
-        camera.position.set(0, 16, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 16, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

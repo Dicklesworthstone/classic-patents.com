@@ -51,6 +51,8 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Edison Incandescent Bulb 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("camera.position.set");
   });
 
   test("computes genuine blackbody temperature, hot resistance, and radiant watts in SI units", () => {

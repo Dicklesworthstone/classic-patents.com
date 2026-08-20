@@ -59,31 +59,24 @@ export function HollerithTabulating3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.5, 8.0, 12.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.5, 8.0, 12.0], [0, 0, 0]);
         break;
       case "pin_press":
-        camera.position.set(-1.8, 1.2, 3.5);
-        controls.target.set(-1.2, 0.2, 0.4);
+        controls.setView([-1.8, 1.2, 3.5], [-1.2, 0.2, 0.4]);
         break;
       case "dials_board":
-        camera.position.set(0, 3.2, 3.8);
-        controls.target.set(0, 2.0, -0.6);
+        controls.setView([0, 3.2, 3.8], [0, 2.0, -0.6]);
         break;
       case "sorting_box":
-        camera.position.set(3.2, 1.5, 3.5);
-        controls.target.set(2.2, 0, 0);
+        controls.setView([3.2, 1.5, 3.5], [2.2, 0, 0]);
         break;
       case "press_lever":
-        camera.position.set(-3.5, 1.8, 2.2);
-        controls.target.set(-2.4, 0.2, 0.8);
+        controls.setView([-3.5, 1.8, 2.2], [-2.4, 0.2, 0.8]);
         break;
       case "top":
-        camera.position.set(0, 13.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

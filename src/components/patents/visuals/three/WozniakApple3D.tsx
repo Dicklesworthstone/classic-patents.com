@@ -60,27 +60,21 @@ export function WozniakApple3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(12, 10, 15);
-        controls.target.set(0, 0, 0);
+        controls.setView([12, 10, 15], [0, 0, 0]);
         break;
       case "cpu":
-        camera.position.set(-3.2, 1.6, 2.2);
-        controls.target.set(-3.2, -0.4, 0.4);
+        controls.setView([-3.2, 1.6, 2.2], [-3.2, -0.4, 0.4]);
         break;
       case "ram_matrix":
-        camera.position.set(1.2, 1.8, -1.0);
-        controls.target.set(1.0, -0.4, -1.2);
+        controls.setView([1.2, 1.8, -1.0], [1.0, -0.4, -1.2]);
         break;
       case "slots":
-        camera.position.set(0, 2.8, 4.0);
-        controls.target.set(0, -0.3, 2.6);
+        controls.setView([0, 2.8, 4.0], [0, -0.3, 2.6]);
         break;
       case "top":
-        camera.position.set(0, 9.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 9.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

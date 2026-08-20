@@ -49,31 +49,24 @@ export function McCormickReaper3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10.5, 7.0, 11.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([10.5, 7.0, 11.0], [0, 0, 0]);
         break;
       case "sickle_guards":
-        camera.position.set(-1.0, 1.0, 4.5);
-        controls.target.set(-0.5, -0.6, 1.8);
+        controls.setView([-1.0, 1.0, 4.5], [-0.5, -0.6, 1.8]);
         break;
       case "grain_reel":
-        camera.position.set(2.8, 3.8, 4.0);
-        controls.target.set(0, 1.2, 0);
+        controls.setView([2.8, 3.8, 4.0], [0, 1.2, 0]);
         break;
       case "platform":
-        camera.position.set(0, 5.0, 0);
-        controls.target.set(0, -0.5, -0.5);
+        controls.setView([0, 5.0, 0], [0, -0.5, -0.5]);
         break;
       case "drive_wheel":
-        camera.position.set(-5.0, 1.2, 3.2);
-        controls.target.set(-3.2, 0.4, 0);
+        controls.setView([-5.0, 1.2, 3.2], [-3.2, 0.4, 0]);
         break;
       case "top":
-        camera.position.set(0, 13.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   useEffect(() => {

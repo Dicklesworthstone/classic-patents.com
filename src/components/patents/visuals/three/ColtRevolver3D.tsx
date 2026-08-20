@@ -31,8 +31,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cylinder" | "lockwork" | "sightline" | "loading_lever" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [4.5, 2.8, 9.5], target: [1.2, 0.0, 0] },
+  cylinder: { pos: [0.0, 1.8, 4.2], target: [0.0, 0.2, 0] },
+  lockwork: { pos: [-2.2, 0.8, 3.8], target: [-1.8, -0.4, 0] },
+  sightline: { pos: [-5.2, 1.38, 0.0], target: [6.0, 1.25, 0.0] },
+  loading_lever: { pos: [3.2, -1.8, 4.5], target: [2.0, -0.4, 0] },
+  top: { pos: [1.2, 9.5, 0.05], target: [1.2, 0.0, 0] },
+};
+
 export function ColtRevolver3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const { params, updateParam, resetParams } = usePatentPhysics("us-x9430-colt-revolver");
 
   // Reactive Physics & Mechanical Parameters
@@ -91,43 +104,12 @@ export function ColtRevolver3D() {
     isLocked: coltMech.isLocked ? 1 : 0,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const fireTimerRef = useRef<number | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(4.5, 2.8, 9.5);
-        controls.target.set(1.2, 0.0, 0);
-        break;
-      case "cylinder":
-        camera.position.set(0.0, 1.8, 4.2);
-        controls.target.set(0.0, 0.2, 0);
-        break;
-      case "lockwork":
-        camera.position.set(-2.2, 0.8, 3.8);
-        controls.target.set(-1.8, -0.4, 0);
-        break;
-      case "sightline":
-        camera.position.set(-5.2, 1.38, 0.0);
-        controls.target.set(6.0, 1.25, 0.0);
-        break;
-      case "loading_lever":
-        camera.position.set(3.2, -1.8, 4.5);
-        controls.target.set(2.0, -0.4, 0);
-        break;
-      case "top":
-        camera.position.set(1.2, 9.5, 0.05);
-        controls.target.set(1.2, 0.0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const handleCockHammer = useCallback(() => {
@@ -170,10 +152,11 @@ export function ColtRevolver3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [4.5, 2.8, 9.5],
-      targetPos: [1.2, 0.0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       fov: 38,
       isDark: true,
       environmentStyle: "sky",
@@ -184,10 +167,9 @@ export function ColtRevolver3D() {
       ambientIntensity: 1.5,
       sunIntensity: 2.5,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     // Build Museum-Quality Procedural Colt Paterson 1836 Model
     const model: ColtRevolverModel = buildColtRevolverModel();
@@ -259,7 +241,6 @@ export function ColtRevolver3D() {
 
       pinGroup.visible = showCalloutPins;
 
-      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -269,6 +250,7 @@ export function ColtRevolver3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [showCalloutPins, live]);
 

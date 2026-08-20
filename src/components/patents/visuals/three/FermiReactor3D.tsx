@@ -13,7 +13,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -25,6 +24,18 @@ import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "control_rods" | "graphite_core" | "gantry" | "detector" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [13, 10, 16], target: [0, 0, 0] },
+  control_rods: { pos: [0, 3.2, 4.2], target: [0, 1.0, 0] },
+  graphite_core: { pos: [0, -0.6, 4.5], target: [0, -1.2, 0] },
+  gantry: { pos: [0, 7.5, 6.0], target: [0, 4.0, 0] },
+  detector: { pos: [5.5, 0.5, 3.2], target: [2.4, -0.5, 0] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
 
 export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -74,42 +85,12 @@ export function FermiReactor3D() {
     fuelGlowIntensity: reactorKinetics.fuelGlowIntensity,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(13, 10, 16);
-        controls.target.set(0, 0, 0);
-        break;
-      case "control_rods":
-        camera.position.set(0, 3.2, 4.2);
-        controls.target.set(0, 1.0, 0);
-        break;
-      case "graphite_core":
-        camera.position.set(0, -0.6, 4.5);
-        controls.target.set(0, -1.2, 0);
-        break;
-      case "gantry":
-        camera.position.set(0, 7.5, 6.0);
-        controls.target.set(0, 4.0, 0);
-        break;
-      case "detector":
-        camera.position.set(5.5, 0.5, 3.2);
-        controls.target.set(2.4, -0.5, 0);
-        break;
-      case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -122,15 +103,15 @@ export function FermiReactor3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [13, 10, 16],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildFermiReactorModel();
     scene.add(model.root);
@@ -177,6 +158,7 @@ export function FermiReactor3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 

@@ -2,10 +2,8 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -19,8 +17,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "apex" | "band" | "spring" | "base" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10, 8, 12], target: [0, 0.5, 0] },
+  apex: { pos: [0, 1.2, 3.2], target: [0, 0.4, 0] },
+  band: { pos: [0, 7.5, 0.1], target: [0, 0, 0] },
+  spring: { pos: [4, 5, 6], target: [0, 1.5, 0] },
+  base: { pos: [-5, 2, 4], target: [-2, 0, 1] },
+  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
+};
+
 export const BardeenTransistor3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
@@ -41,22 +52,12 @@ export const BardeenTransistor3D = memo(() => {
     pointContactGapMicrons,
   );
 
-  useFrankenSimPhysics("us-2524035-bardeen-transistor", {
-    domain: "semiconductor_carrier",
-    timestampMs: Date.now(),
-    timeStepDt: 0.016,
-    refusal: { isRefused: false },
-    semi: semiState,
-  });
-
   const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
   const collectorCurrentMa = semiState.collectorCurrentMa.toFixed(2);
   const voltageGain = semiState.voltageGain;
   const powerGainDb = semiState.powerGainDb;
 
   const live = useLiveSimParams({
-    emitterCurrentMa,
-    pointContactGapMicrons,
     collectorVoltageV,
     showHoleDrift,
     currentGainAlpha: semiState.currentGainAlpha,
@@ -66,42 +67,10 @@ export const BardeenTransistor3D = memo(() => {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(10, 8, 12);
-        controls.target.set(0, 0.5, 0);
-        break;
-      case "apex":
-        camera.position.set(0, 1.2, 3.2);
-        controls.target.set(0, 0.4, 0);
-        break;
-      case "band":
-        camera.position.set(0, 7.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-      case "spring":
-        camera.position.set(4, 5, 6);
-        controls.target.set(0, 1.5, 0);
-        break;
-      case "base":
-        camera.position.set(-5, 2, 4);
-        controls.target.set(-2, 0, 1);
-        break;
-      case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -118,15 +87,15 @@ export const BardeenTransistor3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10, 8, 12],
-      targetPos: [0, 0.5, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildBardeenTransistorModel();
     scene.add(rootGroup);
@@ -160,6 +129,7 @@ export const BardeenTransistor3D = memo(() => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -175,7 +145,7 @@ export const BardeenTransistor3D = memo(() => {
             Bardeen Point-Contact Transistor 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            US Patent 2,569,347 (1948)
+            US Patent 2,524,035 (1950)
           </span>
         </div>
 

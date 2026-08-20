@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -15,8 +14,20 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "centrifuge_bowl" | "conical_discs" | "outlet_spouts" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.5, 7.5, 11.0], target: [0, 0, 0] },
+  centrifuge_bowl: { pos: [0, 1.8, 3.8], target: [0, 0.8, 0] },
+  conical_discs: { pos: [2.2, 2.2, 2.8], target: [0, 0.8, 0] },
+  outlet_spouts: { pos: [-2.5, 3.2, 3.0], target: [0, 2.2, 0] },
+  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
+};
+
 export function DeLavalSeparator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Centrifugal Separation Parameters
@@ -51,38 +62,10 @@ export function DeLavalSeparator3D() {
     skimDropWrap: sep.skimDropWrap,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(9.5, 7.5, 11.0);
-        controls.target.set(0, 0, 0);
-        break;
-      case "centrifuge_bowl":
-        camera.position.set(0, 1.8, 3.8);
-        controls.target.set(0, 0.8, 0);
-        break;
-      case "conical_discs":
-        camera.position.set(2.2, 2.2, 2.8);
-        controls.target.set(0, 0.8, 0);
-        break;
-      case "outlet_spouts":
-        camera.position.set(-2.5, 3.2, 3.0);
-        controls.target.set(0, 2.2, 0);
-        break;
-      case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -99,15 +82,15 @@ export function DeLavalSeparator3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.5, 7.5, 11.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     // Build procedural 3D model
     const model = buildDeLavalSeparatorModel();
@@ -152,6 +135,7 @@ export function DeLavalSeparator3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

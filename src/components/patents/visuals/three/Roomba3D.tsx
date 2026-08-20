@@ -20,12 +20,13 @@ export function Roomba3D() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const studio = createThreeStudioScene({ container });
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: [0, 3.2, 3.2],
+      targetPos: [0, 0, 0],
+    });
     const model = buildRoombaModel();
     studio.scene.add(model.root);
-
-    studio.camera.position.set(0, 3.2, 3.2);
-    studio.camera.lookAt(0, 0, 0);
 
     let renderedSteps = 0;
     const sched = new TickScheduler(1 / 120, 0);

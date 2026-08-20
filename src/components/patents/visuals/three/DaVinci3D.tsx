@@ -24,12 +24,13 @@ export function DaVinci3D() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const studio = createThreeStudioScene({ container });
+    const studio = createThreeStudioScene({
+      container: container as HTMLDivElement,
+      cameraPos: [0, 1.2, 2.5],
+      targetPos: [0, 0, 0],
+    });
     const model = buildDaVinciModel();
     studio.scene.add(model.root);
-
-    studio.camera.position.set(0, 1.2, 2.5);
-    studio.camera.lookAt(0, 0, 0);
 
     let renderedSteps = 0;
     const sched = new TickScheduler(1 / 120, 0);

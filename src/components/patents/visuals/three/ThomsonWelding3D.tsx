@@ -67,31 +67,24 @@ export function ThomsonWelding3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(9.5, 7.0, 11.0);
-        controls.target.set(0, 0, 0);
+        controls.setView([9.5, 7.0, 11.0], [0, 0, 0]);
         break;
       case "weld_junction":
-        camera.position.set(0, 1.2, 3.2);
-        controls.target.set(0, 0.4, 0);
+        controls.setView([0, 1.2, 3.2], [0, 0.4, 0]);
         break;
       case "transformer_core":
-        camera.position.set(0, -1.0, 4.0);
-        controls.target.set(0, -1.2, 0);
+        controls.setView([0, -1.0, 4.0], [0, -1.2, 0]);
         break;
       case "copper_clamps":
-        camera.position.set(2.4, 1.5, 3.0);
-        controls.target.set(0.8, 0.4, 0);
+        controls.setView([2.4, 1.5, 3.0], [0.8, 0.4, 0]);
         break;
       case "compression_screw":
-        camera.position.set(3.8, 1.0, 2.2);
-        controls.target.set(2.4, 0.4, 0);
+        controls.setView([3.8, 1.0, 2.2], [2.4, 0.4, 0]);
         break;
       case "top":
-        camera.position.set(0, 12.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

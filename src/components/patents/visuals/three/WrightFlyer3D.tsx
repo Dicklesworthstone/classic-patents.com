@@ -103,31 +103,24 @@ export function WrightFlyer3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(7.6, 3.2, 8.4);
-        ctrl.target.set(0, 0.15, 0);
+        ctrl.setView([7.6, 3.2, 8.4], [0, 0.15, 0]);
         break;
       case "wing_warp":
-        camera.position.set(-6.5, 1.8, 4.2);
-        ctrl.target.set(-4.5, 0.2, 0);
+        ctrl.setView([-6.5, 1.8, 4.2], [-4.5, 0.2, 0]);
         break;
       case "canard":
-        camera.position.set(0, 1.2, 5.5);
-        ctrl.target.set(0, 0.4, 2.5);
+        ctrl.setView([0, 1.2, 5.5], [0, 0.4, 2.5]);
         break;
       case "rudder":
-        camera.position.set(0, 1.4, -6.0);
-        ctrl.target.set(0, 0.4, -2.5);
+        ctrl.setView([0, 1.4, -6.0], [0, 0.4, -2.5]);
         break;
       case "engine_props":
-        camera.position.set(2.8, 1.2, -1.8);
-        ctrl.target.set(0, 0.2, -0.5);
+        ctrl.setView([2.8, 1.2, -1.8], [0, 0.2, -0.5]);
         break;
       case "top":
-        camera.position.set(0, 13.5, 0.1);
-        ctrl.target.set(0, 0, 0);
+        ctrl.setView([0, 13.5, 0.1], [0, 0, 0]);
         break;
     }
-    ctrl.update();
   };
 
   useEffect(() => {

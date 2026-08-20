@@ -81,31 +81,24 @@ export function KwolekKevlar3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 8, 14);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 8, 14], [0, 0, 0]);
         break;
       case "ring":
-        camera.position.set(0, 1.4, 3.8);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 1.4, 3.8], [0, 0, 0]);
         break;
       case "hbonds":
-        camera.position.set(0, 5.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 5.5, 0.1], [0, 0, 0]);
         break;
       case "spinneret":
-        camera.position.set(-5.5, 2.0, 4.0);
-        controls.target.set(-5.0, 0, 0);
+        controls.setView([-5.5, 2.0, 4.0], [-5.0, 0, 0]);
         break;
       case "impact":
-        camera.position.set(4.0, 1.5, 5.0);
-        controls.target.set(1.5, 0, 0);
+        controls.setView([4.0, 1.5, 5.0], [1.5, 0, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const handleToggleSound = () => {

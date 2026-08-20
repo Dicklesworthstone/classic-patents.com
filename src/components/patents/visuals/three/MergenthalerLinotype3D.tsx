@@ -64,31 +64,24 @@ export function MergenthalerLinotype3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11.0, 8.5, 12.5);
-        controls.target.set(0, 0, 0);
+        controls.setView([11.0, 8.5, 12.5], [0, 0, 0]);
         break;
       case "matrix_magazine":
-        camera.position.set(0, 4.2, 3.8);
-        controls.target.set(0, 2.2, 0);
+        controls.setView([0, 4.2, 3.8], [0, 2.2, 0]);
         break;
       case "casting_pot":
-        camera.position.set(-2.8, 0.5, 3.5);
-        controls.target.set(-1.5, -0.4, 0);
+        controls.setView([-2.8, 0.5, 3.5], [-1.5, -0.4, 0]);
         break;
       case "spaceband_justifier":
-        camera.position.set(0, 0.8, 3.2);
-        controls.target.set(0, 0.2, 0);
+        controls.setView([0, 0.8, 3.2], [0, 0.2, 0]);
         break;
       case "keyboard":
-        camera.position.set(0, 1.2, 3.4);
-        controls.target.set(0, -0.6, 1.4);
+        controls.setView([0, 1.2, 3.4], [0, -0.6, 1.4]);
         break;
       case "top":
-        camera.position.set(0, 14.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 14.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

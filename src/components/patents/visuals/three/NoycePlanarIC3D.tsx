@@ -63,31 +63,24 @@ export const NoycePlanarIC3D = memo(() => {
 
     switch (preset) {
       case "iso":
-        camera.position.set(10, 8, 12);
-        controls.target.set(0, 0, 0);
+        controls.setView([10, 8, 12], [0, 0, 0]);
         break;
       case "metallization_layer":
-        camera.position.set(0, 3.5, 4.5);
-        controls.target.set(0, 0.6, 0);
+        controls.setView([0, 3.5, 4.5], [0, 0.6, 0]);
         break;
       case "oxide_dielectric":
-        camera.position.set(0, 2.2, 5.0);
-        controls.target.set(0, 0.3, 0);
+        controls.setView([0, 2.2, 5.0], [0, 0.3, 0]);
         break;
       case "pn_junctions":
-        camera.position.set(-2.2, 1.8, 3.5);
-        controls.target.set(-1.0, 0.1, 0);
+        controls.setView([-2.2, 1.8, 3.5], [-1.0, 0.1, 0]);
         break;
       case "leadframe":
-        camera.position.set(0, 4.5, 8.5);
-        controls.target.set(0, -0.6, 0);
+        controls.setView([0, 4.5, 8.5], [0, -0.6, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.0, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.0, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {

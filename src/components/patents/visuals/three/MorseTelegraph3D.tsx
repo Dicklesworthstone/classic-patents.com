@@ -68,31 +68,24 @@ export function MorseTelegraph3D() {
 
     switch (preset) {
       case "iso":
-        camera.position.set(11, 8, 13);
-        controls.target.set(0, 0, 0);
+        controls.setView([11, 8, 13], [0, 0, 0]);
         break;
       case "key_lever":
-        camera.position.set(-3.5, 2.5, 4.5);
-        controls.target.set(-3.5, -0.8, 0);
+        controls.setView([-3.5, 2.5, 4.5], [-3.5, -0.8, 0]);
         break;
       case "electromagnet_relay":
-        camera.position.set(3.5, 2.0, 4.0);
-        controls.target.set(3.5, -0.8, 0);
+        controls.setView([3.5, 2.0, 4.0], [3.5, -0.8, 0]);
         break;
       case "paper_tape_register":
-        camera.position.set(2.0, 3.5, 3.5);
-        controls.target.set(1.5, 0.5, 0);
+        controls.setView([2.0, 3.5, 3.5], [1.5, 0.5, 0]);
         break;
       case "sounding_anvil":
-        camera.position.set(3.5, 3.0, 2.0);
-        controls.target.set(3.5, 0.2, 0);
+        controls.setView([3.5, 3.0, 2.0], [3.5, 0.2, 0]);
         break;
       case "top":
-        camera.position.set(0, 11.5, 0.1);
-        controls.target.set(0, 0, 0);
+        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
         break;
     }
-    controls.update();
   };
 
   const toggleSound = () => {
