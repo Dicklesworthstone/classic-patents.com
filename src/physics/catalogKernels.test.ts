@@ -805,6 +805,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     const res = stepMaximMachineGun({ firingRateRpm: 600, recoilStrokeMm: 19 });
     expect(res.recoilVelocityMps).toBeGreaterThan(0);
     expect(res.toggleUnlockForceN).toBeGreaterThan(0);
+    expect(res.heatGeneratedWatts).toBe(Math.round((600 / 60) * 45 * 1000 * 0.28));
     expect(res.schematicToggleCx).toBe(280);
     expect(res.schematicToggleR).toBe(4);
     expect(res.schematicJacketW).toBe(180);
