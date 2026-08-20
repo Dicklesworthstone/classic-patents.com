@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -10,6 +9,7 @@ import {
   buildFessendenWirelessModel,
   type FessendenWirelessModelNodes,
 } from "./fessendenWirelessModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "isometric" | "alternator" | "cageAntenna" | "liquidBarretter";
@@ -34,8 +34,7 @@ export function FessendenWireless3D() {
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
 
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const nodesRef = useRef<FessendenWirelessModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef(0);
@@ -57,82 +56,31 @@ export function FessendenWireless3D() {
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    if (!cameraRef.current || !controlsRef.current) return;
     const { pos, target } = CAMERA_PRESETS[preset];
-    cameraRef.current.position.set(...pos);
-    controlsRef.current.target.set(...target);
-    controlsRef.current.update();
+    studioRef.current?.controls.setView(pos, target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth;
-    const height = container.clientHeight || 480;
-
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x060913);
-
-    // Fog
-    scene.fog = new THREE.FogExp2(0x060913, 0.08);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
-    cameraRef.current = camera;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    container.appendChild(renderer.domElement);
-
-    // Orbit Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
-    controlsRef.current = controls;
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xfff5e6, 2.0);
-    dirLight.position.set(5, 10, 7);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    const blueFill = new THREE.DirectionalLight(0x38bdf8, 1.2);
-    blueFill.position.set(-5, 4, -4);
-    scene.add(blueFill);
+    const overview = CAMERA_PRESETS.isometric;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
     const pointGlow = new THREE.PointLight(0x10b981, 1.5, 8);
     pointGlow.position.set(0.5, 2.0, 0);
-    scene.add(pointGlow);
+    studio.scene.add(pointGlow);
 
-    // Build Model
     const nodes = buildFessendenWirelessModel();
     nodesRef.current = nodes;
-    scene.add(nodes.root);
+    studio.scene.add(nodes.root);
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 480;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
-    // Animation Loop
     let lastTime: number | null = null;
     const animate = (now: number) => {
       const dt = lastTime === null ? 0.016 : Math.min(0.1, (now - lastTime) / 1000);
@@ -140,29 +88,23 @@ export function FessendenWireless3D() {
       timeRef.current += dt;
 
       const p = live.current;
-      if (p.isRotating && controlsRef.current) {
-        controlsRef.current.autoRotate = true;
-        controlsRef.current.autoRotateSpeed = 1.0;
-      } else if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
+      if (p.isRotating) {
+        nodes.root.rotation.y += 0.0044;
       }
+      studio.controls.update();
 
-      controlsRef.current?.update();
-
-      if (nodesRef.current) {
-        articulateFessendenWireless(nodesRef.current, {
-          timeSec: timeRef.current,
-          carrierFrequencyKhz: p.carrierFreqKhz,
-          radiatedPowerWatts: p.radiatedPowerWatts,
-          audioModulationPct: p.audioModPct,
-          isResonant: p.isResonant,
-        });
-      }
+      articulateFessendenWireless(nodes, {
+        timeSec: timeRef.current,
+        carrierFrequencyKhz: p.carrierFreqKhz,
+        radiatedPowerWatts: p.radiatedPowerWatts,
+        audioModulationPct: p.audioModPct,
+        isResonant: p.isResonant,
+      });
 
       pointGlow.color.setHex(p.isResonant ? 0x10b981 : 0xf59e0b);
       pointGlow.intensity = (p.radiatedPowerWatts / 1000) * 2.0;
 
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -170,17 +112,15 @@ export function FessendenWireless3D() {
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", handleResize);
-      renderer.forceContextLoss();
-      renderer.dispose();
+      pointGlow.dispose();
       nodes.materials.forEach((m) => {
         m.dispose();
       });
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
+      nodesRef.current = null;
     };
-  }, [live, cameraPreset]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">

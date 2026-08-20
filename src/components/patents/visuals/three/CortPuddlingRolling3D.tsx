@@ -6,6 +6,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const EXHIBIT_ID = "gb-1420-cort-puddling-rolling";
 
@@ -18,10 +19,14 @@ export function CortPuddlingRolling3D() {
   >("iso");
 
   const { params } = usePatentPhysics(EXHIBIT_ID);
-  const liveControls = useRef(params);
-  useEffect(() => {
-    liveControls.current = params;
-  }, [params]);
+  const live = useLiveSimParams({
+    furnaceTemperatureCelsius: params.furnaceTemperatureCelsius ?? 1350,
+    initialCarbonPercent: params.initialCarbonPercent ?? 3.8,
+    rabbleStirringRpm: params.rabbleStirringRpm ?? 15,
+    puddlingDurationMinutes: params.puddlingDurationMinutes ?? 90,
+    rollerPassCount: params.rollerPassCount ?? 5,
+    rollSpeedRpm: params.rollSpeedRpm ?? 30,
+  });
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -58,26 +63,24 @@ export function CortPuddlingRolling3D() {
       animId = requestAnimationFrame(renderLoop);
       virtualTime += 1 / 60;
 
-      const p = liveControls.current;
-      const furnaceTempC = p.furnaceTemperatureCelsius ?? 1350;
-      const initialCarbon = p.initialCarbonPercent ?? 3.8;
-      const rabbleRpm = p.rabbleStirringRpm ?? 15;
-      const puddlingMin = p.puddlingDurationMinutes ?? 90;
-      const rollerPasses = p.rollerPassCount ?? 5;
-
+      const p = live.current;
       const outputs = stepCortPuddlingRolling({
-        furnaceTemperatureCelsius: furnaceTempC,
-        initialCarbonPercent: initialCarbon,
-        rabbleStirringRpm: rabbleRpm,
-        puddlingDurationMinutes: puddlingMin,
-        rollerPassCount: rollerPasses,
+        furnaceTemperatureCelsius: p.furnaceTemperatureCelsius,
+        initialCarbonPercent: p.initialCarbonPercent,
+        rabbleStirringRpm: p.rabbleStirringRpm,
+        puddlingDurationMinutes: p.puddlingDurationMinutes,
+        rollerPassCount: p.rollerPassCount,
+        rollSpeedRpm: p.rollSpeedRpm,
       });
-
-      const rollOmega = (30 * 2 * Math.PI) / 60; // 30 RPM = ~3.14 rad/s
 
       model.setCutaway(cutawayRef.current);
       model.setShowCallouts(calloutsRef.current);
-      model.updateAnimation(virtualTime, outputs.isPastyNatureState, rollOmega);
+      model.updateAnimation(
+        virtualTime,
+        outputs.isPastyNatureState,
+        outputs.rollOmegaRadPerS,
+        outputs.rabbleOmegaRadPerS,
+      );
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -90,7 +93,7 @@ export function CortPuddlingRolling3D() {
       model.dispose();
       studio.dispose();
     };
-  }, []);
+  }, [live]);
 
   const handlePreset = (preset: "iso" | "furnace" | "hearth" | "mill" | "grooves") => {
     setActivePreset(preset);
@@ -115,6 +118,7 @@ export function CortPuddlingRolling3D() {
   const rabbleRpm = params.rabbleStirringRpm ?? 15;
   const puddlingMin = params.puddlingDurationMinutes ?? 90;
   const rollerPasses = params.rollerPassCount ?? 5;
+  const rollSpeedRpm = params.rollSpeedRpm ?? 30;
 
   const outputs = stepCortPuddlingRolling({
     furnaceTemperatureCelsius: furnaceTempC,
@@ -122,6 +126,7 @@ export function CortPuddlingRolling3D() {
     rabbleStirringRpm: rabbleRpm,
     puddlingDurationMinutes: puddlingMin,
     rollerPassCount: rollerPasses,
+    rollSpeedRpm,
   });
 
   const chips: KernelChip[] = [

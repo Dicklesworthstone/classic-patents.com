@@ -55,6 +55,11 @@ export interface CortKernelOutputs {
   // Productivity Metrics vs Prior Tilt-Hammer Art
   hourlyIronOutputKg: number;
   productionSpeedupVsHammer: number; // ~15x
+
+  // Mill / rabble kinematics the 3D studio drains (no leftover 30 RPM sticker)
+  rollSpeedRpm: number;
+  rollOmegaRadPerS: number;
+  rabbleOmegaRadPerS: number;
 }
 
 export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOutputs {
@@ -141,6 +146,8 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
   // Cort's grooved rolling process produced ~15 tons per 12-hour shift vs 1 ton with forge hammer
   const hourlyIronOutputKg = (spongeBallMassKg * (rollRpm * 0.6 * passes)) / 10;
   const productionSpeedupVsHammer = 15.0;
+  const rollOmegaRadPerS = (rollRpm * 2 * Math.PI) / 60;
+  const rabbleOmegaRadPerS = (rabbleRpm * 2 * Math.PI) / 60;
 
   return {
     currentTemperatureCelsius: tempC,
@@ -170,5 +177,9 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
 
     hourlyIronOutputKg: Math.round(hourlyIronOutputKg),
     productionSpeedupVsHammer,
+
+    rollSpeedRpm: rollRpm,
+    rollOmegaRadPerS,
+    rabbleOmegaRadPerS,
   };
 }

@@ -28,7 +28,12 @@ export interface CortModel {
   calloutSprites: THREE.Sprite[];
   setCutaway: (enabled: boolean) => void;
   setShowCallouts: (enabled: boolean) => void;
-  updateAnimation: (timeSec: number, isComingToNature: boolean, rollOmegaRadPerS: number) => void;
+  updateAnimation: (
+    timeSec: number,
+    isComingToNature: boolean,
+    rollOmegaRadPerS: number,
+    rabbleOmegaRadPerS?: number,
+  ) => void;
   dispose: () => void;
 }
 
@@ -379,11 +384,16 @@ export function buildCortPuddlingRollingModel(): CortModel {
       }
     },
 
-    updateAnimation(timeSec: number, isComingToNature: boolean, rollOmegaRadPerS: number) {
-      // 1. Rabble stirring oscillation
-      const rabbleAngle = Math.sin(timeSec * 3) * 0.15;
+    updateAnimation(
+      timeSec: number,
+      isComingToNature: boolean,
+      rollOmegaRadPerS: number,
+      rabbleOmegaRadPerS = (15 * 2 * Math.PI) / 60,
+    ) {
+      // 1. Rabble stirring oscillation from the kernel ω, not leftover 3 / 4.
+      const rabbleAngle = Math.sin(timeSec * rabbleOmegaRadPerS) * 0.15;
       rabbleGroup.rotation.y = rabbleAngle;
-      rabbleGroup.position.x = Math.sin(timeSec * 4) * 0.08;
+      rabbleGroup.position.x = Math.sin(timeSec * rabbleOmegaRadPerS * (4 / 3)) * 0.08;
 
       // 2. Puddle ball growth and texture
       if (isComingToNature) {
@@ -398,8 +408,9 @@ export function buildCortPuddlingRollingModel(): CortModel {
       topRollGroup.rotation.x = -timeSec * rollOmegaRadPerS;
       bottomRollGroup.rotation.x = timeSec * rollOmegaRadPerS;
 
-      // 4. Billet movement through rolls
-      billetMesh.position.z = ((timeSec * 0.4) % 1.2) - 0.6;
+      // 4. Billet movement through rolls. Studio radius keeps default 30 RPM at 0.4 units/s.
+      const studioBilletRadius = 0.4 / Math.PI;
+      billetMesh.position.z = ((timeSec * rollOmegaRadPerS * studioBilletRadius) % 1.2) - 0.6;
 
       // 5. Spark particle animation
       const posAttr = sparkParticles.geometry.getAttribute("position") as THREE.BufferAttribute;

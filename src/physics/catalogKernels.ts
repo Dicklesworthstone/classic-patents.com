@@ -4301,8 +4301,9 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
   const tauMetastableMs = 3.0 * (300 / Math.max(80, tempK)) ** 0.35;
 
   // Optical pumping efficiency and absorbed pump rate into level 3
-  const pumpCouplingEfficiency = 0.08; // 8% electrical-to-absorbed optical in green/violet bands
-  const rodVolumeCm3 = Math.PI * 0.45 ** 2 * rodLength; // radius ~0.45 cm
+  const pumpCouplingEfficiency = 0.22; // 22% electrical-to-absorbed optical in green/violet bands
+  const rodRadiusCm = 0.25; // 5 mm diameter ruby cylinder (Maiman 1960 apparatus)
+  const rodVolumeCm3 = Math.PI * rodRadiusCm ** 2 * rodLength;
   const photonEnergyPumpJoules = (6.626e-34 * 3e8) / 520e-9; // ~3.8e-19 J for ~520 nm green pump photon
   const totalPumpPhotons = (pumpEnergy * pumpCouplingEfficiency) / photonEnergyPumpJoules;
   const pumpRatePerCm3 = totalPumpPhotons / (rodVolumeCm3 * (flashMs * 1e-3));

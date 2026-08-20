@@ -21,9 +21,9 @@ export function DaVinciSim({
   const { params, updateParam } = usePatentPhysics("us-6331181-davinci");
   const motionScale = params.motionScaleRatio ?? initialMotionScale;
   const tremorFilter = (params.tremorFilterEnabled ?? (initialTremorFilter ? 1 : 0)) === 1;
+  const inputSpeed = params.masterInputSpeedMps ?? 0.5;
+  const gripAngleDeg = params.gripAngleDeg ?? 30;
 
-  const [inputSpeed, setInputSpeed] = useState<number>(0.6);
-  const [gripAngleDeg, setGripAngleDeg] = useState<number>(30);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
 
   useEffect(() => {
@@ -316,7 +316,7 @@ export function DaVinciSim({
             max="1.5"
             step="0.05"
             value={inputSpeed}
-            onChange={(e) => setInputSpeed(parseFloat(e.target.value))}
+            onChange={(e) => updateParam("masterInputSpeedMps", parseFloat(e.target.value))}
             className="w-full accent-cyan-500 cursor-pointer"
           />
           <span className="text-[10px] text-neutral-500">
@@ -337,7 +337,7 @@ export function DaVinciSim({
             max="60"
             step="2"
             value={gripAngleDeg}
-            onChange={(e) => setGripAngleDeg(parseFloat(e.target.value))}
+            onChange={(e) => updateParam("gripAngleDeg", parseFloat(e.target.value))}
             className="w-full accent-emerald-500 cursor-pointer"
           />
           <span className="text-[10px] text-neutral-500">

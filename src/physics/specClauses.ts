@@ -29,6 +29,7 @@ const HEWITT_ID = "us-682690-hewitt-mercury-lamp";
 const DE_FOREST_ID = "us-879532-de-forest-audion";
 const CARLSON_ID = "us-2297691-carlson-electrophotography";
 const TOWNES_ID = "us-2929922-townes-laser";
+const MAIMAN_ID = "us-3353115-maiman-ruby-laser";
 const KILBY_ID = "us-3138743-kilby-integrated-circuit";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
@@ -320,6 +321,48 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isTransistorActive,
         tone: "held",
         caption: `Gold flying wire bonds linking isolated component mesas into a functional bistable flip-flop/oscillator.`,
+      },
+    ];
+  }
+
+  if (patentId === MAIMAN_ID) {
+    const pumpJ = params.pumpEnergyJoules ?? 150;
+    const r2 = params.outputMirrorReflectivity ?? 0.92;
+    const isLasing = pumpJ >= 110;
+    const isCoupling = r2 < 0.99;
+
+    return [
+      {
+        id: "maiman-population-inversion",
+        phrase:
+          "establish a population inversion between said discrete second energy level and said ground state",
+        active: isLasing,
+        tone: isLasing ? "live" : "broken",
+        caption: `Pump Energy=${pumpJ} J: Flash excitation transfers >50% of ground-state Cr3+ ions into the metastable 2E level, achieving true 3-level population inversion.`,
+      },
+      {
+        id: "maiman-radiationless-transition",
+        phrase:
+          "from whence they decay without substantial radiation loss to said discrete second energy level",
+        active: true,
+        tone: "live",
+        caption: `Sub-picosecond non-radiative phonon relaxation from green/violet 4F bands into the long-lived (~3 ms) metastable 2E state.`,
+      },
+      {
+        id: "maiman-interferometer-resonator",
+        phrase:
+          "interferometer means optically coupled to said ruby and tuned to the frequency corresponding to that of the energy difference",
+        active: true,
+        tone: "live",
+        caption: `Fabry-Pérot Resonator: Mutually parallel polished silvered end facets circulate axial 694.3 nm photons through the gain crystal.`,
+      },
+      {
+        id: "maiman-coupling-means",
+        phrase:
+          "coupling means for extracting the monochromatic coherent light beam from said ruby",
+        active: isCoupling,
+        tone: isCoupling ? "live" : "held",
+        caption: `Output Mirror R2=${(r2 * 100).toFixed(0)}%: Transmits a fraction of the oscillating coherent wavefront as a collimated 694.3 nm pulsed laser beam.`,
       },
     ];
   }

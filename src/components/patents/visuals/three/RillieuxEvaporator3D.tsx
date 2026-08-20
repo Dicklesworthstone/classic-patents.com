@@ -2,14 +2,13 @@
 
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   createRillieuxEvaporatorModel,
   type RillieuxEvaporatorModelNodes,
 } from "./rillieuxEvaporatorModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 interface Rillieux3DProps {
@@ -51,8 +50,7 @@ const CAMERA_PRESETS: Record<
 
 export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<RillieuxEvaporatorModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
@@ -70,56 +68,29 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
-    if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(...targetConfig.pos);
-      controlsRef.current.target.set(...targetConfig.target);
-      controlsRef.current.update();
-    }
+    studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 640;
-    const height = container.clientHeight || 480;
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050811);
-    scene.fog = new THREE.FogExp2(0x050811, 0.05);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS.overview.pos);
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    container.innerHTML = "";
-    container.appendChild(renderer.domElement);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS.overview.target);
-    controlsRef.current = controls;
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight.position.set(6, 12, 8);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
+    const overview = CAMERA_PRESETS.overview;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
     const model = createRillieuxEvaporatorModel();
     modelRef.current = model;
-    scene.add(model.group);
+    studio.scene.add(model.group);
 
     const animate = () => {
       timeRef.current += 0.016;
-      controls.update();
+      studio.controls.update();
 
       const p = live.current;
       const state = stepRillieuxEvaporator({
@@ -131,34 +102,18 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
       model.update(state, timeRef.current);
 
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
     return () => {
-      window.removeEventListener("resize", handleResize);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      controls.dispose();
       model.dispose();
-      renderer.forceContextLoss();
-      renderer.dispose();
-      ambientLight.dispose();
-      dirLight.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
+      modelRef.current = null;
     };
   }, [live]);
 

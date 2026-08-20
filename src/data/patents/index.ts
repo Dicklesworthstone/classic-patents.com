@@ -39,6 +39,7 @@ import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency
 import { landPolaroidPatent } from "./land-polaroid";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
+import { maimanRubyLaserPatent } from "./maiman-ruby-laser";
 import { marconiRadioPatent } from "./marconi-radio";
 import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
@@ -136,6 +137,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   townesLaserPatent, // 1960-03-22
   noyceIcPatent,
   kilbyIntegratedCircuitPatent, // 1964-06-23
+  maimanRubyLaserPatent, // 1967-11-14
   engelbartMousePatent,
   kwolekKevlarPatent,
   boyleSmithCcdPatent,

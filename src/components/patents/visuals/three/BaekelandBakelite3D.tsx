@@ -6,6 +6,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildBaekelandBakeliteModel } from "./baekelandBakeliteModel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const EXHIBIT_ID = "us-942699-baekeland-bakelite";
 
@@ -18,10 +19,7 @@ export function BaekelandBakelite3D() {
   >("iso");
 
   const { params } = usePatentPhysics(EXHIBIT_ID);
-  const liveControls = useRef(params);
-  useEffect(() => {
-    liveControls.current = params;
-  }, [params]);
+  const live = useLiveSimParams(params);
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -52,7 +50,7 @@ export function BaekelandBakelite3D() {
       rafId = requestAnimationFrame(animate);
       virtualTime += 1 / 60;
 
-      model.update(liveControls.current, virtualTime);
+      model.update(live.current, virtualTime);
       model.setCutaway(cutawayRef.current);
       model.setCalloutsVisible(calloutsRef.current);
 
@@ -67,7 +65,7 @@ export function BaekelandBakelite3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const setPreset = (preset: "iso" | "autoclave" | "mold" | "molecular" | "gauges") => {
     setActivePreset(preset);
@@ -99,12 +97,11 @@ export function BaekelandBakelite3D() {
     }
   };
 
-  const currentControls = liveControls.current;
-  const tempC = (currentControls.curingTempC as number) ?? 130;
-  const pressPsi = (currentControls.autoclavePressurePsi as number) ?? 75;
-  const catPct = (currentControls.catalystPct as number) ?? 1.5;
-  const timeMin = (currentControls.curingTimeMin as number) ?? 60;
-  const filler = (currentControls.fillerPct as number) ?? 45;
+  const tempC = (params.curingTempC as number) ?? 130;
+  const pressPsi = (params.autoclavePressurePsi as number) ?? 75;
+  const catPct = (params.catalystPct as number) ?? 1.5;
+  const timeMin = (params.curingTimeMin as number) ?? 60;
+  const filler = (params.fillerPct as number) ?? 45;
 
   const sim = stepBaekelandBakelite(tempC, pressPsi, catPct, timeMin, filler);
 

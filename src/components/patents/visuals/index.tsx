@@ -50,6 +50,7 @@ import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
 import { LandPolaroidSim } from "./LandPolaroidSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
+import { MaimanRubyLaserSim } from "./MaimanRubyLaserSim";
 import { MarconiRadioSim } from "./MarconiRadioSim";
 import { MaximMachineGunSim } from "./MaximMachineGunSim";
 import { McCormickReaperSim } from "./McCormickReaperSim";
@@ -327,6 +328,10 @@ const SholesTypewriter3D = dynamic(
 );
 const SpencerMicrowave3D = dynamic(
   () => import("./three/SpencerMicrowave3D").then((mod) => mod.SpencerMicrowave3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const MaimanRubyLaser3D = dynamic(
+  () => import("./three/MaimanRubyLaser3D").then((m) => m.MaimanRubyLaser3D),
   { ssr: false, loading: ThreeLoading },
 );
 const TownesLaser3D = dynamic(
@@ -646,6 +651,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-2708656-fermi-reactor":
             return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+          case "us-3353115-maiman-ruby-laser":
+            return renderMode === "3d-physics" ? <MaimanRubyLaser3D /> : <MaimanRubyLaserSim />;
           case "us-2929922-townes-laser":
             return renderMode === "3d-physics" ? <TownesLaser3D /> : <TownesLaserSim />;
           case "us-2543181-land-polaroid":

@@ -1,9 +1,8 @@
-// @ts-nocheck -- Companion to the unpublished Maiman edition draft; skipped until
-// the edition schema matches CuratedSpecificationEdition.
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { CuratedSpecificationBlock } from "@/types/patent";
 import {
   maimanRubyLaserArchivalEdition,
   maimanRubyLaserParallelReadings,
@@ -12,8 +11,11 @@ import {
 
 describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publication contract", () => {
   const root = process.cwd();
-  const pdfPath = join(root, "public", maimanRubyLaserArchivalEdition.sourcePdfPath);
-  const ledgerPath = join(root, "public", maimanRubyLaserArchivalEdition.reviewedLedgerPath);
+  const pdfPath = join(root, "public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf");
+  const ledgerPath = join(
+    root,
+    "public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
+  );
 
   test("pins the immutable facsimile PDF with matching lowercase SHA-256", () => {
     expect(existsSync(pdfPath)).toBe(true);
@@ -32,7 +34,10 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
   });
 
   test("contains all 2 printed claims matching the reviewed ledger text", () => {
-    const claims = maimanRubyLaserArchivalEdition.blocks.filter((b) => b.kind === "claim");
+    const claims = maimanRubyLaserArchivalEdition.blocks.filter(
+      (b: CuratedSpecificationBlock): b is Extract<CuratedSpecificationBlock, { kind: "claim" }> =>
+        b.kind === "claim",
+    );
     expect(claims.length).toBe(2);
     expect(claims.map((c) => c.number)).toEqual([1, 2]);
 
@@ -52,21 +57,28 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     for (const block of maimanRubyLaserArchivalEdition.blocks) {
       if (block.kind === "paragraph") {
         for (const inline of block.inlines) {
-          if (inline.kind === "figure-ref") {
-            const figPath = join(root, "public", inline.preview.src);
-            expect(existsSync(figPath)).toBe(true);
+          if (inline.kind === "reference" && inline.figurePreviews) {
+            for (const preview of inline.figurePreviews) {
+              const figPath = join(root, "public", preview.src);
+              expect(existsSync(figPath)).toBe(true);
+            }
           }
         }
       }
     }
   });
 
-  test("maps every block to an explicit parallel reading", () => {
-    maimanRubyLaserArchivalEdition.blocks.forEach((_, idx) => {
-      const readings = maimanRubyLaserParallelReadings[idx];
-      expect(readings).toBeDefined();
-      expect(readings.length).toBeGreaterThan(0);
-      expect(readings[0].trim().length).toBeGreaterThan(15);
-    });
+  test("pairs every source paragraph with an explicit non-lossy reading", () => {
+    const explainableBlocks = maimanRubyLaserArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    expect(
+      Object.keys(maimanRubyLaserParallelReadings)
+        .map(Number)
+        .sort((a, b) => a - b),
+    ).toEqual(explainableBlocks);
+    for (const index of explainableBlocks) {
+      expect(maimanRubyLaserParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(30);
+    }
   });
 });

@@ -13,10 +13,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWattRotaryEngineModel, type WattRotaryModelNodes } from "./wattRotaryEngineModel";
 
 type CameraPreset = "overview" | "gear-mesh" | "beam" | "cylinder";
@@ -40,8 +40,7 @@ export function WattRotaryEngine3D() {
   const flywheelMassKg = params.flywheelMassKg ?? 3500;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<WattRotaryModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
@@ -59,119 +58,45 @@ export function WattRotaryEngine3D() {
   const showCalloutsRef = useRef(showCallouts);
   showCalloutsRef.current = showCallouts;
 
-  const strokeRateSpmRef = useRef(strokeRateSpm);
-  strokeRateSpmRef.current = strokeRateSpm;
-
-  const boilerPressureKpaRef = useRef(boilerPressureKpa);
-  boilerPressureKpaRef.current = boilerPressureKpa;
-
-  const gearRatioNpOverNsRef = useRef(gearRatioNpOverNs);
-  gearRatioNpOverNsRef.current = gearRatioNpOverNs;
-
-  const flywheelMassKgRef = useRef(flywheelMassKg);
-  flywheelMassKgRef.current = flywheelMassKg;
+  const live = useLiveSimParams({
+    strokeRateSpm,
+    boilerPressureKpa,
+    gearRatioNpOverNs,
+    flywheelMassKg,
+  });
 
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
-    const cam = cameraRef.current;
-    const ctrl = controlsRef.current;
-    if (!cam || !ctrl) return;
     const cfg = CAMERA_PRESETS[preset];
-    cam.position.set(...cfg.pos);
-    ctrl.target.set(...cfg.target);
-    ctrl.update();
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0a0c10);
-    scene.fog = new THREE.FogExp2(0x0a0c10, 0.04);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / (container.clientHeight || 480),
-      0.1,
-      100,
-    );
     const initialPreset = CAMERA_PRESETS.overview;
-    camera.position.set(...initialPreset.pos);
-    cameraRef.current = camera;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: initialPreset.pos,
+      targetPos: initialPreset.target,
+      environmentStyle: "studio",
+      cameraMinDistance: 1.5,
+      cameraMaxDistance: 20,
+    });
+    studioRef.current = studio;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight || 480, false);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    container.replaceChildren(renderer.domElement);
-
-    // OrbitControls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...initialPreset.target);
-    controls.maxDistance = 20;
-    controls.minDistance = 1.5;
-    controls.maxPolarAngle = Math.PI / 2 + 0.1;
-    controlsRef.current = controls;
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xfff6ea, 0.7);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffedd5, 2.4);
-    keyLight.position.set(6, 9, 8);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
-    scene.add(keyLight);
-
-    const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.8);
-    fillLight.position.set(-8, 5, -5);
-    scene.add(fillLight);
-
-    const rimLight = new THREE.DirectionalLight(0xf59e0b, 1.2);
-    rimLight.position.set(0, 8, -6);
-    scene.add(rimLight);
-
-    // Grid Ground
-    const gridHelper = new THREE.GridHelper(16, 16, 0x78350f, 0x1f2937);
-    gridHelper.position.y = -0.4;
-    scene.add(gridHelper);
-
-    // Build Procedural 3D Model
     const model = buildWattRotaryEngineModel();
-    scene.add(model.root);
+    studio.scene.add(model.root);
     modelRef.current = model;
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 480;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
-    // Deterministic Animation Loop
     let virtualTimeSec = 0;
     const dt = 1 / 60;
 
     const animate = () => {
       animFrameRef.current = requestAnimationFrame(animate);
 
-      if (controlsRef.current) {
-        controlsRef.current.update();
-      }
+      studio.controls.update();
 
       if (isPlayingRef.current) {
         virtualTimeSec += dt;
@@ -179,17 +104,14 @@ export function WattRotaryEngine3D() {
 
       if (modelRef.current) {
         if (isPlayingRef.current) {
-          modelRef.current.updateAnimation(
-            virtualTimeSec,
-            strokeRateSpmRef.current,
-            gearRatioNpOverNsRef.current,
-          );
+          const p = live.current;
+          modelRef.current.updateAnimation(virtualTimeSec, p.strokeRateSpm, p.gearRatioNpOverNs);
         }
         modelRef.current.setCutaway(cutawayRef.current);
         modelRef.current.setShowCallouts(showCalloutsRef.current);
       }
 
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
     };
 
     animate();
@@ -198,14 +120,12 @@ export function WattRotaryEngine3D() {
       if (animFrameRef.current !== null) {
         cancelAnimationFrame(animFrameRef.current);
       }
-      window.removeEventListener("resize", handleResize);
-      controls.dispose();
-      renderer.forceContextLoss();
-      renderer.dispose();
       model.dispose();
-      container.replaceChildren();
+      studio.dispose();
+      studioRef.current = null;
+      modelRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const telemetry = stepWattRotaryEngine(
     {

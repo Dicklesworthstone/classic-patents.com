@@ -2,10 +2,9 @@
 
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 interface LandPolaroid3DProps {
@@ -42,8 +41,7 @@ const CAMERA_PRESETS: Record<
 
 export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const modelRef = useRef<LandPolaroidModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
@@ -62,102 +60,42 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
-    if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(...targetConfig.pos);
-      controlsRef.current.target.set(...targetConfig.target);
-      controlsRef.current.update();
-    }
+    studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 640;
-    const height = container.clientHeight || 480;
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x050811);
-    scene.fog = new THREE.FogExp2(0x050811, 0.06);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS.overview.pos);
-    cameraRef.current = camera;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.innerHTML = "";
-    container.appendChild(renderer.domElement);
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS.overview.target);
-    controlsRef.current = controls;
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.6);
-    dirLight.position.set(6, 10, 8);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    const emeraldSpot = new THREE.SpotLight(0x10b981, 2.2);
-    emeraldSpot.position.set(-4, 6, 4);
-    emeraldSpot.angle = Math.PI / 4;
-    emeraldSpot.penumbra = 0.5;
-    scene.add(emeraldSpot);
-
-    const amberSpot = new THREE.SpotLight(0xf59e0b, 1.8);
-    amberSpot.position.set(5, 6, -3);
-    amberSpot.angle = Math.PI / 4;
-    amberSpot.penumbra = 0.5;
-    scene.add(amberSpot);
+    const overview = CAMERA_PRESETS.overview;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
     const model = createLandPolaroidModel(live.current);
     modelRef.current = model;
-    scene.add(model.group);
+    studio.scene.add(model.group);
 
     const animate = () => {
       timeRef.current += 0.016;
-      controls.update();
-
+      studio.controls.update();
       model.update(timeRef.current, live.current);
-
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);
 
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
     return () => {
-      window.removeEventListener("resize", handleResize);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      controls.dispose();
-      renderer.forceContextLoss();
-      renderer.dispose();
       model.dispose();
-      ambientLight.dispose();
-      dirLight.dispose();
-      emeraldSpot.dispose();
-      amberSpot.dispose();
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
+      modelRef.current = null;
     };
   }, [live]);
 

@@ -6,6 +6,7 @@ import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "overview" | "anodes" | "molten_bath" | "siphon_tap";
 
@@ -38,10 +39,11 @@ export default function HallAluminium3D() {
     });
   }, [currentAmperes, bathTemperatureCelsius, aluminaConcentrationPct]);
 
-  const simRef = useRef(sim);
-  useEffect(() => {
-    simRef.current = sim;
-  }, [sim]);
+  const live = useLiveSimParams({
+    currentAmperes,
+    bathTemperatureCelsius,
+    aluminaConcentrationPct,
+  });
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
 
@@ -67,7 +69,7 @@ export default function HallAluminium3D() {
     const animate = () => {
       rafId = requestAnimationFrame(animate);
       virtualTime += 1 / 60;
-      const currentSim = simRef.current;
+      const currentSim = stepHallAluminium(live.current);
 
       updateHallAluminiumVisual(
         model,
@@ -90,7 +92,7 @@ export default function HallAluminium3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const setView = (preset: CameraPreset) => {
     setActivePreset(preset);

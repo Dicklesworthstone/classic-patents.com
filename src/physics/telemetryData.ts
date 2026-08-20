@@ -36,6 +36,7 @@ import {
   stepHallAluminium,
   stepHyattCelluloid,
   stepLincolnBuoy as stepLincolnBuoySi,
+  stepMaimanRubyLaser,
   stepMcCormickReaper,
   stepMorseTelegraph,
   stepNobelDynamite,
@@ -322,6 +323,134 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "M parts/ft³",
           badgeColor: "amber",
           description: "Calculated volumetric component packing density",
+        },
+      ];
+    },
+  },
+  "us-3353115-maiman-ruby-laser": {
+    domain: "quantum_optics",
+    domainTitle: "Solid-State Three-Level Laser & Optical Pumping Kinetics",
+    equationName: "Three-Level Rate Equations & Fabry-Pérot Threshold Inversion",
+    governingEquation:
+      "Delta N_{\\text{th}} = \frac{1}{\\sigma_{21} L} left[ alpha L + \frac{1}{2} lnleft(\frac{1}{R_1 R_2}\right) \right] quad \text{and} quad P_{\\text{peak}} = eta_{\\text{slope}} \frac{E_{\\text{pump}} - E_{\\text{th}}}{\\tau_{\\text{pulse}}}",
+    engineMethod:
+      "Xenon Flash Optical Pumping, Metastable Phonon Relaxation & Coherent Resonator Feedback",
+    pedagogicalInsight:
+      "High-power pulsed xenon flash discharge excites ground-state chromium ions into broad green/violet pump bands, which decay non-radiatively in picoseconds to the metastable 2E state, establishing population inversion and 694.3 nm stimulated emission.",
+    controls: [
+      {
+        id: "pumpEnergyJoules",
+        label: "Flash Pump Energy",
+        min: 50,
+        max: 500,
+        step: 10,
+        defaultValue: 150,
+        unit: "J",
+      },
+      {
+        id: "flashDurationMs",
+        label: "Flash Pulse Duration",
+        min: 0.5,
+        max: 3.0,
+        step: 0.1,
+        defaultValue: 1.0,
+        unit: "ms",
+      },
+      {
+        id: "rodLengthCm",
+        label: "Ruby Rod Length",
+        min: 2.0,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 5.0,
+        unit: "cm",
+      },
+      {
+        id: "outputMirrorReflectivity",
+        label: "Output Mirror Reflectivity",
+        min: 0.7,
+        max: 0.98,
+        step: 0.01,
+        defaultValue: 0.92,
+        unit: "R",
+      },
+      {
+        id: "crystalTemperatureKelvin",
+        label: "Crystal Temperature",
+        min: 100,
+        max: 350,
+        step: 10,
+        defaultValue: 300,
+        unit: "K",
+      },
+    ],
+    computeMetrics: (controls: Record<string, number>) => {
+      const res = stepMaimanRubyLaser({
+        pumpEnergyJoules: controls.pumpEnergyJoules,
+        flashDurationMs: controls.flashDurationMs,
+        rodLengthCm: controls.rodLengthCm,
+        outputMirrorReflectivity: controls.outputMirrorReflectivity,
+        crystalTemperatureKelvin: controls.crystalTemperatureKelvin,
+      });
+
+      return [
+        {
+          label: "Lasing Status",
+          value: res.isLasing
+            ? "ACTIVE (STIMULATED EMISSION)"
+            : "BELOW THRESHOLD (FLUORESCENCE ONLY)",
+          unit: "",
+          badgeColor: res.isLasing ? "rose" : "amber",
+          progressPct: res.isLasing ? 100 : 30,
+        },
+        {
+          label: "Population Inversion (N2/N1)",
+          value: res.populationInversionRatio.toFixed(2),
+          unit: "ratio",
+          badgeColor: res.populationInversionRatio > 1.0 ? "rose" : "amber",
+          progressPct: clampProgress((res.populationInversionRatio / 2.5) * 100),
+        },
+        {
+          label: "Threshold Pump Energy",
+          value: res.thresholdPumpEnergyJoules.toFixed(1),
+          unit: "J",
+          badgeColor: "cyan",
+          progressPct: clampProgress((res.thresholdPumpEnergyJoules / 2000) * 100),
+        },
+        {
+          label: "Laser Output Pulse Energy",
+          value: res.laserPulseEnergyJoules.toFixed(3),
+          unit: "J",
+          badgeColor: res.laserPulseEnergyJoules > 0 ? "emerald" : "indigo",
+          progressPct: clampProgress((res.laserPulseEnergyJoules / 5.0) * 100),
+        },
+        {
+          label: "Peak Optical Power",
+          value: res.laserPeakPowerKw.toFixed(2),
+          unit: "kW",
+          badgeColor: res.laserPeakPowerKw > 0 ? "rose" : "indigo",
+          progressPct: clampProgress((res.laserPeakPowerKw / 100) * 100),
+        },
+        {
+          label: "Net Round-Trip Gain",
+          value: res.netRoundTripGainDb.toFixed(2),
+          unit: "dB",
+          badgeColor: "indigo",
+          progressPct: clampProgress(((res.netRoundTripGainDb + 5) / 15) * 100),
+        },
+        {
+          label: "Emission Wavelength (R1)",
+          value: res.emissionWavelengthNm.toFixed(2),
+          unit: "nm",
+          badgeColor: "rose",
+          progressPct: 100,
+        },
+        {
+          label: "Longitudinal Mode Spacing",
+          value: res.modeSpacingGhz.toFixed(2),
+          unit: "GHz",
+          badgeColor: "cyan",
+          progressPct: clampProgress((res.modeSpacingGhz / 5.0) * 100),
         },
       ];
     },
@@ -6819,6 +6948,15 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         defaultValue: 30,
         unit: "°",
       },
+      {
+        id: "masterInputSpeedMps",
+        label: "Master Velocity",
+        min: 0.2,
+        max: 1.5,
+        step: 0.05,
+        defaultValue: 0.5,
+        unit: "m/s",
+      },
     ],
     computeMetrics: (p) => {
       const scale = p.motionScaleRatio ?? 3;
@@ -6837,6 +6975,13 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "atten",
           badgeColor: filterOn ? "emerald" : "rose",
           progressPct: filterOn ? 94.5 : 0,
+        },
+        {
+          label: "Master Velocity",
+          value: (p.masterInputSpeedMps ?? 0.5).toFixed(2),
+          unit: "m/s",
+          badgeColor: "amber",
+          progressPct: clampProgress(((p.masterInputSpeedMps ?? 0.5) / 1.5) * 100),
         },
       ];
     },

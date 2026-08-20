@@ -88,6 +88,14 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(withFilter.wristPitchRad).toBeDefined();
     });
 
+    test("2D master-speed and grip sliders write the shared physics bus", async () => {
+      const simSource = await Bun.file(new URL("../DaVinciSim.tsx", import.meta.url)).text();
+      expect(simSource).not.toContain("setInputSpeed");
+      expect(simSource).not.toContain("setGripAngleDeg");
+      expect(simSource).toContain('updateParam("masterInputSpeedMps"');
+      expect(simSource).toContain('updateParam("gripAngleDeg"');
+    });
+
     test("articulates multi-axis EndoWrist and dual forceps jaws", () => {
       const model = buildDaVinciModel();
       expect(model.root).toBeDefined();

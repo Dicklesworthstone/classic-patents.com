@@ -11,7 +11,6 @@ import type { Patent } from "@/types/patent";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
-  "us-3237-rillieux-evaporator",
   "us-x72-whitney-cotton-gin",
   "us-313224-mergenthaler-linotype",
   "us-2708656-fermi-reactor",

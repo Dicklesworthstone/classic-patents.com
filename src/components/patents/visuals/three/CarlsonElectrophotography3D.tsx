@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -10,6 +8,7 @@ import {
   buildCarlsonElectrophotographyModel,
   type CarlsonElectrophotographyModelNodes,
 } from "./carlsonElectrophotographyModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 interface CarlsonElectrophotography3DProps {
@@ -44,8 +43,7 @@ export function CarlsonElectrophotography3D({
   initialFuserTemperatureC = 185,
 }: CarlsonElectrophotography3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const nodesRef = useRef<CarlsonElectrophotographyModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
@@ -77,112 +75,46 @@ export function CarlsonElectrophotography3D({
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
-    if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(...targetConfig.pos);
-      controlsRef.current.target.set(...targetConfig.target);
-      controlsRef.current.update();
-    }
+    studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 640;
-    const height = container.clientHeight || 480;
+    const overview = CAMERA_PRESETS.isometric;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x070b14);
-    scene.fog = new THREE.FogExp2(0x070b14, 0.1);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
-    cameraRef.current = camera;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    // Orbit Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
-    controlsRef.current = controls;
-
-    // Lighting (5-Light Rig)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffedd5, 2.2);
-    keyLight.position.set(5, 8, 6);
-    keyLight.castShadow = true;
-    keyLight.shadow.bias = -0.0002;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
-    scene.add(keyLight);
-
-    const cyanFill = new THREE.DirectionalLight(0x06b6d4, 1.0);
-    cyanFill.position.set(-6, 3, -4);
-    scene.add(cyanFill);
-
-    const warmRim = new THREE.DirectionalLight(0xf59e0b, 1.2);
-    warmRim.position.set(0, -3, -5);
-    scene.add(warmRim);
-
-    // Build Model
     const nodes = buildCarlsonElectrophotographyModel();
-    scene.add(nodes.root);
+    studio.scene.add(nodes.root);
     nodesRef.current = nodes;
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 480;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
-    // Animation Loop (Deterministic virtual time step)
     const animate = () => {
       timeRef.current += 0.016;
-
       const current = live.current;
-      if (current.isRotating && controlsRef.current) {
-        controlsRef.current.autoRotate = true;
-        controlsRef.current.autoRotateSpeed = 1.0;
-      } else if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
+      if (current.isRotating) {
+        nodes.root.rotation.y += 0.0044;
       }
+      studio.controls.update();
 
-      controlsRef.current?.update();
+      articulateCarlsonElectrophotographyModel(
+        nodes,
+        {
+          coronaVoltageKv: current.coronaVoltageKv,
+          contrastPotentialV: current.contrastPotentialV,
+          opticalDensity: current.opticalDensity,
+          fuserTemperatureC: current.fuserTemperatureC,
+        },
+        timeRef.current,
+      );
 
-      if (nodesRef.current) {
-        articulateCarlsonElectrophotographyModel(
-          nodesRef.current,
-          {
-            coronaVoltageKv: current.coronaVoltageKv,
-            contrastPotentialV: current.contrastPotentialV,
-            opticalDensity: current.opticalDensity,
-            fuserTemperatureC: current.fuserTemperatureC,
-          },
-          timeRef.current,
-        );
-      }
-
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -190,17 +122,14 @@ export function CarlsonElectrophotography3D({
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", handleResize);
-      renderer.forceContextLoss();
-      renderer.dispose();
       for (const m of nodes.materials) {
         m.dispose();
       }
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
+      nodesRef.current = null;
     };
-  }, [cameraPreset, live]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">

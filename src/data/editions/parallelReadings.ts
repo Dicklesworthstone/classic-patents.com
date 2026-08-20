@@ -38,9 +38,9 @@ import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
+import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
-import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
@@ -53,6 +53,7 @@ import { parsonsTurbineParallelReadings } from "./parsonsTurbineEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
 import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { renoEscalatorParallelReadings } from "./renoEscalatorEdition";
+import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
@@ -82,6 +83,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
   "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
   "us-1647-morse-telegraph": morseTelegraphParallelReadings,
+  "us-3237-rillieux-evaporator": rillieuxEvaporatorParallelReadings,
   "us-3633-goodyear-rubber": goodyearRubberParallelReadings,
   "us-4750-howe-sewing-machine": HOWE_SEWING_MACHINE_PARALLEL_READINGS,
   "us-6162-corliss-steam-engine": corlissSteamEngineParallelReadings,
@@ -127,8 +129,8 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
-  "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
+  "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
   "us-942699-baekeland-bakelite": baekelandBakeliteParallelReadings,

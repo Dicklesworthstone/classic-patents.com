@@ -54,6 +54,16 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     model.dispose();
   });
 
+  test("3D mill omega drains the kernel instead of a leftover 30 RPM sticker", async () => {
+    const threeSource = await Bun.file(
+      new URL("./CortPuddlingRolling3D.tsx", import.meta.url),
+    ).text();
+    expect(threeSource).not.toContain("(30 * 2 * Math.PI) / 60");
+    expect(threeSource).toContain("outputs.rollOmegaRadPerS");
+    expect(threeSource).toContain("outputs.rabbleOmegaRadPerS");
+    expect(threeSource).toContain("useLiveSimParams");
+  });
+
   test("properly cleans up WebGL geometries and materials on disposal", () => {
     const model = buildCortPuddlingRollingModel();
     let meshCount = 0;
