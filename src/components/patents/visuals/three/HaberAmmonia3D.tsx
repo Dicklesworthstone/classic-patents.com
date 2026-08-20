@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -10,6 +8,7 @@ import {
   buildHaberAmmoniaModel,
   type HaberAmmoniaModelNodes,
 } from "./haberAmmoniaModel";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 interface HaberAmmonia3DProps {
@@ -38,9 +37,8 @@ export default function HaberAmmonia3D({
   initialCatalystActivity = 1.0,
 }: HaberAmmonia3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const nodesRef = useRef<HaberAmmoniaModelNodes | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
 
@@ -70,85 +68,26 @@ export default function HaberAmmonia3D({
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
-    if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(...targetConfig.pos);
-      controlsRef.current.target.set(...targetConfig.target);
-      controlsRef.current.update();
-    }
+    studioRef.current?.controls.setView(targetConfig.pos, targetConfig.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 640;
-    const height = container.clientHeight || 480;
+    const overview = CAMERA_PRESETS.isometric;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x060913);
-    scene.fog = new THREE.FogExp2(0x060913, 0.08);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
-    cameraRef.current = camera;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    // Orbit Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
-    controlsRef.current = controls;
-
-    // Lighting (5-Light Rig)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xfff5e6, 2.2);
-    keyLight.position.set(5, 12, 8);
-    keyLight.castShadow = true;
-    keyLight.shadow.bias = -0.0002;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
-    scene.add(keyLight);
-
-    const blueFill = new THREE.DirectionalLight(0x38bdf8, 1.2);
-    blueFill.position.set(-6, 4, -5);
-    scene.add(blueFill);
-
-    const warmRim = new THREE.DirectionalLight(0xf59e0b, 1.0);
-    warmRim.position.set(0, -3, -6);
-    scene.add(warmRim);
-
-    // Build Model
     const nodes = buildHaberAmmoniaModel();
     nodesRef.current = nodes;
-    scene.add(nodes.root);
+    studio.scene.add(nodes.root);
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 480;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
-
-    // Animation Loop
     let lastTime: number | null = null;
     const animate = (now: number) => {
       const dt = lastTime === null ? 0.016 : Math.min(0.1, (now - lastTime) / 1000);
@@ -156,29 +95,23 @@ export default function HaberAmmonia3D({
       timeRef.current += dt;
 
       const p = live.current;
-      if (p.isRotating && controlsRef.current) {
-        controlsRef.current.autoRotate = true;
-        controlsRef.current.autoRotateSpeed = 1.0;
-      } else if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
+      if (p.isRotating) {
+        nodes.root.rotation.y += 0.0044;
       }
+      studio.controls.update();
 
-      controlsRef.current?.update();
+      articulateHaberAmmoniaModel(
+        nodes,
+        {
+          pressureAtm: p.pressureAtm,
+          temperatureCelsius: p.temperatureCelsius,
+          ammoniaYieldPct: p.ammoniaYieldPct,
+          ammoniaProductionKgPerHour: p.ammoniaProductionKgPerHour,
+        },
+        timeRef.current,
+      );
 
-      if (nodesRef.current) {
-        articulateHaberAmmoniaModel(
-          nodesRef.current,
-          {
-            pressureAtm: p.pressureAtm,
-            temperatureCelsius: p.temperatureCelsius,
-            ammoniaYieldPct: p.ammoniaYieldPct,
-            ammoniaProductionKgPerHour: p.ammoniaProductionKgPerHour,
-          },
-          timeRef.current,
-        );
-      }
-
-      renderer.render(scene, camera);
+      studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -186,17 +119,14 @@ export default function HaberAmmonia3D({
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", handleResize);
-      renderer.forceContextLoss();
-      renderer.dispose();
       nodes.materials.forEach((m) => {
         m.dispose();
       });
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
+      nodesRef.current = null;
     };
-  }, [live, cameraPreset]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
