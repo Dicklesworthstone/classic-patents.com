@@ -15,6 +15,7 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
+  "us-313224-mergenthaler-linotype",
   "us-3671542-kwolek-kevlar",
 ] as const;
 
@@ -23,7 +24,6 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-135245-pasteur-fermentation",
   "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
-  "us-313224-mergenthaler-linotype",
 ] as const;
 
 describe("root editorial publication holds", () => {
