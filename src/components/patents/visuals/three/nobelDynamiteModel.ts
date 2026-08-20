@@ -423,13 +423,15 @@ export function updateNobelDynamiteKinematics(
   shockwaveGlow: number,
   stickDisplayOmegaRadPerS: number,
   isCutaway: boolean,
+  ngConcentrationPct = 75,
+  capEnergyJoules = 1.2,
 ) {
   // 1. Slow presentation rotation
   nodes.stickGroup.rotation.y += dt * stickDisplayOmegaRadPerS;
 
   // 2. Pulse Fuse Spark when lit
   if (isFuseLit) {
-    const nobel = stepNobelDynamite({});
+    const nobel = stepNobelDynamite({ ngConcentrationPct, capEnergyJoules });
     const field = wave2dFrames(16, 16, 2);
     const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
     materials.sparkMat.opacity =

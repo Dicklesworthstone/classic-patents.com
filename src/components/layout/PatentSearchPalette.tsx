@@ -75,7 +75,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
           <input
             ref={inputRef}
             type="search"
-            placeholder="Search all 54 inventions (e.g. Wright, Tesla, Transistor, 821,393)..."
+            placeholder="Search all 55 inventions (e.g. Wright, Tesla, Transistor, 821,393)..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -197,7 +197,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
         <div className="p-3 border-t border-parchment-200 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 flex items-center justify-between text-xs font-mono text-ink-500">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <Compass className="w-3.5 h-3.5 text-amber-600" /> 54 Curated Patents
+              <Compass className="w-3.5 h-3.5 text-amber-600" /> 55 Curated Patents
             </span>
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline-flex items-center gap-1">

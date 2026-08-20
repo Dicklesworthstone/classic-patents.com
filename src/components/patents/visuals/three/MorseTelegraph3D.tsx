@@ -139,6 +139,9 @@ export function MorseTelegraph3D() {
         p.electronDisplaySpeed,
         p.keyIsDown,
         p.isCutaway,
+        p.lineVoltageV,
+        p.lineLengthMiles,
+        p.wpmSpeed,
       );
 
       renderer.render(scene, camera);

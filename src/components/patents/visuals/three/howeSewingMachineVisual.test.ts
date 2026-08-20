@@ -21,6 +21,8 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildHoweSewingMachineModel");
+    expect(modelSource).toContain("howeCyclicFlex");
+    expect(modelSource).not.toContain("0.35 + Math.abs(shaftRate)");
     expect(threeSource).toContain("needleStudioRotZ");
     expect(threeSource).not.toContain("/ 45");
     expect(threeSource).not.toContain("/ 90");

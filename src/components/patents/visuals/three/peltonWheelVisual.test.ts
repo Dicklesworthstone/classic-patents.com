@@ -23,6 +23,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(modelSource).toContain("fluidFrames");
     expect(modelSource).toContain("sampleFluidAt");
     expect(modelSource).not.toContain("/ 90");
+    expect(modelSource).not.toContain("stepPeltonWheel({})");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

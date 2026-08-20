@@ -123,6 +123,7 @@ export const SholesTypewriter3D = memo(() => {
         step.ratchetReleasePct,
         step.displayTypebarIndex,
         p.isCutaway ?? false,
+        p.demonstrationCadence,
       );
 
       renderer.render(scene, camera);

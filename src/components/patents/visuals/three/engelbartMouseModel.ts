@@ -16,7 +16,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { engelbartXyCrate } from "@/physics/genericWasm";
 import { stepEngelbartResolver } from "@/physics/machineKernels";
 
 export interface EngelbartMouseModelNodes {
@@ -448,9 +448,7 @@ export function updateEngelbartMouseKinematics(
     pulsesPerRev,
   );
 
-  const xy = cyclicSymmetry(4, 0.4);
-  const flexX = 1 + 0.2 * cyclicSol(xy, 0);
-  const flexY = 1 + 0.2 * cyclicSol(xy, 1);
+  const { flexX, flexY } = engelbartXyCrate();
   nodes.xWheelRim.rotation.x -= resolved.dThetaX * flexX;
   nodes.xPotWiper.rotation.x -= resolved.dThetaX * flexX;
   nodes.yWheelRim.rotation.z += resolved.dThetaY * flexY;

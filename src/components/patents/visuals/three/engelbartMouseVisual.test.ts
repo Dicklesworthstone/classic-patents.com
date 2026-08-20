@@ -21,6 +21,8 @@ describe("US 3,541,541 Douglas Engelbart Computer Mouse visual & resolver kinema
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(threeSource).not.toContain("useGLTF");
+    expect(modelSource).toContain("engelbartXyCrate");
+    expect(modelSource).not.toContain("cyclicSymmetry(4, 0.4)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

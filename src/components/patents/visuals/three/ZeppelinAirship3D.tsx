@@ -46,6 +46,8 @@ export function ZeppelinAirship3D() {
     isCutaway,
     isAudioMuted,
     trimWeightPosM,
+    gasInflation: params.gasInflation ?? 95,
+    flightSpeedKnots: Number(flightSpeedKnots),
     netLiftKn: zep.netLiftKn,
     hullStudioY: zep.hullStudioY,
     pitchTrimDeg: zep.pitchTrimDeg,
@@ -138,6 +140,8 @@ export function ZeppelinAirship3D() {
         p.propellerOmegaRadPerS,
         p.trimWeightPosM,
         p.isCutaway,
+        p.gasInflation,
+        p.flightSpeedKnots,
       );
 
       renderer.render(scene, camera);

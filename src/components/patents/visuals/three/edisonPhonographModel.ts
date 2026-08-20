@@ -301,12 +301,14 @@ export function updateEdisonPhonographKinematics(
   stylusAmp: number,
   stylusOmegaRadPerS: number,
   isCutaway: boolean,
+  mandrelRpm = 60,
+  voiceVolumeDb = 75,
 ) {
   model.cylinderGroup.rotation.x += mandrelOmegaRadPerS * dt;
   model.rotationReferenceWheel.rotation.x += mandrelOmegaRadPerS * dt;
 
   // Illustrative display motion only. The source specifies no amplitude or frequency.
-  const phonograph = stepEdisonPhonograph({});
+  const phonograph = stepEdisonPhonograph({ mandrelRpm, voiceVolumeDb });
   const field = wave2dFrames(16, 16, 2);
   const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
   const vibration = Math.sin(timeSec * stylusOmegaRadPerS) * stylusAmp * (1 + rms);

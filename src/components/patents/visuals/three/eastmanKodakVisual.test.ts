@@ -22,6 +22,8 @@ describe("US 388,850 George Eastman Roll-Film Box Camera visual & optics boundar
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEastmanKodakModel");
     expect(modelSource).toContain("updateEastmanKodakKinematics");
+    expect(modelSource).toContain("eastmanSprocketCrate");
+    expect(modelSource).not.toContain("0.4 + Math.abs(filmAdvanceSpeedRadPerS)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

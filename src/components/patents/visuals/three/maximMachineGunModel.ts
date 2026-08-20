@@ -525,8 +525,9 @@ export function updateMaximMachineGunKinematics(
   isCutaway: boolean,
   fireCycleWrapRad = Math.PI * 2,
   muzzleFlashSinThreshold = 0.82,
+  firingRateRpm = 600,
 ): { isMuzzleFlash: boolean } {
-  const maxim = stepMaximMachineGun({});
+  const maxim = stepMaximMachineGun({ firingRateRpm });
   const cycleTime = wrapCycleRad(timeSec * fireOmegaRadPerS, fireCycleWrapRad);
   const isFiring = Math.sin(cycleTime);
 

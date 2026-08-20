@@ -346,8 +346,14 @@ export function updateZeppelinAirshipKinematics(
   propellerSpeedRadPerS: number,
   trimWeightPosM: number,
   isCutaway: boolean,
+  gasInflation = 95,
+  flightSpeedKnots = 28,
 ) {
-  const zeppelin = stepZeppelinAirship({});
+  const zeppelin = stepZeppelinAirship({
+    gasInflation,
+    flightSpeedKnots,
+    trimWeight: trimWeightPosM,
+  });
   const heat = heatFrames(12, 16, 2);
   const lift =
     1 + Math.abs(sampleHeatAt(heat, 12, 16, Math.abs(Math.floor(timeSec * 4)) % 16, 0.5, 0.3));

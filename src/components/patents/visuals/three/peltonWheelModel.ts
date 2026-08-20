@@ -479,6 +479,8 @@ export function updatePeltonWheelKinematics(
   handwheelOmegaRadPerS: number,
   showJet: boolean,
   isCutaway = false,
+  headMeters = 450,
+  runnerRpm = 600,
 ): void {
   // Runner wheel rotation
   model.runnerGroup.rotation.z += runnerOmegaRadPerS * dt;
@@ -491,7 +493,7 @@ export function updatePeltonWheelKinematics(
   if (showJet) {
     model.jetPoints.visible = true;
     model.sprayPoints.visible = true;
-    const pelton = stepPeltonWheel({});
+    const pelton = stepPeltonWheel({ headMeters, runnerRpm });
     const fluid = fluidFrames(16, 8);
     const frame = Math.abs(Math.floor(model.runnerGroup.rotation.z * 3)) % 8;
 

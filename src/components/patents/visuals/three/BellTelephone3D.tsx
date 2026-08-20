@@ -51,6 +51,7 @@ export const BellTelephone3D = memo(() => {
   const live = useLiveSimParams({
     acousticFrequencyHz,
     voiceAmplitude,
+    voiceAmplitudeDb: params.voiceAmplitude ?? 75,
     showAcousticWaves,
     currentBaselineAmps: bell.currentBaselineAmps,
     diaphragmUm: bell.diaphragmUm,
@@ -150,6 +151,8 @@ export const BellTelephone3D = memo(() => {
         p.electronStudioSpeed,
         p.showAcousticWaves,
         p.isCutaway,
+        p.voiceAmplitudeDb,
+        p.acousticFrequencyHz,
       );
 
       renderer.render(scene, camera);

@@ -3,8 +3,8 @@ import { allPatents } from "@/data/patents";
 import { PATENT_PHYSICS_REGISTRY } from "@/physics/telemetryData";
 
 describe("Visual Simulation Dispatcher & Catalogue Completeness", () => {
-  test("54/54 catalog patents have verified 2D and 3D simulation entries", () => {
-    expect(allPatents.length).toBe(54);
+  test("all catalog patents have verified 2D and 3D simulation entries", () => {
+    expect(allPatents.length).toBeGreaterThanOrEqual(55);
 
     for (const patent of allPatents) {
       expect(patent.id).toBeTruthy();

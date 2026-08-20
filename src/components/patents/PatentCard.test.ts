@@ -5,7 +5,7 @@ describe("Patent Card & Catalog Directory Navigation", () => {
   test("every patent has valid link targets and display attributes", () => {
     for (const patent of allPatents) {
       expect(patent.id).toBeTruthy();
-      expect(patent.id.startsWith("us-")).toBe(true);
+      expect(/^(us|gb|fr|de)-/.test(patent.id)).toBe(true);
       expect(patent.patentNumber).toBeTruthy();
       expect(patent.shortTitle.trim().length).toBeGreaterThan(0);
       expect(patent.subtitle.trim().length).toBeGreaterThan(0);

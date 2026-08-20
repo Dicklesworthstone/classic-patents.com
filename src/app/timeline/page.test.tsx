@@ -7,8 +7,8 @@ describe("TimelinePage component", () => {
     const html = renderToStaticMarkup(<TimelinePage />);
 
     expect(html).toContain("Chronological Evolution of Technology");
-    expect(html).toContain("Nearly Two Centuries of Human Ingenuity (1794–1979)");
+    expect(html).toContain("Over Two Centuries of Human Ingenuity (1769–1979)");
     expect(html).toContain("All Milestones");
-    expect(html).toContain("Eli Whitney");
+    expect(html).toContain("James Watt");
   });
 });

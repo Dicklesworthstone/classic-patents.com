@@ -743,7 +743,11 @@ export function buildMorseTelegraphModel(): MorseTelegraphModelResult {
   // ==========================================
   const electronGeo = trackGeo(new THREE.BufferGeometry());
   const electronPositions = new Float32Array(ELECTRON_COUNT * 3);
-  const morseSeats = stepMorseTelegraph({});
+  const morseSeats = stepMorseTelegraph({
+    lineVoltageV: 24,
+    lineLengthMiles: 44,
+    wpmSpeed: 20,
+  });
   for (let i = 0; i < ELECTRON_COUNT; i++) {
     electronPositions[i * 3] =
       morseSeats.electronOriginX + (i / ELECTRON_COUNT) * morseSeats.electronSpanX;
@@ -801,9 +805,12 @@ export function updateMorseTelegraphKinematics(
   electronDisplaySpeed: number,
   keyIsDown: boolean,
   isCutaway: boolean,
+  lineVoltageV = 12,
+  lineLengthMiles = 40,
+  wpmSpeed = 20,
 ) {
   // 1. Key Action (manual or rhythmic Morse oscillation)
-  const morse = stepMorseTelegraph({});
+  const morse = stepMorseTelegraph({ lineVoltageV, lineLengthMiles, wpmSpeed });
   const isKeyActive =
     keyIsDown || Math.sin(timeSec * keyOscillationRadPerS) > morse.keySinThreshold;
   nodes.keyLeverGroup.rotation.z = isKeyActive ? morse.keyTiltRad : 0;

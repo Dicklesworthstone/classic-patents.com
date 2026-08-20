@@ -141,6 +141,8 @@ export function PeltonWheel3D() {
         p.handwheelOmegaRadPerS,
         p.showJet,
         p.isCutaway,
+        p.headMeters,
+        p.wheelRpm,
       );
 
       // Euler optimum is u/v ≈ 0.5. Off-design color shift

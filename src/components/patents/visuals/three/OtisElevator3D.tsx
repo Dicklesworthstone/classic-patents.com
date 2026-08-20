@@ -152,6 +152,8 @@ export function OtisElevator3D() {
         step.isSnapped,
         step.springBowY,
         step.isPawlEngaged,
+        p.cabPayloadKg,
+        p.cableTensionPct,
       );
 
       renderer.render(scene, camera);

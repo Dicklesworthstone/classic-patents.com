@@ -21,7 +21,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { mergenthalerMagCrate } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 
 export interface MergenthalerLinotypeModelNodes {
@@ -608,12 +608,15 @@ export function buildMergenthalerLinotypeModel(): MergenthalerLinotypeModelResul
 export function updateMergenthalerLinotypeKinematics(
   nodes: MergenthalerLinotypeModelNodes,
   _materials: MergenthalerLinotypeMaterials,
-  _dt: number,
-  _timeSec: number,
+  dt: number,
+  timeSec: number,
   plungerY: number,
   moldAngle: number,
   slugOut: boolean,
   wedgeLift: number,
+  matrixRatePerMin = 60,
+  spacebandWedgeMm = 6.5,
+  potTempC = 260,
 ) {
   // 1. Plunger Stroke
   nodes.potPlunger.position.y = 0.95 + plungerY * 0.6;
@@ -635,17 +638,22 @@ export function updateMergenthalerLinotypeKinematics(
     band.position.y = 0.12 + wedgeLift;
   }
 
-  const lino = stepMergenthalerLinotype({});
-  const mag = cyclicSymmetry(8, 0.4);
-  const flex = 1 + 0.15 * cyclicSol(mag, 0);
+  const lino = stepMergenthalerLinotype({
+    matrixRatePerMin,
+    spacebandWedgeMm,
+    potTempC,
+    elapsedS: timeSec,
+  });
+  const flex = mergenthalerMagCrate().magFlex;
+  const distributorStepRad = 2 * Math.PI * lino.distributorFreqHz * dt * flex;
 
   // 5. Star Wheel & Distributor Screw Articulation
   if (nodes.starWheel) {
-    nodes.starWheel.rotation.z += lino.starWheelStepRad * flex;
+    nodes.starWheel.rotation.z += distributorStepRad;
   }
   if (nodes.distributorScrews) {
     nodes.distributorScrews.forEach((screw) => {
-      screw.rotation.y += lino.distributorScrewStepRad * flex;
+      screw.rotation.y += distributorStepRad;
     });
   }
 

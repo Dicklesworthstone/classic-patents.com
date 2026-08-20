@@ -187,6 +187,9 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/einstein|refrigerator|1781541|1,781,541/, "einstein-refrigerator"],
   [/colt|revolver|138|x9430|9430/, "colt-revolver"],
   [/otis|elevator|31128|31,128/, "otis-elevator"],
+  [/watt|separate[- ]condenser|913/, "watt-separate-condenser"],
+  [/arkwright|water[- ]frame|931/, "arkwright-water-frame"],
+  [/hopkins|potash|x1/, "hopkins-potash"],
   [/whitney|cotton[- ]gin|x72/, "whitney-cotton-gin"],
   [/mccormick|reaper|x8277|4895|4,895/, "mccormick-reaper"],
   [/davenport|132/, "davenport-motor"],
@@ -3263,6 +3266,274 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "watt-separate-condenser": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Engine House Wall */}
+          <rect
+            x="180"
+            y="40"
+            width="40"
+            height="240"
+            stroke="#64748b"
+            strokeWidth="2"
+            fill="#1e293b"
+            fillOpacity="0.3"
+          />
+          {/* Walking Beam */}
+          <line x1="50" y1="50" x2="350" y2="50" stroke="#f59e0b" strokeWidth="4" />
+          <circle cx="200" cy="50" r="8" fill="#fbbf24" stroke="#78350f" strokeWidth="2" />
+          {/* Steam Jacket & Cylinder */}
+          <rect
+            x="70"
+            y="90"
+            width="70"
+            height="90"
+            rx="4"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#78350f"
+            fillOpacity="0.2"
+          />
+          <rect
+            x="80"
+            y="95"
+            width="50"
+            height="80"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+            fill="#0f172a"
+          />
+          <rect x="82" y="130" width="46" height="12" fill="#64748b" />
+          {/* Boiler */}
+          <path
+            d="M 20 180 L 20 240 L 60 240 L 60 180 Q 40 160 20 180 Z"
+            stroke="#b45309"
+            strokeWidth="2"
+            fill="#78350f"
+            fillOpacity="0.3"
+          />
+          {/* Condenser & Cistern */}
+          <rect
+            x="75"
+            y="200"
+            width="90"
+            height="60"
+            rx="4"
+            stroke="#0284c7"
+            strokeWidth="2"
+            fill="#0369a1"
+            fillOpacity="0.2"
+          />
+          <rect
+            x="85"
+            y="210"
+            width="30"
+            height="40"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            fill="#0f172a"
+          />
+          <rect
+            x="125"
+            y="210"
+            width="25"
+            height="40"
+            stroke="#94a3b8"
+            strokeWidth="1.5"
+            fill="#0f172a"
+          />
+          {/* Labels */}
+          <text x="105" y="85" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">
+            STEAM JACKET (B)
+          </text>
+          <text x="100" y="268" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">
+            CONDENSER (E)
+          </text>
+          <text x="40" y="252" fill="#d97706" fontSize="8" textAnchor="middle">
+            BOILER (A)
+          </text>
+        </g>
+      );
+    }
+    case "arkwright-water-frame": {
+      return (
+        <g stroke="#f59e0b" strokeWidth="1.5" fill="none">
+          {/* Framework Outlines */}
+          <rect
+            x="30"
+            y="20"
+            width="340"
+            height="260"
+            stroke="#94a3b8"
+            strokeWidth="2"
+            fill="#0f172a"
+            fillOpacity="0.3"
+          />
+          {/* Great Driving Drum (A) */}
+          <circle
+            cx="280"
+            cy="220"
+            r="35"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#78350f"
+            fillOpacity="0.3"
+          />
+          <circle cx="280" cy="220" r="6" fill="#fbbf24" />
+          {/* Differential Drawing Rollers (C) */}
+          <g transform="translate(120, 70)">
+            <rect
+              x="-40"
+              y="-12"
+              width="16"
+              height="10"
+              rx="2"
+              stroke="#38bdf8"
+              fill="#0284c7"
+              fillOpacity="0.4"
+            />
+            <rect
+              x="-40"
+              y="2"
+              width="16"
+              height="10"
+              rx="2"
+              stroke="#d97706"
+              fill="#b45309"
+              fillOpacity="0.4"
+            />
+            <rect
+              x="25"
+              y="-12"
+              width="16"
+              height="10"
+              rx="2"
+              stroke="#38bdf8"
+              fill="#0284c7"
+              fillOpacity="0.4"
+            />
+            <rect
+              x="25"
+              y="2"
+              width="16"
+              height="10"
+              rx="2"
+              stroke="#d97706"
+              fill="#b45309"
+              fillOpacity="0.4"
+            />
+            {/* Weight Saddle (D) */}
+            <line x1="-32" y1="-8" x2="-32" y2="35" stroke="#94a3b8" strokeWidth="1.5" />
+            <circle cx="-32" cy="38" r="5" fill="#475569" />
+          </g>
+          {/* Spindle & Flyer (E) */}
+          <g transform="translate(120, 150)">
+            <line x1="0" y1="-40" x2="0" y2="100" stroke="#cbd5e1" strokeWidth="2" />
+            <path d="M 0 -40 C -25 -20, -25 30, -25 45" stroke="#38bdf8" strokeWidth="2" />
+            <path d="M 0 -40 C 25 -20, 25 30, 25 45" stroke="#38bdf8" strokeWidth="2" />
+            {/* Bobbin (F) */}
+            <rect
+              x="-12"
+              y="10"
+              width="24"
+              height="30"
+              rx="2"
+              stroke="#fbbf24"
+              fill="#d97706"
+              fillOpacity="0.5"
+            />
+          </g>
+          {/* Heart-Cam (G) */}
+          <g transform="translate(280, 120)">
+            <path
+              d="M 0 -15 C 14 -22, 22 -6, 0 20 C -22 -6, -14 -22, 0 -15 Z"
+              stroke="#ec4899"
+              strokeWidth="2"
+              fill="#be185d"
+              fillOpacity="0.3"
+            />
+            <line
+              x1="0"
+              y1="8"
+              x2="-140"
+              y2="55"
+              stroke="#94a3b8"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+            />
+          </g>
+          {/* Annotations */}
+          <text x="120" y="45" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">
+            DRAFT ROLLERS (C)
+          </text>
+          <text x="120" y="240" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">
+            FLYER &amp; BOBBIN (E/F)
+          </text>
+          <text x="280" y="270" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">
+            DRIVING DRUM (A)
+          </text>
+          <text x="280" y="95" fill="#ec4899" fontSize="8" fontWeight="bold" textAnchor="middle">
+            HEART-CAM (G)
+          </text>
+        </g>
+      );
+    }
+    case "hopkins-potash": {
+      return (
+        <g stroke="#10b981" strokeWidth="1.5" fill="none">
+          {/* Calcination Kiln */}
+          <rect
+            x="40"
+            y="80"
+            width="90"
+            height="120"
+            rx="6"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#78350f"
+            fillOpacity="0.3"
+          />
+          <path
+            d="M 50 160 Q 85 110 120 160 Z"
+            stroke="#ef4444"
+            strokeWidth="2"
+            fill="#ef4444"
+            fillOpacity="0.2"
+          />
+          {/* Leaching Vat */}
+          <rect
+            x="155"
+            y="80"
+            width="90"
+            height="120"
+            rx="4"
+            stroke="#10b981"
+            strokeWidth="2"
+            fill="#064e3b"
+            fillOpacity="0.2"
+          />
+          {/* Evaporating Kettle */}
+          <path
+            d="M 270 120 L 270 170 Q 315 200 360 170 L 360 120 Z"
+            stroke="#64748b"
+            strokeWidth="2"
+            fill="#1e293b"
+            fillOpacity="0.3"
+          />
+          {/* Labels */}
+          <text x="85" y="72" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">
+            CALCINING KILN
+          </text>
+          <text x="200" y="72" fill="#10b981" fontSize="8" fontWeight="bold" textAnchor="middle">
+            LIXIVIATION VAT
+          </text>
+          <text x="315" y="112" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">
+            PEARL ASH KETTLE
+          </text>
+        </g>
+      );
+    }
     case "corliss-engine": {
       const corliss = stepCorlissEngine({});
       return (
@@ -4063,6 +4334,69 @@ function _renderHistoricalSchematic(
           </text>
           <text x="200" y="220" fill="#4ade80" fontSize="8" textAnchor="middle">
             165° Jet Energy Extraction
+          </text>
+        </g>
+      );
+    }
+    case "baekeland-bakelite": {
+      return (
+        <g stroke="#d97706" strokeWidth="1.5" fill="none">
+          {/* Autoclave Pressure Vessel Shell */}
+          <rect
+            x="50"
+            y="60"
+            width="300"
+            height="160"
+            rx="20"
+            stroke="#94a3b8"
+            strokeWidth="2"
+            fill="#1e293b"
+            fillOpacity="0.4"
+          />
+          {/* Steam Jacket */}
+          <rect
+            x="40"
+            y="50"
+            width="320"
+            height="180"
+            rx="26"
+            stroke="#f97316"
+            strokeWidth="1.5"
+            strokeDasharray="6 3"
+          />
+          {/* Compression Mold Platen */}
+          <rect
+            x="120"
+            y="100"
+            width="160"
+            height="80"
+            rx="4"
+            stroke="#e2e8f0"
+            strokeWidth="2"
+            fill="#451a03"
+            fillOpacity="0.8"
+          />
+          <text
+            x="200"
+            y="145"
+            fill="#fef08a"
+            fontSize="10"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+            fontWeight="bold"
+          >
+            Bakelite Molding Cavity
+          </text>
+          {/* Hydraulic Ram */}
+          <line x1="200" y1="20" x2="200" y2="100" stroke="#38bdf8" strokeWidth="6" />
+          {/* Pressure Gauge */}
+          <circle cx="200" cy="20" r="16" stroke="#38bdf8" strokeWidth="2" fill="#0f172a" />
+          <text x="200" y="24" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            P &gt; 50 psi
+          </text>
+          {/* Labels */}
+          <text x="200" y="250" fill="#f97316" fontSize="9" textAnchor="middle">
+            Steam Jacket (110–140 °C)
           </text>
         </g>
       );

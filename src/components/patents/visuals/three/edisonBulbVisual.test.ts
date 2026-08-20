@@ -19,6 +19,7 @@ describe("US 223,898 Thomas Edison Incandescent Lamp visual & physics boundary",
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEdisonBulbModel");
     expect(modelSource).toContain("updateEdisonBulbKinematics");
+    expect(modelSource).not.toContain("stepEdisonBulb({})");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

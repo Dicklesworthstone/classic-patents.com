@@ -43,6 +43,7 @@ export function EdisonPhonograph3D() {
 
   const live = useLiveSimParams({
     cylinderRpm,
+    voiceVolumeDb: params.voiceVolumeDb ?? 75,
     isAudioMuted,
     isCutaway,
     axialTravelMmPerS: phono.axialTravelMmPerS,
@@ -138,6 +139,8 @@ export function EdisonPhonograph3D() {
         p.stylusAmp,
         p.stylusOmegaRadPerS,
         p.isCutaway,
+        p.cylinderRpm,
+        p.voiceVolumeDb,
       );
 
       renderer.render(scene, camera);

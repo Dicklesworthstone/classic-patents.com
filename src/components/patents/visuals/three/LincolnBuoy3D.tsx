@@ -57,6 +57,7 @@ export function LincolnBuoy3D() {
   const live = useLiveSimParams({
     bellowsInflationPct,
     riverShoalDepthFt,
+    weightTons: steamboatWeightTons,
     baseDraftFt,
     effectiveDraftFt,
     isCutaway,
@@ -145,6 +146,7 @@ export function LincolnBuoy3D() {
         p.effectiveDraftFt,
         p.paddleDisplayOmegaRadPerS,
         p.isCutaway,
+        p.weightTons,
       );
 
       model.materials.hullWood.color.setHex(p.shoalClearanceFt > 0 ? 0x5c3a21 : 0x991b1b);

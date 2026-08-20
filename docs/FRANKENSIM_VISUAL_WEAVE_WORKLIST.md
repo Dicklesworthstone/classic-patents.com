@@ -482,6 +482,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.386 Westinghouse 2D/3D piston and shoe travel drain `clampRatio * maxPushStroke` / `beamClampTravel`. No private cylPsi/80 leftover (kernel clamp is cyl/55).
 - [x] P5.387 `engine.stepWrightFlyer` is a thin 6-DoF integrator over `stepWrightFlyerSi`. Lift/drag/yaw/pitch/altitude come from the SI step (netYawNm / I_zz, pitchNm / I_yy, (L − 3336 N) × 0.0005). No private `× 0.08` / `× 0.12` / `× 0.15` / `340 × 9.81` leftover. Kitty Hawk weight is `WRIGHT_GROSS_WEIGHT_N`.
 - [x] P5.388 Einstein 3D heat-frame drains `heatFrameIndex` from `stepEinsteinRefrigerator`. Kinematics no longer re-steps `{}` or converts leftover `coolingWatts / 80 × 8` privately.
+- [x] P5.392 Eastman/Glidden/Reno/McCormick/Howe leftover cyclic kappas drain crate seats (`eastmanSprocketCrate`, `gliddenFlyerCrate`, `renoSheaveCrate`, `mccormickReelCrate`, `howeShaftCrate` / `howeCyclicFlex`). 3D no longer converts `0.4 + |ω| × 0.05` privately.
+- [x] P5.393 Otis/Engelbart/Sholes/Hollerith/Mergenthaler/Corliss leftover constant-kappa cyclic rings drain crate seats (`otisSheaveCrate`, `engelbartXyCrate`, `sholesBasketCrate`, `hollerithBankCrate`, `mergenthalerMagCrate`, `corlissValveCrate`).
+- [x] P5.394 Energy strips from owned watts on new kernels: Hall cell kW, De Forest filament/audio, Edison indicator filament, Watt furnace/indicated/air-pump.
+- [x] P5.395 Otto / Pelton / Parsons / Edison-bulb 3D kinematics step the live slider params instead of `stepX({})`. Couple links drain Hall, De Forest, Edison indicator, and Watt owned watts.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

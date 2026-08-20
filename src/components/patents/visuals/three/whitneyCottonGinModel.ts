@@ -444,6 +444,7 @@ export function updateWhitneyCottonGinKinematics(
   brushOmegaRadPerS: number,
   showFibers: boolean,
   isCutaway = false,
+  crankRpm = 60,
 ): void {
   // Crank handle manual rotation
   model.crankGroup.rotation.x += crankOmegaRadPerS * dt;
@@ -458,7 +459,7 @@ export function updateWhitneyCottonGinKinematics(
   // Animate cotton fibers through the gin grate and doffing chamber
   if (showFibers) {
     model.fiberPoints.visible = true;
-    const whitney = stepWhitneyCottonGin({});
+    const whitney = stepWhitneyCottonGin({ crankRpm });
     const pos = model.fiberPositions;
     const fluid = fluidFrames(16, 8);
     const frame = Math.abs(Math.floor(model.sawCylinderGroup.rotation.x * 2)) % 8;

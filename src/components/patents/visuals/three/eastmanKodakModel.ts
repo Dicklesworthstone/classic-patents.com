@@ -16,7 +16,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { eastmanSprocketCrate } from "@/physics/genericWasm";
 
 export interface EastmanKodakModelNodes {
   rootGroup: THREE.Group;
@@ -476,8 +476,7 @@ export function updateEastmanKodakKinematics(
   filmAdvanceSpeedRadPerS: number,
   supplySpoolOmegaRadPerS: number,
 ) {
-  const sprocket = cyclicSymmetry(8, 0.4 + Math.abs(filmAdvanceSpeedRadPerS) * 0.05);
-  const flex = 1 + 0.12 * cyclicSol(sprocket, 0);
+  const flex = eastmanSprocketCrate(filmAdvanceSpeedRadPerS).sprocketFlex;
 
   // 1. Shutter Rotation
   nodes.barrel.rotation.x += barrelOmegaRadPerS * dt;

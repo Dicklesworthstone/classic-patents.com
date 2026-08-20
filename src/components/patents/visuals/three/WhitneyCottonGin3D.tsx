@@ -132,6 +132,7 @@ export function WhitneyCottonGin3D() {
         p.brushOmegaRadPerS,
         p.showFibers,
         p.isCutaway,
+        p.crankRpm,
       );
 
       renderer.render(scene, camera);

@@ -470,7 +470,7 @@ export function updatePasteurFermentationKinematics(
   showBubbles: boolean,
   isCutaway: boolean,
 ) {
-  const pasteur = stepPasteurFermentation({});
+  const pasteur = stepPasteurFermentation({ wortTempC: fermentationTempC });
   const activity = Math.max(0, yeastActivityPct / pasteur.activityNormDivisor);
   const rise = pasteur.bubbleRise0 + activity * pasteur.bubbleRiseAmp;
   const pos = nodes.bubblePositions;

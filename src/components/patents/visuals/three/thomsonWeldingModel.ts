@@ -406,6 +406,8 @@ export function updateThomsonWeldingKinematics(
   jawStudioOffset: number,
   isForged: boolean,
   showSparks: boolean,
+  weldCurrentAmps = 4500,
+  clampPressureMpa = 35,
 ) {
   // 1. Incandescence Intensity & Color based on temperature
   materials.glowingWeld.emissiveIntensity = weldGlowIntensity;
@@ -431,7 +433,7 @@ export function updateThomsonWeldingKinematics(
     const geo = nodes.sparkPoints.geometry as THREE.BufferGeometry;
     const pos = geo.attributes.position.array as Float32Array;
 
-    const weld = stepThomsonWelding({});
+    const weld = stepThomsonWelding({ weldCurrentAmps, clampPressureMpa });
     const heat = heatFrames(12, 16, 2);
     const heatFrame = Math.abs(Math.floor(timeSec * 6)) % 16;
     const nugget = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, 0.5, 0.5));

@@ -18315,16 +18315,1068 @@ ALL_COLORIZED_EQUATIONS["us-395781-hollerith-tabulating"] = [
         name: "Claim 1 separate record-cards",
         color: "emerald",
         role: "A card represents one individual or subject and carries the fixed-plan index-points required by Claim 1.",
-        unit: "Claim 1 record and contact relation",
-        dimension: "source-defined statistical-record construction",
+        unit: "punched card",
+        dimension: "dimensionless",
         explanation:
-          "The claim requires the card and its index-points to cooperate with circuit-controlling devices. It does not state a card size, grid count, voltage, current, contact force, throughput, or a digital information capacity.",
+          "The patent specification's fixed-plan record structure that encodes demographic attributes into discrete punched holes.",
       },
     ],
     pedagogicalNote:
-      "This card is limited to Claim 1's record-card, index-point, and circuit-controlling-device relationship. The complete seventeen-page source edition remains under independent review, so the site does not present unprinted electrical, mechanical, census-performance, or later-computing measurements as evidence from US 395,781.",
+      "Hollerith's fundamental invention was the physical record-card with standardized coordinate holes that completed electrical circuits through mercury cups to step mechanical counters.",
     claimRef: 1,
     historicalSignificance:
-      "The card preserves the grant's printed record-and-circuit construction without turning later tabulator data into a measurement made by the 1889 patent.",
+      "Formed the technological foundation of IBM and the modern data processing industry.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["gb-913-watt-separate-condenser"] = [
+  {
+    id: "watt-separate-condensation-thermo",
+    patentId: "gb-913-watt-separate-condenser",
+    title: "Thermodynamic Heat Loss Elimination via Separate Condensation",
+    category: "Thermodynamics & Steam Power Cycles",
+    rawLatex: "Q_{\\text{waste}} = m_{\\text{cyl}} c_p (T_{\\text{steam}} - T_{\\text{cond}})",
+    colorizedLatex:
+      "\\textcolor{#ef4444}{Q_{\\text{waste}}} = \\textcolor{#3b82f6}{m_{\\text{cyl}}} \\textcolor{#10b981}{c_p} (\\textcolor{#f59e0b}{T_{\\text{steam}}} - \\textcolor{#06b6d4}{T_{\\text{cond}}})",
+    plainEnglishSentence: [
+      { text: "Thermal waste energy " },
+      { text: "quenched per cycle", variableId: "q_waste" },
+      { text: " scales directly with the iron " },
+      { text: "cylinder mass", variableId: "m_cyl" },
+      { text: ", the iron's " },
+      { text: "specific heat capacity", variableId: "c_p" },
+      { text: ", and the temperature difference between entering " },
+      { text: "live boiler steam", variableId: "t_steam" },
+      { text: " and the " },
+      { text: "condenser heat sink", variableId: "t_cond" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "q_waste",
+        symbol: "Q_waste",
+        name: "Cyclic Quench Energy Waste",
+        color: "crimson",
+        role: "Thermal energy lost each stroke reheating the chilled cast-iron cylinder walls",
+        unit: "Joules (J)",
+        dimension: "[M L^2 T^-2]",
+        explanation:
+          "Watt discovered that direct in-cylinder water quenching wasted over 75% of boiler coal solely in reheating the heavy metal walls.",
+      },
+      {
+        id: "m_cyl",
+        symbol: "m_cyl",
+        name: "Cylinder Metal Mass",
+        color: "sapphire",
+        role: "Thermal mass of the working cylinder subject to temperature cycles",
+        unit: "Kilograms (kg)",
+        dimension: "[M]",
+        explanation:
+          "The hundreds of kilograms of iron forming the cylinder body acted as a severe parasitic heat sink.",
+      },
+      {
+        id: "c_p",
+        symbol: "c_p",
+        name: "Specific Heat of Cast Iron",
+        color: "emerald",
+        role: "Heat capacity of cast iron (~450 J/kg·K)",
+        unit: "J/(kg·K)",
+        dimension: "[L^2 T^-2 \\Theta^-1]",
+        explanation:
+          "Material property determining how much thermal energy is absorbed per degree of reheating.",
+      },
+      {
+        id: "t_steam",
+        symbol: "T_steam",
+        name: "Live Steam Temperature",
+        color: "amber",
+        role: "Temperature of boiler steam entering the cylinder",
+        unit: "Kelvin (K)",
+        dimension: "[\\Theta]",
+        explanation: "Saturated steam at low boiler pressure enters at ~373 K (100°C).",
+      },
+      {
+        id: "t_cond",
+        symbol: "T_cond",
+        name: "Condenser Temperature",
+        color: "cyan",
+        role: "Temperature of the separate condensation vessel",
+        unit: "Kelvin (K)",
+        dimension: "[\\Theta]",
+        explanation: "The condenser is maintained at ~308 K (35°C) to create a deep vacuum.",
+      },
+    ],
+    pedagogicalNote:
+      "By separating the vessel of condensation from the vessel of expansion, Watt maintained T_cyl = T_steam continuously, reducing Q_waste to near zero.",
+    claimRef: 1,
+    historicalSignificance:
+      "The master thermodynamic insight that quadrupled the thermal efficiency of steam engines and catalyzed the Industrial Revolution.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["gb-931-arkwright-water-frame"] = [
+  {
+    id: "arkwright-differential-draft-twist",
+    patentId: "gb-931-arkwright-water-frame",
+    title: "Differential Roller Drafting & Flyer Twist Tenacity Law",
+    category: "Textile Mechanics & Continuous Spinning",
+    rawLatex:
+      "D = \\frac{v_{\\text{delivery}}}{v_{\\text{feed}}} = \\frac{r_4 \\omega_4}{r_1 \\omega_1} \\quad \\text{and} \\quad \\text{TPM} = \\frac{\\Omega_{\\text{flyer}}}{v_{\\text{delivery}}}",
+    colorizedLatex:
+      "\\textcolor{#0891b2}{D} = \\frac{\\textcolor{#059669}{v_{\\text{delivery}}}}{\\textcolor{#2563eb}{v_{\\text{feed}}}} \\quad \\text{and} \\quad \\textcolor{#d97706}{\\text{TPM}} = \\frac{\\textcolor{#9333ea}{\\Omega_{\\text{flyer}}}}{\\textcolor{#059669}{v_{\\text{delivery}}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "total draft ratio", variableId: "draft_ratio" },
+      { text: " equals the velocity ratio between " },
+      { text: "front delivery rollers", variableId: "v_delivery" },
+      { text: " and " },
+      { text: "feed rollers", variableId: "v_feed" },
+      { text: ", while the " },
+      { text: "imparted twist per meter", variableId: "tpm" },
+      { text: " is determined by the ratio of " },
+      { text: "flyer rotational velocity", variableId: "omega_flyer" },
+      { text: " to yarn delivery throughput." },
+    ],
+    variables: [
+      {
+        id: "draft_ratio",
+        symbol: "D",
+        name: "Differential Draft Ratio",
+        color: "cyan",
+        role: "Multiplicative attenuation factor stretching cotton roving into thin, parallel staple fibers.",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Arkwright used pairs of differential-speed rollers (D = 4x to 8x) to mechanically replace human finger drawing.",
+      },
+      {
+        id: "v_delivery",
+        symbol: "v_delivery",
+        name: "Delivery Roller Speed",
+        color: "emerald",
+        role: "Surface linear velocity of the fastest, final pair of fluted output rollers.",
+        unit: "m/s",
+        dimension: "L T^-1",
+        explanation: "The speed at which attenuated roving emerges into the flyer twist zone.",
+      },
+      {
+        id: "v_feed",
+        symbol: "v_feed",
+        name: "Feed Roller Speed",
+        color: "sapphire",
+        role: "Surface linear velocity of the slow intake rollers taking in loose carded roving.",
+        unit: "m/s",
+        dimension: "L T^-1",
+        explanation:
+          "Intake speed calibrated to prevent fiber rupture while ensuring positive grip.",
+      },
+      {
+        id: "tpm",
+        symbol: "TPM",
+        name: "Turns Per Meter",
+        color: "amber",
+        role: "Helical twist density imparted to the yarn to create inter-fiber frictional cohesion.",
+        unit: "turns/m",
+        dimension: "L^-1",
+        explanation:
+          "High twist multiplier binds short cotton fibers into hard, warp-grade yarn ('water twist') capable of withstanding loom tension.",
+      },
+      {
+        id: "omega_flyer",
+        symbol: "\\Omega_{\\text{flyer}}",
+        name: "Flyer Angular Speed",
+        color: "amethyst",
+        role: "Rotational velocity of the U-shaped steel flyer revolving on the upright spindle (3000–4000 RPM).",
+        unit: "rad/s",
+        dimension: "T^-1",
+        explanation: "Driven continuously by leather bands from the main water-wheel driving drum.",
+      },
+    ],
+    pedagogicalNote:
+      "By combining differential roller drafting with high-velocity flyer twisting and dead-spindle bobbin winding, Arkwright created the first fully automatic spinning machine, launching the modern factory system at Cromford Mill in 1771.",
+    claimRef: 1,
+    historicalSignificance:
+      "Eliminated the centuries-old textile bottleneck by producing strong, inexpensive all-cotton warp yarn at industrial scale.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-x1-hopkins-potash"] = [
+  {
+    id: "hopkins-calcination-mass-balance",
+    patentId: "us-x1-hopkins-potash",
+    title: "Hopkins Thermal Decarbonization & Potash Mass Balance",
+    category: "Thermochemical Calcination & Leaching",
+    rawLatex:
+      "m_{\\text{potash}} = m_{\\text{raw}} \\cdot \\eta_{\\text{calc}} \\cdot \\frac{M_{\\text{K}_2\\text{CO}_3}}{M_{\\text{ash}}}",
+    colorizedLatex:
+      "\\textcolor{#059669}{m_{\\text{potash}}} = \\textcolor{#2563eb}{m_{\\text{raw}}} \\cdot \\textcolor{#d97706}{\\eta_{\\text{calc}}} \\cdot \\frac{M_{\\text{K}_2\\text{CO}_3}}{M_{\\text{ash}}}",
+    plainEnglishSentence: [
+      { text: "The yield of refined " },
+      { text: "pearl ash (potassium carbonate)", variableId: "potash_yield" },
+      { text: " equals the " },
+      { text: "raw wood ash charge", variableId: "raw_ash_mass" },
+      { text: " multiplied by the " },
+      { text: "calcination combustion efficiency", variableId: "calcination_efficiency" },
+      {
+        text: " and the stoichiometric ratio of K₂CO₃ in the mineralized residue.",
+      },
+    ],
+    variables: [
+      {
+        id: "potash_yield",
+        symbol: "m_potash",
+        name: "Refined Pearl Ash Yield",
+        color: "emerald",
+        role: "Mass of pure crystallized potassium carbonate obtained after leaching and evaporation.",
+        unit: "kg",
+        dimension: "M",
+        explanation:
+          "Hopkins' roasting method removed combustible unburned carbons, yielding nearly pure K₂CO₃ pearl ash.",
+      },
+      {
+        id: "raw_ash_mass",
+        symbol: "m_raw",
+        name: "Raw Wood Ash Charge",
+        color: "sapphire",
+        role: "Total initial mass of unburned wood ashes fed into the calcining furnace.",
+        unit: "kg",
+        dimension: "M",
+        explanation:
+          "Wood ashes from cleared hardwood forests contained 10–25% potash mixed with unburned charcoal and organic tar.",
+      },
+      {
+        id: "calcination_efficiency",
+        symbol: "eta_calc",
+        name: "Thermal Decarbonization Efficiency",
+        color: "amber",
+        role: "Fraction of organic carbons completely combusted to CO₂ before aqueous leaching.",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Pre-calcining the ashes in a reverberatory furnace at 600–700 °C burned off tar that otherwise contaminated the lye.",
+      },
+    ],
+    pedagogicalNote:
+      "US Patent No. 1 granted to Samuel Hopkins in 1790 improved potash making by burning raw ashes a second time before leaching, converting black salts into white pearl ash.",
+    claimRef: 1,
+    historicalSignificance:
+      "First United States patent, signed by President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-307031-edison-indicator"] = [
+  {
+    id: "edison-indicator-emission",
+    patentId: "us-307031-edison-indicator",
+    title: "Richardson-Dushman Thermionic Emission Law",
+    category: "Thermionic Physics",
+    rawLatex: "J = A T^2 e^{-\\frac{\\Phi}{k_B T}}",
+    colorizedLatex:
+      "\\textcolor{#06b6d4}{J} = \\textcolor{#2563eb}{A} \\textcolor{#d97706}{T^2} e^{-\\frac{\\textcolor{#9333ea}{\\Phi}}{\\textcolor{#2563eb}{k_B} \\textcolor{#d97706}{T}}}",
+    plainEnglishSentence: [
+      { text: "The " },
+      { text: "thermionic current density", variableId: "current_density" },
+      { text: " scales with the square of " },
+      { text: "cathode temperature", variableId: "temp" },
+      { text: " and exponential thermal escape over the " },
+      { text: "carbon work function", variableId: "work_function" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "current_density",
+        symbol: "J",
+        name: "Thermionic Current Density",
+        color: "cyan",
+        role: "Electric current emitted per unit surface area of incandescent carbon filament into the surrounding vacuum.",
+        unit: "A/m²",
+        dimension: "I L^-2",
+        explanation:
+          "Edison discovered that heated carbon boils off electrons across an empty vacuum gap, creating a measurable microampere shunt current.",
+      },
+      {
+        id: "richardson_const",
+        symbol: "A",
+        name: "Richardson Constant",
+        color: "sapphire",
+        role: "Universal thermionic emission coefficient (A ≈ 1.20 × 10⁶ A/(m²·K²)).",
+        unit: "A/(m²·K²)",
+        dimension: "I L^-2 Theta^-2",
+        explanation:
+          "Theoretical quantum coefficient governing free electron density and transmission probability across the metal-vacuum boundary.",
+      },
+      {
+        id: "temp",
+        symbol: "T",
+        name: "Absolute Filament Temperature",
+        color: "amber",
+        role: "Absolute thermodynamic temperature of the glowing carbon filament loop (~1900–2200 K).",
+        unit: "K",
+        dimension: "Theta",
+        explanation:
+          "Filament temperature is driven by Joule heating from distribution mains voltage (V² / R), linking grid pressure directly to emission.",
+      },
+      {
+        id: "work_function",
+        symbol: "\\Phi",
+        name: "Material Work Function",
+        color: "amethyst",
+        role: "Minimum energy barrier required for a conduction electron to escape the carbon surface (Φ ≈ 4.60 eV).",
+        unit: "eV",
+        dimension: "M L^2 T^-2",
+        explanation: "The surface potential barrier of carbonized bamboo filament in high vacuum.",
+      },
+      {
+        id: "boltzmann",
+        symbol: "k_B",
+        name: "Boltzmann Constant",
+        color: "sapphire",
+        role: "Fundamental thermodynamic constant (8.6173 × 10⁻⁵ eV/K).",
+        unit: "eV/K",
+        dimension: "M L^2 T^-2 Theta^-1",
+        explanation:
+          "Relates the thermal kinetic energy distribution of electrons to absolute temperature.",
+      },
+    ],
+    pedagogicalNote:
+      "Edison's discovery that current could cross a high vacuum exclusively to a positive electrode became the foundation of all vacuum tube diodes, triodes, and 20th-century electronics.",
+    claimRef: 1,
+    historicalSignificance:
+      "First patented observation and utilization of thermionic electron emission, leading directly to the Fleming valve and De Forest Audion.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-879532-de-forest-audion"] = [
+  {
+    id: "de-forest-audion-amplification",
+    patentId: "us-879532-de-forest-audion",
+    title: "Audion Triode Transconductance & Space-Charge Control",
+    category: "Thermionic Grid Control & RF Amplification",
+    rawLatex: "I_a = k \\left(V_g + \\frac{V_a}{\\mu}\\right)^{3/2}",
+    colorizedLatex:
+      "\\textcolor{#059669}{I_a} = k \\left(\\textcolor{#2563eb}{V_g} + \\frac{\\textcolor{#d97706}{V_a}}{\\textcolor{#9333ea}{\\mu}}\\right)^{3/2}",
+    plainEnglishSentence: [
+      { text: "The anode plate " },
+      { text: "thermionic current", variableId: "anode_current" },
+      { text: " is governed by electrostatic space-charge modulation from the interposed " },
+      { text: "grid control voltage", variableId: "grid_voltage" },
+      { text: " and the accelerated " },
+      { text: "plate anode voltage", variableId: "plate_voltage" },
+      { text: " scaled by the electrostatic " },
+      { text: "triode amplification factor", variableId: "amplification_factor" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "anode_current",
+        symbol: "I_a",
+        name: "Anode Plate Current",
+        color: "emerald",
+        role: "Total thermionic electron current collected at the positive anode plate.",
+        unit: "mA",
+        dimension: "I",
+        explanation:
+          "The plate current that flows through the telephone receiver or output transformer to drive earphones or loudspeakers.",
+      },
+      {
+        id: "grid_voltage",
+        symbol: "V_g",
+        name: "Control Grid Bias Voltage",
+        color: "sapphire",
+        role: "Electrostatic potential applied to the wire grid interposed between filament and plate.",
+        unit: "V",
+        dimension: "M L^2 T^-3 I^-1",
+        explanation:
+          "Minute radio frequency voltages from the antenna modulate the grid potential, dynamically controlling the electron stream without drawing significant current.",
+      },
+      {
+        id: "plate_voltage",
+        symbol: "V_a",
+        name: "Plate Supply Voltage (B-Battery)",
+        color: "amber",
+        role: "High positive potential accelerating thermionic electrons across the evacuated bulb.",
+        unit: "V",
+        dimension: "M L^2 T^-3 I^-1",
+        explanation:
+          "Supplied by local B-batteries (typically 20–90 V) to pull electrons across the vacuum gap.",
+      },
+      {
+        id: "amplification_factor",
+        symbol: "\\mu",
+        name: "Triode Voltage Amplification Factor",
+        color: "amethyst",
+        role: "Ratio of grid effectiveness to plate effectiveness in controlling space-charge flow (mu = -dV_a / dV_g).",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Because the grid is much closer to the cathode than the plate, a small change in grid voltage has the same effect as a much larger change in plate voltage, producing voltage amplification.",
+      },
+    ],
+    pedagogicalNote:
+      "Lee de Forest's insertion of a perforated control grid between cathode and anode transformed the passive Fleming diode into an active electronic amplifier, creating the technological foundation for radio broadcasting, television, long-distance telephony, radar, and electronic computing.",
+    claimRef: 1,
+    historicalSignificance:
+      "US 879,532 is the master triode patent that enabled the entire electronic century.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
+  {
+    id: "hall-aluminium-faraday-deposition",
+    patentId: "us-400766-hall-aluminium",
+    title: "Faraday's Law of Electrolytic Aluminium Smelting & Voltage Balance",
+    category: "Electrochemistry & High-Temperature Metallurgy",
+    rawLatex:
+      "m_{\\text{Al}} = \\frac{I \\cdot t \\cdot M}{z \\cdot F} \\cdot \\eta_{\\text{curr}} \\quad \\text{and} \\quad V_{\\text{cell}} = E_{\\text{rev}} + \\eta_{\\text{anode}} + I R_{\\text{bath}}",
+    colorizedLatex:
+      "\\textcolor{#059669}{m_{\\text{Al}}} = \\frac{\\textcolor{#2563eb}{I} \\cdot \\textcolor{#d97706}{t} \\cdot \\textcolor{#0d9488}{M}}{\\textcolor{#9333ea}{z} \\cdot \\textcolor{#dc2626}{F}} \\cdot \\textcolor{#10b981}{\\eta_{\\text{curr}}} \\quad \\text{and} \\quad \\textcolor{#f59e0b}{V_{\\text{cell}}} = \\textcolor{#6366f1}{E_{\\text{rev}}} + \\textcolor{#ec4899}{\\eta_{\\text{anode}}} + \\textcolor{#2563eb}{I} \\textcolor{#14b8a6}{R_{\\text{bath}}}",
+    plainEnglishSentence: [
+      { text: "The total mass of " },
+      { text: "liquid aluminium metal deposited", variableId: "m_al" },
+      { text: " at the cathode is proportional to the " },
+      { text: "electrolytic direct current", variableId: "cell_current" },
+      { text: ", total " },
+      { text: "electrolysis time", variableId: "time_t" },
+      { text: ", and " },
+      { text: "molar mass of aluminium", variableId: "molar_mass" },
+      { text: ", divided by " },
+      { text: "valence electron transfer (z = 3)", variableId: "valence_z" },
+      { text: " and " },
+      { text: "Faraday's constant", variableId: "faraday_f" },
+      { text: ", scaled by the " },
+      { text: "cathodic current efficiency", variableId: "curr_eff" },
+      { text: ", while the " },
+      { text: "total reduction cell voltage", variableId: "v_cell" },
+      { text: " balances the " },
+      { text: "reversible thermodynamic potential", variableId: "e_rev" },
+      { text: ", " },
+      { text: "anode overpotential", variableId: "eta_anode" },
+      { text: ", and " },
+      { text: "Ohmic cryolite bath resistance", variableId: "r_bath" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "m_al",
+        symbol: "m_Al",
+        name: "Mass of Reduced Aluminium Metal",
+        color: "emerald",
+        role: "Total liquid metallic aluminium electrodeposited at the cathode and tapped from the pot bottom",
+        unit: "Kilograms (kg)",
+        dimension: "[M]",
+        explanation:
+          "Continuous electrolysis yields approximately 0.335 kg of pure aluminium per kiloampere-hour.",
+        telemetryKey: "currentAmperes",
+        telemetryMetricLabel: "Al Production Rate",
+      },
+      {
+        id: "cell_current",
+        symbol: "I",
+        name: "Electrolytic Cell DC Current",
+        color: "sapphire",
+        role: "Direct electric current driven through the molten cryolite bath by the generator",
+        unit: "Amperes (A)",
+        dimension: "[I]",
+        explanation:
+          "High direct current (100–500 kA in modern smelters; ~2000 A in Hall's initial 1888 pilot pots) drives both reduction and autothermal Joule heating.",
+        telemetryKey: "currentAmperes",
+        telemetryMetricLabel: "Cell Current",
+      },
+      {
+        id: "time_t",
+        symbol: "t",
+        name: "Smelting Duration",
+        color: "amber",
+        role: "Total elapsed time of continuous electrolytic operation",
+        unit: "Seconds (s) / Hours (h)",
+        dimension: "[T]",
+        explanation: "Hall cells operate continuously for months or years without shutdown.",
+      },
+      {
+        id: "molar_mass",
+        symbol: "M",
+        name: "Aluminium Molar Mass",
+        color: "teal",
+        role: "Atomic weight of aluminium (26.9815 g/mol)",
+        unit: "g/mol / kg/mol",
+        dimension: "[M N^-1]",
+        explanation: "Standard elemental atomic weight of aluminium.",
+      },
+      {
+        id: "valence_z",
+        symbol: "z",
+        name: "Aluminium Valence State",
+        color: "amethyst",
+        role: "Number of electrons required to reduce one Al³⁺ cation to metallic Al (z = 3)",
+        unit: "Electrons per atom",
+        dimension: "Dimensionless",
+        explanation: "Reduction from Al³⁺ in alumina requires three electrons per atom.",
+      },
+      {
+        id: "faraday_f",
+        symbol: "F",
+        name: "Faraday Constant",
+        color: "rose",
+        role: "Electric charge per mole of electrons (96,485.33 C/mol)",
+        unit: "Coulombs per mole (C/mol)",
+        dimension: "[I T N^-1]",
+        explanation: "Fundamental constant relating electric charge to chemical quantity.",
+      },
+      {
+        id: "curr_eff",
+        symbol: "\\eta_curr",
+        name: "Faradaic Current Efficiency",
+        color: "emerald",
+        role: "Fraction of electric current producing net aluminium metal (~85–95%)",
+        unit: "Dimensionless (ratio / %)",
+        dimension: "Dimensionless",
+        explanation:
+          "Slight losses occur due to back-reaction of dissolved aluminium metal with anode CO₂ gas.",
+        telemetryKey: "bathTemperatureCelsius",
+        telemetryMetricLabel: "Current Efficiency",
+      },
+      {
+        id: "v_cell",
+        symbol: "V_cell",
+        name: "Total Cell Operating Voltage",
+        color: "amber",
+        role: "Terminal voltage applied across the anode bus and cathode shell (4.0–4.5 V)",
+        unit: "Volts (V)",
+        dimension: "[M L^2 T^-3 I^-1]",
+        explanation:
+          "Total electrical potential drop sustaining the electrochemical reaction and thermal Joule balance.",
+        telemetryKey: "currentAmperes",
+        telemetryMetricLabel: "Cell Voltage",
+      },
+      {
+        id: "e_rev",
+        symbol: "E_rev",
+        name: "Reversible Thermodynamic Potential",
+        color: "sapphire",
+        role: "Theoretical minimum decomposition voltage with carbon anode consumption (1.18 V at 960°C)",
+        unit: "Volts (V)",
+        dimension: "[M L^2 T^-3 I^-1]",
+        explanation:
+          "Carbon anode oxidation to CO₂ lowers the required decomposition potential from 2.21 V (inert anode) to 1.18 V.",
+      },
+      {
+        id: "eta_anode",
+        symbol: "\\eta_anode",
+        name: "Anode & Cathode Overpotential",
+        color: "rose",
+        role: "Kinetic activation and concentration polarization voltage drops (~0.5–0.6 V)",
+        unit: "Volts (V)",
+        dimension: "[M L^2 T^-3 I^-1]",
+        explanation:
+          "Kinetic barrier for CO₂ bubble nucleation and mass transfer at carbon surfaces.",
+      },
+      {
+        id: "r_bath",
+        symbol: "R_bath",
+        name: "Cryolite Electrolyte Ohmic Resistance",
+        color: "teal",
+        role: "Internal electrical resistance of the molten salt layer between anodes and metal pad",
+        unit: "Ohms (Ω)",
+        dimension: "[M L^2 T^-3 I^-2]",
+        explanation:
+          "Ohmic dissipation (I² R_bath) supplies the heat needed to maintain the 960°C operating temperature.",
+      },
+    ],
+    pedagogicalNote:
+      "By dissolving alumina in a liquid fluoride solvent at 950°C and using consumable carbon anodes, Hall achieved commercial aluminium electrodeposition at low voltages and high current efficiencies.",
+    claimRef: 1,
+    historicalSignificance:
+      "The master chemical and electrochemical reaction equation that transformed aluminium into the foundational material of modern aviation and industry.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-942699-baekeland-bakelite"] = [
+  {
+    id: "bakelite-carothers-gel-point",
+    patentId: "us-942699-baekeland-bakelite",
+    title: "Carothers Polycondensation Gel Point & Crosslink Threshold",
+    category: "Polymer Chemistry & Step-Growth Kinetics",
+    rawLatex: "p_c = \\frac{2}{f_{\\text{avg}}}",
+    colorizedLatex: "\\textcolor{#059669}{p_c} = \\frac{2}{\\textcolor{#2563eb}{f_{\\text{avg}}}}",
+    plainEnglishSentence: [
+      { text: "The critical fractional " },
+      { text: "gel-point conversion threshold", variableId: "gel_conversion" },
+      { text: " where an infinite crosslinked network forms is inversely proportional to the " },
+      { text: "average monomer functional group valency", variableId: "avg_functionality" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "gel_conversion",
+        symbol: "p_c",
+        name: "Critical Gel Point Conversion",
+        color: "emerald",
+        role: "Fraction of reacted functional groups at which viscosity diverges to infinity and an insoluble infusible 3D gel network forms (p_c ≈ 0.667 for phenol-formaldehyde).",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Below p_c = 66.7%, the resin remains in fusible A-stage or B-stage form; once conversion exceeds p_c, irreversible thermosetting into C-stage Bakelite occurs.",
+      },
+      {
+        id: "avg_functionality",
+        symbol: "f_{\\text{avg}}",
+        name: "Average Monomer Functionality",
+        color: "sapphire",
+        role: "Weighted average number of reactive bonding sites per monomer molecule (f = 3 for trifunctional phenol at ortho/ortho/para, and f = 2 for difunctional formaldehyde).",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Because phenol has 3 reactive ring sites and formaldehyde forms 2 bridging connections, f_avg = (3 + 2)/2 = 2.5 in equimolar feedstocks, driving rapid 3D network percolation.",
+      },
+    ],
+    pedagogicalNote:
+      "Baekeland halted the reaction before reaching the gel point (p < p_c) to isolate moldable intermediate resole resin, then resumed heating inside molds to cross past p_c into infusible Bakelite.",
+    claimRef: 1,
+    historicalSignificance:
+      "Formulated the theoretical basis for all thermosetting polymers, epoxies, and 3D crosslinked materials.",
+  },
+  {
+    id: "bakelite-vapor-pressure-suppression",
+    patentId: "us-942699-baekeland-bakelite",
+    title: "Clausius-Clapeyron Vapor Pressure Suppression Equilibrium",
+    category: "Thermodynamics & Autoclave Phase Equilibria",
+    rawLatex:
+      "P_{\\text{autoclave}} > P_{\\text{sat}}(T) = P_0 e^{-\\frac{\\Delta H_{\\text{vap}}}{R T}}",
+    colorizedLatex:
+      "\\textcolor{#2563eb}{P_{\\text{autoclave}}} > \\textcolor{#ef4444}{P_{\\text{sat}}(T)} = P_0 e^{-\\frac{\\textcolor{#9333ea}{\\Delta H_{\\text{vap}}}}{R \\textcolor{#d97706}{T}}}",
+    plainEnglishSentence: [
+      { text: "The applied " },
+      { text: "autoclave pneumatic pressure", variableId: "p_autoclave" },
+      { text: " must exceed the " },
+      { text: "saturated vapor pressure", variableId: "p_sat" },
+      { text: " of volatile water and formaldehyde at the elevated " },
+      { text: "curing temperature", variableId: "temp" },
+      { text: " governed by the " },
+      { text: "molar enthalpy of vaporization", variableId: "delta_h" },
+      { text: " to prevent foaming." },
+    ],
+    variables: [
+      {
+        id: "p_autoclave",
+        symbol: "P_{\\text{autoclave}}",
+        name: "Autoclave Chamber Pressure",
+        color: "sapphire",
+        role: "Super-atmospheric pressure maintained in the Bakelizer vessel (typically 50–100 psi / 3.5–7 bar).",
+        unit: "Pa",
+        dimension: "M L^-1 T^-2",
+        explanation:
+          "External compressed air or steam pressure applied to the mold to suppress boiling of internal condensation moisture.",
+      },
+      {
+        id: "p_sat",
+        symbol: "P_{\\text{sat}}",
+        name: "Saturated Vapor Pressure",
+        color: "crimson",
+        role: "Equilibrium vapor pressure of water and unreacted formaldehyde at curing temperature (P_sat ≈ 3.6 bar at 140 °C).",
+        unit: "Pa",
+        dimension: "M L^-1 T^-2",
+        explanation:
+          "If autoclave pressure drops below P_sat, boiling steam bubbles nucleate throughout the resin, creating porous, fragile foam.",
+      },
+      {
+        id: "temp",
+        symbol: "T",
+        name: "Absolute Curing Temperature",
+        color: "amber",
+        role: "Thermodynamic temperature of the mold and resin charge (110–140 °C / 383–413 K).",
+        unit: "K",
+        dimension: "Theta",
+        explanation:
+          "Thermal energy driving condensation kinetics across methylene bridge crosslinks.",
+      },
+      {
+        id: "delta_h",
+        symbol: "\\Delta H_{\\text{vap}}",
+        name: "Enthalpy of Vaporization of Water",
+        color: "amethyst",
+        role: "Latent heat of vaporization of water (ΔH_vap ≈ 40.7 kJ/mol).",
+        unit: "J/mol",
+        dimension: "M L^2 T^-2 N^-1",
+        explanation:
+          "Thermodynamic energy barrier determining the exponential rise of vapor pressure with temperature.",
+      },
+    ],
+    pedagogicalNote:
+      "Baekeland's key apparatus insight was that high pressure does not just mold the resin—it suppresses the physical boiling of byproduct water, guaranteeing void-free density.",
+    claimRef: 1,
+    historicalSignificance:
+      "Established the operational physics for autoclave curing, compression molding, and composite autoclaves used in modern aerospace manufacturing.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6120588-eink"] = [
+  {
+    id: "eink-electrophoretic-drift",
+    patentId: "us-6120588-eink",
+    title: "Stokes-Einstein Electrophoretic Drift Velocity",
+    category: "Optoelectronics & Microencapsulated Colloid Dynamics",
+    rawLatex: "v = \\frac{q E}{6 \\pi \\eta r_p}",
+    colorizedLatex:
+      "\\textcolor{#059669}{v} = \\frac{\\textcolor{#2563eb}{q} \\textcolor{#ef4444}{E}}{6 \\pi \\textcolor{#d97706}{\\eta} \\textcolor{#9333ea}{r_p}}",
+    plainEnglishSentence: [
+      { text: "Electrophoretic drift " },
+      { text: "terminal velocity", variableId: "drift_vel" },
+      { text: " of charged pigment nanoparticles scales with " },
+      { text: "particle surface charge", variableId: "particle_charge" },
+      { text: " and applied " },
+      { text: "electric field intensity", variableId: "electric_field" },
+      { text: ", and is inversely resisted by fluid " },
+      { text: "dielectric viscosity", variableId: "fluid_viscosity" },
+      { text: " and " },
+      { text: "hydrodynamic particle radius", variableId: "particle_radius" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "drift_vel",
+        symbol: "v",
+        name: "Electrophoretic Drift Velocity",
+        color: "emerald",
+        role: "Translational velocity of TiO2 / carbon black particles inside the microcapsule",
+        unit: "m/s",
+        dimension: "L T^-1",
+        explanation:
+          "Determines display response latency; switching times of ~100–300 ms result from micrometer-scale particle migration across the 50 μm capsule cavity.",
+      },
+      {
+        id: "particle_charge",
+        symbol: "q",
+        name: "Net Particle Surface Charge",
+        color: "sapphire",
+        role: "Electrostatic surface charge established by charging surfactants (e.g. positive for TiO2, negative for carbon)",
+        unit: "Coulombs (C)",
+        dimension: "I T",
+        explanation:
+          "Chemical functionalization gives opposite polarity to visually contrastive particles for bidirectional sorting.",
+      },
+      {
+        id: "electric_field",
+        symbol: "E",
+        name: "Applied Electric Field Intensity",
+        color: "crimson",
+        role: "Voltage gradient between top ITO electrode and bottom active-matrix pixel electrode (E = V/d ≈ 0.3 V/μm)",
+        unit: "V/m",
+        dimension: "M L T^-3 I^-1",
+        explanation:
+          "A 15V switching pulse establishes the electrostatic force driving particles toward the viewing surface.",
+      },
+      {
+        id: "fluid_viscosity",
+        symbol: "\\eta",
+        name: "Dielectric Carrier Fluid Viscosity",
+        color: "amber",
+        role: "Dynamic viscosity of the hydrocarbon suspending dielectric fluid (η ≈ 1–2 mPa·s)",
+        unit: "Pa·s",
+        dimension: "M L^-1 T^-1",
+        explanation:
+          "Low viscosity enables rapid switching, while matched fluid density prevents gravitational settling.",
+      },
+      {
+        id: "particle_radius",
+        symbol: "r_p",
+        name: "Hydrodynamic Particle Radius",
+        color: "amethyst",
+        role: "Mean radius of suspended pigment nanoparticles (r_p ≈ 100–250 nm)",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Sub-micron particles maximize light scattering (Mie scattering) for paper-like diffuse reflectance.",
+      },
+    ],
+    pedagogicalNote:
+      "Because electrophoretic motion ceases the instant the electric field is removed and particles remain held by van der Waals forces, E-Ink exhibits true bistability with zero power consumption in static states.",
+    claimRef: 1,
+    historicalSignificance:
+      "Created the physics foundation for the Amazon Kindle and worldwide electronic paper publishing.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6285999-pagerank"] = [
+  {
+    id: "pagerank-markov-eigenvector",
+    patentId: "us-6285999-pagerank",
+    title: "Stationary Markov Link Transition Eigenvector",
+    category: "Information Retrieval & Web Graph Centrality",
+    rawLatex: "\\mathbf{r} = d \\mathbf{M} \\mathbf{r} + \\frac{1-d}{N} \\mathbf{1}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathbf{r}} = \\textcolor{#2563eb}{d} \\textcolor{#ef4444}{\\mathbf{M}} \\textcolor{#059669}{\\mathbf{r}} + \\frac{1-\\textcolor{#2563eb}{d}}{\\textcolor{#d97706}{N}} \\mathbf{1}",
+    plainEnglishSentence: [
+      { text: "The global " },
+      { text: "PageRank vector", variableId: "pagerank_vec" },
+      { text: " is the stationary distribution of a random surfer clicking links with " },
+      { text: "damping probability", variableId: "damping_factor" },
+      { text: " across the " },
+      { text: "stochastic hyperlink transition matrix", variableId: "link_matrix" },
+      { text: " and teleporting uniformly across " },
+      { text: "total database documents", variableId: "total_docs" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "pagerank_vec",
+        symbol: "\\mathbf{r}",
+        name: "Stationary PageRank Distribution Vector",
+        color: "emerald",
+        role: "Probability vector whose i-th component represents the long-term visitation probability of document i",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Documents with higher stationary probability possess higher global authority and rank higher in search results.",
+      },
+      {
+        id: "damping_factor",
+        symbol: "d",
+        name: "Damping Constant (Transition Probability)",
+        color: "sapphire",
+        role: "Probability that the surfer follows a hyperlink rather than teleporting (standard d = 0.85)",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Guarantees that the transition matrix is primitive and irreducible, ensuring power iteration converges to a unique positive eigenvector.",
+      },
+      {
+        id: "link_matrix",
+        symbol: "\\mathbf{M}",
+        name: "Hyperlink Column-Stochastic Transition Matrix",
+        color: "crimson",
+        role: "Adjacency matrix where M_ij = 1/L(j) if page j links to page i and 0 otherwise",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Encodes the directed topology of the World Wide Web, distributing each document's rank equally among its outbound citations.",
+      },
+      {
+        id: "total_docs",
+        symbol: "N",
+        name: "Total Database Document Count",
+        color: "amber",
+        role: "Total number of pages indexed in the linked corpus (billions on the modern web)",
+        unit: "count",
+        dimension: "1",
+        explanation:
+          "Normalizes the teleportation distribution so that every document receives a base random jump probability of (1-d)/N.",
+      },
+    ],
+    pedagogicalNote:
+      "PageRank converts subjective human hyperlinking choices into an objective mathematical eigenvector, turning link topology into collective intelligence.",
+    claimRef: 1,
+    historicalSignificance:
+      "The foundational search algorithm that powered Google and revolutionized global information retrieval.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
+  {
+    id: "davinci-motion-scaling-tremor",
+    patentId: "us-6331181-davinci",
+    title: "EndoWrist Master-Slave Tremor Filtration & Motion Scaling",
+    category: "Robotic Telepresence & Micro-Surgical Kinematics",
+    rawLatex:
+      "\\mathbf{x}_{\\text{slave}}(t) = \\frac{1}{K} \\mathcal{F}^{-1}\\{ H_{\\text{LPF}}(j\\omega) \\mathcal{F}\\{\\mathbf{x}_{\\text{master}}(t)\\} \\}",
+    colorizedLatex:
+      "\\textcolor{#059669}{\\mathbf{x}_{\\text{slave}}(t)} = \\frac{1}{\\textcolor{#2563eb}{K}} \\mathcal{F}^{-1}\\{ \\textcolor{#ef4444}{H_{\\text{LPF}}(j\\omega)} \\mathcal{F}\\{\\textcolor{#d97706}{\\mathbf{x}_{\\text{master}}(t)}\\} \\}",
+    plainEnglishSentence: [
+      { text: "The internal " },
+      { text: "slave micro-wrist trajectory", variableId: "slave_pos" },
+      { text: " is generated by scaling down surgeon " },
+      { text: "master console hand motion", variableId: "master_pos" },
+      { text: " by a " },
+      { text: "motion reduction factor", variableId: "scale_factor" },
+      { text: " through a digital " },
+      { text: "low-pass tremor filter", variableId: "lpf_filter" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "slave_pos",
+        symbol: "\\mathbf{x}_{\\text{slave}}(t)",
+        name: "Slave End-Effector Cartesian Position",
+        color: "emerald",
+        role: "Real-time 3D coordinate vector of the micro-surgical forceps inside the patient",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Driven by cable-actuated pulleys through 7 degrees of freedom with sub-millimeter precision.",
+      },
+      {
+        id: "scale_factor",
+        symbol: "K",
+        name: "Kinematic Motion Scaling Factor",
+        color: "sapphire",
+        role: "User-selectable ratio between master hand travel and internal slave travel (K = 3:1 to 10:1)",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "A 50 mm macroscopic hand movement is downscaled to 5 mm at the tissue interface, enabling microscopic vascular anastomoses.",
+      },
+      {
+        id: "lpf_filter",
+        symbol: "H_{\\text{LPF}}(j\\omega)",
+        name: "Digital Low-Pass Tremor Filter Transfer Function",
+        color: "crimson",
+        role: "Frequency response filter with cutoff frequency fc ≈ 6–8 Hz",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Attenuates 6–10 Hz physiological involuntary hand tremors while passing voluntary surgeon guidance unhindered.",
+      },
+      {
+        id: "master_pos",
+        symbol: "\\mathbf{x}_{\\text{master}}(t)",
+        name: "Surgeon Master Input Grip Position",
+        color: "amber",
+        role: "3D kinematic coordinates sampled from surgeon master tool grips at 1000 Hz",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Optical encoders track surgeon hand orientation to replicate natural wrist articulation digitally.",
+      },
+    ],
+    pedagogicalNote:
+      "By decoupling the surgeon's hands from the mechanical fulcrum of the incision port, telepresence restores intuitive eye-hand alignment and full 3D wrist dexterity.",
+    claimRef: 1,
+    historicalSignificance:
+      "Pioneered modern minimally invasive robotic surgery, performing over 12 million procedures worldwide.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-6594844-roomba"] = [
+  {
+    id: "roomba-spiral-coverage",
+    patentId: "us-6594844-roomba",
+    title: "Archimedean Spiral Coverage & Differential Kinematics",
+    category: "Autonomous Mobile Robotics & Coverage Algorithms",
+    rawLatex: "r(\\theta) = r_0 + \\frac{w_{\\text{brush}}}{2\\pi} \\theta",
+    colorizedLatex:
+      "\\textcolor{#059669}{r(\\theta)} = \\textcolor{#2563eb}{r_0} + \\frac{\\textcolor{#ef4444}{w_{\\text{brush}}}}{2\\pi} \\textcolor{#d97706}{\\theta}",
+    plainEnglishSentence: [
+      { text: "The expanding " },
+      { text: "cleaning radius", variableId: "spiral_radius" },
+      { text: " grows linearly from an " },
+      { text: "initial radius", variableId: "initial_radius" },
+      { text: " proportional to " },
+      { text: "brush cleaning swath width", variableId: "brush_width" },
+      { text: " and cumulative " },
+      { text: "angular wheel rotation", variableId: "turn_angle" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "spiral_radius",
+        symbol: "r(\\theta)",
+        name: "Instantaneous Spiral Trajectory Radius",
+        color: "emerald",
+        role: "Radial distance from the spiral initiation center to the robot's center of mass",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Differential wheel speed modulation continuously expands this radius during open floor sweeping.",
+      },
+      {
+        id: "initial_radius",
+        symbol: "r_0",
+        name: "Initial Turning Radius",
+        color: "sapphire",
+        role: "Starting spiral radius at beginning of cleaning cycle (typically ~0.15 m)",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Prevents tire scrubbing while initiating outward rotational sweep from a resting point.",
+      },
+      {
+        id: "brush_width",
+        symbol: "w_{\\text{brush}}",
+        name: "Effective Cleaning Brush Width",
+        color: "crimson",
+        role: "Linear track width covered by counter-rotating brush rollers (w ≈ 0.20–0.25 m)",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Track-to-track pitch equals brush width, ensuring complete floor coverage without uncleaned gaps.",
+      },
+      {
+        id: "turn_angle",
+        symbol: "\\theta",
+        name: "Cumulative Heading Angle",
+        color: "amber",
+        role: "Total integrated angular rotation around the spiral center",
+        unit: "radians",
+        dimension: "1",
+        explanation:
+          "Controlled by differential wheel velocities: omega = (v_right - v_left) / wheelbase.",
+      },
+    ],
+    pedagogicalNote:
+      "Combining deterministic Archimedean spirals with pseudo-random collision turns achieves statistically complete floor coverage without internal map memory.",
+    claimRef: 1,
+    historicalSignificance:
+      "Created the consumer domestic mobile robotics industry, selling over 40 million Roomba units.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["us-7479949-multitouch"] = [
+  {
+    id: "multitouch-pinch-zoom-scale",
+    patentId: "us-7479949-multitouch",
+    title: "Pinch-to-Zoom Dynamic Euclidean Affine Scaling Factor",
+    category: "Human-Computer Interaction & Touch Screen Heuristics",
+    rawLatex:
+      "S(t) = \\frac{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}",
+    colorizedLatex:
+      "\\textcolor{#059669}{S(t)} = \\frac{\\textcolor{#ef4444}{\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|}}{\\textcolor{#2563eb}{\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|}}",
+    plainEnglishSentence: [
+      { text: "The real-time " },
+      { text: "affine zoom magnification scale", variableId: "zoom_scale" },
+      { text: " is the ratio of instantaneous " },
+      { text: "current dual-finger separation distance", variableId: "current_dist" },
+      { text: " to the " },
+      { text: "initial touch contact distance", variableId: "initial_dist" },
+      { text: "." },
+    ],
+    variables: [
+      {
+        id: "zoom_scale",
+        symbol: "S(t)",
+        name: "Affine Magnification Scale Factor",
+        color: "emerald",
+        role: "Multiplicative scaling factor applied to the graphical rendering matrix of the displayed document",
+        unit: "dimensionless",
+        dimension: "1",
+        explanation:
+          "Continuous updates at 60 Hz produce smooth, direct-manipulation zooming of web pages, photos, and maps.",
+      },
+      {
+        id: "current_dist",
+        symbol: "\\|\\mathbf{p}_2(t) - \\mathbf{p}_1(t)\\|",
+        name: "Current Inter-Touch Euclidean Distance",
+        color: "crimson",
+        role: "Geometric separation distance between two concurrent capacitive contact centroids at time t",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Calculated from mutual capacitance sensor grid scans using √((x2-x1)² + (y2-y1)²).",
+      },
+      {
+        id: "initial_dist",
+        symbol: "\\|\\mathbf{p}_2(0) - \\mathbf{p}_1(0)\\|",
+        name: "Initial Gesture Contact Distance",
+        color: "sapphire",
+        role: "Distance between contact points when the two-finger gesture was first recognized",
+        unit: "m",
+        dimension: "L",
+        explanation:
+          "Acts as the baseline reference scale for calculating pinch contraction or spread dilation.",
+      },
+    ],
+    pedagogicalNote:
+      "By eliminating modal zoom buttons and replacing them with continuous direct-finger affine scaling, multi-touch made interaction feel physical and elastic.",
+    claimRef: 1,
+    historicalSignificance:
+      "Defined the smartphone user interface revolution that established the iPhone and modern mobile computing.",
   },
 ];

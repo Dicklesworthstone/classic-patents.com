@@ -373,8 +373,13 @@ export function updateLincolnBuoyKinematics(
   effectiveDraftFt: number,
   paddleDisplayOmegaRadPerS: number,
   isCutaway = false,
+  weightTons = 380,
 ): void {
-  const lincoln = stepLincolnBuoy({});
+  const lincoln = stepLincolnBuoy({
+    inflationPct: bellowsInflationPct,
+    weightTons,
+    shoalDepth: riverShoalDepthFt,
+  });
   const infl = lincolnInflationNorm(bellowsInflationPct, lincoln.inflationNormDivisor);
   const fluid = fluidFrames(16, 8);
   const air = 1 + sampleFluidAt(fluid, 16, 8, 4, 0.25, 0.8);

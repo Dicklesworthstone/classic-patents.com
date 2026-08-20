@@ -9,8 +9,8 @@ describe("PatentVisualDispatcher coverage", () => {
     "utf8",
   );
 
-  test("contains an explicit case for all 54 patents in the library", () => {
-    expect(allPatents.length).toBe(54);
+  test("contains an explicit case for all patents in the library", () => {
+    expect(allPatents.length).toBeGreaterThanOrEqual(55);
 
     const missingCases: string[] = [];
     for (const patent of allPatents) {

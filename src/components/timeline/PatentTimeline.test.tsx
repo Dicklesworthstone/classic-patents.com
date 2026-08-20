@@ -17,9 +17,9 @@ describe("PatentTimeline component", () => {
     const html = renderToStaticMarkup(<PatentTimeline />);
 
     expect(html).toContain("All Milestones");
-    expect(html).toContain("1794");
-    expect(html).toContain("Eli Whitney");
-    expect(html).toContain("US X72");
+    expect(html).toContain("1769");
+    expect(html).toContain("James Watt");
+    expect(html).toContain("GB 913");
     expect(html).toContain("Explore Patent &amp; 3D Model");
   });
 });

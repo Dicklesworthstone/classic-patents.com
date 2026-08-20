@@ -169,6 +169,7 @@ export function OttoEngine3D() {
         delta,
         live.current.govDisplayOmegaRadPerS,
         live.current.flyballRadius,
+        currentRpm,
       );
 
       // Deflagration flame flash at ignition (start of power stroke at 360 deg = 2pi rad)

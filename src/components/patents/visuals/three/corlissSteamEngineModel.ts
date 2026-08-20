@@ -16,7 +16,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { corlissValveCrate } from "@/physics/genericWasm";
 
 export interface CorlissEngineModel {
   rootGroup: THREE.Group;
@@ -529,8 +529,7 @@ export function updateCorlissEngineKinematics(
   model.wristPlate.rotation.z = wristAngle;
 
   // 5. Four Rotary Valve Levers & Pneumatic Dashpot Drop-Cutoff (Claim 1)
-  const ring = cyclicSymmetry(4, 2);
-  const harmonic = 0.05 * cyclicSol(ring, Math.abs(Math.floor(crankAngleRad * 2)) % 4);
+  const harmonic = corlissValveCrate(crankAngleRad).exhaustHarmonic;
   const steamCutoffAngle = cutoffFraction * Math.PI;
 
   model.valveLevers.forEach((lever, idx) => {

@@ -19,7 +19,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { gliddenFlyerCrate } from "@/physics/genericWasm";
 
 export interface GliddenBarbedWireModelNodes {
   rootGroup: THREE.Group;
@@ -560,8 +560,7 @@ export function updateGliddenBarbedWireKinematics(
   isLocked: boolean,
   isCutaway: boolean,
 ) {
-  const flyer = cyclicSymmetry(6, 0.4 + Math.abs(flyerOmegaRadPerS) * 0.03);
-  const flex = 1 + 0.12 * cyclicSol(flyer, 0);
+  const flex = gliddenFlyerCrate(flyerOmegaRadPerS).flyerFlex;
   nodes.flyerGroup.rotation.x += flyerOmegaRadPerS * dt * flex;
   nodes.reelGroup.rotation.x += reelOmegaRadPerS * dt * flex;
 

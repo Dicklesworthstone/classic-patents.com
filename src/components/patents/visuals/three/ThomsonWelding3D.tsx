@@ -43,6 +43,7 @@ export function ThomsonWelding3D() {
 
   const live = useLiveSimParams({
     weldCurrentAmps,
+    clampPressureMpa,
     weldTempCelsius,
     jouleKw: weld.jouleKw,
     isForged: weld.isForged ? 1 : 0,
@@ -145,6 +146,8 @@ export function ThomsonWelding3D() {
         p.jawStudioOffset,
         p.isForged > 0.5,
         p.showSparks,
+        p.weldCurrentAmps,
+        p.clampPressureMpa,
       );
 
       renderer.render(scene, camera);

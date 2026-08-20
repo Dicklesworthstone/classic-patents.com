@@ -337,12 +337,17 @@ export function updateParsonsTurbineKinematics(
   steamSwirlOmegaRadPerS: number,
   showSteamFlow: boolean,
   isCutaway: boolean,
+  rotorRpm = 3000,
+  steamPressureBar = 12.4,
 ) {
   // 1. Rotor Rotation
   nodes.rotorGroup.rotation.x += displayOmegaRadPerS * dt;
 
   // 2. Steam Streamline Particle Advection
-  const parsons = stepParsonsTurbine({});
+  const parsons = stepParsonsTurbine({
+    rotorRpm,
+    inletPressurePsi: steamPressureBar * 14.5038,
+  });
   const fluid = fluidFrames(16, 8);
   const frame = Math.abs(Math.floor(_timeSec * 4)) % 8;
   const pos = nodes.steamPositions;

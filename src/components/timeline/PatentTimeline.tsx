@@ -9,8 +9,8 @@ import { allPatents } from "@/data/patents";
 type EraGroup = "all" | "early" | "gilded" | "modern";
 
 const ERA_TABS: { id: EraGroup; label: string; range: string }[] = [
-  { id: "all", label: "All Milestones", range: "1794–1979" },
-  { id: "early", label: "Early Republic & Industrial", range: "1794–1869" },
+  { id: "all", label: "All Milestones", range: "1769–1979" },
+  { id: "early", label: "Early Republic & Industrial", range: "1769–1869" },
   { id: "gilded", label: "Gilded Age & Electrification", range: "1870–1909" },
   { id: "modern", label: "Atomic, Silicon & Computing", range: "1910–1979" },
 ];

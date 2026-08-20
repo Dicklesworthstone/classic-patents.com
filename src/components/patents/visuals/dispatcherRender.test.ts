@@ -5,8 +5,8 @@ import { allPatents } from "@/data/patents";
 import { PatentVisualDispatcher } from "./index";
 
 describe("PatentVisualDispatcher React SSR rendering", () => {
-  test("renders without throwing for all 54 catalog patents in SSR environment", () => {
-    expect(allPatents.length).toBe(54);
+  test("renders without throwing for all catalog patents in SSR environment", () => {
+    expect(allPatents.length).toBeGreaterThanOrEqual(55);
 
     for (const patent of allPatents) {
       const element = React.createElement(PatentVisualDispatcher, { patentId: patent.id });

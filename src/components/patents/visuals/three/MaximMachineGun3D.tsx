@@ -153,6 +153,7 @@ export function MaximMachineGun3D() {
         p.isCutaway,
         p.fireCycleWrapRad,
         p.muzzleFlashSinThreshold,
+        p.fireRateRpm,
       );
 
       flashLight.intensity = isMuzzleFlash ? 4.8 : 0;

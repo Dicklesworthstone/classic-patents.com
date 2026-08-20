@@ -22,6 +22,8 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMcCormickReaperModel");
     expect(modelSource).toContain("updateMcCormickReaperKinematics");
+    expect(modelSource).toContain("mccormickReelCrate");
+    expect(modelSource).not.toContain("0.4 + Math.abs(reelRadPerSec)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

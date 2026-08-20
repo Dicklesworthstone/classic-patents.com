@@ -36,6 +36,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
 
   const live = useLiveSimParams({
     ngPercentage,
+    capEnergyJoules: params.capEnergyJoules ?? 1.2,
     detonationVelocityMps,
     isFuseLit,
     shockwaveGlow: nobel.shockwaveGlow,
@@ -153,6 +154,8 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
         p.shockwaveGlow,
         p.stickDisplayOmegaRadPerS,
         p.isCutaway,
+        p.ngPercentage,
+        p.capEnergyJoules,
       );
 
       renderer.render(scene, camera);

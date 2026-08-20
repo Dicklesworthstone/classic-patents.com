@@ -678,12 +678,13 @@ export function updateOttoEngineKinematics(
   nodes: OttoEngineModelNodes,
   materials: OttoEngineMaterials,
   crankAngle: number,
-  _compressionRatio: number,
+  compressionRatio: number,
   cutawayMode: boolean,
   running: boolean,
   dt: number,
   govDisplayOmegaRadPerS: number,
   flyballRadius: number,
+  engineRpm = 180,
 ) {
   // 1. Crankshaft & Twin Flywheels Rotation
   nodes.crankshaftGroup.rotation.z = crankAngle;
@@ -704,7 +705,7 @@ export function updateOttoEngineKinematics(
   nodes.connectingRod.rotation.z = rodAngle;
 
   // 4. 2:1 Lay Shaft (Camshaft) Half-Speed Rotation
-  const otto = stepOttoEngine({});
+  const otto = stepOttoEngine({ engineRpm, compressionRatio });
   const cycle = fourStrokeCycle(crankAngle);
   const camAngle = cycle.camAngleRad;
   nodes.sideShaftGroup.rotation.x = camAngle;

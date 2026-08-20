@@ -510,8 +510,10 @@ export function updateBellTelephoneKinematics(
   electronStudioSpeed: number,
   showAcousticWaves: boolean,
   isCutaway: boolean,
+  voiceAmplitude = 75,
+  acousticFrequencyHz = 440,
 ) {
-  const bell = stepBellTelephone({});
+  const bell = stepBellTelephone({ voiceAmplitude, acousticFrequencyHz });
   const acousticVibe = Math.sin(timeSec * acousticDisplayOmegaRadPerS);
   const displScale = diaphragmStudioScale;
 

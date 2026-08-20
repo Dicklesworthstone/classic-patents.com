@@ -19,6 +19,8 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildOttoEngineModel");
     expect(modelSource).toContain("updateOttoEngineKinematics");
+    expect(modelSource).toContain("stepOttoEngine({ engineRpm, compressionRatio })");
+    expect(modelSource).not.toContain("stepOttoEngine({})");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

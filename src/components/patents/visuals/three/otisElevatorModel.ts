@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { otisSheaveCrate } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 
 export interface OtisElevatorModelNodes {
@@ -455,15 +455,16 @@ export function updateOtisElevatorKinematics(
   isRopeSevered: boolean,
   springBowStudioY: number,
   isPawlEngaged: boolean,
+  cabPayloadKg = 650,
+  cableTensionPct = 100,
 ) {
   // 1. Hoisting Cable State
   nodes.tautCable.visible = !isRopeSevered;
   nodes.severedCableTop.visible = isRopeSevered;
   nodes.severedCableBottom.visible = isRopeSevered;
 
-  const otis = stepOtisElevator({});
-  const sheave = cyclicSymmetry(6, 0.4);
-  const sheaveFlex = 1 + 0.15 * cyclicSol(sheave, 0);
+  const otis = stepOtisElevator({ cabPayloadKg, cableTensionPct });
+  const sheaveFlex = otisSheaveCrate().sheaveFlex;
 
   // 2. Leaf Spring Elastic Deflection
   // Under tension (100%), spring bows upward in the center (+0.25m)

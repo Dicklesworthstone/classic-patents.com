@@ -340,8 +340,10 @@ export function updateEdisonBulbKinematics(
   vacuumTorr: number,
   showGasMolecules: boolean,
   isCutaway: boolean,
+  voltage = 110,
+  filamentLength?: number,
 ): { incandescenceIntensity: number; glowColor: THREE.Color } {
-  const edison = stepEdisonBulb({});
+  const edison = stepEdisonBulb({ voltage, filamentLength });
   const isGlowing = incandescenceIntensity > edison.glowThreshold;
   const glowColor = new THREE.Color(blackbodyRgb(filamentTempKelvin));
 

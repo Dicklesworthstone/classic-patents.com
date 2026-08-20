@@ -51,7 +51,7 @@ export default function HomePage() {
             href="#catalog"
             className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-sans font-bold transition-colors shadow-sm flex items-center gap-2"
           >
-            <span>Explore All 54 Inventions</span>
+            <span>Explore All {allPatents.length} Inventions</span>
             <ArrowRight className="w-4 h-4" />
           </a>
           <Link
@@ -59,7 +59,10 @@ export default function HomePage() {
             className="px-5 py-2.5 rounded-xl bg-parchment-100 hover:bg-parchment-200 dark:bg-ink-900 dark:hover:bg-ink-800 border border-parchment-300 dark:border-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-sans font-bold transition-colors shadow-2xs flex items-center gap-2"
           >
             <Compass className="w-4 h-4 text-amber-600" />
-            <span>Interactive Timeline (1794–1979)</span>
+            <span>
+              Interactive Timeline ({allPatents[0]?.grantDate.slice(0, 4) ?? "1769"}–
+              {allPatents[allPatents.length - 1]?.grantDate.slice(0, 4) ?? "1979"})
+            </span>
           </Link>
         </div>
 

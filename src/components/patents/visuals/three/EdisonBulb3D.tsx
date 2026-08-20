@@ -140,6 +140,7 @@ export const EdisonBulb3D = memo(() => {
         p.vacuumTorr,
         p.showGasMolecules,
         p.isCutaway,
+        p.appliedVoltage,
       );
 
       renderer.render(scene, camera);

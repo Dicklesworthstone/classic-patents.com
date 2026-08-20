@@ -22,6 +22,8 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildRenoEscalatorModel");
     expect(modelSource).toContain("updateRenoEscalatorKinematics");
+    expect(modelSource).toContain("renoSheaveCrate");
+    expect(modelSource).not.toContain("0.4 + Math.abs(sheaveOmegaRadPerS)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

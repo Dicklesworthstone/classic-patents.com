@@ -20,7 +20,7 @@
  */
 
 import * as THREE from "three";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { sholesBasketCrate } from "@/physics/genericWasm";
 import {
   sholesCarriageStudioX,
   sholesKeyStudioY,
@@ -716,10 +716,10 @@ export function updateSholesTypewriterKinematics(
   ratchetReleasePct: number,
   displayTypebarIndex: number,
   isCutaway: boolean,
+  typingSpeedWpm = 40,
 ) {
-  const sholes = stepSholesTypewriter(0, 0);
-  const basket = cyclicSymmetry(Math.max(4, nodes.typeBars.length), 0.35);
-  const strikeFlex = 1 + 0.2 * cyclicSol(basket, displayTypebarIndex);
+  const sholes = stepSholesTypewriter(typingSpeedWpm, 0);
+  const strikeFlex = sholesBasketCrate(nodes.typeBars.length, displayTypebarIndex).strikeFlex;
   nodes.activeHammer.rotation.x = -ratchetReleasePct * sholes.hammerPitchAmp * strikeFlex;
 
   nodes.typeBars.forEach((bar, i) => {

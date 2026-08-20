@@ -145,6 +145,8 @@ export function ParsonsTurbine3D() {
         p.steamSwirlOmegaRadPerS,
         p.showSteamFlow,
         p.isCutaway,
+        p.turbineRpm,
+        p.steamPressureBar,
       );
 
       renderer.render(scene, camera);
