@@ -47,7 +47,6 @@ import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
-import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { noyceIcParallelReadings } from "./noyceIcEdition";
