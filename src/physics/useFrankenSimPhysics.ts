@@ -34,7 +34,6 @@ class PatentTransport {
     const nowS = typeof performance !== "undefined" ? performance.now() / 1000 : 0;
     this.scheduler = new TickScheduler(tickS, nowS, 3);
 
-    // Create initial envelope
     this.lastFrame = {
       tick: 0,
       atMs: nowS * 1000,
@@ -50,11 +49,17 @@ class PatentTransport {
     return () => this.listeners.delete(listener);
   }
 
-  pump(nowMs: number, updater: () => Partial<UniversalPatentPhysicsTelemetry> | null) {
+  pump(
+    nowMs: number,
+    updater: (
+      prev: UniversalPatentPhysicsTelemetry,
+      dt: number,
+    ) => Partial<UniversalPatentPhysicsTelemetry> | null,
+  ) {
     let ran = 0;
     this.scheduler.pump(nowMs / 1000, () => {
       ran++;
-      const update = updater();
+      const update = updater(this.lastFrame.telemetry, this.tickS);
       if (update) {
         this.lastFrame = {
           ...this.lastFrame,
@@ -81,7 +86,13 @@ class PatentTransport {
 class TransportBus {
   private transports = new Map<string, PatentTransport>();
   private rafId: number | null = null;
-  private updaters = new Map<string, () => Partial<UniversalPatentPhysicsTelemetry> | null>();
+  private updaters = new Map<
+    string,
+    (
+      prev: UniversalPatentPhysicsTelemetry,
+      dt: number,
+    ) => Partial<UniversalPatentPhysicsTelemetry> | null
+  >();
 
   getTransport(
     patentId: string,
@@ -98,9 +109,16 @@ class TransportBus {
 
   registerUpdater(
     patentId: string,
-    updater: () => Partial<UniversalPatentPhysicsTelemetry> | null,
+    updater: (
+      prev: UniversalPatentPhysicsTelemetry,
+      dt: number,
+    ) => Partial<UniversalPatentPhysicsTelemetry> | null,
   ) {
     this.updaters.set(patentId, updater);
+  }
+
+  unregisterUpdater(patentId: string) {
+    this.updaters.delete(patentId);
   }
 
   private startPump() {
