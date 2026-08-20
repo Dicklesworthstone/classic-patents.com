@@ -1,0 +1,886 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---
+UNITED STATES PATENT OFFICE
+THEODORE H. MAIMAN, PACIFIC PALISADES, CALIF.
+ASSIGNOR TO HUGHES AIRCRAFT COMPANY, CULVER CITY, CALIF.
+US PATENT 3,353,115
+RUBY LASER SYSTEM
+Filed April 13, 1961, Serial No. 102,698. 5 Sheets-Sheet 1
+[Drawings: Figures illustrating helical flash lamp ruby laser head construction, three-level energy state transitions and population inversion, absorption/fluorescence spectra, Fabry-Perot resonator modes, Porro retroreflector prisms, and Colidar optical radar system.]
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 10 ---
+UNITED STATES PATENT OFFICE
+THEODORE H. MAIMAN, PACIFIC PALISADES, CALIF.
+ASSIGNOR TO HUGHES AIRCRAFT COMPANY, CULVER CITY, CALIF.
+US PATENT 3,353,115
+RUBY LASER SYSTEM
+Filed April 13, 1961, Serial No. 102,698. 5 Sheets-Sheet 2
+[Drawings: Figures illustrating helical flash lamp ruby laser head construction, three-level energy state transitions and population inversion, absorption/fluorescence spectra, Fabry-Perot resonator modes, Porro retroreflector prisms, and Colidar optical radar system.]
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 10 ---
+UNITED STATES PATENT OFFICE
+THEODORE H. MAIMAN, PACIFIC PALISADES, CALIF.
+ASSIGNOR TO HUGHES AIRCRAFT COMPANY, CULVER CITY, CALIF.
+US PATENT 3,353,115
+RUBY LASER SYSTEM
+Filed April 13, 1961, Serial No. 102,698. 5 Sheets-Sheet 3
+[Drawings: Figures illustrating helical flash lamp ruby laser head construction, three-level energy state transitions and population inversion, absorption/fluorescence spectra, Fabry-Perot resonator modes, Porro retroreflector prisms, and Colidar optical radar system.]
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 10 ---
+UNITED STATES PATENT OFFICE
+THEODORE H. MAIMAN, PACIFIC PALISADES, CALIF.
+ASSIGNOR TO HUGHES AIRCRAFT COMPANY, CULVER CITY, CALIF.
+US PATENT 3,353,115
+RUBY LASER SYSTEM
+Filed April 13, 1961, Serial No. 102,698. 5 Sheets-Sheet 4
+[Drawings: Figures illustrating helical flash lamp ruby laser head construction, three-level energy state transitions and population inversion, absorption/fluorescence spectra, Fabry-Perot resonator modes, Porro retroreflector prisms, and Colidar optical radar system.]
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 10 ---
+UNITED STATES PATENT OFFICE
+THEODORE H. MAIMAN, PACIFIC PALISADES, CALIF.
+ASSIGNOR TO HUGHES AIRCRAFT COMPANY, CULVER CITY, CALIF.
+US PATENT 3,353,115
+RUBY LASER SYSTEM
+Filed April 13, 1961, Serial No. 102,698. 5 Sheets-Sheet 5
+[Drawings: Figures illustrating helical flash lamp ruby laser head construction, three-level energy state transitions and population inversion, absorption/fluorescence spectra, Fabry-Perot resonator modes, Porro retroreflector prisms, and Colidar optical radar system.]
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 10 ---
+BEST AVAILABLE copy
+
+nitcd States Patent O??cc
+
+3,353,115
+Patented Nov. 14, 1967
+
+2
+
+1
+
+emission and a coherent wave propagating through the
+3,353,115
+
+\
+
+RUBY LASER SYSTEMS
+Theodore H. Malman, Los Angeles, Calif., asslgnor to
+Hughes Aircraft Company, Culver City, Calif” a cor
+poration of Delaware
+Continuation of application Ser. No. 102,698, Apr. 13,
+1961. This application Nov. 29, 1965, Ser. No. 516,830
+2 Claims. (Cl. 331-945)
+
+This application is a continuation of my copending IO
+
+medium. In addition, the frequency of operation of any
+given gas laser may be effectively tuned only by Stark or
+Zeeman effects which can provide a tuning range of only
+
+approximately 5X10" cycles per second. Further, the
+construction of a gas cell is extremely critical in that the
+
+end plates must be highly re?ective and perfectly parallel
+so that the many re?ections required because of the low
+
+density gaseous material will be accomplished.
+It is therefore an object. of the present invention to
+
+application Ser. No. 102,698 entitled, Laser Systems,
+
+provide an operable, low noise. :f?cient laser.
+
+?led Apr. 13, 1961, now abandoned.
+This invention relates to the generation, ampli?cation,
+and utilization of electromagnetic waves in the infrared,
+
+chanically stable and of noncritical construction.
+it is another object to provide a laser which operates
+
+It is another object to provide a laser which is me-
+
+visible and. ultraviolet portion of the spectrum, and more 15 at room temperature or cryogenic temperatures for addi
+tional simplicity and even greater ?exibility in design
+speci?cally to lasers and laser systems. A laser, the term
+
+being an acronym for light ampli?cation by stimulated
+emission of radiation, is a device capable of generating
+
+parameters.
+
+It is another object to provide a laser which does not
+require critical vacuum or vapor pressure techniques and
+is similar to that of a maser and is therefore also referred 20 which operates in a medium of high dielectric constant.
+
+or amplifying coherent light. The principle of operation
+to as an optical maser.
+
+Much effort has been'expcnded in the ?elds of elec
+tronics and physics in attempts to generate or amplify
+
+It is another object to provide a laser capable of much
+
+higher power handling.
+
+It is another object to provide a laser which is tun
+able over aproximately a 5X 1011 cycles per second range.
+coherent light. Such an achievement, it was known, would
+It is another object to provide an optical radar sys
+make available a vast new region of the electromagnetic 25
+tem utilizing the advantages of a laser.
+spectrum for a multitude of purposes including com
+
+municalions and metrology (measurements) applications.
+
+Briefly, these and other objects are achieved in accord
+
+Such coherent light would have the properties of being
+
+ance with the present invention in a system including a
+
+monochromatic and of having its component waves prop
+
+solid state negative temperature medium.
+
+a gating in phase with each other. Thus, as at radio or 80
+
+In one example a segment of solid state active laser ma
+
+terial such as a cylindrical ruby (M203 doped with
+CtgOg) rod with re?ecting coating at each end is coaxial
+concentrated at or extremely near to a single frequency
+ly placed in a helical ?ash lamp. White light or, predomi
+and be utilized in methods analogous to those at radio
+nantly, the green and blue components thereof, is absorbed
+frequencies.
+Ordinary techniques of generating or amplifying elec 36 by the ruby; and red light is emitted therefrom and cou
+pled out of the system through a hole in the re?ective
+tromagnctic waves, including microwave maser tech
+coating at one end of the rod. The re?ecting coatings pro
+niqucs, cannot be extended usefully into the optical fre
+vide a regeneration related to the coupling between the
+quencies because such techniques require components,
+reflecting wave, traveling back and forth many times, and
+such as maser cavities, for supporting wave oscillations
+which must have physical dimensions of the order of a 40 the emitting atoms. In other words, a resonating, stand
+ing wave is provided which derives energy from the nega
+wavelength. Obviously, such components can neither be
+tive temperature dielectric. Thus the rod may be con
+manufactured nor meaningfully utilized at optical fre
+sidered as a resonator having different Q's for different
+qucncics where the wavelengths are of the order of
+modes of oscillation. The mode having the highest Q
+atomic dimensions. When it is attempted to use cavities
+which have dimensions corresponding to a large number 45 corresponds to waves traveling nearly parallel to the rod
+axis since it supplies the highest degree of regeneration.
+of wavelengths, many modes are supported, coherence is
+
+microwave frequencies, a great deal of energy could be
+
+degraded, and impracticably large sources of pumping
+power are required.
+
+A laser has been proposed by Schawlow and Townes,
+
+This effect causes the output to be an extremely parallel
+beam so that it propagates immense distances without
+
+spreading. Inherent in the regeneration process is the
+
+see United States Patent No. 2,929,922, issued March 60 coherent amplification of an extremely narrow band of
+frequencies, thus providing a menochromatic output.
+22, 1960, which suggests using as the negative tempera
+Additional discussion of principles of operation, of fur
+ture medium certain gaseous state materials such as al
+ther objects and advantages, including uses, and of other
+kali metal vapors. Such materials may be shown to have
+examples will be presented below in connection with a
+energy levels in their atomic systems corresponding to
+appropriate optical frequencies for absorbing optical 55 description of the accompanying drawings in which:
+FIG. 1 is an energy level diagram for the atoms of a
+pump energy to invert the population from the stable
+
+equilibrium state and thus provide the material with
+
+substance exhibiting laser properties;
+
+FIG. 2 is a schematic diagram illustrating optical pump
+equilibrium state. Then by stimulation or spontaneous
+ing of negative temperature laser material;
+relaxation the atomic system falls back to its normal 60
+FIG. 3 is a schematic diagram of means for optically
+equilibrium state by one or more steps emitting energy
+pumping the laser material with sunlight energy;
+what is known as a negative temperature or excited, non
+
+of certain optical frequencies.
+
+FIG. 4 is a schematic diagram of one embodiment of I
+
+Such proposed gaseous state devices are of great inter
+the present invention which utilizes a helical gas-?lled
+est its theoretical models and represent signi?cant aca
+?ash tube for optical pumping of the laser material;
+65
+demic advances, however, they have not been shown to
+FIG. 5 is a diagram of an alternative embodiment utiliz
+provide it not generation or ampli?cation of light. In addi
+ing a hollow gas-?lled cylinder for optical pumping of the
+tion, the structure of gaseous state systems is complex and
+laser material;
+requires the mainttenance of critical vapor pressures and
+FIG. 6 is another embodiment of the present invention
+temperatures. Impurities in the gas is another very serious 70 which utilizes a hollow cylindrical gas-filled optical pump
+problem. The inter-atomic spacing of the gas severely
+ing means which is radially separated from the active
+
+limits the ef?ciency of coupling between the stimulated
+
+laser material by a ?uorescent material;
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 10 ---
+BEST AVAILABLE COPY
+
+3,353,115
+FIG. 7 is an energy level diagram illustrating the
+
+method of operation of the embodiment of FIG. 6;
+FIG. 8 is a schematic diagram of an embodiment of
+the invention in which the active laser material is a hollow
+
+4
+
+3. Because of the broadness of region 3, doping atoms,
+which for example may be the ‘chromium atoms, may
+accept pumping energy over a correspondingly broad
+band. The atoms thus excited may then decay from the
+
+region 3 back to the ground state or, alternatively, they
+may decay to level 2 corresponding to E2 and thence
+to level 1. The latter course is de?nitely the favored one
+and the atoms in decaying to level 2 do not emit energy.
+FIG. 9 is a cut-away view of an embodiment of the
+In other words, it is a radiationless thermal type of transi
+present invention in which the laser material is refrig
+tion which funnels the energy distributed in the board
+10 region 3 into the very narrow region 2. The energy level 2
+erated;
+FIG. 10 is a diagram of a segment of laser material;
+is in fact a single energy level, or may in the presence of
+FIG. II is a diagram of a coated segment of laser
+a magnetic ?eld be a doublet, and the atoms of this state
+material;
+of excitation will emit the correspondingly discrete fre
+FIG. 12 is a diagram of a segment of laser material
+v31 corresponding to the difference between level
+which is surrounded by a coolant having a high index 15 quency
+2 and level 1 that is liq-E1 when they are appropriately
+
+cylinder surrounding a cylindrical gas-?lled flash tube,
+the entire assembly being surrounded by a second hollow
+cylinder of coolant of a high index of refraction;
+
+of refraction;
+
+FIG. 13 is a schematic diagram of a portion of a laser
+system illustrating the use of an interferometer;
+
+stimulated or triggered to do so. Further, when an ap
+
+propriate stimulation does occur, the atoms in the par
+
+ticular segment of laser material will fall together or emit
+FIGS. 14 and I5 are schematic diagrams illustrating
+their radiated energy coherently with each other and with
+20
+additional types of interferometers;
+the stimulating wave. Thus it may be seen that the mecha
+FIGS. 16 and 17 are diagrams of a laser system in
+nism is a tunneling of energy from a broadband inco~
+which the optical pump utilizes an exploding wire; and
+herent source into a discrete frequency that is mono
+FIG. 18 is a schematic diagram of a practical colidar
+chromatic cohercnt radiation.
+system utilizing a laser.
+Referring to FIG. 2, there is shown a schematic rcprcs
+The laser to be herein below described utilizes the 26
+entation of the mechanism of optically pumping the atoms
+interaction of electromagnetic radiation with‘ a material
+such as those of chromium in a ruby rod 10. A light
+having an appropriate set of discrete energy levels. Con
+pump 12 emits a high intensity “white“ light or, in this
+sider. for example, a pair of such levels with energies E1
+example, it may be broadly green, toward the ruby rod
+and I3, where E, is greater than E‘. An electromagnetic
+30 10. The broadband light thus radiated includes at least
+wave of frequency
+VII:
+
+Ez-El
+
+some light in the frequency range #31. This light is ab
+sorbed by the ruby rod and causes the doping atoms to
+be excited in the energy state represented by region 3
+of the diagram of FIG. I. This excitation is equivalent
+
+where h is Planck's constant, coupled to the system stimu
+lates both absorption and emission. In other words, atoms 35 to an inversion of the population of the chromium atoms
+in the lower level make transitions to the upper level, each
+absorbing energy E=m and similarly upper level atoms
+are stimulated downwardly, each of these giving up energy
+to the wave by radiating a like quantum of energy. The
+
+as discussed above. The excited atoms then relax by ther
+mal processes down to the level 2 and may remain there
+
+until stimulated to fall to the level 1 thereby emitting the
+desired monochromatic light of frequency v21. This stimu
+
+net absorption of the radiating wave interacting with the 40 lation may be by an external source of radiation at fre
+quency m, or it may be triggered spontaneously as by
+system is proportional to Nx-Ng where N, and N, are
+respectively the number of atoms in these two levels.
+
+optical noise. When the energy at frequency 11,, is emitted
+
+Since in thermal equilibrium N1 is greater than N, the
+indicated difference is positive and a wave propagating
+
+from the atoms in the ruby rod 10 it causes a wave to
+
+propagate through the rod and if the wave is parallel
+the length of the material is attenuated.
+‘ 46 to the axis it may reflect repeatedly from the ends of the
+rod. If the rod is of an appropriate length a standing
+In a substance with a third energy level E, higher
+wave 14 may be set up. In either event the repeated
+than either of the other two levels, energy can be supplied
+re?ections through the material stimulate the emission of
+to the system by a radiating wave of frequency
+substantially all the atoms from level 2 to their ground
+v 3i =E3—'I§1
+state level 1. The emission of the enrcgy at frequency 1121
+h
+combines in phase with the stimulating wave 14 thus
+If other parameters, and, in particular, relaxation times,
+adding coherently with it. This energy may then be
+in the material are suitably related, an inverted popula
+coupled out of the rod as a beam 16 which is mono
+tion will be produced such that N, is greater than N1;
+chromatic at frequenvy v3‘ and which is traveling or prop
+then the net interaction with a radiating wave of frequency 56 agating in a direction parallel to the axis of the ruby
+m is emission and the wave is ampli?ed. Also, by provid
+rod 10.
+‘
+ing a feedback mechanism oscillation can be produced.
+FIG. 3 illustrates an example of the invention in which
+Visible light covers the electromagnetic spectrum ap
+the light pump 12 of FIG. 2 is the sun or some other
+proximately 4X10" cycles per second, that is, red light
+source of parallel “whitc" light. The lens 18 focuses the
+
+to approximately 7.5)(10H cycles per second which is 60 light so that it is of relatively high intensity in a region
+violet light. In substance as described above with energy
+levels such that m lies in this frequency range can there
+
+20 where an element of active laser material 22 is dis
+
+fore amplify or generate visible light.
+Referring speci?cally to FIG. 1 an energy level diagram
+
+light in the region of the laser material. The mirror 24
+
+posed. An auxiliary mirror 24 may further intensify the
+
+may be a spherical re?ector which merely sends the un
+is illustrated for the atoms of a material such as A120, 65 absorbed. pumping light 'back through the focal point of
+which may exhibit laser action in accordance with the
+the lens 18 and thence through the laser material 22 a
+present invention. Level I may be considered the ground
+second time.
+state corresponding to E1 and region 3 in the relatively
+Referring to FIG. 4, an embodiment of the invention
+high energy state corresponding to E, which is actually a
+is shown in which an active laser rod 26 is disposed
+broadband of energy levels rather than a discrete energy 70 coaxially within a helical gas-?lled ?ash tube 28. The ends
+level. The atoms, or ions, as the case may be, are excited
+of the rod 26 may be suitably plated as by a partial coat
+or pumped from the level 1 to the region 3 by means of
+ing of silver in order to provide the reptitive re?ections
+
+an optical pumping source having the energies or fre
+of the monochromatic emitted light. The system of stimu
+quencies m corresponding to the difference between the
+latton is so efficient that a plating 26 which will provide
+energy of level 1 and those of the levels throughout region 76 approximately 10 percent reflection is adequate. One end
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 10 ---
+BEST AVAILABLE COPY
+
+3,353,115
+‘of the rod 30 has a. nonre?ective opening 32 in the end
+
+6
+
+FIG. 10 illustrates schematically a segment of laser
+
+plating to provide unobstructed passage of the coherent
+
+material 104 for purposes of illustrating internal re?ec
+
+monochromatic beam 34 as shown. A power supply 36
+provides the ?ashing energy for the tube 28. An outer en
+
+coated but is merely surrounded by material of a low
+
+closing cylinder 38 is provided which has a very highly
+
+re?ecting inner surface for re?ecting the pumping energy
+repeatedly through the rod 26 for improved efficiency of
+the system as compared with operation when the light
+energy of the tube 28 is permitted to radiate inde?nitely
+in all directions causing only a fraction of its energy to
+pass through the rod 26.
+
+7
+
+Referring to FIG. 5, a rod of active laser material 40
+
+is shown which again has re?ectively coated ends 42, 44
+with an opening 46 in the plating 44 to permit passage of
+the laser output beam 48. The light pump in this example
+is a hollow cylinder 50 which is coaxially disposed about
+
+tions of the stimulating wave when the segment 15 not
+
+index of refraction, such as air. A ray of energy 106 is
+
+shown as propagating parallel with the axis of the rod
+and therefore never re?ects against the side of the segment
+104. A ray 108, however, has a radial component of di
+rection and re?ects, as shown, off the side boundary of
+the segment 104. Such re?ections cause two deleterious
+
+effects. One is that the effective length of the resonating
+segment is greater than that for an axially traveling ray
+such as 106. Thus the ray 108 may represent a component
+of energy at a frequency slightly different from the de
+
+sired or designed frequency of operation. Secondly, the
+ray 108, if it finds its way out of the coupling hole 110
+of the segment 104, will cause a spreading of the beam
+thereby detracting from the otherwise extremely narrow
+beam of the laser and contributing to its noncohcrcnce. A
+
+the rod 42 with the radial space thercbetween being ?lled
+with a ?ashing gas 52. Appropriate electrodes 54 and 56
+at opposite ends of the cylinder 50 are energized by a
+power supply 58 to cause the gas 52 to emit high intensity 20 ray 112‘propagating in a direction even further removed
+from that of the axis of the segment may obviously rc
+“white“ light when desired. Again, the inner surface of
+vcrberate substantially endlessly through the segment
+' the cylinder 50 is highly re?ective for added efficiency of
+causing by its interference with the desired energy a de
+the light pump mechanism.
+crease in the coherence and narrowness of bandwidth of
+FIG. 6 illustrates an embodiment of the invention in
+which a rod 60 of active laser material similar to rods 26 25 the laser output.
+To minimize the deleterious effects of the rays 108 and
+and 42 is disposed coaxially within ahollow ?ash tube 62.
+112 of FIG. 10 a coating 114 may be applied to an active
+The radial space between the rod 60 and the ?ash tube 62
+laser segment 116 as illustrated in FIG. ll. The coating
+is filled with a fluorescent material 64, such as ?uorescein.
+114 may be chosen to be transparent to the pumping
+The ?uorescent material e?‘iciently absorbs the "white"
+light emitted by the ?ash tube 62_and re-emits predomi-' 30 energy but highly absorptive of the frequency of light
+energy near to that of the desired laser output frequency
+nantly green light which is more efficiently absorbed by
+so that rays 118 and 120 which are not parallel to the
+the laser rod 60. Thus, as illustrated in FIG. 7, the broad
+axis 122 of the segment are absorbed at the boundary by
+band “white“ light 66 is directed into the ?uorescein
+the coating 114 and hence do not degrade the desired
+which re-emits incoherent green light predominantly in
+characteristics of the output beam 124.
+the region 3 of the material discussed in connection with
+FIG. 12 illustrates an alternative system for minimiz
+the description of FIG. 1. Thus the ?uorescein effectively
+ing the deleterious effects due to the reverberation of non
+funnels the "whitc“ light into green light which energy is
+parallel rays of the active laser segment 126. The seg
+further funneled and subsequently emitted as a single
+
+ment is shown surrounded by a coolant material 128 hav
+frequency or monochromatic light by the laser material,
+as indicated by the heavy vector 68 between lever 2 and 40 ing a high index of refraction in immediate contact with
+
+the cylinder surrounding the tube 62 may be highly
+polished for even greater efficiency of pumping.
+
+the surface of the segment 126. Again an axially directed
+ray 130 which is propagated back and forth along the
+length of the scgment 126 can ultimately be coupled out
+
+tion is emitted in a radial direction and must therefore
+
+face with a material such as air. The prime reason for
+
+level 1 of FIG. 7. Again in FIG. 6 the inner surface of
+
+of the segment resonator as a portion of the laser Output
+Referring to FIG. 8 there is illustrated an example of
+the invention in which the active laser material is in the 45 beam. Nonparallel rays 132, 134 strike the side boun
+daries of the segment 126 and tend to be transmitted
+form of a hollow cylinder 70 within which is coaxially
+through the material of high index of refraction where
+disposed a cylindrical ?ash tube 72. Thus when the ?ash
+they would otherwise be re?ected by the boundary sur
+tube is energized, substantially all of its pumping radia
+
+pass through the laser material. The laser material 70 is 60 this is that the critical angle between the rays 132, 134
+incident upon the boundary is increased in proportion to
+in turn coaxially surrounded by a cylinder 74 ?lled with a
+
+the ratio of n; to n; where n1 is the index of refraction
+coolant 76. The coolant 76 may be chosen to havc'a high
+of the material beyond the boundary. The critical angle
+index of refraction for the advantages and purposes dis
+is de?ned as that angle between the incident ray and a
+cussed below. Cylinder 74 may have a highly polished in
+ternal surface for re?ecting energy of the ?ash tube 72 as line normal to the boundary at which substantially all
+the energy transmits the boundary instead of being re
+back through the laser material 70.
+flccted by it. It is highly desirable that the critical angle
+. Referring to FIG. 9, an embodiment of the invention
+
+is shown in which the laser material is refrigerated to
+liquid nitrogen temperatures for the purpose of making
+its output beam even more purely monochromatic be
+
+_be as large as possible so as to minimize the energy
+
+which is re?ected by the boundary. In other words, it is
+60 desired to transmit the nonparallel rays 132, 134 out of
+
+cause the line width of the laser transition (frequency m)
+
+the laser material where they may be dissipated without
+
+thermally conductive rod 88 which may be of copper or
+
+A practical example of a material having a suitably high
+index of refraction, as well as being an effective coolant,
+
+interfering with the laser regeneration mechanism and
+is much sharper in most solids at low temperature. A rod
+the output beam 130. It is apparent that if 111 is as large
+78 of active laser material has plated ends 80 and 82 with
+as It; the critical angle would be 90° and, optically speak
+a coupling hole 84 in the upper end for emitting the laser
+ing, there would be no boundary, so that even energy
+beam 86. The opposite end of the rod is mounted on a 65 grazing the surface would be transmitted thcrethrough.
+
+sapphire. The major portion of the rod 88 is immersed
+in liquid nitrogen 90 within a Dewar ?ask 92. A hollow
+
+1s diodomethane which has an index of refraction of 1.75
+
+cylindrical ?ash tube 94 is disposed coaxially about the 70 which compares to the index of refraction of ruby which
+laser rod 78 and is energized from a power supply 96
+is approximately 1.76.
+through a set of annular electrodes 98 disposed at op
+posite ends of the gas tube 94. A further hollow cylinder
+
+It is useful to provide a coolant for the active laser
+material in order to control its frequency of operation
+since the magnitude of the energy level 2 in a solid state
+
+is disposed coaxially about the ?ash tube 94 and is filled
+with a coolant ‘102 to cool the ?ash tube 94.
+76 substance is dependent upon temperature. This need not
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 10 ---
+BEST AVAILABLE COPY
+
+3,353,115
+be a disadvantage since it affords a highly useful means
+for tuning the device over a relatively broad range, that
+
+is, approximately 5x10u cycles per second. However,
+it is important in many applications for the frequency to
+be controlled and constant by controlling or maintain
+ing constant the temperature of the active substance. To
+this end, the active segment may be cooled and the heat
+energy of the pump removed by ?owing appropriate cool
+
+8
+
+parabolic re?ectors 189 and 190 are directed toward each
+other so that the light source 184 at the focal point of
+re?ector 189 emits a substantially parallel beam of pump
+
+ing light 188 which is collected by the parabolic re?ec
+tor 190 and focused to pass through the laser segment‘
+182. The parabolic surfaces 189 and 190 may be para
+bolic cylindrical surfaces as shown or they may be para
+
+boloidal surfaces of revolution symmetrically disposed
+about the line joining their respective foci.
+
+ants over their surfaces.
+
+FIG. 17 illustrates an elliptical system for re?ecting
+FIG. 13 illustrates a system in accordance with the 10 the energy from the light source 184 to the laser segment
+present invention which utilizes an interferometer for pro
+182 wherein the source 184 is disposed at one focus of
+viding even greater coherence and narrow bandwidth. In
+an ellipse while the laser segment 182 is disposed at the
+this embodiment a rod 136 of active laser material does
+opposite focus; hence, the elliptical surface 192 re?ects
+not have coated ends but rather has prisms 138 and 140
+substantially all of the energy radiating from the source
+15
+coupled to each end of the rod 136. An additional pair
+184 and refocuses it through the laser segment 182. The
+of mirrors or prisms 142 and 144 are disposed so that a
+elliptical surface 192 may be an elliptical cylindrical sur
+
+ray of light 146 which is axially directed through the rod
+136 may propagate along the closed path determined by
+the re?ecting surfaces of the 4 mirrors. Disposed be
+
+face or it may be an ellipsoid.
+The light source 184 in either of the above examples
+may make use of exploding wire phenomenon in which
+tween the mirrors 142 and 144 is an interferometer 148 20 an extremely high current at low voltage is sent through
+which may be a Fabry-Perot interferometer. The inter
+a wire thereby exploding and vaporizing it. The light en
+
+ferometer comprises a pair of parallel plates 150 and
+
+ergy emitted by this phenomena may be extremely in
+152, the distance between which may be adjusted to
+tense “white" light. Alternatively, the source 184 may
+“tune“ the regenerative circuit for the ray 146. Thus a
+be other conventional light sources such as gas-?lled ?ash
+26
+ray of the proper wavelength will ‘resonate between the
+tubes, or carbon arc lamps. An advantage of the systems
+parallel plates 150, 152 while waves of other frequen—
+depicted in FIGS. 16 and 17 is that the light source and
+cies will be dissipated and lost in the interferometer. The
+the active laser material may be independently handled
+circuit defined by the re?ective prisms and the inter
+and cooled due to their spacing from each other.
+ferometer is practically non-negotiable for rays of light
+Referring to FIG. 18, there is illustrated a practical
+which are not propagating exactly parallel to the axis of 80 application of a laser in a colidar ‘optical radar system.
+the rod 136. Nonparallel rays 154 and 156 in the ?gure
+“Colidar" is an acronym for coherent light ranging. A
+illustrates how their energy is lost from the system be
+laser unit 200 is the colidar transmitter and includes an
+cause their direction precludes their traversal of the cir
+active laser segment 202. Surrounding the segment 202
+cuit past the ?rst re?ective prisms. Furthermore, even if
+
+a ray was almost parallel to the axis of the rod 136 it 35 is a gas-?lled ?ash tube 204 which is pulsed from a pump
+power supply 206. A synchronizer 208 triggers the pump
+would not make a large number of traversals around the
+power supply which in turn ?res the ?ash tube 204 and
+circuit before it would become lost from the edge of one
+the laser 200 transmits a beam 210 of monochromatic
+oi‘ the prisms. Also the coupling through the interferom
+coherent light toward a target 212, the range to which
+eter may be made highly directive to further discriminate
+against waves which are not propagating in exactly the 40 is to be determined. The synchronizer trigger also trig
+gers the horizontal sweeps of a pair of oscillographs 214
+desired direction. As shown by rays 154 and 156 emanat
+and 216. A sample of the laser output is determined by a
+ing from the interferometer, waves which are not prop
+photoelectric cell 218 which is coupled to the oscillograph
+agated in the proper direction are lost out the sides of
+
+the interferometer and thereby removed from the system.
+The laser output beam 158 may be coupled out of the
+system in any appropriate manner such as for example
+
+by an appropriate discontinuity in the re?ective face of
+the prism 140.
+H0. 14 illustrates another type of interferometer in
+
+214 and presented on the face thereof as a “transmitter"
+
+pulse 220 to indicate the time at which the laser output
+pulse was transmitted. The laser beam 210 is re?ected off
+a target 212 and a minute portion thereof is received as
+
+a parallel beam 210’ by the colidar receiver 222. The
+received beam 210 impinges upon a parabolic re?ector
+which the active laser segment 160 does not have re?ec 50 224 and is focused into a photoelectric cell 226. The
+electrical cell of the protoelectric cell 226 is coupled to
+tive ends. Instead, mutually parallel plates 162 and 164
+the receiver oscillograph 216 where it is presented on the
+are disposed perpendicularly to the axis of the segment
+face thereof as a “receiver" pulse 228. The time di?erence
+160 which is the desired direction of propagation. The
+between the pulses 220 and 228 on the two oscillographs
+plates may be disposed at some distance from the laser
+material; the greater the distance and the smaller their 55 is, of course, a direct indication of the range from the
+colidar system to the target 212. The two oscillographs
+size the more the system discriminates against nonpara1~
+214 and 216 may alternatively be a dual trace, single oscil
+lel light rays 166 and 168. Again the desired energy may
+lograph tube or, as in conventional radar “B-scope“ pre
+be coupled out of the system through a small opening
+
+sentation, be displayed with a single horizontal trace.
+The advantages of such a ranging system which may
+00
+170.
+obviously be extended to other forms of radar, such as
+FIG. 15 illustrates the use of an interferometer simi
+plan position indicator types, include the fact that the
+lar in some respects to the device of FIG. 14. In this ex
+transmitted beam is extremely narrow and may be sent
+ample one of the re?ective plates 172 may be placed di
+over great distances with very little beam spreading. Also
+rectly on the active laser segment 174 while the other
+re?ective plate 176 may be axially disposed at some dis 65 the wavelength is so small that extremely high resolu‘
+tion is obtained. It may also be seen that it is substantially
+tance from the segment 174. As shown, the nonparallel
+ray 178 will not be re-rc?ected between the two re?ec
+impossible to jam a laser radar system because the jam
+
+in the re?ective plate 164 to provide a laser output beam
+
+tive plates 172 and 176 thereby minimizing its deleteri
+ous eilccts on the monochromatic output beam 180.
+
+ming equipment would have to be placed precisely in
+
+line with the transmitter and the target would have to be
+FlGS. l6 and 17 illustrate methods of optically pump 70 directed at the receiver and would have to be at precisely
+ing the active laser segment 182 by a source 184 of broad
+the proper optical frequency in order to interfere with the
+band light which is disposed some distance from the laser
+laser receiver. For further improvements in this regard
+segment. in each case the output beam 186 of the laser
+optical ?lters 230 may be placed in the receiver 222 to
+is directed out of the rod-shaped laser segment in a di
+rection parallel to the axis of the rod. In FIG. 16 two 76 discriminate not only against deliberate jamming but also
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 10 ---
+BEST AVAILABLE COPY
+
+3,353,115
+
+10
+
+and coupling means for extracting the monochromatic
+coherent light beam from said ruby.
+,2. A three energy level ruby laser system, comprising:
+
+against the minute amount of optical noise at the operat
+
+ing frequency.
+
+There has thus been disclosed a laser system in which
+the active laser substance is solid state and which pro
+
+a ruby having atoms exhibiting a ?rst energy level cor
+responding to a ground atomic state, a substantially
+
+vides coherent monochromatic ampli?cation and genera
+tion of electromagnetic wave energy in the optical or
+visible spectrum. The invention is effectively an e?icient
+
+discrete second energy level above said ground state
+and third energy levels de?ning a relatively broad
+band absorption third region extending above said
+
+device which is mechanically stable and which may be op—
+crated at room temperature without complex vacuum or
+vapor pressure techniques. The invention as disclosed also
+
+broadband optical pumping means directly coupled to
+said ruby for exciting atoms of said ruby from said
+
+second level;
+
+is capable of tuning over a 5X10" cycles per second
+range and may handle high powers for practical optical
+radar and communications utilization. In addition, be
+cause it provides light which can be focused extremely
+precisely, the laser opens new possibilities in the investiga 15
+tion of basic properties of mater, as well as in medicine
+where objects or very minute portions thereof can be
+
+?rst energy level to said third energy levels from
+which radiationless energy transition of said atoms
+takes place to said second energy level to establish
+a population inversion between said second energy
+level and said ground state; and
+lightrresonating means coupled to and forming a re
+
+generative optical path through said ruby to stimulate
+
+selectively sterilized or vaporized.
+What is claimed is:
+20
+1. A three energy level laser comprising:
+a ruby having ntoms exhibiting a ?rst energy level
+
+corresponding to a ground atomic state, a substantial
+ly discrete second energy level above said ground
+state and third energy- levels de?ning a relatively
+
+broadband absorption third region extending above
+
+radiant energy transitions of said atoms from said
+second energy level toward said ground state to pro
+duce a coherent monochromatic light beam having a
+
+frequency substantially corresponding to the energy
+difference between said ground state and said second
+energy level.
+
+25
+
+References Cited
+
+said second level;
+a pumping source of broadband light energy optically
+
+couplcd'to said ruby for illuminating it and exciting
+atoms thereof to exhibit excitation at said third en
+
+ergy levels from whence they decay without sub 30
+stantial radiation loss to said discrete second energy
+level so as to establish a population inversion between
+
+.
+
+UNITED STATES PATENTS
+
+2,929,922
+
+3/1960
+
+Schawlow et a1. __-__ 33l-~94.5
+
+OTHER REFERENCES
+Townes ct al.: "Infrared and Optical Mascrs," Physical
+Review, vol. 112. No. 6, Dec. 15, 1958, pp. 1940-1949.
+
+said discrete second energy level and said ground
+Wieder: "Solid State, High-Intensity Monochromatic
+state;
+interferometer means optically coupled to said ruby and 85 Light Sources," The Review of Scienti?c instruments, vol,
+30, No. 1, November 1959, pp. 995-996.
+tuned to the frequency corresponding to that of the
+energy difference between said second energy level
+IEWELL H. PEDERSEN, Primary Examiner.
+and said ?rst energy level for re?ecting light energy
+of said frequency repeatedly through portions of said
+RONALD L, WILBERT, Examiner.
+ruby to generate a coherent light beam;
+
+'
