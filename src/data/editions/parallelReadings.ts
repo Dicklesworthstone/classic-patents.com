@@ -109,6 +109,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-235199-bell-photophone": bellPhotophoneParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
   "us-307031-edison-indicator": edisonIndicatorParallelReadings,
+  "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
   "us-347140-thomson-welding": thomsonWeldingParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
