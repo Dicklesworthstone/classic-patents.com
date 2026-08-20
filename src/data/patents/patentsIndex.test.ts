@@ -36,6 +36,9 @@ describe("Patents Index & Search Helper Methods", () => {
     expect(legacyPatentRedirectFor("us-2569347-bardeen-transistor")).toBe(
       "us-2524035-bardeen-transistor",
     );
+    expect(legacyPatentRedirectFor("us-3923554-boyle-smith-ccd")).toBe(
+      "us-3858232-boyle-smith-ccd",
+    );
     expect(legacyPatentRedirectFor("unknown-alias")).toBeUndefined();
   });
 

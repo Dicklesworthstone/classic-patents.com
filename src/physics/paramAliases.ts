@@ -97,8 +97,8 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
       fromCanonical: (psi) => psi / 14.5038,
     },
   },
-  "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
-  "us-3858232-boyle-smith-ccd": { clockSpeedFactor: same("clockFreq") },
+  "us-3923554-boyle-smith-ccd": { clockSpeedFactor: same("clockFrequencyMhz") },
+  "us-3858232-boyle-smith-ccd": { clockSpeedFactor: same("clockFrequencyMhz") },
   "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
   "us-808897-carrier-air-conditioner": {
     inletTemp: same("inletTempC"),

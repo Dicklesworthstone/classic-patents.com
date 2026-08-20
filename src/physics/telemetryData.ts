@@ -58,7 +58,6 @@ import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { stepHopkinsPotash } from "./hopkinsPotashKernel";
 import {
-  stepCcdWells,
   stepHoweSewingMachine,
   stepMergenthalerLinotype,
   stepRenoEscalator,
@@ -3116,98 +3115,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "An optical image focused onto a potassium hydride photo-cathode emits a continuous electron image; orthogonal electromagnetic deflection coils sweep the entire electron cloud past an anode aperture.",
-  },
-  "us-3923554-boyle-smith-ccd": {
-    domain: "semiconductor_carrier",
-    domainTitle: "3-Phase MOS Potential Well Bucket-Brigade Charge Transport",
-    equationName: "Charge Transfer Efficiency & Potential Well Depth",
-    governingEquation:
-      "Q_{\\text{final}} = Q_0 \\cdot (\\text{CTE})^N \\quad \\text{with} \\quad \\text{CTE} = 0.99995",
-    engineMethod: "FrankenSimEngine.stepBoyleSmithCCD",
-    controls: [
-      {
-        id: "clockFreq",
-        label: "3-Phase Clock Frequency",
-        min: 0.5,
-        max: 8.0,
-        step: 0.25,
-        defaultValue: 2.5,
-        unit: "MHz",
-      },
-      {
-        id: "gateVoltage",
-        label: "Gate Potential Well Voltage",
-        min: 3.0,
-        max: 15.0,
-        step: 0.5,
-        defaultValue: 8.0,
-        unit: "V",
-      },
-      {
-        id: "incidentLux",
-        label: "Incident Illuminance",
-        min: 100,
-        max: 2000,
-        step: 50,
-        defaultValue: 850,
-        unit: "lx",
-      },
-    ],
-    computeMetrics: (p) => {
-      const f = p.clockFreq ?? 2.5;
-      const vGate = p.gateVoltage ?? 8.0;
-      const lux = p.incidentLux ?? 850;
-      const wells = stepCcdWells(1, lux, f, vGate);
-      const wellCap = wells.fullWellElectrons;
-      const cte = wells.ctePct.toFixed(4);
-
-      return [
-        {
-          label: "Charge Transfer Eff",
-          value: `${cte}%`,
-          unit: "CTE",
-          badgeColor: "emerald",
-          progressPct: clampProgress(99),
-        },
-        {
-          label: "Full Well Capacity",
-          value: wellCap.toLocaleString(),
-          unit: "e⁻",
-          badgeColor: "cyan",
-          progressPct: clampProgress((wellCap / 200000) * 100),
-        },
-        {
-          label: "Output Signal",
-          value: `${wells.outputSignalMv} mV`,
-          unit: "V_out",
-          badgeColor: "amber",
-          progressPct: Math.min(100, wells.outputSignalMv / 10),
-        },
-        {
-          label: "Gate Step Period",
-          value: `${wells.phasePeriodNs}`,
-          unit: "ns",
-          badgeColor: "purple",
-          progressPct: clampProgress((wells.phasePeriodNs / 500) * 100),
-        },
-        {
-          label: "Visible φ Step",
-          value: `${wells.phaseDisplayMs} ms`,
-          unit: "t_φ",
-          badgeColor: "amber",
-          progressPct: Math.min(100, (wells.phaseDisplayMs / 1000) * 100),
-        },
-        {
-          label: "Dynamic Range",
-          value: (20 * Math.log10(wellCap / 15)).toFixed(1),
-          unit: "dB",
-          badgeColor: "indigo",
-          progressPct: clampProgress(88),
-        },
-      ];
-    },
-    pedagogicalInsight:
-      "Overlapping polysilicon gates pulsed in three phases create shifting potential energy wells in silicon, marching packets of photo-generated electrons across the substrate without wire interconnects.",
   },
   "us-4136359-wozniak-apple": {
     domain: "semiconductor_carrier",
@@ -7243,6 +7150,8 @@ PATENT_PHYSICS_REGISTRY["us-7479949"] = PATENT_PHYSICS_REGISTRY["us-7479949-mult
 // The 3D/2D instruments write these ids; the badge must not stay on sourceFocus.
 PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
   PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
+PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"] =
+  PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
 PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
   PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
 PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =

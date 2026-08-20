@@ -156,6 +156,7 @@ export function getPatentById(id: string): Patent | undefined {
 export const LEGACY_PATENT_REDIRECTS = {
   "us-533367-tesla-coil": "us-593138-tesla-coil",
   "us-2569347-bardeen-transistor": "us-2524035-bardeen-transistor",
+  "us-3923554-boyle-smith-ccd": "us-3858232-boyle-smith-ccd",
 } as const;
 
 export function legacyPatentRedirectFor(id: string): string | undefined {

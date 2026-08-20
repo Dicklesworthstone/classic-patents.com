@@ -30,6 +30,15 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
+  test("Boyle CCD leftover US 3,923,554 bus is the published US 3,858,232 kernel", () => {
+    const published = PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"];
+    const leftover = PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];
+    expect(leftover).toBe(published);
+    expect(published.controls.some((control) => control.id === "clockFrequencyMhz")).toBe(true);
+    expect(published.controls.some((control) => control.id === "clockFreq")).toBe(false);
+    expect(published.controls.some((control) => control.id === "gateVoltageV")).toBe(true);
+  });
+
   test("does not keep a sourceFocus facsimile slider on any catalog patent", () => {
     for (const patent of allPatents) {
       const entry = PATENT_PHYSICS_REGISTRY[patent.id];
@@ -179,6 +188,7 @@ describe("Physics Telemetry Data Registry", () => {
     const routed: Array<[string, string]> = [
       ["us-608969-parsons-turbine", "stepParsonsTurbine"],
       ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCCD"],
+      ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCCD"],
       ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
       ["us-586193-marconi-radio", "stepMarconiRadio"],
       ["us-2292387-lamarr-frequency-hopping", "stepLamarrFrequencyHopping"],

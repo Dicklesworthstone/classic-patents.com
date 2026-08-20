@@ -27,7 +27,8 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
   const scenarios = datedScenarios(patentId);
   const couples = coupleLinks(patentId, params);
   const isWright = patentId.includes("wright");
-  const isBell = patentId.includes("bell") || patentId.includes("174465");
+  const isBell =
+    (patentId.includes("bell") && patentId.includes("telephone")) || patentId.includes("174465");
   const isMorse = patentId.includes("morse") || patentId.includes("1647");
   const isLamarr = patentId.includes("lamarr");
   const kh = isWright ? kittyHawkResidual(params) : null;
