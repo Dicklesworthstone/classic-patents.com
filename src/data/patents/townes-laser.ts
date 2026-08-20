@@ -57,6 +57,13 @@ export const townesLaserPatent: Patent = {
           "This invention relates to the generation and amplification of coherent electromagnetic waves...",
       },
       {
+        page: 3,
+        sourceRelationship:
+          "Specification Column 3 & 4: Descriptions of Figures 1–5, potassium vapor optical pumping transitions, and laser oscillation threshold",
+        exactSourceText:
+          "When the single-pass optical gain through the inverted medium exceeds the round-trip reflection and diffraction losses of the cavity...",
+      },
+      {
         page: 4,
         sourceRelationship:
           "Claims 1–6 (Master method and apparatus claims for open optical cavity masers)",

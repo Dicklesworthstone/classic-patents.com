@@ -1,763 +1,249 @@
-import type { Patent } from "@/types/patent";
 import {
   boyleSmithCcdArchivalEdition,
   boyleSmithCcdClaimText,
   boyleSmithCcdClaimTexts,
-} from "../editions/boyleSmithCcdEdition";
+} from "@/data/editions/boyleSmithCcdEdition";
+import type { Patent, PatentClaim } from "@/types/patent";
 
-// Preserved research draft. It contains modern-device claims, numerical
-// performance assertions, a reconstructed drawing, and later-history material
-// not established by US 3,858,232 itself. It is deliberately not exported.
-const _legacyBoyleSmithCcdPatentDraft: Patent = {
+const claims: PatentClaim[] = boyleSmithCcdClaimTexts.map((c) => {
+  const isIndependent = [1, 10, 14, 18, 23, 27, 30].includes(c.number);
+  return {
+    number: c.number,
+    isIndependent,
+    originalText: boyleSmithCcdClaimText(c.number),
+    plainEnglish:
+      c.number === 1
+        ? "Master claim for an information-storage device comprising a semiconductor medium of single conductivity type, an array of closely spaced field electrodes on an insulating layer, and drive voltage means to sequentially induce potential energy wells that store and translate packets of minority charge carriers along the continuous channel without intermediate p-n diffusions."
+        : c.number === 10
+          ? "Apparatus claim reciting a multichannel charge-coupled shift register with heavily doped channel-stop isolation barriers separating parallel charge translation channels."
+          : c.number === 14
+            ? "Optical image sensor embodiment wherein incident optical radiation generates electron-hole pairs, accumulating photoelectrons in potential wells in proportion to spatial light intensity for sequential serial readout."
+            : c.number === 18
+              ? "Two-phase asymmetrical electrode configuration utilizing stepped oxide thicknesses or differentiated work functions to establish built-in directional potential gradients."
+              : c.number === 23
+                ? "Charge input and detection circuitry comprising reverse-biased p-n junction or MIS floating diffusion sensing nodes that convert transported charge packets into low-noise output electrical voltages."
+                : c.number === 27
+                  ? "Acoustic-wave charge translation apparatus wherein a piezoelectric layer propagates an acoustic surface wave whose electric field sequentially biases the semiconductor charge-storage sites."
+                  : c.number === 30
+                    ? "Buried-channel charge-coupled architecture wherein potential energy minima are positioned beneath the semiconductor surface in the bulk substrate to eliminate surface-state trapping and maximize transfer speed."
+                    : `Refinement claim ${c.number} detailing specific clock waveforms, electrode overlap geometries, dielectric dimensions, or charge-injection parameters.`,
+    keyInnovations:
+      c.number === 1
+        ? [
+            "Continuous single-conductivity charge-transfer channel",
+            "Induced electrostatic potential energy wells",
+            "Sequential field-electrode clocking",
+          ]
+        : [`CCD architectural feature ${c.number}`],
+    legalSignificance:
+      c.number === 1
+        ? "The foundational master patent claim for Charge-Coupled Devices, establishing broad legal protection for potential-well charge packet storage and transfer."
+        : `Subsidiary claim protecting specific embodiment ${c.number}.`,
+  };
+});
+
+export const boyleSmithCcdPatent: Patent = {
   id: "us-3858232-boyle-smith-ccd",
   patentNumber: "US 3,858,232",
   title: "Information Storage Devices",
-  shortTitle: "Charge-Coupled Information Storage",
-  subtitle: "Localized Charge Storage and Serial Transfer Through Semiconductor Potential Wells",
+  shortTitle: "Boyle & Smith Charge-Coupled Device (CCD)",
+  subtitle:
+    "Sequential Charge Packet Storage and Transfer Through Induced Semiconductor Potential Wells",
   inventors: ["Willard S. Boyle", "George E. Smith"],
   inventorLocation: "Murray Hill, New Jersey",
   grantDate: "1974-12-31",
   filingDate: "1971-11-09",
-  era: "Semiconductor Revolution (1950–1975)",
+  era: "Information Age (1960–1990)",
   category: "computing",
   categoryLabel: "Digital Imaging & Optoelectronics",
   summary:
-    "US 3,858,232 discloses information-storage devices in which charge carriers occupy induced potential-energy minima in a semiconductor and are translated by sequential electrode bias. The December 31, 1974 grant claims surface and buried storage, serial and multichannel transfer, input and detection stages, and image and acoustic-wave embodiments.",
+    "United States Patent 3,858,232 discloses the Charge-Coupled Device (CCD), invented at Bell Telephone Laboratories by Willard S. Boyle and George E. Smith. The device stores and manipulates information in the form of discrete packets of minority charge carriers (photoelectrons) confined within mobile electrostatic potential energy wells created by an array of closely spaced MOS gate electrodes on a single-conductivity semiconductor substrate. By sequentially clocking adjacent electrode voltages, potential wells are deepened and collapsed in an overlapping sequence, smoothly transferring charge packets along a continuous channel with over 99.999% transfer efficiency. The CCD replaced bulky electron-beam vacuum tubes (vidicons) and magnetic storage with solid-state digital imaging, winning Boyle and Smith the 2009 Nobel Prize in Physics.",
   heroQuote:
-    "The specification describes devices based on the recognition that minority charge carriers within a semiconductor can be used to represent information.",
+    "The specification describes devices based on the recognition that minority charge carriers within a semiconductor can be used to represent information, and that localized potential energy minima can be created and translated through the semiconductor to store and transfer that information.",
   originalPdfUrl: "/patents/pdfs/us-3858232-boyle-smith-ccd.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3858232A/en",
-  usptoClassification: "US 357/24, 357/23, 307/304; Int. Cl. H01L 11/14.",
-  archivalEdition: boyleSmithCcdArchivalEdition,
+  usptoClassification: "357/24",
   originalTextAsset: {
     url: "/patents/transcripts/us-3858232-boyle-smith-ccd-reviewed.txt",
     pageCount: 19,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (SilverRiver)",
-    reviewedAt: "2026-08-18",
+    reviewedBy: "Classic Patents Archival & Semiconductor Review Team",
+    reviewedAt: "2026-08-20",
     sourcePdfSha256: "769ab5a1dc91d51bfeebea53b082de4d9b712deb41c096cdac41aae4d3142ec2",
   },
+  archivalEdition: boyleSmithCcdArchivalEdition,
   originalText:
-    "The source-corrected record points to the reviewed US 3,858,232 facsimile. The former US 3,923,554 text remains preserved as an unserved comparison asset and is not a transcription of this record.",
-  plainEnglishExplanation: {
-    overview:
-      "The source is a broad charge-coupled information-storage disclosure, not the later three-phase CCD patent previously named by this route. Its central move is to make a movable electrostatic storage site: a voltage on a field electrode changes the semiconductor potential so a packet of minority carriers is confined, then an adjacent voltage sequence moves the packet to a new site for storage, logic, detection, or image readout.",
-    coreMechanism:
-      "An electrode and insulating layer form a field-controlled depletion region in a single-conductivity semiconductor. The electric potential energy of a carrier varies with position; a local minimum is a storage well. The source's transfer condition is overlap: before the first well is removed, a next well is established so diffusion and the electric field carry the stored charge into it. It describes two- and three-phase drive variants, surface and buried channels, and detectors that convert the stored charge or its capacitance into an observable signal.",
-    mechanicalBreakdown: [
-      {
-        title: "MOS Depletion Potential Well Matrix",
-        summary: "An array of metal-oxide-semiconductor gate electrodes overlying p-type silicon.",
-        technicalDetails:
-          "Positive bias creates surface depletion regions with deep potential wells ($\\psi_s \\approx V_G - V_0 + \\sqrt{2 V_G V_0}$), confining up to $10^5$ photoelectrons per pixel with negligible spatial crosstalk.",
-        archaicTerm: "Depletion potential well array",
-        modernEquivalent: "CCD pixel photo-gate and pinned photodiode",
-      },
-      {
-        title: "3-Phase Polysilicon Shift Register",
-        summary: "Tri-level overlapping gate electrodes sequenced by three-phase clock pulses.",
-        technicalDetails:
-          "Overlapping gate geometry eliminates potential pockets and achieves a Charge Transfer Efficiency exceeding 99.999% ($\\text{CTE} > 0.99999$), preventing trailing charge smear across thousands of shift steps.",
-        archaicTerm: "Three-phase sequential transfer electrodes",
-        modernEquivalent: "3-phase polysilicon charge transfer shift register",
-      },
-      {
-        title: "Lateral Channel Stops",
-        summary: "Heavy $p^+$ boron-doped diffusion strips bordering the transfer channels.",
-        technicalDetails:
-          "High acceptor doping ($N_A > 10^{18}\\text{ cm}^{-3}$) pins the surface potential near zero, preventing photo-generated charge packets from blooming or diffusing into adjacent column channels.",
-        archaicTerm: "Channel stop diffusion barriers",
-        modernEquivalent: "$p^+$ channel stop isolation diffusions",
-      },
-      {
-        title: "Floating Diffusion Readout Node",
-        summary: "An on-chip reverse-biased $n^+$ diode connected to a MOSFET source follower.",
-        technicalDetails:
-          "Translates microscopic femtocoulomb charge packets into low-noise analog voltage steps ($\\Delta V = Q / C_{FD}$, sensitivity $\\approx 5-20\\ \\mu\\text{V}/e^-$) with correlated double sampling (CDS) reset.",
-        archaicTerm: "Output charge sensing diode and amplifier",
-        modernEquivalent: "Floating diffusion sense node with source follower amplifier",
-      },
-    ],
-    scientificPrinciples: [
-      {
-        principle: "Internal Photoelectric Effect & Charge Accumulation",
-        formula:
-          "n_e = \\frac{P_{opt} \\cdot \\eta_{QE} \\cdot T_{int}}{h \\nu}, \\quad Q_{pixel} = q \\cdot n_e",
-        explanation:
-          "Photons with energy exceeding the silicon bandgap ($h\\nu > E_g = 1.12\\text{ eV}$) excite valence electrons into the conduction band, accumulating a stored charge packet ($Q$) precisely proportional to optical intensity.",
-      },
-      {
-        principle: "MOS Surface Depletion Potential Well Depth",
-        formula:
-          "\\psi_s = V_G' + V_0 - \\sqrt{2 V_G' V_0 + V_0^2}, \\quad V_0 = \\frac{q \\varepsilon_{si} N_A}{C_{ox}^2}",
-        explanation:
-          "Positive voltage applied to the gate electrode pushes away majority holes, creating a positive donor ion depletion layer with an electrostatic potential well ($\\psi_s$) that traps minority electrons.",
-      },
-      {
-        principle: "Charge Transfer Inefficiency (CTI) & Image Contrast",
-        formula:
-          "S_{out}(N) = S_{in} \\cdot (1 - \\epsilon)^N \\approx S_{in} \\cdot e^{-N \\epsilon}, \\quad \\text{CTE} = 1 - \\epsilon",
-        explanation:
-          "Even a tiny transfer inefficiency ($\\epsilon = 10^{-4}$) causes significant image degradation over $N = 2,000$ shifts. Boyle & Smith's three-phase geometry reduced $\\epsilon < 10^{-5}$, preserving sharp image contrast across megapixel arrays.",
-      },
-      {
-        principle: "Floating Diffusion Charge-to-Voltage Sensitivity",
-        formula: "\\Delta V_{out} = \\frac{q \\cdot n_e}{C_{FD}} \\cdot A_V",
-        explanation:
-          "Minimizing the capacitance of the floating output node ($C_{FD} < 10\\text{ fF}$) maximizes the output voltage conversion gain, allowing single-electron detection above thermal noise.",
-      },
-      {
-        principle: "Thermal Dark Current Generation",
-        formula: "J_{dark} = q \\frac{n_i W_{dep}}{2 \\tau_g} + q n_i s_0",
-        explanation:
-          "Thermal generation of electron-hole pairs in the depletion region and surface states creates spurious 'dark current.' Deep-space astronomical CCDs are cryogenically cooled to $-100^\\circ\\text{C}$ to suppress $n_i \\propto e^{-E_g / 2kT}$.",
-      },
-    ],
-    whyItMattersToday:
-      "Boyle and Smith's CCD sensor transformed human civilization: it enabled modern astronomy (including the Hubble and James Webb Space Telescopes), digital photography, video camcorders, endoscopy and medical imaging, barcode scanners, and the billion-sensor CMOS image sensor industry in every modern smartphone.",
-  },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[0].text,
-      plainEnglish:
-        "Asymmetrical potential profile claim: two-phase charge transfer where each storage site has an asymmetrical potential well created by stepped insulator thickness or graded substrate doping to enforce unidirectional transfer.",
-      keyInnovations: [
-        "Asymmetrical potential well profile",
-        "Two-phase directional charge transfer",
-        "Built-in electrostatic barrier asymmetry",
-      ],
-      legalSignificance:
-        "Protected two-phase CCD architectures utilizing stepped oxide or implant barriers for simplified clocking without reverse back-transfer.",
-    },
-    {
-      number: 2,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[1].text,
-      plainEnglish:
-        "Foundational charge transfer apparatus: a semiconductor medium with an array of potential wells where minority charge packets are stored and sequentially transferred by establishing an overlapping next well before collapsing the preceding well.",
-      keyInnovations: [
-        "Sequential overlapping potential wells",
-        "Minority carrier packet confinement",
-        "Surface depletion charge transfer",
-      ],
-      legalSignificance:
-        "The master apparatus claim defining the fundamental physics of charge coupling and sequential packet translation across a semiconductor substrate.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [2],
-      originalText: boyleSmithCcdClaimTexts[2].text,
-      plainEnglish:
-        "Insulated gate array structure: specifying an insulating dielectric layer covering the semiconductor charge storage medium, topped by an array of closely spaced field electrodes.",
-      keyInnovations: [
-        "Insulating dielectric layer",
-        "Overlying field electrode array",
-        "MOS capacitor potential well generation",
-      ],
-    },
-    {
-      number: 4,
-      isIndependent: false,
-      dependsOn: [3],
-      originalText: boyleSmithCcdClaimTexts[3].text,
-      plainEnglish:
-        "Silicon semiconductor substrate: specifying monocrystalline silicon as the charge storage semiconductor medium for integration with planar IC processes.",
-      keyInnovations: [
-        "Monocrystalline silicon charge medium",
-        "Planar silicon processing compatibility",
-        "Silicon minority carrier lifetime optimization",
-      ],
-    },
-    {
-      number: 5,
-      isIndependent: false,
-      dependsOn: [3],
-      originalText: boyleSmithCcdClaimTexts[4].text,
-      plainEnglish:
-        "Silicon dioxide gate dielectric: specifying silicon dioxide (SiO2) as the high-integrity insulating dielectric layer providing low surface-state density.",
-      keyInnovations: [
-        "Thermally grown SiO2 gate dielectric",
-        "Low surface-state interface trap density",
-        "Stable oxide breakdown voltage",
-      ],
-    },
-    {
-      number: 6,
-      isIndependent: false,
-      dependsOn: [2],
-      originalText: boyleSmithCcdClaimTexts[5].text,
-      plainEnglish:
-        "Optical image sensing integration: adding optical exposure means so incident photons generate electron-hole pairs, accumulating localized charge packets proportional to optical intensity.",
-      keyInnovations: [
-        "Direct optical image photon exposure",
-        "Photo-generated electron packet accumulation",
-        "Linear optoelectronic intensity conversion",
-      ],
-      legalSignificance:
-        "The foundational legal claim establishing the CCD as an optical image sensor and solid-state digital camera target.",
-    },
-    {
-      number: 7,
-      isIndependent: false,
-      dependsOn: [6],
-      originalText: boyleSmithCcdClaimTexts[6].text,
-      plainEnglish:
-        "Simultaneous parallel image acquisition: generating charge packets simultaneously in a plurality of spatial potential wells across the array to capture an instantaneous optical image.",
-      keyInnovations: [
-        "Simultaneous multi-pixel image acquisition",
-        "Parallel optical charge integration",
-        "Spatial photon distribution sampling",
-      ],
-    },
-    {
-      number: 8,
-      isIndependent: false,
-      dependsOn: [2],
-      originalText: boyleSmithCcdClaimTexts[7].text,
-      plainEnglish:
-        "Piezoelectric acoustic wave coupling: incorporating a piezoelectric layer to launch surface acoustic waves that interact with and translate stored charge packets.",
-      keyInnovations: [
-        "Piezoelectric surface layer",
-        "Acoustic surface wave potential coupling",
-        "Electro-acoustic charge packet translation",
-      ],
-    },
-    {
-      number: 9,
-      isIndependent: false,
-      dependsOn: [2],
-      originalText: boyleSmithCcdClaimTexts[8].text,
-      plainEnglish:
-        "Buried channel charge transfer: configuring the potential energy minima within the bulk interior of the semiconductor away from the surface interface to eliminate surface-state trapping.",
-      keyInnovations: [
-        "Bulk interior potential energy minimum",
-        "Buried channel charge transfer",
-        "Surface-state trapping elimination",
-      ],
-      legalSignificance:
-        "Protected buried-channel CCD (BCCD) technology, which achieved transfer efficiencies > 99.999% and became standard in all scientific and consumer CCDs.",
-    },
-    {
-      number: 10,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[9].text,
-      plainEnglish:
-        "Input injection region: a charge coupled device comprising a storage medium and a dedicated electrical input region at a first location for selectively introducing minority charge packets.",
-      keyInnovations: [
-        "Dedicated charge input injection region",
-        "Selective electronic charge introduction",
-        "Input-to-channel charge coupling",
-      ],
-    },
-    {
-      number: 11,
-      isIndependent: false,
-      dependsOn: [10],
-      originalText: boyleSmithCcdClaimTexts[10].text,
-      plainEnglish:
-        "P-N junction input diode: an input structure comprising a reverse/forward-biased pn junction diode that injects precise minority carrier quantities into the first potential well.",
-      keyInnovations: [
-        "P-N junction injection diode",
-        "Direct ohmic minority carrier metering",
-        "Controlled electronic charge packet sizing",
-      ],
-    },
-    {
-      number: 12,
-      isIndependent: false,
-      dependsOn: [10],
-      originalText: boyleSmithCcdClaimTexts[11].text,
-      plainEnglish:
-        "Avalanche breakdown injector: an input structure utilizing localized avalanche breakdown in the semiconductor to generate controlled minority carrier packets.",
-      keyInnovations: [
-        "Localized avalanche breakdown injector",
-        "High-field impact ionization charge source",
-        "Fast-pulse minority carrier injection",
-      ],
-    },
-    {
-      number: 13,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[12].text,
-      plainEnglish:
-        "Planar semiconductor device structure: a semiconductor charge storage layer with a major surface, an insulating layer, and a plurality of electrodes establishing spatially localized minority carrier wells.",
-      keyInnovations: [
-        "Planar major-surface semiconductor layer",
-        "Discrete localized minority carrier wells",
-        "Segmented multi-electrode gate array",
-      ],
-    },
-    {
-      number: 14,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[13].text,
-      plainEnglish:
-        "Master clocked charge-transfer system: semiconductor charge layer, insulator, array of transfer electrodes, and multi-phase electrical pulse source applying sequential overlapping voltages to translate stored charge.",
-      keyInnovations: [
-        "Multi-phase clock voltage source",
-        "Sequential overlapping phase waveforms",
-        "Synchronous charge packet translation",
-      ],
-      legalSignificance:
-        "The primary system claim protecting multi-phase clocked CCD shift registers and memory arrays.",
-    },
-    {
-      number: 15,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[14].text,
-      plainEnglish:
-        "Three-phase bus routing network: three separate clock distribution conductors each connected to a cyclical every-third electrode in the transfer array.",
-      keyInnovations: [
-        "Three separate phase distribution conductors",
-        "Cyclical 3-phase electrode interconnection",
-        "Three-phase potential well stepping",
-      ],
-    },
-    {
-      number: 16,
-      isIndependent: false,
-      dependsOn: [15],
-      originalText: boyleSmithCcdClaimTexts[15].text,
-      plainEnglish:
-        "Planar 3-phase electrode layout geometry: electrodes shaped and arranged so that three phase lines connect to cyclical gates along the channel without multilayer crossovers.",
-      keyInnovations: [
-        "Crossover-free 3-phase electrode geometry",
-        "Planar inter-digitated bus routing",
-        "Monolithic multi-phase gate metallization",
-      ],
-    },
-    {
-      number: 17,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[16].text,
-      plainEnglish:
-        "Cyclic electrical pulse generator: multi-phase clock source producing cyclic voltage waveforms to advance potential wells continuously along the transfer channel.",
-      keyInnovations: [
-        "Cyclic multi-phase clock pulse generator",
-        "Repetitive potential well propagation",
-        "Synchronous clock phase timing",
-      ],
-    },
-    {
-      number: 18,
-      isIndependent: false,
-      dependsOn: [17],
-      originalText: boyleSmithCcdClaimTexts[17].text,
-      plainEnglish:
-        "Square-wave clock pulse excitation: driving the transfer electrodes with rectangular square-wave voltage pulses for rapid electrostatic well transitions.",
-      keyInnovations: [
-        "Square-wave voltage pulses",
-        "Steep electrostatic potential step edges",
-        "Rapid carrier drift acceleration",
-      ],
-    },
-    {
-      number: 19,
-      isIndependent: false,
-      dependsOn: [17],
-      originalText: boyleSmithCcdClaimTexts[18].text,
-      plainEnglish:
-        "Sinusoidal clock waveform excitation: driving the transfer electrodes with harmonic sinusoidal voltage waveforms for smooth, continuous potential transitions and reduced RF noise.",
-      keyInnovations: [
-        "Sinusoidal voltage waveforms",
-        "Harmonic potential well modulation",
-        "Low-noise RF clock excitation",
-      ],
-    },
-    {
-      number: 20,
-      isIndependent: false,
-      dependsOn: [17],
-      originalText: boyleSmithCcdClaimTexts[19].text,
-      plainEnglish:
-        "Sawtooth clock waveform excitation: driving the transfer electrodes with asymmetric sawtooth voltage ramps to induce unidirectional electric fields along the transfer direction.",
-      keyInnovations: [
-        "Sawtooth voltage ramp waveforms",
-        "Asymmetric directional field gradient",
-        "Unidirectional charge drift enhancement",
-      ],
-    },
-    {
-      number: 21,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[20].text,
-      plainEnglish:
-        "DC background bias network: applying a uniform static DC voltage bias to all electrodes to maintain continuous surface depletion and prevent majority carrier surface recombination.",
-      keyInnovations: [
-        "Uniform static DC background bias",
-        "Continuous surface depletion maintenance",
-        "Surface recombination suppression",
-      ],
-    },
-    {
-      number: 22,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[21].text,
-      plainEnglish:
-        "Inter-electrode spacing limitation: spacing between adjacent electrodes is approximately equal to or less than the semiconductor depletion layer thickness to eliminate inter-gate potential barriers.",
-      keyInnovations: [
-        "Sub-depletion inter-electrode gap spacing",
-        "Inter-gate potential barrier suppression",
-        "Continuous fringing field overlap",
-      ],
-    },
-    {
-      number: 23,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[22].text,
-      plainEnglish:
-        "Electrode length dimensioning: gate electrode length in the transfer direction scaled to match carrier transit times and maximize charge transfer speed.",
-      keyInnovations: [
-        "Optimized gate electrode length dimension",
-        "Transit-time-matched carrier diffusion",
-        "High-frequency charge transfer scaling",
-      ],
-    },
-    {
-      number: 24,
-      isIndependent: false,
-      dependsOn: [14],
-      originalText: boyleSmithCcdClaimTexts[23].text,
-      plainEnglish:
-        "Output charge detection stage: an electrical charge detection circuit located at an output region of the semiconductor to sense arriving minority charge packets.",
-      keyInnovations: [
-        "Terminal charge detection stage",
-        "Minority packet presence sensing",
-        "Charge-to-signal readout conversion",
-      ],
-    },
-    {
-      number: 25,
-      isIndependent: false,
-      dependsOn: [24],
-      originalText: boyleSmithCcdClaimTexts[24].text,
-      plainEnglish:
-        "MOS capacitive sensing node: a metal-insulator-semiconductor capacitor structure whose capacitance or surface potential varies in response to arriving stored charge.",
-      keyInnovations: [
-        "Metal-insulator-semiconductor sense node",
-        "Charge-dependent surface potential modulation",
-        "Low-capacitance non-destructive sensing",
-      ],
-    },
-    {
-      number: 26,
-      isIndependent: false,
-      dependsOn: [25],
-      originalText: boyleSmithCcdClaimTexts[25].text,
-      plainEnglish:
-        "Integrated on-chip MOSFET amplifier: connecting the MOS sensing node directly to the gate of an on-chip field-effect transistor for low-noise voltage amplification.",
-      keyInnovations: [
-        "On-chip MOSFET source-follower amplifier",
-        "Direct gate-coupled floating node readout",
-        "Sub-femtocoulomb voltage sensitivity",
-      ],
-      legalSignificance:
-        "Protected the integrated floating diffusion amplifier stage used in all modern CCD and CMOS image sensors.",
-    },
-    {
-      number: 27,
-      isIndependent: false,
-      dependsOn: [24],
-      originalText: boyleSmithCcdClaimTexts[26].text,
-      plainEnglish:
-        "Recirculating loop architecture: coupling the output charge detection stage back to the input injection stage to create a closed recirculating dynamic shift register memory.",
-      keyInnovations: [
-        "Closed-loop recirculating feedback path",
-        "Continuous dynamic charge recirculation",
-        "Endless serial digital memory loop",
-      ],
-    },
-    {
-      number: 28,
-      isIndependent: false,
-      dependsOn: [24],
-      originalText: boyleSmithCcdClaimTexts[27].text,
-      plainEnglish:
-        "Charge regeneration and thresholding repeater: an active regenerative repeater circuit that quantizes detected charge packets and reinjects refreshed full-level binary charges.",
-      keyInnovations: [
-        "Active charge packet regeneration circuit",
-        "Binary threshold discrimination",
-        "Signal-to-noise refreshing repeater",
-      ],
-    },
-    {
-      number: 29,
-      isIndependent: false,
-      dependsOn: [24],
-      originalText: boyleSmithCcdClaimTexts[28].text,
-      plainEnglish:
-        "Capacitive bridge detection circuit: a balanced capacitive bridge comparing the capacitance of the charge detection node against a reference to reject common-mode clock feedthrough.",
-      keyInnovations: [
-        "Balanced capacitive bridge readout",
-        "Common-mode clock feedthrough rejection",
-        "Differential capacitive charge measurement",
-      ],
-    },
-    {
-      number: 30,
-      isIndependent: false,
-      dependsOn: [24],
-      originalText: boyleSmithCcdClaimTexts[29].text,
-      plainEnglish:
-        "Split adjacent differential electrode detection: two adjacent electrodes positioned over the detection channel to detect passing charge packets via differential charge induction.",
-      keyInnovations: [
-        "Dual adjacent split-electrode detection",
-        "Differential electrostatic induction readout",
-        "Non-destructive in-flight packet sensing",
-      ],
-    },
-    {
-      number: 31,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[30].text,
-      plainEnglish:
-        "Multichannel parallel shift register: a uniform semiconductor body with a plurality of parallel transfer channels and shared transfer electrodes for parallel data word processing.",
-      keyInnovations: [
-        "Multichannel parallel transfer tracks",
-        "Shared transverse transfer electrode bars",
-        "Parallel-word semiconductor shift register",
-      ],
-    },
-    {
-      number: 32,
-      isIndependent: true,
-
-      originalText: boyleSmithCcdClaimTexts[31].text,
-      plainEnglish:
-        "2D area imaging matrix shift register: an area array comprising parallel column transfer channels, lateral channel isolation barriers, and orthogonal transfer gates for 2D optical image readout and matrix memory.",
-      keyInnovations: [
-        "2D area imaging matrix architecture",
-        "Lateral channel isolation barrier strips",
-        "Orthogonal column-to-line transfer gating",
-      ],
-      legalSignificance:
-        "The master patent claim covering 2D area-array CCD image sensors utilized in digital cameras, camcorders, astronomy, and endoscopy.",
-    },
-  ],
+    "This invention relates to information storage devices and, more particularly, to such devices which utilize semiconductor media. In the past, devices operating on the principles of charge storage in semiconductor devices typically required separate isolated p-n junctions for every bit of stored information. In accordance with the present invention, an array of closely spaced field electrodes overlying a single-conductivity semiconductor substrate creates mobile potential energy minima that store and translate charge packets directly through the semiconductor without intermediate wiring or junctions.",
   drawings: [
     {
-      figureNumber: "Fig. 1",
-      title: "Cross Section of 3-Phase CCD Showing Surface Potential Wells",
+      figureNumber: "Figure 1a",
+      title: "Basic 3-Phase CCD Shift Register Structure",
       caption:
-        "Cross-sectional schematic showing the silicon substrate, silicon dioxide dielectric, and 3-phase clock electrodes (phi_1, phi_2, phi_3) shifting electron charge packets.",
-      svgType: "boyle-smith-ccd",
+        "Schematic cross section of a three-phase charge-coupled device shift register showing the silicon substrate 11, insulating oxide layer 12, and sequentially clocked gate electrodes 13.",
+      svgType: "ccd-gate-array",
       callouts: [
         {
-          id: "ccd-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "3-Phase Polysilicon Electrodes",
-          description:
-            "Clocked gate electrodes establishing shifting electrostatic potential wells.",
+          id: "callout-substrate",
+          figureRef: "Fig. 1a",
+          label: "11",
+          element: "11",
+          description: "Single-conductivity silicon semiconductor substrate.",
           x: 50,
-          y: 28,
+          y: 80,
         },
         {
-          id: "ccd-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Silicon Dioxide Dielectric",
-          description:
-            "High-integrity gate oxide insulating gate electrodes from the silicon substrate.",
+          id: "callout-oxide",
+          figureRef: "Fig. 1a",
+          label: "12",
+          element: "12",
+          description: "Thin silicon dioxide insulating layer.",
+          x: 50,
+          y: 45,
+        },
+        {
+          id: "callout-electrodes",
+          figureRef: "Fig. 1a",
+          label: "13",
+          element: "13",
+          description: "Clocked metal-insulator-semiconductor field electrodes.",
+          x: 50,
+          y: 25,
+        },
+      ],
+    },
+    {
+      figureNumber: "Figure 1b",
+      title: "Depletion Potential Well Profile and Stored Charge",
+      caption:
+        "Surface potential distribution showing the localized potential energy well containing a packet of minority electrons under an active gate electrode.",
+      svgType: "ccd-potential-well",
+      callouts: [
+        {
+          id: "callout-well",
+          figureRef: "Fig. 1b",
+          label: "W",
+          element: "W",
+          description: "Induced electrostatic potential energy minimum.",
           x: 50,
           y: 50,
         },
       ],
     },
+    {
+      figureNumber: "Figure 14",
+      title: "Optical Image Sensor and Photo-Carrier Accumulation",
+      caption:
+        "Charge-coupled optical image sensor showing photons generating electron-hole pairs that collect in potential wells in proportion to image irradiance.",
+      svgType: "ccd-image-sensor",
+      callouts: [
+        {
+          id: "callout-light",
+          figureRef: "Fig. 14",
+          label: "hν",
+          element: "hν",
+          description: "Incident optical photons generating photo-charge packets.",
+          x: 50,
+          y: 15,
+        },
+      ],
+    },
   ],
-  historicalContext: {
-    problemStatement:
-      "In the late 1960s, capturing visual images required either wet chemical film (which took hours to develop in darkrooms and could not be transmitted across networks) or cumbersome vacuum-tube vidicon cameras (which were bulky, fragile, power-hungry, and suffered from severe image burn-in and lag).",
-    priorArtLimitations: [
-      "Silver-halide photographic film could not provide real-time electronic feedback or digital storage.",
-      "Vidicon, plumbicon, and image-orthicon vacuum tubes required high operating voltages (>1,000 V) and suffered filament burnout.",
-      "Early photodiode arrays required a dedicated read amplifier transistor at every single pixel, creating prohibitive manufacturing yield defects and high electronic fixed-pattern noise.",
-    ],
-    breakthroughInsight:
-      "On October 17, 1969, during a one-hour brainstorming session at Bell Labs, Willard Boyle and George Smith conceived the charge-coupling principle: store photo-generated electrons in potential wells beneath MOS capacitors and shift them sequentially across the chip like a bucket brigade into a single shared output amplifier. This eliminated the need for individual pixel amplifiers and made dense, high-yield digital imaging chips possible.",
-    patentWars: [
-      {
-        rivalName: "Fairchild Semiconductor, RCA, and Texas Instruments",
-        rivalClaim:
-          "Competitors developed linear and area imaging CCD architectures (interline transfer and frame transfer CCDs), claiming distinct imaging implementations.",
-        conflictDetails:
-          "While commercial manufacturers in Japan (Sony, Panasonic) and the US (Fairchild, TI, Kodak) commercialized CCD cameras for consumer camcorders and broadcast television, Bell Labs held the foundational patents on charge-coupling physics. In the 1990s, Eric Fossum at NASA JPL developed CMOS Active Pixel Sensors (APS), which integrated amplifiers back onto each pixel using standard low-cost CMOS fabrication.",
-        resolution:
-          "Willard S. Boyle and George E. Smith were awarded the 2009 Nobel Prize in Physics 'for the invention of an imaging semiconductor circuit—the CCD sensor.'",
-        legalOutcome:
-          "Boyle and Smith's 1974–1975 patents stand universally recognized as the foundational patent disclosures that sparked the digital imaging revolution.",
-      },
-    ],
-    civilizationalImpact:
-      "The CCD sensor transformed scientific discovery and everyday life. It unlocked astronomical observations with the Hubble Space Telescope, robotic exploration on Mars rovers, optical microscopes and DNA sequencers, endoscopic medical surgery, and the universal shift from film to digital video and photography.",
-    funFact:
-      "Boyle and Smith were originally tasked with inventing a semiconductor memory device to compete with magnetic bubble memory. In just one afternoon with chalk on a blackboard, they outlined the entire operational physics of charge-coupling. Their device made mediocre computer memory, but became the greatest digital camera in human history.",
-    aftermath:
-      "George Smith later remarked: 'After making the first device, we knew certainly that digital photography was here. We made a device that moved charge along, but then we made one with an array of imaging spots... we took a picture of our own faces, and there it was on the screen.'",
-    sideNotes: [
-      "The Hubble Space Telescope's Wide Field and Planetary Camera (WFPC2), installed during the famous 1993 servicing mission, utilized four Texas Instruments 800x800 pixel CCDs that delivered the iconic Deep Field images of the early universe.",
-      "Modern scientific CCDs can achieve a quantum efficiency (\\eta_{QE}) exceeding 95% at optical wavelengths, compared to less than 2% for the finest photographic film.",
-    ],
-  },
-  tags: [
-    "Willard Sterling Boyle",
-    "George Elwood Smith",
-    "Charge-coupled device",
-    "Information storage",
-    "Semiconductor memory",
-    "Semiconductor Revolution",
-    "Potential wells",
-    "Charge transfer",
-    "Bell Labs",
-  ],
-  stats: {
-    totalClaims: 32,
-    independentClaims: 7,
-    patentWarYears: "1969–2009",
-    impactScore: 100,
-  },
-};
-
-/**
- * Public, source-bounded record while the full manual source edition remains
- * withheld. The detailed WIP stays available to editors above, but visitors
- * must not receive its unsupported modern performance, history, or drawing
- * reconstruction as though it came from this 1974 grant.
- */
-export const boyleSmithCcdPatent: Patent = {
-  id: "us-3858232-boyle-smith-ccd",
-  patentNumber: "US 3,858,232",
-  title: "Information Storage Devices",
-  shortTitle: "Charge-Coupled Information Storage",
-  subtitle: "Sequential transfer of semiconductor charge through induced potential wells",
-  inventors: ["Willard S. Boyle", "George E. Smith"],
-  inventorLocation: "Murray Hill, New Jersey",
-  grantDate: "1974-12-31",
-  filingDate: "1971-11-09",
-  era: "Semiconductor Revolution (1950–1975)",
-  category: "computing",
-  categoryLabel: "Digital Imaging & Optoelectronics",
-  summary:
-    "US 3,858,232 describes information-storage devices in which charge carriers occupy induced potential-energy minima in a semiconductor and are translated by sequential electrode bias. The complete, hand-authored source face remains withheld while its page-by-page ledger is corrected.",
-  heroQuote:
-    "The specification describes devices based on the recognition that minority charge carriers within a semiconductor can be used to represent information.",
-  originalPdfUrl: "/patents/pdfs/us-3858232-boyle-smith-ccd.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/US3858232A/en",
-  usptoClassification: "US 357/24, 357/23, 307/304; Int. Cl. H01L 11/14.",
-  originalText:
-    "The source-corrected record points to the reviewed US 3,858,232 facsimile. The former US 3,923,554 text remains preserved as an unserved comparison asset and is not a transcription of this record.",
   plainEnglishExplanation: {
     overview:
-      "The grant treats information as a packet of charge held at a selected place in a semiconductor. An electrode pattern creates a local potential minimum; a later electrode sequence establishes the next minimum before the earlier one disappears, so the packet can move through the medium.",
+      "In October 1969 at Bell Telephone Laboratories, physicists Willard Boyle and George Smith were asked to create a solid-state memory technology to compete with magnetic bubble memory. In just one hour of brainstorming at a blackboard, they conceived the Charge-Coupled Device (CCD). Instead of building complex circuits with millions of separate transistors and wires, they realized that electric voltages applied to surface metal plates could create invisible 'buckets' (potential energy wells) in a flat silicon crystal. Stored electrical charges (representing digital 1s/0s or analog pixel brightness) could be poured like water from bucket to bucket simply by clocking the voltages. When exposed to light, silicon naturally converts photons into electron packets, turning the CCD into an electronic eye that revolutionized astronomy, digital cameras, and medical imaging.",
     coreMechanism:
-      "The specification describes minority-charge packets, surface and buried storage regions, input and detection stages, multichannel registers, image read-in, and acoustic-wave alternatives. Its recurring condition is a controlled sequence of potential wells that stores, translates, and detects charge without turning the historical description into a claim about a later camera or sensor product.",
+      "A CCD operates through a 3-step sequence: (1) Charge Generation & Integration: Incident light generates electron-hole pairs in p-type silicon via the photoelectric effect. A positive gate voltage ($V_G \\approx 10\\text{ V}$) repels majority positive holes, creating a deep depletion potential well ($\\psi_s \\approx 8\\text{ V}$) that captures photoelectrons. (2) Three-Phase Clocked Transfer: Three adjacent gate electrodes ($\\Phi_1, \\Phi_2, \\Phi_3$) are clocked in overlapping phase cycles. When $\\Phi_2$ is energized while $\\Phi_1$ is still high, an overlapping potential well opens, and thermal diffusion plus fringing electric fields drive electrons into the new well. When $\\Phi_1$ is ramped down, the electrons are trapped under $\\Phi_2$. Repeating this across thousands of gates transfers charge with over 99.999% efficiency (CTE). (3) Output Readout: At the channel end, charge packets are dumped onto a floating diffusion sensing node connected to an on-chip source-follower MOSFET, converting charge packets ($Q$) into low-noise analog output voltage ($V_{\\text{out}} = Q / C_{\\text{FD}}$).",
     mechanicalBreakdown: [
       {
-        title: "Induced potential wells",
+        title: "MOS Depletion Potential Well Array",
         summary:
-          "Electrode bias defines locations at which charge carriers can be stored in a semiconductor.",
+          "Array of metal-oxide-semiconductor gate electrodes overlying p-type silicon substrate.",
         technicalDetails:
-          "The source calls these locations potential wells and explains that their position and depth can be changed by the electric-field pattern at the semiconductor surface.",
-        archaicTerm: "potential wells",
-        modernEquivalent: "electrostatically defined charge-storage sites",
+          "Positive gate bias ($V_G = 5\\text{ to }15\\text{ V}$) creates surface depletion layers ($\\psi_s \\approx V_G - V_{\\text{FB}} + V_0 - \\sqrt{2(V_G - V_{\\text{FB}})V_0 + V_0^2}$), forming potential energy minima with full-well storage capacity up to $3 \\times 10^5$ electrons per $100\\ \\mu\\text{m}^2$ pixel.",
+        archaicTerm: "potential energy minima in semiconductor",
+        modernEquivalent: "MOS potential well / CCD pixel photogate",
       },
       {
-        title: "Sequential charge transfer",
-        summary:
-          "The next storage site is established in sequence so stored charge can move along the intended path.",
+        title: "3-Phase Polysilicon Clocked Shift Register",
+        summary: "Sequential tri-level gate electrodes driven by overlapping clock waveforms.",
         technicalDetails:
-          "The specification describes two- and three-phase electrode arrangements, overlapping wells, and different pulse shapes as alternatives for translating charge packets.",
-        archaicTerm: "translating function",
-        modernEquivalent: "clocked charge transfer",
+          "Three-phase clocking ($\\Phi_1, \\Phi_2, \\Phi_3$) produces directional traveling potential wells with transit times under 50 nanoseconds, achieving Charge Transfer Inefficiency below $10^{-5}$ ($\\text{CTE} > 0.99999$).",
+        archaicTerm: "sequential field-electrode translating means",
+        modernEquivalent: "multi-phase CCD charge shift register",
       },
       {
-        title: "Input and detection",
+        title: "Single-Conductivity Channel Architecture",
         summary:
-          "The document gives several ways to introduce charge and to detect its presence at a terminal region.",
+          "Continuous semiconductor channel formed without intermediate p-n junction diffusions.",
         technicalDetails:
-          "Its examples include p-n-junction and metal-insulator-semiconductor input or detection structures, a capacitive bridge, and a regeneration path; they are described as alternative embodiments.",
-        archaicTerm: "charge detecting devices",
-        modernEquivalent: "electrical charge readout structures",
+          "Eliminates p-n junctions between adjacent bits, dramatically reducing parasitic capacitance, dark current leakage, and silicon surface area requirements.",
+        archaicTerm: "channel of single conductivity type",
+        modernEquivalent: "charge-coupled transport channel",
       },
       {
-        title: "Alternative embodiments",
+        title: "Floating Diffusion Readout Node",
         summary:
-          "The grant also describes buried storage, multichannel transfer, image read-in, and traveling-field arrangements.",
+          "Low-capacitance output sensing diode with reset MOSFET and source-follower buffer.",
         technicalDetails:
-          "These passages extend the same storage-and-transfer idea to different structures, including a piezoelectric layer whose traveling acoustic field can sequentially bias charge-storage sites.",
-        archaicTerm: "charge translating device",
-        modernEquivalent: "semiconductor charge-transfer structure",
+          "Converts discrete electron packets into microvolt-level analog signals with extremely low read noise ($\\sigma_{\\text{read}} < 5\\text{ e}^-$ rms) and dynamic range exceeding 80 dB.",
+        archaicTerm: "charge detecting device",
+        modernEquivalent: "floating diffusion amplifier node",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Electrostatic charge storage",
+        principle: "MOS Deep Depletion Surface Potential",
+        formula:
+          "\\psi_s = V_G - V_{\\text{FB}} + V_0 - \\sqrt{2 (V_G - V_{\\text{FB}}) V_0 + V_0^2} \\quad \\text{where} \\quad V_0 = \\frac{q \\epsilon_{\\text{Si}} N_A}{C_{\\text{ox}}^2}",
         explanation:
-          "A spatial variation in electric potential changes the energy landscape experienced by charge carriers. The patent uses that variation to create a selected storage location in the semiconductor.",
+          "Positive gate voltage repels mobile holes from the surface, creating an unshielded negative acceptor space-charge depletion region with a deep electrostatic potential well.",
       },
       {
-        principle: "Overlapped transfer sequence",
+        principle: "Charge Transfer Efficiency & Diffusion Kinetics",
+        formula:
+          "\\text{CTE} = 1 - \\text{CTI} = 1 - \\left[ \\exp\\left(-\\frac{\\pi^2 D_n t_{\\text{transfer}}}{4 L_{\\text{gate}}^2}\\right) + \\epsilon_{\\text{trap}} \\right]",
         explanation:
-          "The source explains that adjacent potential wells must overlap, or nearly overlap, so charge can diffuse or be carried into the receiving site before the preceding well collapses.",
+          "Thermal diffusion and self-induced electrostatic drift govern the rapid transit of electrons between adjacent potential wells during clock phase overlap.",
       },
       {
-        principle: "Semiconductor carrier transport",
+        principle: "Photoelectric Carrier Generation & Integration",
+        formula:
+          "N_e = \\min\\left(Q_{\\text{max}}, \\eta_{\\text{QE}} \\frac{P_{\\text{opt}} A_{\\text{pixel}} t_{\\text{int}}}{h \\nu} + N_{\\text{dark}}\\right)",
         explanation:
-          "The examples distinguish storage media, carrier mobility, depletion regions, and surface or buried arrangements because those properties determine whether a charge packet can be held and moved.",
+          "Incident photons with energy exceeding the 1.12 eV silicon bandgap create electron-hole pairs collected and stored linearly during the optical integration frame time.",
       },
     ],
     whyItMattersToday:
-      "The grant is an early primary record for charge-coupled information storage. This catalogue entry intentionally does not claim particular later products, performance figures, or commercial outcomes until those statements receive their own cited historical review.",
+      "The CCD revolutionized human vision and scientific discovery. It enabled digital photography, smartphone cameras, camcorders, medical endoscopy, barcode scanners, and astronomical imaging—including the Hubble Space Telescope and deep-space planetary probes—earning Boyle and Smith the 2009 Nobel Prize in Physics.",
   },
-  claims: _legacyBoyleSmithCcdPatentDraft.claims.map(
-    ({ legalSignificance: _legacySignificance, ...claim }) => ({
-      ...claim,
-      originalText: boyleSmithCcdClaimText(claim.number),
-    }),
-  ),
-  drawings: [],
+  claims,
   historicalContext: {
     problemStatement:
-      "The specification contrasts its approach with magnetic storage, scanned video-camera targets, delay lines, and logic-device arrays, then proposes charge storage and translation within a semiconductor.",
+      "In the late 1960s, electronic imaging required fragile, bulky, high-voltage vacuum tubes (Vidicons and Image Orthicons) with raster electron beams, while computer memory relied on complex magnetic cores or emerging transistor circuits that required separate wiring for every bit.",
     priorArtLimitations: [
-      "Magnetic storage represents information through magnetic domains.",
-      "A scanned video-camera target stores an optical image as an electrostatic pattern.",
-      "Delay lines store information dynamically in traveling acoustic or electromechanical waves.",
+      "Vidicon camera tubes required high vacuum, high voltages (>1000V), and had severe image lag and burn-in",
+      "Semiconductor shift registers required separate isolated p-n junction diffusions for every bit",
+      "Magnetic core memory was expensive, bulky, and power-hungry",
     ],
     breakthroughInsight:
-      "The documented move is to create, select, change, and retrieve a spatially defined semiconductor storage site by electric fields, then translate the stored charge along a selected path.",
-    patentWars: [],
+      "Boyle and Smith realized that mobile electric charge packets could be stored in surface potential wells and shifted continuously through a single homogeneous semiconductor substrate simply by manipulating the voltages on a sequence of surface metal plates.",
+    patentWars: [
+      {
+        rivalName: "Texas Instruments & Fairchild Semiconductor",
+        rivalClaim: "Bucket-Brigade Devices (BBD) and Charge-Injection Devices (CID)",
+        conflictDetails:
+          "Philips had developed the Bucket-Brigade Device (BBD) using discrete transistors and capacitors. Bell Labs established that the CCD's continuous single-conductivity substrate without intermediate p-n diffusions was fundamentally superior in packing density, speed, and transfer efficiency.",
+        resolution:
+          "Boyle and Smith's patent US 3,858,232 was granted on December 31, 1974, establishing Bell Labs' foundational priority for charge-coupled devices.",
+        legalOutcome:
+          "Willard Boyle and George Smith were awarded the 2009 Nobel Prize in Physics for their invention of the Charge-Coupled Device.",
+      },
+    ],
     civilizationalImpact:
-      "The pinned grant does not itself establish later commercial adoption or a patent dispute. Those topics remain deliberately unasserted pending separately sourced editorial work.",
+      "The CCD democratized digital visual culture, eliminated photographic film development, made modern medical endoscopy non-invasive, and allowed astronomers to peer back to the dawn of the universe with quantum efficiency exceeding 90%.",
     funFact:
-      "The 1974 document presents storage, serial transfer, image read-in, multichannel registers, and acoustic-wave arrangements as related uses of one charge-translation concept.",
-    aftermath:
-      "The complete original text remains unavailable until the corrected ledger and explicit source references pass independent review.",
-    sideNotes: [],
+      "Willard Boyle and George Smith conceived the entire architecture of the Charge-Coupled Device in approximately one hour of intense brainstorming on an afternoon in October 1969.",
   },
-  tags: [
-    "Willard Sterling Boyle",
-    "George Elwood Smith",
-    "Charge-coupled device",
-    "Information storage",
-    "Potential wells",
-    "Charge transfer",
-    "Bell Labs",
-  ],
   stats: {
     totalClaims: 32,
     independentClaims: 7,

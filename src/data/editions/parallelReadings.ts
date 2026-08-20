@@ -11,6 +11,7 @@ import { baekelandBakeliteParallelReadings } from "./baekelandBakeliteEdition";
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
 import { bellPhotophoneParallelReadings } from "./bellPhotophoneEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
+import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
@@ -36,6 +37,7 @@ import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
+import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
@@ -60,6 +62,7 @@ import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
 import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition";
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
+import { townesLaserParallelReadings } from "./townesLaserEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { wattRotaryEngineParallelReadings } from "./wattRotaryEngineEdition";
@@ -129,9 +132,12 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
-  "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
+  "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
+  "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
+  "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
+  "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
   "us-942699-baekeland-bakelite": baekelandBakeliteParallelReadings,
 
