@@ -25,6 +25,8 @@ describe("US 307,031 Thomas Edison Electrical Indicator Visual Boundary", () => 
     expect(componentSource).not.toContain("GLTFLoader");
     expect(componentSource).toContain('usePatentPhysics("us-307031-edison-indicator")');
     expect(componentSource).toContain('from "./useLiveSimParams"');
+    expect(componentSource).toContain("controls.setView");
+    expect(componentSource).toContain("CAMERA_PRESETS[preset]");
     const simSource = readFileSync(
       join(root, "src/components/patents/visuals/EdisonIndicatorSim.tsx"),
       "utf8",
