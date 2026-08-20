@@ -13,7 +13,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -26,6 +25,18 @@ import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "generator" | "condenser" | "evaporator" | "absorber" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 8, 14], target: [0, 0, 0] },
+  generator: { pos: [3.8, 0.4, 3.8], target: [3.4, -0.8, 0] },
+  condenser: { pos: [2.4, 3.6, 3.0], target: [2.2, 2.6, 0] },
+  evaporator: { pos: [-2.8, 2.8, 3.8], target: [-2.8, 1.8, 0] },
+  absorber: { pos: [-3.2, -0.6, 3.6], target: [-2.8, -1.4, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
 
 export function EinsteinRefrigerator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,35 +79,12 @@ export function EinsteinRefrigerator3D() {
     fluidWrapY: frige.fluidWrapY,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11, 8, 14], [0, 0, 0]);
-        break;
-      case "generator":
-        controls.setView([3.8, 0.4, 3.8], [3.4, -0.8, 0]);
-        break;
-      case "condenser":
-        controls.setView([2.4, 3.6, 3.0], [2.2, 2.6, 0]);
-        break;
-      case "evaporator":
-        controls.setView([-2.8, 2.8, 3.8], [-2.8, 1.8, 0]);
-        break;
-      case "absorber":
-        controls.setView([-3.2, -0.6, 3.6], [-2.8, -1.4, 0]);
-        break;
-      case "top":
-        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -109,15 +97,15 @@ export function EinsteinRefrigerator3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 8, 14],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // --- 3D EINSTEIN-SZILARD REFRIGERATOR ASSEMBLY ---
     const model = buildEinsteinRefrigeratorModel();
@@ -156,6 +144,7 @@ export function EinsteinRefrigerator3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 

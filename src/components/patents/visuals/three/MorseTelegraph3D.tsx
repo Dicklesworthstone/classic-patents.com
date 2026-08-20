@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -19,6 +18,18 @@ type CameraPreset =
   | "paper_tape_register"
   | "sounding_anvil"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 8, 13], target: [0, 0, 0] },
+  key_lever: { pos: [-3.5, 2.5, 4.5], target: [-3.5, -0.8, 0] },
+  electromagnet_relay: { pos: [3.5, 2.0, 4.0], target: [3.5, -0.8, 0] },
+  paper_tape_register: { pos: [2.0, 3.5, 3.5], target: [1.5, 0.5, 0] },
+  sounding_anvil: { pos: [3.5, 3.0, 2.0], target: [3.5, 0.2, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
 
 export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,35 +68,12 @@ export function MorseTelegraph3D() {
     electronDisplaySpeed: morse.electronDisplaySpeed,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11, 8, 13], [0, 0, 0]);
-        break;
-      case "key_lever":
-        controls.setView([-3.5, 2.5, 4.5], [-3.5, -0.8, 0]);
-        break;
-      case "electromagnet_relay":
-        controls.setView([3.5, 2.0, 4.0], [3.5, -0.8, 0]);
-        break;
-      case "paper_tape_register":
-        controls.setView([2.0, 3.5, 3.5], [1.5, 0.5, 0]);
-        break;
-      case "sounding_anvil":
-        controls.setView([3.5, 3.0, 2.0], [3.5, 0.2, 0]);
-        break;
-      case "top":
-        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -98,15 +86,15 @@ export function MorseTelegraph3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 8, 13],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildMorseTelegraphModel();
     scene.add(rootGroup);
@@ -146,6 +134,7 @@ export function MorseTelegraph3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

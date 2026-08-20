@@ -13,7 +13,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -32,6 +31,18 @@ type CameraPreset =
   | "gimbal_actuator"
   | "interstage"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [13, 10, 16], target: [0, 0, 0] },
+  de_laval_nozzle: { pos: [0, -3.2, 5.0], target: [0, -3.0, 0] },
+  combustion_chamber: { pos: [0, -0.5, 4.5], target: [0, -1.0, 0] },
+  gimbal_actuator: { pos: [2.8, -2.4, 3.5], target: [0, -2.5, 0] },
+  interstage: { pos: [2.8, 1.8, 4.2], target: [0, 1.5, 0] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
 
 export function GoddardRocket3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -97,35 +108,12 @@ export function GoddardRocket3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([13, 10, 16], [0, 0, 0]);
-        break;
-      case "de_laval_nozzle":
-        controls.setView([0, -3.2, 5.0], [0, -3.0, 0]);
-        break;
-      case "combustion_chamber":
-        controls.setView([0, -0.5, 4.5], [0, -1.0, 0]);
-        break;
-      case "gimbal_actuator":
-        controls.setView([2.8, -2.4, 3.5], [0, -2.5, 0]);
-        break;
-      case "interstage":
-        controls.setView([2.8, 1.8, 4.2], [0, 1.5, 0]);
-        break;
-      case "top":
-        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -138,15 +126,15 @@ export function GoddardRocket3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [13, 10, 16],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildGoddardRocketModel();
     scene.add(model.root);
@@ -179,6 +167,7 @@ export function GoddardRocket3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 

@@ -339,12 +339,79 @@ My machine embraces two leading groups of mechanism: first, those which form a t
         modernEquivalent: "cast relief printing form",
       },
     ],
-    scientificPrinciples: [],
+    scientificPrinciples: [
+      {
+        principle: "Tapered Matrix-Bar Kinematic Stops & Positioning",
+        formula: "x_j = \\Delta x \\cdot k_j, \\quad k_j \\in \\{0, \\dots, N-1\\}",
+        explanation:
+          "Finger-key escapements release stop-pins at calibrated vertical positions along the matrix-bar travel, aligning selected intaglio letterforms across parallel bars into a coherent line of text.",
+      },
+      {
+        principle: "Wedge Clamping & Line Alignment Mechanics",
+        formula: "F_{\\text{clamp}} = \\frac{F_{\\text{transverse}}}{2 \\tan(\\theta) + \\mu}",
+        explanation:
+          "Lateral clamping bars compress the aligned tapered matrix-bars against transverse alignment blades, converting longitudinal clamping force into precise line spacing and zeroing character misalignment.",
+      },
+      {
+        principle: "Eutectic Hot-Metal Pressure Casting",
+        formula:
+          "P_{\\text{inj}} = \\frac{F_{\\text{plunger}}}{A_{\\text{pot}}}, \\quad t_{\\text{freeze}} \\approx B \\cdot \\left(\\frac{V}{A}\\right)^2",
+        explanation:
+          "Molten type metal delivered under pump pressure into the closed sectional mold against the clamped matrix bars rapidly cools and freezes to form a solid relief printing bar.",
+      },
+    ],
     whyItMattersToday:
       "The grant is valuable as a detailed primary-source account of an early approach to mechanized composition: choose characters by setting independently moving bar matrices, align and clamp them into a temporary mold face, then cast a printing form. Claims 1 through 70 define variations of that apparatus. Later commercial Linotype technology requires separate, cited treatment rather than being projected backward onto this grant.",
   },
   claims: mergenthalerLinotypeClaims,
-  drawings: [],
+  drawings: [
+    {
+      figureNumber: "Fig. 1",
+      title: "Matrix-Bar Machine Side Elevation & Operating Mechanism",
+      caption:
+        "Side elevation of Mergenthaler's 1885 printing-bar machine showing the finger-key deck, stop-pin matrix-bar carriage, sectional mold, and melting pot.",
+      svgType: "mergenthaler-linotype",
+      callouts: [
+        {
+          id: "ml-1",
+          figureRef: "Fig. 1",
+          label: "A",
+          element: "Matrix-Bar Carriage",
+          description: "Parallel tapered matrix-bars carrying intaglio character series.",
+          x: 45,
+          y: 28,
+        },
+        {
+          id: "ml-2",
+          figureRef: "Fig. 1",
+          label: "B",
+          element: "Finger-Key Operating Deck",
+          description: "Keyboard and adjusting-pins setting matrix-bar stop positions.",
+          x: 25,
+          y: 65,
+        },
+        {
+          id: "ml-3",
+          figureRef: "Fig. 1",
+          label: "C",
+          element: "Transverse Alignment Blade & Clamps",
+          description:
+            "Clamping mechanism holding the selected bars in temporary matrix alignment.",
+          x: 52,
+          y: 55,
+        },
+        {
+          id: "ml-4",
+          figureRef: "Fig. 1",
+          label: "D",
+          element: "Melting Pot & Pressure Pump",
+          description: "Hot-metal reservoir and pump delivering molten material to the mold.",
+          x: 72,
+          y: 50,
+        },
+      ],
+    },
+  ],
   historicalContext: {
     problemStatement:
       "The specification identifies the rapid and economical production of letterpress printing as the problem and contrasts its apparatus with ordinary type-setting and with preparing matrices by machinery before casting forms.",

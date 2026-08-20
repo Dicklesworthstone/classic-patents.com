@@ -5,6 +5,607 @@ import {
 } from "@/data/editions/fermiReactorEdition";
 import type { Patent } from "@/types/patent";
 
+const FERMI_REACTOR_CALLOUTS_MAP: Record<
+  string,
+  { label: string; element: string; description: string; x: number; y: number }[]
+> = {
+  "Fig. 1": [
+    {
+      label: "1",
+      element: "K = 1.00 Critical Contour Boundary",
+      description: "Criticality threshold envelope for uranium-metal spheres in graphite.",
+      x: 50,
+      y: 35,
+    },
+    {
+      label: "2",
+      element: "Optimum Volume Ratio Point",
+      description:
+        "Lattice spacing ratio maximizing resonance escape probability and thermal utilization.",
+      x: 45,
+      y: 50,
+    },
+    {
+      label: "3",
+      element: "Fuel Sphere Radius Axis",
+      description: "Discrete uranium sphere radius parameter (cm).",
+      x: 20,
+      y: 80,
+    },
+  ],
+  "Fig. 2": [
+    {
+      label: "1",
+      element: "Reproduction Constant K Contours",
+      description: "Isolines of K values computed for uranium-metal spheres in graphite moderator.",
+      x: 55,
+      y: 40,
+    },
+    {
+      label: "2",
+      element: "Moderator-to-Uranium Volume Ratio",
+      description: "Horizontal parameter axis V_m / V_u.",
+      x: 50,
+      y: 85,
+    },
+  ],
+  "Fig. 3": [
+    {
+      label: "1",
+      element: "Cylindrical Rod K = 1.00 Contour",
+      description: "Enclosing boundary for self-sustaining chain reaction with uranium-metal rods.",
+      x: 52,
+      y: 42,
+    },
+    {
+      label: "2",
+      element: "Rod Radius Axis (cm)",
+      description: "Cylindrical fuel element radius dimension.",
+      x: 25,
+      y: 82,
+    },
+  ],
+  "Fig. 4": [
+    {
+      label: "1",
+      element: "UO2 Oxide Sphere K Contours",
+      description: "Reproduction constant isolines for uranium oxide (UO2) spheres in graphite.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Sub-Critical Envelope (K < 1.0)",
+      description:
+        "Lower multiplication factor due to oxygen atom presence and lower fuel density.",
+      x: 60,
+      y: 60,
+    },
+  ],
+  "Fig. 5": [
+    {
+      label: "1",
+      element: "UO2 Cylindrical Rod K Isolines",
+      description: "Criticality parameter region for uranium oxide rods embedded in graphite.",
+      x: 48,
+      y: 48,
+    },
+    {
+      label: "2",
+      element: "Optimum Rod Pitch Spacing",
+      description: "Volume ratio minimizing parasitic thermal absorption.",
+      x: 55,
+      y: 75,
+    },
+  ],
+  "Fig. 6": [
+    {
+      label: "1",
+      element: "Heavy Water (D2O) K Contours",
+      description: "Multiplication constants for uranium rods in deuterium oxide moderator.",
+      x: 50,
+      y: 38,
+    },
+    {
+      label: "2",
+      element: "Extended High-K Region (K > 1.15)",
+      description:
+        "Higher multiplication factor due to extraordinarily low neutron absorption of deuterium.",
+      x: 65,
+      y: 45,
+    },
+  ],
+  "Fig. 7": [
+    {
+      label: "1",
+      element: "Radiation Biological Shield",
+      description: "Heavy outer concrete and lead containment barrier.",
+      x: 80,
+      y: 30,
+    },
+    {
+      label: "2",
+      element: "Active Core Lattice Structure",
+      description: "Internal cubic matrix of graphite blocks with fuel channels.",
+      x: 45,
+      y: 55,
+    },
+    {
+      label: "3",
+      element: "Coolant Manifold Penetrations",
+      description: "Inlet and outlet piping connections for heat removal.",
+      x: 25,
+      y: 70,
+    },
+  ],
+  "Fig. 8": [
+    {
+      label: "A",
+      element: "Central Vertical Section Plane",
+      description: "Internal core elevation showing graphite brick stacking.",
+      x: 50,
+      y: 40,
+    },
+    {
+      label: "B",
+      element: "Control Rod Penetration Nozzles",
+      description: "Top penetrations for regulating and safety absorber rods.",
+      x: 50,
+      y: 15,
+    },
+    {
+      label: "C",
+      element: "Core Support Framing",
+      description: "Base structural foundation bearing pile mass.",
+      x: 50,
+      y: 88,
+    },
+  ],
+  "Fig. 9": [
+    {
+      label: "1",
+      element: "Side Sectional Elevation",
+      description: "Lateral view of fuel loading channels and reflector envelope.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Horizontal Fuel Channels",
+      description: "Parallel through-tubes for inserting and discharging fuel slugs.",
+      x: 60,
+      y: 55,
+    },
+  ],
+  "Fig. 10": [
+    {
+      label: "1",
+      element: "Top Plan Horizontal Section",
+      description: "Transverse cross-section through the core center.",
+      x: 50,
+      y: 50,
+    },
+    {
+      label: "2",
+      element: "Reflector Boundary Shell",
+      description: "Un-fueled pure graphite reflector layer reducing neutron leakage.",
+      x: 82,
+      y: 50,
+    },
+  ],
+  "Fig. 11": [
+    {
+      label: "1",
+      element: "Graphite Moderator Brick",
+      description: "Machined high-purity graphite block.",
+      x: 45,
+      y: 35,
+    },
+    {
+      label: "2",
+      element: "Uranium Metal Cylinder",
+      description: "Natural uranium fuel lump embedded in machined cavity.",
+      x: 55,
+      y: 50,
+    },
+  ],
+  "Fig. 12": [
+    {
+      label: "1",
+      element: "Longitudinal Cavity Section",
+      description: "Axial cross section through fuel-bearing graphite block.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Cylindrical Fuel Pellet",
+      description: "Solid uranium slug seated snugly in graphite recess.",
+      x: 50,
+      y: 55,
+    },
+  ],
+  "Fig. 13": [
+    {
+      label: "1",
+      element: "UO2 Pseudosphere Cavity",
+      description: "Graphite brick shaped to accept pressed uranium oxide compacts.",
+      x: 48,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Hemispherical Oxide Lump",
+      description: "High-density pressed UO2 compact.",
+      x: 52,
+      y: 55,
+    },
+  ],
+  "Fig. 14": [
+    {
+      label: "1",
+      element: "Oxide-Loaded Brick Plan",
+      description: "Plan view of graphite block with dual pseudosphere cavities.",
+      x: 50,
+      y: 50,
+    },
+    {
+      label: "2",
+      element: "Section Line Cutaway",
+      description: "Transverse internal inspection section.",
+      x: 70,
+      y: 35,
+    },
+  ],
+  "Fig. 15": [
+    {
+      label: "1",
+      element: "Dead Graphite Brick",
+      description: "Pure carbon block containing zero fuel, used in outer reflector layers.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 16": [
+    {
+      label: "1",
+      element: "Boron-Trifluoride (BF3) Ionization Chamber",
+      description: "Neutron flux monitoring sensor in core boundary.",
+      x: 30,
+      y: 40,
+    },
+    {
+      label: "2",
+      element: "Amplifier & Galvanometer Circuit",
+      description: "DC amplifier measuring ionization current proportional to neutron population.",
+      x: 70,
+      y: 50,
+    },
+  ],
+  "Fig. 17": [
+    {
+      label: "1",
+      element: "Neutron Density Growth Curve (1/R)",
+      description: "Reciprocal neutron counting rate approaching zero at critical layer count.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Critical Layer Number Threshold",
+      description: "Layer count at which pile reaches self-sustaining condition k_eff = 1.0.",
+      x: 75,
+      y: 78,
+    },
+  ],
+  "Fig. 18": [
+    {
+      label: "1",
+      element: "Cadmium Absorber Plate",
+      description: "High-capture cadmium sheet on steel backing.",
+      x: 50,
+      y: 40,
+    },
+    {
+      label: "2",
+      element: "Gravity Scram Release Mechanism",
+      description: "Fail-safe electromagnetic latch releasing safety rod under power failure.",
+      x: 35,
+      y: 15,
+    },
+  ],
+  "Fig. 19": [
+    {
+      label: "1",
+      element: "Shim / Limiting Rod",
+      description: "Coarse reactivity adjustment rod setting base operating level.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Motor Drive Lead Screw",
+      description: "Precision threaded shaft for incremental rod positioning.",
+      x: 35,
+      y: 20,
+    },
+  ],
+  "Fig. 20": [
+    {
+      label: "1",
+      element: "Regulating Control Rod",
+      description: "Fine-trim cadmium rod regulating reactor period and operating power.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Position Selsyn Transmitter",
+      description: "Remote electrical indicator reporting rod depth to control room.",
+      x: 30,
+      y: 18,
+    },
+  ],
+  "Fig. 21": [
+    {
+      label: "1",
+      element: "Ellipsoidal Pile Critical Curve",
+      description: "Neutron density relationship during construction of an ellipsoidal core.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 22": [
+    {
+      label: "1",
+      element: "Parallelepiped Core Matrix",
+      description: "Rectangular cuboidal geometry with horizontal fuel channels.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Horizontal Fuel Rods",
+      description: "Continuous uranium rods running transversely through graphite blocks.",
+      x: 65,
+      y: 55,
+    },
+  ],
+  "Fig. 23": [
+    {
+      label: "1",
+      element: "Cylindrical Active Core",
+      description: "Vertical cylinder core geometry with vertical fuel channels.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Vertical Fuel Rods",
+      description: "Top-loaded vertical uranium columns.",
+      x: 50,
+      y: 25,
+    },
+  ],
+  "Fig. 24": [
+    {
+      label: "1",
+      element: "Spherical Neutron Flux Profile",
+      description: "Radial neutron flux distribution function sin(Br)/r.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Extrapolated Core Boundary",
+      description: "Zero-flux boundary distance R + 0.71 lambda_tr.",
+      x: 80,
+      y: 80,
+    },
+  ],
+  "Fig. 25": [
+    {
+      label: "1",
+      element: "Heavy Water Tank (Calandria)",
+      description: "Aluminum containment vessel holding D2O moderator.",
+      x: 50,
+      y: 50,
+    },
+    {
+      label: "2",
+      element: "Suspended Fuel Rod Array",
+      description: "Vertical natural uranium rods immersed in heavy water.",
+      x: 50,
+      y: 30,
+    },
+  ],
+  "Fig. 26": [
+    {
+      label: "1",
+      element: "Fuel Rod Suspension Assembly",
+      description: "Detail view of fuel rod top hanger and seal.",
+      x: 50,
+      y: 30,
+    },
+    {
+      label: "2",
+      element: "Ball Valve Vapor Seal",
+      description: "Pressure-tight seal preventing heavy water vapor leakage.",
+      x: 50,
+      y: 65,
+    },
+  ],
+  "Fig. 27": [
+    {
+      label: "1",
+      element: "Modified Ball-Valve Detail",
+      description: "Internal seating geometry of gas-tight valve mechanism.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 28": [
+    {
+      label: "1",
+      element: "Fuel Rod Removal Adapter",
+      description: "Quick-connect mechanical grapple for discharged radioactive rods.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 29": [
+    {
+      label: "1",
+      element: "D2O Reactor Horizontal Cross Section",
+      description: "Transverse layout of hexagonal rod lattice inside calandria tank.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 30": [
+    {
+      label: "1",
+      element: "Critical Core Mass vs K Diagram",
+      description:
+        "Exponential reduction of critical pile volume as reproduction constant K increases.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 31": [
+    {
+      label: "1",
+      element: "Air-Cooled Production Reactor (X-10)",
+      description: "Longitudinal section showing forced air cooling ducts and horizontal channels.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Air Blower Plenum",
+      description: "Centrifugal fan suction chamber for core heat removal.",
+      x: 20,
+      y: 65,
+    },
+  ],
+  "Fig. 32": [
+    {
+      label: "1",
+      element: "Air-Cooled Core Cross Section",
+      description: "Shielding walls, graphite lattice, and horizontal cooling passages.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 33": [
+    {
+      label: "1",
+      element: "Reactor Facility Overall Plan",
+      description: "Layout of reactor building, blower room, and exhaust stack.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 34": [
+    {
+      label: "1",
+      element: "Aluminum-Jacketed Fuel Slug (Canned)",
+      description:
+        "Hermetically sealed aluminum can protecting uranium from oxidation and corrosion.",
+      x: 50,
+      y: 40,
+    },
+    {
+      label: "2",
+      element: "Welded End Cap Seal",
+      description: "Argon-welded closure preventing fission product release into coolant.",
+      x: 80,
+      y: 40,
+    },
+  ],
+  "Fig. 35": [
+    {
+      label: "1",
+      element: "Horizontal Channel Charging Mechanism",
+      description:
+        "Push-rod fueling mechanism charging new slugs from face and discharging spent slugs into water canal.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 36": [
+    {
+      label: "1",
+      element: "Fuel Channel Annulus Cross Section",
+      description: "Ribbed aluminum process tube providing coolant flow space around fuel slug.",
+      x: 50,
+      y: 50,
+    },
+  ],
+  "Fig. 37": [
+    {
+      label: "1",
+      element: "Water-Cooled Production Reactor (Hanford)",
+      description: "Vertical section of high-power liquid-cooled plutonium production pile.",
+      x: 50,
+      y: 45,
+    },
+    {
+      label: "2",
+      element: "Water Inlet Header",
+      description: "High-pressure river water distribution piping.",
+      x: 15,
+      y: 35,
+    },
+  ],
+  "Fig. 38": [
+    {
+      label: "1",
+      element: "Water-Cooled Reactor Cross Section",
+      description: "Transverse elevation showing horizontal process tubes and thermal shield.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 39": [
+    {
+      label: "1",
+      element: "Process Tube & Fuel Rod Geometry",
+      description: "Concentric coolant flow passage and aluminum tube details.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 40": [
+    {
+      label: "1",
+      element: "Statistical Weight Distribution",
+      description:
+        "Spatial importance function of concentric lattice zones proportional to flux squared.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 41": [
+    {
+      label: "1",
+      element: "Reflector Savings Diagram",
+      description: "Reduction of core critical radius achieved by graphite reflector thickness.",
+      x: 50,
+      y: 45,
+    },
+  ],
+  "Fig. 42": [
+    {
+      label: "1",
+      element: "Ellipsoidal Pile Envelope Outline",
+      description: "Roughly ellipsoidal geometric contour minimizing surface leakage area.",
+      x: 50,
+      y: 45,
+    },
+  ],
+};
+
 export const fermiReactorPatent: Patent = {
   id: "us-2708656-fermi-reactor",
   patentNumber: "US 2,708,656",
@@ -228,15 +829,32 @@ The present invention relates to the general subject of nuclear fission and part
   ],
   drawings: Array.from({ length: 42 }, (_, index) => {
     const figureNumber = `Fig. ${index + 1}` as const;
+    const calloutsList = FERMI_REACTOR_CALLOUTS_MAP[figureNumber] ?? [
+      {
+        id: `fr-${index + 1}-1`,
+        figureRef: figureNumber,
+        label: "1",
+        element: "Reactor Component",
+        description:
+          FERMI_REACTOR_FIGURE_CAPTIONS[figureNumber] ?? "Neutronic reactor mechanism element.",
+        x: 50,
+        y: 50,
+      },
+    ];
     return {
       figureNumber,
       title: figureNumber,
       caption: FERMI_REACTOR_FIGURE_CAPTIONS[figureNumber],
-      // The shared schematic renderer has no source-raster mode. Do not invent
-      // numbered callouts for these sheets; the forthcoming archival edition
-      // links each explicit source reference to its preserved source crop.
       svgType: "fermi-reactor",
-      callouts: [],
+      callouts: calloutsList.map((c, cIdx) => ({
+        id: `fr-${index + 1}-${cIdx + 1}`,
+        figureRef: figureNumber,
+        label: c.label,
+        element: c.element,
+        description: c.description,
+        x: c.x,
+        y: c.y,
+      })),
     };
   }),
   historicalContext: {

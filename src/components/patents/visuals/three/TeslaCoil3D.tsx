@@ -2,7 +2,6 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
@@ -14,6 +13,17 @@ import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 9, 14], target: [0, 0, 0] },
+  toroid_breakout: { pos: [0, 4.2, 4.5], target: [0, 2.5, 0] },
+  primary_spiral: { pos: [0, -1.2, 5.5], target: [0, -2.4, 0] },
+  spark_gap: { pos: [2.8, -2.2, 3.8], target: [2.4, -3.2, 0] },
+  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
+};
 
 export function TeslaCoil3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,32 +94,12 @@ export function TeslaCoil3D() {
     sparkRateHz: params.sparkRateHz ?? 120,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11, 9, 14], [0, 0, 0]);
-        break;
-      case "toroid_breakout":
-        controls.setView([0, 4.2, 4.5], [0, 2.5, 0]);
-        break;
-      case "primary_spiral":
-        controls.setView([0, -1.2, 5.5], [0, -2.4, 0]);
-        break;
-      case "spark_gap":
-        controls.setView([2.8, -2.2, 3.8], [2.4, -3.2, 0]);
-        break;
-      case "top":
-        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   // Audio synthesis
@@ -128,15 +118,15 @@ export function TeslaCoil3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 9, 14],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildTeslaCoilModel();
     scene.add(model.root);
@@ -165,6 +155,7 @@ export function TeslaCoil3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 
