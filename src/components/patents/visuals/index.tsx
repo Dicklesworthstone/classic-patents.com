@@ -85,9 +85,9 @@ import { YaleLockSim } from "./YaleLockSim";
 import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
 
 const ThreeLoading = () => (
-  <div className="w-full min-h-[420px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-[#090d16] flex flex-col items-center justify-center p-6 text-center space-y-3">
-    <div className="w-8 h-8 rounded-full border-2 border-amber-500 border-t-transparent animate-spin" />
-    <span className="font-mono text-xs text-amber-500 tracking-wider">
+  <div className="w-full min-h-[420px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/90 dark:bg-ink-950/90 flex flex-col items-center justify-center p-6 text-center space-y-3 shadow-patent">
+    <div className="w-8 h-8 rounded-full border-2 border-amber-600 dark:border-amber-400 border-t-transparent animate-spin" />
+    <span className="font-mono text-xs font-bold text-amber-700 dark:text-amber-300 tracking-wider">
       INITIALIZING THREE.JS WEBGL SIMULATION...
     </span>
   </div>
@@ -98,11 +98,11 @@ const ArkwrightWaterFrame3D = dynamic(
   { ssr: false, loading: ThreeLoading },
 );
 const DeForestAudion3D = dynamic(
-  () => import("./three/DeForestAudion3D").then((m) => m.DeForestAudion3D || m.default),
+  () => import("./three/DeForestAudion3D").then((m) => m.DeForestAudion3D),
   { ssr: false, loading: ThreeLoading },
 );
 const DeForestAudionSim = dynamic(
-  () => import("./DeForestAudionSim").then((m) => m.DeForestAudionSim || m.default),
+  () => import("./DeForestAudionSim").then((m) => m.DeForestAudionSim),
   { ssr: false },
 );
 const FessendenWireless3D = dynamic(

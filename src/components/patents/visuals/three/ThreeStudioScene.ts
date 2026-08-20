@@ -93,13 +93,15 @@ function createProceduralSkyTexture(
   }
 
   const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.needsUpdate = true;
   return texture;
 }
 
 /**
- * Creates 3D procedural fluffy cumulus clouds that float and drift in the sky.
+ * Creates 3D procedural fluffy cumulus clouds that float and drift in the sky in all 360 degrees.
  */
 function createCumulusCloudPuff(
   cloudGroup: THREE.Group,
@@ -107,12 +109,11 @@ function createCumulusCloudPuff(
   baseY: number,
   baseZ: number,
   scale = 1.0,
-  _isDark = false,
 ) {
   const cloudMat = new THREE.MeshLambertMaterial({
     color: 0xffffff,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.88,
     depthWrite: false,
   });
 
@@ -169,7 +170,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   // Atmospheric Fog: Matches horizon for soft atmospheric depth
   const fogColor = 0xdbeafe;
-  scene.fog = new THREE.FogExp2(fogColor, 0.004);
+  scene.fog = new THREE.FogExp2(fogColor, 0.003);
 
   const width = container.clientWidth || 600;
   const height = container.clientHeight || 460;
@@ -214,7 +215,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   const hemiLight = new THREE.HemisphereLight(
     hemiSkyColor,
     hemiGroundColor,
-    opts.ambientIntensity ?? 2.2,
+    opts.ambientIntensity ?? 2.4,
   );
   hemiLight.position.set(0, 50, 0);
   scene.add(hemiLight);
@@ -240,7 +241,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   scene.add(fillLight);
 
   // D. Upward Daylight Bounce (Illuminates bottoms of wings, coils, and gears)
-  const bounceLight = new THREE.DirectionalLight(0xffedd5, 1.1);
+  const bounceLight = new THREE.DirectionalLight(0xffedd5, 1.2);
   bounceLight.position.set(0, -15, 12);
   scene.add(bounceLight);
 
@@ -250,37 +251,45 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   rimLight.lookAt(0, 0, 0);
   scene.add(rimLight);
 
-  // 5. 3D Cumulus Clouds Layer
+  // 5. 3D 360-Degree Cumulus Clouds Layer (Surrounds the model at all angles)
   const cloudsGroup = new THREE.Group();
   if (enableClouds) {
-    // Generate scattered puffy clouds across the sky background
-    createCumulusCloudPuff(cloudsGroup, -45, 18, -40, 1.2, isDark);
-    createCumulusCloudPuff(cloudsGroup, 20, 22, -50, 1.5, isDark);
-    createCumulusCloudPuff(cloudsGroup, -15, 26, -60, 1.8, isDark);
-    createCumulusCloudPuff(cloudsGroup, 50, 20, -35, 1.1, isDark);
-    createCumulusCloudPuff(cloudsGroup, -60, 24, -45, 1.4, isDark);
-    createCumulusCloudPuff(cloudsGroup, 5, 28, -70, 2.0, isDark);
+    // Generate scattered puffy clouds across all 360 degrees of azimuth
+    const cloudAngles = [
+      0,
+      Math.PI / 4,
+      Math.PI / 2,
+      (3 * Math.PI) / 4,
+      Math.PI,
+      (5 * Math.PI) / 4,
+      (3 * Math.PI) / 2,
+      (7 * Math.PI) / 4,
+    ];
+    cloudAngles.forEach((angle, idx) => {
+      const radius = 55 + (idx % 3) * 12;
+      const x = Math.cos(angle) * radius;
+      const z = Math.sin(angle) * radius;
+      const y = 16 + (idx % 4) * 4;
+      const scale = 1.1 + (idx % 3) * 0.35;
+      createCumulusCloudPuff(cloudsGroup, x, y, z, scale);
+    });
     scene.add(cloudsGroup);
   }
 
   // 6. Ground Pedestal / Architectural Floor & Grid
   if (opts.enableFloorGrid !== false) {
-    const gridHelper = new THREE.GridHelper(
-      48,
-      32,
-      isDark ? 0x38bdf8 : 0xd97706,
-      isDark ? 0x1e3a8a : 0x93c5fd,
-    );
+    const gridHelper = new THREE.GridHelper(48, 32, 0x0284c7, 0x93c5fd);
     gridHelper.position.y = -4.5;
+    if (gridHelper.material && "opacity" in gridHelper.material) {
+      gridHelper.material.transparent = true;
+      gridHelper.material.opacity = 0.45;
+    }
     scene.add(gridHelper);
 
-    // Luminous shadow-receiving circular pedestal ground
-    const floorGeo = new THREE.CircleGeometry(28, 64);
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: opts.floorColor ?? (isDark ? 0x0f172a : 0xf1f5f9),
-      roughness: 0.7,
-      metalness: 0.15,
-      side: THREE.DoubleSide,
+    // Luminous shadow-receiving circular pedestal ground (soft semi-transparent to let sky breathe)
+    const floorGeo = new THREE.CircleGeometry(32, 64);
+    const floorMat = new THREE.ShadowMaterial({
+      opacity: 0.22,
     });
     const floorMesh = new THREE.Mesh(floorGeo, floorMat);
     floorMesh.rotation.x = -Math.PI / 2;
@@ -297,7 +306,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   const targetSpherical = spherical.clone();
   const isReducedMotion = checkPrefersReducedMotion();
 
-  // Multi-pointer and touch state tracking
+  // Multi-pointer state tracking (unifies mouse, pen, and touch)
   const activePointers = new Map<number, { x: number; y: number }>();
   let isDragging = false;
   let isPinching = false;
@@ -313,10 +322,8 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   let prevPinchMidX = 0;
   let prevPinchMidY = 0;
 
-  let lastTapTime = 0;
-
-  const minRadius = Math.max(2.0, opts.cameraMinDistance ?? 2.0);
-  const maxRadius = Math.min(65.0, opts.cameraMaxDistance ?? 65.0);
+  const minRadius = Math.max(1.5, opts.cameraMinDistance ?? 1.5);
+  const maxRadius = Math.min(80.0, opts.cameraMaxDistance ?? 80.0);
 
   const domEl = renderer.domElement;
   domEl.style.touchAction = "none";
@@ -336,7 +343,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     centerTarget.addScaledVector(up, deltaY * factor);
   };
 
-  // Reset to initial framing on double-tap
+  // Reset to initial framing
   const resetFraming = () => {
     centerTarget.copy(initialCenter);
     const offset = initialCamPos.clone().sub(initialCenter);
@@ -345,66 +352,68 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     velPhi = 0;
   };
 
-  // Native Touch Handlers for iOS Safari & Android
-  const onTouchStart = (e: TouchEvent) => {
-    if (e.cancelable) e.preventDefault();
+  // Unified Pointer Handlers with Window Tracking for uninhibited dragging
+  const onPointerDown = (e: PointerEvent) => {
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    const now = Date.now();
-    if (now - lastTapTime < 320 && e.touches.length === 1) {
-      resetFraming();
-      lastTapTime = 0;
-      return;
-    }
-    lastTapTime = now;
-
-    if (e.touches.length === 1) {
-      const t = e.touches[0];
-      isDragging = true;
-      isPinching = false;
-      isPanning = false;
-      prevSingleX = t.clientX;
-      prevSingleY = t.clientY;
+    if (activePointers.size === 1) {
+      if (e.button === 2 || e.shiftKey) {
+        isPanning = true;
+        isDragging = false;
+      } else {
+        isDragging = true;
+        isPanning = false;
+      }
+      prevSingleX = e.clientX;
+      prevSingleY = e.clientY;
       velTheta = 0;
       velPhi = 0;
-    } else if (e.touches.length >= 2) {
+    } else if (activePointers.size >= 2) {
       isDragging = false;
       isPinching = true;
       isPanning = true;
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      initialPinchDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      const pts = Array.from(activePointers.values());
+      initialPinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       initialPinchRadius = targetSpherical.radius;
-      prevPinchMidX = (t1.clientX + t2.clientX) / 2;
-      prevPinchMidY = (t1.clientY + t2.clientY) / 2;
+      prevPinchMidX = (pts[0].x + pts[1].x) / 2;
+      prevPinchMidY = (pts[0].y + pts[1].y) / 2;
       velTheta = 0;
       velPhi = 0;
     }
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
+    }
   };
 
-  const onTouchMove = (e: TouchEvent) => {
-    // Only prevent default native scrolling if we are actively dragging/pinching the 3D scene.
-    // Otherwise, this breaks all page scrolling on mobile devices when attached to window!
-    if ((isDragging || isPinching || isPanning) && e.cancelable) {
-      e.preventDefault();
-    }
+  const onPointerMove = (e: PointerEvent) => {
+    if (!activePointers.has(e.pointerId)) return;
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    if (isDragging && e.touches.length === 1) {
-      const t = e.touches[0];
-      const dx = (t.clientX - prevSingleX) * 0.0075;
-      const dy = (t.clientY - prevSingleY) * 0.0075;
+    if (activePointers.size === 1) {
+      const dx = e.clientX - prevSingleX;
+      const dy = e.clientY - prevSingleY;
 
-      velTheta = -dx;
-      velPhi = -dy;
+      if (isPanning) {
+        panCamera(dx, dy);
+      } else if (isDragging) {
+        velTheta = -dx * 0.0065;
+        velPhi = dy * 0.0065;
 
-      targetSpherical.theta -= dx;
-      targetSpherical.phi = Math.max(0.04, Math.min(Math.PI - 0.04, targetSpherical.phi - dy));
+        targetSpherical.theta -= dx * 0.0065;
+        targetSpherical.phi = Math.max(
+          0.02,
+          Math.min(Math.PI - 0.02, targetSpherical.phi + dy * 0.0065),
+        );
+      }
 
-      prevSingleX = t.clientX;
-      prevSingleY = t.clientY;
-    } else if (isPinching && e.touches.length >= 2) {
-      const t1 = e.touches[0];
-      const t2 = e.touches[1];
-      const dist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+      prevSingleX = e.clientX;
+      prevSingleY = e.clientY;
+    } else if (activePointers.size >= 2) {
+      const pts = Array.from(activePointers.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
       if (initialPinchDist > 0 && dist > 0) {
         const pinchFactor = initialPinchDist / dist;
         targetSpherical.radius = Math.max(
@@ -413,116 +422,42 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
         );
       }
 
-      // Two-finger pan
-      const midX = (t1.clientX + t2.clientX) / 2;
-      const midY = (t1.clientY + t2.clientY) / 2;
+      const midX = (pts[0].x + pts[1].x) / 2;
+      const midY = (pts[0].y + pts[1].y) / 2;
       panCamera(midX - prevPinchMidX, midY - prevPinchMidY);
       prevPinchMidX = midX;
       prevPinchMidY = midY;
     }
   };
 
-  const onTouchEnd = (e: TouchEvent) => {
-    if (e.touches.length === 0) {
-      isDragging = false;
-      isPinching = false;
-      isPanning = false;
-    } else if (e.touches.length === 1) {
-      isPinching = false;
-      isPanning = false;
-      isDragging = true;
-      const t = e.touches[0];
-      prevSingleX = t.clientX;
-      prevSingleY = t.clientY;
-    }
-  };
-
-  const onGesturePrevent = (e: Event) => {
-    if (e.cancelable) e.preventDefault();
-  };
-
-  // Pointer Event Handlers (Desktop Mouse & Stylus)
-  const onPointerDown = (e: PointerEvent) => {
-    if (e.pointerType === "touch") return; // Touch is handled by native touch listeners above
-    try {
-      domEl.setPointerCapture(e.pointerId);
-    } catch {
-      // Ignored if unsupported
-    }
-    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    if (e.button === 2 || e.shiftKey) {
-      isPanning = true;
-      isDragging = false;
-    } else {
-      isDragging = true;
-      isPanning = false;
-    }
-    prevSingleX = e.clientX;
-    prevSingleY = e.clientY;
-    velTheta = 0;
-    velPhi = 0;
-  };
-
-  const onPointerMove = (e: PointerEvent) => {
-    if (e.pointerType === "touch") return;
-    if (!activePointers.has(e.pointerId)) return;
-    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-    const dx = e.clientX - prevSingleX;
-    const dy = e.clientY - prevSingleY;
-
-    if (isPanning) {
-      panCamera(dx, dy);
-    } else if (isDragging) {
-      velTheta = -dx * 0.007;
-      velPhi = -dy * 0.007;
-
-      targetSpherical.theta -= dx * 0.007;
-      targetSpherical.phi = Math.max(
-        0.04,
-        Math.min(Math.PI - 0.04, targetSpherical.phi - dy * 0.007),
-      );
-    }
-
-    prevSingleX = e.clientX;
-    prevSingleY = e.clientY;
-  };
-
   const onPointerUp = (e: PointerEvent) => {
-    if (e.pointerType === "touch") return;
-    try {
-      if (domEl.hasPointerCapture(e.pointerId)) {
-        domEl.releasePointerCapture(e.pointerId);
-      }
-    } catch {
-      // Ignored
-    }
     activePointers.delete(e.pointerId);
+
     if (activePointers.size === 0) {
       isDragging = false;
+      isPinching = false;
       isPanning = false;
-    }
-  };
-
-  const onPointerCancel = (e: PointerEvent) => {
-    if (e.pointerType === "touch") return;
-    try {
-      if (domEl.hasPointerCapture(e.pointerId)) {
-        domEl.releasePointerCapture(e.pointerId);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerUp);
       }
-    } catch {
-      // Ignored
+    } else if (activePointers.size === 1) {
+      isPinching = false;
+      isPanning = false;
+      isDragging = true;
+      const remaining = activePointers.values().next().value;
+      if (remaining) {
+        prevSingleX = remaining.x;
+        prevSingleY = remaining.y;
+      }
     }
-    activePointers.delete(e.pointerId);
-    isDragging = false;
-    isPanning = false;
   };
 
-  // Wheel Zoom (Trackpad pinch & mouse wheel)
+  // Wheel Zoom (Trackpad pinch & mouse wheel with smooth proportional scaling)
   const onWheel = (e: WheelEvent) => {
     e.preventDefault();
-    const zoomFactor = e.deltaY * 0.02;
+    const zoomFactor = e.deltaY * 0.0015 * targetSpherical.radius;
     targetSpherical.radius = Math.max(
       minRadius,
       Math.min(maxRadius, targetSpherical.radius + zoomFactor),
@@ -534,22 +469,17 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     e.preventDefault();
   };
 
-  // Register Event Listeners
-  domEl.addEventListener("touchstart", onTouchStart, { passive: false });
-  window.addEventListener("touchmove", onTouchMove, { passive: false });
-  window.addEventListener("touchend", onTouchEnd, { passive: false });
-  window.addEventListener("touchcancel", onTouchEnd, { passive: false });
+  // Double click to reset camera framing
+  const onDblClick = (e: MouseEvent) => {
+    e.preventDefault();
+    resetFraming();
+  };
 
-  domEl.addEventListener("gesturestart", onGesturePrevent, { passive: false });
-  domEl.addEventListener("gesturechange", onGesturePrevent, { passive: false });
-  domEl.addEventListener("gestureend", onGesturePrevent, { passive: false });
-
+  // Register Event Listeners on canvas
   domEl.addEventListener("pointerdown", onPointerDown);
-  window.addEventListener("pointermove", onPointerMove);
-  window.addEventListener("pointerup", onPointerUp);
-  window.addEventListener("pointercancel", onPointerCancel);
   domEl.addEventListener("wheel", onWheel, { passive: false });
   domEl.addEventListener("contextmenu", onContextMenu);
+  domEl.addEventListener("dblclick", onDblClick);
 
   let lastResizeW = width;
   let lastResizeH = height;
@@ -583,45 +513,37 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
         if (Math.abs(velTheta) > 0.00005 || Math.abs(velPhi) > 0.00005) {
           targetSpherical.theta += velTheta;
           targetSpherical.phi = Math.max(
-            0.04,
-            Math.min(Math.PI - 0.04, targetSpherical.phi + velPhi),
+            0.02,
+            Math.min(Math.PI - 0.02, targetSpherical.phi + velPhi),
           );
           velTheta *= 0.92;
           velPhi *= 0.92;
         }
       }
 
-      spherical.theta += (targetSpherical.theta - spherical.theta) * 0.14;
-      spherical.phi += (targetSpherical.phi - spherical.phi) * 0.14;
-      spherical.radius += (targetSpherical.radius - spherical.radius) * 0.14;
+      const lerpFactor = 0.22;
+      spherical.theta += (targetSpherical.theta - spherical.theta) * lerpFactor;
+      spherical.phi += (targetSpherical.phi - spherical.phi) * lerpFactor;
+      spherical.radius += (targetSpherical.radius - spherical.radius) * lerpFactor;
 
       camera.position.setFromSpherical(spherical).add(centerTarget);
       camera.lookAt(centerTarget);
 
-      // Cloud drift animation across the sky
+      // Cloud drift animation smoothly orbiting across the 360-degree sky
       if (enableClouds && !isReducedMotion) {
-        cloudsGroup.position.x += 0.012;
-        if (cloudsGroup.position.x > 80) {
-          cloudsGroup.position.x = -80;
-        }
+        cloudsGroup.rotation.y += 0.0005;
       }
     },
     dispose: () => {
-      domEl.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchcancel", onTouchEnd);
-
-      domEl.removeEventListener("gesturestart", onGesturePrevent);
-      domEl.removeEventListener("gesturechange", onGesturePrevent);
-      domEl.removeEventListener("gestureend", onGesturePrevent);
-
       domEl.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUp);
-      window.removeEventListener("pointercancel", onPointerCancel);
       domEl.removeEventListener("wheel", onWheel);
       domEl.removeEventListener("contextmenu", onContextMenu);
+      domEl.removeEventListener("dblclick", onDblClick);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerUp);
+      }
       if (resizeObserver) {
         resizeObserver.disconnect();
       } else {
@@ -630,6 +552,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     },
     setRadius: (r: number) => {
       targetSpherical.radius = r;
+      spherical.radius = r;
     },
     setView: (pos: [number, number, number], target: [number, number, number]) => {
       centerTarget.set(target[0], target[1], target[2]);
@@ -640,6 +563,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       }
       spherical.setFromVector3(offset);
       targetSpherical.copy(spherical);
+      velTheta = 0;
+      velPhi = 0;
+      camera.lookAt(centerTarget);
     },
     // Compatibility for scenes that still call OrbitControls-style `controls.target.set`.
     // Must run *after* camera.position.set so the spherical is rebuilt from the new pose.
@@ -652,6 +578,9 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
         }
         spherical.setFromVector3(offset);
         targetSpherical.copy(spherical);
+        velTheta = 0;
+        velPhi = 0;
+        camera.lookAt(centerTarget);
       },
     },
   };
