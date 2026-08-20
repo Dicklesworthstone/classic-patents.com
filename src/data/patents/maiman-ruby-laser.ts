@@ -48,8 +48,7 @@ export const maimanRubyLaserPatent: Patent = {
     reviewedBy: "Classic Patents Archival & Optical Engineering Review Team",
     reviewDate: "2026-08-20",
     coverage: "complete",
-    sourcePdfSha256:
-      "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
+    sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
   },
   archivalEdition: maimanRubyLaserArchivalEdition,
   originalText:
@@ -133,8 +132,7 @@ export const maimanRubyLaserPatent: Patent = {
       figureNumber: "7",
       description:
         "Cross-sectional structural view of the liquid-cooled laser head housing, showing circulating coolant jacket channels surrounding the ruby rod to maintain crystal low-temperature stability under repetitive high-joule flash discharges.",
-      originalCaption:
-        "FIG. 7 is a cross-sectional view of a cooled laser head structure.",
+      originalCaption: "FIG. 7 is a cross-sectional view of a cooled laser head structure.",
       callouts: [
         { id: "jacket", label: "Coolant Flow Channel", x: 45, y: 32 },
         { id: "ruby", label: "Axially Mounted Ruby Element", x: 50, y: 55 },
@@ -202,19 +200,22 @@ export const maimanRubyLaserPatent: Patent = {
     scientificPrinciples: [
       {
         name: "Three-Level Population Inversion Threshold Condition",
-        formula: "\\Delta N_{\\text{th}} = N_2 - N_1 = \\frac{\\gamma_{\\text{cav}}}{\\sigma_{21}} = \\frac{1}{\\sigma_{21} L} \\left[ \\alpha L + \\frac{1}{2} \\ln\\left(\\frac{1}{R_1 R_2}\\right) \\right]",
+        formula:
+          "\\Delta N_{\\text{th}} = N_2 - N_1 = \\frac{\\gamma_{\\text{cav}}}{\\sigma_{21}} = \\frac{1}{\\sigma_{21} L} \\left[ \\alpha L + \\frac{1}{2} \\ln\\left(\\frac{1}{R_1 R_2}\\right) \\right]",
         explanation:
           "Because the lower laser level is the atomic ground state, more than half of the total chromium ions in the crystal ($N_2 > N_{\\text{total}} / 2$) must be pumped into the metastable state before net optical gain overcomes ground-state reabsorption.",
       },
       {
         name: "Einstein Stimulated Emission Rate & Optical Gain",
-        formula: "g(\\nu) = \\sigma_{21}(\\nu) (N_2 - N_1) = \\frac{\\lambda^2 A_{21}}{8 \\pi n^2 \\tau_{\\text{sp}}} g_L(\\nu) (N_2 - N_1)",
+        formula:
+          "g(\\nu) = \\sigma_{21}(\\nu) (N_2 - N_1) = \\frac{\\lambda^2 A_{21}}{8 \\pi n^2 \\tau_{\\text{sp}}} g_L(\\nu) (N_2 - N_1)",
         explanation:
           "An incident photon whose frequency matches the atomic transition stimulates an excited electron to drop to ground, releasing a clone photon with identical energy, frequency, wavevector, phase, and polarization state.",
       },
       {
         name: "Fabry-Perot Longitudinal Cavity Mode Spacing",
-        formula: "\\Delta \\nu = \\frac{c}{2 n L} \\quad \\text{and} \\quad \\lambda_m = \\frac{2 n L}{m}",
+        formula:
+          "\\Delta \\nu = \\frac{c}{2 n L} \\quad \\text{and} \\quad \\lambda_m = \\frac{2 n L}{m}",
         explanation:
           "Standing optical waves are supported inside the crystal cavity where the round-trip phase shift is an exact integer multiple of $2\\pi$, selecting ultra-narrow discrete spectral lines from the broader fluorescence curve.",
       },

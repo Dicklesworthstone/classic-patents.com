@@ -4275,7 +4275,6 @@ export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolar
   };
 }
 
-
 export interface MaimanRubyLaserControls {
   pumpEnergyJoules?: number;
   flashDurationMs?: number;
@@ -4299,12 +4298,12 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
   const sigma21 = 2.5e-20 * (300 / Math.max(80, tempK));
 
   // Metastable 2E lifetime (ms): ~4.3 ms at 77K, ~3.0 ms at 300K
-  const tauMetastableMs = 3.0 * Math.pow(300 / Math.max(80, tempK), 0.35);
+  const tauMetastableMs = 3.0 * (300 / Math.max(80, tempK)) ** 0.35;
 
   // Optical pumping efficiency and absorbed pump rate into level 3
   const pumpCouplingEfficiency = 0.08; // 8% electrical-to-absorbed optical in green/violet bands
-  const rodVolumeCm3 = Math.PI * Math.pow(0.45, 2) * rodLength; // radius ~0.45 cm
-  const photonEnergyPumpJoules = (6.626e-34 * 3e8) / (520e-9); // ~3.8e-19 J for ~520 nm green pump photon
+  const rodVolumeCm3 = Math.PI * 0.45 ** 2 * rodLength; // radius ~0.45 cm
+  const photonEnergyPumpJoules = (6.626e-34 * 3e8) / 520e-9; // ~3.8e-19 J for ~520 nm green pump photon
   const totalPumpPhotons = (pumpEnergy * pumpCouplingEfficiency) / photonEnergyPumpJoules;
   const pumpRatePerCm3 = totalPumpPhotons / (rodVolumeCm3 * (flashMs * 1e-3));
 
@@ -4316,7 +4315,10 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
 
   // Required pump energy threshold
   const thresholdPumpEnergyJoules = Number(
-    ((nTotal / 2 + deltaNThreshold) * rodVolumeCm3 * photonEnergyPumpJoules / (pumpCouplingEfficiency * (1 - Math.exp(-flashMs / tauMetastableMs)))).toFixed(1)
+    (
+      ((nTotal / 2 + deltaNThreshold) * rodVolumeCm3 * photonEnergyPumpJoules) /
+      (pumpCouplingEfficiency * (1 - Math.exp(-flashMs / tauMetastableMs)))
+    ).toFixed(1),
   );
 
   // Excited state population N2
@@ -4328,20 +4330,28 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
 
   // Lasing threshold state
   const isLasing = pumpEnergy >= thresholdPumpEnergyJoules;
-  const netRoundTripGainDb = Number((4.343 * 2 * (sigma21 * (n2 - n1) - cavityLoss) * rodLength).toFixed(2));
+  const netRoundTripGainDb = Number(
+    (4.343 * 2 * (sigma21 * (n2 - n1) - cavityLoss) * rodLength).toFixed(2),
+  );
 
   // Laser output pulse energy and peak power
   const slopeEfficiency = 0.012; // 1.2% slope efficiency
-  const laserPulseEnergyJoules = isLasing ? Number((slopeEfficiency * (pumpEnergy - thresholdPumpEnergyJoules)).toFixed(3)) : 0;
+  const laserPulseEnergyJoules = isLasing
+    ? Number((slopeEfficiency * (pumpEnergy - thresholdPumpEnergyJoules)).toFixed(3))
+    : 0;
   const pulseDurationUs = 250; // typical spiked relaxation burst duration (us)
-  const laserPeakPowerKw = isLasing ? Number(((laserPulseEnergyJoules / (pulseDurationUs * 1e-6)) / 1000).toFixed(2)) : 0;
+  const laserPeakPowerKw = isLasing
+    ? Number((laserPulseEnergyJoules / (pulseDurationUs * 1e-6) / 1000).toFixed(2))
+    : 0;
 
   // Wavelength at temperature: 694.3 nm at 300K, shifts to 693.4 nm at 77K
   const emissionWavelengthNm = Number((694.3 - 0.005 * (300 - tempK)).toFixed(2));
 
   // Cavity longitudinal mode spacing (GHz)
   const refractiveIndexRuby = 1.76;
-  const modeSpacingGhz = Number(((3e8 / (2 * refractiveIndexRuby * (rodLength * 1e-2))) / 1e9).toFixed(2));
+  const modeSpacingGhz = Number(
+    (3e8 / (2 * refractiveIndexRuby * (rodLength * 1e-2)) / 1e9).toFixed(2),
+  );
 
   // Colidar ranging distance resolution (cm) for 20 ns pulse
   const colidarDistanceResolutionCm = 15; // c * 1ns = 30 cm roundtrip -> 15 cm
@@ -4358,5 +4368,6 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
     modeSpacingGhz,
     colidarDistanceResolutionCm,
     metastableLifetimeMs: Number(tauMetastableMs.toFixed(2)),
+    pumpRatePerCm3: Number(pumpRatePerCm3.toExponential(3)),
   };
 }

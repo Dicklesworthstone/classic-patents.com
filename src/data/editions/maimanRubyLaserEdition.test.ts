@@ -1,13 +1,13 @@
 // @ts-nocheck -- Companion to the unpublished Maiman edition draft; skipped until
 // the edition schema matches CuratedSpecificationEdition.
 import { describe, expect, test } from "bun:test";
-import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
 import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   maimanRubyLaserArchivalEdition,
-  manualMaimanClaimText,
   maimanRubyLaserParallelReadings,
+  manualMaimanClaimText,
 } from "./maimanRubyLaserEdition";
 
 describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publication contract", () => {

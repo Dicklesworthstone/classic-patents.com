@@ -2,10 +2,7 @@
 // excluded from type validation until it has a literal facsimile pass and a complete
 // block-by-block editorial rebuild. The canonical record is fail-closed by the root
 // publication hold; this annotation must not be interpreted as publication approval.
-import type {
-  CuratedSpecificationEdition,
-  CuratedSpecificationInline,
-} from "@/types/patent";
+import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/types/patent";
 
 function text(content: string): CuratedSpecificationInline {
   return { kind: "text", text: content };
@@ -309,7 +306,7 @@ export function manualMaimanClaimText(claimNumber: number): string {
   const claim = maimanRubyLaserArchivalEdition.blocks.find(
     (b) => b.kind === "claim" && b.number === claimNumber,
   );
-  if (!claim || claim.kind !== "claim") {
+  if (claim?.kind !== "claim") {
     throw new Error(`Claim ${claimNumber} not found in Maiman Ruby Laser archival edition`);
   }
   return claim.inlines.map((i) => i.text).join("");
