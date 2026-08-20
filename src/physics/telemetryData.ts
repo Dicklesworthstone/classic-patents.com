@@ -46,6 +46,7 @@ import {
   stepParsonsTurbine,
   stepPasteurFermentation,
   stepPeltonWheel,
+  stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWhitneyCottonGin,
   stepWozniakApple,
@@ -4337,44 +4338,42 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
     ],
     computeMetrics: (p) => {
-      const f = p.rfFrequency ?? 150;
-      const rudder = p.rudderAngle ?? 15;
-      const isRes = Math.abs(f - 150) <= 4;
-      const cohererR = isRes ? "50 Ω (Conducting)" : "100 kΩ (Open)";
-      const thrustN = isRes ? "85 N" : "0 N";
-      const turnRadiusM =
-        Math.abs(rudder) > 0
-          ? (12.5 / Math.sin((Math.abs(rudder) * Math.PI) / 180)).toFixed(1)
-          : "Straight";
+      const tele = stepTeslaTeleautomaton({
+        rfFrequency: p.rfFrequency,
+        rudderAngle: p.rudderAngle,
+        propellerThrottlePct: p.propellerThrottlePct,
+        pulseCount: p.pulseCount,
+      });
+      const turnRadiusM = tele.turningRadiusM < 900 ? `${tele.turningRadiusM} m` : "Straight";
 
       return [
         {
           label: "Coherer Resistance",
-          value: cohererR,
+          value: tele.isResonant ? `${tele.cohererOhms} Ω (Conducting)` : "100 kΩ (Open)",
           unit: "R_det",
-          badgeColor: isRes ? "emerald" : "amber",
-          progressPct: clampProgress(isRes ? 95 : 10),
+          badgeColor: tele.isResonant ? "emerald" : "amber",
+          progressPct: clampProgress(tele.isResonant ? 95 : 10),
         },
         {
           label: "Propulsion Motor",
-          value: thrustN,
-          unit: "Thrust",
-          badgeColor: isRes ? "cyan" : "purple",
-          progressPct: clampProgress(isRes ? 85 : 0),
+          value: `${tele.motorThrustN} N`,
+          unit: `${Math.round(tele.propellerRpm)} rpm`,
+          badgeColor: tele.relayEnergized ? "cyan" : "purple",
+          progressPct: clampProgress(tele.motorThrustN),
         },
         {
           label: "Turning Radius",
-          value: `${turnRadiusM} m`,
+          value: turnRadiusM,
           unit: "R_turn",
           badgeColor: "indigo",
-          progressPct: clampProgress(Math.abs(rudder) > 0 ? 70 : 100),
+          progressPct: clampProgress(Math.abs(tele.rudderAngleDeg) > 0 ? 70 : 100),
         },
         {
           label: "Carrier Resonance",
-          value: isRes ? "LOCKED (150 kHz)" : "DETUNED",
+          value: tele.isResonant ? "LOCKED (150 kHz)" : "DETUNED",
           unit: "resonance",
-          badgeColor: isRes ? "emerald" : "rose",
-          progressPct: clampProgress(isRes ? 100 : 20),
+          badgeColor: tele.isResonant ? "emerald" : "rose",
+          progressPct: clampProgress(tele.isResonant ? 100 : 20),
         },
       ];
     },

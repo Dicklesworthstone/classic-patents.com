@@ -4064,6 +4064,54 @@ export function stepHewittMercuryLamp(params: {
   };
 }
 
+/**
+ * Nikola Tesla Teleautomaton radio-controlled boat (US 613,809).
+ * Tuned RF tank, coherer demodulation, throttle-scaled propeller ω, stepping disk.
+ */
+export function stepTeslaTeleautomaton(
+  params: {
+    transmitterFreqKhz?: number;
+    rfFrequency?: number;
+    cohererTapped?: boolean;
+    rudderAngleDeg?: number;
+    rudderAngle?: number;
+    propellerThrottlePct?: number;
+    pulseCount?: number;
+  } = {},
+) {
+  const fKhz = params.rfFrequency ?? params.transmitterFreqKhz ?? 150;
+  const isTapped = params.cohererTapped ?? false;
+  const rudderDeg = params.rudderAngle ?? params.rudderAngleDeg ?? 0;
+  const throttlePct = Math.max(0, Math.min(100, params.propellerThrottlePct ?? 75));
+  const pulseCount = Math.max(0, Math.floor(params.pulseCount ?? 0));
+  const targetFreqKhz = 150;
+  const isResonant = Math.abs(fKhz - targetFreqKhz) <= 5;
+  const cohererOhms = isResonant && !isTapped ? 45 : 100000;
+  const relayEnergized = cohererOhms < 1000;
+  const motorThrustN = relayEnergized ? Number((85 * (throttlePct / 100)).toFixed(1)) : 0;
+  const turningRadiusM =
+    Math.abs(rudderDeg) > 0
+      ? Number((12.5 / Math.sin((Math.abs(rudderDeg) * Math.PI) / 180)).toFixed(1))
+      : 999;
+  const propellerRpm = relayEnergized ? Number((600 * (throttlePct / 100)).toFixed(1)) : 0;
+  const propellerOmegaRadPerS = rpmToOmega(propellerRpm).omegaRadPerS;
+  const steppingDiskIndex = pulseCount % 8;
+
+  return {
+    isResonant,
+    cohererOhms,
+    relayEnergized,
+    motorThrustN,
+    turningRadiusM,
+    propellerRpm,
+    propellerOmegaRadPerS,
+    steppingDiskIndex,
+    rfFrequencyKhz: fKhz,
+    rudderAngleDeg: rudderDeg,
+    propellerThrottlePct: throttlePct,
+  };
+}
+
 export { stepBellPhotophone } from "./bellPhotophoneKernel";
 export { stepCortPuddlingRolling } from "./cortKernel";
 export { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";

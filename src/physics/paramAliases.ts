@@ -12,7 +12,7 @@ export interface ParamAlias {
 
 const same = (canonical: string): ParamAlias => ({ canonical });
 
-/** Per-patent alias map. Linde / Teleautomaton remain peer-owned. */
+/** Per-patent alias map. Linde remains peer-owned. */
 export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = {
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
@@ -106,6 +106,10 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     sprayTemp: same("sprayWaterTempC"),
     sprayTempC: same("sprayWaterTempC"),
     reheatTemp: same("reheatTempC"),
+  },
+  "us-613809-tesla-teleautomaton": {
+    rudderAngleDeg: same("rudderAngle"),
+    transmitterFreqKhz: same("rfFrequency"),
   },
 };
 

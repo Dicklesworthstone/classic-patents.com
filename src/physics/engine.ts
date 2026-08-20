@@ -40,6 +40,7 @@ import {
   stepPasteurFermentation,
   stepPeltonWheel,
   stepSpencerMicrowave as stepSpencerMicrowaveCatalog,
+  stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWhitneyCottonGin,
   stepWozniakApple,
@@ -1062,32 +1063,7 @@ export const FrankenSimEngine = {
    * Nikola Tesla Teleautomaton Radio-Controlled Boat (US 613,809)
    * Tuned RF Resonant Tank & Rotary Logic State Machine
    */
-  stepTeslaTeleautomaton(params: {
-    transmitterFreqKhz?: number;
-    cohererTapped?: boolean;
-    rudderAngleDeg?: number;
-  }) {
-    const fKhz = params.transmitterFreqKhz ?? 150;
-    const isTapped = params.cohererTapped ?? false;
-    const rudderDeg = params.rudderAngleDeg ?? 0;
-    const targetFreqKhz = 150;
-    const isResonant = Math.abs(fKhz - targetFreqKhz) <= 5;
-    const cohererOhms = isResonant && !isTapped ? 45 : 100000;
-    const relayEnergized = cohererOhms < 1000;
-    const motorThrustN = relayEnergized ? 85 : 0;
-    const turningRadiusM =
-      Math.abs(rudderDeg) > 0
-        ? Number((12.5 / Math.sin((Math.abs(rudderDeg) * Math.PI) / 180)).toFixed(1))
-        : 999;
-
-    return {
-      isResonant,
-      cohererOhms,
-      relayEnergized,
-      motorThrustN,
-      turningRadiusM,
-    };
-  },
+  stepTeslaTeleautomaton,
 
   /**
    * Ferdinand von Zeppelin Rigid Airship (US 621,195)

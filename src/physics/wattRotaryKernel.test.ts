@@ -8,6 +8,7 @@ describe("James Watt 1781 Sun & Planet Epicyclic Physics Kernel (GB 1306)", () =
 
     expect(telemetry.speedMultiplier).toBe(2.0);
     expect(telemetry.shaftRpm).toBe(40.0);
+    expect(telemetry.cycleOmegaRadPerS).toBeCloseTo((20 * 2 * Math.PI) / 60, 6);
     expect(telemetry.shaftAngularVelocityRadS).toBeCloseTo((40 * 2 * Math.PI) / 60, 3);
   });
 

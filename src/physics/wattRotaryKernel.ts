@@ -26,6 +26,7 @@ export interface WattRotaryTelemetry {
   sunShaftAngleDeg: number; // Flywheel shaft angle (0 - 720 deg per cycle)
   shaftRpm: number; // Output driveshaft speed (RPM)
   shaftAngularVelocityRadS: number; // Driveshaft angular velocity (rad/s)
+  cycleOmegaRadPerS: number; // Beam / planet-orbit angular velocity (rad/s)
   speedMultiplier: number; // 1 + Np/Ns (2.0 for equal gears)
 
   // Forces & Mechanics
@@ -134,6 +135,7 @@ export function stepWattRotaryEngine(
     sunShaftAngleDeg,
     shaftRpm,
     shaftAngularVelocityRadS,
+    cycleOmegaRadPerS: omegaCycle,
     speedMultiplier,
     pistonForceN,
     connectingRodForceN,
