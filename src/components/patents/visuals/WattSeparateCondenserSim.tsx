@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useState } from "react";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
   stepWattCondenser,
   WATT_DEFAULT_CONTROLS,
@@ -8,7 +9,23 @@ import {
 } from "@/physics/wattCondenserKernel";
 
 export function WattSeparateCondenserSim() {
-  const [controls, setControls] = useState<WattCondenserControls>(WATT_DEFAULT_CONTROLS);
+  const { params, updateParam } = usePatentPhysics("gb-913-watt-separate-condenser");
+  const controls: WattCondenserControls = useMemo(
+    () => ({
+      boilerPressurePsi: params.boilerPressurePsi ?? WATT_DEFAULT_CONTROLS.boilerPressurePsi,
+      condenserTempC: params.condenserTempC ?? WATT_DEFAULT_CONTROLS.condenserTempC,
+      cylinderBoreInches: params.cylinderBoreInches ?? WATT_DEFAULT_CONTROLS.cylinderBoreInches,
+      pistonStrokeFeet: params.pistonStrokeFeet ?? WATT_DEFAULT_CONTROLS.pistonStrokeFeet,
+      strokesPerMinute: params.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute,
+      hasSeparateCondenser:
+        (params.hasSeparateCondenser ?? 1) > 0.5
+          ? true
+          : (params.hasSeparateCondenser ?? 1) === 0
+            ? false
+            : WATT_DEFAULT_CONTROLS.hasSeparateCondenser,
+    }),
+    [params],
+  );
   const [animTime, setAnimTime] = useState(0);
 
   const boilerId = useId();
@@ -529,10 +546,7 @@ export function WattSeparateCondenserSim() {
             step="0.5"
             value={controls.boilerPressurePsi ?? 3}
             onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                boilerPressurePsi: Number.parseFloat(e.target.value),
-              }))
+              updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))
             }
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
@@ -551,10 +565,7 @@ export function WattSeparateCondenserSim() {
             step="1"
             value={controls.condenserTempC ?? 35}
             onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                condenserTempC: Number.parseFloat(e.target.value),
-              }))
+              updateParam("condenserTempC", Number.parseFloat(e.target.value))
             }
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
@@ -575,10 +586,7 @@ export function WattSeparateCondenserSim() {
             step="2"
             value={controls.cylinderBoreInches ?? 38}
             onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                cylinderBoreInches: Number.parseFloat(e.target.value),
-              }))
+              updateParam("cylinderBoreInches", Number.parseFloat(e.target.value))
             }
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
@@ -599,10 +607,7 @@ export function WattSeparateCondenserSim() {
             step="1"
             value={controls.strokesPerMinute ?? 14}
             onChange={(e) =>
-              setControls((prev) => ({
-                ...prev,
-                strokesPerMinute: Number.parseFloat(e.target.value),
-              }))
+              updateParam("strokesPerMinute", Number.parseFloat(e.target.value))
             }
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />

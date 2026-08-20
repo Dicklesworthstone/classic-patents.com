@@ -32,7 +32,7 @@ const CAMERA_PRESETS: Record<
 };
 
 export function WattRotaryEngine3D() {
-  const { params, setParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
+  const { params, updateParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
 
   const strokeRateSpm = params.strokeRateSpm ?? 20;
   const boilerPressureKpa = params.boilerPressureKpa ?? 70;
@@ -305,7 +305,7 @@ export function WattRotaryEngine3D() {
             max="30"
             step="2"
             value={strokeRateSpm}
-            onChange={(e) => setParam("strokeRateSpm", Number(e.target.value))}
+            onChange={(e) => updateParam("strokeRateSpm", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
         </div>
@@ -324,7 +324,7 @@ export function WattRotaryEngine3D() {
             max="120"
             step="5"
             value={boilerPressureKpa}
-            onChange={(e) => setParam("boilerPressureKpa", Number(e.target.value))}
+            onChange={(e) => updateParam("boilerPressureKpa", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
           />
         </div>
@@ -343,7 +343,7 @@ export function WattRotaryEngine3D() {
             max="2.0"
             step="0.25"
             value={gearRatioNpOverNs}
-            onChange={(e) => setParam("gearRatioNpOverNs", Number(e.target.value))}
+            onChange={(e) => updateParam("gearRatioNpOverNs", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
         </div>
@@ -362,7 +362,7 @@ export function WattRotaryEngine3D() {
             max="6000"
             step="250"
             value={flywheelMassKg}
-            onChange={(e) => setParam("flywheelMassKg", Number(e.target.value))}
+            onChange={(e) => updateParam("flywheelMassKg", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />
         </div>

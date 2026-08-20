@@ -6,7 +6,7 @@ import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export function HallAluminiumSim() {
-  const { params, setParam } = usePatentPhysics("us-400766-hall-aluminium");
+  const { params, updateParam } = usePatentPhysics("us-400766-hall-aluminium");
 
   const currentAmperes = (params.currentAmperes as number) ?? 300000;
   const bathTemperatureCelsius = (params.bathTemperatureCelsius as number) ?? 960;
@@ -458,7 +458,7 @@ export function HallAluminiumSim() {
               max={500000}
               step={10000}
               value={currentAmperes}
-              onChange={(e) => setParam("currentAmperes", Number(e.target.value))}
+              onChange={(e) => updateParam("currentAmperes", Number(e.target.value))}
               className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
             />
             <div className="flex justify-between text-[10px] text-ink-400 font-mono">
@@ -479,7 +479,7 @@ export function HallAluminiumSim() {
               max={1020}
               step={5}
               value={bathTemperatureCelsius}
-              onChange={(e) => setParam("bathTemperatureCelsius", Number(e.target.value))}
+              onChange={(e) => updateParam("bathTemperatureCelsius", Number(e.target.value))}
               className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
             />
             <div className="flex justify-between text-[10px] text-ink-400 font-mono">
@@ -502,7 +502,7 @@ export function HallAluminiumSim() {
               max={8.0}
               step={0.5}
               value={aluminaConcentrationPct}
-              onChange={(e) => setParam("aluminaConcentrationPct", Number(e.target.value))}
+              onChange={(e) => updateParam("aluminaConcentrationPct", Number(e.target.value))}
               className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
             />
             <div className="flex justify-between text-[10px] text-ink-400 font-mono">

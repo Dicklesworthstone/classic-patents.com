@@ -6,7 +6,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 
 export function WattRotaryEngineSim() {
-  const { params, setParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
+  const { params, updateParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
 
   const [activeTab, setActiveTab] = useState<
     "engine-elevation" | "gear-mesh" | "alternative-methods"
@@ -593,7 +593,7 @@ export function WattRotaryEngineSim() {
             max="30"
             step="2"
             value={strokeRateSpm}
-            onChange={(e) => setParam("strokeRateSpm", Number(e.target.value))}
+            onChange={(e) => updateParam("strokeRateSpm", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
         </div>
@@ -612,7 +612,7 @@ export function WattRotaryEngineSim() {
             max="120"
             step="5"
             value={boilerPressureKpa}
-            onChange={(e) => setParam("boilerPressureKpa", Number(e.target.value))}
+            onChange={(e) => updateParam("boilerPressureKpa", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
           />
         </div>
@@ -631,7 +631,7 @@ export function WattRotaryEngineSim() {
             max="2.0"
             step="0.25"
             value={gearRatioNpOverNs}
-            onChange={(e) => setParam("gearRatioNpOverNs", Number(e.target.value))}
+            onChange={(e) => updateParam("gearRatioNpOverNs", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
         </div>
@@ -650,7 +650,7 @@ export function WattRotaryEngineSim() {
             max="6000"
             step="250"
             value={flywheelMassKg}
-            onChange={(e) => setParam("flywheelMassKg", Number(e.target.value))}
+            onChange={(e) => updateParam("flywheelMassKg", Number(e.target.value))}
             className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />
         </div>

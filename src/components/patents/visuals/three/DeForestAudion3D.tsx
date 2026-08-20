@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
-import {
-  articulateDeForestAudionModel,
-  buildDeForestAudionModel,
-  type DeForestAudionModelNodes,
-} from "./deForestAudionModel";
-
-interface DeForestAudion3DProps {
-  initialPlateVoltageV?: number;
-  initialGridBiasVoltageV?: number;
-  initialFilamentCurrentA?: number;
-  initialGridSignalAmplitudeMv?: number;
-  initialLoadResistanceKOhms?: number;
-}
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
+import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "isometric" | "gridControl" | "filament" | "plateAnode";
 
@@ -30,27 +19,19 @@ const CAMERA_PRESETS: Record<
   plateAnode: { pos: [1.2, 0.4, 1.8], target: [0.4, 0.2, 0] },
 };
 
-export function DeForestAudion3D({
-  initialPlateVoltageV = 45,
-  initialGridBiasVoltageV = -1.5,
-  initialFilamentCurrentA = 1.0,
-  initialGridSignalAmplitudeMv = 50,
-  initialLoadResistanceKOhms = 20,
-}: DeForestAudion3DProps) {
+export function DeForestAudion3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const nodesRef = useRef<DeForestAudionModelNodes | null>(null);
-  const controlsRef = useRef<OrbitControls | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const animFrameRef = useRef<number | null>(null);
-  const timeRef = useRef<number>(0);
-
-  const [plateVoltageV, setPlateVoltageV] = useState(initialPlateVoltageV);
-  const [gridBiasVoltageV, setGridBiasVoltageV] = useState(initialGridBiasVoltageV);
-  const [filamentCurrentA, setFilamentCurrentA] = useState(initialFilamentCurrentA);
-  const [gridSignalAmplitudeMv, setGridSignalAmplitudeMv] = useState(initialGridSignalAmplitudeMv);
-  const [loadResistanceKOhms, setLoadResistanceKOhms] = useState(initialLoadResistanceKOhms);
+  const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
+
+  const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
+
+  const plateVoltageV = params.plateVoltageV ?? 45;
+  const gridBiasVoltageV = params.gridBiasVoltageV ?? -1.5;
+  const filamentCurrentA = params.filamentCurrentA ?? 1.0;
+  const gridSignalAmplitudeMv = params.gridSignalAmplitudeMv ?? 50;
+  const loadResistanceKOhms = params.loadResistanceKOhms ?? 20;
 
   const sim = stepDeForestAudion({
     plateVoltageV,
@@ -60,13 +41,19 @@ export function DeForestAudion3D({
     loadResistanceKOhms,
   });
 
+  const live = useLiveSimParams({
+    filamentTemperatureK: sim.filamentTemperatureK,
+    plateCurrentMa: sim.plateCurrentMa,
+    voltageGain: sim.voltageGain,
+    isConducting: sim.isConducting,
+    isRotating,
+  });
+
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
-    if (cameraRef.current && controlsRef.current) {
-      cameraRef.current.position.set(...targetConfig.pos);
-      controlsRef.current.target.set(...targetConfig.target);
-      controlsRef.current.update();
+    if (studioRef.current) {
+      studioRef.current.controls.setView(targetConfig.pos, targetConfig.target);
     }
   };
 
@@ -74,128 +61,56 @@ export function DeForestAudion3D({
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 640;
-    const height = container.clientHeight || 480;
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: CAMERA_PRESETS[cameraPreset].pos,
+      targetPos: CAMERA_PRESETS[cameraPreset].target,
+      environmentStyle: "studio",
+    });
+    studioRef.current = studio;
 
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x070b14);
-    scene.fog = new THREE.FogExp2(0x070b14, 0.1);
-
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
-    cameraRef.current = camera;
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(width, height, false);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    // Orbit Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
-    controlsRef.current = controls;
-
-    // Lighting (5-Light Rig)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffedd5, 2.2);
-    keyLight.position.set(5, 8, 6);
-    keyLight.castShadow = true;
-    keyLight.shadow.bias = -0.0002;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
-    scene.add(keyLight);
-
-    const cyanFill = new THREE.DirectionalLight(0x06b6d4, 1.0);
-    cyanFill.position.set(-6, 3, -4);
-    scene.add(cyanFill);
-
-    const warmRim = new THREE.DirectionalLight(0xf59e0b, 1.2);
-    warmRim.position.set(0, -3, -5);
-    scene.add(warmRim);
-
-    // Build Model
     const nodes = buildDeForestAudionModel();
-    nodesRef.current = nodes;
-    scene.add(nodes.root);
+    studio.scene.add(nodes.root);
 
-    // Resize Handler
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight || 480;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h, false);
-    };
-    window.addEventListener("resize", handleResize);
+    let animId = 0;
+    let frame = 0;
 
-    // Animation Loop
-    let lastTime: number | null = null;
-    const animate = (now: number) => {
-      const dt = lastTime === null ? 0.016 : Math.min(0.1, (now - lastTime) / 1000);
-      lastTime = now;
-      timeRef.current += dt;
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+      frame += 1;
+      const time = frame / 60;
+      const p = live.current;
 
-      if (isRotating && controlsRef.current) {
-        controlsRef.current.autoRotate = true;
-        controlsRef.current.autoRotateSpeed = 1.0;
-      } else if (controlsRef.current) {
-        controlsRef.current.autoRotate = false;
+      if (p.isRotating) {
+        nodes.root.rotation.y += 0.005;
       }
+      studio.controls.update();
 
-      controlsRef.current?.update();
+      articulateDeForestAudionModel(
+        nodes,
+        {
+          filamentTemperatureK: p.filamentTemperatureK,
+          plateCurrentMa: p.plateCurrentMa,
+          voltageGain: p.voltageGain,
+          isConducting: p.isConducting,
+        },
+        time,
+      );
 
-      if (nodesRef.current) {
-        articulateDeForestAudionModel(
-          nodesRef.current,
-          {
-            filamentTemperatureK: sim.filamentTemperatureK,
-            plateCurrentMa: sim.plateCurrentMa,
-            voltageGain: sim.voltageGain,
-            isConducting: sim.isConducting,
-          },
-          timeRef.current,
-        );
-      }
-
-      renderer.render(scene, camera);
-      animFrameRef.current = requestAnimationFrame(animate);
+      studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animFrameRef.current = requestAnimationFrame(animate);
+    animate();
 
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      window.removeEventListener("resize", handleResize);
-      renderer.forceContextLoss();
-      renderer.dispose();
+      cancelAnimationFrame(animId);
       nodes.materials.forEach((m) => {
         m.dispose();
       });
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement);
-      }
+      studio.dispose();
+      studioRef.current = null;
     };
-  }, [
-    isRotating,
-    cameraPreset,
-    sim.filamentTemperatureK,
-    sim.plateCurrentMa,
-    sim.voltageGain,
-    sim.isConducting,
-  ]);
+  }, [cameraPreset, live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
@@ -287,7 +202,7 @@ export function DeForestAudion3D({
             max={120}
             step={5}
             value={plateVoltageV}
-            onChange={(e) => setPlateVoltageV(Number(e.target.value))}
+            onChange={(e) => updateParam("plateVoltageV", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
           <span className="text-[10px] text-slate-400">High-voltage DC supply</span>
@@ -305,7 +220,7 @@ export function DeForestAudion3D({
             max={2.0}
             step={0.25}
             value={gridBiasVoltageV}
-            onChange={(e) => setGridBiasVoltageV(Number(e.target.value))}
+            onChange={(e) => updateParam("gridBiasVoltageV", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
           <span className="text-[10px] text-slate-400">Electrostatic control bias</span>
@@ -323,7 +238,7 @@ export function DeForestAudion3D({
             max={1.5}
             step={0.1}
             value={filamentCurrentA}
-            onChange={(e) => setFilamentCurrentA(Number(e.target.value))}
+            onChange={(e) => updateParam("filamentCurrentA", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-500"
           />
           <span className="text-[10px] text-slate-400">Cathode heating power</span>
@@ -341,7 +256,7 @@ export function DeForestAudion3D({
             max={200}
             step={5}
             value={gridSignalAmplitudeMv}
-            onChange={(e) => setGridSignalAmplitudeMv(Number(e.target.value))}
+            onChange={(e) => updateParam("gridSignalAmplitudeMv", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
           <span className="text-[10px] text-slate-400">Antenna carrier swing</span>
@@ -359,7 +274,7 @@ export function DeForestAudion3D({
             max={50}
             step={5}
             value={loadResistanceKOhms}
-            onChange={(e) => setLoadResistanceKOhms(Number(e.target.value))}
+            onChange={(e) => updateParam("loadResistanceKOhms", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />
           <span className="text-[10px] text-slate-400">Headset coil impedance</span>
