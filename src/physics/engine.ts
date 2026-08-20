@@ -74,6 +74,7 @@ import type {
   ThermodynamicsState,
   UniversalPatentPhysicsTelemetry,
 } from "./types";
+import { stepWrightFlyerSi } from "./wrightKernel";
 
 /** US 2,292,387 88-key player-piano hop set. Shared by 2D / 3D. */
 export const LAMARR_BAND_MIN_MHZ = 302;
@@ -172,41 +173,25 @@ export const FrankenSimEngine = {
     },
   ): AerodynamicsState {
     const { wingWarpDeg, rudderDeg, elevatorDeg, dt } = params;
-
-    // Wing Warping Lift differential
-    const baseLift = 0.5 * 1.225 * current.airspeedMps ** 2 * 47.4 * 0.45;
-    const deltaLift = wingWarpDeg * 18.5;
-    const liftNewtons = Math.max(0, baseLift + deltaLift);
-
-    // Induced Drag: C_Di = C_L^2 / (pi * AR * e)
-    const inducedDrag =
-      liftNewtons ** 2 /
-      (Math.PI * 6.4 * 0.85 * 0.5 * 1.225 * current.airspeedMps ** 2 * 47.4 + 1e-4);
-    const parasiticDrag = 0.5 * 1.225 * current.airspeedMps ** 2 * 4.2;
-
-    // Adverse Yaw Coupling & Rudder Counter-Torque
-    const adverseYawTorque = -wingWarpDeg * 0.08;
-    const rudderRestoringTorque = rudderDeg * 0.12;
-    const netYawRate = current.yawRateRps + (adverseYawTorque + rudderRestoringTorque) * dt;
-
-    // Elevator Pitch Moment
-    const pitchMoment = -elevatorDeg * 0.15;
-    const netPitchRate = current.pitchRateRps + pitchMoment * dt;
+    const si = stepWrightFlyerSi({
+      airspeedMph: current.airspeedMps / 0.44704,
+      wingWarpDeg,
+      rudderDeg,
+      elevatorDeg,
+      coupled: false,
+    });
 
     return {
       ...current,
       wingWarpDeflectionDeg: wingWarpDeg,
       rudderDeflectionDeg: rudderDeg,
       elevatorDeflectionDeg: elevatorDeg,
-      liftNewtons,
-      inducedDragNewtons: inducedDrag,
-      parasiticDragNewtons: parasiticDrag,
-      yawRateRps: netYawRate,
-      pitchRateRps: netPitchRate,
-      altitudeMeters: Math.max(
-        0,
-        current.altitudeMeters + (liftNewtons - 340 * 9.81) * 0.0005 * dt,
-      ),
+      liftNewtons: si.liftNewtons,
+      inducedDragNewtons: si.inducedDragNewtons,
+      parasiticDragNewtons: si.parasiticDragNewtons,
+      yawRateRps: current.yawRateRps + si.yawAlphaRadPerS2 * dt,
+      pitchRateRps: current.pitchRateRps + si.pitchAlphaRadPerS2 * dt,
+      altitudeMeters: Math.max(0, current.altitudeMeters + si.altitudeRateMps * dt),
     };
   },
 

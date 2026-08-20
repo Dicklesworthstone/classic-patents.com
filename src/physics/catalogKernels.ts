@@ -2934,6 +2934,25 @@ export function goodyearSchematicCrosslink(index: number) {
   return nodes[((index % nodes.length) + nodes.length) % nodes.length];
 }
 
+/** Heat-frame count on the fs-sparse 12×16 tape. Shared by 3D. */
+export const EINSTEIN_HEAT_FRAME_COUNT = 16;
+/** Watts that map the leftover /80 × 8 index onto the 16-frame tape. */
+export const EINSTEIN_HEAT_FRAME_WATTS_REF = 80;
+export const EINSTEIN_HEAT_FRAME_SCALE = 8;
+
+/** Tape frame for the thermosiphon heat sample. Shared by 3D. */
+export function einsteinHeatFrameIndex(coolingWatts: number) {
+  return Math.max(
+    0,
+    Math.min(
+      EINSTEIN_HEAT_FRAME_COUNT - 1,
+      Math.floor(
+        (Math.max(0, coolingWatts) / EINSTEIN_HEAT_FRAME_WATTS_REF) * EINSTEIN_HEAT_FRAME_SCALE,
+      ),
+    ),
+  );
+}
+
 export function stepEinsteinRefrigerator(params: {
   heatInput?: number;
   totalPressure?: number;
@@ -2975,6 +2994,8 @@ export function stepEinsteinRefrigerator(params: {
     schematicAbsGenY1: 170,
     schematicAbsGenY2: 110,
     fluidWrapY: 2.8,
+    heatFrameCount: EINSTEIN_HEAT_FRAME_COUNT,
+    heatFrameIndex: einsteinHeatFrameIndex(coolingWatts),
   };
 }
 

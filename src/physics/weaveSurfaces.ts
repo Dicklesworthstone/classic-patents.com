@@ -50,7 +50,7 @@ import {
 } from "./machineKernels";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "./teslaKernel";
 
-import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
+import { readWrightControls, stepWrightFlyerSi, WRIGHT_GROSS_WEIGHT_N } from "./wrightKernel";
 
 export interface MaterialProbe {
   part: string;
@@ -113,7 +113,7 @@ export interface KittyHawkResidual {
 
 /** Kitty Hawk, 17 Dec 1903, first powered hop: weight ≈ 750 lbf, airspeed ≈ 30 mph. */
 export const KITTY_HAWK = {
-  liftN: 3336,
+  liftN: WRIGHT_GROSS_WEIGHT_N,
   airspeedMph: 30,
   durationS: 12,
   distanceM: 36.6,

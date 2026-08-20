@@ -25,6 +25,9 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEinsteinRefrigeratorModel");
     expect(modelSource).toContain("updateEinsteinRefrigeratorKinematics");
+    expect(modelSource).not.toContain("coolingWatts / 80");
+    expect(modelSource).not.toContain("stepEinsteinRefrigerator({})");
+    expect(threeSource).toContain("p.heatFrameIndex");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -69,6 +72,7 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
     expect(result.cop).toBeGreaterThan(0.1);
     expect(result.fluidDisplaySpeed).toBeCloseTo(result.coolingWatts / 45 + 0.8, 2);
     expect(result.fluidWrapY).toBe(2.8);
+    expect(result.heatFrameIndex).toBe(Math.floor((result.coolingWatts / 80) * 8));
   });
 
   test("builds and articulates procedural boiler generator, condenser coil, and evaporator correctly", () => {
@@ -98,6 +102,8 @@ describe("US 1,781,541 Albert Einstein & Leo Szilard Refrigerator visual & therm
       fridge.generatorGlowIntensity,
       true,
       true,
+      fridge.heatFrameIndex,
+      fridge.fluidWrapY,
     );
     expect(model.materials.weldedSteel.opacity).toBe(0.35);
 

@@ -782,6 +782,7 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(einsteinSchematicVessel("evaporator").y).toBe(170);
     expect(einsteinSchematicVessel("absorber").labelY).toBe(205);
     expect(res.fluidWrapY).toBe(2.8);
+    expect(res.heatFrameIndex).toBe(Math.floor((res.coolingWatts / 80) * 8));
     expect(einsteinFluidSign(0)).toBe(1);
     expect(einsteinFluidSign(1)).toBe(-1);
   });

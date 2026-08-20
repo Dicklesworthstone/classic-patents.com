@@ -13,9 +13,6 @@
  */
 
 import * as THREE from "three";
-import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(2287);
 
 export interface DavenportMotorModelNodes {
   rootGroup: THREE.Group;
@@ -491,9 +488,9 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
   for (let i = 0; i < SPARK_COUNT; i++) {
     const idx = i * 3;
     const isLeft = i % 2 === 0;
-    sparkPositions[idx] = (isLeft ? -0.42 : 0.42) + (lcg() - 0.5) * 0.15;
-    sparkPositions[idx + 1] = 1.6 + (lcg() - 0.5) * 0.25;
-    sparkPositions[idx + 2] = (lcg() - 0.5) * 0.15;
+    sparkPositions[idx] = (isLeft ? -0.42 : 0.42) + (deterministicUnit(i, 0) - 0.5) * 0.15;
+    sparkPositions[idx + 1] = 1.6 + (deterministicUnit(i, 1) - 0.5) * 0.25;
+    sparkPositions[idx + 2] = (deterministicUnit(i, 2) - 0.5) * 0.15;
   }
 
   sparkGeo.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));

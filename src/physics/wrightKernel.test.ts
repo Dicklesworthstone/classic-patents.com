@@ -1,10 +1,17 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { FrankenSimEngine } from "./engine";
 import {
   coupledRudderDeg,
   readWrightControls,
   stepWrightFlyerSi,
+  WRIGHT_ALTITUDE_LIFT_COUPLING,
   WRIGHT_COUPLING,
+  WRIGHT_GROSS_WEIGHT_N,
   WRIGHT_PATENT_ID,
+  WRIGHT_PITCH_INERTIA_KG_M2,
+  WRIGHT_YAW_INERTIA_KG_M2,
   wrightSchematicPose,
 } from "./wrightKernel";
 
@@ -43,6 +50,12 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
     expect(si.parasiticDragNewtons).toBeGreaterThan(0);
     expect(si.liftToDrag).toBeGreaterThan(4);
     expect(si.cl).toBe(0.45);
+    expect(si.yawAlphaRadPerS2).toBeCloseTo(si.netYawNm / WRIGHT_YAW_INERTIA_KG_M2, 5);
+    expect(si.pitchAlphaRadPerS2).toBeCloseTo(si.pitchNm / WRIGHT_PITCH_INERTIA_KG_M2, 5);
+    expect(si.altitudeRateMps).toBeCloseTo(
+      (si.liftNewtons - WRIGHT_GROSS_WEIGHT_N) * WRIGHT_ALTITUDE_LIFT_COUPLING,
+      6,
+    );
   });
 
   test("differential wing warping creates differential lift and induced drag on each wingtip", () => {
@@ -82,5 +95,45 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
 
     const adversePose = wrightSchematicPose({ wingWarp: 10, rudder: 0, coupled: 0 });
     expect(adversePose.adverse).toBe(true);
+  });
+
+  test("host 6-DoF integrator drains lift, drag, and yaw/pitch rates from stepWrightFlyerSi", () => {
+    const engineSource = readFileSync(join(process.cwd(), "src/physics/engine.ts"), "utf8");
+    expect(engineSource).not.toContain("wingWarpDeg * 0.08");
+    expect(engineSource).not.toContain("rudderDeg * 0.12");
+    expect(engineSource).not.toContain("elevatorDeg * 0.15");
+    expect(engineSource).not.toContain("340 * 9.81");
+
+    const dt = 0.016;
+    const si = stepWrightFlyerSi({
+      airspeedMph: 30,
+      wingWarpDeg: 10,
+      rudderDeg: 0,
+      elevatorDeg: 2,
+      coupled: false,
+    });
+    const next = FrankenSimEngine.stepWrightFlyer(
+      {
+        airspeedMps: 30 * 0.44704,
+        altitudeMeters: 3.5,
+        angleOfAttackRad: 0.073,
+        sideslipRad: 0,
+        wingWarpDeflectionDeg: 0,
+        rudderDeflectionDeg: 0,
+        elevatorDeflectionDeg: 0,
+        liftNewtons: 3400,
+        inducedDragNewtons: 480,
+        parasiticDragNewtons: 120,
+        thrustNewtons: 500,
+        pitchRateRps: 0,
+        rollRateRps: 0,
+        yawRateRps: 0,
+      },
+      { wingWarpDeg: 10, rudderDeg: 0, elevatorDeg: 2, dt },
+    );
+    expect(next.liftNewtons).toBeCloseTo(si.liftNewtons, 5);
+    expect(next.inducedDragNewtons).toBeCloseTo(si.inducedDragNewtons, 5);
+    expect(next.yawRateRps).toBeCloseTo(si.yawAlphaRadPerS2 * dt, 5);
+    expect(next.pitchRateRps).toBeCloseTo(si.pitchAlphaRadPerS2 * dt, 5);
   });
 });

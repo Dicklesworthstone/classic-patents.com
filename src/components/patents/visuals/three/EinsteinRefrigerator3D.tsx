@@ -64,6 +64,8 @@ export function EinsteinRefrigerator3D() {
     heaterGlowIntensity: frige.heaterGlowIntensity,
     generatorGlowIntensity: frige.generatorGlowIntensity,
     evaporatorGlowIntensity: frige.evaporatorGlowIntensity,
+    heatFrameIndex: frige.heatFrameIndex,
+    fluidWrapY: frige.fluidWrapY,
   });
 
   const controlsRef = useRef<StudioContext["controls"] | null>(null);
@@ -147,6 +149,8 @@ export function EinsteinRefrigerator3D() {
         p.generatorGlowIntensity,
         p.isHeating,
         p.isCutaway,
+        p.heatFrameIndex,
+        p.fluidWrapY,
       );
 
       controls.update();

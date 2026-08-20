@@ -480,6 +480,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.384 Energy strips from owned watts: Reno motor kW, Maxim jacket heat, Ericsson thrust·v. Maxim `heatGeneratedWatts` is now on the step return.
 - [x] P5.385 Couple links drain the same owned watts: Reno, Maxim, Ericsson, Marconi spark RF, Carrier latent, Fermi fission, Parsons shaft, Otto/Daimler/Corliss hp, Goddard exhaust KE.
 - [x] P5.386 Westinghouse 2D/3D piston and shoe travel drain `clampRatio * maxPushStroke` / `beamClampTravel`. No private cylPsi/80 leftover (kernel clamp is cyl/55).
+- [x] P5.387 `engine.stepWrightFlyer` is a thin 6-DoF integrator over `stepWrightFlyerSi`. Lift/drag/yaw/pitch/altitude come from the SI step (netYawNm / I_zz, pitchNm / I_yy, (L − 3336 N) × 0.0005). No private `× 0.08` / `× 0.12` / `× 0.15` / `340 × 9.81` leftover. Kitty Hawk weight is `WRIGHT_GROSS_WEIGHT_N`.
+- [x] P5.388 Einstein 3D heat-frame drains `heatFrameIndex` from `stepEinsteinRefrigerator`. Kinematics no longer re-steps `{}` or converts leftover `coolingWatts / 80 × 8` privately.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

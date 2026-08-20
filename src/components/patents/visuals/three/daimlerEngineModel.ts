@@ -16,7 +16,7 @@
  */
 
 import * as THREE from "three";
-import { fourStrokeIndexFromRad, stepDaimlerEngine } from "@/physics/catalogKernels";
+import { fourStrokeIndexFromRad } from "@/physics/catalogKernels";
 import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 
 export interface DaimlerEngineModel {
@@ -501,15 +501,14 @@ export function updateDaimlerEngineKinematics(
 
   // Power stroke combustion flame (stroke 2)
   const isPower = stroke === 2;
-  const daimler = stepDaimlerEngine({});
   const heat = heatFrames(12, 16, 2);
   const frame = Math.abs(Math.floor(cycleAngle * 4)) % 16;
   const flash = 1 + Math.abs(sampleHeatAt(heat, 12, 16, frame, 0.5, 0.5));
   model.combustionFlame.visible = isPower;
   if (isPower) {
-    const scale = daimler.combustionScale0 + flash * daimler.combustionScaleAmp;
+    const scale = 0.85 + flash * 0.35;
     model.combustionFlame.scale.set(scale, scale, scale);
-    model.combustionFlame.position.y = pistonY + daimler.combustionPistonOffsetY;
+    model.combustionFlame.position.y = pistonY + 0.35;
   }
 
   // 5. Cutaway Mode

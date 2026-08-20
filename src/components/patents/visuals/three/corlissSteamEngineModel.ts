@@ -16,7 +16,6 @@
  */
 
 import * as THREE from "three";
-import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
 
 export interface CorlissEngineModel {
@@ -42,11 +41,116 @@ export interface CorlissEngineModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Cuban Mahogany Wood-Stave Lagging Texture
+ */
+function createMahoganyTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  // Dark rich varnished mahogany
+  ctx.fillStyle = "#451a03";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Vertical stave joint lines
+  for (let x = 0; x < 512; x += 32) {
+    ctx.fillStyle = "rgba(20, 8, 2, 0.5)";
+    ctx.fillRect(x, 0, 2, 512);
+  }
+
+  // Flowing wood grain
+  for (let i = 0; i < 70; i++) {
+    const x = i * 7.4 + (deterministicUnit(i, 0) - 0.5) * 4;
+    ctx.strokeStyle = `rgba(120, 40, 10, ${0.15 + deterministicUnit(i, 1) * 0.15})`;
+    ctx.lineWidth = 1.2 + deterministicUnit(i, 2) * 1.2;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 10, 150, x - 8, 350, x + 6, 512);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 1);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Ashlar Granite Masonry Foundation Texture
+ */
+function createMasonryTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#475569";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Ashlar stone block grid & mortar lines
+  ctx.strokeStyle = "rgba(30, 41, 59, 0.8)";
+  ctx.lineWidth = 3;
+  for (let y = 0; y < 512; y += 64) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y);
+    ctx.stroke();
+
+    const rowOffset = (y / 64) % 2 === 0 ? 0 : 64;
+    for (let x = rowOffset; x < 512; x += 128) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x, y + 64);
+      ctx.stroke();
+    }
+  }
+
+  // Stone chisel texture
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const d = imgData.data;
+  for (let i = 0; i < 512 * 512; i++) {
+    const n = (deterministicUnit(i, 0) - 0.5) * 16;
+    d[i * 4 + 0] = Math.max(0, Math.min(255, d[i * 4 + 0] + n));
+    d[i * 4 + 1] = Math.max(0, Math.min(255, d[i * 4 + 1] + n));
+    d[i * 4 + 2] = Math.max(0, Math.min(255, d[i * 4 + 2] + n));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(3, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildCorlissEngineModel(): CorlissEngineModel {
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
+
+  const mahoganyTex = createMahoganyTexture();
+  if (mahoganyTex) texturesToDispose.push(mahoganyTex);
+
+  const masonryTex = createMasonryTexture();
+  if (masonryTex) texturesToDispose.push(masonryTex);
 
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
@@ -85,6 +189,7 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   materialsToDispose.push(bronze);
 
   const mahogany = new THREE.MeshStandardMaterial({
+    ...(mahoganyTex ? { map: mahoganyTex } : {}),
     color: 0x451a03,
     roughness: 0.45,
     metalness: 0.05,
@@ -92,6 +197,7 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   materialsToDispose.push(mahogany);
 
   const masonry = new THREE.MeshStandardMaterial({
+    ...(masonryTex ? { map: masonryTex } : {}),
     color: 0x475569,
     roughness: 0.9,
     metalness: 0.1,
@@ -182,10 +288,10 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
   // 4 Rotary Oscillating Valve Chests (2 Top Admission, 2 Bottom Exhaust - US Patent 6,162)
   const valveLevers: THREE.Group[] = [];
   const valveLocs = [
-    { x: -1.5, y: 1.65, z: 0, isSteam: true }, // Front Steam Valve
-    { x: 1.5, y: 1.65, z: 0, isSteam: true }, // Back Steam Valve
-    { x: -1.5, y: -1.65, z: 0, isSteam: false }, // Front Exhaust Valve
-    { x: 1.5, y: -1.65, z: 0, isSteam: false }, // Back Exhaust Valve
+    { x: -1.5, y: 1.65, z: 0, isSteam: true },
+    { x: 1.5, y: 1.65, z: 0, isSteam: true },
+    { x: -1.5, y: -1.65, z: 0, isSteam: false },
+    { x: 1.5, y: -1.65, z: 0, isSteam: false },
   ];
 
   valveLocs.forEach(({ x, y, z, isSteam }) => {
@@ -248,119 +354,113 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
     pot.position.set(dx, 0.42, 0);
     dashpotGroup.add(pot);
 
-    // Dashpot Vertical Drop Rod
-    const dRodGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8);
-    geometriesToDispose.push(dRodGeo);
-    const dRod = new THREE.Mesh(dRodGeo, polishedSteel);
-    dRod.position.set(dx, 1.5, 0);
-    dashpotGroup.add(dRod);
-    dashpotRods.push(dRod);
+    // Dashpot Plunger Rod
+    const rodGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.8, 10);
+    geometriesToDispose.push(rodGeo);
+    const rod = new THREE.Mesh(rodGeo, polishedSteel);
+    rod.position.set(dx, 1.3, 0);
+    dashpotGroup.add(rod);
+    dashpotRods.push(rod);
   }
 
-  // --- 6. CRANKSHAFT, CRANK DISC & SEGMENTAL FLYWHEEL ---
-  const crankGroup = new THREE.Group();
-  crankGroup.position.set(3.8, 0, 0);
-  rootGroup.add(crankGroup);
-
-  // Main Shaft
-  const shaftGeo = new THREE.CylinderGeometry(0.24, 0.24, 4.5, 24);
-  geometriesToDispose.push(shaftGeo);
-  const shaft = new THREE.Mesh(shaftGeo, polishedSteel);
-  shaft.rotation.x = Math.PI / 2;
-  crankGroup.add(shaft);
-
-  // Heavy Counterbalanced Crank Disc
-  const discGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.32, 32);
-  geometriesToDispose.push(discGeo);
-  const crankDisc = new THREE.Mesh(discGeo, castIron);
-  crankDisc.rotation.x = Math.PI / 2;
-  crankDisc.position.z = 0.85;
-  crankDisc.castShadow = true;
-  crankGroup.add(crankDisc);
-
-  // Crankpin
-  const pinGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.45, 16);
-  geometriesToDispose.push(pinGeo);
-  const crankPin = new THREE.Mesh(pinGeo, polishedSteel);
-  crankPin.rotation.x = Math.PI / 2;
-  crankPin.position.set(0.65, 0, 1.1);
-  crankGroup.add(crankPin);
-
-  // Multi-Spoke Segmental Flywheel with Barring Gear Rim
-  const flyRimGeo = new THREE.TorusGeometry(3.6, 0.32, 16, 48);
-  geometriesToDispose.push(flyRimGeo);
-  const flywheel = new THREE.Mesh(flyRimGeo, castIron);
-  flywheel.position.z = -1.4;
-  flywheel.castShadow = true;
-  crankGroup.add(flywheel);
-
-  // 8 Curved Spokes
-  for (let s = 0; s < 8; s++) {
-    const sAngle = (s * Math.PI * 2) / 8;
-    const spokeGeo = new THREE.BoxGeometry(0.18, 3.4, 0.14);
-    geometriesToDispose.push(spokeGeo);
-    const spoke = new THREE.Mesh(spokeGeo, castIron);
-    spoke.position.set(Math.cos(sAngle) * 1.7, Math.sin(sAngle) * 1.7, -1.4);
-    spoke.rotation.z = sAngle;
-    crankGroup.add(spoke);
-  }
-
-  // --- 7. CROSSHEAD & CONNECTING ROD ---
+  // --- 6. RECIPROCATING CROSSHEAD, CONNECTING ROD & CRANK DISC ---
   const crossheadGroup = new THREE.Group();
   crossheadGroup.position.set(-0.6, 0, 0);
   rootGroup.add(crossheadGroup);
 
-  const xheadGeo = new THREE.BoxGeometry(0.9, 0.75, 0.65);
+  const xheadGeo = new THREE.BoxGeometry(0.85, 0.85, 0.95);
   geometriesToDispose.push(xheadGeo);
-  const xhead = new THREE.Mesh(xheadGeo, castIron);
+  const xhead = new THREE.Mesh(xheadGeo, bronze);
   xhead.castShadow = true;
   crossheadGroup.add(xhead);
 
-  // Piston Rod
-  const pRodGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.8, 12);
+  // Piston Rod from cylinder into crosshead
+  const pRodGeo = new THREE.CylinderGeometry(0.1, 0.1, 2.4, 16);
   geometriesToDispose.push(pRodGeo);
   const pRod = new THREE.Mesh(pRodGeo, polishedSteel);
   pRod.rotation.z = Math.PI / 2;
-  pRod.position.x = -1.9;
+  pRod.position.x = -1.2;
   crossheadGroup.add(pRod);
 
-  // Internal Double-Acting Steam Piston Head
-  const pistonGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.45, 32);
-  geometriesToDispose.push(pistonGeo);
-  const pistonHead = new THREE.Mesh(pistonGeo, polishedSteel);
-  pistonHead.rotation.z = Math.PI / 2;
-  pistonHead.position.x = -3.2;
-  pistonHead.castShadow = true;
-  crossheadGroup.add(pistonHead);
-
-  // Marine Connecting Rod
+  // Connecting Rod (Crosshead to Crankpin)
   const conRodGroup = new THREE.Group();
+  conRodGroup.position.set(-0.6, 0, 0);
   rootGroup.add(conRodGroup);
 
-  const conBeamGeo = new THREE.CylinderGeometry(0.085, 0.085, 4.4, 16);
-  geometriesToDispose.push(conBeamGeo);
-  const conBeam = new THREE.Mesh(conBeamGeo, polishedSteel);
-  conBeam.rotation.z = Math.PI / 2;
-  conBeam.position.x = 2.2;
-  conBeam.castShadow = true;
-  conRodGroup.add(conBeam);
+  const cRodBeamGeo = new THREE.CylinderGeometry(0.11, 0.11, 4.4, 16);
+  geometriesToDispose.push(cRodBeamGeo);
+  const cRodBeam = new THREE.Mesh(cRodBeamGeo, castIron);
+  cRodBeam.rotation.z = Math.PI / 2;
+  cRodBeam.position.x = 2.2;
+  cRodBeam.castShadow = true;
+  conRodGroup.add(cRodBeam);
+
+  // Crank Disc & Counterbalance
+  const crankGroup = new THREE.Group();
+  crankGroup.position.set(3.8, 0, 0);
+  rootGroup.add(crankGroup);
+
+  const discGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.28, 32);
+  geometriesToDispose.push(discGeo);
+  const disc = new THREE.Mesh(discGeo, darkIron);
+  disc.rotation.x = Math.PI / 2;
+  disc.position.z = 0.55;
+  disc.castShadow = true;
+  crankGroup.add(disc);
+
+  // Crankpin
+  const cPinGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.65, 16);
+  geometriesToDispose.push(cPinGeo);
+  const cPin = new THREE.Mesh(cPinGeo, polishedSteel);
+  cPin.rotation.x = Math.PI / 2;
+  cPin.position.set(0.9, 0, 0.35);
+  crankGroup.add(cPin);
+
+  // --- 7. MULTI-SPOKE FLYWHEEL WITH RIM GEAR TEETH ---
+  const flywheelGeo = new THREE.TorusGeometry(3.6, 0.35, 16, 48);
+  geometriesToDispose.push(flywheelGeo);
+  const flywheel = new THREE.Mesh(flywheelGeo, castIron);
+  flywheel.position.set(3.8, 0, -1.8);
+  flywheel.castShadow = true;
+  rootGroup.add(flywheel);
+
+  // 8 Heavy Tapered Flywheel Spokes
+  for (let s = 0; s < 8; s++) {
+    const sAngle = (s * Math.PI * 2) / 8;
+    const spokeGeo = new THREE.CylinderGeometry(0.08, 0.18, 3.4, 12);
+    geometriesToDispose.push(spokeGeo);
+    const spoke = new THREE.Mesh(spokeGeo, castIron);
+    spoke.position.set(Math.cos(sAngle) * 1.7, Math.sin(sAngle) * 1.7, 0);
+    spoke.rotation.z = sAngle + Math.PI / 2;
+    flywheel.add(spoke);
+  }
 
   // --- 8. CENTRIFUGAL FLYBALL GOVERNOR ---
   const governorGroup = new THREE.Group();
-  governorGroup.position.set(-1.0, 1.8, 1.2);
+  governorGroup.position.set(-1.2, 1.8, 0.85);
   rootGroup.add(governorGroup);
 
-  const govColumnGeo = new THREE.CylinderGeometry(0.06, 0.08, 2.0, 12);
-  geometriesToDispose.push(govColumnGeo);
-  const govCol = new THREE.Mesh(govColumnGeo, brass);
-  governorGroup.add(govCol);
+  // Vertical Spindle Pillar
+  const govSpindleGeo = new THREE.CylinderGeometry(0.06, 0.08, 2.2, 12);
+  geometriesToDispose.push(govSpindleGeo);
+  const govSpindle = new THREE.Mesh(govSpindleGeo, polishedSteel);
+  governorGroup.add(govSpindle);
 
+  // Spinning Flyball Arms & Brass Spheres
   const governorBalls: THREE.Mesh[] = [];
   for (const sign of [-1, 1]) {
+    const armGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.9, 8);
+    geometriesToDispose.push(armGeo);
+    const arm = new THREE.Mesh(armGeo, brass);
+    arm.rotation.z = sign * 0.55;
+    arm.position.set(sign * 0.22, 0.6, 0);
+    governorGroup.add(arm);
+
     const ballGeo = new THREE.SphereGeometry(0.18, 16, 16);
     geometriesToDispose.push(ballGeo);
     const ball = new THREE.Mesh(ballGeo, brass);
-    ball.position.set(sign * 0.45, 0.6, 0);
+    ball.position.set(sign * 0.45, 0.35, 0);
+    ball.castShadow = true;
     governorGroup.add(ball);
     governorBalls.push(ball);
   }
@@ -397,63 +497,80 @@ export function buildCorlissEngineModel(): CorlissEngineModel {
 }
 
 /**
- * Updates Corliss steam engine kinematics, valve trips, and cutaway state.
+ * Updates Corliss engine 4-valve kinematics, wrist-plate oscillation, dashpot trips, and flyball governor.
  */
 export function updateCorlissEngineKinematics(
   model: CorlissEngineModel,
-  crankAngle: number,
-  govSpread: number,
-  wristAmp: number,
-  isCutaway = false,
-): { strokeX: number; wristAngle: number } {
-  const corliss = stepCorlissEngine({});
-  const valves = cyclicSymmetry(4, 0.4 + Math.abs(wristAmp));
-  const valveFlex = 1 + 0.15 * cyclicSol(valves, 0);
-  model.crankGroup.rotation.z = -crankAngle;
+  crankAngleRad: number,
+  rpm: number,
+  cutoffFraction: number,
+  isCutaway: boolean,
+) {
+  const crankRadius = 0.9;
+  const conRodLength = 4.4;
 
-  const govAngle = crankAngle * corliss.govOmegaRatio;
-  model.governorGroup.rotation.y = govAngle;
-  model.governorBalls[0].position.x = -govSpread;
-  model.governorBalls[1].position.x = govSpread;
+  // 1. Crankshaft & Flywheel Rotation
+  model.crankGroup.rotation.z = -crankAngleRad;
+  model.flywheel.rotation.z = -crankAngleRad;
 
-  // Kinematics: crankpin position
-  const crankR = corliss.crankR;
-  const pinX = corliss.pinHomeX + Math.cos(crankAngle) * crankR;
-  const pinY = Math.sin(crankAngle) * crankR;
+  // 2. Crosshead Reciprocating Kinematics
+  const pinX = 3.8 - Math.cos(crankAngleRad) * crankRadius;
+  const pinY = Math.sin(crankAngleRad) * crankRadius;
+  const crossheadX = pinX - Math.sqrt(conRodLength ** 2 - pinY ** 2);
+  model.crossheadGroup.position.x = crossheadX;
 
-  // Slider-crank crosshead position
-  const rodL = corliss.rodLen;
-  const strokeX = pinX - Math.sqrt(Math.max(corliss.rodMin, rodL ** 2 - pinY ** 2));
-  model.crossheadGroup.position.x = strokeX;
+  // 3. Connecting Rod Articulation
+  model.conRodGroup.position.set(crossheadX, 0, 0);
+  const conRodAngle = Math.asin(pinY / conRodLength);
+  model.conRodGroup.rotation.z = conRodAngle;
 
-  // Connecting rod pose
-  model.conRodGroup.position.set(strokeX, 0, 0);
-  const rodAngle = Math.atan2(pinY, pinX - strokeX);
-  model.conRodGroup.rotation.z = rodAngle;
-
-  // Central wrist plate harmonic oscillation (Claim 2)
-  const wristAngle = Math.sin(crankAngle + corliss.wristLeadRad) * wristAmp * valveFlex;
+  // 4. Corliss Wrist Plate Harmonic Oscillation (Claim 2)
+  const wristAngle = Math.sin(crankAngleRad + 0.3) * 0.35;
   model.wristPlate.rotation.z = wristAngle;
 
-  // 4 Rotary oscillating valve levers (Claim 1)
-  model.valveLevers[0].rotation.z = wristAngle * corliss.intakeValveCoupling;
-  model.valveLevers[1].rotation.z = -wristAngle * corliss.intakeValveCoupling;
-  model.valveLevers[2].rotation.z =
-    Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling * valveFlex;
-  model.valveLevers[3].rotation.z =
-    -Math.sin(crankAngle) * wristAmp * corliss.exhaustValveCoupling * valveFlex;
+  // 5. Four Rotary Valve Levers & Pneumatic Dashpot Drop-Cutoff (Claim 1)
+  const ring = cyclicSymmetry(4, 2);
+  const harmonic = 0.05 * cyclicSol(ring, Math.abs(Math.floor(crankAngleRad * 2)) % 4);
+  const steamCutoffAngle = cutoffFraction * Math.PI;
 
-  // Dashpot rods drop motion
-  const drop1 = Math.max(0, -wristAngle * corliss.dashpotDropAmp);
-  const drop2 = Math.max(0, wristAngle * corliss.dashpotDropAmp);
-  model.dashpotRods[0].position.y = corliss.dashpotHomeY - drop1;
-  model.dashpotRods[1].position.y = corliss.dashpotHomeY - drop2;
+  model.valveLevers.forEach((lever, idx) => {
+    if (idx === 0) {
+      // Front Steam Admission: open until cutoff, then drop shut
+      const open =
+        ((crankAngleRad % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) < steamCutoffAngle;
+      lever.rotation.z = open ? wristAngle * 0.8 : -0.2;
+    } else if (idx === 1) {
+      // Back Steam Admission
+      const open =
+        (((crankAngleRad + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) <
+        steamCutoffAngle;
+      lever.rotation.z = open ? -wristAngle * 0.8 : 0.2;
+    } else if (idx === 2) {
+      // Front Exhaust
+      lever.rotation.z = wristAngle * 0.6 + harmonic;
+    } else {
+      // Back Exhaust
+      lever.rotation.z = -wristAngle * 0.6 - harmonic;
+    }
+  });
 
-  // Cutaway mode
+  // 6. Dashpot Rod Plungers
+  model.dashpotRods.forEach((rod, idx) => {
+    const open =
+      idx === 0 ? (model.valveLevers[0]?.rotation.z ?? 0) : (model.valveLevers[1]?.rotation.z ?? 0);
+    rod.position.y = 1.3 + Math.max(0, open) * 0.4;
+  });
+
+  // 7. Centrifugal Flyball Governor Rotation & Ball Lift
+  model.governorGroup.rotation.y += (rpm / 60) * 0.2;
+  const govSpeedNorm = Math.min(1.0, rpm / 120);
+  const ballSpread = 0.35 + govSpeedNorm * 0.25;
+  if (model.governorBalls[0]) model.governorBalls[0].position.x = -ballSpread;
+  if (model.governorBalls[1]) model.governorBalls[1].position.x = ballSpread;
+
+  // 8. Cutaway Mode
   model.materials.mahogany.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.mahogany.transparent = isCutaway;
-  model.materials.castIron.opacity = isCutaway ? 0.65 : 1.0;
-  model.materials.castIron.transparent = isCutaway;
 
-  return { strokeX, wristAngle };
+  return { strokeX: crossheadX, wristAngle };
 }

@@ -8,6 +8,16 @@ import { wrightBayTensions } from "./genericWasm";
 export const WRIGHT_PATENT_ID = "us-821393-wright-flyer";
 /** Claim 18 rudder linkage: rudder degrees per degree of wing warp. */
 export const WRIGHT_COUPLING = 0.45;
+/** 750 lbf Kitty Hawk flying weight. Shared by the SI step, host 6-DoF integrator, and fidelity. */
+export const WRIGHT_GROSS_WEIGHT_N = 3336;
+/** Host 6-DoF yaw inertia. dω_yaw = netYawNm / I_zz. Not a 1903 measurement. */
+export const WRIGHT_YAW_INERTIA_KG_M2 = 36;
+/** Host 6-DoF pitch inertia. dω_pitch = pitchNm / I_yy. */
+export const WRIGHT_PITCH_INERTIA_KG_M2 = 24;
+/** Host altitude integrator: dh = (L − W) × this × dt. Named leftover from the old 6-DoF path. */
+export const WRIGHT_ALTITUDE_LIFT_COUPLING = 0.0005;
+/** Pitch couple per degree of canard, scaled by airspeed/30 mph. */
+export const WRIGHT_PITCH_ELEVATOR_NM_PER_DEG = 2.2;
 
 export interface WrightControls {
   airspeedMph: number;
@@ -55,6 +65,10 @@ export interface WrightSiState {
   rudderSvgScale: number;
   hoverOmegaRadPerS: number;
   hoverAmpM: number;
+  pitchNm: number;
+  yawAlphaRadPerS2: number;
+  pitchAlphaRadPerS2: number;
+  altitudeRateMps: number;
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
@@ -165,6 +179,12 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
   const adverseYawNm = -controls.wingWarpDeg * 1.7 * speedRatio;
   const rudderYawNm = controls.rudderDeg * 3.8 * speedRatio;
   const netYawNm = adverseYawNm + rudderYawNm;
+  const pitchNm = -controls.elevatorDeg * WRIGHT_PITCH_ELEVATOR_NM_PER_DEG * speedRatio;
+  const yawAlphaRadPerS2 = Number((netYawNm / WRIGHT_YAW_INERTIA_KG_M2).toFixed(5));
+  const pitchAlphaRadPerS2 = Number((pitchNm / WRIGHT_PITCH_INERTIA_KG_M2).toFixed(5));
+  const altitudeRateMps = Number(
+    ((liftNewtons - WRIGHT_GROSS_WEIGHT_N) * WRIGHT_ALTITUDE_LIFT_COUPLING).toFixed(6),
+  );
   return {
     airspeedMps,
     dynamicPressurePa: q,
@@ -211,6 +231,10 @@ export function stepWrightFlyerSi(controls: WrightControls): WrightSiState {
     rudderSvgScale: 1.2,
     hoverOmegaRadPerS: 1.4,
     hoverAmpM: 0.04,
+    pitchNm,
+    yawAlphaRadPerS2,
+    pitchAlphaRadPerS2,
+    altitudeRateMps,
   };
 }
 

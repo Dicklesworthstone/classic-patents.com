@@ -56,7 +56,49 @@ export interface DieselEngineMaterials {
   glassMat: THREE.MeshPhysicalMaterial;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural MAN Augsburg Industrial Green Machine Enamel Texture
+ */
+function createAugsburgGreenTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#1b4332";
+  ctx.fillRect(0, 0, 512, 512);
+
+  const imgData = ctx.getImageData(0, 0, 512, 512);
+  const d = imgData.data;
+  for (let i = 0; i < 512 * 512; i++) {
+    const n = (deterministicUnit(i, 0) - 0.5) * 16;
+    d[i * 4 + 0] = Math.max(0, Math.min(255, d[i * 4 + 0] + n * 0.5));
+    d[i * 4 + 1] = Math.max(0, Math.min(255, d[i * 4 + 1] + n));
+    d[i * 4 + 2] = Math.max(0, Math.min(255, d[i * 4 + 2] + n * 0.7));
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function createDieselEngineMaterials(): DieselEngineMaterials {
+  const greenTex = createAugsburgGreenTexture();
+
   const castIron = new THREE.MeshStandardMaterial({
     color: 0x334155,
     roughness: 0.7,
@@ -100,6 +142,7 @@ export function createDieselEngineMaterials(): DieselEngineMaterials {
   });
 
   const paintedGreen = new THREE.MeshStandardMaterial({
+    ...(greenTex ? { map: greenTex } : {}),
     color: 0x1b4332,
     roughness: 0.55,
     metalness: 0.3,

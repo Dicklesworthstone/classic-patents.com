@@ -10,7 +10,6 @@
 import * as THREE from "three";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
 
 export interface EdisonPhonographModel {
   rootGroup: THREE.Group;
@@ -28,8 +27,15 @@ export interface EdisonPhonographModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
 export function buildEdisonPhonographModel(): EdisonPhonographModel {
-  const lcg = createLcg(2185);
   const rootGroup = new THREE.Group();
   const texturesToDispose: THREE.Texture[] = [];
   const materialsToDispose: THREE.Material[] = [];
@@ -47,7 +53,7 @@ export function buildEdisonPhonographModel(): EdisonPhonographModel {
       wctx.fillRect(0, 0, 512, 512);
       for (let i = 0; i < 240; i++) {
         wctx.fillStyle = i % 2 === 0 ? "rgba(80, 30, 10, 0.45)" : "rgba(25, 10, 5, 0.5)";
-        wctx.fillRect(0, lcg() * 512, 512, lcg() * 3 + 1);
+        wctx.fillRect(0, deterministicUnit(i, 0) * 512, 512, deterministicUnit(i, 1) * 3 + 1);
       }
     }
     woodTexture = new THREE.CanvasTexture(woodCanvas);
