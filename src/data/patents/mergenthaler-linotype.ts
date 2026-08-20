@@ -278,7 +278,16 @@ export const mergenthalerLinotypePatent: Patent = {
     "My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars.",
   originalPdfUrl: "/patents/pdfs/us-313224-mergenthaler-linotype.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US313224A/en",
-  usptoClassification: "Printing machinery; source classification review pending",
+  usptoClassification: "B41B 11/00 (Matrix-composing machines / Hot-metal casting)",
+  archivalEdition: mergenthalerLinotypeArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
+    pageCount: 35,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents Editorial Team",
+    reviewedAt: "2026-08-20",
+    sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE
 NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA.

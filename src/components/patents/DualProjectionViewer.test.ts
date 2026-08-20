@@ -2,8 +2,8 @@ import { describe, expect, test } from "bun:test";
 import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
 import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
+import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
 import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
-import { mergenthalerLinotypePatent } from "@/data/patents/mergenthaler-linotype";
 import type { Patent } from "@/types/patent";
 import { archivalEditionForPublication, viewModeFromSearch } from "./DualProjectionViewer";
 
@@ -23,8 +23,8 @@ describe("patent view URL state", () => {
 describe("archival publication boundary", () => {
   test("renders only editions with approved explicit paragraph companions", () => {
     expect(archivalEditionForPublication(lamarrPatent)).toBe(lamarrPatent.archivalEdition);
-    expect(isArchivalEditionExplicitlyWithheld(mergenthalerLinotypePatent.id)).toBe(true);
-    expect(archivalEditionForPublication(mergenthalerLinotypePatent)).toBeUndefined();
+    expect(isArchivalEditionExplicitlyWithheld(kwolekKevlarPatent.id)).toBe(true);
+    expect(archivalEditionForPublication(kwolekKevlarPatent)).toBeUndefined();
     const unmappedPatent: Patent = {
       ...lamarrPatent,
       id: "us-unmapped-draft-test",

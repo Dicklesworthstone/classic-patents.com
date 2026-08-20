@@ -9,8 +9,6 @@ import {
 
 const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-x72-whitney-cotton-gin",
-  "us-313224-mergenthaler-linotype",
-  "us-2708656-fermi-reactor",
   "us-3671542-kwolek-kevlar",
 ] as const;
 

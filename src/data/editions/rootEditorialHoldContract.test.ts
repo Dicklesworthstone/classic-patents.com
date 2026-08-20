@@ -43,7 +43,7 @@ describe("root editorial publication holds", () => {
   });
 
   test("keeps records with known incomplete source ledgers unbound as a second fail-closed layer", () => {
-    for (const patentId of ["us-313224-mergenthaler-linotype"]) {
+    for (const patentId of ["us-621195-zeppelin-airship"]) {
       const patent = allPatents.find((candidate) => candidate.id === patentId);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;

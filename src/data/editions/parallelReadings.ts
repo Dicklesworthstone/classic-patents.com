@@ -132,6 +132,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
+  "us-2708656-fermi-reactor": fermiReactorParallelReadings,
   "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,

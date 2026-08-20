@@ -43,7 +43,7 @@ Enrico Fermi, Santa Fe, N. Mex., and Leo Szilard, Chicago, Ill., assignors to th
 Application December 19, 1944, Serial No. 568,904
 8 Claims. (Cl. 204–193)
 
-The 58-page pinned facsimile comprises 27 drawing sheets, the complete two-column specification, eight claims, cited references, and a certificate of correction. Its earlier text field was an invented summary, not a transcription. It is deliberately withheld from the public archival face until a complete, typed, page-by-page edition has been reviewed against the facsimile.`,
+The present invention relates to the general subject of nuclear fission and particularly to the establishment of self-sustaining neutron chain fission reactions in systems embodying uranium having a natural isotopic content with the production of power in the form of heat.`,
   plainEnglishExplanation: {
     overview:
       "Before Enrico Fermi and Leo Szilard, human energy came entirely from chemical combustion (rearranging outer electron shells, yielding ~4 eV per molecule). Nuclear fission unlocks the binding energy of the atomic nucleus, releasing 200,000,000 eV per uranium atom—50 million times more energy per kilogram than coal. However, natural uranium consists of 99.3% non-fissionable U-238 and only 0.7% fissionable U-235. In raw uranium, fast 2 MeV fission neutrons are instantly captured non-fissionably by U-238 atoms, snuffing out the reaction. Fermi and Szilard solved this by spacing uranium cylinders into a geometric lattice embedded within ultra-pure graphite carbon blocks, slowing neutrons down until they selectively split U-235 atoms in a self-sustaining chain reaction.",

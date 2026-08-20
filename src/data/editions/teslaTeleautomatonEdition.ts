@@ -20,13 +20,13 @@ const figureDimensions: Record<number, readonly [number, number]> = {
   6: [630, 670],
   7: [550, 260],
   8: [310, 350],
-  9: [1300, 1600],
+  9: [1600, 1300],
   10: [1150, 1460],
 };
 
 const figure = (number: number, label = `Fig. ${number}`) => {
   const [width, height] = figureDimensions[number] ?? [780, 1390];
-  const revision = number === 9 ? 2 : 1;
+  const revision = number === 9 ? 3 : 1;
   return {
     kind: "reference" as const,
     text: label,

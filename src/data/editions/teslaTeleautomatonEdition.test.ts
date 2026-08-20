@@ -52,9 +52,9 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     for (const reference of figureNineReferences) {
       expect(reference.figurePreviews).toContainEqual(
         expect.objectContaining({
-          src: "/patents/figures/us-613809-tesla-teleautomaton/fig-9-source-crop-v2.png",
-          width: 1300,
-          height: 1600,
+          src: "/patents/figures/us-613809-tesla-teleautomaton/fig-9-source-crop-v3.png",
+          width: 1600,
+          height: 1300,
         }),
       );
     }

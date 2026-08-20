@@ -72,23 +72,30 @@ const figureSheets: Record<number, number> = {
   42: 27,
 };
 
-const figure = (num: number, label: string): CuratedSpecificationInline => {
-  const sheet = figureSheets[num] ?? 1;
-  const s = sourceSheet(sheet);
+const figure = (
+  num: number,
+  label: string,
+  extraNums: number[] = [],
+): CuratedSpecificationInline => {
+  const nums = [num, ...extraNums];
+  const previews = nums.map((n) => {
+    const sheet = figureSheets[n] ?? 1;
+    const s = sourceSheet(sheet);
+    return {
+      src: s.src,
+      alt: `US 2,708,656 Fig. ${n} on Drawing Sheet ${sheet}`,
+      width: s.width,
+      height: s.height,
+    };
+  });
+  const firstSheet = figureSheets[num] ?? 1;
   return {
     kind: "reference",
     text: label,
     href: `#fermi-fig-${num}`,
     referenceType: "figure",
-    label: `Preview ${label} on Sheet ${sheet} of US 2,708,656`,
-    figurePreviews: [
-      {
-        src: s.src,
-        alt: `US 2,708,656 ${label} on Drawing Sheet ${sheet}`,
-        width: s.width,
-        height: s.height,
-      },
-    ],
+    label: `Preview ${label} on Sheet ${firstSheet} of US 2,708,656`,
+    figurePreviews: previews,
   };
 };
 
@@ -193,8 +200,18 @@ export const FERMI_REACTOR_SOURCE_PDF_SHA256 =
 export const FERMI_REACTOR_FIGURE_PREVIEWS = FERMI_REACTOR_FIGURE_CAPTIONS;
 
 function claimInlines(claimText: string) {
-  const parts = claimText.split(/(Figures?\s+\d+(?:\s+through\s+\d+)?)/i);
+  const parts = claimText.split(/(Figures?\s+\d+(?:\s+(?:through|to|and)\s+\d+)?)/i);
   return parts.flatMap((part) => {
+    const rangeMatch = part.match(/^Figures?\s+(\d+)\s+(?:through|to)\s+(\d+)/i);
+    if (rangeMatch) {
+      const start = parseInt(rangeMatch[1], 10);
+      const end = parseInt(rangeMatch[2], 10);
+      const nums: number[] = [];
+      for (let n = start + 1; n <= end; n++) {
+        nums.push(n);
+      }
+      return [figure(start, part, nums)];
+    }
     const match = part.match(/^Figures?\s+(\d+)/i);
     if (match) {
       const num = parseInt(match[1], 10);
