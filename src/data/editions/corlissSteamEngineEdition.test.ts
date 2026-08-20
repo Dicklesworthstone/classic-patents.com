@@ -38,11 +38,15 @@ describe("corlissSteamEngineArchivalEdition", () => {
     const publicText = JSON.stringify(corlissSteamEngineArchivalEdition.blocks);
     for (const figure of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
       const filename =
-        figure === 3
-          ? "us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
-          : figure === 6
-            ? "us-6162-corliss-steam-engine-fig-6-source-crop-v2.png"
-            : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
+        figure === 1
+          ? "us-6162-corliss-steam-engine-fig-1-source-crop-v2.png"
+          : figure === 3
+            ? "us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
+            : figure === 6
+              ? "us-6162-corliss-steam-engine-fig-6-source-crop-v2.png"
+              : figure === 9
+                ? "us-6162-corliss-steam-engine-fig-9-source-crop-v2.png"
+                : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
       expect(publicText).toContain(filename);
       expect(existsSync(resolve(process.cwd(), "public/patents/figures", filename))).toBe(true);
     }
@@ -63,6 +67,31 @@ describe("corlissSteamEngineArchivalEdition", () => {
         src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-source-crop-v2.png",
         width: 600,
         height: 650,
+      }),
+    );
+  });
+
+  test("uses upright exact source crops for Figures 1 and 9", () => {
+    const previews = corlissSteamEngineArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? (inline.figurePreviews ?? [])
+          : [],
+      );
+
+    expect(previews.find((preview) => preview.alt === "Figure 1 from US 6,162.")).toEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-source-crop-v2.png",
+        width: 1400,
+        height: 1043,
+      }),
+    );
+    expect(previews.find((preview) => preview.alt === "Figure 9 from US 6,162.")).toEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-source-crop-v2.png",
+        width: 1370,
+        height: 520,
       }),
     );
   });

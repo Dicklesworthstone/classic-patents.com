@@ -71,4 +71,27 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
       }
     }
   });
+
+  it("uses the complete source drawing rather than the signature margin for Figure 3", () => {
+    const figureThreePreviews = edisonIndicatorArchivalEdition.blocks
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .filter(
+        (inline) =>
+          inline.kind === "reference" &&
+          inline.referenceType === "figure" &&
+          inline.text === "Fig. 3",
+      )
+      .flatMap((inline) => (inline.kind === "reference" ? (inline.figurePreviews ?? []) : []));
+
+    expect(figureThreePreviews.length).toBeGreaterThan(0);
+    for (const preview of figureThreePreviews) {
+      expect(preview).toEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
+          width: 900,
+          height: 590,
+        }),
+      );
+    }
+  });
 });

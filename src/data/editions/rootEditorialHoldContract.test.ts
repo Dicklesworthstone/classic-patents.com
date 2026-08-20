@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
+import { carlsonElectrophotographyPatent } from "@/data/patents/carlson-electrophotography";
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 import {
   archivalEditionForPublication,
@@ -15,6 +16,7 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
+  "us-2297691-carlson-electrophotography",
   "us-3671542-kwolek-kevlar",
 ] as const;
 
@@ -33,7 +35,11 @@ describe("root editorial publication holds", () => {
     );
 
     for (const patentId of REQUIRED_ROOT_EDITORIAL_HOLDS) {
-      const patent = allPatents.find((candidate) => candidate.id === patentId);
+      const patent =
+        allPatents.find((candidate) => candidate.id === patentId) ??
+        (patentId === carlsonElectrophotographyPatent.id
+          ? carlsonElectrophotographyPatent
+          : undefined);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 

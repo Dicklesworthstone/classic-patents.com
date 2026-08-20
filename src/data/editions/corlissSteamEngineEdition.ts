@@ -113,10 +113,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           label: "Open the source-faithful crop for Figure 1 of US 6,162",
           figurePreviews: [
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-preview.png",
+              src: "/patents/figures/us-6162-corliss-steam-engine-fig-1-source-crop-v2.png",
               alt: "Figure 1 from US 6,162.",
-              width: 720,
-              height: 840,
+              width: 1400,
+              height: 1043,
             },
           ],
         },
@@ -256,10 +256,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
               height: 1057,
             },
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-preview.png",
+              src: "/patents/figures/us-6162-corliss-steam-engine-fig-9-source-crop-v2.png",
               alt: "Figure 9 from US 6,162.",
-              width: 720,
-              height: 1057,
+              width: 1370,
+              height: 520,
             },
           ],
         },

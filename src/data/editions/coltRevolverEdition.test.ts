@@ -93,10 +93,16 @@ describe("coltRevolverArchivalEdition", () => {
   test("makes every source drawing citation a semantic reference with a local crop", () => {
     const bareDrawingCitation = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+|(?:section|division)\s+\d+)\b/i;
     const sourcePreviewByDrawing = {
-      "division-2": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
-      "division-3": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png",
-      "division-4": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
-      "plate-2": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png",
+      "division-1": "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+      "division-2":
+        "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+      "division-3":
+        "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+      "division-4":
+        "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+      "division-5":
+        "/patents/figures/us-x9430-colt-revolver/division-5-combination-source-crop-v2.png",
+      "plate-2": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
     } as const;
 
     for (const block of coltRevolverArchivalEdition.blocks) {
@@ -108,7 +114,7 @@ describe("coltRevolverArchivalEdition", () => {
         }
         if (inline.kind === "reference" && inline.referenceType === "figure") {
           expect(inline.figurePreviews?.length).toBeGreaterThan(0);
-          const drawing = inline.href.match(/^#(division-[234]|plate-2)-drawing$/)?.[1];
+          const drawing = inline.href.match(/^#(division-[1-5]|plate-2)-drawing$/)?.[1];
           expect(drawing).toBeDefined();
           if (!drawing) continue;
           const expectedPreview =
@@ -138,5 +144,18 @@ describe("coltRevolverArchivalEdition", () => {
         ),
       ).toBe(true);
     }
+
+    const divisionOne = coltRevolverArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .find((inline) => inline.kind === "reference" && inline.text === "Division 1");
+    const divisionFive = coltRevolverArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .find((inline) => inline.kind === "reference" && inline.text === "Division 5");
+    expect(divisionOne && divisionOne.kind === "reference" ? divisionOne.href : undefined).toBe(
+      "#division-1-drawing",
+    );
+    expect(divisionFive && divisionFive.kind === "reference" ? divisionFive.href : undefined).toBe(
+      "#division-5-drawing",
+    );
   });
 });

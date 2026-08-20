@@ -18,7 +18,7 @@ const term = (
 const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 1474, height: 1765 },
   2: { width: 1126, height: 914 },
-  3: { width: 1010, height: 1084 },
+  3: { width: 900, height: 590 },
   4: { width: 662, height: 1424 },
 };
 
@@ -164,7 +164,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       preview(
         "Fig. 3",
         3,
-        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
         "Figure 3: Galvanometer needle carrying circuit-closing contact arm.",
       ),
       ", a view showing the use of the galvanometer to close regulating or other circuits; and ",
@@ -190,7 +190,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       preview(
         "Fig. 3",
         3,
-        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
         "Figure 3: Circuit-controlling contact arm carried by the galvanometer needle.",
       ),
       ", may be carried by the needle, which may close circuit at contacts p, or in any other suitable manner, to electrical devices for automatically regulating the electro-motive force of the system, to electrically-operated indicating devices, or to any electrically-operated apparatus.",

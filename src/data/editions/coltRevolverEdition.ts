@@ -2,7 +2,13 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-type ColtDrawingGroup = "division-2" | "division-3" | "division-4" | "plate-2";
+type ColtDrawingGroup =
+  | "division-1"
+  | "division-2"
+  | "division-3"
+  | "division-4"
+  | "division-5"
+  | "plate-2";
 
 /**
  * The printed drawing divisions reuse figure numbers.  A reference such as
@@ -13,29 +19,41 @@ type ColtDrawingGroup = "division-2" | "division-3" | "division-4" | "plate-2";
 const sourceDrawingPreviews: Readonly<
   Record<ColtDrawingGroup, { src: string; width: number; height: number; description: string }>
 > = {
+  "division-1": {
+    src: "/patents/figures/us-x9430-colt-revolver/division-1-pistol-source-crop-v2.png",
+    width: 700,
+    height: 440,
+    description: "upright Division 1 pistol drawing",
+  },
   "division-2": {
-    src: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
-    width: 820,
-    height: 1420,
-    description: "Division 2 sectional pistol drawing",
+    src: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section-source-crop-v2.png",
+    width: 1100,
+    height: 720,
+    description: "upright Division 2 sectional pistol drawing",
   },
   "division-3": {
-    src: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png",
-    width: 760,
-    height: 1080,
-    description: "Division 3 lock-parts drawing",
+    src: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts-source-crop-v2.png",
+    width: 430,
+    height: 360,
+    description: "upright Division 3 lock-parts drawing",
   },
   "division-4": {
-    src: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
-    width: 1000,
-    height: 1220,
-    description: "Division 4 arbor-and-cylinder drawing",
+    src: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder-source-crop-v2.png",
+    width: 800,
+    height: 430,
+    description: "upright Division 4 arbor-and-cylinder drawing",
+  },
+  "division-5": {
+    src: "/patents/figures/us-x9430-colt-revolver/division-5-combination-source-crop-v2.png",
+    width: 500,
+    height: 330,
+    description: "upright Division 5 mechanical-combination drawing",
   },
   "plate-2": {
-    src: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png",
-    width: 980,
-    height: 1190,
-    description: "Plate 2 lockwork drawing",
+    src: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork-source-crop-v2.png",
+    width: 1150,
+    height: 650,
+    description: "upright Plate 2 lockwork drawing",
   },
 };
 
@@ -129,11 +147,11 @@ export const coltRevolverArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "paragraph",
       inlines: cited(
-        figure("Division 1", "division-2"),
+        figure("Division 1", "division-1"),
         " of the drawings represents a pistol. ",
         figure("Division 2", "division-2"),
         " represents ",
-        figure("Division 1", "division-2"),
+        figure("Division 1", "division-1"),
         " in four sections, as 1, 2, 3, and 4. ",
         figure("Division 3", "division-3"),
         " represents all the parts in ",
@@ -147,7 +165,7 @@ export const coltRevolverArchivalEdition: CuratedSpecificationEdition = {
         " of ",
         figure("Division 2", "division-2"),
         ". ",
-        figure("Division 5", "plate-2"),
+        figure("Division 5", "division-5"),
         " represents the mechanical combination of the entire instrument.",
       ),
     },

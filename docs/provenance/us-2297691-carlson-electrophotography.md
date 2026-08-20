@@ -21,22 +21,23 @@
 
 | PDF Page | Physical Content | Status / Verification |
 | :--- | :--- | :--- |
-| **Page 1** | Drawing Sheet 1: Figures 1–8 (Charging, exposing, dusting, and transfer operations) | Reviewed and extracted figure crops |
-| **Page 2** | Drawing Sheet 2: Figures 9–14 (Continuous belt, drum, and rotary copying apparatus) | Reviewed and extracted figure crops |
-| **Page 3** | Drawing Sheet 3: Figures 15–21 (Electrostatic spray, optical projection, and fixing) | Reviewed and extracted figure crops |
-| **Page 4** | Drawing Sheet 4: Figures 22–28 (Photo-conductive layer structures and materials) | Reviewed and extracted figure crops |
-| **Page 5** | Specification Column 1 & 2: Patent-office masthead, Serial No. 265,925, Preamble, and fundamental theory of photo-conductive insulating layers | Reviewed verbatim against facsimile |
-| **Page 6** | Specification Column 3 & 4: Detailed description of charging, exposing, and powder dusting mechanisms | Reviewed verbatim against facsimile |
-| **Page 7** | Specification Column 5 & 6: Detailed description of powder transfer, fixing, and continuous rotary drum apparatus | Reviewed verbatim against facsimile |
-| **Page 8** | Specification Column 7 & 8: Description of sulfur/selenium layer preparations, and Claims 1–7 | Reviewed verbatim against facsimile |
-| **Page 9** | Claims 8–20: Apparatus and method claims for electrostatic latent image development | Reviewed verbatim against facsimile |
-| **Page 10** | Claims 21–27, Formal execution, and Inventor signature of Chester F. Carlson | Reviewed verbatim against facsimile |
+| **Page 1** | The only drawing sheet: Figures 1, 2, 2a, 2b, and 3–10; inventor signature | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 2** | Printed specification page 1: Patent Office masthead, application data, objects, figure list, and opening description | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 3** | Printed specification page 2: plate preparation, charging, exposure, and preferred process | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 4** | Printed specification page 3: projection alternatives and powder development | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 5** | Printed specification page 4: transfer, heat fixing, and the Figure 8 alternative | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 6** | Printed specification page 5: lithographic, dye, half-tone, and paper-layer variants | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 7** | Printed specification page 6: concluding advantages and the opening claims | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 8** | Printed specification page 7: claims continuing through Claim 12 | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 9** | Printed specification page 8: Claims 13–23 | Directly reviewed against the pinned facsimile on 2026-08-20 |
+| **Page 10** | Printed specification page 9: Claims 24–27 and Chester F. Carlson execution | Directly reviewed against the pinned facsimile on 2026-08-20 |
 
 ---
 
 ## Preservation Boundaries
 
-1. **Source Face**: Hand-annotated React source face in `src/data/editions/carlsonElectrophotographyEdition.ts`.
-2. **Reviewed Ledger**: Page-marked complete human-reviewed transcription in `public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt`.
-3. **Figure Crops**: Stored under `public/patents/figures/us-2297691-carlson-electrophotography/`.
-4. **Claim Count**: Exactly 27 claims printed on pages 8–10 of the original grant, all dynamically linked via `manualCarlsonClaimText`.
+1. **Source Face**: The draft in `src/data/editions/carlsonElectrophotographyEdition.ts` is retained as evidence but is under a root editorial hold and is not approved for visitor publication.
+2. **Reviewed Ledger**: `public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt` is not accepted as a page-complete reviewed transcription. Its four-drawing-sheet inventory contradicts the pinned facsimile's single drawing sheet.
+3. **Figure Crops**: Existing files under `public/patents/figures/us-2297691-carlson-electrophotography/` are preserved but untrusted pending source-by-source recropping. The file currently named for Figure 9 contains the specification masthead, not Figure 9.
+4. **Claim Count**: The facsimile prints 27 claims across PDF pages 7–10. Those claims require a new literal comparison before the draft edition can be released.
+5. **Release boundary**: The edition must remain withheld until the ledger, every edition block, every figure identity, and every paragraph companion have been rebuilt and independently compared with the pinned PDF.
