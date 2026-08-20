@@ -95,7 +95,7 @@ export const BellTelephone3D = memo(() => {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const model = buildBellTelephoneModel();
     scene.add(model.rootGroup);
@@ -123,6 +123,7 @@ export const BellTelephone3D = memo(() => {
         p.acousticFrequencyHz,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

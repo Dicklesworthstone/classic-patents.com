@@ -13,7 +13,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -27,8 +26,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "photocathode" | "aperture" | "coils" | "electron_gun" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [6, 4, 7], target: [0, 0, 0] },
+  photocathode: { pos: [-4, 0.5, 3], target: [-2.5, 0, 0] },
+  aperture: { pos: [2.5, 1, 2], target: [2.0, 0, 0] },
+  coils: { pos: [0, 3, 4], target: [0, 0, 0] },
+  electron_gun: { pos: [4.5, 1, 2], target: [3.5, 0, 0] },
+  top: { pos: [0, 9, 0.1], target: [0, 0, 0] },
+};
+
 export function FarnsworthTV3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   // Dissector Tube State Controls
   const { params, updateParam: _updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
@@ -86,35 +98,10 @@ export function FarnsworthTV3D() {
     gyroRadiusMm: beamState.gyroRadiusMm,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([13, 9, 15], [0, 0, 0]);
-        break;
-      case "photocathode":
-        controls.setView([-5.8, 1.4, 2.5], [-4.8, 0, 0]);
-        break;
-      case "aperture":
-        controls.setView([4.8, 1.5, 2.2], [4.0, 0, 0]);
-        break;
-      case "coils":
-        controls.setView([0, 3.8, 3.2], [0, 0, 0]);
-        break;
-      case "electron_gun":
-        controls.setView([3.6, 2.2, 3.2], [3.2, 0, 0]);
-        break;
-      case "top":
-        controls.setView([0, 9.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -127,15 +114,15 @@ export function FarnsworthTV3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [13, 9, 15],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildFarnsworthTvModel();
     scene.add(model.root);
@@ -169,7 +156,8 @@ export function FarnsworthTV3D() {
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

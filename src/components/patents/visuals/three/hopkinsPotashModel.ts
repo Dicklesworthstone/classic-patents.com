@@ -445,7 +445,13 @@ export function buildHopkinsPotashModel(): HopkinsPotashModelResult {
  */
 export function animateHopkinsPotashModel(
   model: HopkinsPotashModelResult,
-  params: Record<string, number>,
+  params: {
+    roastTempC?: number;
+    roastTimeHours?: number;
+    ashBatchKg?: number;
+    waterTempC?: number;
+    isCutaway?: boolean;
+  },
   timeS: number,
 ) {
   const pot = stepHopkinsPotash({

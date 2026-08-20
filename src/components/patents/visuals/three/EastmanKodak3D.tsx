@@ -97,7 +97,7 @@ export function EastmanKodak3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Build procedural 3D model
     const { rootGroup, nodes, materials, dispose } = buildEastmanKodakModel();
@@ -124,6 +124,7 @@ export function EastmanKodak3D() {
         p.supplySpoolOmegaRadPerS,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

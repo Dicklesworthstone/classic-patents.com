@@ -57,6 +57,8 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Whitney Cotton Gin 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine mechanical output rate, labor multiplier, and kinematics in SI units", () => {

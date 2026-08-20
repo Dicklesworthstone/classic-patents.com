@@ -55,6 +55,8 @@ describe("US 4,750 Elias Howe Sewing Machine visual & kinematics boundary", () =
     }
 
     expect(threeSource).toContain("US 4,750");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine lockstitch stitching frequency and cloth feed rate in SI units", () => {

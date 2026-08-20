@@ -94,7 +94,7 @@ export function MorseTelegraph3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildMorseTelegraphModel();
     scene.add(rootGroup);
@@ -125,6 +125,7 @@ export function MorseTelegraph3D() {
         p.wpmSpeed,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

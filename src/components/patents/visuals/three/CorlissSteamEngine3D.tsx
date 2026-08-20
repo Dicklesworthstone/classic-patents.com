@@ -87,7 +87,7 @@ export function CorlissSteamEngine3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Build procedural 3D model
     const model = buildCorlissEngineModel();
@@ -106,6 +106,7 @@ export function CorlissSteamEngine3D() {
 
       updateCorlissEngineKinematics(model, crankAngle, p.engineRpm, p.cutoffPct / 100, p.isCutaway);
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

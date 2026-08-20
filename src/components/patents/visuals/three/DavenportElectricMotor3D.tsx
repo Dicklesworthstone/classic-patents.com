@@ -85,7 +85,7 @@ export function DavenportElectricMotor3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildDavenportMotorModel();
     scene.add(rootGroup);
@@ -108,6 +108,7 @@ export function DavenportElectricMotor3D() {
         p.isCutaway,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

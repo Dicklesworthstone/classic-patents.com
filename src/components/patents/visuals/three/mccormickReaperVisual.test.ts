@@ -54,6 +54,8 @@ describe("US X8277 Cyrus McCormick Grain Reaper visual & kinematics boundary", (
 
     expect(threeSource).toContain("McCormick Reaper 3D");
     expect(threeSource).toContain("isCutaway");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine ground drive ratio, reel speed, and cutter frequency in SI units", () => {

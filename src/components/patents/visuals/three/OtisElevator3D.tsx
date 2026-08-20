@@ -12,7 +12,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -24,6 +23,18 @@ import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "safety_pawls" | "leaf_spring" | "cab" | "crown_sheave" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10.0, 6.5, 11.5], target: [0, 0, 0] },
+  safety_pawls: { pos: [2.8, 2.2, 3.2], target: [1.8, 1.8, 0] },
+  leaf_spring: { pos: [0, 4.2, 3.8], target: [0, 2.5, 0] },
+  cab: { pos: [0, 0.5, 4.5], target: [0, 0, 0] },
+  crown_sheave: { pos: [0, 6.8, 3.5], target: [0, 5.6, 0] },
+  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
+};
 
 export function OtisElevator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,35 +63,12 @@ export function OtisElevator3D() {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([10.0, 6.5, 11.5], [0, 0, 0]);
-        break;
-      case "safety_pawls":
-        controls.setView([2.8, 2.2, 3.2], [1.8, 1.8, 0]);
-        break;
-      case "leaf_spring":
-        controls.setView([0, 4.2, 3.8], [0, 2.5, 0]);
-        break;
-      case "cab":
-        controls.setView([0, 0.5, 4.5], [0, 0, 0]);
-        break;
-      case "crown_sheave":
-        controls.setView([0, 6.8, 3.5], [0, 5.6, 0]);
-        break;
-      case "top":
-        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const cutRope = () => {
@@ -105,15 +93,15 @@ export function OtisElevator3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10.0, 6.5, 11.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { root, nodes, materials, dispose } = buildOtisElevatorModel();
     scene.add(root);
@@ -149,6 +137,7 @@ export function OtisElevator3D() {
         p.cableTensionPct,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -158,6 +147,7 @@ export function OtisElevator3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

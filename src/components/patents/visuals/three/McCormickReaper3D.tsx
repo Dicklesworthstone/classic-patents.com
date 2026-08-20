@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Layers } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -10,63 +9,53 @@ import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mc
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "sickle_guards" | "grain_reel" | "platform" | "drive_wheel" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10.5, 7.0, 11.0], target: [0, 0, 0] },
+  sickle_guards: { pos: [-1.0, 1.0, 4.5], target: [-0.5, -0.6, 1.8] },
+  grain_reel: { pos: [2.8, 3.8, 4.0], target: [0, 1.2, 0] },
+  platform: { pos: [0, 5.0, 0], target: [0, -0.5, -0.5] },
+  drive_wheel: { pos: [-5.0, 1.2, 3.2], target: [-3.2, 0.4, 0] },
+  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
+};
+
 export function McCormickReaper3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
-  // Mechanical Reaper Simulation Parameters
-  const { params } = usePatentPhysics("us-x8277-mccormick-reaper");
-  const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
-  const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
-  const cutterCrankRpm = reaper.cutterCrankRpm;
-  const reelRpm = reaper.reelRpm;
   const [showStalks, setShowStalks] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
+
+  const { params } = usePatentPhysics("us-x8277-mccormick-reaper");
+  const groundSpeedMph = params.draftSpeedMph ?? params.forwardSpeedMph ?? 2.5;
+  const { isAudioMuted } = usePatentAudio();
+
+  const reaper = stepMcCormickReaper({
+    forwardSpeedMph: groundSpeedMph,
+  });
 
   const live = useLiveSimParams({
     groundSpeedMph,
-    cutterCrankRpm,
-    reelRpm,
     showStalks,
+    isAudioMuted,
     isCutaway,
     groundWheelOmegaRadPerS: reaper.groundWheelOmegaRadPerS,
     reelOmegaRadPerS: reaper.reelOmegaRadPerS,
     cutterOmegaRadPerS: reaper.cutterOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([10.5, 7.0, 11.0], [0, 0, 0]);
-        break;
-      case "sickle_guards":
-        controls.setView([-1.0, 1.0, 4.5], [-0.5, -0.6, 1.8]);
-        break;
-      case "grain_reel":
-        controls.setView([2.8, 3.8, 4.0], [0, 1.2, 0]);
-        break;
-      case "platform":
-        controls.setView([0, 5.0, 0], [0, -0.5, -0.5]);
-        break;
-      case "drive_wheel":
-        controls.setView([-5.0, 1.2, 3.2], [-3.2, 0.4, 0]);
-        break;
-      case "top":
-        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
@@ -77,15 +66,15 @@ export function McCormickReaper3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10.5, 7.0, 11.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Build procedural 3D model
     const model = buildMcCormickReaperModel();
@@ -101,13 +90,10 @@ export function McCormickReaper3D() {
       const elapsedSeconds = presentationStep / 60;
       presentationStep += 1;
 
-      const wheelRadPerSec = p.groundWheelOmegaRadPerS;
-      const reelRadPerSec = p.reelOmegaRadPerS;
-
       updateMcCormickReaperKinematics(
         model,
-        wheelRadPerSec,
-        reelRadPerSec,
+        p.groundWheelOmegaRadPerS,
+        p.reelOmegaRadPerS,
         p.cutterOmegaRadPerS,
         elapsedSeconds,
         p.showStalks,
@@ -118,12 +104,13 @@ export function McCormickReaper3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -209,8 +196,8 @@ export function McCormickReaper3D() {
         chips={[
           { label: "Ground", value: String(groundSpeedMph), unit: "mph" },
           { label: "24-inch wheel", value: String(reaper.groundWheelRpm), unit: "rpm" },
-          { label: "Crank", value: String(cutterCrankRpm), unit: "rpm" },
-          { label: "Reel", value: String(reelRpm), unit: "rpm" },
+          { label: "Crank", value: String(reaper.cutterCrankRpm), unit: "rpm" },
+          { label: "Reel", value: String(reaper.reelRpm), unit: "rpm" },
           { label: "v", value: String(reaper.groundSpeedMps), unit: "m/s" },
           { label: "f_cut", value: String(reaper.cutterHz), unit: "Hz" },
           { label: "ω_cut", value: reaper.cutterOmegaRadPerS.toFixed(2), unit: "rad/s" },

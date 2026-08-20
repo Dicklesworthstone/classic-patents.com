@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -24,6 +23,18 @@ type CameraPreset =
   | "brake_cylinder"
   | "reservoir"
   | "signaling_gauge";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [8.5, 5.5, 9.5], target: [0, 0, 0] },
+  selecting_cock: { pos: [0.2, 2.2, 2.8], target: [0, 0.9, 0.825] },
+  trip_apparatus: { pos: [-3.2, 1.2, 2.6], target: [-3.6, 0.2, 0.85] },
+  brake_cylinder: { pos: [2.6, 1.8, 2.2], target: [1.4, 0.5, 0] },
+  reservoir: { pos: [-2.4, 1.8, 2.2], target: [-1.5, 0.5, 0] },
+  signaling_gauge: { pos: [4.2, 1.8, 1.8], target: [3.4, 0.8, 0.4] },
+};
 
 export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -67,35 +78,12 @@ export function WestinghouseAirBrake3D() {
     rollingOmegaRadPerS: westinghouse.rollingOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([8.5, 5.5, 9.5], [0, 0, 0]);
-        break;
-      case "selecting_cock":
-        controls.setView([0.2, 2.2, 2.8], [0, 0.9, 0.825]);
-        break;
-      case "trip_apparatus":
-        controls.setView([-3.2, 1.2, 2.6], [-3.6, 0.2, 0.85]);
-        break;
-      case "brake_cylinder":
-        controls.setView([2.6, 1.8, 2.2], [1.4, 0.5, 0]);
-        break;
-      case "reservoir":
-        controls.setView([-2.4, 1.8, 2.2], [-1.5, 0.5, 0]);
-        break;
-      case "signaling_gauge":
-        controls.setView([4.2, 1.8, 1.8], [3.4, 0.8, 0.4]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -112,15 +100,15 @@ export function WestinghouseAirBrake3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [8.5, 5.5, 9.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Build procedural 3D model
     const brakeModel: WestinghouseAirBrakeModelResult = buildWestinghouseAirBrakeModel();
@@ -177,6 +165,7 @@ export function WestinghouseAirBrake3D() {
       cancelAnimationFrame(reqId);
       brakeModel.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

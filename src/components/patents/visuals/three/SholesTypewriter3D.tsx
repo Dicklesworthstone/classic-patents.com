@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -24,12 +23,25 @@ type CameraPreset =
   | "escapement_ratchet"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.0, 7.5, 10.5], target: [0, 0, 0] },
+  type_basket: { pos: [0, 2.2, 3.5], target: [0, 0.4, 0] },
+  platen_carriage: { pos: [0, 3.2, 2.8], target: [0, 1.8, -0.4] },
+  keyboard: { pos: [0, 1.5, 4.2], target: [0, -0.8, 1.4] },
+  escapement_ratchet: { pos: [3.5, 2.8, 1.5], target: [2.8, 1.8, -0.2] },
+  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
 export const SholesTypewriter3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
-  // The source states a key-to-type-bar-to-ratchet sequence, not measured speed.
+  // Mechanical Typewriter Dynamics Parameters
   const { params } = usePatentPhysics("us-79265-sholes-typewriter");
   const demonstrationCadence = params.typingSpeedWpm ?? 40;
   const sholesIdle = stepSholesTypewriter(demonstrationCadence, 0);
@@ -43,35 +55,10 @@ export const SholesTypewriter3D = memo(() => {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([9.0, 7.5, 10.5], [0, 0, 0]);
-        break;
-      case "type_basket":
-        controls.setView([0, 2.2, 3.5], [0, 0.4, 0]);
-        break;
-      case "platen_carriage":
-        controls.setView([0, 3.2, 2.8], [0, 1.8, -0.4]);
-        break;
-      case "keyboard":
-        controls.setView([0, 1.5, 4.2], [0, -0.8, 1.4]);
-        break;
-      case "escapement_ratchet":
-        controls.setView([3.5, 2.8, 1.5], [2.8, 1.8, -0.2]);
-        break;
-      case "top":
-        controls.setView([0, 11.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -88,15 +75,15 @@ export const SholesTypewriter3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.0, 7.5, 10.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { rootGroup, nodes, materials, dispose } = buildSholesTypewriterModel();
     scene.add(rootGroup);
@@ -119,15 +106,17 @@ export const SholesTypewriter3D = memo(() => {
         p.demonstrationCadence,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

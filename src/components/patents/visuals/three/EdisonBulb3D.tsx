@@ -94,7 +94,7 @@ export const EdisonBulb3D = memo(() => {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const model = buildEdisonBulbModel();
     scene.add(model.rootGroup);
@@ -124,6 +124,7 @@ export const EdisonBulb3D = memo(() => {
         p.appliedVoltage,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

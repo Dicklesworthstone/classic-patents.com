@@ -96,7 +96,7 @@ export function ZeppelinAirship3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildZeppelinAirshipModel();
     scene.add(rootGroup);
@@ -125,6 +125,7 @@ export function ZeppelinAirship3D() {
         p.flightSpeedKnots,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

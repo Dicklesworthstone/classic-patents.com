@@ -5,18 +5,27 @@ import { useEffect, useRef, useState } from "react";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
-const CAMERA_OVERVIEW = {
-  pos: [10, 8, 14] as [number, number, number],
-  target: [3, 0.4, 0] as [number, number, number],
+type CameraPreset = "iso" | "ruby_rod" | "flashlamp" | "resonator" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10, 8, 14], target: [3, 0.4, 0] },
+  ruby_rod: { pos: [4.5, 2.0, 5.0], target: [3, 0.4, 0] },
+  flashlamp: { pos: [1.5, 3.5, 4.0], target: [2.5, 0.4, 0] },
+  resonator: { pos: [9.0, 1.2, 2.0], target: [6.0, 0.4, 0] },
+  top: { pos: [3.0, 16.0, 0.1], target: [3, 0.4, 0] },
 };
 
 export function MaimanRubyLaser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-3353115-maiman-ruby-laser");
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isFiring, setIsFiring] = useState(false);
   const isFiringRef = useRef(false);
 
@@ -33,6 +42,14 @@ export function MaimanRubyLaser3D() {
     outputMirrorReflectivity: outputReflectivity,
     crystalTemperatureKelvin: temperature,
   });
+
+  const studioRef = useRef<StudioContext | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const metrics = stepMaimanRubyLaser({
     pumpEnergyJoules: pumpEnergy,
@@ -55,12 +72,13 @@ export function MaimanRubyLaser3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_OVERVIEW.pos,
-      targetPos: CAMERA_OVERVIEW.target,
-      environmentStyle: "studio",
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const laserModel = createMaimanRubyLaserModel();
     studio.scene.add(laserModel.nodes.group);
@@ -96,6 +114,7 @@ export function MaimanRubyLaser3D() {
       cancelAnimationFrame(animId);
       laserModel.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -106,7 +125,7 @@ export function MaimanRubyLaser3D() {
         ref={containerRef}
       >
         {showUiOverlay && (
-          <div className="absolute top-4 left-4 z-10 rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
+          <div className="absolute top-4 left-4 z-10 pointer-events-none rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
             <div className="font-mono text-xs font-bold text-slate-200">
               MAIMAN RUBY LASER 3D STUDIO (US 3,353,115)
             </div>
@@ -116,7 +135,33 @@ export function MaimanRubyLaser3D() {
           </div>
         )}
 
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          {showUiOverlay && (
+            <div className="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-lg border border-slate-700">
+              {(
+                [
+                  ["iso", "ISO"],
+                  ["ruby_rod", "Ruby Rod"],
+                  ["flashlamp", "Flashlamp"],
+                  ["resonator", "Resonator"],
+                  ["top", "Top"],
+                ] as [CameraPreset, string][]
+              ).map(([preset, label]) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => applyCameraPreset(preset)}
+                  className={`px-2 py-1 text-xs font-sans rounded transition-colors ${
+                    activeCamera === preset
+                      ? "bg-rose-600 text-white font-semibold shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -128,7 +173,7 @@ export function MaimanRubyLaser3D() {
         </div>
 
         {showUiOverlay && isFiring && metrics.isLasing && (
-          <div className="absolute bottom-4 left-4 z-10 animate-pulse rounded-md border border-rose-500/60 bg-rose-950/80 px-3 py-1.5 font-mono text-xs font-bold text-rose-300 backdrop-blur-md">
+          <div className="absolute bottom-4 left-4 z-10 pointer-events-none animate-pulse rounded-md border border-rose-500/60 bg-rose-950/80 px-3 py-1.5 font-mono text-xs font-bold text-rose-300 backdrop-blur-md">
             ⚡ STIMULATED EMISSION PULSE ACTIVE (694.3 nm)
           </div>
         )}

@@ -1,13 +1,12 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Activity, Camera, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildNoycePlanarICModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
+import { buildNoycePlanarIcModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -20,67 +19,52 @@ type CameraPreset =
   | "leadframe"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10, 8, 12], target: [0, 0, 0] },
+  metallization_layer: { pos: [0, 3.5, 4.5], target: [0, 0.6, 0] },
+  oxide_dielectric: { pos: [0, 2.2, 5.0], target: [0, 0.3, 0] },
+  pn_junctions: { pos: [-2.2, 1.8, 3.5], target: [-1.0, 0.1, 0] },
+  leadframe: { pos: [0, 4.5, 8.5], target: [0, -0.6, 0] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
 export const NoycePlanarIC3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-
-  // Microelectronics State Controls
-  const { params } = usePatentPhysics("us-2981877-noyce-ic");
-  const clockFrequencyMhz = params.clockFrequencyMhz ?? 10;
-  const [showLogicSignals] = useState<boolean>(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+
+  // Semiconductor Microfabrication Parameters
+  const { params } = usePatentPhysics("us-2981877-noyce-ic");
+  const reverseBias = params.reverseBias ?? params.supplyVoltageV ?? 5.0;
+  const oxideThickness = params.oxideThickness ?? 0.5;
+  const clockFrequencyMhz = params.clockFrequencyMhz ?? 10;
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const noyce = stepNoyceIC({
-    reverseBias: params.reverseBias ?? 5,
-    oxideThickness: params.oxideThickness ?? 0.5,
+    reverseBias,
+    oxideThickness,
     clockFrequencyMhz,
   });
-  const oxideLayerThicknessNm = noyce.oxideThicknessNm;
-  const gateCapacitancePf = noyce.junctionCapPfPerMm2;
-  const gatePropagationDelayPs = noyce.propDelayPs;
-  const maxClockGhz = noyce.maxClockGhz.toFixed(2);
 
   const live = useLiveSimParams({
+    reverseBias,
+    oxideThickness,
     clockFrequencyMhz,
-    oxideLayerThicknessNm,
-    showLogicSignals,
     clockPeriodNs: noyce.clockPeriodNs,
     signalDisplaySpeed: noyce.signalDisplaySpeed,
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([10, 8, 12], [0, 0, 0]);
-        break;
-      case "metallization_layer":
-        controls.setView([0, 3.5, 4.5], [0, 0.6, 0]);
-        break;
-      case "oxide_dielectric":
-        controls.setView([0, 2.2, 5.0], [0, 0.3, 0]);
-        break;
-      case "pn_junctions":
-        controls.setView([-2.2, 1.8, 3.5], [-1.0, 0.1, 0]);
-        break;
-      case "leadframe":
-        controls.setView([0, 4.5, 8.5], [0, -0.6, 0]);
-        break;
-      case "top":
-        controls.setView([0, 11.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -106,47 +90,52 @@ export const NoycePlanarIC3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10, 8, 12],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
-    const { rootGroup, nodes, materials, dispose } = buildNoycePlanarICModel();
+    // Build procedural 3D model
+    const { rootGroup, nodes, materials, dispose } = buildNoycePlanarIcModel();
     scene.add(rootGroup);
 
+    // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    let presentationStep = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const delta = 1 / 60;
       const p = live.current;
+      const elapsedSeconds = presentationStep / 60;
+      presentationStep += 1;
 
       updateNoycePlanarIcKinematics(
         nodes,
         materials,
-        dt,
-        timeSec,
+        delta,
+        elapsedSeconds,
         p.signalDisplaySpeed,
-        p.showLogicSignals,
-        p.isCutaway ?? false,
+        true,
+        p.isCutaway,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -159,10 +148,10 @@ export const NoycePlanarIC3D = memo(() => {
         <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
           <Activity className="w-4 h-4 text-sky-400 animate-pulse" />
           <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Noyce Monolithic Planar IC 3D
+            Noyce Planar IC 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
-            US Patent 2,981,877 (1959)
+            US Patent 2,981,877
           </span>
         </div>
 
@@ -172,8 +161,8 @@ export const NoycePlanarIC3D = memo(() => {
           {(
             [
               ["iso", "Isometric"],
-              ["metallization_layer", "Aluminum Traces"],
-              ["oxide_dielectric", "SiO₂ Dielectric"],
+              ["metallization_layer", "Metal Layer"],
+              ["oxide_dielectric", "Oxide Layer"],
               ["pn_junctions", "PN Junctions"],
               ["leadframe", "Leadframe"],
               ["top", "Top"],
@@ -185,7 +174,7 @@ export const NoycePlanarIC3D = memo(() => {
               onClick={() => applyCameraPreset(preset)}
               className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
                 activeCamera === preset
-                  ? "bg-sky-600 text-white font-semibold shadow-sm"
+                  ? "bg-amber-600 text-white font-semibold shadow-sm"
                   : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
               }`}
             >
@@ -199,21 +188,19 @@ export const NoycePlanarIC3D = memo(() => {
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Oxide" : "Cutaway Oxide"}
-            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+            title={isCutaway ? "Switch to Solid Silicon" : "Switch to Die Cutaway"}
+            className={`p-1.5 rounded-lg text-xs transition-colors ${
               isCutaway
-                ? "bg-sky-600/30 text-sky-200 border border-sky-500/40"
-                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+                ? "bg-amber-600/30 text-amber-300 border border-amber-500/40"
+                : "text-parchment-400 hover:text-white"
             }`}
           >
-            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+            <EyeOff className="w-4 h-4" />
           </button>
-
           <button
             type="button"
             onClick={toggleSound}
-            title={isPlayingAudio ? "Mute Clock Audio" : "Play Clock Audio"}
+            title={isPlayingAudio ? "Mute Clock Tone" : "Play Clock Tone"}
             className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
           >
             {isPlayingAudio ? (
@@ -237,10 +224,14 @@ export const NoycePlanarIC3D = memo(() => {
         title="Noyce planar monolithic circuit kinetics"
         chips={[
           { label: "Clock Freq", value: `${clockFrequencyMhz}`, unit: "MHz" },
-          { label: "Oxide Layer", value: `${oxideLayerThicknessNm.toFixed(0)}`, unit: "nm" },
-          { label: "Junction Cap", value: `${gateCapacitancePf.toFixed(2)}`, unit: "pF/mm²" },
-          { label: "Prop Delay", value: `${gatePropagationDelayPs.toFixed(0)}`, unit: "ps" },
-          { label: "Max Clock", value: `${maxClockGhz}`, unit: "GHz", tone: "ok" },
+          { label: "Oxide Layer", value: `${noyce.oxideThicknessNm.toFixed(0)}`, unit: "nm" },
+          {
+            label: "Junction Cap",
+            value: `${noyce.junctionCapPfPerMm2.toFixed(2)}`,
+            unit: "pF/mm²",
+          },
+          { label: "Prop Delay", value: `${noyce.propDelayPs.toFixed(0)}`, unit: "ps" },
+          { label: "Max Clock", value: `${noyce.maxClockGhz}`, unit: "GHz", tone: "ok" },
           {
             label: "Bus crate",
             value: crateSource === "wasm" ? "fs-la" : "ts-laplace-fallback",

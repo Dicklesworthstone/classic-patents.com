@@ -90,7 +90,7 @@ export function DeLavalSeparator3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Build procedural 3D model
     const model = buildDeLavalSeparatorModel();
@@ -126,6 +126,7 @@ export function DeLavalSeparator3D() {
           p.skimDropOriginY - ((elapsed * skimSpeed + i * p.skimDropSpacing) % p.skimDropWrap);
       });
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

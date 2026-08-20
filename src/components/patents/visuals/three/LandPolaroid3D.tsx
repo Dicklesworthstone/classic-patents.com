@@ -74,7 +74,6 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

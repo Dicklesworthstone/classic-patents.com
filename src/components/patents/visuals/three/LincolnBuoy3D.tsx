@@ -13,8 +13,8 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
@@ -24,33 +24,48 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "bellows_chambers" | "pilothouse" | "paddlewheel" | "keel" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [14, 10, 16], target: [0, 0, 0] },
+  bellows_chambers: { pos: [0, -0.8, 6.5], target: [0, -0.5, 0] },
+  pilothouse: { pos: [-5.5, 5.0, 5.0], target: [-3.2, 3.5, 0] },
+  paddlewheel: { pos: [8.5, 1.2, 3.5], target: [6.8, 0, 0] },
+  keel: { pos: [0, -4.5, 8.5], target: [0, -1.0, 0] },
+  top: { pos: [0, 13.0, 0.1], target: [0, 0, 0] },
+};
+
 export function LincolnBuoy3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Marine Hydrostatic State Controls
-  const { params } = usePatentPhysics("us-6469-lincoln-buoy");
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const bellowsInflationPct = params.inflationPct ?? 75;
-  const steamboatWeightTons = params.weightTons ?? 380;
-  const riverShoalDepthFt = params.shoalDepth ?? 3.5;
+
+  // Hydrostatic & Vessel Parameters
+  const { params } = usePatentPhysics("us-6469-lincoln-buoy");
+  const bellowsInflationPct = params.bellowsInflationPct ?? 80;
+  const riverShoalDepthFt = params.riverShoalDepthFt ?? 4.5;
+  const steamboatWeightTons = params.steamboatWeightTons ?? 120;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [_crateSource, setCrateSource] = useState(genericKernelSource());
 
   const lincoln = stepLincolnBuoy({
     inflationPct: bellowsInflationPct,
-    weightTons: steamboatWeightTons,
     shoalDepth: riverShoalDepthFt,
+    weightTons: steamboatWeightTons,
   });
+
+  const baseDraftFt = lincoln.baseDraftFt;
+  const effectiveDraftFt = lincoln.hullDraftFt;
   const hullLengthFt = lincoln.hullLengthFt;
   const hullBeamFt = lincoln.hullBeamFt;
   const waterDensityLbsPerCuFt = lincoln.waterDensityLbsPerCuFt;
   const hullWaterplaneAreaSqFt = lincoln.waterplaneAreaSqFt;
-  const baseDraftFt = lincoln.baseDraftFt;
 
   const netLiftTons = lincoln.liftTons;
-  const effectiveDraftFt = lincoln.hullDraftFt;
   const underKeelClearanceFt = lincoln.shoalClearanceFt.toFixed(2);
   const isAground = lincoln.shoalClearanceFt <= 0;
 
@@ -67,35 +82,10 @@ export function LincolnBuoy3D() {
     paddleDisplayOmegaRadPerS: lincoln.paddleDisplayOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([14, 10, 16], [0, 0, 0]);
-        break;
-      case "bellows_chambers":
-        controls.setView([0, -0.8, 6.5], [0, -0.5, 0]);
-        break;
-      case "pilothouse":
-        controls.setView([-5.5, 5.0, 5.0], [-3.2, 3.5, 0]);
-        break;
-      case "paddlewheel":
-        controls.setView([8.5, 1.2, 3.5], [6.8, 0, 0]);
-        break;
-      case "keel":
-        controls.setView([0, -4.5, 8.5], [0, -1.0, 0]);
-        break;
-      case "top":
-        controls.setView([0, 13.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -105,18 +95,22 @@ export function LincolnBuoy3D() {
   };
 
   useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [14, 10, 16],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // --- 3D STEAMBOAT & LINCOLN BELLOWS ASSEMBLY ---
     const model = buildLincolnBuoyModel();
@@ -148,12 +142,13 @@ export function LincolnBuoy3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

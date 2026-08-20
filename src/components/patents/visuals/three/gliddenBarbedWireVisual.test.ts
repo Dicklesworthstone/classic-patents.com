@@ -64,6 +64,8 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Glidden Barbed Wire Machine 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine catenary sag, barb slip threshold, and locked state in SI units", () => {

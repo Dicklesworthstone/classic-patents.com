@@ -2,7 +2,6 @@
 
 import { Camera, Cpu, Eye, EyeOff, Monitor, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -13,25 +12,38 @@ import { buildWozniakAppleModel } from "./wozniakAppleModel";
 
 type CameraPreset = "iso" | "cpu" | "ram_matrix" | "slots" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [0, 8.0, 9.5], target: [0, 0, 0] },
+  cpu: { pos: [-2.5, 3.5, 4.0], target: [-1.2, 0, 0] },
+  ram_matrix: { pos: [2.5, 3.5, 4.0], target: [1.2, 0, 0] },
+  slots: { pos: [0, 4.0, 5.0], target: [0, 0, 1.5] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
 export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   // Microcomputer Architecture State Controls
   const { params } = usePatentPhysics("us-4136359-wozniak-apple");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const ramCapacityKb = params.ramCapacityKb ?? 48;
-  const apple = stepWozniakApple({
-    crystalFreq: params.crystalFreq ?? 14.318,
-    ramCapacityKb,
-  });
-  const clockFrequencyMhz = apple.cpuClockMhz;
-  const [videoMode, _setVideoMode] = useState<"hires_color" | "lores_color" | "text_40col">(
-    "hires_color",
-  );
-  const [isCpuActive, _setIsCpuActive] = useState<boolean>(true);
+  const [videoMode] = useState<"text" | "lores" | "hires">("lores");
+  const [isCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+
+  const clockFrequencyMhz = params.masterClockMhz ?? 14.31818;
+  const ramCapacityKb = params.ramCapacityKb ?? 48;
+
+  const apple = stepWozniakApple({
+    crystalFreq: clockFrequencyMhz,
+    ramCapacityKb,
+  });
+
   const cycleTimeNs = apple.cycleTimeNs;
   const phi1VideoAccessWindowNs = apple.dramWindowNs;
   const effectiveCpuThroughputPct = apple.cpuDutyPct;
@@ -49,32 +61,10 @@ export function WozniakApple3D() {
     busDisplaySpeed: apple.busDisplaySpeed,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([12, 10, 15], [0, 0, 0]);
-        break;
-      case "cpu":
-        controls.setView([-3.2, 1.6, 2.2], [-3.2, -0.4, 0.4]);
-        break;
-      case "ram_matrix":
-        controls.setView([1.2, 1.8, -1.0], [1.0, -0.4, -1.2]);
-        break;
-      case "slots":
-        controls.setView([0, 2.8, 4.0], [0, -0.3, 2.6]);
-        break;
-      case "top":
-        controls.setView([0, 9.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -87,15 +77,15 @@ export function WozniakApple3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [12, 10, 15],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const { scene, camera, renderer } = studio;
 
     const model = buildWozniakAppleModel();
     scene.add(model.root);
@@ -111,16 +101,16 @@ export function WozniakApple3D() {
 
       model.updateKinematics(delta, renderedSteps, p.busDisplaySpeed, p.isCpuActive);
 
-      controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

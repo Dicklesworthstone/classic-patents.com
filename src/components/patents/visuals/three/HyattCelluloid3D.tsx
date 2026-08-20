@@ -2,8 +2,8 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildHyattCelluloidModel, updateHyattCelluloidKinematics } from "./hyattCelluloidModel";
@@ -20,63 +20,52 @@ type CameraPreset =
   | "billiard_balls"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10.5, 7.5, 12.0], target: [0, 0, 0] },
+  hydraulic_ram: { pos: [-3.5, 2.0, 4.5], target: [-2.0, 0, 0] },
+  steam_jacket: { pos: [0, 1.2, 4.2], target: [0, 0, 0] },
+  nozzle_die: { pos: [3.8, 1.5, 3.5], target: [2.5, -0.4, 0] },
+  billiard_balls: { pos: [4.8, -0.5, 2.5], target: [4.2, -1.6, 0] },
+  top: { pos: [0, 12.5, 0.1], target: [0, 0, 0] },
+};
+
 export const HyattCelluloid3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
-  // Polymer Processing Parameters
+  // Polymer Extrusion & Thermal Parameters
   const { params } = usePatentPhysics("us-105338-hyatt-celluloid");
-  const processTempC = params.steamTempC ?? params.tempCelsius ?? 95;
-  const hydraulicPressureMpa = params.hydraulicPressureMpa ?? 10;
-  const hyatt = stepHyattCelluloid({
-    steamTempC: processTempC,
-    hydraulicPressureMpa,
-  });
+  const steamTempC = params.steamTempC ?? 135;
+  const hydraulicPressureMpa = (params.ramPressurePsi ?? 1200) * 0.00689476;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
-  const live = useLiveSimParams({
-    processTempC,
+  const hyatt = stepHyattCelluloid({
+    steamTempC,
     hydraulicPressureMpa,
-    isAudioMuted,
-    viscosityPaS: hyatt.viscosityPaS,
-    isMelted: hyatt.isMelted,
-    extrusionRateCmPerMin: hyatt.extrusionRateCmPerMin,
-    ramHz: hyatt.ramHz,
-    ramStrokeStudio: hyatt.ramStrokeStudio,
-    isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const live = useLiveSimParams({
+    steamTempC,
+    hydraulicPressureMpa,
+    isAudioMuted,
+    isCutaway,
+    viscosityPaS: hyatt.viscosityPaS,
+    ramHz: hyatt.ramHz,
+    ramStrokeStudio: hyatt.ramStrokeStudio,
+    isMelted: hyatt.isMelted,
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([10.5, 7.5, 12.0], [0, 0, 0]);
-        break;
-      case "hydraulic_ram":
-        controls.setView([-3.5, 2.0, 4.5], [-2.0, 0, 0]);
-        break;
-      case "steam_jacket":
-        controls.setView([0, 1.2, 4.2], [0, 0, 0]);
-        break;
-      case "nozzle_die":
-        controls.setView([3.8, 1.5, 3.5], [2.5, -0.4, 0]);
-        break;
-      case "billiard_balls":
-        controls.setView([4.8, -0.5, 2.5], [4.2, -1.6, 0]);
-        break;
-      case "top":
-        controls.setView([0, 12.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -86,18 +75,22 @@ export const HyattCelluloid3D = memo(() => {
   };
 
   useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10.5, 7.5, 12.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { rootGroup, nodes, materials, dispose } = buildHyattCelluloidModel();
     scene.add(rootGroup);
@@ -117,7 +110,7 @@ export const HyattCelluloid3D = memo(() => {
         materials,
         dt,
         timeSec,
-        p.processTempC,
+        p.steamTempC,
         p.viscosityPaS,
         p.isMelted ?? true,
         p.ramHz,
@@ -125,6 +118,7 @@ export const HyattCelluloid3D = memo(() => {
         p.isCutaway ?? false,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -134,6 +128,7 @@ export const HyattCelluloid3D = memo(() => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -221,7 +216,7 @@ export const HyattCelluloid3D = memo(() => {
         chips={[
           {
             label: "Steam Temp",
-            value: `${processTempC}`,
+            value: `${steamTempC}`,
             unit: "°C",
             tone: hyatt.isMelted ? "ok" : "warn",
           },
@@ -240,6 +235,10 @@ export const HyattCelluloid3D = memo(() => {
             tone: hyatt.isMelted ? "ok" : "warn",
           },
           { label: "Ram Stroke Freq", value: hyatt.ramHz.toFixed(2), unit: "Hz" },
+          {
+            label: "Melt crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
         ]}
       />
     </div>

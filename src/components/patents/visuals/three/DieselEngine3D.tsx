@@ -96,13 +96,12 @@ export function DieselEngine3D() {
       cameraPos: [7.5, 3.2, 7.5],
       targetPos: [0, 0.4, 0],
       fov: 40,
-      environmentStyle: "sky",
       enableClouds: true,
       enableFloorGrid: true,
       floorColor: 0x0f172a,
     });
     studioRef.current = studio;
-    const { scene, renderer } = studio;
+    const { scene, renderer, controls } = studio;
 
     // Build procedural 3D model
     const { root, nodes, materials } = buildDieselEngineModel();
@@ -145,7 +144,7 @@ export function DieselEngine3D() {
         }
       }
 
-      studio.controls.update();
+      controls.update();
       renderer.render(scene, studio.camera);
       animRef.current = requestAnimationFrame(renderLoop);
     };

@@ -46,7 +46,6 @@ export function CortPuddlingRolling3D() {
       cameraPos: [0, 2.8, 6.0],
       targetPos: [0, 1.2, 0],
       fov: 42,
-      environmentStyle: "studio",
       enableFloorGrid: true,
       floorColor: 0x181512,
       gridColor: 0x2d241e,

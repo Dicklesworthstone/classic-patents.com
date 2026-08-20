@@ -61,13 +61,12 @@ export function DaimlerEngine3D() {
       cameraPos: [6.5, 3.8, 6.5],
       targetPos: [0, 0.4, 0],
       fov: 38,
-      environmentStyle: "sky",
       enableClouds: true,
       enableFloorGrid: true,
       floorColor: 0x0f172a,
     });
     studioRef.current = studio;
-    const { scene, renderer } = studio;
+    const { scene, renderer, controls } = studio;
 
     // Build procedural 3D model
     const model = buildDaimlerEngineModel();
@@ -109,7 +108,7 @@ export function DaimlerEngine3D() {
         }
       }
 
-      studio.controls.update();
+      controls.update();
       renderer.render(scene, studio.camera);
       animRef.current = requestAnimationFrame(renderLoop);
     };

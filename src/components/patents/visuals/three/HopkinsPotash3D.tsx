@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { animateHopkinsPotashModel, buildHopkinsPotashModel } from "./hopkinsPotashModel";
@@ -13,19 +12,30 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "furnace" | "leaching" | "crystallizer" | "ingot" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [4.5, 3.2, 4.8], target: [0, 0.5, 0] },
+  furnace: { pos: [-1.6, 1.4, 2.5], target: [-1.6, 0.6, 0] },
+  leaching: { pos: [-0.4, 1.3, 2.2], target: [-0.4, 0.5, 0] },
+  crystallizer: { pos: [0.8, 1.4, 2.2], target: [0.8, 0.5, 0] },
+  ingot: { pos: [1.8, 1.0, 1.8], target: [1.8, 0.25, 0] },
+  top: { pos: [0, 6.0, 0.1], target: [0, 0, 0] },
+};
+
 export function HopkinsPotash3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const patentId = "us-x1-hopkins-potash";
-
-  const { params } = usePatentPhysics(patentId);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
+  const { params } = usePatentPhysics("us-x1-hopkins-potash");
   const roastTempC = params.roastTempC ?? 750;
-  const roastTimeHours = params.roastTimeHours ?? 2.5;
-  const ashBatchKg = params.ashBatchKg ?? 200;
+  const roastTimeHours = params.roastTimeHours ?? 4;
+  const ashBatchKg = params.ashBatchKg ?? 500;
   const waterTempC = params.waterTempC ?? 80;
 
   const pot = stepHopkinsPotash({
@@ -46,50 +56,25 @@ export function HopkinsPotash3D() {
     pearlAshYieldKg: pot.pearlAshYieldKg,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([4.5, 3.2, 4.8], [0, 0.5, 0]);
-        break;
-      case "furnace":
-        controls.setView([-1.6, 1.4, 2.5], [-1.6, 0.6, 0]);
-        break;
-      case "leaching":
-        controls.setView([-0.4, 1.3, 2.2], [-0.4, 0.5, 0]);
-        break;
-      case "crystallizer":
-        controls.setView([0.8, 1.4, 2.2], [0.8, 0.5, 0]);
-        break;
-      case "ingot":
-        controls.setView([1.8, 1.0, 1.8], [1.8, 0.25, 0]);
-        break;
-      case "top":
-        controls.setView([0, 6.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [4.5, 3.2, 4.8],
-      targetPos: [0, 0.5, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       fov: 45,
     });
 
-    controlsRef.current = studio.controls;
-    cameraRef.current = studio.camera;
+    studioRef.current = studio;
 
     const modelResult = buildHopkinsPotashModel();
     studio.scene.add(modelResult.rootGroup);
@@ -108,11 +93,12 @@ export function HopkinsPotash3D() {
           roastTimeHours: p.roastTimeHours,
           ashBatchKg: p.ashBatchKg,
           waterTempC: p.waterTempC,
+          isCutaway: Boolean(p.isCutaway),
         },
         timeS,
       );
 
-      modelResult.nodes.furnaceArch.visible = !p.isCutaway;
+      studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
 
@@ -122,6 +108,7 @@ export function HopkinsPotash3D() {
       cancelAnimationFrame(animId);
       modelResult.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

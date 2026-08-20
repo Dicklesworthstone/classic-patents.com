@@ -70,7 +70,6 @@ export function BellPhotophone3D({
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

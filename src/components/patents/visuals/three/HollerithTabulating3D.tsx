@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -17,6 +16,18 @@ import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "pin_press" | "dials_board" | "sorting_box" | "press_lever" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [10.5, 8.0, 12.0], target: [0, 0, 0] },
+  pin_press: { pos: [-1.8, 1.2, 3.5], target: [-1.2, 0.2, 0.4] },
+  dials_board: { pos: [0, 3.2, 3.8], target: [0, 2.0, -0.6] },
+  sorting_box: { pos: [3.2, 1.5, 3.5], target: [2.2, 0, 0] },
+  press_lever: { pos: [-3.5, 1.8, 2.2], target: [-2.4, 0.2, 0.8] },
+  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
+};
 
 export function HollerithTabulating3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -48,35 +59,12 @@ export function HollerithTabulating3D() {
     plungeAmp: hollerith.plungeAmp,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([10.5, 8.0, 12.0], [0, 0, 0]);
-        break;
-      case "pin_press":
-        controls.setView([-1.8, 1.2, 3.5], [-1.2, 0.2, 0.4]);
-        break;
-      case "dials_board":
-        controls.setView([0, 3.2, 3.8], [0, 2.0, -0.6]);
-        break;
-      case "sorting_box":
-        controls.setView([3.2, 1.5, 3.5], [2.2, 0, 0]);
-        break;
-      case "press_lever":
-        controls.setView([-3.5, 1.8, 2.2], [-2.4, 0.2, 0.8]);
-        break;
-      case "top":
-        controls.setView([0, 13.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -93,15 +81,15 @@ export function HollerithTabulating3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [10.5, 8.0, 12.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { rootGroup, nodes, materials, dispose } = buildHollerithTabulatingModel();
     scene.add(rootGroup);
@@ -126,6 +114,7 @@ export function HollerithTabulating3D() {
         p.isCutaway,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -135,6 +124,7 @@ export function HollerithTabulating3D() {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

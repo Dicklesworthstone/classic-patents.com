@@ -111,7 +111,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildNobelDynamiteModel();
     scene.add(rootGroup);
@@ -139,6 +139,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
         p.capEnergyJoules,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

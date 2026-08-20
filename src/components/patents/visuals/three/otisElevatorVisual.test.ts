@@ -57,6 +57,8 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Otis Safety Elevator 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Otis wagon-spring safety dynamics in SI units", () => {

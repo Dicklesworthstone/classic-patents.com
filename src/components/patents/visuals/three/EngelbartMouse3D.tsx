@@ -15,74 +15,61 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "wheels" | "xray" | "microswitch" | "potentiometers" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 9, 13], target: [0, 0, 0] },
+  wheels: { pos: [0, -6, 9], target: [0, 0, 0] },
+  xray: { pos: [4, 7, 9], target: [0, 1.2, 0] },
+  microswitch: { pos: [3, 4, -4], target: [1.3, 2.0, -2.0] },
+  potentiometers: { pos: [-3, 3, 2], target: [0, 0.5, 0] },
+  top: { pos: [0, 16, 0.1], target: [0, 0, 0] },
+};
+
 export const EngelbartMouse3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
-
-  // Mouse Kinematics & Rendering State
-  const { params } = usePatentPhysics("us-3541541-engelbart-mouse");
-  const displacementSpeedMmSec = params.mouseSpeed ?? 350;
-  const mouseTrajectory = "figure8" as const;
   const [isClicking, setIsClicking] = useState<boolean>(false);
+
+  // Mechanical Coordinates & Pulse Resolver Parameters
+  const { params } = usePatentPhysics("us-3541541-engelbart-mouse");
+  const mouseSpeedMmPerS = params.mouseSpeedMmPerS ?? 350;
+  const surfaceFrictionCoeff = params.surfaceFrictionCoeff ?? 0.35;
+  const wheelRadiusMm = params.wheelRadiusMm ?? 9.5;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
-  const wheelRadiusMm = params.wheelRadius ?? 10;
   const mouse = stepEngelbartMouse({
-    mouseSpeed: displacementSpeedMmSec,
+    mouseSpeed: mouseSpeedMmPerS,
     wheelRadius: wheelRadiusMm,
     pulsesPerRev: params.pulsesPerRev ?? 200,
   });
-  const cpiResolution = mouse.dpi;
-  const pulseRateHz = mouse.pulseRateHz;
 
   const live = useLiveSimParams({
-    displacementSpeedMmSec,
-    mouseTrajectory,
-    isClicking,
-    isXRayMode,
-    cpiResolution,
+    mouseSpeedMmPerS,
+    surfaceFrictionCoeff,
     wheelRadiusMm,
-    dpi: mouse.dpi,
-    omegaRadPerS: mouse.omegaRadPerS,
+    isAudioMuted,
+    isXRayMode,
+    isClicking,
+    pulsesPerInch: mouse.dpi,
+    wheelOmegaRadPerS: mouse.omegaRadPerS,
     pathDisplayOmega: mouse.pathDisplayOmega,
     resolverSvgScale: mouse.resolverSvgScale,
     pulsesPerRev: params.pulsesPerRev ?? 200,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11, 9, 13], [0, 0, 0]);
-        break;
-      case "wheels":
-        controls.setView([0, -6, 9], [0, 0, 0]);
-        break;
-      case "xray":
-        setIsXRayMode(true);
-        controls.setView([4, 7, 9], [0, 1.2, 0]);
-        break;
-      case "microswitch":
-        controls.setView([3, 4, -4], [1.3, 2.0, -2.0]);
-        break;
-      case "potentiometers":
-        setIsXRayMode(true);
-        controls.setView([-3, 3, 2], [0, 0.5, 0]);
-        break;
-      case "top":
-        controls.setView([0, 16, 0.1], [0, 0, 0]);
-        break;
+    if (preset === "xray" || preset === "potentiometers") {
+      setIsXRayMode(true);
     }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -96,7 +83,7 @@ export const EngelbartMouse3D = memo(() => {
     if (!isAudioMuted) {
       soundEngine.playMicroswitchClick();
     }
-    setTimeout(() => setIsClicking(false), mouse.clickDisplayMs);
+    setTimeout(() => setIsClicking(false), 250);
   };
 
   useEffect(() => {
@@ -107,15 +94,15 @@ export const EngelbartMouse3D = memo(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 9, 13],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Formica Desk Surface
     const deskMat = new THREE.MeshStandardMaterial({
@@ -123,14 +110,17 @@ export const EngelbartMouse3D = memo(() => {
       roughness: 0.6,
       metalness: 0.1,
     });
-    const desk = new THREE.Mesh(new THREE.BoxGeometry(26, 0.4, 20), deskMat);
-    desk.position.y = -0.22;
+    const desk = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), deskMat);
+    desk.rotation.x = -Math.PI / 2;
+    desk.position.y = -1.5;
     desk.receiveShadow = true;
     scene.add(desk);
 
+    // Build procedural 3D model
     const { rootGroup, nodes, materials, dispose } = buildEngelbartMouseModel();
     scene.add(rootGroup);
 
+    // Animation Loop
     let reqId: number;
     let timeSec = 0;
 
@@ -147,13 +137,14 @@ export const EngelbartMouse3D = memo(() => {
         timeSec,
         p.pathDisplayOmega,
         p.resolverSvgScale,
-        p.mouseTrajectory,
+        "figure8",
         p.wheelRadiusMm,
         p.pulsesPerRev,
         p.isClicking,
         p.isXRayMode,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -161,10 +152,10 @@ export const EngelbartMouse3D = memo(() => {
 
     return () => {
       cancelAnimationFrame(reqId);
-      deskMat.dispose();
-      desk.geometry.dispose();
       dispose();
+      deskMat.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -258,10 +249,15 @@ export const EngelbartMouse3D = memo(() => {
         visible={showUiOverlay}
         title="Engelbart orthogonal position resolver kinetics"
         chips={[
-          { label: "Displacement", value: `${displacementSpeedMmSec}`, unit: "mm/s" },
+          { label: "Displacement", value: `${mouseSpeedMmPerS}`, unit: "mm/s" },
           { label: "Wheel Radius", value: `${wheelRadiusMm}`, unit: "mm" },
-          { label: "Encoder Resolution", value: `${cpiResolution}`, unit: "CPI" },
-          { label: "Pulse Rate", value: `${pulseRateHz.toFixed(0)}`, unit: "pulses/s", tone: "ok" },
+          { label: "Encoder Resolution", value: `${mouse.dpi}`, unit: "CPI" },
+          {
+            label: "Pulse Rate",
+            value: `${mouse.pulseRateHz.toFixed(0)}`,
+            unit: "pulses/s",
+            tone: "ok",
+          },
           { label: "Wheel Angular Vel", value: `${mouse.omegaRadPerS.toFixed(1)}`, unit: "rad/s" },
           {
             label: "XY crate",

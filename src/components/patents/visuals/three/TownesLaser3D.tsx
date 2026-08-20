@@ -84,7 +84,6 @@ export function TownesLaser3D({
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

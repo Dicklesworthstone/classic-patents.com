@@ -82,7 +82,6 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

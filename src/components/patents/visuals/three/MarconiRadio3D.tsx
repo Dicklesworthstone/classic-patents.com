@@ -100,7 +100,7 @@ export function MarconiRadio3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildMarconiRadioModel();
     scene.add(rootGroup);
@@ -130,6 +130,7 @@ export function MarconiRadio3D() {
         p.isCutaway,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

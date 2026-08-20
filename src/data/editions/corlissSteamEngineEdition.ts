@@ -143,10 +143,10 @@ export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
           label: "Open the source-faithful crops for Figures 6 and 7",
           figurePreviews: [
             {
-              src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-preview.png",
+              src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-source-crop-v2.png",
               alt: "Figure 6 from US 6,162.",
-              width: 720,
-              height: 720,
+              width: 600,
+              height: 650,
             },
             {
               src: "/patents/figures/us-6162-corliss-steam-engine-fig-7-preview.png",

@@ -12,7 +12,6 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -24,6 +23,17 @@ import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "needle" | "shuttle" | "flywheel" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11, 8, 13], target: [0, 0, 0] },
+  needle: { pos: [3.2, 0.4, 3.0], target: [2.8, -1.0, 0] },
+  shuttle: { pos: [2.8, -1.2, 2.5], target: [2.8, -1.5, 0] },
+  flywheel: { pos: [-4.5, 2.2, 3.5], target: [-3.8, 2.1, 0] },
+  top: { pos: [1.0, 7.0, 0.1], target: [1.0, 0, 0] },
+};
 
 export function HoweSewingMachine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,32 +89,12 @@ export function HoweSewingMachine3D() {
     stitchFrequencyHz: stitchState.stitchFrequencyHz,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11, 8, 13], [0, 0, 0]);
-        break;
-      case "needle":
-        controls.setView([3.2, 0.4, 3.0], [2.8, -1.0, 0]);
-        break;
-      case "shuttle":
-        controls.setView([2.8, -1.2, 2.5], [2.8, -1.5, 0]);
-        break;
-      case "flywheel":
-        controls.setView([-4.5, 2.2, 3.5], [-3.8, 2.1, 0]);
-        break;
-      case "top":
-        controls.setView([1.0, 7.0, 0.1], [1.0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -117,15 +107,15 @@ export function HoweSewingMachine3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 8, 13],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Build procedural 3D model
     const model = buildHoweSewingMachineModel();
@@ -173,6 +163,7 @@ export function HoweSewingMachine3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 

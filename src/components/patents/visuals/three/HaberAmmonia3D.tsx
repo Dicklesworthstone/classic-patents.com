@@ -80,7 +80,6 @@ export default function HaberAmmonia3D({
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

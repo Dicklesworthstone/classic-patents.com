@@ -61,6 +61,8 @@ describe("US 470,918 Jesse Reno Inclined Elevator visual & mechanics boundary", 
 
     expect(threeSource).toContain("cutawayMode");
     expect(threeSource).toContain("Reno Endless Conveyor Dynamics");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Reno inclined elevator transit dynamics in SI units", () => {

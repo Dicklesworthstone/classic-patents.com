@@ -13,15 +13,12 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import {
   FrankenSimEngine,
   lamarrChannelFrequencyMhz,
   lamarrDefaultJamChannel,
-  lamarrPianoKeyHz,
-  lamarrPianoRollChannel,
-  lamarrRadioChannel,
 } from "@/physics/engine";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -35,22 +32,40 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [6, 4, 7], target: [0, 0, 0] },
+  roll: { pos: [-2.5, 1.5, 3.5], target: [-1.5, 0, 0] },
+  waterfall: { pos: [0, 2.5, 4.5], target: [0, 0, 0] },
+  escapement: { pos: [2.0, 1.0, 3.0], target: [1.5, 0, 0] },
+  torpedo: { pos: [4.0, 1.5, 3.5], target: [2.5, 0, 0] },
+  top: { pos: [0, 9.0, 0.1], target: [0, 0, 0] },
+};
+
 export function LamarrFrequencyHopping3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   // Spread Spectrum State Controls
   const { params } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const carrierChannelsCount = params.channels ?? 88;
-  const hopRateHopsPerSec = params.hopRate ?? 4;
-  const isJammingActive = params.isJammingActive !== 0;
-  const currentChannel = Math.max(1, Math.round(params.channel ?? 1));
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [_crateSource, setCrateSource] = useState(genericKernelSource());
 
-  // Spread Spectrum Physics Calculations (FrankenSim Slotted Frequency-Hopping)
+  useEffect(() => {
+    void ensureGenericWasm().then((next) => setCrateSource(next));
+  }, []);
+
+  const carrierChannelsCount = params.channels ?? params.carrierChannelsCount ?? 88;
+  const hopRateHopsPerSec = params.hopRate ?? params.hopRateHopsPerSec ?? 4;
+  const isJammingActive = params.isJammingActive !== 0;
+  const currentChannel = Math.max(1, Math.round(params.channel ?? 1));
+
   const fhPhysics = FrankenSimEngine.stepLamarrFrequencyHopping(
     carrierChannelsCount,
     hopRateHopsPerSec,
@@ -79,9 +94,8 @@ export function LamarrFrequencyHopping3D() {
       electricalInputWatts: 0,
     },
   });
-  const processingGainDb = fhPhysics.processingGainDb.toFixed(1);
-  const antiJamMarginDb = fhPhysics.antiJammingMarginDb.toFixed(1);
-  const activeFrequencyMhz = lamarrChannelFrequencyMhz(
+
+  const carrierFrequencyMhz = lamarrChannelFrequencyMhz(
     currentChannel,
     carrierChannelsCount,
   ).toFixed(1);
@@ -96,35 +110,10 @@ export function LamarrFrequencyHopping3D() {
     isAudioMuted,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([12, 9, 15], [0, 0, 0]);
-        break;
-      case "roll":
-        controls.setView([0, 3.2, 4.0], [0, 1.4, 0]);
-        break;
-      case "waterfall":
-        controls.setView([0, -3.2, 5.0], [0, -1.8, 0]);
-        break;
-      case "escapement":
-        controls.setView([-4.5, 1.5, 3.5], [-3.0, 0.4, 0]);
-        break;
-      case "torpedo":
-        controls.setView([8, 3, 9], [0, 0.5, 0]);
-        break;
-      case "top":
-        controls.setView([0, 10.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const handleToggleSound = () => {
@@ -137,15 +126,15 @@ export function LamarrFrequencyHopping3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [12, 9, 15],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildLamarrFrequencyHoppingModel();
     scene.add(model.root);
@@ -161,17 +150,15 @@ export function LamarrFrequencyHopping3D() {
       const p = live.current;
 
       hopTimer += delta;
-      const hopInterval = 1.0 / Math.max(1, p.hopRateHopsPerSec);
+      const hopInterval = 1 / Math.max(1, p.hopRateHopsPerSec);
 
       if (hopTimer >= hopInterval) {
         hopTimer = 0;
         rollStep += 1;
-        const pianoKey = lamarrPianoRollChannel(rollStep);
-        const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
-        activeChan = lamarrRadioChannel(pianoKey, liveChannels) - 1;
+        activeChan = (activeChan * 17 + 5) % p.carrierChannelsCount;
 
         if (!p.isAudioMuted && rollStep % p.hopSoundStride === 0) {
-          soundEngine.playPianoKeyHop(lamarrPianoKeyHz(pianoKey));
+          soundEngine.playPianoKeyHop(200 + activeChan * 8);
         }
       }
 
@@ -195,12 +182,13 @@ export function LamarrFrequencyHopping3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -222,19 +210,19 @@ export function LamarrFrequencyHopping3D() {
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Carrier Freq:</span>{" "}
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {activeFrequencyMhz} MHz (Ch {currentChannel}/{carrierChannelsCount})
+                    {carrierFrequencyMhz} MHz (Ch {currentChannel}/{carrierChannelsCount})
                   </span>
                 </div>
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Processing Gain:</span>{" "}
                   <span className="font-bold text-blue-600 dark:text-blue-400">
-                    +{processingGainDb} dB ({carrierChannelsCount} Ch)
+                    +{fhPhysics.processingGainDb} dB ({carrierChannelsCount} Ch)
                   </span>
                 </div>
                 <div>
                   <span className="text-ink-600 dark:text-ink-400">Anti-Jam:</span>{" "}
                   <span className="font-bold text-purple-600 dark:text-purple-400">
-                    +{antiJamMarginDb} dB
+                    +{fhPhysics.antiJammingMarginDb} dB
                   </span>
                 </div>
                 <div>

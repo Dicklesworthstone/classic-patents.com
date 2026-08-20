@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -18,68 +17,59 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "propeller_drum" | "helical_blades" | "sternpost" | "rudder" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.0, 6.0, 10.5], target: [0, 0, 0] },
+  propeller_drum: { pos: [0, 0.5, 4.2], target: [0, 0, 0] },
+  helical_blades: { pos: [2.5, 1.8, 3.0], target: [0.5, 0, 0] },
+  sternpost: { pos: [-3.2, 1.2, 3.5], target: [-1.5, 0, 0] },
+  rudder: { pos: [4.2, 0.8, 2.5], target: [2.8, 0, 0] },
+  top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
 export function EricssonPropeller3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Marine Hydrodynamics Parameters
-  const { params } = usePatentPhysics("us-588-ericsson-propeller");
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const shaftRpm = params.shaftRpm ?? 120;
-  const ericson = stepEricssonPropeller({
-    shaftRpm,
-    bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
-  });
   const [showWake, setShowWake] = useState<boolean>(true);
+
+  // Hydrodynamic & Marine Propulsion Parameters
+  const { params } = usePatentPhysics("us-588-ericsson-propeller");
+  const shaftRpm = params.shaftRpm ?? 120;
+  const bladeCount = params.bladeCount ?? 8;
+  const pitchAngleDeg = params.pitchAngleDeg ?? 35;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
-  const live = useLiveSimParams({
+  const ericson = stepEricssonPropeller({
     shaftRpm,
+    bladePitchAngleDeg: pitchAngleDeg,
+  });
+
+  const live = useLiveSimParams({
     shipSpeedKnots: ericson.shipSpeedKnots,
-    showWake,
-    isCutaway,
+    shaftRpm,
+    bladeCount,
+    pitchAngleDeg,
     isAudioMuted,
+    isCutaway,
+    showWake,
     thrustKn: ericson.thrustKn,
-    bladePitchAngleDeg: params.bladePitchAngleDeg ?? 35,
-    propulsiveEfficiencyPct: ericson.propulsiveEfficiencyPct,
+    efficiencyPct: ericson.propulsiveEfficiencyPct,
+    slipRatio: ericson.slipFraction,
     shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
-    wakeSwirlScale: ericson.wakeSwirlScale,
-    wakeFlowSpeed: ericson.wakeFlowSpeed,
     wakeSwirlCoeff: ericson.wakeSwirlCoeff,
     wakeOpacity: ericson.wakeOpacity,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([9.0, 6.0, 10.5], [0, 0, 0]);
-        break;
-      case "propeller_drum":
-        controls.setView([0, 0.5, 4.2], [0, 0, 0]);
-        break;
-      case "helical_blades":
-        controls.setView([2.5, 1.8, 3.0], [0.5, 0, 0]);
-        break;
-      case "sternpost":
-        controls.setView([-3.2, 1.2, 3.5], [-1.5, 0, 0]);
-        break;
-      case "rudder":
-        controls.setView([4.2, 0.8, 2.5], [2.8, 0, 0]);
-        break;
-      case "top":
-        controls.setView([0, 11.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -96,15 +86,15 @@ export function EricssonPropeller3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.0, 6.0, 10.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Build authentic procedural model
     const model = buildEricssonPropellerModel();
@@ -123,23 +113,18 @@ export function EricssonPropeller3D() {
       previousFrameTime = frameTime;
       const p = live.current;
 
-      const omegaRadPerSec = p.shaftOmegaRadPerS;
-
       updateEricssonPropellerKinematics(
         model,
         delta,
-        omegaRadPerSec,
-        p.wakeSwirlScale,
-        p.wakeFlowSpeed,
+        p.shaftOmegaRadPerS,
+        p.wakeOpacity,
+        p.shipSpeedKnots,
         p.wakeSwirlCoeff,
         p.showWake,
         p.isCutaway,
       );
 
-      const wakeMat = model.materials.wakeMat;
-      wakeMat.opacity = p.wakeOpacity;
-      wakeMat.color.setHex(p.thrustKn > 12 ? 0x38bdf8 : 0x64748b);
-
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -149,6 +134,7 @@ export function EricssonPropeller3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

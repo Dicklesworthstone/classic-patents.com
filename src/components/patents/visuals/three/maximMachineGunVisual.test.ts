@@ -60,6 +60,8 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     }
 
     expect(threeSource).toContain("isCutaway");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
     expect(threeSource).toContain("Maxim Machine Gun 3D");
   });
 

@@ -62,6 +62,8 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Thomson Butt-Welder 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Thomson Joule heating and forged plastic upset state in SI units", () => {

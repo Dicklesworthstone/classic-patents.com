@@ -80,7 +80,6 @@ export function WattRotaryEngine3D() {
       container,
       cameraPos: initialPreset.pos,
       targetPos: initialPreset.target,
-      environmentStyle: "studio",
       cameraMinDistance: 1.5,
       cameraMaxDistance: 20,
     });

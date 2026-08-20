@@ -40,10 +40,31 @@ describe("corlissSteamEngineArchivalEdition", () => {
       const filename =
         figure === 3
           ? "us-6162-corliss-steam-engine-fig-3-source-crop-v2.png"
-          : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
+          : figure === 6
+            ? "us-6162-corliss-steam-engine-fig-6-source-crop-v2.png"
+            : `us-6162-corliss-steam-engine-fig-${figure}-preview.png`;
       expect(publicText).toContain(filename);
       expect(existsSync(resolve(process.cwd(), "public/patents/figures", filename))).toBe(true);
     }
+  });
+
+  test("uses the actual upright source detail for Figure 6", () => {
+    const figureSix = corlissSteamEngineArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure"
+          ? (inline.figurePreviews ?? [])
+          : [],
+      )
+      .find((preview) => preview.alt === "Figure 6 from US 6,162.");
+
+    expect(figureSix).toEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-6162-corliss-steam-engine-fig-6-source-crop-v2.png",
+        width: 600,
+        height: 650,
+      }),
+    );
   });
 
   test("pairs each authored source paragraph with a substantial manual reading", () => {

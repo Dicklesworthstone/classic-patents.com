@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Layers, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -17,6 +16,18 @@ import {
 } from "./whitneyCottonGinModel";
 
 type CameraPreset = "iso" | "grate_saws" | "brush_drum" | "hopper" | "crank_drive" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.5, 7.5, 11.5], target: [0, 0, 0] },
+  grate_saws: { pos: [0, 1.2, 4.8], target: [0, 0.4, 0] },
+  brush_drum: { pos: [-3.2, 1.8, 3.8], target: [-1.0, 0, 0] },
+  hopper: { pos: [0, 6.2, 2.5], target: [0, 1.5, 0] },
+  crank_drive: { pos: [5.5, 0.8, 2.5], target: [3.5, 0, 0] },
+  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
+};
 
 export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,35 +61,12 @@ export function WhitneyCottonGin3D() {
     brushOmegaRadPerS: gin.brushOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([9.5, 7.5, 11.5], [0, 0, 0]);
-        break;
-      case "grate_saws":
-        controls.setView([0, 1.2, 4.8], [0, 0.4, 0]);
-        break;
-      case "brush_drum":
-        controls.setView([-3.2, 1.8, 3.8], [-1.0, 0, 0]);
-        break;
-      case "hopper":
-        controls.setView([0, 6.2, 2.5], [0, 1.5, 0]);
-        break;
-      case "crank_drive":
-        controls.setView([5.5, 0.8, 2.5], [3.5, 0, 0]);
-        break;
-      case "top":
-        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -95,15 +83,15 @@ export function WhitneyCottonGin3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.5, 7.5, 11.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Build procedural 3D model
     const model = buildWhitneyCottonGinModel();
@@ -128,6 +116,7 @@ export function WhitneyCottonGin3D() {
         p.crankRpm,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -137,6 +126,7 @@ export function WhitneyCottonGin3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

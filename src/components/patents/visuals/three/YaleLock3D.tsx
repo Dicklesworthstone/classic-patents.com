@@ -73,7 +73,6 @@ export function YaleLock3D({
       container,
       cameraPos: iso.pos,
       targetPos: iso.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

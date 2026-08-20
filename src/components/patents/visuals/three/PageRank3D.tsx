@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createThreeStudioScene } from "@/components/patents/visuals/three/ThreeStudioScene";
+import {
+  createThreeStudioScene,
+  type StudioContext,
+} from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { stepPageRank } from "@/physics/pageRankKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
@@ -10,21 +13,44 @@ import { buildPageRankModel } from "./PageRankModel";
 
 const EXHIBIT_ID = "us-6285999-pagerank";
 
+type CameraPreset = "iso" | "graph_network" | "central_node" | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [0, 0, 8.5], target: [0, 0, 0] },
+  graph_network: { pos: [5.0, 3.5, 6.5], target: [0, 0, 0] },
+  central_node: { pos: [1.8, 1.2, 3.2], target: [0, 0, 0] },
+  top: { pos: [0, 10.0, 0.01], target: [0, 0, 0] },
+};
+
 export function PageRank3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({ damping: 0.85, iter: 0, topRank: 0.38 });
   const { params } = usePatentPhysics(EXHIBIT_ID);
   const live = useLiveSimParams(params);
 
+  const studioRef = useRef<StudioContext | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [0, 0, 8.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
     const model = buildPageRankModel();
     studio.scene.add(model.root);
 
@@ -82,7 +108,32 @@ export function PageRank3D() {
   return (
     <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
       <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+        {showUiOverlay && (
+          <div className="flex items-center gap-1 bg-white/85 dark:bg-neutral-900/85 backdrop-blur-md p-1 rounded-xl border border-neutral-300 dark:border-neutral-700">
+            {(
+              [
+                ["iso", "ISO"],
+                ["graph_network", "Network"],
+                ["central_node", "Hub"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 text-xs font-sans rounded-lg transition-colors ${
+                  activeCamera === preset
+                    ? "bg-blue-600 text-white font-semibold shadow-sm"
+                    : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setShowUiOverlay((v) => !v)}

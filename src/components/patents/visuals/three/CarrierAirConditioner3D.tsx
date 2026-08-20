@@ -92,7 +92,7 @@ export function CarrierAirConditioner3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { root, nodes, materials, dispose } = buildCarrierAirConditionerModel();
     scene.add(root);
@@ -115,6 +115,7 @@ export function CarrierAirConditioner3D() {
         p.cutawayMode,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

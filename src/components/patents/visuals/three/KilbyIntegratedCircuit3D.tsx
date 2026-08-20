@@ -75,7 +75,6 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
       container,
       cameraPos: overview.pos,
       targetPos: overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
 

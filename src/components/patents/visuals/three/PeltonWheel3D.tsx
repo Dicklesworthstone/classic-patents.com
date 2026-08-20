@@ -94,7 +94,7 @@ export function PeltonWheel3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Build procedural 3D model
     const model = buildPeltonWheelModel();
@@ -132,6 +132,7 @@ export function PeltonWheel3D() {
       jetMat.color.setHex(ratioErr < 0.08 ? 0x38bdf8 : p.speedRatio < 0.5 ? 0x0284c7 : 0xfb7185);
       jetMat.opacity = p.jetOpacity;
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

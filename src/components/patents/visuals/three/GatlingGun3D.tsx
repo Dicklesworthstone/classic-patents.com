@@ -82,7 +82,7 @@ export function GatlingGun3D() {
       fov: 38,
     });
     studioRef.current = studio;
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Load High-Fidelity Gatling Gun Model
     const model = buildGatlingGunModel();
@@ -133,6 +133,7 @@ export function GatlingGun3D() {
         );
       }
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

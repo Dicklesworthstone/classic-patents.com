@@ -2,14 +2,12 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildEdisonPhonographModel,
-  type EdisonPhonographModel,
   updateEdisonPhonographKinematics,
 } from "./edisonPhonographModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -25,63 +23,57 @@ type CameraPreset =
   | "illustrative_drive"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.5, 7.0, 11.0], target: [0, 0, 0] },
+  stylus_groove: { pos: [0, 2.2, 3.2], target: [0, 1.2, 0.8] },
+  tinfoil_cylinder: { pos: [-1.8, 1.8, 3.8], target: [-0.4, 0.8, 0] },
+  speaking_tube: { pos: [2.8, 3.0, 4.0], target: [0, 1.8, 1.8] },
+  illustrative_drive: { pos: [-4.5, 2.0, 3.5], target: [-3.5, 0.5, 0] },
+  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
+};
+
 export function EdisonPhonograph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
-  // Acoustic Phonograph Parameters
+  // Acoustic & Kinematic Parameters
   const { params } = usePatentPhysics("us-200521-edison-phonograph");
-  const cylinderRpm = params.mandrelRpm ?? params.cylinderRpm ?? 60;
-  const phono = stepEdisonPhonograph({
-    mandrelRpm: cylinderRpm,
-    voiceVolumeDb: params.voiceVolumeDb ?? 75,
-  });
+  const mandrelRpm = params.mandrelRpm ?? 60;
+  const cylinderRpm = mandrelRpm;
+  const voiceVolumeDb = params.voiceVolumeDb ?? params.soundWaveAmpDb ?? 75;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
+  const phono = stepEdisonPhonograph({
+    mandrelRpm,
+    voiceVolumeDb,
+  });
+
   const live = useLiveSimParams({
+    mandrelRpm,
     cylinderRpm,
-    voiceVolumeDb: params.voiceVolumeDb ?? 75,
+    voiceVolumeDb,
     isAudioMuted,
     isCutaway,
-    axialTravelMmPerS: phono.axialTravelMmPerS,
+    grooveDepthMicrons: phono.grooveDepthMicrons,
+    leadScrewPitchMm: phono.leadScrewPitchMm,
+    surfaceSpeedCmPerS: phono.surfaceSpeedCmPerS,
+    audioBandwidthHz: phono.audioBandwidthHz,
     mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
     stylusAmp: phono.stylusAmp,
     stylusOmegaRadPerS: phono.stylusOmegaRadPerS,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const modelRef = useRef<EdisonPhonographModel | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([9.5, 7.0, 11.0], [0, 0, 0]);
-        break;
-      case "stylus_groove":
-        controls.setView([0, 2.2, 3.2], [0, 1.2, 0.8]);
-        break;
-      case "tinfoil_cylinder":
-        controls.setView([-1.8, 1.8, 3.8], [-0.4, 0.8, 0]);
-        break;
-      case "speaking_tube":
-        controls.setView([2.8, 3.0, 4.0], [0, 1.8, 1.8]);
-        break;
-      case "illustrative_drive":
-        controls.setView([-4.5, 2.0, 3.5], [-3.5, 0.5, 0]);
-        break;
-      case "top":
-        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -98,18 +90,17 @@ export function EdisonPhonograph3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.5, 7.0, 11.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const model = buildEdisonPhonographModel();
-    modelRef.current = model;
     scene.add(model.rootGroup);
 
     // Animation Loop
@@ -119,7 +110,7 @@ export function EdisonPhonograph3D() {
 
     const animate = (frameMs: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = Math.min(0.1, Math.max(0, (frameMs - (lastFrameMs ?? frameMs)) / 1000));
+      const dt = lastFrameMs !== undefined ? Math.min((frameMs - lastFrameMs) / 1000, 0.1) : 1 / 60;
       lastFrameMs = frameMs;
       timeSec += dt;
       const p = live.current;
@@ -136,6 +127,7 @@ export function EdisonPhonograph3D() {
         p.voiceVolumeDb,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -145,6 +137,7 @@ export function EdisonPhonograph3D() {
       cancelAnimationFrame(reqId);
       model.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 
@@ -240,7 +233,7 @@ export function EdisonPhonograph3D() {
             value: String(phono.sourceThreadsPerInch),
             unit: "threads/in",
           },
-          { label: "Illustrative turn setting", value: String(cylinderRpm), unit: "rpm" },
+          { label: "Illustrative turn setting", value: String(mandrelRpm), unit: "rpm" },
           {
             label: "Illustrative axial animation",
             value: phono.axialTravelMmPerS.toFixed(2),

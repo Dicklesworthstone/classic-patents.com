@@ -62,6 +62,8 @@ describe("US 124,404 George Westinghouse Double-Pipe Air Brake & Signal Visual B
     ]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes double-pipe pneumatics, selecting cock d¹, and automatic cock e trip dynamics", () => {

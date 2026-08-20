@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Flame, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -20,6 +19,18 @@ type CameraPreset =
   | "copper_clamps"
   | "compression_screw"
   | "top";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9.5, 7.0, 11.0], target: [0, 0, 0] },
+  weld_junction: { pos: [0, 1.2, 3.2], target: [0, 0.4, 0] },
+  transformer_core: { pos: [0, -1.0, 4.0], target: [0, -1.2, 0] },
+  copper_clamps: { pos: [2.4, 1.5, 3.0], target: [0.8, 0.4, 0] },
+  compression_screw: { pos: [3.8, 1.0, 2.2], target: [2.4, 0.4, 0] },
+  top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
+};
 
 export function ThomsonWelding3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -56,35 +67,12 @@ export function ThomsonWelding3D() {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([9.5, 7.0, 11.0], [0, 0, 0]);
-        break;
-      case "weld_junction":
-        controls.setView([0, 1.2, 3.2], [0, 0.4, 0]);
-        break;
-      case "transformer_core":
-        controls.setView([0, -1.0, 4.0], [0, -1.2, 0]);
-        break;
-      case "copper_clamps":
-        controls.setView([2.4, 1.5, 3.0], [0.8, 0.4, 0]);
-        break;
-      case "compression_screw":
-        controls.setView([3.8, 1.0, 2.2], [2.4, 0.4, 0]);
-        break;
-      case "top":
-        controls.setView([0, 12.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -101,15 +89,15 @@ export function ThomsonWelding3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9.5, 7.0, 11.0],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { rootGroup, nodes, materials, dispose } = buildThomsonWeldingModel();
     scene.add(rootGroup);
@@ -143,15 +131,17 @@ export function ThomsonWelding3D() {
         p.clampPressureMpa,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

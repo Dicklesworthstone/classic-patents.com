@@ -95,7 +95,7 @@ export const BardeenTransistor3D = memo(() => {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     const { rootGroup, nodes, materials, dispose } = buildBardeenTransistorModel();
     scene.add(rootGroup);
@@ -120,6 +120,7 @@ export const BardeenTransistor3D = memo(() => {
         p.isCutaway ?? false,
       );
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

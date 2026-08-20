@@ -47,6 +47,8 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Abraham Lincoln (US 6,469)");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine hydrostatic buoyancy displacement, hull draft, and shoal clearance in SI units", () => {

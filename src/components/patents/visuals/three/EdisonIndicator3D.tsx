@@ -50,7 +50,6 @@ export default function EdisonIndicator3D() {
       container,
       cameraPos: CAMERA_PRESETS.overview.pos,
       targetPos: CAMERA_PRESETS.overview.target,
-      environmentStyle: "studio",
     });
     studioRef.current = studio;
     const model = buildEdisonIndicatorModel();

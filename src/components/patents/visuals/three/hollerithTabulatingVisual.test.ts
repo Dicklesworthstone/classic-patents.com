@@ -55,6 +55,8 @@ describe("US 395,781 Herman Hollerith Electro-Mechanical Punched-Card Tabulator 
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Hollerith Tabulator 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine electromechanical solenoid force and card throughput in SI units", () => {

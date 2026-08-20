@@ -2,7 +2,6 @@
 
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -24,8 +23,21 @@ type CameraPreset =
   | "keyboard"
   | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [11.0, 8.5, 12.5], target: [0, 0, 0] },
+  matrix_magazine: { pos: [0, 4.2, 3.8], target: [0, 2.2, 0] },
+  casting_pot: { pos: [-2.8, 0.5, 3.5], target: [-1.5, -0.4, 0] },
+  spaceband_justifier: { pos: [0, 0.8, 3.2], target: [0, 0.2, 0] },
+  keyboard: { pos: [0, 1.2, 3.4], target: [0, -0.6, 1.4] },
+  top: { pos: [0, 14.0, 0.1], target: [0, 0, 0] },
+};
+
 export function MergenthalerLinotype3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
@@ -53,35 +65,10 @@ export function MergenthalerLinotype3D() {
     isCutaway,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([11.0, 8.5, 12.5], [0, 0, 0]);
-        break;
-      case "matrix_magazine":
-        controls.setView([0, 4.2, 3.8], [0, 2.2, 0]);
-        break;
-      case "casting_pot":
-        controls.setView([-2.8, 0.5, 3.5], [-1.5, -0.4, 0]);
-        break;
-      case "spaceband_justifier":
-        controls.setView([0, 0.8, 3.2], [0, 0.2, 0]);
-        break;
-      case "keyboard":
-        controls.setView([0, 1.2, 3.4], [0, -0.6, 1.4]);
-        break;
-      case "top":
-        controls.setView([0, 14.0, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -98,15 +85,15 @@ export function MergenthalerLinotype3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11.0, 8.5, 12.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     const { rootGroup, nodes, materials, dispose } = buildMergenthalerLinotypeModel();
     scene.add(rootGroup);
@@ -117,6 +104,7 @@ export function MergenthalerLinotype3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      controls.update();
       const dt = 1 / 60;
       timeSec += dt;
       const p = live.current;
@@ -149,12 +137,13 @@ export function MergenthalerLinotype3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

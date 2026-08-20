@@ -166,7 +166,6 @@ export function ColtRevolver3D() {
       targetPos: iso.target,
       fov: 38,
       isDark: true,
-      environmentStyle: "sky",
       enableFloorGrid: true,
       enableClouds: true,
       floorColor: 0x0a0f1d,
@@ -176,7 +175,7 @@ export function ColtRevolver3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer } = studio;
+    const { scene, camera, renderer, controls } = studio;
 
     // Build Museum-Quality Procedural Colt Paterson 1836 Model
     const model: ColtRevolverModel = buildColtRevolverModel();
@@ -248,6 +247,7 @@ export function ColtRevolver3D() {
 
       pinGroup.visible = showCalloutPins;
 
+      controls.update();
       renderer.render(scene, camera);
     };
 

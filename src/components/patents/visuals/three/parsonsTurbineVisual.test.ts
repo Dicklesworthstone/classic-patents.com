@@ -62,6 +62,8 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Parsons Steam Turbine 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine steam enthalpy expansion and shaft power in SI units", () => {
