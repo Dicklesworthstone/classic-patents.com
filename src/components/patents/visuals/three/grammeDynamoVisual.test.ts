@@ -54,6 +54,8 @@ describe("US 120,057 Zénobe Gramme Ring Armature Dynamo visual & electromagneti
     ]) {
       expect(threeSource).toContain(preset);
     }
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine shaft rotation radians, induced EMF index, and flux telemetry in SI units", () => {

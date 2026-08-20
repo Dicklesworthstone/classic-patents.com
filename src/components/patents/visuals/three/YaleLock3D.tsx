@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -36,6 +37,7 @@ export function YaleLock3D({
   const { params, updateParam } = usePatentPhysics("us-48475-yale-lock");
   const keyInsertion = params.keyInsertion ?? initialKeyInsertion;
   const appliedTorqueNm = params.appliedTorqueNm ?? initialAppliedTorque;
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [useAuthorizedKey, setUseAuthorizedKey] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("iso");
@@ -183,6 +185,15 @@ export function YaleLock3D({
           >
             {isRotating ? "Return (0°)" : "Turn Key (90°)"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1.5 rounded-lg text-xs bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-700 transition-colors"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-neutral-500"}`} />
+          </button>
         </div>
       </div>
 
@@ -191,31 +202,33 @@ export function YaleLock3D({
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Live HUD Overlay (Pointer Events None) */}
-        <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Shear Status: </span>
-            <span
-              className={
-                yaleState.isUnlocked ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"
-              }
-            >
-              {yaleState.isUnlocked ? "ALIGNED (UNLOCKED)" : "PINS BINDING"}
-            </span>
+        {showUiOverlay && (
+          <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Shear Status: </span>
+              <span
+                className={
+                  yaleState.isUnlocked ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"
+                }
+              >
+                {yaleState.isUnlocked ? "ALIGNED (UNLOCKED)" : "PINS BINDING"}
+              </span>
+            </div>
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Max Pin Error: </span>
+              <span className="text-amber-400 font-bold">
+                {yaleState.maxShearErrorMm.toFixed(3)} mm
+              </span>
+            </div>
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Bolt Throw: </span>
+              <span className="text-cyan-400 font-bold">
+                {yaleState.boltExtensionMm.toFixed(1)} mm{" "}
+                {yaleState.isDeadlocked ? "(DEADLOCKED)" : ""}
+              </span>
+            </div>
           </div>
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Max Pin Error: </span>
-            <span className="text-amber-400 font-bold">
-              {yaleState.maxShearErrorMm.toFixed(3)} mm
-            </span>
-          </div>
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Bolt Throw: </span>
-            <span className="text-cyan-400 font-bold">
-              {yaleState.boltExtensionMm.toFixed(1)} mm{" "}
-              {yaleState.isDeadlocked ? "(DEADLOCKED)" : ""}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Interactive Controls & Telemetry */}

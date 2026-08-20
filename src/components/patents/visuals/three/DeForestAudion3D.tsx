@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -22,6 +23,7 @@ const CAMERA_PRESETS: Record<
 export function DeForestAudion3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
 
@@ -155,6 +157,14 @@ export function DeForestAudion3D() {
           >
             {isRotating ? "Stop Orbit" : "Auto Orbit"}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1.5 rounded-lg text-xs bg-slate-900 text-slate-400 hover:text-white border border-slate-700 transition-colors"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-slate-500"}`} />
+          </button>
         </div>
       </div>
 
@@ -163,30 +173,32 @@ export function DeForestAudion3D() {
         <div ref={containerRef} className="w-full h-full" />
 
         {/* Bottom-Left Pointer-Events-None Telemetry HUD */}
-        <div className="absolute bottom-4 left-4 p-3 bg-slate-900/80 backdrop-blur-md rounded-lg border border-slate-700 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Voltage Gain:</span>
-            <span className="text-emerald-400 font-bold">{sim.voltageGain}x</span>
+        {showUiOverlay && (
+          <div className="absolute bottom-4 left-4 p-3 bg-slate-900/80 backdrop-blur-md rounded-lg border border-slate-700 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Voltage Gain:</span>
+              <span className="text-emerald-400 font-bold">{sim.voltageGain}x</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Plate Current:</span>
+              <span className="text-cyan-400 font-bold">{sim.plateCurrentMa} mA</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Transconductance:</span>
+              <span className="text-amber-400 font-bold">
+                {sim.dynamicTransconductanceMicromhos} µmhos
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Cutoff Bias:</span>
+              <span className="text-rose-400 font-bold">{sim.gridCutoffVoltageV} V</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Power Gain:</span>
+              <span className="text-purple-400 font-bold">{sim.powerGainDb} dB</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Plate Current:</span>
-            <span className="text-cyan-400 font-bold">{sim.plateCurrentMa} mA</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Transconductance:</span>
-            <span className="text-amber-400 font-bold">
-              {sim.dynamicTransconductanceMicromhos} µmhos
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Cutoff Bias:</span>
-            <span className="text-rose-400 font-bold">{sim.gridCutoffVoltageV} V</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Power Gain:</span>
-            <span className="text-purple-400 font-bold">{sim.powerGainDb} dB</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Parameter Control Sliders */}

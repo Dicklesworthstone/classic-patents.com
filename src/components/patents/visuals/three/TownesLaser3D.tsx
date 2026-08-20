@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -42,6 +43,7 @@ export function TownesLaser3D({
   const nodesRef = useRef<TownesLaserModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
 
   const { params, updateParam } = usePatentPhysics("us-2929922-townes-laser");
   const pumpPowerWatts = params.pumpPowerWatts ?? initialPumpPowerWatts;
@@ -174,6 +176,14 @@ export function TownesLaser3D({
           >
             {isRotating ? "Stop Orbit" : "Auto Orbit"}
           </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1.5 rounded-lg text-xs bg-slate-900 text-slate-400 hover:text-white border border-slate-700 transition-colors"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-cyan-400" : "text-slate-500"}`} />
+          </button>
         </div>
       </div>
 
@@ -182,34 +192,38 @@ export function TownesLaser3D({
         <div ref={containerRef} className="w-full h-full" />
 
         {/* Bottom-Left Pointer-Events-None Telemetry HUD */}
-        <div className="absolute bottom-4 left-4 p-3 bg-slate-900/80 backdrop-blur-md rounded-lg border border-slate-700 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">State:</span>
-            <span className={`font-bold ${sim.isLasing ? "text-emerald-400" : "text-rose-400"}`}>
-              {sim.isLasing ? "LASING COHERENT" : "BELOW THRESHOLD"}
-            </span>
+        {showUiOverlay && (
+          <div className="absolute bottom-4 left-4 p-3 bg-slate-900/80 backdrop-blur-md rounded-lg border border-slate-700 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-lg">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">State:</span>
+              <span className={`font-bold ${sim.isLasing ? "text-emerald-400" : "text-rose-400"}`}>
+                {sim.isLasing ? "LASING COHERENT" : "BELOW THRESHOLD"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Output Power:</span>
+              <span className="text-cyan-400 font-bold">{sim.laserOutputPowerWatts} W</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Threshold Gain:</span>
+              <span className="text-emerald-400 font-bold">{sim.thresholdGainPerCm} cm⁻¹</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Intracavity Flux:</span>
+              <span className="text-amber-400 font-bold">{sim.intraCavityPowerWatts} W</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Beam Divergence:</span>
+              <span className="text-purple-400 font-bold">{sim.beamDivergenceMrad} mrad</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Mode Spacing:</span>
+              <span className="text-indigo-400 font-bold">
+                {sim.longitudinalModeSpacingMhz} MHz
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Output Power:</span>
-            <span className="text-cyan-400 font-bold">{sim.laserOutputPowerWatts} W</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Threshold Gain:</span>
-            <span className="text-emerald-400 font-bold">{sim.thresholdGainPerCm} cm⁻¹</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Intracavity Flux:</span>
-            <span className="text-amber-400 font-bold">{sim.intraCavityPowerWatts} W</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Beam Divergence:</span>
-            <span className="text-purple-400 font-bold">{sim.beamDivergenceMrad} mrad</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400">Mode Spacing:</span>
-            <span className="text-indigo-400 font-bold">{sim.longitudinalModeSpacingMhz} MHz</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Parameter Control Sliders */}

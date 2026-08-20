@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
@@ -54,9 +55,10 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
   const modelRef = useRef<RillieuxEvaporatorModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   const { params } = usePatentPhysics("us-3237-rillieux-evaporator");
-  const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   const live = useLiveSimParams({
     juiceFeedRateKgPerH: params.juiceFeedRateKgPerH ?? 10000,
@@ -140,14 +142,27 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
         ))}
       </div>
 
-      <div className="absolute bottom-4 left-4 z-10 bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 backdrop-blur-sm pointer-events-none">
-        <div className="text-xs font-mono font-semibold text-amber-400">
-          US 3,237 — Norbert Rillieux Multiple-Effect Evaporator
-        </div>
-        <div className="text-[10px] font-mono text-slate-400">
-          Triple-Effect Latent Heat Recovery Calandria Cascade
-        </div>
+      <div className="absolute top-4 right-4 z-10">
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+          className="p-1.5 rounded-lg text-xs bg-slate-900/90 text-slate-400 hover:text-white border border-slate-800 transition-colors backdrop-blur-sm"
+        >
+          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-slate-500"}`} />
+        </button>
       </div>
+
+      {showUiOverlay && (
+        <div className="absolute bottom-4 left-4 z-10 bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 backdrop-blur-sm pointer-events-none">
+          <div className="text-xs font-mono font-semibold text-amber-400">
+            US 3,237 — Norbert Rillieux Multiple-Effect Evaporator
+          </div>
+          <div className="text-[10px] font-mono text-slate-400">
+            Triple-Effect Latent Heat Recovery Calandria Cascade
+          </div>
+        </div>
+      )}
     </div>
   );
 };

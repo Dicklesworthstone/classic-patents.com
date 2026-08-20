@@ -47,3 +47,22 @@ test("US 621,195 keeps every supplied figure preview at its source citation", ()
   expect(renderedSource).toContain('"text":"Figs. 11 and 12"');
   expect(renderedSource).toContain("no preview is fabricated");
 });
+
+test("US 621,195 rotates the supplied Fig. 7 crop into its printed reading orientation", () => {
+  const figureSeven = zeppelinAirshipArchivalEdition.blocks
+    .flatMap((block) => ("inlines" in block ? block.inlines : []))
+    .flatMap((inline) =>
+      inline.kind === "reference" && inline.referenceType === "figure"
+        ? (inline.figurePreviews ?? [])
+        : [],
+    )
+    .find((preview) => preview.alt.includes("Fig. 7 "));
+
+  expect(figureSeven).toEqual(
+    expect.objectContaining({
+      src: "/patents/figures/us-621195-zeppelin-airship/fig-7-source-crop-v2.png",
+      width: 720,
+      height: 480,
+    }),
+  );
+});

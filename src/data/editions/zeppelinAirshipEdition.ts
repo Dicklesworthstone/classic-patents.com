@@ -13,7 +13,9 @@ const claim = (number: number, value: string) => ({
 });
 
 const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-621195-zeppelin-airship/fig-${number}-source-crop-v1.png`,
+  src: `/patents/figures/us-621195-zeppelin-airship/fig-${number}-source-crop-v${
+    number === 7 ? 2 : 1
+  }.png`,
   alt: `Source-facsimile crop of Fig. ${number} from US 621,195.`,
   width,
   height,
@@ -26,7 +28,7 @@ const FIGURES = {
   "Fig. 4": [crop(4, 800, 700)],
   "Fig. 5": [crop(5, 800, 400)],
   "Fig. 6": [crop(6, 800, 720)],
-  "Fig. 7": [crop(7, 480, 720)],
+  "Fig. 7": [crop(7, 720, 480)],
   "Fig. 8": [crop(8, 460, 720)],
   "Fig. 9": [crop(9, 580, 1050)],
   "Fig. 10": [crop(10, 500, 1840)],

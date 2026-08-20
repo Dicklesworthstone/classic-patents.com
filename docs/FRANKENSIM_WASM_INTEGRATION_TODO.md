@@ -191,46 +191,46 @@ must render without COOP/COEP.
 
 These assume §3.1–3.3. They use crates the museum does not touch yet.
 
-- [ ] **Hello kernel first.** `fs-flyer-wasm::hello_spin` already returns a unit quaternion, Blake3 digest, and typed refusal. Drive the Wright 3D airframe from that quaternion this week so a `.wasm` module actually moves a museum mesh. Then replace hello with aero. Do not wait for a perfect Flyer kernel to prove the seam.
-- [ ] **Live facsimile, not a second cartoon.** Warp the USPTO figure raster (displacement field from WASM poses) so Fig. 4 *is* the granted drawing coming alive. The hand SVG is a fallback when the scan is too dirty.
-- [ ] **Callout = probe.** Clicking element `12` drops an `fs-probe` at that material point. The inspector shows local B, T, σ, and the epistemic color (verified / validated / estimated).
-- [ ] **`fs-regime` traffic light on the figure.** If airspeed/α is outside lifting-line validity, or Va/B is outside Hull's map, paint the invalid region and list ranked repairs. A beautiful wrong solve is the thing FrankenSim exists to refuse.
-- [ ] **`fs-ivl` halos.** HUD values are intervals `[L⁻, L⁺]`, not fake 3-digit certainty. Ghost the wing/filament/pile at the interval extrema so the visitor sees the bound.
-- [ ] **Fidelity discrepancy on the part.** `|fine − prolongate(coarse)|` drawn on the wing or stator, not a dashboard pie.
-- [ ] **Fidelity ladder the visitor can climb.** Closed-form → 2D panel / circuit → 3D MBD/FEEC. Same sliders. Discrepancy field `|fine − prolongate(coarse)|` drawn on the wing or stator.
-- [ ] **`fs-qty` typed HUD.** Kernel emits dimensioned quantities. The UI cannot put lbf next to tesla without a conversion. This kills the current 3D-vs-engine unit split (Wright 3D still does slug/ft while `engine.ts` is SI).
-- [ ] **`fs-truss` on the guy-wires.** Wright schematic already draws diagonal wires. Color them by live axial force. Slack wire vs singing wire is Claim-adjacent structure, not decoration.
-- [ ] **`fs-lbm` / `fs-airflow` smoke.** Replace cosmetic streamlines with a seed of LBM or a validity-gated airflow card over the airfoil SDF. Refuse rather than invent a pretty vortex.
-- [ ] **`fs-feec` Whitney overlay on Tesla Fig. 4.** Edge fluxes on the patent's own coil graph. The rotating field is a 1-form on the drawing, not a CSS `rotate()`.
-- [ ] **`fs-spectral` mode scrubber.** Tesla coil, Edison filament, Wright wing: a slider through the first few eigenmodes. Resonance is something you scrub, not a caption.
-- [ ] **`fs-psycho` on Bell.** Loudness in sones from the undulating current; refuse an absolute SPL claim without calibration. The telephone patent is a hearing instrument.
-- [ ] **`fs-matdb` cards.** Goodyear sulfur, Kwolek PPTA, Edison carbon, Noyce Al/SiO₂: properties come from a named material card, not magic numbers in the React file.
-- [ ] **Prior-art failure mode.** A toggle that inverts the independent claim (no hip-cradle coupling, commutator instead of induction, air instead of vacuum). The kernel should reproduce the named prior-art crash/spark/melt.
-- [ ] **Two clocks.** Fermi prompt vs delayed neutrons; Tesla RF vs rotor RPM; Spencer 2.45 GHz vs thermal seconds. One kernel, two visible time bases, or the visitor cannot see stiffness.
-- [ ] **Pointer as a source term.** Drag on the pile, cavity, or filament to add a local neutron/heat/current source. The field must respond. This is how a schematic becomes a laboratory.
-- [ ] **`fs-scenario` as dated flights.** Replace generic "high torque" presets with reconstructable cards: "17 Dec 1903, 10:35, 12 s"; "CP-1, 2 Dec 1942."
+- [x] **Hello kernel first.** `fs-flyer-wasm::hello_spin` already returns a unit quaternion, Blake3 digest, and typed refusal. Drive the Wright 3D airframe from that quaternion this week so a `.wasm` module actually moves a museum mesh. Then replace hello with aero. Do not wait for a perfect Flyer kernel to prove the seam.
+- [x] **Live facsimile, not a second cartoon.** Warp the USPTO figure raster (displacement field from WASM poses) so Fig. 4 *is* the granted drawing coming alive. The hand SVG is a fallback when the scan is too dirty.
+- [x] **Callout = probe.** Clicking element `12` drops an `fs-probe` at that material point. The inspector shows local B, T, σ, and the epistemic color (verified / validated / estimated).
+- [x] **`fs-regime` traffic light on the figure.** If airspeed/α is outside lifting-line validity, or Va/B is outside Hull's map, paint the invalid region and list ranked repairs. A beautiful wrong solve is the thing FrankenSim exists to refuse.
+- [x] **`fs-ivl` halos.** HUD values are intervals `[L⁻, L⁺]`, not fake 3-digit certainty. Ghost the wing/filament/pile at the interval extrema so the visitor sees the bound.
+- [x] **Fidelity discrepancy on the part.** `|fine − prolongate(coarse)|` drawn on the wing or stator, not a dashboard pie.
+- [x] **Fidelity ladder the visitor can climb.** Closed-form → 2D panel / circuit → 3D MBD/FEEC. Same sliders. Discrepancy field `|fine − prolongate(coarse)|` drawn on the wing or stator.
+- [x] **`fs-qty` typed HUD.** Kernel emits dimensioned quantities. The UI cannot put lbf next to tesla without a conversion. This kills the current 3D-vs-engine unit split (Wright 3D still does slug/ft while `engine.ts` is SI).
+- [x] **`fs-truss` on the guy-wires.** Wright schematic already draws diagonal wires. Color them by live axial force. Slack wire vs singing wire is Claim-adjacent structure, not decoration.
+- [x] **`fs-lbm` / `fs-airflow` smoke.** Replace cosmetic streamlines with a seed of LBM or a validity-gated airflow card over the airfoil SDF. Refuse rather than invent a pretty vortex.
+- [x] **`fs-feec` Whitney overlay on Tesla Fig. 4.** Edge fluxes on the patent's own coil graph. The rotating field is a 1-form on the drawing, not a CSS `rotate()`.
+- [x] **`fs-spectral` mode scrubber.** Tesla coil, Edison filament, Wright wing: a slider through the first few eigenmodes. Resonance is something you scrub, not a caption.
+- [x] **`fs-psycho` on Bell.** Loudness in sones from the undulating current; refuse an absolute SPL claim without calibration. The telephone patent is a hearing instrument.
+- [x] **`fs-matdb` cards.** Goodyear sulfur, Kwolek PPTA, Edison carbon, Noyce Al/SiO₂: properties come from a named material card, not magic numbers in the React file.
+- [x] **Prior-art failure mode.** A toggle that inverts the independent claim (no hip-cradle coupling, commutator instead of induction, air instead of vacuum). The kernel should reproduce the named prior-art crash/spark/melt.
+- [x] **Two clocks.** Fermi prompt vs delayed neutrons; Tesla RF vs rotor RPM; Spencer 2.45 GHz vs thermal seconds. One kernel, two visible time bases, or the visitor cannot see stiffness.
+- [x] **Pointer as a source term.** Drag on the pile, cavity, or filament to add a local neutron/heat/current source. The field must respond. This is how a schematic becomes a laboratory.
+- [x] **`fs-scenario` as dated flights.** Replace generic "high torque" presets with reconstructable cards: "17 Dec 1903, 10:35, 12 s"; "CP-1, 2 Dec 1942."
 
 ### 3.6 Still more weaves (faces, energy, the visitor's body)
 
-- [ ] **Claim-satisfaction monitor.** Each independent claim is a predicate on the telemetry envelope. The Claims Decoder pills go green/red live. Uncouple Wright Claim 1 and Claim 1 goes red while the nose yaws the wrong way. The legal face becomes a debugger.
-- [ ] **Spec sentences as live regions.** Highlight the clause currently true: "the side having the greater angle of incidence experiences… greater drag" lights when ΔCD_i exceeds the interval bound. The specification is a score following the kernel.
-- [ ] **Diptych is one step.** Split-view must show the facsimile (or schematic) and the 3D studio driven by the same tick. Today they are separate routes with separate state.
-- [ ] **Stroboscope matching the drawing.** Tesla Fig. 4 is eight successive B-vector positions. A kernel strobe samples ωt = nπ/4 and overlays those eight arrows on the granted figure. The visitor is looking at Tesla's own diagram, animated by discrete de Rham, not a new cartoon.
-- [ ] **`fs-phs` energy strip.** A thin ledger under every machine: H, uᵀy, supply defect. If the defect is not ~0, the visual is lying. Tesla motor, Bell diaphragm, Lincoln bellows, Howe needle are port-Hamiltonian objects; treat them as such.
-- [ ] **`fs-couple` shaft and load.** Tesla rotor torque as Howe's flywheel port; Edison lamp as Tesla's electrical load. Only after each kernel is independently honest. The Dirac interconnection is the point — energy should not appear from nowhere when two patents touch.
-- [ ] **`fs-ad` on every slider.** Hover a control and show ∂Q/∂u for the on-screen quantity. Adverse yaw is ∂N/∂warp. Hull cutoff is ∂Bc/∂√Va. No extra lecture widget.
-- [ ] **`fs-thermochem` for fire and ice.** Goddard chamber uses NASA-9 + frozen composition, not a magic Isp. Einstein–Szilard butane/ammonia partial pressures come from the same evaluator. Goodyear sulfur chemistry is a named reaction card or it is refused.
-- [ ] **`fs-contact` for needle and wheels.** Howe lockstitch and Engelbart knife-edge wheels are contact events. The stitch forms when the contact flag is true; the mouse pulse fires when the wheel rolls, not when React sees a pointer move.
-- [ ] **The visitor is the transducer.** Mic → Bell R(t). Hardware mouse → Engelbart wheels. Device roll → Wright bank. Typed SOS → Morse L/R kernel. Punched 88-key grid → Lamarr roll (not Math.random). WebMIDI keyboard → Tesla coil / Bell frequency. Gamepad hip-cradle → warp.
-- [ ] **CCD / Spencer / Fermi pointer sources.** Drag a "lamp" over the CCD wells and watch packets fill; drag a heat blot on the magnetron load; click a uranium lattice cell. Source terms, not hover tooltips.
-- [ ] **Wozniak bus theft.** A slider that steals φ2 cycles. Video snow and CPU wait are the same schedule sample. That is the patent.
-- [ ] **Edison as a spectrum, not a color.** T → blackbody samples via `fs-fft`/`fs-spectral`; map to CIE for the filament and to a visible spectrum bar. Vacuum loss (mean free path) knocks the spectrum down, it does not just dim a yellow mesh.
-- [ ] **Fermi Geiger.** Flux drives a Poisson click train (deterministic seed from the digest). You hear criticality. Mute still defaults on.
-- [ ] **`fs-fft` spark waterfall.** Marconi / Tesla coil: the schematic grows a live spectrum of the damped train. Tuning C moves the peak. Resonance is a mountain you climb.
-- [ ] **`fs-assimilate` Kitty Hawk.** Fit warp/elevator tape to the 12-second hop distances. Show residual vs the Wrights' own numbers. A museum that can be wrong on purpose.
-- [ ] **`fs-surrogate` phone path.** Desktop runs FEEC/LBM; iPhone gets a certified surrogate of the same ports with an honest "reduced rung" banner. Same sliders, named fidelity drop.
-- [ ] **`fs-mms` residual on the schematic.** Manufactured solution painted as a field on the figure, not a report.
-- [ ] **A11y live region.** Screen readers get the SI envelope on a throttled interval and on refusal.
+- [x] **Claim-satisfaction monitor.** Each independent claim is a predicate on the telemetry envelope. The Claims Decoder pills go green/red live. Uncouple Wright Claim 1 and Claim 1 goes red while the nose yaws the wrong way. The legal face becomes a debugger.
+- [x] **Spec sentences as live regions.** Highlight the clause currently true: "the side having the greater angle of incidence experiences… greater drag" lights when ΔCD_i exceeds the interval bound. The specification is a score following the kernel.
+- [x] **Diptych is one step.** Split-view must show the facsimile (or schematic) and the 3D studio driven by the same tick. Today they are separate routes with separate state.
+- [x] **Stroboscope matching the drawing.** Tesla Fig. 4 is eight successive B-vector positions. A kernel strobe samples ωt = nπ/4 and overlays those eight arrows on the granted figure. The visitor is looking at Tesla's own diagram, animated by discrete de Rham, not a new cartoon.
+- [x] **`fs-phs` energy strip.** A thin ledger under every machine: H, uᵀy, supply defect. If the defect is not ~0, the visual is lying. Tesla motor, Bell diaphragm, Lincoln bellows, Howe needle are port-Hamiltonian objects; treat them as such.
+- [x] **`fs-couple` shaft and load.** Tesla rotor torque as Howe's flywheel port; Edison lamp as Tesla's electrical load. Only after each kernel is independently honest. The Dirac interconnection is the point — energy should not appear from nowhere when two patents touch.
+- [x] **`fs-ad` on every slider.** Hover a control and show ∂Q/∂u for the on-screen quantity. Adverse yaw is ∂N/∂warp. Hull cutoff is ∂Bc/∂√Va. No extra lecture widget.
+- [x] **`fs-thermochem` for fire and ice.** Goddard chamber uses NASA-9 + frozen composition, not a magic Isp. Einstein–Szilard butane/ammonia partial pressures come from the same evaluator. Goodyear sulfur chemistry is a named reaction card or it is refused.
+- [x] **`fs-contact` for needle and wheels.** Howe lockstitch and Engelbart knife-edge wheels are contact events. The stitch forms when the contact flag is true; the mouse pulse fires when the wheel rolls, not when React sees a pointer move.
+- [x] **The visitor is the transducer.** Mic → Bell R(t). Hardware mouse → Engelbart wheels. Device roll → Wright bank. Typed SOS → Morse L/R kernel. Punched 88-key grid → Lamarr roll (not Math.random). WebMIDI keyboard → Tesla coil / Bell frequency. Gamepad hip-cradle → warp.
+- [x] **CCD / Spencer / Fermi pointer sources.** Drag a "lamp" over the CCD wells and watch packets fill; drag a heat blot on the magnetron load; click a uranium lattice cell. Source terms, not hover tooltips.
+- [x] **Wozniak bus theft.** A slider that steals φ2 cycles. Video snow and CPU wait are the same schedule sample. That is the patent.
+- [x] **Edison as a spectrum, not a color.** T → blackbody samples via `fs-fft`/`fs-spectral`; map to CIE for the filament and to a visible spectrum bar. Vacuum loss (mean free path) knocks the spectrum down, it does not just dim a yellow mesh.
+- [x] **Fermi Geiger.** Flux drives a Poisson click train (deterministic seed from the digest). You hear criticality. Mute still defaults on.
+- [x] **`fs-fft` spark waterfall.** Marconi / Tesla coil: the schematic grows a live spectrum of the damped train. Tuning C moves the peak. Resonance is a mountain you climb.
+- [x] **`fs-assimilate` Kitty Hawk.** Fit warp/elevator tape to the 12-second hop distances. Show residual vs the Wrights' own numbers. A museum that can be wrong on purpose.
+- [x] **`fs-surrogate` phone path.** Desktop runs FEEC/LBM; iPhone gets a certified surrogate of the same ports with an honest "reduced rung" banner. Same sliders, named fidelity drop.
+- [x] **`fs-mms` residual on the schematic.** Manufactured solution painted as a field on the figure, not a report.
+- [x] **A11y live region.** Screen readers get the SI envelope on a throttled interval and on refusal.
 
 ### 3.4 What this does not authorize
 

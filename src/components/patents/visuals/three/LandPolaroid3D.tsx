@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -45,6 +46,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const modelRef = useRef<LandPolaroidModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   const { params } = usePatentPhysics("us-2543181-land-polaroid");
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
@@ -123,15 +125,28 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         ))}
       </div>
 
-      {/* Historic Model 95 Banner */}
-      <div className="absolute bottom-4 left-4 z-10 bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 backdrop-blur-sm pointer-events-none">
-        <div className="text-xs font-mono font-semibold text-emerald-400">
-          US 2,543,181 — Edwin Land Polaroid Instant Film & Camera
-        </div>
-        <div className="text-[10px] font-mono text-slate-400">
-          Diffusion Transfer Reversal with Rupturable Foil Pod & Squeegee Rollers
-        </div>
+      <div className="absolute top-4 right-4 z-10">
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+          className="p-1.5 rounded-lg text-xs bg-slate-900/90 text-slate-400 hover:text-white border border-slate-800 transition-colors backdrop-blur-sm"
+        >
+          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-emerald-400" : "text-slate-500"}`} />
+        </button>
       </div>
+
+      {/* Historic Model 95 Banner */}
+      {showUiOverlay && (
+        <div className="absolute bottom-4 left-4 z-10 bg-slate-900/90 px-3 py-2 rounded-lg border border-slate-800 backdrop-blur-sm pointer-events-none">
+          <div className="text-xs font-mono font-semibold text-emerald-400">
+            US 2,543,181 — Edwin Land Polaroid Instant Film & Camera
+          </div>
+          <div className="text-[10px] font-mono text-slate-400">
+            Diffusion Transfer Reversal with Rupturable Foil Pod & Squeegee Rollers
+          </div>
+        </div>
+      )}
     </div>
   );
 };

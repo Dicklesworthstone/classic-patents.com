@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -40,6 +41,7 @@ export function BellPhotophone3D({
   const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
   const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
+  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isAudioActive, setIsAudioActive] = useState<boolean>(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
@@ -168,6 +170,15 @@ export function BellPhotophone3D({
           >
             {isAudioActive ? "Voice ON" : "Voice OFF"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1.5 rounded-lg text-xs bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-700 transition-colors"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-neutral-500"}`} />
+          </button>
         </div>
       </div>
 
@@ -176,26 +187,28 @@ export function BellPhotophone3D({
         <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
         {/* Live HUD Overlay */}
-        <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Beam Modulation: </span>
-            <span className="text-amber-400 font-bold">
-              {(photoState.modulationDepth * 100).toFixed(1)}%
-            </span>
+        {showUiOverlay && (
+          <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Beam Modulation: </span>
+              <span className="text-amber-400 font-bold">
+                {(photoState.modulationDepth * 100).toFixed(1)}%
+              </span>
+            </div>
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Selenium R: </span>
+              <span className="text-emerald-400 font-bold">
+                {photoState.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ
+              </span>
+            </div>
+            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
+              <span className="text-neutral-400">Audio Signal: </span>
+              <span className="text-cyan-400 font-bold">
+                {photoState.audioSignalCurrentUa.toFixed(2)} µA
+              </span>
+            </div>
           </div>
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Selenium R: </span>
-            <span className="text-emerald-400 font-bold">
-              {photoState.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ
-            </span>
-          </div>
-          <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-            <span className="text-neutral-400">Audio Signal: </span>
-            <span className="text-cyan-400 font-bold">
-              {photoState.audioSignalCurrentUa.toFixed(2)} µA
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Real-Time Controllers & Physical Telemetry */}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -15,6 +16,7 @@ const CAMERA_OVERVIEW = {
 export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-3858232-boyle-smith-ccd");
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [isRunning, setIsRunning] = useState(true);
 
   const gateVoltage = params.gateVoltageV ?? 10;
@@ -93,20 +95,36 @@ export function BoyleSmithCcd3D() {
         className="relative h-[480px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950"
         ref={containerRef}
       >
-        <div className="absolute top-4 left-4 z-10 rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
-          <div className="font-mono text-xs font-bold text-slate-200">
-            BOYLE & SMITH CCD 3D STUDIO (US 3,858,232)
+        {showUiOverlay && (
+          <div className="absolute top-4 left-4 z-10 rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
+            <div className="font-mono text-xs font-bold text-slate-200">
+              BOYLE & SMITH CCD 3D STUDIO (US 3,858,232)
+            </div>
+            <div className="text-[11px] text-slate-400">
+              Interactive WebGL 3D Model • 3-Phase Gate Array • Clocked Potential Wells • Ceramic
+              DIP Package
+            </div>
           </div>
-          <div className="text-[11px] text-slate-400">
-            Interactive WebGL 3D Model • 3-Phase Gate Array • Clocked Potential Wells • Ceramic DIP
-            Package
-          </div>
+        )}
+
+        <div className="absolute top-4 right-4 z-10">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1.5 rounded-lg text-xs bg-slate-900/80 text-slate-400 hover:text-white border border-slate-700 transition-colors backdrop-blur-md"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-sky-400" : "text-slate-500"}`} />
+          </button>
         </div>
 
-        <div className="absolute bottom-4 left-4 z-10 rounded-md border border-sky-500/50 bg-slate-950/80 px-3 py-1.5 font-mono text-xs text-sky-300 backdrop-blur-md">
-          CTE: {metrics.ctePct}% • Capacity: {(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}
-          k e⁻ • Well Depth: {metrics.depletionDepthUm} µm
-        </div>
+        {showUiOverlay && (
+          <div className="absolute bottom-4 left-4 z-10 rounded-md border border-sky-500/50 bg-slate-950/80 px-3 py-1.5 font-mono text-xs text-sky-300 backdrop-blur-md">
+            CTE: {metrics.ctePct}% • Capacity:{" "}
+            {(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}k e⁻ • Well Depth:{" "}
+            {metrics.depletionDepthUm} µm
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">

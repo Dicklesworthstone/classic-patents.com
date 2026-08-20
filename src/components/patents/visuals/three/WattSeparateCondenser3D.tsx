@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser, WATT_DEFAULT_CONTROLS } from "@/physics/wattCondenserKernel";
@@ -26,6 +27,7 @@ const CAMERA_PRESETS: Record<
 export function WattSeparateCondenser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
@@ -164,7 +166,7 @@ export function WattSeparateCondenser3D() {
       </div>
 
       {/* Toggles */}
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setCutaway((v) => !v)}
@@ -187,10 +189,18 @@ export function WattSeparateCondenser3D() {
         >
           {showCallouts ? "Pins ON" : "Pins OFF"}
         </button>
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+          className="p-1.5 rounded-lg text-xs bg-ink-900/80 text-parchment-400 hover:text-white hover:bg-ink-800 border border-parchment-700/40 transition-colors backdrop-blur-md"
+        >
+          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-parchment-400"}`} />
+        </button>
       </div>
 
       {/* Bottom SI Telemetry Chips */}
-      <StudioKernelChips visible={true} chips={chips} title="SI Telemetry" />
+      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
     </div>
   );
 }

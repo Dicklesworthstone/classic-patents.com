@@ -47,6 +47,8 @@ describe("US 194,047 Nikolaus Otto Four-Stroke Engine visual & kinematics bounda
 
     expect(threeSource).toContain("cutawayMode");
     expect(threeSource).toContain("2:1 Lay Shaft");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Otto thermodynamic air-standard cycle in reproducible SI units", () => {

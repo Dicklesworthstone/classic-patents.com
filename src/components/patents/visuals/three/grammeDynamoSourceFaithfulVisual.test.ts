@@ -63,6 +63,8 @@ describe("US 120,057 Gramme source-faithful visual boundary", () => {
     }
 
     expect(threeSource).toContain("isCutaway");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("returns reproducible relative indicators rather than fabricated volts, amps, or watts", () => {

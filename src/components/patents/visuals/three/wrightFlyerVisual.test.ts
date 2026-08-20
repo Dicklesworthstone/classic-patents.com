@@ -51,6 +51,8 @@ describe("US 821,393 Wright Brothers Flying-Machine 3D visual & aerodynamic boun
       expect(threeSource).toContain(preset);
     }
     expect(threeSource).toContain("isCutaway");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine aerodynamic lift, induced drag, and adverse yaw cancellation in SI units", () => {

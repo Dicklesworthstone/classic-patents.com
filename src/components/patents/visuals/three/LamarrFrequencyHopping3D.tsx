@@ -45,7 +45,7 @@ export function LamarrFrequencyHopping3D() {
   const carrierChannelsCount = params.channels ?? 88;
   const hopRateHopsPerSec = params.hopRate ?? 4;
   const isJammingActive = params.isJammingActive !== 0;
-  const [currentChannel, setCurrentChannel] = useState<number>(1);
+  const currentChannel = Math.max(1, Math.round(params.channel ?? 1));
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -169,7 +169,6 @@ export function LamarrFrequencyHopping3D() {
         const pianoKey = lamarrPianoRollChannel(rollStep);
         const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
         activeChan = lamarrRadioChannel(pianoKey, liveChannels) - 1;
-        setCurrentChannel(activeChan + 1);
 
         if (!p.isAudioMuted && rollStep % p.hopSoundStride === 0) {
           soundEngine.playPianoKeyHop(lamarrPianoKeyHz(pianoKey));

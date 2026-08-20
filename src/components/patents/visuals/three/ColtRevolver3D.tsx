@@ -52,9 +52,9 @@ export function ColtRevolver3D() {
   const chamberPressureMpa = params.chamberPressure ?? 85;
   const cockingAngleDeg = params.cockingAngle ?? 45; // 0 (hammer down) to 45 (full cock)
   const rammerPositionPct = params.rammerPosition ?? 0; // 0 (latched under barrel) to 100 (fully rammed)
+  const currentChamberIndex = Math.max(1, Math.round(params.chamberIndex ?? 1));
 
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [currentChamberIndex, setCurrentChamberIndex] = useState<number>(1);
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -118,9 +118,9 @@ export function ColtRevolver3D() {
   }, [updateParam]);
 
   const handleStepChamber = useCallback(() => {
-    setCurrentChamberIndex((prev) => coltNextChamber(prev, coltMech.chamberCount));
+    updateParam("chamberIndex", coltNextChamber(currentChamberIndex, coltMech.chamberCount));
     soundEngine.playMicroswitchClick();
-  }, [coltMech.chamberCount]);
+  }, [updateParam, currentChamberIndex, coltMech.chamberCount]);
 
   const handlePullTrigger = useCallback(() => {
     if (!isFullCock || isFiring) return;
@@ -135,9 +135,16 @@ export function ColtRevolver3D() {
     }
     fireTimerRef.current = window.setTimeout(() => {
       setIsFiring(false);
-      setCurrentChamberIndex((prev) => coltNextChamber(prev, coltMech.chamberCount));
+      updateParam("chamberIndex", coltNextChamber(currentChamberIndex, coltMech.chamberCount));
     }, coltMech.cycleDisplayMs);
-  }, [isFullCock, isFiring, updateParam, coltMech.cycleDisplayMs, coltMech.chamberCount]);
+  }, [
+    isFullCock,
+    isFiring,
+    updateParam,
+    currentChamberIndex,
+    coltMech.cycleDisplayMs,
+    coltMech.chamberCount,
+  ]);
 
   useEffect(() => {
     return () => {

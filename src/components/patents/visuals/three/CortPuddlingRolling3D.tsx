@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -12,6 +13,7 @@ const EXHIBIT_ID = "gb-1420-cort-puddling-rolling";
 
 export function CortPuddlingRolling3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<
@@ -193,7 +195,7 @@ export function CortPuddlingRolling3D() {
       </div>
 
       {/* Toggles */}
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setCutaway((v) => !v)}
@@ -216,10 +218,18 @@ export function CortPuddlingRolling3D() {
         >
           {showCallouts ? "Pins ON" : "Pins OFF"}
         </button>
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+          className="p-1.5 rounded-lg text-xs bg-ink-900/80 text-parchment-400 hover:text-white hover:bg-ink-800 border border-parchment-700/40 transition-colors backdrop-blur-md"
+        >
+          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-parchment-400"}`} />
+        </button>
       </div>
 
       {/* Bottom SI Telemetry Chips */}
-      <StudioKernelChips visible={true} chips={chips} title="SI Telemetry" />
+      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
     </div>
   );
 }

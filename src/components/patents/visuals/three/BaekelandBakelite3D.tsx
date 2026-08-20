@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -25,6 +26,7 @@ const CAMERA_PRESETS: Record<
 
 export function BaekelandBakelite3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
@@ -127,7 +129,7 @@ export function BaekelandBakelite3D() {
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Top HUD Chips */}
-      <StudioKernelChips visible={true} chips={chips} title="Bakelite SI Telemetry" />
+      <StudioKernelChips visible={showUiOverlay} chips={chips} title="Bakelite SI Telemetry" />
 
       {/* Camera Presets & Toggles */}
       <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap justify-between items-center gap-2 bg-stone-900/80 backdrop-blur-md p-2 rounded-lg border border-stone-700/60">
@@ -171,6 +173,14 @@ export function BaekelandBakelite3D() {
             }`}
           >
             {showCallouts ? "CALLOUTS ON" : "CALLOUTS OFF"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className="p-1 rounded border border-stone-700 bg-stone-800 text-stone-400 hover:text-white transition-colors"
+          >
+            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-stone-500"}`} />
           </button>
         </div>
       </div>

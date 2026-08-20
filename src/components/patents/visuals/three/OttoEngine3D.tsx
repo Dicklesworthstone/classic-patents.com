@@ -28,6 +28,18 @@ type CameraPreset =
   | "governor"
   | "flywheels";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [8.5, 6.0, 9.5], target: [0, 0, 0] },
+  slide_valve: { pos: [-4.5, 2.0, 2.8], target: [-3.2, 0.4, 0.7] },
+  cylinder_piston: { pos: [-1.2, 2.8, 4.0], target: [-1.6, 0, 0] },
+  lay_shaft: { pos: [1.2, 2.2, 3.4], target: [0.5, 0.4, 1.0] },
+  governor: { pos: [-1.2, 1.8, 2.6], target: [-1.2, 0.8, 1.25] },
+  flywheels: { pos: [4.5, 3.2, 5.5], target: [2.4, 0, 0] },
+};
+
 export function OttoEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -63,35 +75,12 @@ export function OttoEngine3D() {
     cycleWrapRad: otto.cycleWrapRad,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        controls.setView([8.5, 6.0, 9.5], [0, 0, 0]);
-        break;
-      case "slide_valve":
-        controls.setView([-4.5, 2.0, 2.8], [-3.2, 0.4, 0.7]);
-        break;
-      case "cylinder_piston":
-        controls.setView([-1.2, 2.8, 4.0], [-1.6, 0, 0]);
-        break;
-      case "lay_shaft":
-        controls.setView([1.2, 2.2, 3.4], [0.5, 0.4, 1.0]);
-        break;
-      case "governor":
-        controls.setView([-1.2, 1.8, 2.6], [-1.2, 0.8, 1.25]);
-        break;
-      case "flywheels":
-        controls.setView([4.5, 3.2, 5.5], [2.4, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   const toggleSound = () => {
@@ -104,15 +93,15 @@ export function OttoEngine3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [8.5, 6.0, 9.5],
-      targetPos: [0, 0, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
 
     // Procedural 1877 Deutz Otto Model Assembly
     const engineModel: OttoEngineModelResult = buildOttoEngineModel();
@@ -196,6 +185,7 @@ export function OttoEngine3D() {
       flameGlowTex.dispose();
       engineModel.dispose();
       studio.cleanup();
+      studioRef.current = null;
     };
   }, [live]);
 

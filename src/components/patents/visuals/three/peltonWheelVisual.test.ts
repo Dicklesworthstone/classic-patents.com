@@ -55,6 +55,8 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
 
     expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Pelton Water Wheel 3D");
+    expect(threeSource).toContain("controls.setView");
+    expect(threeSource).not.toContain("cameraRef");
   });
 
   test("computes genuine Torricelli jet velocity, impulse force, and hydraulic efficiency in SI units", () => {

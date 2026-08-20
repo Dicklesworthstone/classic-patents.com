@@ -1,5 +1,6 @@
 "use client";
 
+import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -34,6 +35,7 @@ const PRESET_CHIPS: ReadonlyArray<{ id: CameraPreset; label: string }> = [
 export function ArkwrightWaterFrame3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cutaway, _setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
@@ -208,10 +210,19 @@ export function ArkwrightWaterFrame3D() {
         >
           Callouts
         </button>
+
+        <button
+          type="button"
+          onClick={() => setShowUiOverlay(!showUiOverlay)}
+          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
+          className="p-1 rounded-lg text-xs text-stone-400 hover:text-white transition-colors"
+        >
+          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-stone-500"}`} />
+        </button>
       </div>
 
       {/* Live SI Kernel Telemetry Chips */}
-      <StudioKernelChips visible={true} chips={chips} title="SI Telemetry" />
+      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
     </div>
   );
 }

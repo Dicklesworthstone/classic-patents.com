@@ -29,6 +29,18 @@ const FIXED_RENDER_STEP_S = 1 / 60;
 
 type CameraPreset = "iso" | "wing_warp" | "canard" | "rudder" | "engine_props" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [7.6, 3.2, 8.4], target: [0, 0.15, 0] },
+  wing_warp: { pos: [-6.5, 1.8, 4.2], target: [-4.5, 0.2, 0] },
+  canard: { pos: [0, 1.2, 5.5], target: [0, 0.4, 2.5] },
+  rudder: { pos: [0, 1.4, -6.0], target: [0, 0.4, -2.5] },
+  engine_props: { pos: [2.8, 1.2, -1.8], target: [0, 0.2, -0.5] },
+  top: { pos: [0, 13.5, 0.1], target: [0, 0, 0] },
+};
+
 function deterministicUnit(index: number, channel: number, generation = 0): number {
   const sample =
     Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233 + (generation + 1) * 37.719) *
@@ -92,35 +104,12 @@ export function WrightFlyer3D() {
     rightBayTension: si.rightBayTension,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const ctrl = controlsRef.current;
-    if (!camera || !ctrl) return;
-
-    switch (preset) {
-      case "iso":
-        ctrl.setView([7.6, 3.2, 8.4], [0, 0.15, 0]);
-        break;
-      case "wing_warp":
-        ctrl.setView([-6.5, 1.8, 4.2], [-4.5, 0.2, 0]);
-        break;
-      case "canard":
-        ctrl.setView([0, 1.2, 5.5], [0, 0.4, 2.5]);
-        break;
-      case "rudder":
-        ctrl.setView([0, 1.4, -6.0], [0, 0.4, -2.5]);
-        break;
-      case "engine_props":
-        ctrl.setView([2.8, 1.2, -1.8], [0, 0.2, -0.5]);
-        break;
-      case "top":
-        ctrl.setView([0, 13.5, 0.1], [0, 0, 0]);
-        break;
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
@@ -132,17 +121,16 @@ export function WrightFlyer3D() {
     const container = containerRef.current;
     if (!container) return;
 
-    // Create Studio Scene with Museum Lighting
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [7.6, 3.2, 8.4],
-      targetPos: [0, 0.15, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       fov: 38,
     });
+    studioRef.current = studio;
 
     const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
     controls.setRadius(11);
 
     const airframe = buildWrightFlyerAirframe();
@@ -300,6 +288,7 @@ export function WrightFlyer3D() {
       cancelAnimationFrame(reqId);
       for (const tex of airframe.textures) tex.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
   }, [live]);
 
