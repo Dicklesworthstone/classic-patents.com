@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 interface DeForestAudionSimProps {
   initialPlateVoltageV?: number;
@@ -20,12 +21,12 @@ export function DeForestAudionSim({
 }: DeForestAudionSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Interactive Controls
-  const [plateVoltageV, setPlateVoltageV] = useState(initialPlateVoltageV);
-  const [gridBiasVoltageV, setGridBiasVoltageV] = useState(initialGridBiasVoltageV);
-  const [filamentCurrentA, setFilamentCurrentA] = useState(initialFilamentCurrentA);
-  const [gridSignalAmplitudeMv, setGridSignalAmplitudeMv] = useState(initialGridSignalAmplitudeMv);
-  const [loadResistanceKOhms, setLoadResistanceKOhms] = useState(initialLoadResistanceKOhms);
+  const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
+  const plateVoltageV = params.plateVoltageV ?? initialPlateVoltageV;
+  const gridBiasVoltageV = params.gridBiasVoltageV ?? initialGridBiasVoltageV;
+  const filamentCurrentA = params.filamentCurrentA ?? initialFilamentCurrentA;
+  const gridSignalAmplitudeMv = params.gridSignalAmplitudeMv ?? initialGridSignalAmplitudeMv;
+  const loadResistanceKOhms = params.loadResistanceKOhms ?? initialLoadResistanceKOhms;
 
   // Compute live physics
   const physics = stepDeForestAudion({
@@ -372,7 +373,7 @@ export function DeForestAudionSim({
             max={120}
             step={5}
             value={plateVoltageV}
-            onChange={(e) => setPlateVoltageV(Number(e.target.value))}
+            onChange={(e) => updateParam("plateVoltageV", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
           />
           <span className="text-[10px] text-slate-400">High-voltage DC supply</span>
@@ -390,7 +391,7 @@ export function DeForestAudionSim({
             max={2.0}
             step={0.25}
             value={gridBiasVoltageV}
-            onChange={(e) => setGridBiasVoltageV(Number(e.target.value))}
+            onChange={(e) => updateParam("gridBiasVoltageV", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
           />
           <span className="text-[10px] text-slate-400">Electrostatic control bias</span>
@@ -408,7 +409,7 @@ export function DeForestAudionSim({
             max={1.5}
             step={0.1}
             value={filamentCurrentA}
-            onChange={(e) => setFilamentCurrentA(Number(e.target.value))}
+            onChange={(e) => updateParam("filamentCurrentA", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-500"
           />
           <span className="text-[10px] text-slate-400">Cathode heating power</span>
@@ -426,7 +427,7 @@ export function DeForestAudionSim({
             max={200}
             step={5}
             value={gridSignalAmplitudeMv}
-            onChange={(e) => setGridSignalAmplitudeMv(Number(e.target.value))}
+            onChange={(e) => updateParam("gridSignalAmplitudeMv", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
           />
           <span className="text-[10px] text-slate-400">Antenna carrier swing</span>
@@ -444,7 +445,7 @@ export function DeForestAudionSim({
             max={50}
             step={5}
             value={loadResistanceKOhms}
-            onChange={(e) => setLoadResistanceKOhms(Number(e.target.value))}
+            onChange={(e) => updateParam("loadResistanceKOhms", Number(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
           />
           <span className="text-[10px] text-slate-400">Headset coil impedance</span>

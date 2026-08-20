@@ -501,6 +501,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.408 Yale lock and Bell photophone 3D camera presets use `studio.controls.setView` and no longer remount WebGL (`[cameraPreset, live]` is gone). Peer De Forest still remounts on its private OrbitControls. Arkwright / Watt condenser remain off this drain.
 - [x] P5.409 Roomba 2D/3D share `ROOMBA_ROOM` (4×4 m) and `ROOMBA_FURNITURE`. Kernel owns table/armchair AABBs; 2D no longer mutates `state.mode` or steps a leftover 5×3.2 m box. 3D floor and furniture boxes drain the same seats. MultiTouch 2D `gestureVelocityMmS` is the registry 15 mm/s, not leftover 25.
 - [x] P5.410 Boyle CCD leftover `us-3923554` bus is the published `us-3858232` kernel (`stepBoyleSmithCcd`, `clockFrequencyMhz` / `gateVoltageV`). No more parallel `stepCcdWells` + `clockFreq` 2.5 MHz seats. Alias param `clockSpeedFactor` maps to `clockFrequencyMhz`. Inbound `/patents/us-3923554-boyle-smith-ccd` redirects. Peer De Forest / Arkwright / Watt condenser remain off-bus.
+- [x] P5.411 De Forest 2D plate/grid/filament sliders hoist onto `us-879532-de-forest-audion` (same bus as 3D). 3D camera presets use `setView` and no longer remount WebGL. Watt separate-condenser 3D drains `useLiveSimParams` and its overview/cylinder/condenser/beam/boiler buttons call `setView` instead of only painting the active chip. Arkwright 2D remains off-bus.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

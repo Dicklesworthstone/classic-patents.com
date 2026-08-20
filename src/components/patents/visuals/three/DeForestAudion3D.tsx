@@ -61,10 +61,11 @@ export function DeForestAudion3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const overview = CAMERA_PRESETS.isometric;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: CAMERA_PRESETS[cameraPreset].pos,
-      targetPos: CAMERA_PRESETS[cameraPreset].target,
+      cameraPos: overview.pos,
+      targetPos: overview.target,
       environmentStyle: "studio",
     });
     studioRef.current = studio;
@@ -110,7 +111,7 @@ export function DeForestAudion3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [cameraPreset, live]);
+  }, [live]);
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">

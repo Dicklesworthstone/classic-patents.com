@@ -4,24 +4,40 @@ import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser, WATT_DEFAULT_CONTROLS } from "@/physics/wattCondenserKernel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWattSeparateCondenserModel } from "./wattSeparateCondenserModel";
 
 const EXHIBIT_ID = "gb-913-watt-separate-condenser";
 
+type CameraPreset = "iso" | "cylinder" | "condenser" | "beam" | "boiler";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [9, 7, 12], target: [0, 3.5, 0] },
+  cylinder: { pos: [-2.5, 3.4, 5.2], target: [-2.5, 2.6, 0] },
+  condenser: { pos: [-2.5, 1.8, 4.2], target: [-2.5, 0.8, 0] },
+  beam: { pos: [0.2, 7.2, 6.5], target: [0, 4.8, 0] },
+  boiler: { pos: [-5.5, 2.8, 5.0], target: [-5.5, 1.5, 0] },
+};
+
 export function WattSeparateCondenser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [activePreset, setActivePreset] = useState<
-    "iso" | "cylinder" | "condenser" | "beam" | "boiler"
-  >("iso");
+  const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
+
+  const handlePresetChange = (preset: CameraPreset) => {
+    setActivePreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const { params } = usePatentPhysics(EXHIBIT_ID);
-  const liveParams = useRef(params);
-  useEffect(() => {
-    liveParams.current = params;
-  }, [params]);
+  const live = useLiveSimParams(params);
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -32,12 +48,14 @@ export function WattSeparateCondenser3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [9, 7, 12],
-      targetPos: [0, 3.5, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       environmentStyle: "studio",
     });
+    studioRef.current = studio;
 
     const model = buildWattSeparateCondenserModel();
     studio.scene.add(model.root);
@@ -47,7 +65,7 @@ export function WattSeparateCondenser3D() {
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const p = liveParams.current;
+      const p = live.current;
 
       const spm = p.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute;
       const cycleFreq = spm / 60;
@@ -74,8 +92,9 @@ export function WattSeparateCondenser3D() {
       cancelAnimationFrame(rafId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const outputs = stepWattCondenser({
     boilerPressurePsi: params.boilerPressurePsi,
@@ -132,7 +151,7 @@ export function WattSeparateCondenser3D() {
           <button
             key={id}
             type="button"
-            onClick={() => setActivePreset(id)}
+            onClick={() => handlePresetChange(id)}
             className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
               activePreset === id
                 ? "bg-amber-500 text-ink-950 font-bold"

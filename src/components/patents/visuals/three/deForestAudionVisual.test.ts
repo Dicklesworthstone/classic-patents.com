@@ -23,6 +23,8 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(studioSource).not.toContain("GLTFLoader");
     expect(studioSource).not.toContain(".gltf");
     expect(studioSource).not.toContain(".glb");
+    expect(studioSource).not.toContain("[cameraPreset, live]");
+    expect(studioSource).toContain("controls.setView");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -33,6 +35,17 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(studioSource).not.toContain("Math.random");
     expect(studioSource).not.toContain("new THREE.Clock");
     expect(studioSource).not.toContain("performance.now");
+  });
+
+  test("2D plate/grid/filament sliders write the shared physics bus", () => {
+    const simSource = readFileSync(
+      join(rootDir, "src/components/patents/visuals/DeForestAudionSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain('usePatentPhysics("us-879532-de-forest-audion")');
+    expect(simSource).toContain('updateParam("plateVoltageV"');
+    expect(simSource).toContain('updateParam("gridBiasVoltageV"');
+    expect(simSource).not.toContain("setPlateVoltageV");
   });
 
   test("computes genuine Child-Langmuir plate current, transconductance, and voltage gain in SI units", () => {
