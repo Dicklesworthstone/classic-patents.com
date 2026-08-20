@@ -1,27 +1,51 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
+import { stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildArkwrightWaterFrameModel } from "./arkwrightWaterFrameModel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
 
+type CameraPreset = "iso" | "drafting" | "flyer" | "cam" | "drum";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [1.8, 1.4, 2.2], target: [0, 0.7, 0] },
+  drafting: { pos: [0, 1.15, 0.45], target: [0, 0.88, 0] },
+  flyer: { pos: [-0.36, 0.85, 0.55], target: [-0.36, 0.65, 0.06] },
+  cam: { pos: [0.75, 0.65, 0.4], target: [0.55, 0.52, 0] },
+  drum: { pos: [0.65, 0.45, 0.6], target: [0.35, 0.22, 0] },
+};
+
+const PRESET_CHIPS: ReadonlyArray<{ id: CameraPreset; label: string }> = [
+  { id: "iso", label: "Full Frame" },
+  { id: "drafting", label: "Draft Rollers (C)" },
+  { id: "flyer", label: "Spindle & Flyer (E)" },
+  { id: "cam", label: "Heart-Cam (G)" },
+  { id: "drum", label: "Driving Drum (A)" },
+];
+
 export function ArkwrightWaterFrame3D() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [cutaway, _setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [activePreset, setActivePreset] = useState<"iso" | "drafting" | "flyer" | "cam" | "drum">(
-    "iso",
-  );
+  const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
 
   const { params } = usePatentPhysics(EXHIBIT_ID);
-  const liveParams = useRef(params);
-  useEffect(() => {
-    liveParams.current = params;
-  }, [params]);
+  const live = useLiveSimParams(params);
+
+  const handlePresetChange = (preset: CameraPreset) => {
+    setActivePreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -32,12 +56,14 @@ export function ArkwrightWaterFrame3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [1.8, 1.4, 2.2],
-      targetPos: [0, 0.7, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       environmentStyle: "studio",
     });
+    studioRef.current = studio;
 
     const model = buildArkwrightWaterFrameModel();
     studio.scene.add(model.root);
@@ -47,7 +73,7 @@ export function ArkwrightWaterFrame3D() {
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const p = liveParams.current;
+      const p = live.current;
 
       const out = stepArkwrightWaterFrame({
         waterWheelRpm: p.waterWheelRpm,
@@ -60,26 +86,21 @@ export function ArkwrightWaterFrame3D() {
       const dtVirtual = 1 / 60;
       virtualTime += dtVirtual;
 
-      const wheelRpm = p.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm;
-      const draftRatio = p.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
-
-      // Kinematic rotations
-      model.wheelGroup.rotation.x = (virtualTime * (wheelRpm * 2 * Math.PI)) / 60;
-      model.shaftGroup.rotation.z = (virtualTime * (wheelRpm * 2 * Math.PI)) / 60;
+      // Kinematic rotations from the shared kernel ω
+      model.wheelGroup.rotation.x = virtualTime * out.wheelOmegaRadPerS;
+      model.shaftGroup.rotation.z = virtualTime * out.wheelOmegaRadPerS;
 
       // Rollers
-      model.feedRollersGroup.rotation.x =
-        (virtualTime * (((wheelRpm * 0.75) / 4.0) * 2 * Math.PI)) / 60;
-      model.deliveryRollersGroup.rotation.x =
-        (virtualTime * (((wheelRpm * 0.75 * draftRatio) / 4.0) * 2 * Math.PI)) / 60;
+      model.feedRollersGroup.rotation.x = virtualTime * out.feedRollerOmegaRadPerS;
+      model.deliveryRollersGroup.rotation.x = virtualTime * out.deliveryRollerOmegaRadPerS;
 
       // Flyers & Bobbins
-      const flyerAngle = (virtualTime * (out.flyerSpindleRpm * 2 * Math.PI)) / 60;
+      const flyerAngle = virtualTime * out.spindleOmegaRadPerSec;
       for (const f of model.flyerGroups) {
         f.rotation.y = flyerAngle;
       }
 
-      const bobbinAngle = (virtualTime * (out.bobbinRpm * 2 * Math.PI)) / 60;
+      const bobbinAngle = virtualTime * out.bobbinOmegaRadPerS;
       for (const b of model.bobbinGroups) {
         b.rotation.y = bobbinAngle;
       }
@@ -103,8 +124,9 @@ export function ArkwrightWaterFrame3D() {
       cancelAnimationFrame(rafId);
       model.dispose();
       studio.dispose();
+      studioRef.current = null;
     };
-  }, []);
+  }, [live]);
 
   const outputs = stepArkwrightWaterFrame({
     waterWheelRpm: params.waterWheelRpm,
@@ -153,19 +175,6 @@ export function ArkwrightWaterFrame3D() {
     },
   ];
 
-  const presets = [
-    { id: "iso", label: "Full Frame", pos: [1.8, 1.4, 2.2], target: [0, 0.7, 0] },
-    { id: "drafting", label: "Draft Rollers (C)", pos: [0, 1.15, 0.45], target: [0, 0.88, 0] },
-    {
-      id: "flyer",
-      label: "Spindle & Flyer (E)",
-      pos: [-0.36, 0.85, 0.55],
-      target: [-0.36, 0.65, 0.06],
-    },
-    { id: "cam", label: "Heart-Cam (G)", pos: [0.75, 0.65, 0.4], target: [0.55, 0.52, 0] },
-    { id: "drum", label: "Driving Drum (A)", pos: [0.65, 0.45, 0.6], target: [0.35, 0.22, 0] },
-  ] as const;
-
   return (
     <div className="relative w-full h-[580px] bg-stone-950 rounded-2xl overflow-hidden border border-stone-800 shadow-2xl">
       {/* 3D Canvas Viewport */}
@@ -173,13 +182,11 @@ export function ArkwrightWaterFrame3D() {
 
       {/* Floating HUD Camera Presets & Toggles */}
       <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-2 bg-stone-900/90 backdrop-blur-md p-1.5 rounded-xl border border-stone-800">
-        {presets.map((preset) => (
+        {PRESET_CHIPS.map((preset) => (
           <button
             key={preset.id}
             type="button"
-            onClick={() => {
-              setActivePreset(preset.id);
-            }}
+            onClick={() => handlePresetChange(preset.id)}
             className={`px-2.5 py-1 text-xs font-mono font-medium rounded-lg transition-all ${
               activePreset === preset.id
                 ? "bg-amber-600 text-white shadow-md shadow-amber-900/30"

@@ -37,6 +37,14 @@ export interface ArkwrightWaterFrameOutputs {
   flyerSpindleRpm: number;
   /** Spindle angular velocity (rad/s) */
   spindleOmegaRadPerSec: number;
+  /** Great-wheel angular velocity (rad/s) */
+  wheelOmegaRadPerS: number;
+  /** Feed-roller pair angular velocity (rad/s) */
+  feedRollerOmegaRadPerS: number;
+  /** Front delivery-roller angular velocity (rad/s) */
+  deliveryRollerOmegaRadPerS: number;
+  /** Bobbin take-up angular velocity (rad/s) */
+  bobbinOmegaRadPerS: number;
   /** Resulting spun yarn English count (Ne = 840 yd/lb) */
   outputYarnCountNe: number;
   /** Yarn linear density in SI Tex (g/1000m) */
@@ -116,12 +124,16 @@ export function stepArkwrightWaterFrame(
   // Transmission gear ratio from main drum to spindle whorl: ~18.5:1
   const flyerSpindleRpm = waterWheelRpm * 18.5;
   const spindleOmegaRadPerSec = (flyerSpindleRpm * 2 * Math.PI) / 60;
+  const wheelOmegaRadPerS = (waterWheelRpm * 2 * Math.PI) / 60;
 
   // 2. Front delivery roller speed (driven through intermediate worm gear and draft train)
   // Roller diameter d_roller = 1 inch = 0.0254 m
   const frontRollerDiameterM = 0.0254;
-  // Front roller RPM is geared relative to water wheel and drafting train
+  // Feed pair is slow; front roller RPM is geared relative to water wheel and drafting train
+  const feedRollerRpm = (waterWheelRpm * 0.75) / 4.0;
   const frontRollerRpm = (waterWheelRpm * 0.75 * totalDraftRatio) / 4.0;
+  const feedRollerOmegaRadPerS = (feedRollerRpm * 2 * Math.PI) / 60;
+  const deliveryRollerOmegaRadPerS = (frontRollerRpm * 2 * Math.PI) / 60;
   const deliveryVelocityMPerMin = Math.PI * frontRollerDiameterM * frontRollerRpm;
   const deliveryVelocityMPerSec = deliveryVelocityMPerMin / 60.0;
 
@@ -169,6 +181,7 @@ export function stepArkwrightWaterFrame(
   const windingRpmNeeded = deliveryVelocityMPerMin / bobbinCircumferenceM;
   const bobbinRpm = Math.max(0, flyerSpindleRpm - windingRpmNeeded * (1.0 + dragCoeff * 0.1));
   const bobbinSlipRpm = flyerSpindleRpm - bobbinRpm;
+  const bobbinOmegaRadPerS = (bobbinRpm * 2 * Math.PI) / 60;
 
   // 8. Heart-cam traverse motion
   // Worm gear from main shaft drives heart-cam at ~0.08 Hz (1 cycle per 12.5 seconds)
@@ -187,6 +200,10 @@ export function stepArkwrightWaterFrame(
     deliveryVelocityMPerSec,
     flyerSpindleRpm,
     spindleOmegaRadPerSec,
+    wheelOmegaRadPerS,
+    feedRollerOmegaRadPerS,
+    deliveryRollerOmegaRadPerS,
+    bobbinOmegaRadPerS,
     outputYarnCountNe,
     yarnLinearDensityTex,
     twistTurnsPerMeter,

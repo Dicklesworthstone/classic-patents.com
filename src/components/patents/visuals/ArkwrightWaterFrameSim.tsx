@@ -1,14 +1,27 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
-import {
-  ARKWRIGHT_DEFAULT_CONTROLS,
-  type ArkwrightWaterFrameControls,
-  stepArkwrightWaterFrame,
-} from "@/physics/arkwrightKernel";
+import { useEffect, useId, useState } from "react";
+import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
+
+const EXHIBIT_ID = "gb-931-arkwright-water-frame";
 
 export function ArkwrightWaterFrameSim() {
-  const [controls, setControls] = useState<ArkwrightWaterFrameControls>(ARKWRIGHT_DEFAULT_CONTROLS);
+  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const waterWheelRpm = params.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm;
+  const totalDraftRatio = params.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
+  const rollerClampingWeightKg =
+    params.rollerClampingWeightKg ?? ARKWRIGHT_DEFAULT_CONTROLS.rollerClampingWeightKg;
+  const stapleLengthMm = params.stapleLengthMm ?? ARKWRIGHT_DEFAULT_CONTROLS.stapleLengthMm;
+  const inputRovingCountNe =
+    params.inputRovingCountNe ?? ARKWRIGHT_DEFAULT_CONTROLS.inputRovingCountNe;
+  const controls = {
+    waterWheelRpm,
+    totalDraftRatio,
+    rollerClampingWeightKg,
+    stapleLengthMm,
+    inputRovingCountNe,
+  };
   const [animTime, setAnimTime] = useState(0);
 
   const speedId = useId();
@@ -32,18 +45,16 @@ export function ArkwrightWaterFrameSim() {
     return () => cancelAnimationFrame(frameId);
   }, []);
 
-  const outputs = useMemo(() => stepArkwrightWaterFrame(controls), [controls]);
+  const outputs = stepArkwrightWaterFrame(controls);
 
-  // Rotational angles
-  const wheelRpm = controls.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm;
-  const draftRatio = controls.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
+  const wheelRpm = waterWheelRpm;
+  const draftRatio = totalDraftRatio;
 
   // Roller angles: feed is slow, intermediate faster, front is fastest
-  const feedRollerAngle = (animTime * ((wheelRpm * 0.75) / 4.0) * 2 * Math.PI) / 60;
-  const deliveryRollerAngle =
-    (animTime * ((wheelRpm * 0.75 * draftRatio) / 4.0) * 2 * Math.PI) / 60;
-  const flyerAngle = (animTime * outputs.flyerSpindleRpm * 2 * Math.PI) / 60;
-  const _bobbinAngle = (animTime * outputs.bobbinRpm * 2 * Math.PI) / 60;
+  const feedRollerAngle = animTime * outputs.feedRollerOmegaRadPerS;
+  const deliveryRollerAngle = animTime * outputs.deliveryRollerOmegaRadPerS;
+  const flyerAngle = animTime * outputs.spindleOmegaRadPerSec;
+  const _bobbinAngle = animTime * outputs.bobbinOmegaRadPerS;
 
   // Heart-cam vertical oscillation [-18px, +18px]
   const traversePhase = (animTime * outputs.traverseFreqHz * 2 * Math.PI) % (2 * Math.PI);
@@ -71,13 +82,10 @@ export function ArkwrightWaterFrameSim() {
         <div className="flex items-center gap-2 bg-stone-950/80 p-1.5 rounded-xl border border-stone-800">
           <button
             type="button"
-            onClick={() =>
-              setControls((prev) => ({
-                ...prev,
-                totalDraftRatio: 6.0,
-                rollerClampingWeightKg: 3.5,
-              }))
-            }
+            onClick={() => {
+              updateParam("totalDraftRatio", 6.0);
+              updateParam("rollerClampingWeightKg", 3.5);
+            }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
               (controls.totalDraftRatio ?? 6.0) >= 4.0
                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/30"
@@ -88,13 +96,10 @@ export function ArkwrightWaterFrameSim() {
           </button>
           <button
             type="button"
-            onClick={() =>
-              setControls((prev) => ({
-                ...prev,
-                totalDraftRatio: 2.5,
-                rollerClampingWeightKg: 0.8,
-              }))
-            }
+            onClick={() => {
+              updateParam("totalDraftRatio", 2.5);
+              updateParam("rollerClampingWeightKg", 0.8);
+            }}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
               (controls.totalDraftRatio ?? 6.0) < 4.0
                 ? "bg-amber-600 text-white shadow-lg shadow-amber-900/30"
@@ -481,12 +486,7 @@ export function ArkwrightWaterFrameSim() {
                 max="260"
                 step="10"
                 value={wheelRpm}
-                onChange={(e) =>
-                  setControls((prev) => ({
-                    ...prev,
-                    waterWheelRpm: Number(e.target.value),
-                  }))
-                }
+                onChange={(e) => updateParam("waterWheelRpm", Number(e.target.value))}
                 className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
               />
             </div>
@@ -505,12 +505,7 @@ export function ArkwrightWaterFrameSim() {
                 max="10.0"
                 step="0.5"
                 value={draftRatio}
-                onChange={(e) =>
-                  setControls((prev) => ({
-                    ...prev,
-                    totalDraftRatio: Number(e.target.value),
-                  }))
-                }
+                onChange={(e) => updateParam("totalDraftRatio", Number(e.target.value))}
                 className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
               />
             </div>
@@ -531,12 +526,7 @@ export function ArkwrightWaterFrameSim() {
                 max="6.0"
                 step="0.5"
                 value={controls.rollerClampingWeightKg ?? 3.5}
-                onChange={(e) =>
-                  setControls((prev) => ({
-                    ...prev,
-                    rollerClampingWeightKg: Number(e.target.value),
-                  }))
-                }
+                onChange={(e) => updateParam("rollerClampingWeightKg", Number(e.target.value))}
                 className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
             </div>
@@ -557,12 +547,7 @@ export function ArkwrightWaterFrameSim() {
                 max="38"
                 step="1"
                 value={controls.stapleLengthMm ?? 28}
-                onChange={(e) =>
-                  setControls((prev) => ({
-                    ...prev,
-                    stapleLengthMm: Number(e.target.value),
-                  }))
-                }
+                onChange={(e) => updateParam("stapleLengthMm", Number(e.target.value))}
                 className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
               />
             </div>

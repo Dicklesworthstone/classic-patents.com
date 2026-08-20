@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
 import { buildArkwrightWaterFrameModel } from "./arkwrightWaterFrameModel";
 
@@ -27,12 +29,40 @@ describe("GB 931 Richard Arkwright Water Frame Visual & Drafting Boundary", () =
   });
 
   test("exposes authentic camera presets and cutaway mode for textile machinery inspection", () => {
+    const studioSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/ArkwrightWaterFrame3D.tsx"),
+      "utf-8",
+    );
+    expect(studioSource).toContain("useLiveSimParams");
+    expect(studioSource).toContain("controls.setView");
+    expect(studioSource).toContain("out.wheelOmegaRadPerS");
+    expect(studioSource).toContain("out.feedRollerOmegaRadPerS");
+    expect(studioSource).not.toContain("[cameraPreset");
+    expect(studioSource).not.toContain("liveParams = useRef");
+    expect(studioSource).not.toContain("0.75) / 4.0");
+
     const model = buildArkwrightWaterFrameModel();
     model.setCalloutsVisible(true);
     expect(model.calloutGroup.visible).toBe(true);
     model.setCalloutsVisible(false);
     expect(model.calloutGroup.visible).toBe(false);
     model.dispose();
+  });
+
+  test("2D wheel/draft/weight/staple sliders write the shared physics bus", () => {
+    const simSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/ArkwrightWaterFrameSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("usePatentPhysics(EXHIBIT_ID)");
+    expect(simSource).toContain('"gb-931-arkwright-water-frame"');
+    expect(simSource).toContain('updateParam("waterWheelRpm"');
+    expect(simSource).toContain('updateParam("totalDraftRatio"');
+    expect(simSource).toContain('updateParam("rollerClampingWeightKg"');
+    expect(simSource).toContain('updateParam("stapleLengthMm"');
+    expect(simSource).not.toContain("setControls");
+    expect(simSource).toContain("outputs.feedRollerOmegaRadPerS");
+    expect(simSource).not.toContain("0.75) / 4.0");
   });
 
   test("computes genuine differential roller draft, flyer twist, and water twist tenacity in SI units", () => {

@@ -7,6 +7,13 @@ describe("Richard Arkwright Water Frame Physics Kernel (GB 931 / 1769)", () => {
 
     expect(out.flyerSpindleRpm).toBeGreaterThanOrEqual(3000);
     expect(out.spindleOmegaRadPerSec).toBeGreaterThan(300);
+    expect(out.wheelOmegaRadPerS).toBeCloseTo((180 * 2 * Math.PI) / 60, 6);
+    expect(out.feedRollerOmegaRadPerS).toBeCloseTo((((180 * 0.75) / 4.0) * 2 * Math.PI) / 60, 6);
+    expect(out.deliveryRollerOmegaRadPerS).toBeCloseTo(
+      (((180 * 0.75 * 6.0) / 4.0) * 2 * Math.PI) / 60,
+      6,
+    );
+    expect(out.bobbinOmegaRadPerS).toBeCloseTo((out.bobbinRpm * 2 * Math.PI) / 60, 6);
     expect(out.totalDraftRatio).toBe(6.0);
     expect(out.outputYarnCountNe).toBe(6.0);
     expect(out.yarnLinearDensityTex).toBeCloseTo(98.42, 1);
