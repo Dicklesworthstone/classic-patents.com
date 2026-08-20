@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface WhitneyCottonGinModel {
@@ -80,7 +79,6 @@ function createTimberTexture(): THREE.CanvasTexture | undefined {
 }
 
 export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
-  const lcg = createLcg(1794);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
@@ -360,9 +358,9 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
 
   for (let i = 0; i < fiberCount; i++) {
     const idx = i * 3;
-    fiberPositions[idx] = (lcg() - 0.5) * 6.2;
-    fiberPositions[idx + 1] = 0.2 + (lcg() - 0.5) * 1.5;
-    fiberPositions[idx + 2] = -0.5 + lcg() * 3.0;
+    fiberPositions[idx] = (deterministicUnit(i, 0) - 0.5) * 6.2;
+    fiberPositions[idx + 1] = 0.2 + (deterministicUnit(i, 1) - 0.5) * 1.5;
+    fiberPositions[idx + 2] = -0.5 + deterministicUnit(i, 2) * 3.0;
 
     fiberColors[idx] = 0.98;
     fiberColors[idx + 1] = 0.98;
@@ -395,8 +393,12 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
 
   for (let sd = 0; sd < 35; sd++) {
     const seed = new THREE.Mesh(seedGeo, seedMat);
-    seed.position.set((lcg() - 0.5) * 5.8, (lcg() - 0.5) * 0.4, (lcg() - 0.5) * 0.6);
-    seed.rotation.set(lcg() * Math.PI, lcg() * Math.PI, 0);
+    seed.position.set(
+      (deterministicUnit(sd, 0) - 0.5) * 5.8,
+      (deterministicUnit(sd, 1) - 0.5) * 0.4,
+      (deterministicUnit(sd, 2) - 0.5) * 0.6,
+    );
+    seed.rotation.set(deterministicUnit(sd, 3) * Math.PI, deterministicUnit(sd, 4) * Math.PI, 0);
     seedsGroup.add(seed);
   }
 

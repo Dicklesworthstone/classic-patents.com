@@ -340,19 +340,49 @@ export function delavalCreamCrate(bowlRpm: number): {
   };
 }
 
+/** Gatling barrel-cluster stiffness. Shared by the crate and bolt flex. */
+export function gatlingClusterKappa(crankRpm: number) {
+  return Number((0.5 + crankRpm / 80).toFixed(4));
+}
+
+/** Peak-normalized cyclic solution at one ring seat. Shared by 3D flex. */
+export function cyclicFlex(n: number, kappa: number, index: number) {
+  const nn = Math.max(4, Math.floor(n));
+  const ring = cyclicSymmetry(nn, kappa);
+  let peak = 1e-9;
+  for (let i = 0; i < nn; i++) peak = Math.max(peak, Math.abs(cyclicSol(ring, i)));
+  return Number((cyclicSol(ring, index) / peak).toFixed(4));
+}
+
 /** Gatling barrel-cluster first harmonic. Shared by 2D/3D/HUD. */
 export function gatlingClusterCrate(
   barrels: number,
   crankRpm: number,
-): { clusterHarmonicH1: number } {
-  const ring = cyclicSymmetry(Math.max(4, barrels), 0.5 + crankRpm / 80);
-  return { clusterHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)) };
+): { clusterHarmonicH1: number; clusterKappa: number } {
+  const kappa = gatlingClusterKappa(crankRpm);
+  const ring = cyclicSymmetry(Math.max(4, barrels), kappa);
+  return {
+    clusterHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)),
+    clusterKappa: kappa,
+  };
+}
+
+/** Gramme ring stiffness. Shared by the crate and flux flex. */
+export function grammeRingKappa(shaftRate: number) {
+  return Number((0.4 + shaftRate).toFixed(4));
 }
 
 /** Gramme 36-junction ring first harmonic. Shared by 2D/3D/HUD. */
-export function grammeRingCrate(junctions: number, shaftRate: number): { ringHarmonicH1: number } {
-  const ring = cyclicSymmetry(Math.max(4, junctions), 0.4 + shaftRate);
-  return { ringHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)) };
+export function grammeRingCrate(
+  junctions: number,
+  shaftRate: number,
+): { ringHarmonicH1: number; ringKappa: number } {
+  const kappa = grammeRingKappa(shaftRate);
+  const ring = cyclicSymmetry(Math.max(4, junctions), kappa);
+  return {
+    ringHarmonicH1: Number(cyclicHarmonic(ring, 1).toFixed(4)),
+    ringKappa: kappa,
+  };
 }
 
 function heatSampleU(u: number, v = 0.45): number {

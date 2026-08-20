@@ -43,10 +43,74 @@ export interface TeslaTeleautomatonModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Planished Copper Hull Plate Texture with Rivet Seams
+ */
+function createCopperHullTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#b87333";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Planished copper plates & rivet seams
+  ctx.strokeStyle = "rgba(100, 45, 15, 0.45)";
+  ctx.lineWidth = 2;
+  for (let y = 64; y < 512; y += 64) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(512, y);
+    ctx.stroke();
+
+    // Rivets along seam
+    for (let x = 8; x < 512; x += 16) {
+      ctx.fillStyle = "rgba(60, 25, 8, 0.7)";
+      ctx.beginPath();
+      ctx.arc(x, y - 4, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Subtle copper patina mottling
+  for (let i = 0; i < 300; i++) {
+    const px = deterministicUnit(i, 0) * 512;
+    const py = deterministicUnit(i, 1) * 512;
+    const r = 2 + deterministicUnit(i, 2) * 5;
+    ctx.fillStyle =
+      deterministicUnit(i, 3) > 0.6 ? "rgba(180, 100, 50, 0.25)" : "rgba(80, 35, 12, 0.2)";
+    ctx.beginPath();
+    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
   const root = new THREE.Group();
   const disposableGeometries: THREE.BufferGeometry[] = [];
   const disposableMaterials: THREE.Material[] = [];
+  const disposableTextures: THREE.Texture[] = [];
+
+  const copperTex = createCopperHullTexture();
+  if (copperTex) disposableTextures.push(copperTex);
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     disposableGeometries.push(geo);
@@ -61,6 +125,7 @@ export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
   const materials: TeslaTeleautomatonMaterials = {
     copperHull: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(copperTex ? { map: copperTex } : {}),
         color: 0xb87333,
         roughness: 0.35,
         metalness: 0.85,
@@ -427,6 +492,9 @@ export function buildTeslaTeleautomatonModel(): TeslaTeleautomatonModelResult {
     }
     for (const m of disposableMaterials) {
       m.dispose();
+    }
+    for (const t of disposableTextures) {
+      t.dispose();
     }
   };
 

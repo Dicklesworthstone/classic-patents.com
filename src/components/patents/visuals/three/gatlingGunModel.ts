@@ -7,9 +7,6 @@
  */
 
 import * as THREE from "three";
-import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(1537);
 
 export interface GatlingGunModelNodes {
   rootGroup: THREE.Group;
@@ -453,9 +450,9 @@ export function buildGatlingGunModel(): GatlingGunModel {
   const flashCount = 60;
   const flashPositions = new Float32Array(flashCount * 3);
   for (let i = 0; i < flashCount; i++) {
-    flashPositions[i * 3] = 4.8 + lcg() * 1.8;
-    flashPositions[i * 3 + 1] = 0.4 + (lcg() - 0.5) * 0.8;
-    flashPositions[i * 3 + 2] = (lcg() - 0.5) * 0.8;
+    flashPositions[i * 3] = 4.8 + deterministicUnit(i, 0) * 1.8;
+    flashPositions[i * 3 + 1] = 0.4 + (deterministicUnit(i, 1) - 0.5) * 0.8;
+    flashPositions[i * 3 + 2] = (deterministicUnit(i, 2) - 0.5) * 0.8;
   }
   flashGeo.setAttribute("position", new THREE.BufferAttribute(flashPositions, 3));
 

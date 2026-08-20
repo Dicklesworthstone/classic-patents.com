@@ -4,12 +4,7 @@ import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-rea
 import { memo, useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
-import {
-  cyclicHarmonic,
-  cyclicSymmetry,
-  ensureGenericWasm,
-  genericKernelSource,
-} from "@/physics/genericWasm";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGrammeDynamoModel, updateGrammeDynamoKinematics } from "./grammeDynamoModel";
@@ -35,7 +30,6 @@ export const GrammeDynamo3D = memo(() => {
   const { params } = usePatentPhysics("us-120057-gramme-dynamo");
   const shaftRate = params.shaftRate ?? 1;
   const gramme = stepGrammeDynamo({ shaftRate });
-  const grammeRing = cyclicSymmetry(gramme.printedJunctionCount, 0.4 + shaftRate);
   const [showMagneticFlux, setShowMagneticFlux] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
@@ -259,7 +253,7 @@ export const GrammeDynamo3D = memo(() => {
             label: "Ring crate",
             value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
           },
-          { label: "h₁", value: cyclicHarmonic(grammeRing, 1).toFixed(3) },
+          { label: "h₁", value: gramme.ringHarmonicH1.toFixed(3) },
         ]}
       />
       <p className="absolute bottom-3 left-4 right-4 z-10 rounded-lg border border-parchment-700/60 bg-parchment-950/80 px-3 py-2 text-xs text-parchment-200 backdrop-blur-md">

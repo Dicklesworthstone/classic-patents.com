@@ -52,6 +52,49 @@ export interface GrammeDynamoModelResult {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Cast-Iron Machine Texture
+ */
+function createCastIronTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#1e293b";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 500; i++) {
+    const x = deterministicUnit(i, 0) * 512;
+    const y = deterministicUnit(i, 1) * 512;
+    const r = 0.5 + deterministicUnit(i, 2) * 1.5;
+    const alpha = 0.06 + deterministicUnit(i, 3) * 0.1;
+    ctx.fillStyle =
+      deterministicUnit(i, 4) > 0.5
+        ? `rgba(255, 255, 255, ${alpha})`
+        : `rgba(0, 0, 0, ${alpha * 1.5})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 const FLUX_COUNT = 120;
 const SECTOR_COUNT = 36;
 
@@ -60,6 +103,9 @@ export function buildGrammeDynamoModel(): GrammeDynamoModelResult {
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
+
+  const castIronTex = createCastIronTexture();
+  if (castIronTex) texturesToDispose.push(castIronTex);
 
   const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
     geometriesToDispose.push(geo);
@@ -77,6 +123,7 @@ export function buildGrammeDynamoModel(): GrammeDynamoModelResult {
   const materials: GrammeDynamoMaterials = {
     castIron: trackMat(
       new THREE.MeshStandardMaterial({
+        ...(castIronTex ? { map: castIronTex } : {}),
         color: 0x1e293b,
         roughness: 0.5,
         metalness: 0.8,

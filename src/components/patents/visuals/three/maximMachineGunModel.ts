@@ -3,16 +3,13 @@
  *
  * Museum-Grade Procedural 3D Model for Sir Hiram Maxim's 1885 Automatic Recoil Machine Gun (US Patent 319,596).
  * Features authentic Victorian tripod ordnance mount, water-cooling jacket with brass filler plugs,
- * knee-joint toggle lock mechanism, side fusee recoil spring box, canvas ammunition belt feed,
- * dual spade grip handles with butterfly trigger, and dynamic muzzle blast & steam venting.
+ * knee-joint toggle lock mechanism, side fusee recoil spring box, woven canvas ammunition belt feed,
+ * dual turned walnut spade grip handles with butterfly trigger, and dynamic muzzle blast & steam venting.
  */
 
 import * as THREE from "three";
 import { stepMaximMachineGun, wrapCycleRad } from "@/physics/catalogKernels";
 import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
-
-const lcg = createLcg(319596);
 
 export interface MaximMachineGunModel {
   rootGroup: THREE.Group;
@@ -38,52 +35,144 @@ export interface MaximMachineGunModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural grain generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Woven Khaki Canvas Ammunition Belt Texture
+ */
+function createCanvasBeltTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#92704f";
+  ctx.fillRect(0, 0, 512, 512);
+
+  // Woven twill crosshatch
+  ctx.strokeStyle = "rgba(70, 45, 25, 0.4)";
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 512; i += 8) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, 512);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, i);
+    ctx.lineTo(512, i);
+    ctx.stroke();
+  }
+
+  // Edge reinforced stitching
+  ctx.strokeStyle = "rgba(40, 25, 10, 0.7)";
+  ctx.lineWidth = 2;
+  for (let y = 4; y < 512; y += 12) {
+    ctx.strokeRect(4, y, 6, 6);
+    ctx.strokeRect(502, y, 6, 6);
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(2, 2);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/**
+ * Procedural Turned English Walnut Spade Grips Texture
+ */
+function createWalnutHandleTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#5c2c16";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 80; i++) {
+    const y = i * 6.5 + (deterministicUnit(i, 0) - 0.5) * 4;
+    ctx.strokeStyle = `rgba(35, 15, 6, ${0.15 + deterministicUnit(i, 1) * 0.15})`;
+    ctx.lineWidth = 1.2 + deterministicUnit(i, 2) * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.bezierCurveTo(170, y + 10, 340, y - 8, 512, y + 6);
+    ctx.stroke();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildMaximMachineGunModel(): MaximMachineGunModel {
   const rootGroup = new THREE.Group();
   const texturesToDispose: THREE.Texture[] = [];
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
 
+  const canvasTex = createCanvasBeltTexture();
+  if (canvasTex) texturesToDispose.push(canvasTex);
+
+  const walnutTex = createWalnutHandleTexture();
+  if (walnutTex) texturesToDispose.push(walnutTex);
+
   // =========================================================================
   // MATERIALS
   // =========================================================================
   const gunmetal = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Deep blued ordnance steel
+    color: 0x1e293b,
     roughness: 0.38,
     metalness: 0.88,
   });
   materialsToDispose.push(gunmetal);
 
   const jacketMat = new THREE.MeshStandardMaterial({
-    color: 0x273549, // Corrugated water jacket dark blued steel
+    color: 0x273549,
     roughness: 0.45,
     metalness: 0.82,
   });
   materialsToDispose.push(jacketMat);
 
   const polishedSteel = new THREE.MeshStandardMaterial({
-    color: 0xe2e8f0, // Mirror-finished hardened tool steel for bolt & toggle
+    color: 0xe2e8f0,
     roughness: 0.15,
     metalness: 0.96,
   });
   materialsToDispose.push(polishedSteel);
 
   const brass = new THREE.MeshStandardMaterial({
-    color: 0xd97706, // Polished yellow ordnance brass for sights, plugs, petcocks, cartridges
+    color: 0xd97706,
     roughness: 0.22,
     metalness: 0.92,
   });
   materialsToDispose.push(brass);
 
   const woodHandle = new THREE.MeshStandardMaterial({
-    color: 0x5c2c16, // Turned English walnut spade grips
+    ...(walnutTex ? { map: walnutTex } : {}),
+    color: 0x5c2c16,
     roughness: 0.65,
     metalness: 0.1,
   });
   materialsToDispose.push(woodHandle);
 
   const canvas = new THREE.MeshStandardMaterial({
-    color: 0x92704f, // Khaki woven canvas ammunition belt
+    ...(canvasTex ? { map: canvasTex } : {}),
+    color: 0x92704f,
     roughness: 0.85,
     metalness: 0.05,
   });
@@ -150,153 +239,112 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     mountGroup.add(rearLeg);
   }
 
-  // Ammo Can Shelf on right leg
-  const shelfGeo = new THREE.BoxGeometry(0.65, 0.05, 0.45);
-  const shelf = new THREE.Mesh(shelfGeo, gunmetal);
-  shelf.position.set(-0.2, -0.4, 0.75);
-  const ammoCanGeo = new THREE.BoxGeometry(0.55, 0.45, 0.32);
-  const ammoCan = new THREE.Mesh(ammoCanGeo, gunmetal);
-  ammoCan.position.set(-0.2, -0.15, 0.75);
-  geometriesToDispose.push(shelfGeo, ammoCanGeo);
-  mountGroup.add(shelf, ammoCan);
-
   rootGroup.add(mountGroup);
 
   // =========================================================================
-  // 2. MAIN GUN BODY (RECOILING SYSTEM & RECEIVER)
+  // 2. RECEIVER CASING, WATER JACKET & RECOILING BARREL
   // =========================================================================
   const gunGroup = new THREE.Group();
-  gunGroup.position.set(0, 0.45, 0);
+  gunGroup.position.set(0, 0.65, 0);
 
-  // --- RECTANGULAR MILLED STEEL RECEIVER BOX ---
-  const receiverGeo = new THREE.BoxGeometry(2.8, 0.95, 0.65);
+  // Rectangular receiver body
+  const receiverGeo = new THREE.BoxGeometry(2.4, 0.95, 0.65);
   const receiver = new THREE.Mesh(receiverGeo, gunmetal);
-  receiver.position.set(-0.8, 0, 0);
+  receiver.position.set(-1.0, 0, 0);
   receiver.castShadow = true;
   geometriesToDispose.push(receiverGeo);
   gunGroup.add(receiver);
 
-  // Bronze Receiver Top Cover (hinged with latch)
-  const topCoverGeo = new THREE.BoxGeometry(2.2, 0.12, 0.66);
-  const topCover = new THREE.Mesh(topCoverGeo, brass);
-  topCover.position.set(-0.7, 0.52, 0);
-  geometriesToDispose.push(topCoverGeo);
-  gunGroup.add(topCover);
+  // Top cover plate (hinged)
+  const coverGeo = new THREE.BoxGeometry(2.1, 0.12, 0.62);
+  const cover = new THREE.Mesh(coverGeo, gunmetal);
+  cover.position.set(-1.0, 0.52, 0);
+  geometriesToDispose.push(coverGeo);
+  gunGroup.add(cover);
 
-  // Side Fusee Recoil Spring Box (Left side, Z = -0.38)
-  const fuseeBoxGeo = new THREE.BoxGeometry(1.2, 0.45, 0.18);
-  const fuseeBox = new THREE.Mesh(fuseeBoxGeo, gunmetal);
-  fuseeBox.position.set(-0.6, 0.05, -0.41);
-  const fuseeCapGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.22, 16);
-  const fuseeCap = new THREE.Mesh(fuseeCapGeo, brass);
-  fuseeCap.rotation.x = Math.PI / 2;
-  fuseeCap.position.set(-1.05, 0.05, -0.42);
-  geometriesToDispose.push(fuseeBoxGeo, fuseeCapGeo);
-  gunGroup.add(fuseeBox, fuseeCap);
+  // Cylindrical Corrugated Water Cooling Jacket (Claim 1)
+  const jacketGeo = new THREE.CylinderGeometry(0.48, 0.48, 3.8, 32);
+  const jacket = new THREE.Mesh(jacketGeo, jacketMat);
+  jacket.rotation.z = Math.PI / 2;
+  jacket.position.set(1.9, 0, 0);
+  jacket.castShadow = true;
+  geometriesToDispose.push(jacketGeo);
+  gunGroup.add(jacket);
 
-  // --- WATER-COOLED BARREL JACKET (Claim 1) ---
-  const jacketGroup = new THREE.Group();
-  jacketGroup.position.set(1.75, 0, 0);
+  // Water filler cap & drain petcock
+  const fillerGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.22, 12);
+  const fillerCap = new THREE.Mesh(fillerGeo, brass);
+  fillerCap.position.set(3.4, 0.54, 0);
+  const petcockGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.18, 8);
+  const petcock = new THREE.Mesh(petcockGeo, brass);
+  petcock.position.set(0.4, -0.52, 0);
+  geometriesToDispose.push(fillerGeo, petcockGeo);
+  gunGroup.add(fillerCap, petcock);
 
-  // Main cylindrical water jacket (holds 4.0 L of water)
-  const jacketCylGeo = new THREE.CylinderGeometry(0.48, 0.48, 4.4, 28);
-  const jacketCyl = new THREE.Mesh(jacketCylGeo, jacketMat);
-  jacketCyl.rotation.z = Math.PI / 2;
-  jacketCyl.castShadow = true;
-  geometriesToDispose.push(jacketCylGeo);
-  jacketGroup.add(jacketCyl);
+  // Muzzle Muzzle-Booster / Recoil-Amplifier Cap
+  const boosterGeo = new THREE.CylinderGeometry(0.22, 0.28, 0.42, 20);
+  const booster = new THREE.Mesh(boosterGeo, gunmetal);
+  booster.rotation.z = Math.PI / 2;
+  booster.position.set(3.95, 0, 0);
+  booster.castShadow = true;
+  geometriesToDispose.push(boosterGeo);
+  gunGroup.add(booster);
 
-  // Fluted cooling rings on jacket surface
-  for (let i = -4; i <= 4; i++) {
-    const ringGeo = new THREE.TorusGeometry(0.485, 0.015, 8, 28);
-    const ring = new THREE.Mesh(ringGeo, gunmetal);
-    ring.rotation.y = Math.PI / 2;
-    ring.position.set(i * 0.45, 0, 0);
-    geometriesToDispose.push(ringGeo);
-    jacketGroup.add(ring);
-  }
-
-  // Brass water filler plug with chain near breech
-  const fillerGeo = new THREE.CylinderGeometry(0.1, 0.12, 0.18, 16);
-  const filler = new THREE.Mesh(fillerGeo, brass);
-  filler.position.set(-1.6, 0.52, 0);
-  geometriesToDispose.push(fillerGeo);
-  jacketGroup.add(filler);
-
-  // Bottom brass drain petcock
-  const drainGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.16, 12);
-  const drain = new THREE.Mesh(drainGeo, brass);
-  drain.position.set(-1.6, -0.52, 0);
-  geometriesToDispose.push(drainGeo);
-  jacketGroup.add(drain);
-
-  // Forward Steam Vent Outlet Port & Condenser Hose Fitting
-  const steamFittingGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.25, 12);
-  const steamFitting = new THREE.Mesh(steamFittingGeo, brass);
-  steamFitting.position.set(1.8, 0.5, 0);
-  geometriesToDispose.push(steamFittingGeo);
-  jacketGroup.add(steamFitting);
-
-  gunGroup.add(jacketGroup);
-
-  // --- RECOILING RIFLED BARREL & MUZZLE RECOIL BOOSTER ---
+  // --- RECOILING INNER BARREL & BARREL EXTENSION ASSEMBLY ---
   const recoilingBarrelGroup = new THREE.Group();
 
-  // Rifled steel barrel protruding through the front stuffing box
-  const barrelGeo = new THREE.CylinderGeometry(0.14, 0.14, 5.6, 16);
+  // Rifled steel barrel (.303 / .45 Caliber)
+  const barrelGeo = new THREE.CylinderGeometry(0.12, 0.12, 4.4, 20);
   const barrel = new THREE.Mesh(barrelGeo, polishedSteel);
   barrel.rotation.z = Math.PI / 2;
-  barrel.position.set(1.9, 0, 0);
+  barrel.position.set(2.0, 0, 0);
+  barrel.castShadow = true;
   geometriesToDispose.push(barrelGeo);
   recoilingBarrelGroup.add(barrel);
 
-  // Maxim Muzzle Gas Recoil Booster Cup (Claim 1)
-  const boosterGroup = new THREE.Group();
-  boosterGroup.position.set(4.0, 0, 0);
-  const boosterBodyGeo = new THREE.CylinderGeometry(0.24, 0.22, 0.55, 16);
-  const boosterBody = new THREE.Mesh(boosterBodyGeo, gunmetal);
-  boosterBody.rotation.z = Math.PI / 2;
-  const boosterConeGeo = new THREE.ConeGeometry(0.22, 0.35, 16);
-  const boosterCone = new THREE.Mesh(boosterConeGeo, gunmetal);
-  boosterCone.rotation.z = -Math.PI / 2;
-  boosterCone.position.set(0.35, 0, 0);
-  geometriesToDispose.push(boosterBodyGeo, boosterConeGeo);
-  boosterGroup.add(boosterBody, boosterCone);
-  recoilingBarrelGroup.add(boosterGroup);
+  // Barrel extension side-plates
+  for (const zSign of [-1, 1]) {
+    const extGeo = new THREE.BoxGeometry(1.6, 0.55, 0.06);
+    const extPlate = new THREE.Mesh(extGeo, polishedSteel);
+    extPlate.position.set(-0.7, 0, zSign * 0.24);
+    geometriesToDispose.push(extGeo);
+    recoilingBarrelGroup.add(extPlate);
+  }
 
   gunGroup.add(recoilingBarrelGroup);
 
-  // --- KNEE-JOINT TOGGLE LOCK & BREECH BOLT ASSEMBLY (Claim 1) ---
+  // --- BREECH BOLT & LOCKING TOGGLE-JOINT MECHANISM (Claim 2) ---
   const toggleJointGroup = new THREE.Group();
-  toggleJointGroup.position.set(-0.8, 0.12, 0);
+  toggleJointGroup.position.set(-0.6, 0, 0);
 
-  // Breech bolt slider block
-  const boltGeo = new THREE.BoxGeometry(0.85, 0.42, 0.35);
+  // Breech block bolt with extractor and firing pin
+  const boltGeo = new THREE.BoxGeometry(0.65, 0.42, 0.38);
   const boltMesh = new THREE.Mesh(boltGeo, polishedSteel);
-  boltMesh.position.set(0.2, 0, 0);
+  boltMesh.position.set(-0.15, 0, 0);
+  boltMesh.castShadow = true;
   geometriesToDispose.push(boltGeo);
   toggleJointGroup.add(boltMesh);
 
-  // Forward connecting link
-  const fLinkGeo = new THREE.BoxGeometry(0.65, 0.14, 0.16);
-  const fLink = new THREE.Mesh(fLinkGeo, polishedSteel);
-  fLink.position.set(-0.35, 0.08, 0);
-  geometriesToDispose.push(fLinkGeo);
-  toggleJointGroup.add(fLink);
+  // Front toggle link
+  const frontLinkGeo = new THREE.BoxGeometry(0.55, 0.16, 0.22);
+  const frontLink = new THREE.Mesh(frontLinkGeo, polishedSteel);
+  frontLink.position.set(-0.6, 0.12, 0);
+  geometriesToDispose.push(frontLinkGeo);
+  toggleJointGroup.add(frontLink);
 
-  // Rear toggle crank link
-  const rLinkGeo = new THREE.BoxGeometry(0.65, 0.14, 0.16);
-  const rLink = new THREE.Mesh(rLinkGeo, polishedSteel);
-  rLink.position.set(-0.85, 0.08, 0);
-  geometriesToDispose.push(rLinkGeo);
-  toggleJointGroup.add(rLink);
+  // Rear toggle crank
+  const rearLinkGeo = new THREE.BoxGeometry(0.6, 0.16, 0.22);
+  const rearLink = new THREE.Mesh(rearLinkGeo, polishedSteel);
+  rearLink.position.set(-1.1, 0.06, 0);
+  geometriesToDispose.push(rearLinkGeo);
+  toggleJointGroup.add(rearLink);
 
-  // External Crank Handle with Roller (Right side, Z = 0.38)
+  // External Right-Side Crank Handle
   const crankHandle = new THREE.Group();
-  crankHandle.position.set(-1.15, 0, 0.38);
-  const crankArmGeo = new THREE.BoxGeometry(0.65, 0.12, 0.08);
+  crankHandle.position.set(-1.45, 0, 0.36);
+  const crankArmGeo = new THREE.BoxGeometry(0.55, 0.12, 0.06);
   const crankArm = new THREE.Mesh(crankArmGeo, gunmetal);
-  crankArm.position.set(0.25, 0.1, 0);
+  crankArm.position.set(0.24, 0.06, 0);
   const crankKnobGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.22, 12);
   const crankKnob = new THREE.Mesh(crankKnobGeo, polishedSteel);
   crankKnob.rotation.x = Math.PI / 2;
@@ -401,9 +449,9 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
   const steamGeo = new THREE.BufferGeometry();
   const steamPositions = new Float32Array(steamCount * 3);
   for (let i = 0; i < steamCount; i++) {
-    steamPositions[i * 3] = 3.55 + (lcg() - 0.5) * 0.3;
-    steamPositions[i * 3 + 1] = 0.95 + lcg() * 0.8;
-    steamPositions[i * 3 + 2] = (lcg() - 0.5) * 0.3;
+    steamPositions[i * 3] = 3.55 + (deterministicUnit(i, 0) - 0.5) * 0.3;
+    steamPositions[i * 3 + 1] = 0.95 + deterministicUnit(i, 1) * 0.8;
+    steamPositions[i * 3 + 2] = (deterministicUnit(i, 2) - 0.5) * 0.3;
   }
   steamGeo.setAttribute("position", new THREE.BufferAttribute(steamPositions, 3));
   const steamMat = new THREE.PointsMaterial({
@@ -423,7 +471,11 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     const sCaseGeo = new THREE.CylinderGeometry(0.045, 0.05, 0.35, 8);
     const sCase = new THREE.Mesh(sCaseGeo, brass);
     sCase.position.set(0.15 + (k % 3) * 0.15, -0.65 - Math.floor(k / 3) * 0.4, (k - 3) * 0.12);
-    sCase.rotation.set(lcg() * Math.PI, lcg() * Math.PI, lcg() * Math.PI);
+    sCase.rotation.set(
+      deterministicUnit(k, 0) * Math.PI,
+      deterministicUnit(k, 1) * Math.PI,
+      deterministicUnit(k, 2) * Math.PI,
+    );
     geometriesToDispose.push(sCaseGeo);
     spentCasesGroup.add(sCase);
   }
@@ -451,15 +503,9 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
       flame,
     },
     dispose: () => {
-      for (const t of texturesToDispose) {
-        t.dispose();
-      }
-      for (const g of geometriesToDispose) {
-        g.dispose();
-      }
-      for (const m of materialsToDispose) {
-        m.dispose();
-      }
+      for (const t of texturesToDispose) t.dispose();
+      for (const g of geometriesToDispose) g.dispose();
+      for (const m of materialsToDispose) m.dispose();
     },
   };
 }

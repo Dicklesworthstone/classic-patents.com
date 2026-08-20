@@ -8,9 +8,11 @@ import {
   bellWaveCrate,
   chainHeatCrate,
   cycleHeatCrate,
+  cyclicFlex,
   delavalCreamCrate,
   edisonHeatCrate,
   gatlingClusterCrate,
+  gatlingClusterKappa,
   grammeRingCrate,
   grooveWaveCrate,
   jacketHeatCrate,
@@ -1140,6 +1142,7 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
     firingWindowDeg: Number((180 / count).toFixed(3)),
     camStrokeStudio: 0.38,
     boltHomeX: -0.6,
+    boltFlexStudio: GATLING_BOLT_FLEX_STUDIO,
     fireIntervalS: Number((cycleTimeMs / 1000).toFixed(4)),
     muzzleFlashDecayPerS: 8,
     ...gatlingClusterCrate(count, rpm),
@@ -1184,6 +1187,14 @@ export function stepGatlingGun(params: { crankRpm?: number; barrelCount?: number
 /** Schematic barrel Y on the cluster face. Shared by the schematic. */
 export function gatlingSchematicBarrelY(angleDeg: number, centerY = 150, ampY = 28) {
   return Number((centerY + Math.sin((angleDeg * Math.PI) / 180) * ampY).toFixed(2));
+}
+
+/** Studio cam-flex amplitude on each bolt. Shared by 3D. */
+export const GATLING_BOLT_FLEX_STUDIO = 0.04;
+
+/** Peak-normalized cyclic flex at one barrel. Shared by 3D. */
+export function gatlingBoltCamFlex(barrelIndex: number, barrelCount: number, crankRpm: number) {
+  return cyclicFlex(barrelCount, gatlingClusterKappa(crankRpm), barrelIndex);
 }
 
 export function gatlingBoltStudioX(barrelAngleRad: number, homeX = -0.6, stroke = 0.38) {

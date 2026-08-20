@@ -3,14 +3,8 @@
 import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type * as THREE from "three";
-import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
-import {
-  cyclicHarmonic,
-  cyclicSol,
-  cyclicSymmetry,
-  ensureGenericWasm,
-  genericKernelSource,
-} from "@/physics/genericWasm";
+import { gatlingBoltCamFlex, gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
+import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGatlingGunModel } from "./gatlingGunModel";
@@ -49,6 +43,7 @@ export function GatlingGun3D() {
     barrelSpacingRad: gatling.barrelSpacingRad,
     camStrokeStudio: gatling.camStrokeStudio,
     boltHomeX: gatling.boltHomeX,
+    boltFlexStudio: gatling.boltFlexStudio,
     fireIntervalS: gatling.fireIntervalS,
     muzzleFlashDecayPerS: gatling.muzzleFlashDecayPerS,
   });
@@ -133,16 +128,11 @@ export function GatlingGun3D() {
 
       // Kinematic Cam Track Bolt Reciprocation
       const currentAngle = model.barrelClusterGroup.rotation.x;
-      const ring = cyclicSymmetry(Math.max(4, model.bolts.length), 0.5 + p.crankRpm / 80);
-      let peak = 1e-9;
-      for (let i = 0; i < model.bolts.length; i++) {
-        peak = Math.max(peak, Math.abs(cyclicSol(ring, i)));
-      }
       model.bolts.forEach((bolt, idx) => {
         const barrelAngle = currentAngle + idx * p.barrelSpacingRad;
-        const flex = cyclicSol(ring, idx) / peak;
+        const flex = gatlingBoltCamFlex(idx, model.bolts.length, p.crankRpm);
         bolt.position.x =
-          gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio) + flex * 0.04;
+          gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio) + flex * p.boltFlexStudio;
       });
 
       // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
@@ -265,13 +255,7 @@ export function GatlingGun3D() {
             label: "Cluster crate",
             value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
           },
-          {
-            label: "h₁",
-            value: cyclicHarmonic(
-              cyclicSymmetry(Math.max(4, params.barrelCount ?? 6), 0.5 + crankRpm / 80),
-              1,
-            ).toFixed(3),
-          },
+          { label: "h₁", value: gatling.clusterHarmonicH1.toFixed(3) },
         ]}
       />
     </div>

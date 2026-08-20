@@ -17,7 +17,6 @@
 import * as THREE from "three";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
-import { createLcg } from "@/utils/lcg";
 
 export interface PeltonWheelModel {
   rootGroup: THREE.Group;
@@ -41,15 +40,61 @@ export interface PeltonWheelModel {
   dispose: () => void;
 }
 
+/**
+ * Deterministic unit noise for procedural generation.
+ */
+function deterministicUnit(index: number, channel: number): number {
+  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
+  return sample - Math.floor(sample);
+}
+
+/**
+ * Procedural Cast-Iron Machine Texture
+ */
+function createCastIronTexture(): THREE.CanvasTexture | undefined {
+  if (typeof document === "undefined") return undefined;
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return undefined;
+
+  ctx.fillStyle = "#243242";
+  ctx.fillRect(0, 0, 512, 512);
+
+  for (let i = 0; i < 500; i++) {
+    const x = deterministicUnit(i, 0) * 512;
+    const y = deterministicUnit(i, 1) * 512;
+    const r = 0.5 + deterministicUnit(i, 2) * 1.5;
+    const alpha = 0.06 + deterministicUnit(i, 3) * 0.1;
+    ctx.fillStyle =
+      deterministicUnit(i, 4) > 0.5
+        ? `rgba(255, 255, 255, ${alpha})`
+        : `rgba(0, 0, 0, ${alpha * 1.5})`;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export function buildPeltonWheelModel(): PeltonWheelModel {
-  const lcg = createLcg(1127);
   const rootGroup = new THREE.Group();
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
+  const castIronTex = createCastIronTexture();
+  if (castIronTex) texturesToDispose.push(castIronTex);
+
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
+    ...(castIronTex ? { map: castIronTex } : {}),
     color: 0x243242,
     roughness: 0.55,
     metalness: 0.8,
@@ -348,7 +393,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     const t = i / jetCount;
     jetPos[idx] = -3.2 + t * 3.2;
     jetPos[idx + 1] = -2.25 + t * 2.25;
-    jetPos[idx + 2] = (lcg() - 0.5) * 0.08;
+    jetPos[idx + 2] = (deterministicUnit(i, 0) - 0.5) * 0.08;
   }
   jetGeo.setAttribute("position", new THREE.BufferAttribute(jetPos, 3));
   geometriesToDispose.push(jetGeo);
@@ -370,9 +415,10 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   const sprayPos = new Float32Array(sprayCount * 3);
   for (let i = 0; i < sprayCount; i++) {
     const idx = i * 3;
-    sprayPos[idx] = (lcg() - 0.5) * 1.5;
-    sprayPos[idx + 1] = -1.0 - lcg() * 1.8;
-    sprayPos[idx + 2] = (lcg() > 0.5 ? 1 : -1) * (0.3 + lcg() * 0.8);
+    sprayPos[idx] = (deterministicUnit(i, 0) - 0.5) * 1.5;
+    sprayPos[idx + 1] = -1.0 - deterministicUnit(i, 1) * 1.8;
+    sprayPos[idx + 2] =
+      (deterministicUnit(i, 2) > 0.5 ? 1 : -1) * (0.3 + deterministicUnit(i, 3) * 0.8);
   }
   sprayGeo.setAttribute("position", new THREE.BufferAttribute(sprayPos, 3));
   geometriesToDispose.push(sprayGeo);
