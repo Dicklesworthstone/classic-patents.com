@@ -127,7 +127,7 @@ describe("US 2,524,035 manual source edition", () => {
       "/patents/figures/us-2524035-bardeen-transistor/fig-1-source-crop-v1.png",
       "/patents/figures/us-2524035-bardeen-transistor/fig-10-source-crop-v1.png",
       "/patents/figures/us-2524035-bardeen-transistor/fig-11-source-crop-v1.png",
-      "/patents/figures/us-2524035-bardeen-transistor/fig-12-source-crop-v1.png",
+      "/patents/figures/us-2524035-bardeen-transistor/fig-12-source-crop-v2.png",
       "/patents/figures/us-2524035-bardeen-transistor/fig-13-source-crop-v1.png",
       "/patents/figures/us-2524035-bardeen-transistor/fig-14-source-crop-v1.png",
       "/patents/figures/us-2524035-bardeen-transistor/fig-15-source-crop-v1.png",

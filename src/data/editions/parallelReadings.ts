@@ -6,6 +6,7 @@
  * in the edition file.
  */
 
+import { ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS } from "./arkwrightWaterFrameEdition";
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
@@ -15,6 +16,7 @@ import { davenportElectricMotorParallelReadings } from "./davenportElectricMotor
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
 import { dieselEngineParallelReadings } from "./dieselEngineEdition";
 import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
+import { edisonIndicatorParallelReadings } from "./edisonIndicatorEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
 import { edisonPhonographParallelReadings } from "./edisonPhonographEdition";
 import { einsteinRefrigeratorParallelReadings } from "./einsteinRefrigeratorEdition";
@@ -26,7 +28,9 @@ import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
 import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
+import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
+import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
@@ -51,6 +55,7 @@ import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition"
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
+import { WATT_SEPARATE_CONDENSER_PARALLEL_READINGS } from "./wattSeparateCondenserEdition";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 
@@ -59,6 +64,9 @@ export type ArchivalParallelReading = readonly string[];
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, readonly string[]>>>
 > = {
+  "gb-913-watt-separate-condenser": WATT_SEPARATE_CONDENSER_PARALLEL_READINGS,
+  "gb-931-arkwright-water-frame": ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
+  "us-x1-hopkins-potash": HOPKINS_PARALLEL_READINGS,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
@@ -83,12 +91,14 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
+  "us-307031-edison-indicator": edisonIndicatorParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
   "us-347140-thomson-welding": thomsonWeldingParallelReadings,
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
   "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
+  "us-400766-hall-aluminium": HALL_ALUMINIUM_PARALLEL_READINGS,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
   "us-586193-marconi-radio": marconiRadioParallelReadings,

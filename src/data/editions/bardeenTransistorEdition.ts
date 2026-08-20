@@ -38,7 +38,7 @@ const FIGURES = {
   "Fig. 9": [crop("fig-9-source-crop-v1", 570, 520, "Fig. 9")],
   "Fig. 10": [crop("fig-10-source-crop-v1", 520, 410, "Fig. 10")],
   "Fig. 11": [crop("fig-11-source-crop-v1", 560, 480, "Fig. 11")],
-  "Fig. 12": [crop("fig-12-source-crop-v1", 560, 480, "Fig. 12")],
+  "Fig. 12": [crop("fig-12-source-crop-v2", 400, 375, "Fig. 12")],
   "Fig. 13": [crop("fig-13-source-crop-v1", 760, 350, "Fig. 13")],
   "Fig. 14": [crop("fig-14-source-crop-v1", 760, 310, "Fig. 14")],
   "Fig. 15": [crop("fig-15-source-crop-v1", 850, 630, "Fig. 15")],

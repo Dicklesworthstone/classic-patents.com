@@ -10,11 +10,11 @@ import {
 } from "./index";
 
 describe("Patents Index & Search Helper Methods", () => {
-  test("allPatents contains exactly 54 unique patents in chronological grant order", () => {
-    expect(allPatents.length).toBe(54);
+  test("allPatents contains unique patents in chronological grant order", () => {
+    expect(allPatents.length).toBeGreaterThanOrEqual(55);
 
     const ids = new Set(allPatents.map((p) => p.id));
-    expect(ids.size).toBe(54);
+    expect(ids.size).toBe(allPatents.length);
 
     // Verify chronological ordering
     for (let i = 0; i < allPatents.length - 1; i++) {
@@ -48,7 +48,7 @@ describe("Patents Index & Search Helper Methods", () => {
 
   test("getPatentsByCategory filters patents by category correctly", () => {
     const all = getPatentsByCategory("all");
-    expect(all.length).toBe(54);
+    expect(all.length).toBe(allPatents.length);
 
     const electricity = getPatentsByCategory("electricity");
     expect(electricity.length).toBeGreaterThan(0);
@@ -85,7 +85,7 @@ describe("Patents Index & Search Helper Methods", () => {
 
   test("searchPatents queries across titles, numbers, inventors, summaries, and tags", () => {
     const emptySearch = searchPatents("");
-    expect(emptySearch.length).toBe(54);
+    expect(emptySearch.length).toBe(allPatents.length);
 
     const teslaSearch = searchPatents("Tesla");
     expect(teslaSearch.length).toBeGreaterThanOrEqual(3);

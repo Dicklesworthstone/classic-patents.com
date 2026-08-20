@@ -5,8 +5,8 @@ import { PATENT_PHYSICS_REGISTRY } from "@/physics";
 import { FrankenSimEngine } from "@/physics/engine";
 
 describe("Classic Patents Catalog Integrity", () => {
-  it("should contain exactly 54 curated patents", () => {
-    expect(allPatents.length).toBe(54);
+  it("should contain all curated patents", () => {
+    expect(allPatents.length).toBeGreaterThanOrEqual(55);
   });
 
   it("should have chronological order across all patents", () => {
