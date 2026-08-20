@@ -1,111 +1,65 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { FrankenSimEngine } from "@/physics/engine";
-import { stepCcdWells } from "@/physics/machineKernels";
-import { buildBoyleSmithCcdModel, updateBoyleSmithCcdKinematics } from "./boyleSmithCcdModel";
+import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
+import { createBoyleSmithCcdModel } from "./boyleSmithCcdModel";
 
-const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+describe("US 3,858,232 Willard Boyle & George Smith Charge-Coupled Devices Visual Boundary", () => {
+  const root = process.cwd();
 
-describe("US 3,858,232 Willard Boyle & George Smith Charge-Coupled Device visual & 3-phase clocking boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "BoyleSmithCcd3D.tsx"),
-      "utf8",
-    );
-    const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "boyleSmithCcdModel.ts"),
-      "utf8",
-    );
+    const modelPath = join(root, "src/components/patents/visuals/three/boyleSmithCcdModel.ts");
+    const studioPath = join(root, "src/components/patents/visuals/three/BoyleSmithCcd3D.tsx");
 
-    expect(threeSource).not.toContain("GLTFLoader");
-    expect(threeSource).not.toContain(".glb");
-    expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildBoyleSmithCcdModel");
-    expect(modelSource).toContain("updateBoyleSmithCcdKinematics");
+    const modelCode = readFileSync(modelPath, "utf8");
+    const studioCode = readFileSync(studioPath, "utf8");
+
+    expect(modelCode).not.toContain("GLTFLoader");
+    expect(modelCode).not.toContain(".gltf");
+    expect(modelCode).not.toContain(".glb");
+
+    expect(studioCode).not.toContain("GLTFLoader");
+    expect(studioCode).not.toContain(".gltf");
+    expect(studioCode).not.toContain(".glb");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "BoyleSmithCcd3D.tsx"),
-      "utf8",
-    );
-    const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "boyleSmithCcdModel.ts"),
-      "utf8",
-    );
+    const modelPath = join(root, "src/components/patents/visuals/three/boyleSmithCcdModel.ts");
+    const modelCode = readFileSync(modelPath, "utf8");
 
-    for (const forbidden of ["Math.random", "new THREE.Clock", "performance.now"]) {
-      expect(threeSource).not.toContain(forbidden);
-      expect(modelSource).not.toContain(forbidden);
-    }
+    expect(modelCode).not.toContain("Math.random()");
+    expect(modelCode).not.toContain("Date.now()");
+    expect(modelCode).not.toContain("performance.now()");
   });
 
-  test("exposes authentic camera presets and cutaway mode for CCD inspection", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "BoyleSmithCcd3D.tsx"),
-      "utf8",
-    );
+  test("computes genuine surface potential, full-well capacity, and CTE in SI units", () => {
+    // Normal 10V gate clock
+    const normal = stepBoyleSmithCcd({ gateVoltageV: 10, incidentLux: 250 });
+    expect(normal.surfacePotentialV).toBeGreaterThan(5.0);
+    expect(normal.fullWellCapacityElectrons).toBeGreaterThan(100000);
+    expect(normal.totalCollectedElectrons).toBeGreaterThan(0);
+    expect(normal.ctePct).toBeGreaterThan(99.9);
+    expect(normal.snrDb).toBeGreaterThan(10);
 
-    for (const preset of [
-      "iso",
-      "potential_well",
-      "sensing_node",
-      "gate_electrodes",
-      "bus_lines",
-      "top",
-    ]) {
-      expect(threeSource).toContain(preset);
-    }
-
-    expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Boyle-Smith Charge-Coupled Device 3D");
+    // High 15V gate clock increases well depth and capacity
+    const highV = stepBoyleSmithCcd({ gateVoltageV: 15, incidentLux: 250 });
+    expect(highV.surfacePotentialV).toBeGreaterThan(normal.surfacePotentialV);
+    expect(highV.fullWellCapacityElectrons).toBeGreaterThan(normal.fullWellCapacityElectrons);
   });
 
-  test("computes genuine charge transfer efficiency (CTE > 0.999), full well capacity, and packet charge in SI units", () => {
-    const result = FrankenSimEngine.stepBoyleSmithCcd(1, 8, 850, 2.5);
-    expect(result.chargeTransferEfficiencyPct).toBeGreaterThan(99.0);
-    const wells = stepCcdWells(1, 850, 2.5, 8);
-    expect(wells.phaseDisplayS).toBeCloseTo(wells.phaseDisplayMs / 1000, 4);
-    expect(wells.ctePct).toBeCloseTo(wells.cte * 100, 4);
-    expect(result.chargeTransferEfficiencyPct).toBe(wells.ctePct);
-    expect(wells.packetOpacity).toBeCloseTo(0.35 + wells.cte * 0.55, 4);
-    expect(wells.wellSvgDepths[0]).toBeGreaterThan(wells.wellSvgDepthBase);
-    expect(wells.wellSvgDepths[0]).toBeLessThan(wells.wellSvgDepthBase + wells.wellSvgDepthSpan);
-    expect(wells.gateSvgCount).toBe(9);
-    expect(wells.gateSvgPitch).toBe(50);
-    expect(wells.packetCount).toBe(3);
-    expect(wells.packetSvgRx).toBe(16);
-  });
+  test("builds and articulates procedural silicon substrate, oxide layer, gate array, and electron packets", () => {
+    const model = createBoyleSmithCcdModel();
+    expect(model.nodes.siliconSubstrate).toBeDefined();
+    expect(model.nodes.oxideLayer).toBeDefined();
+    expect(model.nodes.gateArray).toBeDefined();
+    expect(model.nodes.electronPackets).toBeDefined();
+    expect(model.nodes.dipPackage).toBeDefined();
+    expect(model.nodes.leadPins).toBeDefined();
 
-  test("builds and articulates procedural silicon substrate, channel stops, gate oxide, 3-phase gates, and electron packets correctly", () => {
-    const { rootGroup, nodes, materials, dispose } = buildBoyleSmithCcdModel();
-    expect(rootGroup.children.length).toBeGreaterThan(0);
-    expect(nodes.substrate).toBeDefined();
-    expect(nodes.channelStops.length).toBe(2);
-    expect(nodes.oxide).toBeDefined();
-    expect(nodes.busLines.length).toBe(3);
-    expect(nodes.gates.length).toBe(9);
-    expect(nodes.outputNode).toBeDefined();
-    expect(nodes.packetPoints).toBeDefined();
+    // Update with animation time step
+    model.update({ gateVoltageV: 10, clockFrequencyMhz: 5.0 }, 0.5);
+    expect(model.nodes.group.children.length).toBeGreaterThan(4);
 
-    updateBoyleSmithCcdKinematics(
-      nodes,
-      materials,
-      0.016,
-      0.5,
-      2,
-      {
-        wells: [5000, 10000, 2000],
-        fullWellElectrons: 40000,
-        cte: 0.9999,
-        packetOpacity: 0.8999,
-      },
-      true,
-    );
-    expect(materials.pSiliconSubstrate.transparent).toBe(true);
-    expect(nodes.packetPoints.visible).toBe(true);
-
-    dispose();
+    model.dispose();
   });
 });

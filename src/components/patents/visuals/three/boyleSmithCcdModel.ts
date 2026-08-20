@@ -1,416 +1,211 @@
-/**
- * boyleSmithCcdModel.ts
- *
- * Museum-Grade Procedural 3D Model for Willard S. Boyle & George E. Smith's 1974 Charge-Coupled Device
- * (US Patent 3,858,232 - "Buried Channel Charge Coupled Devices").
- *
- * Reconstructs the Bell Labs semiconductor imaging & memory invention:
- * 1. P-type silicon substrate ingot slab with authentic crystal lattice finish.
- * 2. Boron-doped channel stop lateral isolation barriers.
- * 3. Transparent silicon dioxide (SiO2) gate dielectric insulator layer.
- * 4. 3-phase clock bus lines (Phase 1, Phase 2, Phase 3).
- * 5. 9 polysilicon gate electrodes connected via contact vias (Claim 1 & Claim 2).
- * 6. Floating diffusion sensing node amplifier and reset gate at the output terminus.
- * 7. Subsurface electron charge packets transferring along the channel with high charge transfer efficiency (CTE > 0.9999).
- */
-
 import * as THREE from "three";
-import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
-import { ccdGatePhase } from "@/physics/machineKernels";
-import { createGlowPointTexture } from "./ThreeStudioScene";
-
-export interface GateNode {
-  mesh: THREE.Mesh;
-  phase: number;
-  x: number;
-}
+import { type BoyleSmithCcdControls, stepBoyleSmithCcd } from "@/physics/catalogKernels";
 
 export interface BoyleSmithCcdModelNodes {
-  rootGroup: THREE.Group;
-  substrate: THREE.Mesh;
-  channelStops: THREE.Mesh[];
-  oxide: THREE.Mesh;
-  busLines: THREE.Mesh[];
-  gates: GateNode[];
-  outputNode: THREE.Mesh;
-  packetPoints: THREE.Points;
-  packetPos: Float32Array;
-  packetCount: number;
-  bondPads?: THREE.Mesh[];
+  group: THREE.Group;
+  siliconSubstrate: THREE.Mesh;
+  oxideLayer: THREE.Mesh;
+  gateArray: THREE.Group;
+  electronPackets: THREE.Group;
+  dipPackage: THREE.Mesh;
+  leadPins: THREE.Group;
 }
 
-export interface BoyleSmithCcdMaterials {
-  pSiliconSubstrate: THREE.MeshStandardMaterial;
-  gatePolySilicon: THREE.MeshStandardMaterial;
-  gateActive: THREE.MeshStandardMaterial;
-  oxideMat: THREE.MeshPhysicalMaterial;
-  channelStopMat: THREE.MeshStandardMaterial;
-  outputNodeMat: THREE.MeshStandardMaterial;
-  packetMat: THREE.PointsMaterial;
-  goldPadMat?: THREE.MeshStandardMaterial;
-}
-
-export interface BoyleSmithCcdModelResult {
-  root: THREE.Group;
-  rootGroup: THREE.Group;
+export function createBoyleSmithCcdModel(): {
   nodes: BoyleSmithCcdModelNodes;
-  materials: BoyleSmithCcdMaterials;
-  updateKinematics: (
-    delta: number,
-    activePhase: 1 | 2 | 3,
-    wellsData: {
-      wells: number[];
-      fullWellElectrons: number;
-      cte: number;
-      packetOpacity: number;
-    },
-  ) => void;
+  update: (controls: BoyleSmithCcdControls, timeSec: number) => void;
   dispose: () => void;
-}
-
-const PACKET_COUNT = 240;
-const NUM_GATES = 9;
-
-/**
- * Deterministic unit noise for procedural grain generation.
- */
-function deterministicUnit(index: number, channel: number): number {
-  const sample = Math.sin((index + 1) * 12.9898 + (channel + 1) * 78.233) * 43758.5453;
-  return sample - Math.floor(sample);
-}
-
-/**
- * Procedural Polished Silicon Wafer Texture
- */
-function createSiliconTexture(): THREE.CanvasTexture | undefined {
-  if (typeof document === "undefined") return undefined;
-  const canvas = document.createElement("canvas");
-  canvas.width = 512;
-  canvas.height = 512;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return undefined;
-
-  // Mirror-polished silicon slate gray base
-  ctx.fillStyle = "#2d3748";
-  ctx.fillRect(0, 0, 512, 512);
-
-  // Subtle crystal orientation striations
-  for (let i = 0; i < 120; i++) {
-    const y = i * 4.3 + (deterministicUnit(i, 0) - 0.5) * 2;
-    ctx.strokeStyle = "rgba(74, 85, 104, 0.25)";
-    ctx.lineWidth = 1.0;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(512, y);
-    ctx.stroke();
-  }
-
-  // Microscopic surface lattice reflections
-  for (let p = 0; p < 200; p++) {
-    const px = deterministicUnit(p, 1) * 512;
-    const py = deterministicUnit(p, 2) * 512;
-    ctx.fillStyle = "rgba(160, 174, 192, 0.15)";
-    ctx.fillRect(px, py, 2, 2);
-  }
-
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(2, 2);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
-}
-
-export function buildBoyleSmithCcdModel(): BoyleSmithCcdModelResult {
-  const rootGroup = new THREE.Group();
-  const materialsToDispose: THREE.Material[] = [];
-  const geometriesToDispose: THREE.BufferGeometry[] = [];
-  const texturesToDispose: THREE.Texture[] = [];
-
-  const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
-    geometriesToDispose.push(geo);
-    return geo;
-  };
-  const trackMat = <T extends THREE.Material>(mat: T): T => {
-    materialsToDispose.push(mat);
-    return mat;
-  };
-
-  const siliconTex = createSiliconTexture();
-  if (siliconTex) texturesToDispose.push(siliconTex);
-
-  const glowTex = createGlowPointTexture();
-  texturesToDispose.push(glowTex);
+} {
+  const group = new THREE.Group();
+  group.name = "boyle-smith-ccd-root";
 
   // Materials
-  const materials: BoyleSmithCcdMaterials = {
-    pSiliconSubstrate: trackMat(
-      new THREE.MeshStandardMaterial({
-        ...(siliconTex ? { map: siliconTex } : {}),
-        color: 0x334155,
-        roughness: 0.25,
-        metalness: 0.85,
-      }),
-    ),
-    gatePolySilicon: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xca8a04,
-        roughness: 0.2,
-        metalness: 0.9,
-      }),
-    ),
-    gateActive: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0x3b82f6,
-        roughness: 0.15,
-        metalness: 0.8,
-        emissive: 0x2563eb,
-        emissiveIntensity: 0.85,
-      }),
-    ),
-    oxideMat: trackMat(
-      new THREE.MeshPhysicalMaterial({
-        color: 0x38bdf8,
-        transmission: 0.85,
-        opacity: 0.9,
-        transparent: true,
-        roughness: 0.05,
-        ior: 1.46,
-      }),
-    ),
-    channelStopMat: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0x1e1b4b,
-        roughness: 0.8,
-      }),
-    ),
-    outputNodeMat: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0x10b981,
-        roughness: 0.3,
-        metalness: 0.8,
-      }),
-    ),
-    goldPadMat: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xf59e0b,
-        roughness: 0.18,
-        metalness: 0.95,
-      }),
-    ),
-    packetMat: trackMat(
-      new THREE.PointsMaterial({
-        size: 0.4,
-        map: glowTex,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
-    ),
-  };
-
-  // 1. P-Type Silicon Substrate Ingot
-  const substrate = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(9.6, 1.0, 5.4)),
-    materials.pSiliconSubstrate,
-  );
-  substrate.position.y = -0.5;
-  substrate.castShadow = true;
-  substrate.receiveShadow = true;
-  rootGroup.add(substrate);
-
-  // 2. Channel Stop Boron Isolation Barriers
-  const channelStops: THREE.Mesh[] = [];
-  [-2.4, 2.4].forEach((sz) => {
-    const channelStop = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(9.4, 0.2, 0.4)),
-      materials.channelStopMat,
-    );
-    channelStop.position.set(0, 0.05, sz);
-    channelStop.castShadow = true;
-    rootGroup.add(channelStop);
-    channelStops.push(channelStop);
+  const ceramicMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.4,
+    metalness: 0.2,
   });
 
-  // 3. SiO2 Gate Dielectric Oxide Layer
-  const oxide = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(9.4, 0.25, 4.4)), materials.oxideMat);
-  oxide.position.y = 0.12;
-  rootGroup.add(oxide);
-
-  // 4. 3-Phase Clock Bus Lines
-  const busLines: THREE.Mesh[] = [];
-  const busColors = [0x0284c7, 0xd97706, 0x9333ea];
-  for (let b = 0; b < 3; b++) {
-    const busLine = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(9.0, 0.12, 0.22)),
-      trackMat(
-        new THREE.MeshStandardMaterial({
-          color: busColors[b],
-          metalness: 0.9,
-          roughness: 0.2,
-        }),
-      ),
-    );
-    busLine.position.set(0, 0.38, 2.0 - b * 0.35);
-    busLine.castShadow = true;
-    rootGroup.add(busLine);
-    busLines.push(busLine);
-  }
-
-  // 5. 9 Transparent Polysilicon Gate Electrodes
-  const gates: GateNode[] = [];
-  const gateGeo = trackGeo(new THREE.BoxGeometry(0.72, 0.24, 3.2));
-
-  for (let g = 0; g < NUM_GATES; g++) {
-    const gX = -3.6 + g * 0.85;
-    const phaseNum = ccdGatePhase(g);
-
-    const gateMesh = new THREE.Mesh(gateGeo, materials.gatePolySilicon);
-    gateMesh.position.set(gX, 0.36, -0.4);
-    gateMesh.castShadow = true;
-    rootGroup.add(gateMesh);
-
-    const busZ = 2.0 - (phaseNum - 1) * 0.35;
-    const via = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(0.12, 0.14, Math.abs(busZ - -0.4))),
-      trackMat(
-        new THREE.MeshStandardMaterial({
-          color: busColors[phaseNum - 1],
-          metalness: 0.85,
-        }),
-      ),
-    );
-    via.position.set(gX, 0.36, (-0.4 + busZ) / 2);
-    rootGroup.add(via);
-
-    gates.push({ mesh: gateMesh, phase: phaseNum, x: gX });
-  }
-
-  // 6. Output Floating Diffusion Sensing Node & Reset Gate
-  const outputNode = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.65, 0.3, 3.2)),
-    materials.outputNodeMat,
-  );
-  outputNode.position.set(4.3, 0.38, -0.4);
-  outputNode.castShadow = true;
-  rootGroup.add(outputNode);
-
-  // Gold Wire Bond Contact Pads on periphery
-  const bondPads: THREE.Mesh[] = [];
-  [-4.2, -4.2, -4.2, 4.4].forEach((bx, idx) => {
-    const pad = new THREE.Mesh(
-      trackGeo(new THREE.BoxGeometry(0.35, 0.08, 0.35)),
-      materials.goldPadMat || materials.gatePolySilicon,
-    );
-    pad.position.set(bx, 0.28, 1.8 - (idx % 3) * 0.8);
-    rootGroup.add(pad);
-    bondPads.push(pad);
+  const siliconMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.2,
+    metalness: 0.8,
   });
 
-  // 7. Glowing Electron Charge Packets
-  const packetGeo = trackGeo(new THREE.BufferGeometry());
-  const packetPos = new Float32Array(PACKET_COUNT * 3);
-  const packetColors = new Float32Array(PACKET_COUNT * 3);
+  const oxideMat = new THREE.MeshPhysicalMaterial({
+    color: 0x38bdf8,
+    transmission: 0.7,
+    roughness: 0.1,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.6,
+  });
 
-  for (let i = 0; i < PACKET_COUNT; i++) {
-    const idx = i * 3;
-    const pixelIdx = Math.floor(i / (PACKET_COUNT / 3));
-    const baseGateX = -3.6 + pixelIdx * 3 * 0.85;
+  const gateMatPhi1 = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    metalness: 0.7,
+    roughness: 0.3,
+  });
 
-    packetPos[idx] = baseGateX;
-    packetPos[idx + 1] = -0.2;
-    packetPos[idx + 2] = ((i % 10) / 10 - 0.5) * 2.8;
+  const gateMatPhi2 = new THREE.MeshStandardMaterial({
+    color: 0x34d399,
+    metalness: 0.7,
+    roughness: 0.3,
+  });
 
-    packetColors[idx] = 0.1;
-    packetColors[idx + 1] = 0.9;
-    packetColors[idx + 2] = 1.0;
+  const gateMatPhi3 = new THREE.MeshStandardMaterial({
+    color: 0xf43f5e,
+    metalness: 0.7,
+    roughness: 0.3,
+  });
+
+  const goldMat = new THREE.MeshStandardMaterial({
+    color: 0xfbbf24,
+    metalness: 0.9,
+    roughness: 0.2,
+  });
+
+  const electronMat = new THREE.MeshStandardMaterial({
+    color: 0x60a5fa,
+    emissive: 0x3b82f6,
+    emissiveIntensity: 1.5,
+    roughness: 0.2,
+    metalness: 0.1,
+  });
+
+  // 1. Ceramic DIP Package Body
+  const dipPackage = new THREE.Mesh(new THREE.BoxGeometry(16, 1.2, 8), ceramicMat);
+  dipPackage.position.set(0, -1.0, 0);
+  group.add(dipPackage);
+
+  // 2. Gold Lead Pins
+  const leadPins = new THREE.Group();
+  const numPins = 8;
+  const pinGeo = new THREE.BoxGeometry(0.3, 1.8, 0.2);
+  for (let i = 0; i < numPins; i++) {
+    const px = -6 + i * 1.7;
+    const pinL = new THREE.Mesh(pinGeo, goldMat);
+    pinL.position.set(px, -1.6, 4.0);
+    leadPins.add(pinL);
+
+    const pinR = new THREE.Mesh(pinGeo, goldMat);
+    pinR.position.set(px, -1.6, -4.0);
+    leadPins.add(pinR);
   }
+  group.add(leadPins);
 
-  packetGeo.setAttribute("position", new THREE.BufferAttribute(packetPos, 3));
-  packetGeo.setAttribute("color", new THREE.BufferAttribute(packetColors, 3));
+  // 3. Silicon Die Substrate
+  const siliconSubstrate = new THREE.Mesh(new THREE.BoxGeometry(11, 0.6, 5), siliconMat);
+  siliconSubstrate.position.set(0, -0.1, 0);
+  group.add(siliconSubstrate);
 
-  const packetPoints = new THREE.Points(packetGeo, materials.packetMat);
-  rootGroup.add(packetPoints);
+  // 4. SiO2 Thin Oxide Layer
+  const oxideLayer = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.12, 4.6), oxideMat);
+  oxideLayer.position.set(0, 0.26, 0);
+  group.add(oxideLayer);
 
-  const nodes: BoyleSmithCcdModelNodes = {
-    rootGroup,
-    substrate,
-    channelStops,
-    oxide,
-    busLines,
-    gates,
-    outputNode,
-    packetPoints,
-    packetPos,
-    packetCount: PACKET_COUNT,
-    bondPads,
+  // 5. Array of 3-Phase Gate Electrodes
+  const gateArray = new THREE.Group();
+  const numGates = 18;
+  const gateWidth = 0.5;
+  const gateHeight = 0.18;
+  const gateDepth = 3.6;
+  const gateMeshes: THREE.Mesh[] = [];
+
+  const gateGeom = new THREE.BoxGeometry(gateWidth, gateHeight, gateDepth);
+
+  for (let i = 0; i < numGates; i++) {
+    const phase = i % 3;
+    let mat = gateMatPhi1;
+    if (phase === 1) mat = gateMatPhi2;
+    if (phase === 2) mat = gateMatPhi3;
+
+    const gx = -4.8 + i * (gateWidth + 0.08);
+    const gateMesh = new THREE.Mesh(gateGeom, mat.clone());
+    gateMesh.position.set(gx, 0.4, 0);
+    gateArray.add(gateMesh);
+    gateMeshes.push(gateMesh);
+  }
+  group.add(gateArray);
+
+  // 6. Electron Charge Packets
+  const electronPackets = new THREE.Group();
+  const packetGeo = new THREE.SphereGeometry(0.24, 16, 16);
+  const packetMeshes: THREE.Mesh[] = [];
+  const numPackets = 6;
+
+  for (let i = 0; i < numPackets; i++) {
+    const pMesh = new THREE.Mesh(packetGeo, electronMat);
+    pMesh.position.set(-4.0 + i * 1.8, 0.05, 0);
+    electronPackets.add(pMesh);
+    packetMeshes.push(pMesh);
+  }
+  group.add(electronPackets);
+
+  // Update loop
+  const update = (controls: BoyleSmithCcdControls, timeSec: number) => {
+    const metrics = stepBoyleSmithCcd(controls);
+    const fClock = controls.clockFrequencyMhz ?? 5.0;
+
+    // Clock phase progression
+    const clockPhase = (timeSec * fClock * 1.5) % (Math.PI * 2);
+
+    // Gate activation shimmers
+    for (let i = 0; i < numGates; i++) {
+      const phase = i % 3;
+      const phaseAngle = clockPhase - (phase * 2 * Math.PI) / 3;
+      const vNorm = 0.5 * (1 + Math.sin(phaseAngle));
+      const gMesh = gateMeshes[i];
+
+      // Elevation and brightness
+      gMesh.position.y = 0.4 + vNorm * 0.08;
+      (gMesh.material as THREE.MeshStandardMaterial).emissive = new THREE.Color(
+        phase === 0 ? 0x0284c7 : phase === 1 ? 0x059669 : 0xe11d48,
+      );
+      (gMesh.material as THREE.MeshStandardMaterial).emissiveIntensity = vNorm * 0.8;
+    }
+
+    // Translate electron charge packets smoothly along channel
+    const channelLength = 9.0;
+    const stageWidth = (gateWidth + 0.08) * 3;
+
+    for (let i = 0; i < numPackets; i++) {
+      const pMesh = packetMeshes[i];
+      const baseOffset =
+        (i * stageWidth + (clockPhase / (Math.PI * 2)) * stageWidth) % channelLength;
+      pMesh.position.x = -4.5 + baseOffset;
+
+      // Scale packet size according to collected photoelectrons
+      const scale = Math.max(0.5, Math.min(1.6, metrics.totalCollectedElectrons / 50000));
+      pMesh.scale.set(scale, scale, scale);
+    }
   };
 
   const dispose = () => {
-    for (const m of materialsToDispose) m.dispose();
-    for (const g of geometriesToDispose) g.dispose();
-    for (const t of texturesToDispose) t.dispose();
+    ceramicMat.dispose();
+    siliconMat.dispose();
+    oxideMat.dispose();
+    gateMatPhi1.dispose();
+    gateMatPhi2.dispose();
+    gateMatPhi3.dispose();
+    goldMat.dispose();
+    electronMat.dispose();
+    gateGeom.dispose();
+    packetGeo.dispose();
+    pinGeo.dispose();
   };
 
-  const updateKinematics = (
-    delta: number,
-    activePhase: 1 | 2 | 3,
-    wellsData: {
-      wells: number[];
-      fullWellElectrons: number;
-      cte: number;
-      packetOpacity: number;
+  return {
+    nodes: {
+      group,
+      siliconSubstrate,
+      oxideLayer,
+      gateArray,
+      electronPackets,
+      dipPackage,
+      leadPins,
     },
-  ) => {
-    updateBoyleSmithCcdKinematics(nodes, materials, delta, 0, activePhase, wellsData, false);
+    update,
+    dispose,
   };
-
-  return { root: rootGroup, rootGroup, nodes, materials, updateKinematics, dispose };
-}
-
-/**
- * Updates 3-phase gate bias potentials, electron charge shift, and cutaway mode.
- */
-export function updateBoyleSmithCcdKinematics(
-  nodes: BoyleSmithCcdModelNodes,
-  materials: BoyleSmithCcdMaterials,
-  _dt: number,
-  _timeSec: number,
-  activePhase: 1 | 2 | 3,
-  wellsData: { wells: number[]; fullWellElectrons: number; cte: number; packetOpacity: number },
-  isCutaway: boolean,
-) {
-  for (const g of nodes.gates) {
-    const wellE = wellsData.wells[g.phase - 1] ?? 0;
-    const fill = Math.min(1, wellE / Math.max(1, wellsData.fullWellElectrons));
-    if (g.phase === activePhase) {
-      g.mesh.material = materials.gateActive;
-      g.mesh.position.y = 0.38;
-      g.mesh.scale.y = 1 + fill * 0.8;
-    } else {
-      g.mesh.material = materials.gatePolySilicon;
-      g.mesh.position.y = 0.42;
-      g.mesh.scale.y = 1 + fill * 0.25;
-    }
-  }
-
-  materials.packetMat.opacity = wellsData.packetOpacity;
-
-  const pPos = nodes.packetPos;
-  const modes = laplacianModes(16, 3);
-  for (let i = 0; i < nodes.packetCount; i++) {
-    const idx = i * 3;
-    const pixelIdx = Math.floor(i / (nodes.packetCount / 3));
-    const targetGateX = -3.6 + (pixelIdx * 3 + (activePhase - 1)) * 0.85;
-    const mode = 1 + 0.3 * laplacianModeShape(modes, 16, 3, 0, i);
-    pPos[idx] += (targetGateX - pPos[idx]) * 0.25 * mode;
-  }
-  nodes.packetPoints.geometry.attributes.position.needsUpdate = true;
-
-  // Cutaway Mode
-  materials.pSiliconSubstrate.opacity = isCutaway ? 0.4 : 1.0;
-  materials.pSiliconSubstrate.transparent = isCutaway;
-  materials.oxideMat.transmission = isCutaway ? 0.95 : 0.85;
 }

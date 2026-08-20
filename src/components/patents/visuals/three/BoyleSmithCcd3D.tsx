@@ -1,122 +1,44 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
-import { memo, useEffect, useRef, useState } from "react";
-import type * as THREE from "three";
-import { FrankenSimEngine } from "@/physics/engine";
-import { ccdNextPhase, stepCcdWells } from "@/physics/machineKernels";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import { useEffect, useRef, useState } from "react";
+import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { buildBoyleSmithCcdModel, updateBoyleSmithCcdKinematics } from "./boyleSmithCcdModel";
-import { StudioKernelChips } from "./StudioKernelChips";
-import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+import { createBoyleSmithCcdModel } from "./boyleSmithCcdModel";
+import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset =
-  | "iso"
-  | "potential_well"
-  | "sensing_node"
-  | "gate_electrodes"
-  | "bus_lines"
-  | "top";
+const CAMERA_OVERVIEW = {
+  pos: [12, 10, 16] as [number, number, number],
+  target: [0, 0, 0] as [number, number, number],
+};
 
-export const BoyleSmithCcd3D = memo(() => {
+export function BoyleSmithCcd3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const { params, updateParam } = usePatentPhysics("us-3858232-boyle-smith-ccd");
+  const [isRunning, setIsRunning] = useState(true);
 
-  // CCD Physics & Clocking State Controls
-  const { params } = usePatentPhysics("us-3858232-boyle-smith-ccd");
-  const [clockPhase] = useState<1 | 2 | 3>(1);
-  const incidentLux = params.incidentLux ?? 850;
-  const gateVoltageV = params.gateVoltage ?? 8;
-  const isAutoClocking = true;
-  const clockFreq = params.clockFreq ?? params.clockSpeedFactor ?? 2.5;
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-
-  const ccdWells = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
-  const ccdState = FrankenSimEngine.stepBoyleSmithCcd(
-    clockPhase,
-    gateVoltageV,
-    incidentLux,
-    clockFreq,
-  );
-
-  useFrankenSimPhysics("us-3858232-boyle-smith-ccd", {
-    domain: "semiconductor_carrier",
-    timestampMs: Date.now(),
-    timeStepDt: 0.016,
-    refusal: { isRefused: false },
-    semi: ccdState,
-  });
-
-  const fullWellElectrons = ccdWells.fullWellElectrons;
-  const collectedChargeElectrons = Math.round(ccdWells.wells[clockPhase - 1] ?? 0);
-  const transferEfficiencyPct = ccdWells.ctePct.toFixed(4);
+  const gateVoltage = params.gateVoltageV ?? 10;
+  const clockFreq = params.clockFrequencyMhz ?? 5.0;
+  const incidentLux = params.incidentLux ?? 250;
+  const integrationTime = params.integrationTimeMs ?? 16.7;
+  const temperature = params.temperatureKelvin ?? 300;
 
   const live = useLiveSimParams({
-    clockPhase,
-    isAutoClocking,
-    gateVoltageV,
-    clockFreq,
+    gateVoltageV: gateVoltage,
+    clockFrequencyMhz: clockFreq,
     incidentLux,
-    isAudioMuted,
-    photoElectrons: ccdWells.photoElectrons,
-    fullWellElectrons: ccdWells.fullWellElectrons,
-    cte: ccdWells.cte,
-    phaseDisplayMs: ccdWells.phaseDisplayMs,
-    phaseDisplayS: ccdWells.phaseDisplayS,
-    phasePeriodNs: ccdWells.phasePeriodNs,
-    gatePhaseCount: ccdWells.gatePhaseCount,
-    isCutaway,
+    integrationTimeMs: integrationTime,
+    temperatureKelvin: temperature,
+    isRunning,
   });
 
-  const controlsRef = useRef<StudioContext["controls"] | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-
-  const applyCameraPreset = (preset: CameraPreset) => {
-    setActiveCamera(preset);
-    const camera = cameraRef.current;
-    const controls = controlsRef.current;
-    if (!camera || !controls) return;
-
-    switch (preset) {
-      case "iso":
-        camera.position.set(11, 9, 14);
-        controls.target.set(0, 0, 0);
-        break;
-      case "potential_well":
-        camera.position.set(0, 1.4, 4.5);
-        controls.target.set(0, 0, 0);
-        break;
-      case "sensing_node":
-        camera.position.set(4.8, 1.8, 2.5);
-        controls.target.set(4.0, 0.2, 0);
-        break;
-      case "gate_electrodes":
-        camera.position.set(-1.5, 4.5, 3.0);
-        controls.target.set(0, 0.4, 0);
-        break;
-      case "bus_lines":
-        camera.position.set(0, 3.5, 5.0);
-        controls.target.set(0, 0.4, 1.5);
-        break;
-      case "top":
-        camera.position.set(0, 8.5, 0.1);
-        controls.target.set(0, 0, 0);
-        break;
-    }
-    controls.update();
-  };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
-  };
+  const metrics = stepBoyleSmithCcd({
+    gateVoltageV: gateVoltage,
+    clockFrequencyMhz: clockFreq,
+    incidentLux,
+    integrationTimeMs: integrationTime,
+    temperatureKelvin: temperature,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -124,162 +46,128 @@ export const BoyleSmithCcd3D = memo(() => {
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [11, 9, 14],
-      targetPos: [0, 0, 0],
+      cameraPos: CAMERA_OVERVIEW.pos,
+      targetPos: CAMERA_OVERVIEW.target,
+      environmentStyle: "studio",
     });
 
-    const { scene, camera, renderer, controls } = studio;
-    cameraRef.current = camera;
-    controlsRef.current = controls;
+    const ccdModel = createBoyleSmithCcdModel();
+    studio.scene.add(ccdModel.nodes.group);
 
-    const { rootGroup, nodes, materials, dispose } = buildBoyleSmithCcdModel();
-    scene.add(rootGroup);
-
-    let reqId: number;
-    let _renderedSteps = 0;
-    let phaseTimer = 0;
-    let currentActivePhase: 1 | 2 | 3 = 1;
-    let timeSec = 0;
+    let animId = 0;
+    let frame = 0;
 
     const animate = () => {
-      reqId = requestAnimationFrame(animate);
-      _renderedSteps += 1;
-      const delta = 1 / 60;
-      timeSec += delta;
+      animId = requestAnimationFrame(animate);
+      frame += 1;
+      const time = frame / 60;
       const p = live.current;
 
-      if (p.isAutoClocking) {
-        phaseTimer += delta;
-        if (phaseTimer > p.phaseDisplayS) {
-          phaseTimer = 0;
-          currentActivePhase = ccdNextPhase(currentActivePhase, p.gatePhaseCount);
-        }
-      } else {
-        currentActivePhase = p.clockPhase;
-      }
-
-      const wells = stepCcdWells(currentActivePhase, p.incidentLux, p.clockFreq, p.gateVoltageV);
-
-      updateBoyleSmithCcdKinematics(
-        nodes,
-        materials,
-        delta,
-        timeSec,
-        currentActivePhase,
-        wells,
-        p.isCutaway ?? false,
+      ccdModel.update(
+        {
+          gateVoltageV: p.gateVoltageV,
+          clockFrequencyMhz: p.clockFrequencyMhz,
+          incidentLux: p.incidentLux,
+          integrationTimeMs: p.integrationTimeMs,
+          temperatureKelvin: p.temperatureKelvin,
+        },
+        p.isRunning ? time : 0,
       );
 
-      renderer.render(scene, camera);
+      studio.controls.update();
+      studio.renderer.render(studio.scene, studio.camera);
     };
 
     animate();
 
     return () => {
-      cancelAnimationFrame(reqId);
-      dispose();
-      studio.cleanup();
+      cancelAnimationFrame(animId);
+      ccdModel.dispose();
+      studio.dispose();
     };
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Activity className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Boyle-Smith Charge-Coupled Device 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-            US Patent 3,858,232 (1974)
-          </span>
+    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
+      <div
+        className="relative h-[480px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950"
+        ref={containerRef}
+      >
+        <div className="absolute top-4 left-4 z-10 rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
+          <div className="font-mono text-xs font-bold text-slate-200">
+            BOYLE & SMITH CCD 3D STUDIO (US 3,858,232)
+          </div>
+          <div className="text-[11px] text-slate-400">
+            Interactive WebGL 3D Model • 3-Phase Gate Array • Clocked Potential Wells • Ceramic DIP
+            Package
+          </div>
         </div>
 
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Isometric"],
-              ["potential_well", "Potential Wells"],
-              ["sensing_node", "Sensing Node"],
-              ["gate_electrodes", "3-Phase Gates"],
-              ["bus_lines", "Clock Bus"],
-              ["top", "Top"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-cyan-600 text-white font-semibold shadow-sm"
-                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Substrate" : "Cutaway Substrate"}
-            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-              isCutaway
-                ? "bg-cyan-600/30 text-cyan-200 border border-cyan-500/40"
-                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-            }`}
-          >
-            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
-          >
-            <Zap className="w-4 h-4 text-cyan-400" />
-          </button>
+        <div className="absolute bottom-4 left-4 z-10 rounded-md border border-sky-500/50 bg-slate-950/80 px-3 py-1.5 font-mono text-xs text-sky-300 backdrop-blur-md">
+          CTE: {metrics.ctePct}% • Capacity: {(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}
+          k e⁻ • Well Depth: {metrics.depletionDepthUm} µm
         </div>
       </div>
 
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Boyle-Smith 3-phase charge transfer kinetics"
-        chips={[
-          { label: "Gate V_g", value: `${gateVoltageV}`, unit: "V" },
-          { label: "Incident Lux", value: `${incidentLux}`, unit: "lux" },
-          { label: "Clock Freq", value: `${clockFreq}`, unit: "MHz" },
-          {
-            label: "Full-Well Capacity",
-            value: `${fullWellElectrons.toLocaleString()}`,
-            unit: "e⁻",
-          },
-          {
-            label: "Packet Charge",
-            value: `${collectedChargeElectrons.toLocaleString()}`,
-            unit: "e⁻",
-          },
-          { label: "Transfer Efficiency (CTE)", value: `${transferEfficiencyPct}%`, tone: "ok" },
-        ]}
-      />
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="gateVoltage3d" className="text-xs font-mono text-slate-400">
+              Gate Bias: {gateVoltage} V
+            </label>
+            <input
+              id="gateVoltage3d"
+              type="range"
+              min="5"
+              max="15"
+              step="0.5"
+              value={gateVoltage}
+              onChange={(e) => updateParam("gateVoltageV", Number(e.target.value))}
+              className="h-1.5 w-32 accent-sky-500"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="clockFreq3d" className="text-xs font-mono text-slate-400">
+              Clock: {clockFreq} MHz
+            </label>
+            <input
+              id="clockFreq3d"
+              type="range"
+              min="0.5"
+              max="20"
+              step="0.5"
+              value={clockFreq}
+              onChange={(e) => updateParam("clockFrequencyMhz", Number(e.target.value))}
+              className="h-1.5 w-32 accent-sky-500"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="incidentLux3d" className="text-xs font-mono text-slate-400">
+              Light: {incidentLux} lux
+            </label>
+            <input
+              id="incidentLux3d"
+              type="range"
+              min="10"
+              max="2000"
+              step="10"
+              value={incidentLux}
+              onChange={(e) => updateParam("incidentLux", Number(e.target.value))}
+              className="h-1.5 w-32 accent-sky-500"
+            />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsRunning(!isRunning)}
+          className="flex items-center gap-2 rounded-md bg-sky-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-lg shadow-sky-600/30 transition hover:bg-sky-500 active:scale-95"
+        >
+          {isRunning ? "⏸ PAUSE CLOCK" : "▶ RUN 3-PHASE CLOCK"}
+        </button>
+      </div>
     </div>
   );
-});
+}

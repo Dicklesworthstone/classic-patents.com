@@ -4372,3 +4372,117 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
     pumpRatePerCm3: Number(pumpRatePerCm3.toExponential(3)),
   };
 }
+
+// ============================================================================
+// US 3,858,232 Willard S. Boyle & George E. Smith Charge-Coupled Devices (CCD)
+// ============================================================================
+
+export interface BoyleSmithCcdControls {
+  gateVoltageV?: number;
+  clockFrequencyMhz?: number;
+  incidentLux?: number;
+  integrationTimeMs?: number;
+  pixelAreaUm2?: number;
+  temperatureKelvin?: number;
+}
+
+export function stepBoyleSmithCcd(controls: BoyleSmithCcdControls = {}) {
+  const vGate = controls.gateVoltageV ?? 10; // 5 to 15 V
+  const fClockMhz = controls.clockFrequencyMhz ?? 5.0; // 0.5 to 20 MHz
+  const lux = controls.incidentLux ?? 250; // 10 to 2000 lux
+  const tIntMs = controls.integrationTimeMs ?? 16.7; // 1 to 100 ms (1/60s)
+  const pixelAreaUm2 = controls.pixelAreaUm2 ?? 100; // 100 um^2 (10x10 um)
+  const tempK = controls.temperatureKelvin ?? 300; // 200 to 350 K
+
+  // Physical constants
+  const q = 1.60217663e-19; // Coulomb
+  const epsOx = 3.9 * 8.854e-14; // F/cm for SiO2
+  const epsSi = 11.7 * 8.854e-14; // F/cm for Si
+  const toxCm = 1200e-8; // 1200 Angstroms = 1.2e-5 cm
+  const cox = epsOx / toxCm; // F/cm^2 (~2.88e-8 F/cm^2)
+  const pixelAreaCm2 = pixelAreaUm2 * 1e-8; // cm^2
+
+  // Acceptor doping Na = 1e15 cm^-3 (10 ohm-cm p-type Si)
+  const na = 1.0e15;
+  const v0 = (q * epsSi * na) / (cox * cox); // ~0.198 V
+
+  // Surface potential in deep depletion (Volts)
+  const vFlatBand = -0.5;
+  const vEff = Math.max(0.5, vGate - vFlatBand);
+  const surfacePotentialV = Number((vEff + v0 - Math.sqrt(2 * vEff * v0 + v0 * v0)).toFixed(2));
+
+  // Full well charge storage capacity (electrons)
+  const vThreshold = 1.2;
+  const fullWellCapacityElectrons = Math.round(
+    (cox * pixelAreaCm2 * Math.max(0, vGate - vThreshold)) / q,
+  );
+
+  // Optical photoelectron generation
+  const quantumEfficiency = 0.65;
+  const opticalFluxWattsPerCm2 = lux * 1.464e-7; // W/cm^2 for 555 nm green
+  const photonEnergyJoules = (6.626e-34 * 3e8) / 550e-9; // ~3.61e-19 J
+  const incidentPhotonsPerSec = (opticalFluxWattsPerCm2 * pixelAreaCm2) / photonEnergyJoules;
+  const generatedPhotoelectrons = Math.round(
+    incidentPhotonsPerSec * quantumEfficiency * (tIntMs * 1e-3),
+  );
+
+  // Thermally generated dark electrons
+  const darkCurrentDensityRef = 1e-9; // 1 nA/cm^2 at 300K
+  const bandgapEgEv = 1.12;
+  const darkThermalFactor =
+    Math.exp((-bandgapEgEv * q) / (2 * 1.380649e-23 * tempK)) /
+    Math.exp((-bandgapEgEv * q) / (2 * 1.380649e-23 * 300));
+  const darkCurrentDensity = darkCurrentDensityRef * (tempK / 300) ** 1.5 * darkThermalFactor;
+  const darkElectrons = Math.round((darkCurrentDensity * pixelAreaCm2 * (tIntMs * 1e-3)) / q);
+
+  // Stored charge packet in potential well
+  const totalCollectedElectrons = Math.min(
+    fullWellCapacityElectrons,
+    generatedPhotoelectrons + darkElectrons,
+  );
+  const wellFillPercentage = Number(
+    ((totalCollectedElectrons / Math.max(1, fullWellCapacityElectrons)) * 100).toFixed(1),
+  );
+  const isSaturated = totalCollectedElectrons >= fullWellCapacityElectrons;
+
+  // Charge Transfer Efficiency (CTE) via thermal diffusion & fringing field drift
+  const gateLengthUm = 4.0;
+  const electronMobility = 1350 * (300 / tempK) ** 1.5; // cm^2/V-s
+  const dn = (electronMobility * 1.380649e-23 * tempK) / q; // cm^2/s
+  const transferTimeSec = 1 / (fClockMhz * 1e6) / 3; // 3-phase clock phase duration
+  const thermalDiffusionCti = Math.exp(
+    (-(Math.PI * Math.PI) * dn * transferTimeSec) / (4 * (gateLengthUm * 1e-4) ** 2),
+  );
+  const trapLossCti = 1e-5;
+  const totalCti = Math.min(0.01, thermalDiffusionCti + trapLossCti);
+  const ctePct = Number(((1 - totalCti) * 100).toFixed(4));
+
+  // Signal-to-noise ratio (SNR) in dB
+  const readNoiseElectrons = 8.0;
+  const totalNoise = Math.sqrt(
+    Math.max(1, generatedPhotoelectrons + darkElectrons + readNoiseElectrons ** 2),
+  );
+  const snrDb = Number(
+    (20 * Math.log10(Math.max(1, generatedPhotoelectrons) / totalNoise)).toFixed(1),
+  );
+
+  // Depletion layer depth (microns)
+  const depletionDepthUm = Number(
+    (Math.sqrt((2 * epsSi * surfacePotentialV) / (q * na)) * 1e4).toFixed(2),
+  );
+
+  return {
+    surfacePotentialV,
+    fullWellCapacityElectrons,
+    generatedPhotoelectrons,
+    darkElectrons,
+    totalCollectedElectrons,
+    wellFillPercentage,
+    isSaturated,
+    ctePct,
+    chargeTransferInefficiency: totalCti,
+    snrDb,
+    depletionDepthUm,
+    clockPeriodNs: Number(((1 / (fClockMhz * 1e6)) * 1e9).toFixed(1)),
+  };
+}

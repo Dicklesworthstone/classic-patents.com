@@ -23,6 +23,7 @@ import {
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
   stepBellTelephone,
+  stepBoyleSmithCcd,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
@@ -323,6 +324,132 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "M parts/ft³",
           badgeColor: "amber",
           description: "Calculated volumetric component packing density",
+        },
+      ];
+    },
+  },
+  "us-3858232-boyle-smith-ccd": {
+    domain: "solid_state_optoelectronics",
+    domainTitle: "Charge-Coupled Device MOS Potential Wells & Serial Charge Translation",
+    equationName: "MOS Surface Potential Depletion & Charge Transfer Efficiency",
+    governingEquation:
+      "\\psi_s = V_G - V_{\\text{FB}} + V_0 - \\sqrt{2 (V_G - V_{\\text{FB}}) V_0 + V_0^2} \\quad \\text{and} \\quad \\text{CTE} = 1 - \\exp\\left(-\\frac{\\pi^2 D_n t_{\\text{transfer}}}{4 L_{\\text{gate}}^2}\\right)",
+    engineMethod:
+      "FrankenSimEngine.stepBoyleSmithCCD: MOS Gate Depletion, Photoelectron Integration, 3-Phase Clocked Potential Well Translation",
+    pedagogicalInsight:
+      "Clocked gate voltages create movable electrostatic potential wells in single-conductivity silicon. Photons generate electron packets that are sequentially transferred from well to well with >99.999% efficiency.",
+    controls: [
+      {
+        id: "gateVoltageV",
+        label: "Gate Clock Voltage",
+        min: 5,
+        max: 15,
+        step: 0.5,
+        defaultValue: 10,
+        unit: "V",
+      },
+      {
+        id: "clockFrequencyMhz",
+        label: "3-Phase Clock Frequency",
+        min: 0.5,
+        max: 20,
+        step: 0.5,
+        defaultValue: 5.0,
+        unit: "MHz",
+      },
+      {
+        id: "incidentLux",
+        label: "Incident Light Intensity",
+        min: 10,
+        max: 2000,
+        step: 10,
+        defaultValue: 250,
+        unit: "lux",
+      },
+      {
+        id: "integrationTimeMs",
+        label: "Integration Exposure Time",
+        min: 1.0,
+        max: 100.0,
+        step: 1.0,
+        defaultValue: 16.7,
+        unit: "ms",
+      },
+      {
+        id: "temperatureKelvin",
+        label: "Sensor Temperature",
+        min: 200,
+        max: 350,
+        step: 5,
+        defaultValue: 300,
+        unit: "K",
+      },
+    ],
+    computeMetrics: (controls: Record<string, number>) => {
+      const res = stepBoyleSmithCcd({
+        gateVoltageV: controls.gateVoltageV,
+        clockFrequencyMhz: controls.clockFrequencyMhz,
+        incidentLux: controls.incidentLux,
+        integrationTimeMs: controls.integrationTimeMs,
+        temperatureKelvin: controls.temperatureKelvin,
+      });
+
+      return [
+        {
+          label: "Surface Depletion Potential (psi_s)",
+          value: res.surfacePotentialV.toFixed(2),
+          unit: "V",
+          badgeColor: "cyan",
+          progressPct: clampProgress((res.surfacePotentialV / 15) * 100),
+        },
+        {
+          label: "Full Well Storage Capacity",
+          value: res.fullWellCapacityElectrons.toLocaleString(),
+          unit: "e-",
+          badgeColor: "indigo",
+          progressPct: clampProgress((res.fullWellCapacityElectrons / 300000) * 100),
+        },
+        {
+          label: "Stored Photoelectron Packet",
+          value: res.totalCollectedElectrons.toLocaleString(),
+          unit: "e-",
+          badgeColor: res.totalCollectedElectrons > 0 ? "emerald" : "indigo",
+          progressPct: clampProgress(res.wellFillPercentage),
+        },
+        {
+          label: "Well Fill Factor",
+          value: `${res.wellFillPercentage.toFixed(1)}%`,
+          unit: "",
+          badgeColor: res.isSaturated ? "rose" : "emerald",
+          progressPct: clampProgress(res.wellFillPercentage),
+        },
+        {
+          label: "Charge Transfer Efficiency (CTE)",
+          value: `${res.ctePct.toFixed(4)}%`,
+          unit: "",
+          badgeColor: res.ctePct > 99.99 ? "emerald" : "amber",
+          progressPct: clampProgress(res.ctePct),
+        },
+        {
+          label: "Signal-to-Noise Ratio (SNR)",
+          value: res.snrDb.toFixed(1),
+          unit: "dB",
+          badgeColor: res.snrDb > 20 ? "emerald" : "amber",
+          progressPct: clampProgress((res.snrDb / 60) * 100),
+        },
+        {
+          label: "Thermal Dark Electrons",
+          value: res.darkElectrons.toLocaleString(),
+          unit: "e-",
+          badgeColor: "amber",
+          progressPct: clampProgress((res.darkElectrons / 5000) * 100),
+        },
+        {
+          label: "Depletion Depth",
+          value: res.depletionDepthUm.toFixed(2),
+          unit: "um",
+          badgeColor: "cyan",
+          progressPct: clampProgress((res.depletionDepthUm / 10) * 100),
         },
       ];
     },
@@ -7118,8 +7245,6 @@ PATENT_PHYSICS_REGISTRY["us-608969-parsons-turbine"] =
   PATENT_PHYSICS_REGISTRY["us-328710-parsons-turbine"];
 PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"] =
   PATENT_PHYSICS_REGISTRY["us-1155986-goddard-rocket"];
-PATENT_PHYSICS_REGISTRY["us-3858232-boyle-smith-ccd"] =
-  PATENT_PHYSICS_REGISTRY["us-3923554-boyle-smith-ccd"];
 PATENT_PHYSICS_REGISTRY["us-3671542-kwolek-kevlar"] =
   PATENT_PHYSICS_REGISTRY["_legacy-unpublished-us-3671542-kwolek-kevlar"];
 PATENT_PHYSICS_REGISTRY["us-586193-marconi-radio"] =

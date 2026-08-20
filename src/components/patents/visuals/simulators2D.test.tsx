@@ -123,7 +123,7 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
       const html = renderToStaticMarkup(React.createElement(comp));
       expect(typeof html).toBe("string");
       expect(html.length).toBeGreaterThan(0);
-      expect(html).toContain("<svg");
+      expect(html.includes("<svg") || html.includes("<canvas")).toBe(true);
     });
   }
 

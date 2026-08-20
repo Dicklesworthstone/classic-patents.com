@@ -1,357 +1,373 @@
 "use client";
 
-import { Camera, Play } from "lucide-react";
-import { useEffect, useState } from "react";
-import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import {
-  ccdGatePhase,
-  ccdGateSvgX,
-  ccdPacketGateIndex,
-  stepCcdWells,
-} from "@/physics/machineKernels";
+import { useEffect, useRef, useState } from "react";
+import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
-export function BoyleSmithCcdSim() {
+interface BoyleSmithCcdSimProps {
+  interactive?: boolean;
+}
+
+export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) {
   const { params, updateParam } = usePatentPhysics("us-3858232-boyle-smith-ccd");
-  const [clockPhase, setClockPhase] = useState<1 | 2 | 3>(1);
-  const incidentLux = params.incidentLux ?? 850;
-  const clockFreq = params.clockFreq ?? 2.5;
-  const gateVoltageV = params.gateVoltage ?? 8;
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const ccd = stepCcdWells(clockPhase, incidentLux, clockFreq, gateVoltageV);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRunning, setIsRunning] = useState(true);
+
+  const gateVoltage = params.gateVoltageV ?? 10;
+  const clockFreq = params.clockFrequencyMhz ?? 5.0;
+  const incidentLux = params.incidentLux ?? 250;
+  const integrationTime = params.integrationTimeMs ?? 16.7;
+  const temperature = params.temperatureKelvin ?? 300;
+
+  const metrics = stepBoyleSmithCcd({
+    gateVoltageV: gateVoltage,
+    clockFrequencyMhz: clockFreq,
+    incidentLux,
+    integrationTimeMs: integrationTime,
+    temperatureKelvin: temperature,
+  });
 
   useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      setClockPhase((prev) => (prev === 1 ? 2 : prev === 2 ? 3 : 1));
-    }, ccd.phaseDisplayMs);
-    return () => clearInterval(interval);
-  }, [isPlaying, ccd.phaseDisplayMs]);
-  const photoElectrons = ccd.photoElectrons;
-  const outputSignalMillivolts = ccd.outputSignalMv;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    let clockPhase = 0;
+
+    const render = () => {
+      if (isRunning) {
+        clockPhase = (clockPhase + 0.05 * (clockFreq / 5.0)) % (Math.PI * 2);
+      }
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // Dark background
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid lines
+      ctx.strokeStyle = "rgba(30, 41, 59, 0.4)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      for (let y = 0; y < h; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // Title
+      ctx.fillStyle = "#e2e8f0";
+      ctx.font = "bold 14px 'JetBrains Mono', monospace";
+      ctx.fillText("US 3,858,232 — BOYLE & SMITH CHARGE-COUPLED DEVICE (1974)", 24, 28);
+
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "11px Inter, sans-serif";
+      ctx.fillText(
+        "3-Phase MOS Potential Well Shift Register • Optical Integration • Single-Conductivity Channel • >99.999% CTE",
+        24,
+        46,
+      );
+
+      // Main Device Cross-Section Layout
+      const devX = 40;
+      const devY = 70;
+      const devW = w - 80;
+      const devH = 220;
+
+      // 1. P-Type Silicon Substrate (p-Si)
+      const subY = devY + 70;
+      const subH = devH - 70;
+      const subGrad = ctx.createLinearGradient(devX, subY, devX, subY + subH);
+      subGrad.addColorStop(0, "#1e293b");
+      subGrad.addColorStop(1, "#0f172a");
+      ctx.fillStyle = subGrad;
+      ctx.fillRect(devX, subY, devW, subH);
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "bold 11px monospace";
+      ctx.fillText(
+        "p-Type Silicon Substrate (10 Ω·cm, Na = 10^15 cm^-3)",
+        devX + 16,
+        subY + subH - 16,
+      );
+
+      // 2. SiO2 Gate Dielectric (1200 Å)
+      const oxY = subY - 14;
+      const oxH = 14;
+      ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
+      ctx.strokeStyle = "rgba(56, 189, 248, 0.7)";
+      ctx.lineWidth = 1;
+      ctx.fillRect(devX, oxY, devW, oxH);
+      ctx.strokeRect(devX, oxY, devW, oxH);
+
+      ctx.fillStyle = "#38bdf8";
+      ctx.font = "9px monospace";
+      ctx.fillText("Thermal SiO2 Insulator (1,200 Å)", devX + 16, oxY - 4);
+
+      // 3. Three-Phase Gate Electrodes (Phi 1, Phi 2, Phi 3)
+      const numStages = 4;
+      const totalGates = numStages * 3;
+      const gateW = (devW - 80) / totalGates;
+      const gateH = 22;
+      const gateStartY = oxY - gateH;
+
+      // 3-Phase Clocks instantaneous voltages
+      const phi1_V = gateVoltage * 0.5 * (1 + Math.sin(clockPhase));
+      const phi2_V = gateVoltage * 0.5 * (1 + Math.sin(clockPhase - (2 * Math.PI) / 3));
+      const phi3_V = gateVoltage * 0.5 * (1 + Math.sin(clockPhase - (4 * Math.PI) / 3));
+
+      const gateVoltages = [phi1_V, phi2_V, phi3_V];
+      const gateColors = ["#38bdf8", "#34d399", "#f43f5e"];
+
+      for (let i = 0; i < totalGates; i++) {
+        const gx = devX + 40 + i * gateW;
+        const phaseIdx = i % 3;
+        const v = gateVoltages[phaseIdx];
+        const color = gateColors[phaseIdx];
+
+        // Gate electrode block
+        ctx.fillStyle = v > gateVoltage * 0.5 ? color : "#334155";
+        ctx.fillRect(gx + 2, gateStartY, gateW - 4, gateH);
+        ctx.strokeStyle = "#475569";
+        ctx.strokeRect(gx + 2, gateStartY, gateW - 4, gateH);
+
+        // Gate label
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 9px monospace";
+        ctx.fillText(`Φ${phaseIdx + 1}`, gx + gateW / 2 - 6, gateStartY + 14);
+
+        // Clock pulse voltage indicator
+        ctx.fillStyle = v > gateVoltage * 0.5 ? color : "#94a3b8";
+        ctx.font = "8px monospace";
+        ctx.fillText(`${v.toFixed(0)}V`, gx + gateW / 2 - 8, gateStartY - 4);
+      }
+
+      // 4. Depletion Potential Wells & Surface Potential Profile (psi_s)
+      ctx.beginPath();
+      ctx.moveTo(devX + 40, subY);
+
+      for (let i = 0; i < totalGates; i++) {
+        const gx = devX + 40 + i * gateW;
+        const phaseIdx = i % 3;
+        const v = gateVoltages[phaseIdx];
+        const wellDepth = (v / gateVoltage) * 45 + 10;
+
+        ctx.lineTo(gx + 2, subY + wellDepth);
+        ctx.lineTo(gx + gateW - 2, subY + wellDepth);
+      }
+      ctx.lineTo(devX + 40 + totalGates * gateW, subY);
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Shaded Depletion Region
+      ctx.fillStyle = "rgba(245, 158, 11, 0.15)";
+      ctx.fill();
+
+      // 5. Stored Photoelectron Packets (Traveling Charge Clouds)
+      const chargePacketProgress = (clockPhase / (Math.PI * 2)) * (gateW * 3);
+      for (let s = 0; s < numStages; s++) {
+        const px = devX + 40 + s * gateW * 3 + chargePacketProgress;
+        const py = subY + 32;
+
+        if (px < devX + 40 + totalGates * gateW) {
+          // Electron cloud gradient
+          const glowGrad = ctx.createRadialGradient(px, py, 2, px, py, 14);
+          glowGrad.addColorStop(0, "#ffffff");
+          glowGrad.addColorStop(0.4, "#60a5fa");
+          glowGrad.addColorStop(1, "transparent");
+          ctx.fillStyle = glowGrad;
+          ctx.beginPath();
+          ctx.arc(px, py, 14, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Electron count badge
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 9px monospace";
+          ctx.fillText(
+            `${(metrics.totalCollectedElectrons / 1000).toFixed(0)}k e⁻`,
+            px - 16,
+            py + 22,
+          );
+        }
+      }
+
+      // 6. Incident Photon Flux (Photogeneration)
+      const numPhotons = Math.min(8, Math.max(2, Math.round(incidentLux / 50)));
+      ctx.strokeStyle = "#fef08a";
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < numPhotons; i++) {
+        const phX = devX + 80 + i * (devW / (numPhotons + 1));
+        const phY = gateStartY - 20 + ((clockPhase * 15 + i * 20) % 30);
+
+        ctx.beginPath();
+        ctx.moveTo(phX, phY);
+        ctx.lineTo(phX, phY + 12);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(phX - 3, phY + 8);
+        ctx.lineTo(phX, phY + 12);
+        ctx.lineTo(phX + 3, phY + 8);
+        ctx.stroke();
+      }
+
+      // ==========================================
+      // Telemetry HUD Bar (Bottom)
+      // ==========================================
+      const hudY = 320;
+      const cardW = (w - 48 - 36) / 4;
+      const cardH = 75;
+
+      const hudCards = [
+        {
+          title: "GATE VOLTAGE & WELL DEPTH",
+          value: `${gateVoltage} V (ψs = ${metrics.surfacePotentialV} V)`,
+          desc: `Depletion Depth: ${metrics.depletionDepthUm} µm`,
+          highlight: true,
+        },
+        {
+          title: "FULL-WELL CAPACITY",
+          value: `${(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}k e⁻`,
+          desc: `Fill: ${metrics.wellFillPercentage}% ${metrics.isSaturated ? "(SATURATED)" : "(LINEAR)"}`,
+          highlight: metrics.isSaturated,
+        },
+        {
+          title: "TRANSFER EFFICIENCY (CTE)",
+          value: `${metrics.ctePct}%`,
+          desc: `Clock: ${clockFreq} MHz (T = ${metrics.clockPeriodNs} ns)`,
+          highlight: metrics.ctePct > 99.99,
+        },
+        {
+          title: "SIGNAL-TO-NOISE RATIO",
+          value: `${metrics.snrDb} dB`,
+          desc: `Dark Noise: ${metrics.darkElectrons} e⁻ at ${temperature} K`,
+          highlight: metrics.snrDb > 20,
+        },
+      ];
+
+      hudCards.forEach((card, idx) => {
+        const cx = 24 + idx * (cardW + 12);
+        ctx.fillStyle = card.highlight ? "rgba(15, 23, 42, 0.85)" : "rgba(15, 23, 42, 0.5)";
+        ctx.strokeStyle = card.highlight ? "rgba(56, 189, 248, 0.5)" : "rgba(51, 65, 85, 0.5)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(cx, hudY, cardW, cardH, 6);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "9px 'JetBrains Mono', monospace";
+        ctx.fillText(card.title, cx + 12, hudY + 20);
+
+        ctx.fillStyle = card.highlight ? "#38bdf8" : "#e2e8f0";
+        ctx.font = "bold 14px 'JetBrains Mono', monospace";
+        ctx.fillText(card.value, cx + 12, hudY + 44);
+
+        ctx.fillStyle = "#64748b";
+        ctx.font = "10px Inter, sans-serif";
+        ctx.fillText(card.desc, cx + 12, hudY + 62);
+      });
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(animId);
+  }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <Camera className="w-6 h-6 text-blue-500 animate-pulse" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Boyle &amp; Smith&apos;s Charge-Coupled Device Simulator (US 3,923,554)
-            </h3>
-          </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Simulate 3-phase MOS potential energy wells shifting photo-electron charge packets
-            across silicon to replace photographic chemical film.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-bold transition-colors border shadow-sm ${
-              isPlaying
-                ? "bg-blue-600 text-white border-blue-700 animate-pulse"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
-            }`}
-          >
-            <Play className="w-4 h-4" />
-            <span>{isPlaying ? "Pause Clock" : "Run 3-Phase Clock"}</span>
-          </button>
-        </div>
+    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+        <canvas ref={canvasRef} width={800} height={420} className="h-full w-full object-contain" />
       </div>
 
-      {/* Interactive Visual Canvas */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
-          <svg viewBox="0 0 600 320" className="w-full h-auto max-h-[340px]">
-            {/* Background */}
-            <rect width="600" height="320" fill="#090d16" />
-
-            {/* Incident Photons (Yellow Arrows) */}
-            {[100, 160, 220, 280, 340, 400].map((x) => (
-              <g key={x} opacity="0.85">
-                <line
-                  x1={x - 20}
-                  y1="20"
-                  x2={x}
-                  y2="65"
-                  stroke="#fef08a"
-                  strokeWidth="2"
-                  strokeDasharray="3,3"
-                />
-                <polygon points={`${x},65 ${x - 4},55 ${x - 8},60`} fill="#fef08a" />
-              </g>
-            ))}
-            <text
-              x="60"
-              y="35"
-              fill="#fef08a"
-              fontSize="11"
-              fontFamily="monospace"
-              fontWeight="bold"
-            >
-              hν INCIDENT PHOTONS
-            </text>
-
-            {/* 3-Phase Gate Electrodes (Poly-Silicon Gates) */}
-            <g transform="translate(60, 70)">
-              {Array.from({ length: ccd.gateSvgCount }).map((_, i) => {
-                const phaseNum = ccdGatePhase(i, ccd.gatePhaseCount);
-                const isHigh = phaseNum === clockPhase;
-                const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
-                return (
-                  <g key={i}>
-                    {/* Gate Metal Bar */}
-                    <rect
-                      x={gx}
-                      y="0"
-                      width={ccd.gateSvgWidth}
-                      height={ccd.gateSvgH}
-                      fill={isHigh ? "#0284c7" : "#334155"}
-                      stroke={isHigh ? "#38bdf8" : "#475569"}
-                      strokeWidth="1.5"
-                      rx="2"
-                    />
-                    <text
-                      x={gx + ccd.gateLabelDx}
-                      y="13"
-                      fill="#f8fafc"
-                      fontSize="10"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      φ{phaseNum}
-                    </text>
-                    <text
-                      x={gx + 10}
-                      y="-6"
-                      fill={isHigh ? "#38bdf8" : "#64748b"}
-                      fontSize="8"
-                      fontFamily="monospace"
-                    >
-                      {isHigh ? "+12V" : "+2V"}
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-
-            {/* Silicon Dioxide (SiO2) Dielectric Layer */}
-            <rect x="60" y="90" width="460" height="10" fill="#38bdf8" opacity="0.6" />
-            <text x="470" y="98" fill="#38bdf8" fontSize="8" fontFamily="monospace">
-              SiO₂
-            </text>
-
-            {/* p-Type Silicon Substrate */}
-            <rect
-              x="60"
-              y="100"
-              width="460"
-              height="160"
-              fill="#1e293b"
-              stroke="#334155"
-              strokeWidth="1.5"
-            />
-            <text
-              x="80"
-              y="240"
-              fill="#64748b"
-              fontSize="12"
-              fontFamily="monospace"
-              fontWeight="bold"
-            >
-              p-TYPE SILICON SUBSTRATE
-            </text>
-
-            {/* 3-Phase Surface Potential Energy Wells */}
-            <g transform="translate(60, 100)">
-              <path
-                d={`M 0 0 ${Array.from({ length: ccd.gateSvgCount })
-                  .map((_, i) => {
-                    const phaseNum = ccdGatePhase(i, ccd.gatePhaseCount);
-                    const depth = ccd.wellSvgDepths[phaseNum - 1];
-                    const gx = ccdGateSvgX(i, ccd.gateSvgPitch);
-                    return `L ${gx} 0 L ${gx} ${depth} L ${gx + ccd.gateSvgWidth} ${depth} L ${gx + ccd.gateSvgWidth} 0`;
-                  })
-                  .join(" ")} L 460 0`}
-                fill="#0369a1"
-                opacity="0.35"
-                stroke="#38bdf8"
-                strokeWidth="2"
-              />
-
-              {/* Trapped Electron Charge Packets in Potential Wells */}
-              {Array.from({ length: ccd.packetCount }).map((_, i) => {
-                const wellGateIndex = ccdPacketGateIndex(i, clockPhase, ccd.packetGateStride);
-                const px = ccdGateSvgX(wellGateIndex, ccd.gateSvgPitch) + ccd.gateSvgWidth / 2;
-                const py = ccd.packetSvgY;
-                return (
-                  <g key={i}>
-                    {/* Electron Cloud Packet */}
-                    <ellipse
-                      cx={px}
-                      cy={py}
-                      rx={ccd.packetSvgRx}
-                      ry={ccd.packetSvgRy}
-                      fill="#38bdf8"
-                      opacity="0.9"
-                    />
-                    <text
-                      x={px - 14}
-                      y={py + 3}
-                      fill="#090d16"
-                      fontSize="9"
-                      fontFamily="monospace"
-                      fontWeight="bold"
-                    >
-                      {photoElectrons.toLocaleString()}e⁻
-                    </text>
-                  </g>
-                );
-              })}
-            </g>
-
-            {/* Output Sensing Node / Floating Diffusion Diode on Right */}
-            <g transform="translate(525, 95)">
-              <rect x="0" y="5" width="25" height="40" fill="#ef4444" opacity="0.7" rx="3" />
-              <text
-                x="-5"
-                y="-5"
-                fill="#ef4444"
-                fontSize="9"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                n+ DIODE
-              </text>
-              <line x1="25" y1="25" x2="55" y2="25" stroke="#ef4444" strokeWidth="2" />
-              <circle cx="55" cy="25" r="4" fill="#fbbf24" />
-              <text
-                x="25"
-                y="45"
-                fill="#fbbf24"
-                fontSize="10"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                V_out: {outputSignalMillivolts.toFixed(1)} mV
-              </text>
-            </g>
-          </svg>
-
-          {/* Telemetry Strip */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs sm:text-sm font-mono pt-3 border-t border-ink-800 text-ink-300">
-            <div>
-              <span className="text-ink-400 block text-xs">CLOCK STATE</span>
-              <span className="text-blue-400 font-bold text-sm sm:text-base">
-                Phase φ{clockPhase} · {ccd.phasePeriodNs} ns
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs">PACKET CHARGE</span>
-              <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {photoElectrons.toLocaleString()} e⁻/pixel
-              </span>
-            </div>
-            <div>
-              <span className="text-ink-400 block text-xs">TRANSFER EFFICIENCY</span>
-              <span className="text-purple-400 font-bold text-sm sm:text-base">
-                {ccd.ctePct.toFixed(3)}% CTE
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
-            <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              CCD Image Sensor Controls
-            </span>
-
-            {/* Manual Phase Stepper Buttons */}
-            <div className="space-y-1.5">
-              <span className="text-xs sm:text-sm font-mono block text-ink-800 dark:text-ink-200 font-semibold mb-1">
-                Manual 3-Phase Step
-              </span>
-              <div className="grid grid-cols-3 gap-2 text-xs sm:text-sm font-mono">
-                {[1, 2, 3].map((phase) => (
-                  <button
-                    key={phase}
-                    type="button"
-                    onClick={() => setClockPhase(phase as 1 | 2 | 3)}
-                    className={`p-2.5 rounded-xl border text-center transition-colors shadow-2xs ${
-                      clockPhase === phase
-                        ? "bg-blue-700 text-white font-bold"
-                        : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-ink-200"
-                    }`}
-                  >
-                    Phase φ{phase}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Light Intensity Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Incident Light Exposure ($I_{lux}$)" />
-                </span>
-                <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {incidentLux} Lux
-                </span>
-              </div>
+      {interactive && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="gateVoltage" className="text-xs font-mono text-slate-400">
+                Gate Voltage: {gateVoltage} V
+              </label>
               <input
+                id="gateVoltage"
                 type="range"
-                aria-label="Simulation parameter"
-                min="100"
+                min="5"
+                max="15"
+                step="0.5"
+                value={gateVoltage}
+                onChange={(e) => updateParam("gateVoltageV", Number(e.target.value))}
+                className="h-1.5 w-32 accent-sky-500"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="clockFreq" className="text-xs font-mono text-slate-400">
+                Clock Freq: {clockFreq} MHz
+              </label>
+              <input
+                id="clockFreq"
+                type="range"
+                min="0.5"
+                max="20"
+                step="0.5"
+                value={clockFreq}
+                onChange={(e) => updateParam("clockFrequencyMhz", Number(e.target.value))}
+                className="h-1.5 w-32 accent-sky-500"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor="incidentLux" className="text-xs font-mono text-slate-400">
+                Incident Light: {incidentLux} lux
+              </label>
+              <input
+                id="incidentLux"
+                type="range"
+                min="10"
                 max="2000"
-                step="50"
+                step="10"
                 value={incidentLux}
                 onChange={(e) => updateParam("incidentLux", Number(e.target.value))}
-                className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                className="h-1.5 w-32 accent-sky-500"
               />
             </div>
 
-            {/* 3-Phase Clock Frequency Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  {"3-Phase Clock Speed"}
-                </span>
-                <span className="text-cyan-600 dark:text-cyan-400 font-bold">
-                  {clockFreq.toFixed(2)} MHz · {ccd.phaseDisplayMs} ms/φ
-                </span>
-              </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="temperature" className="text-xs font-mono text-slate-400">
+                Temp: {temperature} K
+              </label>
               <input
+                id="temperature"
                 type="range"
-                aria-label="3-Phase Clock Frequency"
-                min="0.5"
-                max="8.0"
-                step="0.25"
-                value={clockFreq}
-                onChange={(e) => updateParam("clockFreq", Number(e.target.value))}
-                className="w-full accent-cyan-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
+                min="200"
+                max="350"
+                step="5"
+                value={temperature}
+                onChange={(e) => updateParam("temperatureKelvin", Number(e.target.value))}
+                className="h-1.5 w-28 accent-sky-500"
               />
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
-              <span className="font-bold text-blue-900 dark:text-blue-300 block font-mono text-xs uppercase tracking-wider mb-1">
-                Bucket-Brigade Charge Transfer:
-              </span>
-              <p className="leading-relaxed">
-                By pulsing voltages across the 3-phase gates, potential wells move across the
-                silicon like moving water buckets, delivering the photo-charge packet intact to the
-                output diode without losing a single electron.
-              </p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() => setIsRunning(!isRunning)}
+            className="flex items-center gap-2 rounded-md bg-sky-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-lg shadow-sky-600/30 transition hover:bg-sky-500 active:scale-95"
+          >
+            {isRunning ? "⏸ PAUSE CLOCK" : "▶ RUN 3-PHASE CLOCK"}
+          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
