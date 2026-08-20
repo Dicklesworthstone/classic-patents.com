@@ -84,6 +84,33 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     );
   });
 
+  test("uses individually reviewed upright source crops for Figures 14 and 15", () => {
+    const figurePreviews = bellPhotophoneArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.referenceType === "figure"
+              ? (inline.figurePreviews ?? [])
+              : [],
+          )
+        : [],
+    );
+
+    expect(figurePreviews).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          src: "/patents/figures/us-235199-bell-photophone/fig-14-source-crop-v4.png",
+          width: 900,
+          height: 1100,
+        }),
+        expect.objectContaining({
+          src: "/patents/figures/us-235199-bell-photophone/fig-15-source-crop-v4.png",
+          width: 700,
+          height: 900,
+        }),
+      ]),
+    );
+  });
+
   test("every paragraph block has a corresponding parallel reading", () => {
     const paragraphIndices = bellPhotophoneArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],

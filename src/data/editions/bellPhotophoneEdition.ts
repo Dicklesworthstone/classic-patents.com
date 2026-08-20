@@ -29,8 +29,8 @@ const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   11: { width: 1000, height: 800 },
   12: { width: 1000, height: 800 },
   13: { width: 1000, height: 950 },
-  14: { width: 1000, height: 500 },
-  15: { width: 1000, height: 450 },
+  14: { width: 900, height: 1100 },
+  15: { width: 700, height: 900 },
   16: { width: 1000, height: 920 },
   17: { width: 1000, height: 920 },
   18: { width: 1000, height: 800 },
@@ -53,7 +53,9 @@ function makePreview(
     referenceType: "figure",
     label: altText,
     figurePreviews: figureNumbers.map((num) => ({
-      src: `/patents/figures/us-235199-bell-photophone/fig-${num}-source-crop${num === 21 ? "-v2" : "-v1"}.png`,
+      src: `/patents/figures/us-235199-bell-photophone/fig-${num}-source-crop${
+        num === 14 || num === 15 ? "-v4" : num === 21 ? "-v2" : "-v1"
+      }.png`,
       alt: `Figure ${num}: ${altText}`,
       width: FIGURE_DIMS[num]?.width ?? 300,
       height: FIGURE_DIMS[num]?.height ?? 300,
