@@ -22,6 +22,9 @@ describe("US 78,317 Alfred Nobel Porous-Earth Explosive Dynamite visual & detona
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildNobelDynamiteModel");
     expect(modelSource).toContain("updateNobelDynamiteKinematics");
+    expect(modelSource).not.toContain("stepNobelDynamite({})");
+    expect(threeSource).toContain("p.ngPercentage");
+    expect(threeSource).toContain("p.capEnergyJoules");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

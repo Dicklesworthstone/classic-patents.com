@@ -25,6 +25,9 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildEdisonPhonographModel");
     expect(modelSource).toContain("updateEdisonPhonographKinematics");
+    expect(modelSource).not.toContain("stepEdisonPhonograph({})");
+    expect(threeSource).toContain("p.cylinderRpm");
+    expect(threeSource).toContain("p.voiceVolumeDb");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

@@ -22,6 +22,9 @@ describe("US 347,140 Elihu Thomson Electric Resistance Butt-Welding visual & ele
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildThomsonWeldingModel");
     expect(modelSource).toContain("updateThomsonWeldingKinematics");
+    expect(modelSource).not.toContain("stepThomsonWelding({})");
+    expect(threeSource).toContain("p.weldCurrentAmps");
+    expect(threeSource).toContain("p.clampPressureMpa");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

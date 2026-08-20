@@ -21,6 +21,8 @@ describe("US 6,469 Abraham Lincoln Buoying Vessels Over Shoals visual & hydrosta
     expect(modelSource).toContain("updateLincolnBuoyKinematics");
     expect(modelSource).toContain("paddleDisplayOmegaRadPerS");
     expect(modelSource).not.toContain("-= 0.02");
+    expect(modelSource).not.toContain("stepLincolnBuoy({})");
+    expect(threeSource).toContain("p.weightTons");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

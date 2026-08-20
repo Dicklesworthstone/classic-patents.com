@@ -805,8 +805,8 @@ export function updateMorseTelegraphKinematics(
   electronDisplaySpeed: number,
   keyIsDown: boolean,
   isCutaway: boolean,
-  lineVoltageV = 12,
-  lineLengthMiles = 40,
+  lineVoltageV = 24,
+  lineLengthMiles = 44,
   wpmSpeed = 20,
 ) {
   // 1. Key Action (manual or rhythmic Morse oscillation)

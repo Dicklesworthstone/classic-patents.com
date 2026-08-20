@@ -24,6 +24,9 @@ describe("US 31,128 Elisha Otis Safety Hoisting Apparatus visual & mechanics bou
     expect(modelSource).toContain("updateOtisElevatorKinematics");
     expect(modelSource).toContain("otisSheaveCrate");
     expect(modelSource).not.toContain("cyclicSymmetry(6, 0.4)");
+    expect(modelSource).not.toContain("stepOtisElevator({})");
+    expect(threeSource).toContain("p.cabPayloadKg");
+    expect(threeSource).toContain("p.cableTensionPct");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

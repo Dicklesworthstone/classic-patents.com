@@ -22,6 +22,10 @@ describe("US 1,647 Samuel Morse Electro-Magnetic Telegraph visual & circuitry bo
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMorseTelegraphModel");
     expect(modelSource).toContain("updateMorseTelegraphKinematics");
+    expect(modelSource).not.toContain("stepMorseTelegraph({})");
+    expect(threeSource).toContain("p.lineVoltageV");
+    expect(threeSource).toContain("p.lineLengthMiles");
+    expect(threeSource).toContain("p.wpmSpeed");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

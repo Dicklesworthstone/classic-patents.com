@@ -25,6 +25,11 @@ describe("US 313,224 Ottmar Mergenthaler Linotype visual & mechanics boundary", 
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMergenthalerLinotypeModel");
     expect(modelSource).toContain("updateMergenthalerLinotypeKinematics");
+    expect(modelSource).not.toContain("stepMergenthalerLinotype({})");
+    expect(modelSource).toContain("distributorFreqHz");
+    expect(threeSource).toContain("p.matrixRate");
+    expect(threeSource).toContain("p.spacebandWedge");
+    expect(threeSource).toContain("p.potTempC");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

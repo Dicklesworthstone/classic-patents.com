@@ -22,6 +22,9 @@ describe("US 174,465 Alexander Graham Bell Telephone visual & acoustics boundary
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildBellTelephoneModel");
     expect(modelSource).toContain("updateBellTelephoneKinematics");
+    expect(modelSource).not.toContain("stepBellTelephone({})");
+    expect(threeSource).toContain("p.voiceAmplitudeDb");
+    expect(threeSource).toContain("p.acousticFrequencyHz");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

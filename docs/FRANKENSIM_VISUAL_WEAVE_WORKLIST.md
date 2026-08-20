@@ -486,6 +486,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.393 Otis/Engelbart/Sholes/Hollerith/Mergenthaler/Corliss leftover constant-kappa cyclic rings drain crate seats (`otisSheaveCrate`, `engelbartXyCrate`, `sholesBasketCrate`, `hollerithBankCrate`, `mergenthalerMagCrate`, `corlissValveCrate`).
 - [x] P5.394 Energy strips from owned watts on new kernels: Hall cell kW, De Forest filament/audio, Edison indicator filament, Watt furnace/indicated/air-pump.
 - [x] P5.395 Otto / Pelton / Parsons / Edison-bulb 3D kinematics step the live slider params instead of `stepX({})`. Couple links drain Hall, De Forest, Edison indicator, and Watt owned watts.
+- [x] P5.396 3D leftover empty-steps drain live sliders: Maxim fireRate, Whitney crankRpm, Bell voice dB / f, Phonograph mandrel / voice, Nobel NG / cap, Lincoln weightTons, Zeppelin inflation / knots, Thomson current / clamp, Morse V / miles / wpm, Otis payload / tension, Sholes cadence. Mergenthaler star-wheel/screws advance at `2π · distributorFreqHz · dt` from the live matrix-rate step (no `stepMergenthalerLinotype({})`). Morse electron seats pin registry 24 V / 44 mi / 20 wpm.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

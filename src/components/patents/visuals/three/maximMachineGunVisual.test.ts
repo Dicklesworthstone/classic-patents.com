@@ -22,6 +22,8 @@ describe("US 319,596 Sir Hiram Maxim Automatic Machine Gun visual & ballistics b
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMaximMachineGunModel");
     expect(modelSource).toContain("updateMaximMachineGunKinematics");
+    expect(modelSource).not.toContain("stepMaximMachineGun({})");
+    expect(threeSource).toContain("p.fireRateRpm");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

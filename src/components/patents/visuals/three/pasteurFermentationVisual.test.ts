@@ -25,6 +25,8 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildPasteurFermentationModel");
     expect(modelSource).toContain("updatePasteurFermentationKinematics");
+    expect(modelSource).not.toContain("stepPasteurFermentation({})");
+    expect(modelSource).toContain("wortTempC: fermentationTempC");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

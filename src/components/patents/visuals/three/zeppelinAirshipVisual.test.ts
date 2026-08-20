@@ -22,6 +22,9 @@ describe("US 621,195 Ferdinand von Zeppelin Rigid Airship visual & aerostatics b
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildZeppelinAirshipModel");
     expect(modelSource).toContain("updateZeppelinAirshipKinematics");
+    expect(modelSource).not.toContain("stepZeppelinAirship({})");
+    expect(threeSource).toContain("p.gasInflation");
+    expect(threeSource).toContain("p.flightSpeedKnots");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

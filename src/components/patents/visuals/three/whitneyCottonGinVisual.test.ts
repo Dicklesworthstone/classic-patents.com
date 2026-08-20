@@ -25,6 +25,8 @@ describe("US X72 Eli Whitney Cotton Gin visual & kinematics boundary", () => {
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildWhitneyCottonGinModel");
     expect(modelSource).toContain("updateWhitneyCottonGinKinematics");
+    expect(modelSource).not.toContain("stepWhitneyCottonGin({})");
+    expect(threeSource).toContain("p.crankRpm");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
