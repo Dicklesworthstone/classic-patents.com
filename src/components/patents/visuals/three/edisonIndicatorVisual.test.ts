@@ -23,6 +23,14 @@ describe("US 307,031 Thomas Edison Electrical Indicator Visual Boundary", () => 
     expect(componentSource).not.toContain(".gltf");
     expect(componentSource).not.toContain(".glb");
     expect(componentSource).not.toContain("GLTFLoader");
+    expect(componentSource).toContain('usePatentPhysics("us-307031-edison-indicator")');
+    expect(componentSource).toContain('from "./useLiveSimParams"');
+    const simSource = readFileSync(
+      join(root, "src/components/patents/visuals/EdisonIndicatorSim.tsx"),
+      "utf8",
+    );
+    expect(simSource).toContain('usePatentPhysics("us-307031-edison-indicator")');
+    expect(simSource).not.toContain("setMainsVoltage");
   });
 
   it("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

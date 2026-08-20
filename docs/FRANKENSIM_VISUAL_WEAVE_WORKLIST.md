@@ -491,6 +491,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.398 Fessenden, Hewitt, and Haber 2D/3D sliders hoist onto `usePatentPhysics`. 3D animate loops drain `useLiveSimParams` instead of remounting the WebGL scene on every slider tick. Hewitt condenser cooling stays on the same bus even though it is not a registry control. De Forest 3D private sliders remain peer-owned.
 - [x] P5.399 Townes 2D, Carlson 2D, Yale 2D/3D, and Bell photophone 2D/3D sliders hoist onto `usePatentPhysics`. Townes/Carlson 3D drop render-time live-ref mutation for the shared `useLiveSimParams` hook. Townes active-medium enum stays local (string, not a registry control). Yale authorized-key and photophone audio-active toggles stay local. Peer De Forest / Edison indicator / Arkwright / Watt condenser left alone.
 - [x] P5.400 Rillieux 2D sliders hoist onto `us-3237-rillieux-evaporator`. 3D leaves the phantom `us-4879` bus, steps registry juice/Brix/effects instead of leftover steam/condenser stickers, drains `useLiveSimParams` so sliders do not remount WebGL, and the HUD cites US 3,237.
+- [x] P5.401 Edison Indicator 2D sliders hoist onto `us-307031-edison-indicator` (same bus as 3D). Plate-bias buttons write the registry number (+1/0/−1). Land Polaroid and Kilby 3D drain `useLiveSimParams` so development/die sliders do not remount WebGL. Peer De Forest / Arkwright / Watt condenser remain off-bus.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

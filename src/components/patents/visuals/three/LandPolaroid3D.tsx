@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 interface LandPolaroid3DProps {
   className?: string;
@@ -50,11 +51,13 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const { params } = usePatentPhysics("us-2543181-land-polaroid");
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
-  const devTime = params.developmentTimeSec ?? 30;
-  const exposure = params.exposureFraction ?? 0.6;
-  const viscosity = params.reagentViscosityCp ?? 25000;
-  const rollerGap = params.rollerGapUm ?? 25;
-  const alkaliPh = params.alkaliPh ?? 12.6;
+  const live = useLiveSimParams({
+    developmentTimeSec: params.developmentTimeSec ?? 30,
+    exposureFraction: params.exposureFraction ?? 0.6,
+    reagentViscosityCp: params.reagentViscosityCp ?? 25000,
+    rollerGapUm: params.rollerGapUm ?? 25,
+    alkaliPh: params.alkaliPh ?? 12.6,
+  });
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -78,7 +81,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     scene.fog = new THREE.FogExp2(0x050811, 0.06);
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
+    camera.position.set(...CAMERA_PRESETS.overview.pos);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -92,7 +95,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
+    controls.target.set(...CAMERA_PRESETS.overview.target);
     controlsRef.current = controls;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -115,13 +118,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     amberSpot.penumbra = 0.5;
     scene.add(amberSpot);
 
-    const model = createLandPolaroidModel({
-      developmentTimeSec: devTime,
-      exposureFraction: exposure,
-      reagentViscosityCp: viscosity,
-      rollerGapUm: rollerGap,
-      alkaliPh: alkaliPh,
-    });
+    const model = createLandPolaroidModel(live.current);
     modelRef.current = model;
     scene.add(model.group);
 
@@ -129,13 +126,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
       timeRef.current += 0.016;
       controls.update();
 
-      model.update(timeRef.current, {
-        developmentTimeSec: params.developmentTimeSec ?? 30,
-        exposureFraction: params.exposureFraction ?? 0.6,
-        reagentViscosityCp: params.reagentViscosityCp ?? 25000,
-        rollerGapUm: params.rollerGapUm ?? 25,
-        alkaliPh: params.alkaliPh ?? 12.6,
-      });
+      model.update(timeRef.current, live.current);
 
       renderer.render(scene, camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -168,7 +159,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         container.removeChild(renderer.domElement);
       }
     };
-  }, [devTime, exposure, viscosity, rollerGap, alkaliPh, params, cameraPreset]);
+  }, [live]);
 
   return (
     <div

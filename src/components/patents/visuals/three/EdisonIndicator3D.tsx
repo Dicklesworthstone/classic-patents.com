@@ -6,6 +6,7 @@ import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildEdisonIndicatorModel } from "./edisonIndicatorModel";
 import { createThreeStudioScene } from "./ThreeStudioScene";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 type CameraPreset = "overview" | "bulb" | "galvanometer" | "regulation";
 
@@ -38,10 +39,7 @@ export default function EdisonIndicator3D() {
     });
   }, [mainsVoltage, plateBias, nullRefVoltage]);
 
-  const simRef = useRef(sim);
-  useEffect(() => {
-    simRef.current = sim;
-  }, [sim]);
+  const live = useLiveSimParams(sim);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -60,7 +58,7 @@ export default function EdisonIndicator3D() {
     let rafId = 0;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const currentSim = simRef.current;
+      const currentSim = live.current;
       model.update({
         filamentTemperatureK: currentSim.filamentTemperatureK,
         galvoDeflectionDeg: currentSim.galvoDeflectionDeg,
@@ -77,7 +75,7 @@ export default function EdisonIndicator3D() {
       model.dispose();
       studio.dispose();
     };
-  }, []);
+  }, [live]);
 
   const setView = (preset: CameraPreset) => {
     setActivePreset(preset);

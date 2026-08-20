@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 
 export default function EdisonIndicatorSim() {
-  const [mainsVoltage, setMainsVoltage] = useState<number>(110);
-  const [plateBias, setPlateBias] = useState<"positive" | "negative" | "neutral">("positive");
-  const [nullRefVoltage, setNullRefVoltage] = useState<number>(110);
-
-  const biasNum = plateBias === "positive" ? 1 : plateBias === "negative" ? -1 : 0;
+  const { params, updateParam } = usePatentPhysics("us-307031-edison-indicator");
+  const mainsVoltage = params.mainsVoltageV ?? 110;
+  const biasNum = params.plateBiasPolarity ?? 1;
+  const plateBias: "positive" | "negative" | "neutral" =
+    biasNum > 0 ? "positive" : biasNum < 0 ? "negative" : "neutral";
+  const nullRefVoltage = params.galvanometerTorsionNullV ?? 110;
 
   const sim = useMemo(() => {
     return stepEdisonIndicator({
@@ -455,7 +457,7 @@ export default function EdisonIndicatorSim() {
             max="130"
             step="1"
             value={mainsVoltage}
-            onChange={(e) => setMainsVoltage(Number(e.target.value))}
+            onChange={(e) => updateParam("mainsVoltageV", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
           <div className="flex justify-between text-[10px] font-mono text-ink-500">
@@ -473,7 +475,7 @@ export default function EdisonIndicatorSim() {
           <div className="grid grid-cols-3 gap-1.5 pt-1">
             <button
               type="button"
-              onClick={() => setPlateBias("positive")}
+              onClick={() => updateParam("plateBiasPolarity", 1)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "positive"
                   ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
@@ -484,7 +486,7 @@ export default function EdisonIndicatorSim() {
             </button>
             <button
               type="button"
-              onClick={() => setPlateBias("neutral")}
+              onClick={() => updateParam("plateBiasPolarity", 0)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "neutral"
                   ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
@@ -495,7 +497,7 @@ export default function EdisonIndicatorSim() {
             </button>
             <button
               type="button"
-              onClick={() => setPlateBias("negative")}
+              onClick={() => updateParam("plateBiasPolarity", -1)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "negative"
                   ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
@@ -531,7 +533,7 @@ export default function EdisonIndicatorSim() {
             max="115"
             step="1"
             value={nullRefVoltage}
-            onChange={(e) => setNullRefVoltage(Number(e.target.value))}
+            onChange={(e) => updateParam("galvanometerTorsionNullV", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
           <p className="text-[10px] font-serif text-ink-600 dark:text-parchment-400 italic">

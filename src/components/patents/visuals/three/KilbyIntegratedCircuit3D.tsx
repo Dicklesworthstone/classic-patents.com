@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createKilbyIntegratedCircuitModel, type KilbyModel } from "./kilbyIntegratedCircuitModel";
+import { useLiveSimParams } from "./useLiveSimParams";
 
 interface Kilby3DProps {
   className?: string;
@@ -51,11 +52,13 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
 
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
-  const supplyVoltage = params.supplyVoltageV ?? 6.0;
-  const resistorLength = params.resistorLengthUm ?? 500;
-  const resistorWidth = params.resistorWidthUm ?? 50;
-  const reverseBias = params.reverseBiasVoltageV ?? 3.0;
-  const baseDrive = params.baseDriveCurrentUa ?? 40;
+  const live = useLiveSimParams({
+    supplyVoltageV: params.supplyVoltageV ?? 6.0,
+    resistorLengthUm: params.resistorLengthUm ?? 500,
+    resistorWidthUm: params.resistorWidthUm ?? 50,
+    reverseBiasVoltageV: params.reverseBiasVoltageV ?? 3.0,
+    baseDriveCurrentUa: params.baseDriveCurrentUa ?? 40,
+  });
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -81,7 +84,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
 
     // Camera
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.set(...CAMERA_PRESETS[cameraPreset].pos);
+    camera.position.set(...CAMERA_PRESETS.overview.pos);
     cameraRef.current = camera;
 
     // Renderer
@@ -97,7 +100,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
-    controls.target.set(...CAMERA_PRESETS[cameraPreset].target);
+    controls.target.set(...CAMERA_PRESETS.overview.target);
     controlsRef.current = controls;
 
     // Lights
@@ -124,11 +127,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     // Model
     const model = createKilbyIntegratedCircuitModel({
       substrateMaterial: "germanium",
-      supplyVoltageV: supplyVoltage,
-      resistorLengthUm: resistorLength,
-      resistorWidthUm: resistorWidth,
-      reverseBiasVoltageV: reverseBias,
-      baseDriveCurrentUa: baseDrive,
+      ...live.current,
     });
     modelRef.current = model;
     scene.add(model.group);
@@ -140,11 +139,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
 
       model.update(timeRef.current, {
         substrateMaterial: "germanium",
-        supplyVoltageV: params.supplyVoltageV ?? 6.0,
-        resistorLengthUm: params.resistorLengthUm ?? 500,
-        resistorWidthUm: params.resistorWidthUm ?? 50,
-        reverseBiasVoltageV: params.reverseBiasVoltageV ?? 3.0,
-        baseDriveCurrentUa: params.baseDriveCurrentUa ?? 40,
+        ...live.current,
       });
 
       renderer.render(scene, camera);
@@ -179,7 +174,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
         container.removeChild(renderer.domElement);
       }
     };
-  }, [supplyVoltage, resistorLength, resistorWidth, reverseBias, baseDrive, params, cameraPreset]);
+  }, [live]);
 
   return (
     <div

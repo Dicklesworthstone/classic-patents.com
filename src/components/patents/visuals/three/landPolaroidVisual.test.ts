@@ -1,8 +1,20 @@
 import { describe, expect, it } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
 import { createLandPolaroidModel } from "./landPolaroidModel";
 
 describe("US 2,543,181 Edwin Land Polaroid Instant Photography Visual Boundary", () => {
+  it("3D live loop drains useLiveSimParams instead of remounting on slider ticks", () => {
+    const studioSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/LandPolaroid3D.tsx"),
+      "utf8",
+    );
+    expect(studioSource).toContain('from "./useLiveSimParams"');
+    expect(studioSource).toContain("model.update(timeRef.current, live.current)");
+    expect(studioSource).not.toContain("cameraPreset]");
+  });
+
   it("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const model = createLandPolaroidModel();
     expect(model.cameraBody).toBeDefined();

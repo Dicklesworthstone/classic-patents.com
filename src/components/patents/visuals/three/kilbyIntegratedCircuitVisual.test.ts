@@ -24,6 +24,8 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(studioSource).not.toContain("GLTFLoader");
+    expect(studioSource).toContain('from "./useLiveSimParams"');
+    expect(studioSource).toContain("...live.current");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
