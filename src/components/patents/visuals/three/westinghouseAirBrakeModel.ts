@@ -558,11 +558,11 @@ export function updateWestinghouseAirBrakeKinematics(
   nodes.couplingCordY.position.x = wh.isUncouplingTripped ? -0.2 : 0;
 
   // 3. Brake Cylinder Piston Stroke
-  const pushStroke = (wh.brakeCylinderPressurePsi / 80) * 0.35;
+  const pushStroke = wh.clampRatio * wh.maxPushStroke;
   nodes.pistonPushRod.position.x = 0.75 + pushStroke;
 
   // 4. Brake Beams & Shoes Clamping Travel
-  const clampTravel = (wh.brakeCylinderPressurePsi / 80) * 0.08;
+  const clampTravel = wh.clampRatio * wh.beamClampTravel;
   nodes.frontBrakeBeam.position.x = -1.4 + clampTravel;
   nodes.rearBrakeBeam.position.x = 1.4 - clampTravel;
 

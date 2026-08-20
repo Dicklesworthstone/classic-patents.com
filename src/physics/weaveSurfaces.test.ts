@@ -264,6 +264,13 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
     expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("jet");
+    expect(coupleLinks("us-470918-reno-escalator", {})[0]?.from).toBe("motor");
+    expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("powder");
+    expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
+    expect(coupleLinks("us-586193-marconi-radio", {})[0]?.from).toBe("spark");
+    expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("spray");
+    expect(coupleLinks("us-2708656-fermi-reactor", {})[0]?.from).toBe("fission");
+    expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");
   });
 
   test("computes Kitty Hawk 1903 empirical flight residuals", () => {

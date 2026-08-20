@@ -5,7 +5,9 @@ import {
   stepDavenportMotor,
   stepEdisonBulb,
   stepEinsteinRefrigerator,
+  stepEricssonPropeller,
   stepMarconiRadio,
+  stepMaximMachineGun,
   stepOttoEngine,
   stepParsonsTurbine,
   stepPeltonWheel,
@@ -14,6 +16,7 @@ import {
 
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
+import { stepRenoEscalator } from "./machineKernels";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 /** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
@@ -26,12 +29,10 @@ export function energyChannelsFor(
   if (patentId === "us-821393-wright-flyer") {
     const si = stepWrightFlyerSi(readWrightControls(params));
     const v = (params.airspeed ?? 28) * 0.44704;
-    const powerInd = si.inducedDragNewtons * v;
-    const powerLift = si.liftNewtons * v * 0.08;
     return [
       { name: "Thrust · v", watts: si.totalDragNewtons * v, tone: "in" },
-      { name: "Lift work", watts: powerLift, tone: "useful" },
-      { name: "Induced drag", watts: powerInd, tone: "loss" },
+      { name: "Parasitic drag", watts: si.parasiticDragNewtons * v, tone: "loss" },
+      { name: "Induced drag", watts: si.inducedDragNewtons * v, tone: "loss" },
     ];
   }
   if (patentId === "us-223898-edison-lightbulb") {
@@ -39,12 +40,9 @@ export function energyChannelsFor(
       voltage: params.voltage ?? 110,
       filamentLength: params.filamentLength,
     });
-    const p = bulb.radiantWatts;
-    const vis = p * Math.min(0.08, bulb.luminousLmPerW / 40);
     return [
-      { name: "Joule heat", watts: p, tone: "in" },
-      { name: "Visible", watts: vis, tone: "useful" },
-      { name: "IR + cond.", watts: p - vis, tone: "loss" },
+      { name: "Joule heat", watts: bulb.radiantWatts, tone: "in" },
+      { name: "Feeder I²R", watts: bulb.feederLossWatts, tone: "loss" },
     ];
   }
   if (patentId === "us-1102653-goddard-rocket") {
@@ -209,6 +207,30 @@ export function energyChannelsFor(
       runnerRpm: params.runnerRpm,
     });
     return [{ name: "Shaft", watts: pelton.shaftPowerKw * 1000, tone: "useful" }];
+  }
+  if (patentId === "us-470918-reno-escalator") {
+    const reno = stepRenoEscalator({
+      passengerCount: params.passengerCount,
+      inclineAngleDeg: params.inclineAngle,
+      velocityMps: params.beltSpeed,
+    });
+    return [{ name: "Motor", watts: reno.motorPowerKw * 1000, tone: "in" }];
+  }
+  if (patentId === "us-319596-maxim-machine-gun") {
+    const maxim = stepMaximMachineGun({
+      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
+      waterJacketLiters: params.waterLevel ?? 4,
+      recoilStrokeMm: params.recoilStroke ?? 19,
+    });
+    return [{ name: "Jacket heat", watts: maxim.heatGeneratedWatts, tone: "loss" }];
+  }
+  if (patentId === "us-588-ericsson-propeller") {
+    const screw = stepEricssonPropeller({
+      shaftRpm: params.shaftRpm,
+      bladePitchAngleDeg: params.bladePitchAngleDeg,
+    });
+    const v = screw.shipSpeedKnots * 0.514444;
+    return [{ name: "Thrust · v", watts: screw.thrustKn * 1000 * v, tone: "useful" }];
   }
   return [];
 }

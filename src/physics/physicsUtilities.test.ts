@@ -56,15 +56,20 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
 
   test("energyChannelsFor derives conservative energy flow partitions", () => {
     const wrightChannels = energyChannelsFor("us-821393-wright-flyer", { airspeed: 30 });
-    expect(wrightChannels.length).toBe(3);
-    expect(wrightChannels[0].tone).toBe("in");
-    expect(wrightChannels[1].tone).toBe("useful");
-    expect(wrightChannels[2].tone).toBe("loss");
+    expect(wrightChannels.map((c) => c.name)).toEqual([
+      "Thrust · v",
+      "Parasitic drag",
+      "Induced drag",
+    ]);
+    expect(wrightChannels[1].watts + wrightChannels[2].watts).toBeCloseTo(
+      wrightChannels[0].watts,
+      1,
+    );
 
     const edisonChannels = energyChannelsFor("us-223898-edison-lightbulb", { voltage: 110 });
-    expect(edisonChannels.length).toBe(3);
-    const sumEdison = edisonChannels[1].watts + edisonChannels[2].watts;
-    expect(sumEdison).toBeCloseTo(edisonChannels[0].watts, 1);
+    expect(edisonChannels.map((c) => c.name)).toEqual(["Joule heat", "Feeder I²R"]);
+    expect(edisonChannels[0].tone).toBe("in");
+    expect(edisonChannels[1].tone).toBe("loss");
 
     const goddardChannels = energyChannelsFor("us-1102653-goddard-rocket", {});
     expect(goddardChannels.length).toBe(2);
@@ -96,6 +101,13 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
     expect(energyChannelsFor("us-361931-daimler-engine", {})[0]?.name).toBe("Brake");
     expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe("Shaft");
+    expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
+    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]).toMatchObject({
+      name: "Jacket heat",
+      tone: "loss",
+    });
+    expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]?.watts).toBeGreaterThan(0);
+    expect(energyChannelsFor("us-588-ericsson-propeller", {})[0]?.name).toBe("Thrust · v");
   });
 
   test("canonicalizeParam and expandParamAliases normalize 3D private slider keys", () => {

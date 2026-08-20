@@ -476,6 +476,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.380 Tesla coil `coupleLinks` no longer prints invented `(inputVoltageKv ?? 15) * 20` W. The coil step owns kV and streamer length, not a watt.
 - [x] P5.381 Tesla 3D HUD title is Fig. 9 motor-generator, not Source Guide. Overlay prints generator / pole-shift / disk rpm and B intensity from `stepTeslaMotorFig9`.
 - [x] P5.382 `coupleLinks` keeps only owned watts: Wright induced-drag · v, Edison I²R. Dropped invented CCD e⁻×e×1e12, Howe shear×Hz×3 mm, Wright adverse-yaw×2, Tesla coil kV×20.
+- [x] P5.383 Wright energy strip is thrust·v = parasitic + induced (no invented 0.08 lift work). Edison is filament I²R + feeder I²R (no invented 8% visible split).
+- [x] P5.384 Energy strips from owned watts: Reno motor kW, Maxim jacket heat, Ericsson thrust·v. Maxim `heatGeneratedWatts` is now on the step return.
+- [x] P5.385 Couple links drain the same owned watts: Reno, Maxim, Ericsson, Marconi spark RF, Carrier latent, Fermi fission, Parsons shaft, Otto/Daimler/Corliss hp, Goddard exhaust KE.
+- [x] P5.386 Westinghouse 2D/3D piston and shoe travel drain `clampRatio * maxPushStroke` / `beamClampTravel`. No private cylPsi/80 leftover (kernel clamp is cyl/55).
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

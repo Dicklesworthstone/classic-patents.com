@@ -25,6 +25,9 @@ describe("US 124,404 George Westinghouse Double-Pipe Air Brake & Signal Visual B
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildWestinghouseAirBrakeModel");
     expect(modelSource).toContain("updateWestinghouseAirBrakeKinematics");
+    expect(modelSource).toContain("wh.clampRatio * wh.maxPushStroke");
+    expect(modelSource).toContain("wh.clampRatio * wh.beamClampTravel");
+    expect(modelSource).not.toContain("brakeCylinderPressurePsi / 80");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

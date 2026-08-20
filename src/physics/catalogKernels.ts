@@ -3095,6 +3095,7 @@ export function stepMaximMachineGun(params: {
     recoilVelocityMps,
     recoilMomentumNs,
     toggleUnlockForceN,
+    heatGeneratedWatts,
     waterEvapRateGs,
     barrelTempC,
     muzzleEnergyJoules,

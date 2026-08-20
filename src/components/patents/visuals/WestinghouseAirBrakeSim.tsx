@@ -543,7 +543,7 @@ export function WestinghouseAirBrakeSim() {
               />
               {/* Internal Piston and Push-Rod */}
               <rect
-                x={20 + (cylPressurePsi / 80) * 45}
+                x={20 + wh.clampRatio * 45}
                 y="6"
                 width="14"
                 height="48"
@@ -554,9 +554,9 @@ export function WestinghouseAirBrakeSim() {
               />
               {/* Push-rod extending to foundation levers */}
               <line
-                x1={34 + (cylPressurePsi / 80) * 45}
+                x1={34 + wh.clampRatio * 45}
                 y1="30"
-                x2={120 + (cylPressurePsi / 80) * 50}
+                x2={120 + wh.clampRatio * 50}
                 y2="30"
                 stroke="#cbd5e1"
                 strokeWidth="6"
@@ -589,7 +589,7 @@ export function WestinghouseAirBrakeSim() {
             <g transform="translate(590, 290)">
               <line x1="0" y1="0" x2="40" y2="0" stroke="#f59e0b" strokeWidth="4" />
               <path
-                d={`M ${50 - (cylPressurePsi / 80) * 12} -20 Q ${55 - (cylPressurePsi / 80) * 12} 0 ${50 - (cylPressurePsi / 80) * 12} 20`}
+                d={`M ${50 - wh.clampRatio * 12} -20 Q ${55 - wh.clampRatio * 12} 0 ${50 - wh.clampRatio * 12} 20`}
                 fill="none"
                 stroke="#ef4444"
                 strokeWidth="8"

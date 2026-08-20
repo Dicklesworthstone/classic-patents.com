@@ -34,7 +34,7 @@ describe("Physics Auxiliary Modules & Utilities", () => {
 
       expect(channels.length).toBeGreaterThan(0);
       expect(channels.some((c) => c.name.includes("Thrust"))).toBe(true);
-      expect(channels.some((c) => c.tone === "useful")).toBe(true);
+      expect(channels.some((c) => c.tone === "loss")).toBe(true);
     });
 
     test("computes energy flow channels for Edison Lightbulb", () => {
@@ -42,8 +42,8 @@ describe("Physics Auxiliary Modules & Utilities", () => {
         voltage: 110,
       });
 
-      expect(channels.length).toBe(3);
-      expect(channels.some((c) => c.name === "Visible")).toBe(true);
+      expect(channels.length).toBe(2);
+      expect(channels.some((c) => c.name === "Feeder I²R")).toBe(true);
       expect(channels.some((c) => c.name === "Joule heat")).toBe(true);
     });
 

@@ -2010,6 +2010,98 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     });
     return [{ from: "jet", to: "shaft", watts: pelton.shaftPowerKw * 1000 }];
   }
+  if (patentId.includes("reno") || patentId.includes("470918")) {
+    const reno = stepRenoEscalator({
+      passengerCount: params.passengerCount,
+      inclineAngleDeg: params.inclineAngle,
+      velocityMps: params.beltSpeed,
+    });
+    return [{ from: "motor", to: "incline", watts: reno.motorPowerKw * 1000 }];
+  }
+  if (patentId.includes("maxim") || patentId.includes("319596")) {
+    const maxim = FrankenSimEngine.stepMaximMachineGun({
+      firingRateRpm: params.firingRate ?? params.fireRateRpm ?? 600,
+      waterJacketLiters: params.waterLevel ?? 4,
+      recoilStrokeMm: params.recoilStroke ?? 19,
+    });
+    return [{ from: "powder", to: "jacket", watts: maxim.heatGeneratedWatts }];
+  }
+  if (patentId.includes("ericsson") || patentId.includes("us-588")) {
+    const screw = stepEricssonPropeller({
+      shaftRpm: params.shaftRpm,
+      bladePitchAngleDeg: params.bladePitchAngleDeg,
+    });
+    const v = screw.shipSpeedKnots * 0.514444;
+    return [{ from: "thrust · v", to: "hull", watts: screw.thrustKn * 1000 * v }];
+  }
+  if (patentId.includes("marconi") || patentId.includes("586193")) {
+    const radio = FrankenSimEngine.stepMarconiRadio(
+      params.aerialHeight ?? 88,
+      params.sparkGapMm ?? 10,
+      params.sparkVoltage ?? 28,
+    );
+    return [{ from: "spark", to: "aerial", watts: radio.peakRfPowerKw * 1000 }];
+  }
+  if (patentId.includes("carrier") || patentId.includes("808897")) {
+    const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
+      airflowCfm: params.airflowCfm,
+    });
+    return [{ from: "spray", to: "latent sink", watts: carrier.coolingWatts }];
+  }
+  if (patentId.includes("fermi")) {
+    const kinetics = stepFermiKinetics(
+      params.rodWithdrawal ?? 83.5,
+      params.moderatorPurity ?? 99.5,
+    );
+    return [{ from: "fission", to: "graphite", watts: kinetics.thermalPowerWatts }];
+  }
+  if (patentId.includes("parsons") || patentId.includes("608969") || patentId.includes("328710")) {
+    const parsons = stepParsonsTurbine({
+      rotorRpm: params.rotorRpm,
+      inletPressurePsi: params.inletPressurePsi ?? (params.steamPressureBar ?? 12.4) * 14.5038,
+    });
+    return [{ from: "steam", to: "shaft", watts: parsons.shaftPowerKw * 1000 }];
+  }
+  if (patentId.includes("otto-engine") || patentId.includes("194047")) {
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm,
+      compressionRatio: params.compressionRatio,
+    });
+    return [{ from: "gas charge", to: "brake", watts: otto.brakeHorsepower * 745.7 }];
+  }
+  if (patentId.includes("daimler") || patentId.includes("361931")) {
+    const d = stepDaimlerEngine({
+      engineRpm: params.engineRpm,
+      hotTubeTempC: params.hotTubeTemp,
+      differentialSlipAngleDeg: params.turnAngle,
+    });
+    return [{ from: "hot-tube", to: "brake", watts: d.brakeHorsepower * 745.7 }];
+  }
+  if (patentId.includes("corliss") || patentId.includes("6162")) {
+    const corliss = stepCorlissEngine({
+      steamPressurePsi: params.steamPressurePsi,
+      engineRpm: params.engineRpm,
+      cutoffPct: params.cutoffPct,
+    });
+    return [{ from: "steam", to: "indicated", watts: corliss.indicatedHp * 745.7 }];
+  }
+  if (
+    patentId.includes("goddard") ||
+    patentId.includes("1102653") ||
+    patentId.includes("1155986")
+  ) {
+    const rocket = FrankenSimEngine.stepGoddardRocket(
+      params.chamberPressure ?? 350,
+      params.fuelFlowRateKgs ?? 1.8,
+      params.throatAreaCm2 ?? 4.2,
+      params.expansionRatio ?? 3.5,
+    );
+    return [{ from: "chem. enthalpy", to: "exhaust KE", watts: rocket.exhaustKineticWatts }];
+  }
   if (patentId.includes("tesla-coil") || patentId.includes("593138")) {
     // stepTeslaCoil owns streamer length, secondary potential, and a 0–1 toneEnergy.
     // It does not own a watt. Do not print kV × 20 as if it were primary-spark power.
