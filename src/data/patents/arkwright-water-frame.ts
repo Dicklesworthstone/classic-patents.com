@@ -184,7 +184,7 @@ export const arkwrightWaterFramePatent: Patent = {
         formula:
           "TPI = TM \\cdot \\sqrt{N_e} = \\frac{\\text{RPM}_{\\text{flyer}}}{v_{\\text{delivery}} \\cdot 39.37}, \\quad P_{\\text{radial}} = \\frac{2 T \\sin^2\\alpha}{r}",
         explanation:
-          "Unspun roving has zero tensile strength because short staple fibers easily slip past one another. Imparting helical twist (\\alpha) converts longitudinal yarn tension ($T$) into inward radial clamping pressure ($P_{\\text{radial}}$), multiplying inter-fiber frictional resistance ($F = \\mu N$) via the capstan effect and producing unbreakable 'Water Twist' warp yarn.",
+          "Unspun roving has zero tensile strength because short staple fibers easily slip past one another. Imparting helical twist ($\\alpha$) converts longitudinal yarn tension ($T$) into inward radial clamping pressure ($P_{\\text{radial}}$), multiplying inter-fiber frictional resistance ($F = \\mu N$) via the capstan effect and producing unbreakable 'Water Twist' warp yarn.",
       },
       {
         principle: "Dead-Spindle Differential Take-up Dynamics",

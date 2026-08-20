@@ -39,7 +39,7 @@ edition source.
 | Masthead: office, Tesla, title, patent number, grant date, application date, serial number, no-model line | p. 3, heading | Transcribed as typed masthead lines |
 | Figure 1 source crop and figure-sheet description | p. 1, full drawing sheet | Local crop `fig-1-source-crop-v2.png`; labels A, B, C, G, H, and K visible |
 | Figure 2 source crop and every Figure 2 reference | p. 2, lower drawing | Local crop `fig-2-source-crop-v2.png`; labels B and C visible |
-| Figure 3 source crop and every Figure 3 reference | p. 2, upper drawing | Local crop `fig-3-source-crop-v2.png`; labels B, C, L, and M visible |
+| Figure 3 source crop and every Figure 3 reference | p. 2, upper drawing | Tightly framed local crop `fig-3-source-crop-v3.png`; labels B, C, L, and M visible |
 | Formal address through quarter-wave construction | p. 3, body text | Continuous authored paragraphs, no public scan-page boundary |
 | Figure inventory, A/B/C descriptions, transmission arrangement | p. 3 through p. 4 | Every printed Figure 1, 2, and 3 citation is an explicit figure-reference node with a local crop |
 | Cone and two-secondary forms, terminal tubes, numerical 925-per-second illustration | p. 4, left column | Continuous authored paragraphs; source quantities retained |

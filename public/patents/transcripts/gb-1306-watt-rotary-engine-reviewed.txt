@@ -1,0 +1,49 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---
+
+A.D. 1781 . . . . . . . No 1306.
+
+SPECIFICATION OF JAMES WATT.
+
+ROTARY STEAM ENGINES & SUN AND PLANET GEARING.
+
+TO ALL TO WHOM THESE PRESENTS SHALL COME, I, JAMES WATT, of Birmingham, in the County of Warwick, Engineer, send greeting:
+
+WHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Twenty-fifth day of October, in the twenty-first year of His reign, did give and grant unto me, the said James Watt, His especial licence, full power, sole privilege and authority, that I, the said James Watt, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented "Certain New Methods of Producing a Continued Rotative Motion Around an Axis or Center, and for other Purposes, to be Applied to the Steam or Fire Engines;" in which said Letters Patent there is contained a proviso obliging me, the said James Watt, by an instrument in writing under my hand and seal, to cause a particular description of the nature of my said Invention, and the manner in which the same is to be performed, to be inrolled in His Majesty's High Court of Chancery within four calendar months next and immediately after the date of the said Letters Patent, as in and by the same, reference being thereunto had, will more fully and at large appear.
+
+NOW KNOW YE, that in compliance with the said proviso, I, the said James Watt, do hereby declare that the following is a particular description of the nature of my said Invention, and in what manner the same is to be performed, that is to say:
+
+My Invention consists in certain new methods or apparatus for applying the reciprocating motion of the working beams or pistons of steam or fire engines to turn large wheels, axles, or shafts, and to produce a continued circular or rotative motion round an axis or center, without employing a simple revolving crank; which circular motion may be applied to drive mills of all kinds, forge hammers, rolling mills, spinning and weaving machinery, and other mechanical apparatus requiring continuous rotation.
+
+The First Method (The Sun and Planet Wheels). --- Upon the end of the shaft, axle, or spindle which is intended to receive the continued rotative motion, and which carries the heavy fly-wheel to equalize the velocity, I fix or key fast a toothed spur wheel, which I denominate the Sun wheel (shown at D in Figure 1 and at A in Figure 2 of the annexed Drawing). To the lower extremity of the spear or connecting rod (B) suspended from the great working beam (A) of the steam engine, I rigidly bolt, fasten, or forge in one solid piece another toothed wheel of equal diameter and number of teeth, which I denominate the Planet wheel (C in Figure 1, and B in Figure 2). The planet wheel is restrained from turning upon its own center or diverging out of gear with the sun wheel by means of a link, radius arm, or circular guiding groove (G) connecting the centers of both wheels.
+
+As the working beam of the steam engine rises and falls in its reciprocating stroke, the connecting rod causes the planet wheel to revolve around the center of the sun wheel. Because the planet wheel is firmly fixed to the connecting rod and does not rotate independently about its own center, it causes the sun wheel, and the main axle and fly-wheel attached thereto, to perform two complete revolutions for every double stroke or reciprocating cycle of the steam engine beam; thereby producing a continued, rapid, and uniform rotative motion with double the velocity that would be produced by a single crank, and with great smoothness and regularity of action.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---
+
+The Second Method. --- In place of external spur teeth, the planet wheel or friction roller is caused to revolve within an eccentric internal toothed ring or hollow drum fixed to the rotating axle, producing rotation by internal planetary epicyclic engagement.
+
+The Third Method. --- Consists in applying a crown wheel with ratchet teeth, acted upon by reciprocating catches or clicks alternately engaged by the up and down motion of the connecting rod, whereby the shaft is impelled continuously in one direction.
+
+The Fourth Method. --- Consists in the application of double toothed racks mounted upon the reciprocating rods, acting upon intermittent sectors or pinions on the shaft with weighted balance levers.
+
+The Fifth Method. --- Consists in a spiral or helical cam groove formed upon the main shaft, traversed by a roller pin on the reciprocating cross-head to generate continuous rotation.
+
+CLAIMS AND SUMMARY OF THE INVENTION.
+
+Having thus described my Invention, what I claim and secure by the said Letters Patent is:
+
+1. First, The method of converting reciprocating rectilinear or oscillatory motion of steam engines into continuous rotative motion by means of a toothed planet wheel rigidly secured to the connecting rod and caused to orbit around a toothed sun wheel fixed to the driven axle, as herein described.
+
+2. Secondly, The epicyclic mechanism whereby the driven sun wheel and flywheel are caused to perform two revolutions for every single reciprocating cycle or double-stroke of the engine beam.
+
+3. Thirdly, The mechanical radius link, groove, or eccentric guide connecting the centers of the sun and planet wheels to maintain continuous pitch-line meshing during epicyclic revolution.
+
+4. Fourthly, The alternative rotative methods comprising internal planetary gearing, crown-wheel ratchet escapements, double rack and pinion sectors, and helical grooved cams as applied to steam engines.
+
+[Figure Plate annexed to James Watt's Rotary Motion Specification (GB No. 1306, 1781).]
+
+IN WITNESS whereof, I, the said James Watt, have hereunto set my hand and seal, this Twenty-third day of February, in the twenty-second year of the reign of King George the Third, and in the year of our Lord One thousand seven hundred and eighty-two.
+
+JAMES WATT. (L.S.)
+
+AND BE IT REMEMBERED, that on the same Twenty-third day of February, the aforesaid James Watt came before our said Lord the King in His Chancery, and acknowledged the Specification aforesaid, and all and every thing therein contained, in form above written. Inrolled the same Twenty-third day of February, in the year of our Lord 1782.
