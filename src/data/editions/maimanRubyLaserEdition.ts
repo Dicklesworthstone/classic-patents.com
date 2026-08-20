@@ -323,7 +323,7 @@ export const maimanRubyLaserParallelReadings: Record<number, string[]> = {
   9: ["Fabry-Perot resonator fabrication: precision polished, parallel end faces with dielectric or silver coatings for mode selection and beam extraction."],
   10: ["Cooled optical cavity architecture: liquid and forced nitrogen cooling jackets to maintain ruby rod low-temperature stability during high-energy discharge cycling."],
   11: ["Colidar application: the world's first laser radar system utilizing monochromatic microsecond optical pulses for high-precision, jam-proof spatial ranging."],
-  12: ["Claims heading."],
+  12: ["Official statutory claims defining the legal scope of the ruby laser system and solid-state optical maser apparatus."],
   13: ["Introductory legal preamble to the granted claims."],
   14: ["Claim 1: The foundational apparatus combination claiming a three-energy-level ruby crystal, broadband optical pumping source, radiationless transition establishing population inversion, tuned interferometer resonator, and beam extraction coupling means."],
   15: ["Claim 2: The system claim protecting three-level optical pumping directly coupled to ruby, radiationless energy transition creating population inversion, and regenerative light-resonating path stimulating 694.3 nm coherent beam emission."],
