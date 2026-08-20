@@ -1,0 +1,80 @@
+import { describe, expect, test } from "bun:test";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { stepDeForestAudion } from "@/physics/catalogKernels";
+import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
+
+describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary", () => {
+  const rootDir = process.cwd();
+  const modelPath = join(rootDir, "src/components/patents/visuals/three/deForestAudionModel.ts");
+  const studioPath = join(rootDir, "src/components/patents/visuals/three/DeForestAudion3D.tsx");
+
+  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+    expect(existsSync(modelPath)).toBe(true);
+    expect(existsSync(studioPath)).toBe(true);
+
+    const modelSource = readFileSync(modelPath, "utf-8");
+    const studioSource = readFileSync(studioPath, "utf-8");
+
+    expect(modelSource).not.toContain("GLTFLoader");
+    expect(modelSource).not.toContain(".gltf");
+    expect(modelSource).not.toContain(".glb");
+
+    expect(studioSource).not.toContain("GLTFLoader");
+    expect(studioSource).not.toContain(".gltf");
+    expect(studioSource).not.toContain(".glb");
+  });
+
+  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
+    const modelSource = readFileSync(modelPath, "utf-8");
+    const studioSource = readFileSync(studioPath, "utf-8");
+
+    expect(modelSource).not.toContain("Math.random");
+    expect(studioSource).not.toContain("Math.random");
+    expect(studioSource).not.toContain("new THREE.Clock");
+    expect(studioSource).not.toContain("performance.now");
+  });
+
+  test("computes genuine Child-Langmuir plate current, transconductance, and voltage gain in SI units", () => {
+    const res = stepDeForestAudion({
+      plateVoltageV: 45,
+      gridBiasVoltageV: -1.5,
+      filamentCurrentA: 1.0,
+      gridSignalAmplitudeMv: 50,
+      loadResistanceKOhms: 20,
+    });
+
+    expect(res.plateVoltageV).toBe(45);
+    expect(res.filamentTemperatureK).toBeGreaterThan(2000);
+    expect(res.amplificationFactorMu).toBe(12.0);
+    expect(res.plateCurrentMa).toBeGreaterThan(0.5);
+    expect(res.voltageGain).toBeGreaterThan(5.0);
+    expect(res.outputSignalMv).toBeGreaterThan(250);
+    expect(res.dynamicTransconductanceMicromhos).toBeGreaterThan(200);
+    expect(res.gridCutoffVoltageV).toBeLessThan(-3.0);
+  });
+
+  test("builds and articulates procedural glass bulb, filament, grid, and plate collector", () => {
+    const nodes = buildDeForestAudionModel();
+    expect(nodes.root).toBeDefined();
+    expect(nodes.glassBulb).toBeDefined();
+    expect(nodes.filamentMesh).toBeDefined();
+    expect(nodes.filamentLight).toBeDefined();
+    expect(nodes.gridMesh).toBeDefined();
+    expect(nodes.plateMesh).toBeDefined();
+    expect(nodes.materials.length).toBeGreaterThan(4);
+
+    articulateDeForestAudionModel(
+      nodes,
+      {
+        filamentTemperatureK: 2200,
+        plateCurrentMa: 2.0,
+        voltageGain: 8.5,
+        isConducting: true,
+      },
+      1.0,
+    );
+
+    expect(nodes.filamentLight.intensity).toBeGreaterThan(2.0);
+  });
+});
