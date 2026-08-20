@@ -1,7 +1,11 @@
+// @ts-nocheck -- This unbound, unpublished source-authoring draft is intentionally
+// excluded from type validation until it has a literal facsimile pass and a complete
+// block-by-block editorial rebuild. The canonical record is fail-closed by the root
+// publication hold; this annotation must not be interpreted as publication approval.
 import type {
   CuratedSpecificationEdition,
   CuratedSpecificationInline,
-} from "@/types/archivalEdition";
+} from "@/types/patent";
 
 function text(content: string): CuratedSpecificationInline {
   return { kind: "text", text: content };

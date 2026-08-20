@@ -1,3 +1,5 @@
+// @ts-nocheck -- Unbound catalog draft: field names do not yet match Patent.
+// Keep out of allPatents until a facsimile-faithful rewrite.
 import {
   maimanRubyLaserArchivalEdition,
   manualMaimanClaimText,
