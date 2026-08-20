@@ -1,21 +1,23 @@
 import type { Patent } from "@/types/patent";
 import { arkwrightWaterFramePatent } from "./arkwright-water-frame";
+import { baekelandBakelitePatent } from "./baekeland-bakelite";
 import { bardeenTransistor2524035Patent } from "./bardeen-transistor-2524035";
+import { bellPhotophonePatent } from "./bell-photophone";
 import { bellTelephonePatent } from "./bell-telephone";
 import { boyleSmithCcdPatent } from "./boyle-smith-ccd";
 import { carrierAirConditionerPatent } from "./carrier-air-conditioner";
 import { coltRevolverPatent } from "./colt-revolver";
 import { corlissSteamEnginePatent } from "./corliss-steam-engine";
+import { cortPuddlingRollingPatent } from "./cort-puddling-rolling";
 import { daimlerEnginePatent } from "./daimler-engine";
 import { davenportElectricMotorPatent } from "./davenport-electric-motor";
-import { daVinciPatent } from "./davinci";
+import { deForestAudionPatent } from "./de-forest-audion";
 import { delavalSeparatorPatent } from "./delaval-separator";
 import { dieselEnginePatent } from "./diesel-engine";
 import { eastmanKodakPatent } from "./eastman-kodak";
 import { edisonIndicatorPatent } from "./edison-indicator";
 import { edisonBulbPatent as edisonLightbulbPatent } from "./edison-lightbulb";
 import { edisonPhonographPatent } from "./edison-phonograph";
-import { eInkPatent } from "./eink";
 import { einsteinRefrigeratorPatent } from "./einstein-refrigerator";
 import { engelbartMousePatent } from "./engelbart-mouse";
 import { ericssonPropellerPatent } from "./ericsson-propeller";
@@ -31,8 +33,10 @@ import { hollerithTabulatingPatent } from "./hollerith-tabulating";
 import { hopkinsPotashPatent } from "./hopkins-potash";
 import { howeSewingMachinePatent } from "./howe-sewing-machine";
 import { hyattCelluloidPatent } from "./hyatt-celluloid";
+import { kilbyIntegratedCircuitPatent } from "./kilby-integrated-circuit";
 import { kwolekKevlarPatent } from "./kwolek-kevlar";
 import { lamarrPatent as lamarrFrequencyHoppingPatent } from "./lamarr-frequency-hopping";
+import { landPolaroidPatent } from "./land-polaroid";
 import { lincolnBuoyPatent } from "./lincoln-buoy";
 import { lindeAirLiquefactionPatent } from "./linde-air-liquefaction";
 import { marconiRadioPatent } from "./marconi-radio";
@@ -40,17 +44,15 @@ import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
 import { mergenthalerLinotypePatent } from "./mergenthaler-linotype";
 import { morseTelegraphPatent } from "./morse-telegraph";
-import { multiTouchPatent } from "./multitouch";
 import { nobelDynamitePatent } from "./nobel-dynamite";
 import { noyceIcPatent } from "./noyce-ic";
 import { otisElevatorPatent } from "./otis-elevator";
 import { ottoEnginePatent } from "./otto-engine";
-import { pagerankPatent } from "./pagerank";
 import { parsonsTurbinePatent } from "./parsons-turbine";
 import { pasteurFermentationPatent } from "./pasteur-fermentation";
 import { peltonWaterWheelPatent } from "./pelton-water-wheel";
 import { renoEscalatorPatent } from "./reno-escalator";
-import { roombaPatent } from "./roomba";
+import { rillieuxEvaporatorPatent } from "./rillieux-evaporator";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
@@ -58,16 +60,21 @@ import { teslaCoil593138Patent } from "./tesla-coil-593138";
 import { teslaMotorPatent } from "./tesla-motor";
 import { teslaTeleautomatonPatent } from "./tesla-teleautomaton";
 import { thomsonWeldingPatent } from "./thomson-welding";
+import { townesLaserPatent } from "./townes-laser";
+import { wattRotaryEnginePatent } from "./watt-rotary-engine";
 import { wattSeparateCondenserPatent } from "./watt-separate-condenser";
 import { westinghouseAirBrakePatent } from "./westinghouse-air-brake";
 import { whitneyCottonGinPatent } from "./whitney-cotton-gin";
 import { wozniakApplePatent } from "./wozniak-apple";
 import { wrightFlyerPatent } from "./wright-flyer";
+import { yaleLockPatent } from "./yale-lock";
 import { zeppelinAirshipPatent } from "./zeppelin-airship";
 
 export const allPatents: Patent[] = parsePatentCatalog([
   wattSeparateCondenserPatent,
   arkwrightWaterFramePatent,
+  wattRotaryEnginePatent,
+  cortPuddlingRollingPatent,
   hopkinsPotashPatent,
   whitneyCottonGinPatent,
   mccormickReaperPatent,
@@ -75,12 +82,14 @@ export const allPatents: Patent[] = parsePatentCatalog([
   davenportElectricMotorPatent,
   ericssonPropellerPatent,
   morseTelegraphPatent,
+  rillieuxEvaporatorPatent,
   goodyearRubberPatent,
   howeSewingMachinePatent,
   corlissSteamEnginePatent,
   lincolnBuoyPatent,
   otisElevatorPatent,
   gatlingGunPatent,
+  yaleLockPatent,
   nobelDynamitePatent,
   sholesTypewriterPatent,
   hyattCelluloidPatent,
@@ -93,6 +102,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   edisonPhonographPatent,
   edisonLightbulbPatent,
   peltonWaterWheelPatent,
+  bellPhotophonePatent,
   delavalSeparatorPatent,
   edisonIndicatorPatent,
   mergenthalerLinotypePatent,
@@ -113,23 +123,23 @@ export const allPatents: Patent[] = parsePatentCatalog([
   lindeAirLiquefactionPatent,
   carrierAirConditionerPatent,
   wrightFlyerPatent,
+  deForestAudionPatent,
+  baekelandBakelitePatent,
   goddardRocketPatent,
   farnsworthTvPatent,
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
   spencerMicrowavePatent,
   bardeenTransistor2524035Patent,
+  landPolaroidPatent, // 1951-02-27
   fermiReactorPatent,
+  townesLaserPatent, // 1960-03-22
   noyceIcPatent,
+  kilbyIntegratedCircuitPatent, // 1964-06-23
   engelbartMousePatent,
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
   wozniakApplePatent,
-  eInkPatent,
-  pagerankPatent,
-  daVinciPatent,
-  roombaPatent,
-  multiTouchPatent,
 ]);
 
 export function getPatentById(id: string): Patent | undefined {
@@ -158,15 +168,14 @@ export function getFeaturedPatents(): Patent[] {
     dieselEnginePatent,
     parsonsTurbinePatent,
     teslaTeleautomatonPatent,
-    wozniakApplePatent,
-    engelbartMousePatent,
-    fermiReactorPatent,
-    bardeenTransistor2524035Patent,
-    noyceIcPatent,
-    goddardRocketPatent,
     einsteinRefrigeratorPatent,
     lincolnBuoyPatent,
     hallAluminiumPatent,
+    wattSeparateCondenserPatent,
+    arkwrightWaterFramePatent,
+    wattRotaryEnginePatent,
+    cortPuddlingRollingPatent,
+    hopkinsPotashPatent,
   ];
 }
 

@@ -1,3 +1,17 @@
+import {
+  stepBaekelandBakelite,
+  stepBellPhotophone,
+  stepCarlsonElectrophotography,
+  stepDeForestAudion,
+  stepFessendenWireless,
+  stepHaberAmmonia,
+  stepHewittMercuryLamp,
+  stepKilbyIntegratedCircuit,
+  stepLandPolaroidInstantFilm,
+  stepRillieuxEvaporator,
+  stepTownesLaser,
+  stepYaleLock,
+} from "./catalogKernels";
 /**
  * telemetryData.ts
  *
@@ -36,6 +50,7 @@ import {
   stepZeppelinAirship,
   voltsToKv,
 } from "./catalogKernels";
+import { stepCortPuddlingRolling } from "./cortKernel";
 import { stepEInk } from "./eInkKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
@@ -51,6 +66,7 @@ import { stepMultiTouch } from "./multiTouchKernel";
 import { stepPageRank } from "./pageRankKernel";
 import { goddardNozzleMatch } from "./thermochem";
 import { stepWattCondenser } from "./wattCondenserKernel";
+import { stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface PhysicsControl {
@@ -92,6 +108,861 @@ export interface PatentPhysicsMetadata {
 }
 
 export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
+  "us-2543181-land-polaroid": {
+    domain: "chemistry",
+    domainTitle: "Chemical Physics & Diffusion Transfer",
+    equationName: "Fickian Diffusion & Silver Thiosulfate Complexation",
+    governingEquation:
+      "J = -D \\frac{\\partial C}{\\partial x} \\quad \\text{and} \\quad \\text{AgBr} + 2\\text{S}_2\\text{O}_3^{2-} \\rightleftharpoons [\\text{Ag}(\\text{S}_2\\text{O}_3)_2]^{3-}",
+    engineMethod: "Fickian Diffusion Transfer Reversal & Competitive Redox Kinetics",
+    pedagogicalInsight:
+      "Edwin Land's 1947 breakthrough combined negative development and positive image formation into a single 60-second in-camera diffusion process, transferring unexposed silver halide to a receiving sheet via a viscous reagent pod.",
+    controls: [
+      {
+        id: "developmentTimeSec",
+        label: "Processing Time",
+        min: 0,
+        max: 60,
+        step: 1,
+        defaultValue: 30,
+        unit: "s",
+      },
+      {
+        id: "exposureFraction",
+        label: "Exposure Level",
+        min: 0.0,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 0.6,
+        unit: "fraction",
+      },
+      {
+        id: "reagentViscosityCp",
+        label: "Gel Viscosity",
+        min: 1000,
+        max: 80000,
+        step: 1000,
+        defaultValue: 25000,
+        unit: "cP",
+      },
+      {
+        id: "rollerGapUm",
+        label: "Roller Spread Gap",
+        min: 10,
+        max: 60,
+        step: 2,
+        defaultValue: 25,
+        unit: "µm",
+      },
+      {
+        id: "alkaliPh",
+        label: "Developer pH",
+        min: 10.5,
+        max: 13.8,
+        step: 0.1,
+        defaultValue: 12.6,
+        unit: "pH",
+      },
+    ],
+    computeMetrics: (controls) => {
+      const state = stepLandPolaroidInstantFilm({
+        developmentTimeSec: controls.developmentTimeSec,
+        exposureFraction: controls.exposureFraction,
+        reagentViscosityCp: controls.reagentViscosityCp,
+        rollerGapUm: controls.rollerGapUm,
+        alkaliPh: controls.alkaliPh,
+      });
+
+      return [
+        {
+          label: "Positive Print Density",
+          value: `${state.positiveSilverDensity.toFixed(2)}`,
+          unit: "D",
+          badgeColor: "emerald",
+        },
+        {
+          label: "Negative Silver Density",
+          value: `${state.negativeSilverDensity.toFixed(2)}`,
+          unit: "D",
+          badgeColor: "indigo",
+        },
+        {
+          label: "Transfer Efficiency",
+          value: `${state.transferEfficiencyPercent.toFixed(1)}`,
+          unit: "%",
+          badgeColor: "cyan",
+        },
+        {
+          label: "Diffusion Flux",
+          value: `${state.diffusionFluxMolPerM2S.toFixed(4)}`,
+          unit: "mol/m²s",
+          badgeColor: "amber",
+        },
+        {
+          label: "Meniscus Uniformity",
+          value: `${state.meniscusSpreadUniformityPercent.toFixed(1)}`,
+          unit: "%",
+          badgeColor: "rose",
+        },
+        {
+          label: "Print Progress",
+          value: `${state.printCompletionPercent.toFixed(0)}`,
+          unit: "%",
+          badgeColor: "emerald",
+        },
+      ];
+    },
+  },
+  "us-3138743-kilby-integrated-circuit": {
+    domain: "semiconductor_physics",
+    domainTitle: "Monolithic Integrated Circuit Solid-State Electronics",
+    equationName: "Semiconductor Bulk Sheet Resistance & P-N Transition Capacitance",
+    governingEquation:
+      "R_{\\text{bulk}} = \\frac{\\rho L}{W t} \\quad \\text{and} \\quad C_j = A \\sqrt{\\frac{q \\varepsilon_s N_d}{2 (V_{\\text{bi}} + V_R)}}",
+    engineMethod: "Bulk Semiconductor Mesa Resistor & P-N Junction Depletion RC Dynamics",
+    pedagogicalInsight:
+      "By carving resistors out of the crystal bulk and capacitors out of reverse-biased p-n junctions, an entire electronic circuit functions without discrete components or hand-soldered wires.",
+    controls: [
+      {
+        id: "supplyVoltageV",
+        label: "Supply Voltage (+Vcc)",
+        min: 1.5,
+        max: 12.0,
+        step: 0.5,
+        defaultValue: 6.0,
+        unit: "V",
+      },
+      {
+        id: "resistorLengthUm",
+        label: "Resistor Path Length",
+        min: 100,
+        max: 2000,
+        step: 50,
+        defaultValue: 500,
+        unit: "µm",
+      },
+      {
+        id: "resistorWidthUm",
+        label: "Resistor Path Width",
+        min: 15,
+        max: 150,
+        step: 5,
+        defaultValue: 50,
+        unit: "µm",
+      },
+      {
+        id: "reverseBiasVoltageV",
+        label: "Capacitor Reverse Bias",
+        min: 0.5,
+        max: 10.0,
+        step: 0.5,
+        defaultValue: 3.0,
+        unit: "V",
+      },
+      {
+        id: "baseDriveCurrentUa",
+        label: "BJT Base Drive Current",
+        min: 5,
+        max: 150,
+        step: 5,
+        defaultValue: 40,
+        unit: "µA",
+      },
+    ],
+    computeMetrics: (controls) => {
+      const state = stepKilbyIntegratedCircuit({
+        substrateMaterial: "germanium",
+        supplyVoltageV: controls.supplyVoltageV ?? 6.0,
+        resistorLengthUm: controls.resistorLengthUm ?? 500,
+        resistorWidthUm: controls.resistorWidthUm ?? 50,
+        reverseBiasVoltageV: controls.reverseBiasVoltageV ?? 3.0,
+        baseDriveCurrentUa: controls.baseDriveCurrentUa ?? 40,
+      });
+
+      return [
+        {
+          label: "Collector Load Resistor",
+          value: `${state.collectorLoadResistanceOhms}`,
+          unit: "Ω",
+          badgeColor: "indigo",
+          description:
+            "Bulk semiconductor resistance calculated from aspect ratio and sheet resistivity",
+        },
+        {
+          label: "P-N Junction Capacitance",
+          value: `${state.junctionCapacitancePf}`,
+          unit: "pF",
+          badgeColor: "rose",
+          description: "Depletion layer transition capacitance under applied reverse bias",
+        },
+        {
+          label: "Collector Current",
+          value: `${state.collectorCurrentMa}`,
+          unit: "mA",
+          badgeColor: "emerald",
+          description: "Bipolar transistor amplified collector switching current",
+        },
+        {
+          label: "Propagation Delay",
+          value: `${state.propagationDelayNs}`,
+          unit: "ns",
+          badgeColor: "cyan",
+          description: "Monolithic solid circuit RC switching propagation delay",
+        },
+        {
+          label: "Phase-Shift Osc. Frequency",
+          value: `${state.phaseShiftOscillatorFrequencyKhz}`,
+          unit: "kHz",
+          badgeColor: "amber",
+          description: "Resonant sinusoidal frequency of the integrated RC feedback oscillator",
+        },
+        {
+          label: "Packing Density",
+          value: `${(state.componentDensityPerCuFt / 1e6).toFixed(1)}`,
+          unit: "M parts/ft³",
+          badgeColor: "amber",
+          description: "Calculated volumetric component packing density",
+        },
+      ];
+    },
+  },
+  "us-2929922-townes-laser": {
+    domain: "quantum_optics",
+    domainTitle: "Stimulated Emission & Fabry-Pérot Open Resonator Lasers",
+    equationName: "Schawlow-Townes Threshold Gain & Einstein Rate Equations",
+    governingEquation:
+      "g_{\\text{th}} = \\alpha + \\frac{1}{2L} \\ln\\left(\\frac{1}{R_1 R_2}\\right) \\quad \\text{and} \\quad P_{\\text{out}} = \\eta (P_p - P_{\\text{th}})",
+    engineMethod: "Optical Pumping Population Inversion & Fabry-Pérot Standing-Wave Mode Feedback",
+    pedagogicalInsight:
+      "Opening the sides of the cavity eliminates chaotic off-axis modes via diffraction loss, allowing only axial plane waves to build up into a pure, phase-locked coherent laser beam.",
+    controls: [
+      {
+        id: "pumpPowerWatts",
+        label: "Optical Pump Power",
+        min: 50,
+        max: 1000,
+        step: 25,
+        defaultValue: 350,
+        unit: "W",
+      },
+      {
+        id: "cavityLengthCm",
+        label: "Resonator Cavity Length",
+        min: 5,
+        max: 100,
+        step: 5,
+        defaultValue: 25,
+        unit: "cm",
+      },
+      {
+        id: "mirror2ReflectivityPct",
+        label: "Output Mirror Reflectivity",
+        min: 80,
+        max: 99.5,
+        step: 0.5,
+        defaultValue: 94,
+        unit: "%",
+      },
+      {
+        id: "beamDiameterMm",
+        label: "Aperture Diameter",
+        min: 2,
+        max: 25,
+        step: 1,
+        defaultValue: 8,
+        unit: "mm",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepTownesLaser({
+        pumpPowerWatts: params.pumpPowerWatts ?? 350,
+        cavityLengthCm: params.cavityLengthCm ?? 25,
+        mirror2ReflectivityPct: params.mirror2ReflectivityPct ?? 94,
+        beamDiameterMm: params.beamDiameterMm ?? 8,
+      });
+
+      return [
+        {
+          label: "Laser Output Power",
+          value: `${res.laserOutputPowerWatts} W`,
+          unit: "W",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Threshold Gain",
+          value: `${res.thresholdGainPerCm} cm⁻¹`,
+          unit: "cm⁻¹",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Intracavity Power",
+          value: `${res.intraCavityPowerWatts} W`,
+          unit: "W",
+          badgeColor: "amber",
+        },
+        {
+          label: "Beam Divergence",
+          value: `${res.beamDivergenceMrad} mrad`,
+          unit: "mrad",
+          badgeColor: "purple",
+        },
+        {
+          label: "Fresnel Number",
+          value: `${res.fresnelNumber}`,
+          unit: "",
+          badgeColor: "rose",
+        },
+      ];
+    },
+  },
+
+  "us-2297691-carlson-electrophotography": {
+    domain: "semiconductor",
+    domainTitle: "Photoconductive Latent Imaging & Electrostatic Xerography",
+    equationName: "Photo-Induced Discharge & Triboelectric Coulomb Adhesion",
+    governingEquation:
+      "V(t) = V_0 \\exp\\left(-\\frac{\\sigma t}{\\epsilon_0 \\epsilon_r}\\right) \\quad \\text{and} \\quad F_e = \\frac{q_{\\text{toner}} \\sigma_s}{\\epsilon_0 \\epsilon_r}",
+    engineMethod: "Corona Townsend Avalanche Charging & Photoconductive Carrier Drift Discharge",
+    pedagogicalInsight:
+      "Photons excite electron-hole pairs across the selenium bandgap, rapidly discharging illuminated areas while dark areas retain hundreds of volts to electrostatically pull dry resin powder onto the drum.",
+    controls: [
+      {
+        id: "coronaVoltageKv",
+        label: "Corona Grid Voltage",
+        min: 4.0,
+        max: 8.0,
+        step: 0.25,
+        defaultValue: 6.5,
+        unit: "kV",
+      },
+      {
+        id: "exposureLuxSec",
+        label: "Optical Exposure",
+        min: 0,
+        max: 30,
+        step: 1,
+        defaultValue: 12,
+        unit: "lx·s",
+      },
+      {
+        id: "layerThicknessUm",
+        label: "Photoreceptor Thickness",
+        min: 10,
+        max: 60,
+        step: 5,
+        defaultValue: 30,
+        unit: "µm",
+      },
+      {
+        id: "fuserTemperatureC",
+        label: "Fuser Roll Temperature",
+        min: 120,
+        max: 220,
+        step: 5,
+        defaultValue: 185,
+        unit: "°C",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepCarlsonElectrophotography({
+        coronaVoltageKv: params.coronaVoltageKv ?? 6.5,
+        exposureLuxSec: params.exposureLuxSec ?? 12,
+        layerThicknessUm: params.layerThicknessUm ?? 30,
+        fuserTemperatureC: params.fuserTemperatureC ?? 185,
+      });
+
+      return [
+        {
+          label: "Surface Contrast Potential",
+          value: `${res.contrastPotentialV} V`,
+          unit: "V",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Developed Optical Density",
+          value: `${res.opticalDensity} OD`,
+          unit: "OD",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Initial Surface Charge",
+          value: `+${res.initialSurfacePotentialV} V`,
+          unit: "V",
+          badgeColor: "amber",
+        },
+        {
+          label: "Toner Mass Density",
+          value: `${res.tonerMassDensityMgPerCm2} mg/cm²`,
+          unit: "mg/cm²",
+          badgeColor: "purple",
+        },
+        {
+          label: "Thermal Fusing Quality",
+          value: `${res.fuserBondQualityPct}%`,
+          unit: "%",
+          badgeColor: "rose",
+        },
+      ];
+    },
+  },
+
+  "us-682690-hewitt-mercury-lamp": {
+    domain: "plasma_optics",
+    domainTitle: "Mercury-Vapor Arc Discharge & Cathode-Spot Plasma",
+    equationName: "Townsend Avalanche & Positive Column Field Gradient",
+    governingEquation:
+      "E_z = \\frac{C}{R} \\left(\\frac{p}{I}\\right)^n \\quad \\text{and} \\quad \\eta = \\frac{\\Phi_v}{P_e}",
+    engineMethod: "Cathode-Spot Electron Emission & Nottingham Negative Resistance Arc Dynamics",
+    pedagogicalInsight:
+      "Unlike incandescent filaments that waste 95% of energy as infrared heat, the low-pressure mercury arc emits directly in discrete spectral lines, achieving unprecedented luminous efficacy above 70 lm/W.",
+    controls: [
+      {
+        id: "mainsVoltageV",
+        label: "DC Supply Voltage",
+        min: 60,
+        max: 200,
+        step: 5,
+        defaultValue: 110,
+        unit: "V",
+      },
+      {
+        id: "ballastResistanceOhms",
+        label: "Series Ballast Resistance",
+        min: 5,
+        max: 50,
+        step: 1,
+        defaultValue: 12,
+        unit: "Ω",
+      },
+      {
+        id: "tubeLengthCm",
+        label: "Arc Tube Length",
+        min: 30,
+        max: 150,
+        step: 5,
+        defaultValue: 100,
+        unit: "cm",
+      },
+      {
+        id: "tubeDiameterMm",
+        label: "Tube Diameter",
+        min: 15,
+        max: 50,
+        step: 5,
+        defaultValue: 25,
+        unit: "mm",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepHewittMercuryLamp({
+        mainsVoltageV: params.mainsVoltageV ?? 110,
+        ballastResistanceOhms: params.ballastResistanceOhms ?? 12,
+        tubeLengthCm: params.tubeLengthCm ?? 100,
+        tubeDiameterMm: params.tubeDiameterMm ?? 25,
+      });
+
+      return [
+        {
+          label: "Arc Current",
+          value: `${res.arcCurrentAmperes} A`,
+          unit: "A",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Luminous Efficacy",
+          value: `${res.luminousEfficacyLmPerWatt} lm/W`,
+          unit: "lm/W",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Arc Tube Voltage",
+          value: `${res.arcOperatingVoltageV} V`,
+          unit: "V",
+          badgeColor: "amber",
+        },
+        {
+          label: "Vapor Pressure",
+          value: `${res.mercuryVaporPressureMmHg} mmHg`,
+          unit: "mmHg",
+          badgeColor: "purple",
+        },
+        {
+          label: "Total Luminous Flux",
+          value: `${res.luminousFluxLumens} lm`,
+          unit: "lm",
+          badgeColor: "cyan",
+        },
+      ];
+    },
+  },
+
+  "us-706737-fessenden-wireless": {
+    domain: "electromagnetics",
+    domainTitle: "Continuous-Wave Wireless Telegraphy & Barretter Detection",
+    equationName: "Continuous-Wave Modulation & Electrolytic Demodulation",
+    governingEquation:
+      "P_{\\text{rad}} = 80 \\pi^2 \\left(\\frac{h_{\\text{eff}}}{\\lambda}\\right)^2 I_0^2 \\quad \\text{and} \\quad \\Delta R = \\frac{\\alpha P_{\\text{rf}}}{G_{\\text{th}}}",
+    engineMethod: "Continuous High-Frequency Alternator & Liquid Barretter RF Demodulator",
+    pedagogicalInsight:
+      "By replacing spark gaps with pure sinusoidal continuous waves, Fessenden enabled sharp frequency tuning and continuous voice/audio modulation without acoustic spark hiss.",
+    controls: [
+      {
+        id: "carrierFrequencyKhz",
+        label: "Carrier Frequency",
+        min: 20,
+        max: 150,
+        step: 5,
+        defaultValue: 75,
+        unit: "kHz",
+      },
+      {
+        id: "audioModulationPct",
+        label: "Audio Modulation",
+        min: 10,
+        max: 100,
+        step: 5,
+        defaultValue: 65,
+        unit: "%",
+      },
+      {
+        id: "antennaTuningUh",
+        label: "Antenna Tuning Inductance",
+        min: 100,
+        max: 1000,
+        step: 25,
+        defaultValue: 450,
+        unit: "µH",
+      },
+      {
+        id: "transmissionDistanceKm",
+        label: "Transmission Distance",
+        min: 5,
+        max: 100,
+        step: 5,
+        defaultValue: 25,
+        unit: "km",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepFessendenWireless({
+        carrierFrequencyKhz: params.carrierFrequencyKhz ?? 75,
+        audioModulationPct: params.audioModulationPct ?? 65,
+        antennaTuningUh: params.antennaTuningUh ?? 450,
+        transmissionDistanceKm: params.transmissionDistanceKm ?? 25,
+      });
+
+      return [
+        {
+          label: "Radiated RF Power",
+          value: `${res.radiatedPowerWatts} W`,
+          unit: "W",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Audio Signal Current",
+          value: `${res.audioSignalCurrentMicroamps} µA`,
+          unit: "µA",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Radiation Resistance",
+          value: `${res.radiationResistanceOhms} Ω`,
+          unit: "Ω",
+          badgeColor: "amber",
+        },
+        {
+          label: "Signal-to-Noise Ratio",
+          value: `${res.audioSnrDb} dB`,
+          unit: "dB",
+          badgeColor: "purple",
+        },
+      ];
+    },
+  },
+
+  "us-879532-de-forest-audion": {
+    domain: "semiconductor",
+    domainTitle: "Thermionic Triode Vacuum Tube & Electrostatic Grid Control",
+    equationName: "Child-Langmuir Triode Equation & Transconductance",
+    governingEquation:
+      "I_p = G \\left(V_g + \\frac{V_p}{\\mu}\\right)^{3/2} \\quad \\text{and} \\quad A_v = \\frac{\\mu R_L}{r_p + R_L}",
+    engineMethod:
+      "Richardson-Dushman Thermionic Emission & Child-Langmuir Space-Charge Triode Load Line",
+    pedagogicalInsight:
+      "Because the control grid is positioned much closer to the filament than the plate, a 1-volt swing on the grid exerts the same electrostatic force as a 12-volt swing on the plate (amplification factor μ = 12), achieving genuine electronic power gain.",
+    controls: [
+      {
+        id: "plateVoltageV",
+        label: "B-Battery Plate Voltage",
+        min: 10,
+        max: 120,
+        step: 5,
+        defaultValue: 45,
+        unit: "V",
+      },
+      {
+        id: "gridBiasVoltageV",
+        label: "Grid Bias Voltage",
+        min: -6.0,
+        max: 2.0,
+        step: 0.25,
+        defaultValue: -1.5,
+        unit: "V",
+      },
+      {
+        id: "filamentCurrentA",
+        label: "Filament Heating Current",
+        min: 0.5,
+        max: 1.5,
+        step: 0.1,
+        defaultValue: 1.0,
+        unit: "A",
+      },
+      {
+        id: "gridSignalAmplitudeMv",
+        label: "Input RF Signal",
+        min: 10,
+        max: 200,
+        step: 5,
+        defaultValue: 50,
+        unit: "mV",
+      },
+      {
+        id: "loadResistanceKOhms",
+        label: "Plate Load Resistance",
+        min: 5,
+        max: 50,
+        step: 5,
+        defaultValue: 20,
+        unit: "kΩ",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepDeForestAudion({
+        plateVoltageV: params.plateVoltageV ?? 45,
+        gridBiasVoltageV: params.gridBiasVoltageV ?? -1.5,
+        filamentCurrentA: params.filamentCurrentA ?? 1.0,
+        gridSignalAmplitudeMv: params.gridSignalAmplitudeMv ?? 50,
+        loadResistanceKOhms: params.loadResistanceKOhms ?? 20,
+      });
+
+      return [
+        {
+          label: "Voltage Amplification Gain",
+          value: `${res.voltageGain}x`,
+          badgeColor: "emerald",
+          unit: "x",
+          primary: true,
+        },
+        {
+          label: "Output Signal Amplitude",
+          value: `${res.outputSignalMv} mV`,
+          badgeColor: "cyan",
+          unit: "mV",
+          primary: true,
+        },
+        {
+          label: "Plate Current",
+          value: `${res.plateCurrentMa} mA`,
+          badgeColor: "amber",
+          unit: "mA",
+        },
+        {
+          label: "Dynamic Transconductance",
+          value: `${res.dynamicTransconductanceMicromhos} µmhos`,
+          badgeColor: "purple",
+          unit: "µmhos",
+        },
+        {
+          label: "Power Gain",
+          value: `${res.powerGainDb} dB`,
+          badgeColor: "rose",
+          unit: "dB",
+        },
+      ];
+    },
+  },
+
+  "us-942699-baekeland-bakelite": {
+    domain: "thermodynamics",
+    domainTitle: "Phenolic Polycondensation Kinetics & Autoclave Polymerization",
+    equationName: "Arrhenius Gelation & Crosslink Density Kinetics",
+    governingEquation:
+      "k = A \\exp\\left(-\\frac{E_a}{R T}\\right) \\quad \\text{and} \\quad \\sigma_t = \\sigma_0 \\cdot \\rho_x^{1/2}",
+    engineMethod: "Bakelizer High-Pressure Condensation & Three-Dimensional Resite Crosslinking",
+    pedagogicalInsight:
+      "By applying 100+ psi pneumatic counter-pressure inside the Bakelizer autoclave, Baekeland prevented volatile reaction water and formaldehyde from boiling into foam, curing the first fully synthetic thermosetting resin.",
+    controls: [
+      {
+        id: "curingTempC",
+        label: "Autoclave Temperature",
+        min: 100,
+        max: 200,
+        step: 5,
+        defaultValue: 150,
+        unit: "°C",
+      },
+      {
+        id: "autoclavePressurePsi",
+        label: "Autoclave Pressure",
+        min: 20,
+        max: 200,
+        step: 5,
+        defaultValue: 100,
+        unit: "psi",
+      },
+      {
+        id: "catalystPct",
+        label: "Base Catalyst",
+        min: 0.5,
+        max: 5.0,
+        step: 0.5,
+        defaultValue: 2.0,
+        unit: "%",
+      },
+      {
+        id: "curingTimeMin",
+        label: "Cure Duration",
+        min: 10,
+        max: 120,
+        step: 5,
+        defaultValue: 45,
+        unit: "min",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepBaekelandBakelite(
+        params.curingTempC ?? 150,
+        params.autoclavePressurePsi ?? 100,
+        params.catalystPct ?? 2.0,
+        params.curingTimeMin ?? 45,
+      );
+
+      return [
+        {
+          label: "Polymer State",
+          value: res.resinStage,
+          unit: "",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Crosslink Conversion",
+          value: `${Math.round(res.conversionP * 100)}%`,
+          unit: "%",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Tensile Strength",
+          value: `${res.tensileStrengthMpa} MPa`,
+          unit: "MPa",
+          badgeColor: "amber",
+        },
+        {
+          label: "Dielectric Strength",
+          value: `${res.dielectricBreakdownKvPerMm} kV/mm`,
+          unit: "kV/mm",
+          badgeColor: "purple",
+        },
+      ];
+    },
+  },
+
+  "us-971501-haber-ammonia": {
+    domain: "thermodynamics",
+    domainTitle: "High-Pressure Catalytic Ammonia Synthesis & Chemical Equilibrium",
+    equationName: "Haber Equilibrium Constant & Le Chatelier Conversion",
+    governingEquation:
+      "K_p(T) = \\frac{P_{\\text{NH}_3}^2}{P_{\\text{N}_2} \\cdot P_{\\text{H}_2}^3} \\quad \\text{and} \\quad \\Delta H_{298} = -92.4 \\text{ kJ/mol}",
+    engineMethod: "High-Pressure Counter-Current Recirculation & Osmium/Iron Catalyst Kinetics",
+    pedagogicalInsight:
+      "Operating at 200 atmospheres and 500°C strikes the optimal balance between thermodynamic equilibrium yield and catalytic reaction kinetics.",
+    controls: [
+      {
+        id: "pressureAtm",
+        label: "Reactor Pressure",
+        min: 50,
+        max: 300,
+        step: 10,
+        defaultValue: 175,
+        unit: "atm",
+      },
+      {
+        id: "temperatureCelsius",
+        label: "Bed Temperature",
+        min: 350,
+        max: 650,
+        step: 10,
+        defaultValue: 530,
+        unit: "°C",
+      },
+      {
+        id: "feedFlowRateMolesPerSec",
+        label: "Feed Gas Flow",
+        min: 10,
+        max: 150,
+        step: 5,
+        defaultValue: 50,
+        unit: "mol/s",
+      },
+      {
+        id: "catalystActivity",
+        label: "Catalyst Activity",
+        min: 0.5,
+        max: 2.0,
+        step: 0.1,
+        defaultValue: 1.0,
+        unit: "x",
+      },
+    ],
+    computeMetrics: (params) => {
+      const res = stepHaberAmmonia({
+        pressureAtm: params.pressureAtm ?? 175,
+        temperatureCelsius: params.temperatureCelsius ?? 530,
+        feedFlowRateMolesPerSec: params.feedFlowRateMolesPerSec ?? 50,
+        catalystActivity: params.catalystActivity ?? 1.0,
+      });
+
+      return [
+        {
+          label: "Ammonia Conversion Yield",
+          value: `${res.ammoniaYieldPct}%`,
+          unit: "%",
+          badgeColor: "emerald",
+          primary: true,
+        },
+        {
+          label: "Hourly Production Rate",
+          value: `${res.ammoniaProductionKgPerHour} kg/h`,
+          unit: "kg/h",
+          badgeColor: "cyan",
+          primary: true,
+        },
+        {
+          label: "Equilibrium Conversion",
+          value: `${res.equilibriumAmmoniaPct}%`,
+          unit: "%",
+          badgeColor: "amber",
+        },
+        {
+          label: "Reaction Heat Generated",
+          value: `${res.reactionHeatGeneratedKw} kW`,
+          unit: "kW",
+          badgeColor: "purple",
+        },
+      ];
+    },
+  },
+
   "us-821393-wright-flyer": {
     domain: "aerodynamics_mbd",
     domainTitle: "6-DoF Aerodynamics & Lie-Group Multibody Dynamics",
@@ -1371,6 +2242,106 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "All-trans rigid rod aromatic poly-p-phenylene terephthalamide chains align in parallel liquid-crystalline domains, transferring impact kinetic energy along transverse hydrogen-bonded sheets at Mach 28.",
+  },
+  "us-3237-rillieux-evaporator": {
+    domain: "thermodynamics",
+    domainTitle: "Multi-Effect Vacuum Evaporation & Latent Heat Cascading",
+    equationName: "Rillieux Multi-Effect Steam Economy & Latent Heat Transfer",
+    governingEquation:
+      "S = \\frac{\\dot{m}_{\\text{evap,total}}}{\\dot{m}_{\\text{steam}}} = \\sum_{i=1}^N \\frac{U_i A_i \\Delta T_i}{\\dot{m}_{\\text{steam}} h_{fg,i}} \\approx N \\cdot \\eta_{\\text{th}}",
+    engineMethod: "FrankenSimEngine.stepRillieuxEvaporator",
+    controls: [
+      {
+        id: "juiceFeedRateKgPerH",
+        label: "Raw Cane Juice Feed Rate",
+        min: 2000,
+        max: 25000,
+        step: 500,
+        defaultValue: 10000,
+        unit: "kg/h",
+      },
+      {
+        id: "initialBrixDeg",
+        label: "Initial Juice Concentration",
+        min: 10,
+        max: 20,
+        step: 0.5,
+        defaultValue: 14,
+        unit: "°Bx",
+      },
+      {
+        id: "targetBrixDeg",
+        label: "Target Syrup Concentration",
+        min: 50,
+        max: 75,
+        step: 1,
+        defaultValue: 65,
+        unit: "°Bx",
+      },
+      {
+        id: "numberOfEffects",
+        label: "Evaporator Effects in Series",
+        min: 2,
+        max: 4,
+        step: 1,
+        defaultValue: 3,
+        unit: "effects",
+      },
+    ],
+    computeMetrics: (p) => {
+      const rill = stepRillieuxEvaporator({
+        juiceFeedRateKgPerH: p.juiceFeedRateKgPerH,
+        initialBrixDeg: p.initialBrixDeg,
+        targetBrixDeg: p.targetBrixDeg,
+        numberOfEffects: p.numberOfEffects,
+      });
+      return [
+        {
+          label: "Steam Economy Ratio",
+          value: `${rill.steamEconomyRatio.toFixed(2)} kg/kg`,
+          unit: "S_economy",
+          badgeColor: "emerald",
+          progressPct: clampProgress((rill.steamEconomyRatio / 4.0) * 100),
+        },
+        {
+          label: "Total Water Evaporated",
+          value: `${(rill.totalEvaporationKgPerH / 1000).toFixed(2)} t/h`,
+          unit: "m_evap",
+          badgeColor: "cyan",
+          progressPct: clampProgress((rill.totalEvaporationKgPerH / 20000) * 100),
+        },
+        {
+          label: "Primary Steam Needed",
+          value: `${(rill.primarySteamConsumptionKgPerH / 1000).toFixed(2)} t/h`,
+          unit: "m_steam",
+          badgeColor: "amber",
+          progressPct: clampProgress((rill.primarySteamConsumptionKgPerH / 10000) * 100),
+        },
+        {
+          label: "Fuel Consumption Savings",
+          value: `${rill.fuelSavingsPct.toFixed(1)}%`,
+          unit: "Savings",
+          badgeColor: "emerald",
+          progressPct: clampProgress(rill.fuelSavingsPct),
+        },
+        {
+          label: "Concentrated Syrup Output",
+          value: `${(rill.syrupOutputRateKgPerH / 1000).toFixed(2)} t/h`,
+          unit: "m_syrup",
+          badgeColor: "indigo",
+          progressPct: clampProgress((rill.syrupOutputRateKgPerH / 5000) * 100),
+        },
+        {
+          label: "Thermal Cascading Efficiency",
+          value: `${rill.thermalEfficiencyPct.toFixed(1)}%`,
+          unit: "eta_th",
+          badgeColor: "purple",
+          progressPct: clampProgress(rill.thermalEfficiencyPct),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Norbert Rillieux's multiple-effect evaporator connected sealed boiling pans in a cascading vacuum series so that the latent heat of vapor boiled off from the first pan was reused to boil subsequent juice at reduced pressure, evaporating nearly three times as much water per pound of fuel and creating the foundation of modern chemical engineering thermodynamics.",
   },
   "us-3633-goodyear-rubber": {
     domain: "continuum_elasticity",
@@ -4016,6 +4987,88 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Six revolving barrels rotate around a stationary central cylinder containing spiral cam grooves that load, cock, lock, fire, and extract cartridges during one continuous turn.",
   },
+  "us-48475-yale-lock": {
+    domain: "solid_mechanics",
+    domainTitle: "Mechanical Shear-Line Kinematics & Pin-Tumbler Dynamics",
+    equationName: "Shear-Line Boundary Condition & Restorative Spring Force",
+    governingEquation:
+      "\\Delta y_i = |y_{\\text{key},i} - y_{\\text{shear},i}| \\le \\delta_{\\text{tol}}, \\quad F_s = \\sum_{i=1}^5 k_s (L_0 - \\Delta x_i)",
+    engineMethod: "FrankenSimEngine.stepYaleLock",
+    controls: [
+      {
+        id: "keyInsertion",
+        label: "Key Blade Insertion Depth",
+        min: 0.0,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 1.0,
+        unit: "fraction",
+      },
+      {
+        id: "appliedTorqueNm",
+        label: "Turning Torque on Plug",
+        min: 0.0,
+        max: 0.5,
+        step: 0.02,
+        defaultValue: 0.15,
+        unit: "N·m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const yale = stepYaleLock({
+        keyInsertion: p.keyInsertion,
+        appliedTorqueNm: p.appliedTorqueNm,
+      });
+      return [
+        {
+          label: "Shear Line Alignment",
+          value: yale.isUnlocked ? "Aligned (Shear Cleared)" : "Misaligned (Pins Blocked)",
+          unit: "Status",
+          badgeColor: yale.isUnlocked ? "emerald" : "rose",
+          progressPct: yale.isUnlocked
+            ? 100
+            : clampProgress(100 - (yale.maxShearErrorMm / 4.0) * 100),
+        },
+        {
+          label: "Max Pin Shear Error",
+          value: `${yale.maxShearErrorMm.toFixed(3)} mm`,
+          unit: "Δy_max",
+          badgeColor: yale.maxShearErrorMm < 0.1 ? "emerald" : "rose",
+          progressPct: clampProgress(Math.max(0, 100 - (yale.maxShearErrorMm / 3.0) * 100)),
+        },
+        {
+          label: "Plug Rotation Angle",
+          value: `${yale.plugAngleDeg.toFixed(1)}°`,
+          unit: "θ_plug",
+          badgeColor: "cyan",
+          progressPct: clampProgress((yale.plugAngleDeg / 360) * 100),
+        },
+        {
+          label: "Bolt Extension / Deadlock",
+          value: `${yale.boltExtensionMm.toFixed(1)} mm ${yale.isDeadlocked ? "(Deadlocked)" : ""}`,
+          unit: "x_bolt",
+          badgeColor: yale.isDeadlocked ? "emerald" : "amber",
+          progressPct: clampProgress((yale.boltExtensionMm / 18.0) * 100),
+        },
+        {
+          label: "Pin Spring Force",
+          value: `${yale.totalSpringForceN.toFixed(2)} N`,
+          unit: "F_spring",
+          badgeColor: "amber",
+          progressPct: clampProgress((yale.totalSpringForceN / 5.0) * 100),
+        },
+        {
+          label: "Theoretical Combinations",
+          value: "7,776 (6⁵)",
+          unit: "perms",
+          badgeColor: "indigo",
+          progressPct: 92,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Linus Yale Jr.'s 1865 breakthrough separated the heavy locking bolt mechanism from the compact key-cylinder. By utilizing a miniature flat serrated key to elevate split pin tumblers to a precise cylindrical shear line, the mechanism reduced key mass by 90% while dramatically expanding cryptographic permutation security.",
+  },
   "us-78317-nobel-dynamite": {
     domain: "solid_mechanics",
     domainTitle: "Explosive Detonation & Porous Matrix Stabilization",
@@ -4614,6 +5667,108 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "The knife-edge splitter divides the jet into two equal halves deflected backward at $165^\\circ$, extracting nearly 90% of kinetic energy while avoiding jet interference.",
   },
+  "us-235199-bell-photophone": {
+    domain: "telecom",
+    domainTitle: "Free-Space Optical Wireless Transmission & Photoconductive Demodulation",
+    equationName: "Selenium Photoconductivity Power Law & Free-Space Irradiance",
+    governingEquation:
+      "E_{\\text{recv}} = \\frac{P_0 e^{-\\alpha d}}{\\frac{\\pi}{4} D_{\\text{spot}}^2(d)}, \\quad R_{\\text{se}} = \\frac{R_{\\text{dark}}}{1 + \\beta \\sqrt{P_{\\text{cell}}}}",
+    engineMethod: "FrankenSimEngine.stepBellPhotophone",
+    controls: [
+      {
+        id: "transmissionDistanceM",
+        label: "Wireless Transmission Distance",
+        min: 10,
+        max: 500,
+        step: 10,
+        defaultValue: 213,
+        unit: "m",
+      },
+      {
+        id: "voiceSplDb",
+        label: "Speaker Vocal Sound Level",
+        min: 50,
+        max: 95,
+        step: 1,
+        defaultValue: 75,
+        unit: "dB SPL",
+      },
+      {
+        id: "solarIrradianceWPerM2",
+        label: "Incident Source Irradiance",
+        min: 200,
+        max: 1200,
+        step: 50,
+        defaultValue: 950,
+        unit: "W/m²",
+      },
+      {
+        id: "collectorDiameterM",
+        label: "Parabolic Collector Diameter",
+        min: 0.2,
+        max: 1.0,
+        step: 0.05,
+        defaultValue: 0.5,
+        unit: "m",
+      },
+    ],
+    computeMetrics: (p) => {
+      const photo = stepBellPhotophone({
+        transmissionDistanceM: p.transmissionDistanceM,
+        voiceSplDb: p.voiceSplDb,
+        solarIrradianceWPerM2: p.solarIrradianceWPerM2,
+        collectorDiameterM: p.collectorDiameterM,
+      });
+      return [
+        {
+          label: "Concentrated Optical Power",
+          value: `${photo.concentratedPowerMw.toFixed(2)} mW`,
+          unit: "P_cell",
+          badgeColor: "amber",
+          progressPct: clampProgress((photo.concentratedPowerMw / 50.0) * 100),
+        },
+        {
+          label: "Selenium Cell Resistance",
+          value: `${photo.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ`,
+          unit: "R_se",
+          badgeColor: "emerald",
+          progressPct: clampProgress(
+            Math.max(0, 100 - (photo.seleniumOperatingResistanceKOhms / 180.0) * 100),
+          ),
+        },
+        {
+          label: "Audio AC Signal Current",
+          value: `${photo.audioSignalCurrentUa.toFixed(2)} µA`,
+          unit: "i_audio",
+          badgeColor: "cyan",
+          progressPct: clampProgress((photo.audioSignalCurrentUa / 15.0) * 100),
+        },
+        {
+          label: "Reproduced Sound Level",
+          value: `${photo.reproducedAudioSplDb.toFixed(1)} dB SPL`,
+          unit: "SPL_out",
+          badgeColor: photo.reproducedAudioSplDb >= 45 ? "emerald" : "amber",
+          progressPct: clampProgress((photo.reproducedAudioSplDb / 85.0) * 100),
+        },
+        {
+          label: "Optical Modulation Depth",
+          value: `${(photo.modulationDepth * 100).toFixed(1)}%`,
+          unit: "m_opt",
+          badgeColor: "indigo",
+          progressPct: clampProgress(photo.modulationDepth * 100),
+        },
+        {
+          label: "Optical Link SNR",
+          value: `${photo.linkSnrDb.toFixed(1)} dB`,
+          unit: "SNR",
+          badgeColor: photo.linkSnrDb >= 20 ? "emerald" : "rose",
+          progressPct: clampProgress((photo.linkSnrDb / 50.0) * 100),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Alexander Graham Bell and Charles Sumner Tainter's Photophone (1880) was the world's first wireless optical communication system. By vibrating a flexible mirror diaphragm with human speech, parallel sunlight was modulated in divergence and focused onto a crystalline selenium cell 213 meters away, reproducing articulate speech without wires 16 years before Marconi's radio.",
+  },
   "us-247804-delaval-separator": {
     domain: "aerodynamics_mbd",
     domainTitle: "Centrifugal Dynamics & Multi-Phase Fluid Separation",
@@ -5075,6 +6230,221 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     },
     pedagogicalInsight:
       "Arkwright's differential drawing rollers stretched roving into fine, parallel fibers without hand human touch, while the high-velocity flyer imparted intense helical twist, creating the world's first industrial warp-grade all-cotton yarn.",
+  },
+  "gb-1306-watt-rotary-engine": {
+    domain: "thermodynamics",
+    domainTitle: "Rotary Steam Engine & Epicyclic Gearing",
+    equationName: "Epicyclic Speed Multiplication & Instantaneous Shaft Torque",
+    governingEquation:
+      "\\omega_{\\text{shaft}} = \\omega_{\\text{beam}} \\left(1 + \\frac{N_{\\text{planet}}}{N_{\\text{sun}}}\\right) = 2 \\cdot \\omega_{\\text{beam}} \\quad \\text{and} \\quad \\tau = \\frac{1}{2} F_{\\text{rod}} r_s \\sin(\\theta)",
+    engineMethod: "stepWattRotaryEngine",
+    controls: [
+      {
+        id: "strokeRateSpm",
+        label: "Beam Stroke Rate",
+        min: 10,
+        max: 30,
+        step: 2,
+        defaultValue: 20,
+        unit: "SPM",
+      },
+      {
+        id: "boilerPressureKpa",
+        label: "Effective Steam Pressure",
+        min: 40,
+        max: 120,
+        step: 5,
+        defaultValue: 70,
+        unit: "kPa",
+      },
+      {
+        id: "gearRatioNpOverNs",
+        label: "Planet / Sun Gear Ratio",
+        min: 0.5,
+        max: 2.0,
+        step: 0.25,
+        defaultValue: 1.0,
+        unit: "ratio",
+      },
+      {
+        id: "flywheelMassKg",
+        label: "Flywheel Mass",
+        min: 1000,
+        max: 6000,
+        step: 250,
+        defaultValue: 3500,
+        unit: "kg",
+      },
+    ],
+    computeMetrics: (p) => {
+      const watt = stepWattRotaryEngine({
+        strokeRateSpm: p.strokeRateSpm,
+        boilerPressureKpa: p.boilerPressureKpa,
+        gearRatioNpOverNs: p.gearRatioNpOverNs,
+        flywheelMassKg: p.flywheelMassKg,
+      });
+
+      return [
+        {
+          label: "Driveshaft Speed",
+          value: `${watt.shaftRpm.toFixed(1)} RPM`,
+          unit: `${watt.speedMultiplier.toFixed(1)}× Speed Multiplier`,
+          badgeColor: "amber",
+          progressPct: Math.min(100, (watt.shaftRpm / 60.0) * 100),
+        },
+        {
+          label: "Indicated Shaft Power",
+          value: `${watt.meanPowerKw.toFixed(1)} kW`,
+          unit: `${watt.brakeHorsepower.toFixed(1)} hp`,
+          badgeColor: "emerald",
+          progressPct: Math.min(100, (watt.meanPowerKw / 40.0) * 100),
+        },
+        {
+          label: "Piston Driving Force",
+          value: `${(watt.pistonForceN / 1e3).toFixed(1)} kN`,
+          unit: "Single-acting condensing",
+          badgeColor: "rose",
+          progressPct: Math.min(100, (watt.pistonForceN / 50e3) * 100),
+        },
+        {
+          label: "Tooth Contact Force",
+          value: `${(watt.tangentialToothForceN / 1e3).toFixed(1)} kN`,
+          unit: "Pitch line spur mesh",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (watt.tangentialToothForceN / 25e3) * 100),
+        },
+        {
+          label: "Flywheel Kinetic Energy",
+          value: `${(watt.flywheelKineticEnergyJ / 1e3).toFixed(1)} kJ`,
+          unit: `I = 10,080 kg·m²`,
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (watt.flywheelKineticEnergyJ / 200e3) * 100),
+        },
+        {
+          label: "Speed Fluctuation (δ)",
+          value: `${(watt.speedFluctuationCoeff * 100).toFixed(1)}%`,
+          unit: "Flywheel smoothing",
+          badgeColor: watt.speedFluctuationCoeff < 0.2 ? "emerald" : "amber",
+          progressPct: Math.max(0, 100 - watt.speedFluctuationCoeff * 200),
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Watt's Sun and Planet epicyclic gearing doubled the rotational output speed of the engine driveshaft without extra gears. Bolting the planet wheel rigidly to the connecting rod forced the central sun wheel to make two complete revolutions for every single reciprocating double-stroke of the walking beam.",
+  },
+  "gb-1420-cort-puddling-rolling": {
+    domain: "metallurgy",
+    domainTitle: "Reverberatory Decarburization & Grooved Roll Extrusion",
+    equationName: "Arrhenius Decarburization, Solidus Elevation, and Hydrostatic Slag Squeeze",
+    governingEquation:
+      "\\frac{d[\\text{C}]}{dt} = -k_0 e^{-\\frac{E_a}{RT}} (1 + \\beta \\omega_{\\text{rabble}}) [\\text{C}] \\quad \\text{and} \\quad P_{\\text{roll}} = \\sigma_{\\text{flow}} \\left(1 + \\frac{1.2 L_{\\text{bite}}}{2 h}\\right)",
+    engineMethod: "stepCortPuddlingRolling",
+    controls: [
+      {
+        id: "furnaceTemperatureCelsius",
+        label: "Furnace Temperature",
+        min: 1150,
+        max: 1550,
+        step: 25,
+        defaultValue: 1350,
+        unit: "°C",
+      },
+      {
+        id: "initialCarbonPercent",
+        label: "Pig Iron Carbon",
+        min: 2.8,
+        max: 4.5,
+        step: 0.1,
+        defaultValue: 3.8,
+        unit: "% C",
+      },
+      {
+        id: "rabbleStirringRpm",
+        label: "Rabble Stirring Rate",
+        min: 0,
+        max: 25,
+        step: 5,
+        defaultValue: 15,
+        unit: "RPM",
+      },
+      {
+        id: "puddlingDurationMinutes",
+        label: "Puddling Time",
+        min: 30,
+        max: 150,
+        step: 10,
+        defaultValue: 90,
+        unit: "min",
+      },
+      {
+        id: "rollerPassCount",
+        label: "Grooved Roll Passes",
+        min: 1,
+        max: 8,
+        step: 1,
+        defaultValue: 5,
+        unit: "passes",
+      },
+    ],
+    computeMetrics: (p) => {
+      const cort = stepCortPuddlingRolling({
+        furnaceTemperatureCelsius: p.furnaceTemperatureCelsius,
+        initialCarbonPercent: p.initialCarbonPercent,
+        rabbleStirringRpm: p.rabbleStirringRpm,
+        puddlingDurationMinutes: p.puddlingDurationMinutes,
+        rollerPassCount: p.rollerPassCount,
+      });
+
+      return [
+        {
+          label: "Residual Carbon",
+          value: `${cort.residualCarbonPercent.toFixed(2)}% C`,
+          unit: cort.isPastyNatureState ? "Decarburized Wrought" : "Liquid Pig Iron",
+          badgeColor: cort.isPastyNatureState ? "emerald" : "amber",
+          progressPct: Math.min(100, (cort.residualCarbonPercent / 4.0) * 100),
+        },
+        {
+          label: "Iron Melting Point",
+          value: `${cort.ironMeltingPointCelsius} °C`,
+          unit: `Solidus (+${cort.ironMeltingPointCelsius - 1147} °C rise)`,
+          badgeColor: "rose",
+          progressPct: Math.min(100, ((cort.ironMeltingPointCelsius - 1100) / 450) * 100),
+        },
+        {
+          label: "State of Charge",
+          value: cort.isPastyNatureState ? "Spongy / Nature" : "Molten Fluid",
+          unit: `${((cort.carbonRemovedPercent * 100) / (p.initialCarbonPercent ?? 3.8)).toFixed(0)}% removed`,
+          badgeColor: cort.isPastyNatureState ? "emerald" : "cyan",
+          progressPct: Math.min(
+            100,
+            (cort.carbonRemovedPercent / (p.initialCarbonPercent ?? 3.8)) * 100,
+          ),
+        },
+        {
+          label: "Residual Slag Content",
+          value: `${cort.residualSlagVolumeFractionPercent.toFixed(1)}%`,
+          unit: `Expelled ${cort.slagExpelledKg.toFixed(1)} kg`,
+          badgeColor: "indigo",
+          progressPct: Math.min(100, (cort.residualSlagVolumeFractionPercent / 16.0) * 100),
+        },
+        {
+          label: "Tensile Strength",
+          value: `${cort.tensileStrengthMpa.toFixed(0)} MPa`,
+          unit: `${cort.ductilityElongationPercent.toFixed(0)}% Elongation`,
+          badgeColor: "emerald",
+          progressPct: Math.min(100, (cort.tensileStrengthMpa / 380.0) * 100),
+        },
+        {
+          label: "Industrial Speedup",
+          value: `${cort.productionSpeedupVsHammer}×`,
+          unit: `${cort.hourlyIronOutputKg} kg/h vs hammer`,
+          badgeColor: "purple",
+          progressPct: 100,
+        },
+      ];
+    },
+    pedagogicalInsight:
+      "Cort's reverberatory furnace decarbonized pig iron by sweeping coal flames over the bath without sulfur contamination. As carbon escaped, the iron's melting point rose above furnace heat—causing it to solidify into pasty 'nature' grains that grooved rollers welded into fibrous wrought iron bars in a single heat.",
   },
   "us-x1-hopkins-potash": {
     domain: "thermochemistry",

@@ -3321,7 +3321,9 @@ export function stepEdisonIndicator(
 export interface DeForestAudionKernelInput {
   filamentCurrentA?: number;
   gridBiasV?: number;
+  gridBiasVoltageV?: number;
   rfInputMv?: number;
+  gridSignalAmplitudeMv?: number;
   plateVoltageV?: number;
   loadResistanceKOhms?: number;
 }
@@ -3330,73 +3332,95 @@ export interface DeForestAudionKernelOutput {
   filamentCurrentA: number;
   filamentPowerW: number;
   filamentGlowRadiusPx: number;
+  filamentTemperatureK: number;
   gridBiasV: number;
+  gridBiasVoltageV: number;
+  gridCutoffVoltageV: number;
   plateVoltageV: number;
   plateCurrentMa: number;
+  vEffective: number;
   effectiveDrivingPotentialV: number;
+  amplificationFactorMu: number;
+  dynamicTransconductanceMicromhos: number;
   transconductanceMicroMhos: number;
   plateResistanceKOhms: number;
   voltageGain: number;
+  inputSignalMv: number;
+  outputSignalMv: number;
+  platePowerMw: number;
+  powerGainDb: number;
   audioOutputMilliWatts: number;
   detectedRfAmplitudeMv: number;
+  isConducting: boolean;
 }
 
 export function stepDeForestAudion(
   params: DeForestAudionKernelInput = {},
 ): DeForestAudionKernelOutput {
-  const filamentCurrentA = params.filamentCurrentA ?? 0.85;
-  const gridBiasV = params.gridBiasV ?? -1.5;
-  const rfInputMv = params.rfInputMv ?? 250;
+  const filamentCurrentA = params.filamentCurrentA ?? 1.0;
+  const gridBiasV = params.gridBiasVoltageV ?? params.gridBiasV ?? -1.5;
+  const rfInputMv = params.gridSignalAmplitudeMv ?? params.rfInputMv ?? 50;
   const plateVoltageV = params.plateVoltageV ?? 45;
   const loadResistanceKOhms = params.loadResistanceKOhms ?? 20;
 
-  // Filament physics (P = I^2 * R, R_fil ~ 5.5 Ohm)
+  const tFilamentK = Math.round(1600 + 600 * Math.min(1.5, Math.max(0.5, filamentCurrentA)));
   const filamentResistanceOhm = 5.5;
-  const filamentPowerW = filamentCurrentA * filamentCurrentA * filamentResistanceOhm;
-  const emissionFactor = Math.max(0, Math.min(1.5, (filamentCurrentA / 0.85) ** 4.0));
+  const filamentPowerW = Number(
+    (filamentCurrentA * filamentCurrentA * filamentResistanceOhm).toFixed(2),
+  );
+  const filamentGlowRadiusPx = Math.round(8 + (filamentCurrentA / 1.0) * 12);
+  const emissionFactor = Math.max(0, Math.min(2.0, (filamentCurrentA / 1.0) ** 4.0));
 
-  // Triode amplification factor mu ~ 10 for early De Forest grid audion
-  const mu = 10.0;
-  const k = 0.00032; // Perveance constant
+  const mu = 12.0;
+  const k = 0.00035; // Perveance constant
 
-  // Effective driving potential V_eff = V_g + V_p / mu
   const vEff = gridBiasV + plateVoltageV / mu;
+  const gridCutoffVoltageV = Number((-plateVoltageV / mu).toFixed(2));
   const rawCurrentMa = vEff > 0 ? k * vEff ** 1.5 * 1000 * emissionFactor : 0.01 * emissionFactor;
-  const plateCurrentMa = Math.max(0, Math.min(15.0, rawCurrentMa));
+  const plateCurrentMa = Number(Math.max(0, Math.min(15.0, rawCurrentMa)).toFixed(2));
 
-  // Dynamic transconductance gm = dIp / dVg = 1.5 * k * sqrt(V_eff)
   const gm_A_per_V = vEff > 0 ? 1.5 * k * Math.sqrt(vEff) * emissionFactor : 0.00005;
   const transconductanceMicroMhos = Math.round(gm_A_per_V * 1e6);
 
-  // Dynamic plate resistance rp = mu / gm (in kOhms)
   const rpOhm = gm_A_per_V > 1e-6 ? mu / gm_A_per_V : 200000;
   const plateResistanceKOhms = Number((rpOhm / 1000).toFixed(1));
 
-  // Stage voltage gain Av = mu * R_L / (r_p + R_L)
   const rLoadOhm = loadResistanceKOhms * 1000;
-  const voltageGain = Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(1));
+  const voltageGain = Number(((mu * rLoadOhm) / (rpOhm + rLoadOhm)).toFixed(2));
 
-  // Audio output power in telephone receiver T: P_out = (v_in * Av)^2 / (2 * R_L)
   const vInRms = rfInputMv / 1000 / Math.SQRT2;
   const vOutRms = vInRms * voltageGain;
   const audioOutputWatts = (vOutRms * vOutRms) / rLoadOhm;
   const audioOutputMilliWatts = Number((audioOutputWatts * 1000).toFixed(2));
+  const outputSignalMv = Number((rfInputMv * voltageGain).toFixed(1));
 
-  const filamentGlowRadiusPx = Math.round(8 + (filamentCurrentA / 1.0) * 12);
+  const platePowerMw = Number((plateVoltageV * plateCurrentMa).toFixed(1));
+  const powerGainDb = Number((20 * Math.log10(Math.max(1, voltageGain * 3.5))).toFixed(1));
 
   return {
     filamentCurrentA,
-    filamentPowerW: Number(filamentPowerW.toFixed(2)),
+    filamentPowerW,
     filamentGlowRadiusPx,
+    filamentTemperatureK: tFilamentK,
     gridBiasV,
+    gridBiasVoltageV: gridBiasV,
+    gridCutoffVoltageV,
     plateVoltageV,
-    plateCurrentMa: Number(plateCurrentMa.toFixed(2)),
+    plateCurrentMa,
+    vEffective: Number(vEff.toFixed(2)),
     effectiveDrivingPotentialV: Number(vEff.toFixed(2)),
+    amplificationFactorMu: mu,
+    dynamicTransconductanceMicromhos: transconductanceMicroMhos,
     transconductanceMicroMhos,
     plateResistanceKOhms,
     voltageGain,
+    inputSignalMv: rfInputMv,
+    outputSignalMv,
+    platePowerMw,
+    powerGainDb,
     audioOutputMilliWatts,
     detectedRfAmplitudeMv: Number((rfInputMv * (voltageGain / 5.0)).toFixed(0)),
+    isConducting: plateCurrentMa > 0.05,
   };
 }
 
@@ -3411,6 +3435,211 @@ export interface BaekelandBakeliteControls {
   catalystPct?: number;
   curingTimeMin?: number;
   fillerPct?: number;
+}
+
+export function stepTownesLaser(params: {
+  pumpPowerWatts?: number;
+  cavityLengthCm?: number;
+  mirror2ReflectivityPct?: number;
+  activeMedium?: "potassium_vapor" | "ruby_solid" | "he_ne_gas" | "nd_yag";
+  beamDiameterMm?: number;
+}) {
+  const pPumpW = params.pumpPowerWatts ?? 350;
+  const lenCm = params.cavityLengthCm ?? 25;
+  const r2Pct = params.mirror2ReflectivityPct ?? 94;
+  const medium = params.activeMedium ?? "potassium_vapor";
+  const diamMm = params.beamDiameterMm ?? 8;
+
+  // Physical constants and medium properties
+  let wavelengthNm = 3140; // 3.14 µm infrared
+  let sigmaCm2 = 2.5e-18;
+  let thresholdPumpW = 120;
+  let slopeEfficiency = 0.32;
+  let refractiveIndex = 1.0;
+
+  if (medium === "ruby_solid") {
+    wavelengthNm = 694.3; // 694.3 nm deep red
+    sigmaCm2 = 2.5e-20;
+    thresholdPumpW = 220;
+    slopeEfficiency = 0.22;
+    refractiveIndex = 1.76;
+  } else if (medium === "he_ne_gas") {
+    wavelengthNm = 632.8; // 632.8 nm bright red
+    sigmaCm2 = 3.0e-19;
+    thresholdPumpW = 45;
+    slopeEfficiency = 0.15;
+    refractiveIndex = 1.0;
+  } else if (medium === "nd_yag") {
+    wavelengthNm = 1064; // 1064 nm near infrared
+    sigmaCm2 = 2.8e-19;
+    thresholdPumpW = 85;
+    slopeEfficiency = 0.48;
+    refractiveIndex = 1.82;
+  }
+
+  const r1 = 0.998;
+  const r2 = r2Pct / 100;
+  const internalLossAlphaPerCm = 0.004;
+
+  // Threshold gain criterion: g_th = alpha + 1/(2L) * ln(1 / (R1 * R2))
+  const mirrorLossPerCm = (1 / (2 * lenCm)) * Math.log(1 / (r1 * r2));
+  const thresholdGainPerCm = Number((internalLossAlphaPerCm + mirrorLossPerCm).toFixed(4));
+
+  // Small-signal gain from optical pumping: g0 = sigma * N_inv
+  const isAboveThreshold = pPumpW >= thresholdPumpW;
+  const smallSignalGainPerCm = Number(
+    (thresholdGainPerCm * (pPumpW / Math.max(1, thresholdPumpW))).toFixed(4),
+  );
+  const populationInversionPerCm3 = Number((smallSignalGainPerCm / sigmaCm2).toExponential(2));
+
+  // Laser output power extraction (Watts)
+  let laserOutputPowerWatts = 0;
+  if (isAboveThreshold) {
+    const extractionFactor =
+      -Math.log(r2) / (-Math.log(r1 * r2) + 2 * internalLossAlphaPerCm * lenCm);
+    laserOutputPowerWatts = Number(
+      (slopeEfficiency * (pPumpW - thresholdPumpW) * Math.max(0.2, extractionFactor)).toFixed(2),
+    );
+  }
+
+  // Intra-cavity circulating optical power (Watts)
+  const intraCavityPowerWatts = Number((laserOutputPowerWatts / Math.max(0.01, 1 - r2)).toFixed(1));
+
+  // Fresnel Number N_F = a^2 / (lambda * L)
+  const radiusM = (diamMm / 2) * 1e-3;
+  const wavelengthM = wavelengthNm * 1e-9;
+  const lengthM = lenCm * 1e-2;
+  const fresnelNumber = Number((radiusM ** 2 / (wavelengthM * lengthM)).toFixed(2));
+
+  // Diffraction-limited beam divergence (mrad): theta = 1.22 * lambda / D
+  const beamDivergenceMrad = Number((((1.22 * wavelengthM) / (diamMm * 1e-3)) * 1e3).toFixed(2));
+
+  // Longitudinal mode frequency spacing (MHz): Delta_nu = c / (2 * n * L)
+  const cSpeed = 2.99792458e8;
+  const longitudinalModeSpacingMhz = Math.round(cSpeed / (2 * refractiveIndex * lengthM) / 1e6);
+
+  // Cavity Quality Factor Q
+  const opticalFrequencyHz = cSpeed / wavelengthM;
+  const cavityPhotonLifetimeNs = Number(
+    ((lengthM / (cSpeed * (internalLossAlphaPerCm * lengthM + 0.5 * (1 - r1 * r2)))) * 1e9).toFixed(
+      2,
+    ),
+  );
+  const cavityQFactor = Number(
+    (2 * Math.PI * opticalFrequencyHz * cavityPhotonLifetimeNs * 1e-9).toExponential(2),
+  );
+
+  return {
+    activeMedium: medium,
+    wavelengthNm,
+    pumpPowerWatts: pPumpW,
+    cavityLengthCm: lenCm,
+    mirror2ReflectivityPct: r2Pct,
+    beamDiameterMm: diamMm,
+    isLasing: isAboveThreshold,
+    thresholdGainPerCm,
+    smallSignalGainPerCm,
+    populationInversionPerCm3,
+    laserOutputPowerWatts,
+    intraCavityPowerWatts,
+    fresnelNumber,
+    beamDivergenceMrad,
+    longitudinalModeSpacingMhz,
+    cavityPhotonLifetimeNs,
+    cavityQFactor,
+  };
+}
+
+export function stepCarlsonElectrophotography(params: {
+  coronaVoltageKv?: number;
+  exposureLuxSec?: number;
+  layerThicknessUm?: number;
+  photoconductorType?: "selenium" | "sulfur" | "anthracene" | "opc";
+  fuserTemperatureC?: number;
+}) {
+  const vCoronaKv = params.coronaVoltageKv ?? 6.5;
+  const expLuxSec = params.exposureLuxSec ?? 12.0;
+  const thickUm = params.layerThicknessUm ?? 30;
+  const pcType = params.photoconductorType ?? "selenium";
+  const tFuserC = params.fuserTemperatureC ?? 185;
+
+  // Material parameters (quantum efficiency, bandgap eV, dielectric constant)
+  let eta = 0.85;
+  let bandgapEv = 2.0;
+  let _epsilonR = 6.0;
+  let sensitivityFactor = 4.2;
+
+  if (pcType === "sulfur") {
+    eta = 0.35;
+    bandgapEv = 2.6;
+    _epsilonR = 4.0;
+    sensitivityFactor = 12.0;
+  } else if (pcType === "anthracene") {
+    eta = 0.2;
+    bandgapEv = 3.6;
+    _epsilonR = 3.0;
+    sensitivityFactor = 18.0;
+  } else if (pcType === "opc") {
+    eta = 0.95;
+    bandgapEv = 1.8;
+    _epsilonR = 3.2;
+    sensitivityFactor = 3.0;
+  }
+
+  // Initial surface electrostatic charge potential (V)
+  const initialSurfacePotentialV = Math.round(vCoronaKv * 100);
+  const internalElectricFieldKvPerMm = Number(
+    (initialSurfacePotentialV / (thickUm * 1e-3) / 1000).toFixed(2),
+  );
+
+  // Photo-induced discharge curve: V_exposed = V0 * exp(-eta * exp / sens) + V_res
+  const residualPotentialV = 25;
+  const decayExponent = (eta * expLuxSec) / sensitivityFactor;
+  const exposedSurfacePotentialV = Math.round(
+    residualPotentialV + (initialSurfacePotentialV - residualPotentialV) * Math.exp(-decayExponent),
+  );
+
+  // Electrostatic potential contrast voltage (V)
+  const contrastPotentialV = initialSurfacePotentialV - exposedSurfacePotentialV;
+
+  // Developed toner mass density (mg/cm^2)
+  const tonerMassDensityMgPerCm2 = Number(
+    Math.min(1.8, (contrastPotentialV / 500) * 1.25).toFixed(2),
+  );
+
+  // Optical Reflection Density (OD: 0 to 2.0)
+  const opticalDensity = Number(Math.min(1.85, 0.05 + tonerMassDensityMgPerCm2 * 1.15).toFixed(2));
+
+  // Thermal Fuser Fixation Quality (%)
+  // Resin melts at ~140°C, optimal at 180-195°C, scorch risk > 215°C
+  let fuserBondQualityPct = 0;
+  if (tFuserC < 130) {
+    fuserBondQualityPct = Math.max(5, Math.round(((tFuserC - 100) / 30) * 30));
+  } else if (tFuserC <= 200) {
+    fuserBondQualityPct = Math.min(100, Math.round(60 + ((tFuserC - 130) / 70) * 40));
+  } else {
+    fuserBondQualityPct = Math.max(70, Math.round(100 - (tFuserC - 200) * 2));
+  }
+
+  // Process speed (feet per minute / copies per minute)
+  const copiesPerMin = pcType === "selenium" || pcType === "opc" ? 45 : 12;
+
+  return {
+    coronaVoltageKv: vCoronaKv,
+    photoconductorType: pcType,
+    photoconductorBandgapEv: bandgapEv,
+    layerThicknessUm: thickUm,
+    initialSurfacePotentialV,
+    exposedSurfacePotentialV,
+    contrastPotentialV,
+    internalElectricFieldKvPerMm,
+    exposureLuxSec: expLuxSec,
+    tonerMassDensityMgPerCm2,
+    opticalDensity,
+    fuserTemperatureC: tFuserC,
+    fuserBondQualityPct,
+    copiesPerMin,
+  };
 }
 
 export function stepBaekelandBakelite(
@@ -3509,5 +3738,539 @@ export function stepBaekelandBakelite(
     dielectricBreakdownKvPerMm,
     densityGPerCm3,
     heatDeflectionTempC,
+  };
+}
+
+export interface FessendenWirelessControlParams {
+  carrierFrequencyKhz?: number;
+  audioModulationPct?: number;
+  audioFrequencyHz?: number;
+  antennaTuningUh?: number;
+  antennaCageDiameterM?: number;
+  acidConcentrationPct?: number;
+  polarizingVoltageVolts?: number;
+  transmissionDistanceKm?: number;
+}
+
+export function stepFessendenWireless(params: FessendenWirelessControlParams = {}) {
+  const fCarrierKhz = params.carrierFrequencyKhz ?? 75;
+  const modPct = params.audioModulationPct ?? 65;
+  const fAudioHz = params.audioFrequencyHz ?? 1000;
+  const lUh = params.antennaTuningUh ?? 450;
+  const cageDiam = params.antennaCageDiameterM ?? 2.4;
+  const acidPct = params.acidConcentrationPct ?? 20;
+  const vPol = params.polarizingVoltageVolts ?? 1.5;
+  const distKm = params.transmissionDistanceKm ?? 25;
+
+  // Antenna capacitance from cage geometry with top-hat capacity (pF)
+  const cPf = Number((10000 * (cageDiam / 2.4)).toFixed(1));
+
+  // Natural resonant frequency of antenna LC circuit (kHz): f = 1 / (2*pi*sqrt(L*C))
+  const lHenries = lUh * 1e-6;
+  const cFarads = cPf * 1e-12;
+  const fResonantKhz = Number(
+    (1 / (2 * Math.PI * Math.sqrt(lHenries * cFarads)) / 1000).toFixed(2),
+  );
+
+  // Tuning offset and resonance alignment
+  const detuningKhz = Number(Math.abs(fCarrierKhz - fResonantKhz).toFixed(2));
+  const isResonant = detuningKhz < 2.0;
+
+  // Radiation resistance & ohmic loss resistance (Ohms)
+  const radiationResistanceOhms = Number((1.8 * (fCarrierKhz / 75) ** 2).toFixed(2));
+  const ohmicLossOhms = Number((0.45 / (cageDiam / 2.4)).toFixed(2));
+  const totalResistanceOhms = radiationResistanceOhms + ohmicLossOhms;
+
+  // Antenna radiation efficiency (%)
+  const radiationEfficiencyPct = Number(
+    ((radiationResistanceOhms / totalResistanceOhms) * 100).toFixed(1),
+  );
+
+  // Loaded Q factor
+  const omega = 2 * Math.PI * fResonantKhz * 1e3;
+  const qFactor = Number(((omega * lHenries) / totalResistanceOhms).toFixed(1));
+
+  // Resonance transfer factor: Lorentzian response curve
+  const resonanceTransfer = 1 / (1 + ((2 * detuningKhz * qFactor) / fResonantKhz) ** 2);
+
+  // Radiated RF Power (Watts) with 1 kW nominal input
+  const nominalInputPowerWatts = 1000;
+  const radiatedPowerWatts = Number(
+    (nominalInputPowerWatts * (radiationEfficiencyPct / 100) * resonanceTransfer).toFixed(1),
+  );
+
+  // Free-space / Groundwave Path propagation to receiver (microwatts)
+  const wavelengthM = 3e8 / (fCarrierKhz * 1e3);
+  const pathLossFactor = (wavelengthM / (4 * Math.PI * distKm * 1e3)) ** 2 * 1.5;
+  const receivedPowerMicrowatts = Number(
+    Math.max(0.01, radiatedPowerWatts * pathLossFactor * 1e6).toFixed(3),
+  );
+
+  // Liquid Barretter / Electrolytic Detector physics
+  // Dilute nitric acid conductivity and junction polarization resistance (Ohms)
+  const baseJunctionResistanceOhms = 1200 * (20 / acidPct);
+  // Microscopic RF thermal heating decreases polarization barrier resistance
+  const deltaResistanceOhms = Number(
+    Math.min(
+      baseJunctionResistanceOhms * 0.85,
+      receivedPowerMicrowatts * 4.5 * (modPct / 100),
+    ).toFixed(2),
+  );
+  const activeDetectorResistanceOhms = Number(
+    (baseJunctionResistanceOhms - deltaResistanceOhms).toFixed(1),
+  );
+
+  // Local audio receiver circuit (with 2000 Ohm telephone earpiece)
+  const phoneImpedanceOhms = 2000;
+  const totalAudioCircuitOhms = activeDetectorResistanceOhms + phoneImpedanceOhms;
+  const dcPolarizingCurrentMicroamps = Number(((vPol / totalAudioCircuitOhms) * 1e6).toFixed(1));
+
+  // Modulated audio signal current (microamps RMS)
+  const audioSignalCurrentMicroamps = Number(
+    (((vPol * deltaResistanceOhms) / totalAudioCircuitOhms ** 2) * 1e6 * (modPct / 100)).toFixed(2),
+  );
+
+  // Signal to Noise Ratio (dB)
+  const thermalNoiseFloorMicrowatts = 0.005;
+  const audioSnrDb = Number(
+    (10 * Math.log10(Math.max(1, receivedPowerMicrowatts / thermalNoiseFloorMicrowatts))).toFixed(
+      1,
+    ),
+  );
+
+  // Audio acoustic volume (dB SPL in telephone earpiece)
+  const audioSoundLevelDbSpl = Number(
+    Math.max(
+      20,
+      Math.min(95, 35 + 20 * Math.log10(Math.max(0.1, audioSignalCurrentMicroamps))),
+    ).toFixed(1),
+  );
+
+  return {
+    carrierFrequencyKhz: fCarrierKhz,
+    audioModulationPct: modPct,
+    audioFrequencyHz: fAudioHz,
+    antennaTuningUh: lUh,
+    antennaCageDiameterM: cageDiam,
+    antennaCapacitancePf: cPf,
+    antennaResonantFreqKhz: fResonantKhz,
+    detuningKhz,
+    isResonant,
+    qFactor,
+    radiationResistanceOhms,
+    ohmicLossOhms,
+    radiationEfficiencyPct,
+    radiatedPowerWatts,
+    wavelengthM: Number(wavelengthM.toFixed(1)),
+    transmissionDistanceKm: distKm,
+    receivedPowerMicrowatts,
+    acidConcentrationPct: acidPct,
+    activeDetectorResistanceOhms,
+    dcPolarizingCurrentMicroamps,
+    audioSignalCurrentMicroamps,
+    audioSnrDb,
+    audioSoundLevelDbSpl,
+  };
+}
+
+export function stepHaberAmmonia(params: {
+  pressureAtm?: number;
+  temperatureCelsius?: number;
+  feedFlowRateMolesPerSec?: number;
+  catalystActivity?: number;
+}) {
+  const pAtm = params.pressureAtm ?? 175;
+  const tempC = params.temperatureCelsius ?? 530;
+  const flowMolS = params.feedFlowRateMolesPerSec ?? 50;
+  const catActivity = params.catalystActivity ?? 1.0;
+
+  // Temperature in Kelvin
+  const tempK = tempC + 273.15;
+  const pBar = pAtm * 1.01325;
+  const pMpa = Number((pBar * 0.1).toFixed(2));
+
+  // Authentic Haber-Larson Equilibrium Constant formula:
+  // log10(Kp) = 2098 / T - 5.86 where Kp = P_NH3 / (P_N2^0.5 * P_H2^1.5) [atm^-1]
+  const log10Kp = 2100 / tempK - 5.4;
+  const kpAtm = 10 ** log10Kp;
+
+  // Equilibrium conversion parameter:
+  // For stoichiometric feed (1 N2 : 3 H2): y_eq / (1 - y_eq) = 0.32476 * Kp * P
+  const bFactor = 0.32476 * kpAtm * pAtm;
+  const eqFraction = bFactor / (1 + bFactor);
+
+  // Kinetic rate constant (Arrhenius with activation energy over Osmium/Fe Ea ≈ 85 kJ/mol)
+  const eaJ = 85000;
+  const rGas = 8.31446;
+  const k0 = 3.2e5;
+  const kRate = k0 * Math.exp(-eaJ / (rGas * tempK)) * catActivity;
+
+  // Catalyst bed contact residence time (seconds)
+  const bedVolumeLiters = 300;
+  const molarVolumeLitersPerMol = (0.08206 * tempK) / pAtm;
+  const volumetricFlowLitersPerSec = (flowMolS * molarVolumeLitersPerMol) / 4;
+  const spaceTimeSec = Math.max(0.1, bedVolumeLiters / Math.max(1, volumetricFlowLitersPerSec));
+
+  // Approach to equilibrium fraction
+  const approachToEquilibrium = Math.min(0.99, 1 - Math.exp(-kRate * spaceTimeSec * 0.15));
+
+  // Actual single-pass ammonia mole fraction and percentage
+  const ammoniaMoleFraction = eqFraction * approachToEquilibrium;
+  const ammoniaYieldPct = Number((ammoniaMoleFraction * 100).toFixed(2));
+
+  // Ammonia production rate (mol/s and kg/hr)
+  // Synthesis: 1 N2 + 3 H2 -> 2 NH3
+  const nh3ProducedMolesPerSec = Number(
+    (flowMolS * (ammoniaMoleFraction / (1 + ammoniaMoleFraction))).toFixed(3),
+  );
+  const molarMassNh3KgPerMol = 0.017031;
+  const ammoniaProductionKgPerHour = Number(
+    (nh3ProducedMolesPerSec * molarMassNh3KgPerMol * 3600).toFixed(2),
+  );
+
+  // Exothermic Reaction Heat Release (kW)
+  // Delta H_rxn = -46.2 kJ per mole of NH3 formed
+  const heatOfFormationKjPerMol = 46.2;
+  const reactionHeatGeneratedKw = Number(
+    (nh3ProducedMolesPerSec * heatOfFormationKjPerMol).toFixed(2),
+  );
+
+  // Counter-current heat exchanger preheat temperature (°C)
+  const heatExchangerEfficiency = 0.85;
+  const gasHeatCapacityJPerMolK = 29.5;
+  const deltaTPreheat =
+    (reactionHeatGeneratedKw * 1000 * heatExchangerEfficiency) /
+    (flowMolS * gasHeatCapacityJPerMolK);
+  const feedPreheatTemperatureCelsius = Number(Math.min(tempC - 20, 25 + deltaTPreheat).toFixed(1));
+
+  // Hydrogen and Nitrogen consumption rates
+  const n2ConsumptionKgPerHour = Number(
+    (nh3ProducedMolesPerSec * 0.5 * 0.028013 * 3600).toFixed(2),
+  );
+  const h2ConsumptionKgPerHour = Number(
+    (nh3ProducedMolesPerSec * 1.5 * 0.002016 * 3600).toFixed(2),
+  );
+
+  // Recycle gas ratio (recirculated volume / fresh makeup volume)
+  const singlePassConversion = Math.max(0.01, ammoniaMoleFraction);
+  const recycleRatio = Number(((1 - singlePassConversion) / singlePassConversion).toFixed(1));
+
+  return {
+    pressureAtm: pAtm,
+    pressureMpa: pMpa,
+    catalystTemperatureCelsius: tempC,
+    feedFlowRateMolesPerSec: flowMolS,
+    catalystActivityMultiplier: catActivity,
+    equilibriumAmmoniaPct: Number((eqFraction * 100).toFixed(2)),
+    approachToEquilibriumPct: Number((approachToEquilibrium * 100).toFixed(1)),
+    ammoniaYieldPct,
+    nh3ProducedMolesPerSec,
+    ammoniaProductionKgPerHour,
+    reactionHeatGeneratedKw,
+    feedPreheatTemperatureCelsius,
+    n2ConsumptionKgPerHour,
+    h2ConsumptionKgPerHour,
+    recycleRatio,
+  };
+}
+
+export function stepHewittMercuryLamp(params: {
+  mainsVoltageV?: number;
+  tubeLengthCm?: number;
+  tubeDiameterMm?: number;
+  condenserCoolingLevel?: number;
+  ballastResistanceOhms?: number;
+}) {
+  const vMains = params.mainsVoltageV ?? 110;
+  const lenCm = params.tubeLengthCm ?? 100;
+  const diamMm = params.tubeDiameterMm ?? 25;
+  const cooling = params.condenserCoolingLevel ?? 1.0;
+  const rBallast = params.ballastResistanceOhms ?? 12;
+
+  // Condenser temperature and equilibrium mercury vapor pressure (mmHg)
+  const tCondenserK = 315 / Math.max(0.5, Math.min(2.0, cooling));
+  const log10PHg = 8.118 - 3168 / tCondenserK;
+  const pMercuryMmHg = Number((10 ** log10PHg).toFixed(4));
+  const pMercuryPa = Number((pMercuryMmHg * 133.322).toFixed(2));
+
+  // High-voltage starting breakdown potential (V)
+  const breakdownStartingVoltageV = Math.round(1200 + 40 * lenCm);
+
+  // Electrode fall voltages (Cathode pool ~10V, Anode ~4.5V)
+  const vElectrodeFall = 14.5;
+
+  // Solve operating arc current from load line:
+  // V_mains = vElectrodeFall + (E_col * lenCm) + I * R_ballast
+  // where E_col = (0.75 + 0.15 * sqrt(p_Hg)) / I^0.35
+  let iArc = 3.5;
+  for (let iter = 0; iter < 10; iter++) {
+    const eColumn = (0.75 + 0.15 * Math.sqrt(pMercuryMmHg)) / Math.max(0.5, iArc) ** 0.35;
+    const vArcEst = vElectrodeFall + eColumn * lenCm;
+    const iNext = Math.max(0.2, (vMains - vArcEst) / rBallast);
+    iArc = 0.5 * (iArc + iNext);
+  }
+
+  const arcCurrentAmperes = Number(iArc.toFixed(2));
+  const electricFieldVPerCm = Number(
+    ((0.75 + 0.15 * Math.sqrt(pMercuryMmHg)) / arcCurrentAmperes ** 0.35).toFixed(2),
+  );
+  const positiveColumnVoltageV = Number((electricFieldVPerCm * lenCm).toFixed(1));
+  const arcOperatingVoltageV = Number((vElectrodeFall + positiveColumnVoltageV).toFixed(1));
+  const ballastVoltageDropV = Number((arcCurrentAmperes * rBallast).toFixed(1));
+
+  // Dynamic negative differential resistance of the arc (dV/dI < 0)
+  const dynamicArcResistanceOhms = Number(
+    (-0.35 * (positiveColumnVoltageV / arcCurrentAmperes)).toFixed(2),
+  );
+  const isStable = rBallast + dynamicArcResistanceOhms > 0;
+
+  // Power metrics (W)
+  const arcPowerWatts = Number((arcOperatingVoltageV * arcCurrentAmperes).toFixed(1));
+  const totalPowerWatts = Number((vMains * arcCurrentAmperes).toFixed(1));
+  const electricalEfficiencyPct = Number(((arcPowerWatts / totalPowerWatts) * 100).toFixed(1));
+
+  // Luminous Efficacy & Output (lumens)
+  const luminousEfficacyLmPerWatt = Number(
+    (72 * (arcCurrentAmperes / 3.5) ** 0.2 * (25 / diamMm) ** 0.15).toFixed(1),
+  );
+  const luminousFluxLumens = Math.round(arcPowerWatts * luminousEfficacyLmPerWatt);
+  const equivalentCarbonBulbs = Math.round(luminousFluxLumens / 200); // 16-cp carbon bulb ≈ 200 lm
+
+  // Cathode spot current density (A/cm²)
+  const cathodeSpotAreaMm2 = Number((arcCurrentAmperes / 500).toFixed(4));
+  const cathodeCurrentDensityAperCm2 = 50000;
+
+  return {
+    mainsVoltageV: vMains,
+    tubeLengthCm: lenCm,
+    tubeDiameterMm: diamMm,
+    mercuryVaporPressureMmHg: pMercuryMmHg,
+    mercuryVaporPressurePa: pMercuryPa,
+    breakdownStartingVoltageV,
+    arcOperatingVoltageV,
+    arcCurrentAmperes,
+    ballastVoltageDropV,
+    electricFieldVPerCm,
+    dynamicArcResistanceOhms,
+    isStable,
+    arcPowerWatts,
+    totalPowerWatts,
+    electricalEfficiencyPct,
+    luminousEfficacyLmPerWatt,
+    luminousFluxLumens,
+    equivalentCarbonBulbs,
+    cathodeSpotAreaMm2,
+    cathodeCurrentDensityAperCm2,
+  };
+}
+
+export { stepBellPhotophone } from "./bellPhotophoneKernel";
+export { stepCortPuddlingRolling } from "./cortKernel";
+export { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
+export { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
+export { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "./yaleLockKernel";
+
+/**
+ * US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Physics Kernel
+ *
+ * Computes bulk semiconductor sheet resistance, reverse-biased p-n junction
+ * depletion capacitance, mesa BJT amplification, and monolithic solid-circuit
+ * switching dynamics.
+ */
+export function stepKilbyIntegratedCircuit(params: {
+  substrateMaterial?: "germanium" | "silicon";
+  supplyVoltageV?: number;
+  resistorWidthUm?: number;
+  resistorLengthUm?: number;
+  dopingConcentrationCm3?: number;
+  junctionAreaUm2?: number;
+  reverseBiasVoltageV?: number;
+  baseDriveCurrentUa?: number;
+}) {
+  const material = params.substrateMaterial ?? "germanium";
+  const vcc = params.supplyVoltageV ?? 6.0;
+  const wUm = params.resistorWidthUm ?? 50.0;
+  const lUm = params.resistorLengthUm ?? 500.0;
+  const ndCm3 = params.dopingConcentrationCm3 ?? 2.5e15;
+  const areaUm2 = params.junctionAreaUm2 ?? 2500.0;
+  const vrV = params.reverseBiasVoltageV ?? 3.0;
+  const ibUa = params.baseDriveCurrentUa ?? 40.0;
+
+  // Material physical constants
+  // Germanium: eps_r = 16.0, mu_n = 3900 cm^2/V*s, V_bi = 0.35 V, E_g = 0.66 eV
+  // Silicon:   eps_r = 11.7, mu_n = 1400 cm^2/V*s, V_bi = 0.70 V, E_g = 1.12 eV
+  const q = 1.602e-19; // C
+  const eps0 = 8.854e-14; // F/cm
+  const isGe = material === "germanium";
+
+  const epsR = isGe ? 16.0 : 11.7;
+  const epsS = epsR * eps0;
+  const muN = isGe ? 3900.0 : 1400.0; // cm^2 / V*s
+  const vBi = isGe ? 0.35 : 0.7; // V
+
+  // 1. Bulk Semiconductor Resistivity & Sheet Resistance (Ohm*cm & Ohm/sq)
+  // Layer thickness t = 10 um = 1e-3 cm
+  const thicknessCm = 1e-3;
+  const bulkResistivityOhmCm = 1.0 / (q * muN * ndCm3);
+  const sheetResistanceOhmSq = bulkResistivityOhmCm / thicknessCm;
+
+  // Resistor geometry: aspect ratio = L / W
+  const aspectSquares = lUm / wUm;
+  const collectorLoadResistanceOhms = Math.round(sheetResistanceOhmSq * aspectSquares);
+  const baseBiasResistanceOhms = Math.round(collectorLoadResistanceOhms * 4.5);
+
+  // 2. P-N Junction Depletion Layer & Transition Capacitance
+  // W_dep = sqrt(2 * eps_s * (V_bi + V_R) / (q * N_d)) in cm
+  const totalPotentialV = vBi + vrV;
+  const wDepCm = Math.sqrt((2.0 * epsS * totalPotentialV) / (q * ndCm3));
+  const wDepUm = Number((wDepCm * 1e4).toFixed(3)); // um
+
+  // C_j = eps_s * Area / W_dep in Farads (Area in cm^2)
+  const areaCm2 = areaUm2 * 1e-8;
+  const junctionCapacitancePf = Number((((epsS * areaCm2) / wDepCm) * 1e12).toFixed(2));
+
+  // 3. Mesa Bipolar Transistor Switching & Gain
+  const beta = isGe ? 65.0 : 85.0; // Common-emitter current gain
+  const ibAmps = ibUa * 1e-6;
+  const icActiveAmps = beta * ibAmps;
+  const vceSat = isGe ? 0.15 : 0.25;
+  const icSatAmps = (vcc - vceSat) / collectorLoadResistanceOhms;
+
+  const isSaturated = icActiveAmps >= icSatAmps;
+  const icActualAmps = Math.min(icActiveAmps, icSatAmps);
+  const collectorCurrentMa = Number((icActualAmps * 1e3).toFixed(2));
+  const collectorVoltageV = Number(
+    Math.max(vceSat, vcc - icActualAmps * collectorLoadResistanceOhms).toFixed(2),
+  );
+
+  // 4. Circuit Dynamics & Propagation Delay
+  // RC time constant tau = R_b * C_j
+  const tauNs = Number((baseBiasResistanceOhms * (junctionCapacitancePf * 1e-12) * 1e9).toFixed(2));
+  const maxClockFrequencyMhz = Number((1000.0 / (2.5 * Math.max(1.0, tauNs))).toFixed(1));
+
+  // Phase-shift oscillator resonant frequency f_osc = 1 / (2 * pi * R * C * sqrt(6))
+  const fOscKhz = Number(
+    (
+      1.0 /
+      (2.0 *
+        Math.PI *
+        collectorLoadResistanceOhms *
+        (junctionCapacitancePf * 1e-12) *
+        Math.sqrt(6)) /
+      1000.0
+    ).toFixed(1),
+  );
+
+  // Component density (parts per cubic inch)
+  const dieVolumeMm3 = 5.0 * 2.0 * 0.25; // 2.5 mm^3 = 0.000152 in^3
+  const componentDensityPerCuFt = Math.round((12 / (dieVolumeMm3 * 1e-9)) * 0.0283);
+
+  return {
+    material,
+    supplyVoltageV: vcc,
+    resistorWidthUm: wUm,
+    resistorLengthUm: lUm,
+    dopingConcentrationCm3: ndCm3,
+    junctionAreaUm2: areaUm2,
+    reverseBiasVoltageV: vrV,
+    baseDriveCurrentUa: ibUa,
+    bulkResistivityOhmCm: Number(bulkResistivityOhmCm.toFixed(3)),
+    sheetResistanceOhmSq: Math.round(sheetResistanceOhmSq),
+    collectorLoadResistanceOhms,
+    baseBiasResistanceOhms,
+    depletionWidthUm: wDepUm,
+    junctionCapacitancePf,
+    transistorGainBeta: beta,
+    collectorCurrentMa,
+    collectorVoltageV,
+    isTransistorSaturated: isSaturated,
+    propagationDelayNs: tauNs,
+    maxClockFrequencyMhz,
+    phaseShiftOscillatorFrequencyKhz: fOscKhz,
+    componentDensityPerCuFt,
+  };
+}
+
+/**
+ * Edwin Land US 2,543,181 — Polaroid Instant Photography & Diffusion Transfer Reversal
+ */
+export interface LandPolaroidInput {
+  reagentViscosityCp?: number; // 1,000 to 100,000 cP
+  rollerGapUm?: number; // 10 to 60 um
+  hydroquinoneConcentrationM?: number; // 0.05 to 0.40 M
+  thiosulfateConcentrationM?: number; // 0.10 to 0.80 M
+  alkaliPh?: number; // 10.5 to 13.8
+  exposureFraction?: number; // 0.0 to 1.0
+  developmentTimeSec?: number; // 0 to 60 s
+}
+
+export interface LandPolaroidState {
+  negativeSilverDensity: number;
+  positiveSilverDensity: number;
+  transferEfficiencyPercent: number;
+  diffusionFluxMolPerM2S: number;
+  meniscusSpreadUniformityPercent: number;
+  printCompletionPercent: number;
+  unexposedSilverComplexedRatio: number;
+}
+
+export function stepLandPolaroidInstantFilm(input: LandPolaroidInput): LandPolaroidState {
+  const viscosity = input.reagentViscosityCp ?? 25000;
+  const gap = input.rollerGapUm ?? 25;
+  const hq = input.hydroquinoneConcentrationM ?? 0.2;
+  const hypo = input.thiosulfateConcentrationM ?? 0.35;
+  const ph = input.alkaliPh ?? 12.6;
+  const exposure = Math.max(0, Math.min(1, input.exposureFraction ?? 0.6));
+  const time = Math.max(0, Math.min(60, input.developmentTimeSec ?? 30));
+
+  // pH-dependent development rate constant k_dev (hydroquinone dianion activity)
+  const phFactor = 10 ** (ph - 11.5);
+  const kDev = 0.08 * (hq / 0.2) * (phFactor / (1 + phFactor));
+
+  // Hypo solubilization rate constant k_sol
+  const kSol = 0.06 * (hypo / 0.35);
+
+  // Negative silver development
+  const negProgress = 1 - Math.exp(-kDev * time);
+  const negativeSilverDensity = Number((2.8 * exposure * negProgress).toFixed(2));
+
+  // Soluble silver thiosulfate complex formation from unexposed silver halide
+  const unexposedFraction = 1 - exposure;
+  const complexationProgress = 1 - Math.exp(-kSol * time);
+  const unexposedSilverComplexedRatio = Number(
+    (unexposedFraction * complexationProgress).toFixed(3),
+  );
+
+  // Fickian Diffusion coefficient D inversely proportional to polymer viscosity
+  const dDiff = 1.2e-9 * (25000 / Math.max(1000, viscosity)); // m^2/s
+  const gapMeters = gap * 1e-6;
+  const diffusionTimeConst = (gapMeters * gapMeters) / (2 * dDiff);
+  const transferProgress = 1 - Math.exp(-time / Math.max(0.5, diffusionTimeConst));
+
+  // Positive reflection silver density (D_max = 2.10)
+  const positiveSilverDensity = Number((2.1 * unexposedFraction * transferProgress).toFixed(2));
+
+  // Transfer efficiency
+  const transferEfficiencyPercent = Number((92 * (1 - Math.exp(-time / 15))).toFixed(1));
+
+  // Diffusion flux
+  const gradC = (hypo * unexposedFraction) / gapMeters;
+  const diffusionFluxMolPerM2S = Number((dDiff * gradC * 1000).toFixed(4));
+
+  // Meniscus spread uniformity (optimal at 10,000 - 50,000 cP)
+  const viscPenalty = Math.abs(Math.log10(viscosity / 25000));
+  const meniscusSpreadUniformityPercent = Number(Math.max(40, 98 - viscPenalty * 22).toFixed(1));
+
+  // Overall print completion percentage
+  const printCompletionPercent = Number(Math.min(100, (time / 60) * 100).toFixed(1));
+
+  return {
+    negativeSilverDensity,
+    positiveSilverDensity,
+    transferEfficiencyPercent,
+    diffusionFluxMolPerM2S,
+    meniscusSpreadUniformityPercent,
+    printCompletionPercent,
+    unexposedSilverComplexedRatio,
   };
 }

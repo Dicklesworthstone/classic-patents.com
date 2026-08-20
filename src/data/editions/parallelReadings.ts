@@ -7,12 +7,16 @@
  */
 
 import { ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS } from "./arkwrightWaterFrameEdition";
+import { baekelandBakeliteParallelReadings } from "./baekelandBakeliteEdition";
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
+import { bellPhotophoneParallelReadings } from "./bellPhotophoneEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
+import { CORT_PUDDLING_ROLLING_PARALLEL_READINGS } from "./cortPuddlingRollingEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
+import { deForestAudionParallelReadings } from "./deForestAudionEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
 import { dieselEngineParallelReadings } from "./dieselEngineEdition";
 import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
@@ -33,6 +37,7 @@ import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEditio
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
+import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
@@ -47,6 +52,7 @@ import { parsonsTurbineParallelReadings } from "./parsonsTurbineEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
 import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { renoEscalatorParallelReadings } from "./renoEscalatorEdition";
+import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
@@ -55,9 +61,11 @@ import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition"
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
+import { wattRotaryEngineParallelReadings } from "./wattRotaryEngineEdition";
 import { WATT_SEPARATE_CONDENSER_PARALLEL_READINGS } from "./wattSeparateCondenserEdition";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
+import { yaleLockParallelReadings } from "./yaleLockEdition";
 
 export type ArchivalParallelReading = readonly string[];
 
@@ -66,18 +74,22 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
 > = {
   "gb-913-watt-separate-condenser": WATT_SEPARATE_CONDENSER_PARALLEL_READINGS,
   "gb-931-arkwright-water-frame": ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
+  "gb-1306-watt-rotary-engine": wattRotaryEngineParallelReadings,
+  "gb-1420-cort-puddling-rolling": CORT_PUDDLING_ROLLING_PARALLEL_READINGS,
   "us-x1-hopkins-potash": HOPKINS_PARALLEL_READINGS,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
   "us-588-ericsson-propeller": ericssonPropellerParallelReadings,
   "us-1647-morse-telegraph": morseTelegraphParallelReadings,
+  "us-3237-rillieux-evaporator": rillieuxEvaporatorParallelReadings,
   "us-3633-goodyear-rubber": goodyearRubberParallelReadings,
   "us-4750-howe-sewing-machine": HOWE_SEWING_MACHINE_PARALLEL_READINGS,
   "us-6162-corliss-steam-engine": corlissSteamEngineParallelReadings,
   "us-6469-lincoln-buoy": lincolnBuoyParallelReadings,
   "us-31128-otis-elevator": otisElevatorParallelReadings,
   "us-36836-gatling-gun": gatlingGunParallelReadings,
+  "us-48475-yale-lock": yaleLockParallelReadings,
   "us-78317-nobel-dynamite": nobelDynamiteParallelReadings,
   "us-79265-sholes-typewriter": sholesTypewriterParallelReadings,
   "us-105338-hyatt-celluloid": hyattCelluloidParallelReadings,
@@ -90,6 +102,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-200521-edison-phonograph": edisonPhonographParallelReadings,
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
+  "us-235199-bell-photophone": bellPhotophoneParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
   "us-307031-edison-indicator": edisonIndicatorParallelReadings,
   "us-319596-maxim-machine-gun": maximMachineGunParallelReadings,
@@ -107,15 +120,18 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
   "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
+  "us-879532-de-forest-audion": deForestAudionParallelReadings,
   "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
   "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
+  "us-2543181-land-polaroid": landPolaroidParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
+  "us-942699-baekeland-bakelite": baekelandBakeliteParallelReadings,
 
   "us-821393-wright-flyer": {
     4: [

@@ -11,6 +11,8 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-x72-whitney-cotton-gin",
   "us-313224-mergenthaler-linotype",
   "us-2708656-fermi-reactor",
+  "us-2929922-townes-laser",
+  "us-3138743-kilby-integrated-circuit",
   "us-3671542-kwolek-kevlar",
   "us-3858232-boyle-smith-ccd",
 ] as const;

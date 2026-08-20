@@ -8,12 +8,16 @@ import { useState } from "react";
 import { ArkwrightWaterFrameSim } from "./ArkwrightWaterFrameSim";
 import { BaekelandBakeliteSim } from "./BaekelandBakeliteSim";
 import { BardeenTransistorSim } from "./BardeenTransistorSim";
+import { BellPhotophoneSim } from "./BellPhotophoneSim";
 import { BellTelephoneSim } from "./BellTelephoneSim";
 import { BoyleSmithCcdSim } from "./BoyleSmithCcdSim";
+import { CarlsonElectrophotographySim } from "./CarlsonElectrophotographySim";
 import { CarrierAirConditionerSim } from "./CarrierAirConditionerSim";
 import { ColtRevolverSim } from "./ColtRevolverSim";
 import { CorlissEngineSim } from "./CorlissEngineSim";
+import { CortPuddlingRollingSim } from "./CortPuddlingRollingSim";
 import { DaimlerEngineSim } from "./DaimlerEngineSim";
+import { DaVinciSim } from "./DaVinciSim";
 import { DavenportMotorSim } from "./DavenportMotorSim";
 import { DeLavalSeparatorSim } from "./DeLavalSeparatorSim";
 import { DieselEngineSim } from "./DieselEngineSim";
@@ -21,23 +25,29 @@ import { EastmanKodakSim } from "./EastmanKodakSim";
 import { EdisonBulbSim } from "./EdisonBulbSim";
 import EdisonIndicatorSim from "./EdisonIndicatorSim";
 import { EdisonPhonographSim } from "./EdisonPhonographSim";
+import { EInkSim } from "./EInkSim";
 import { EinsteinRefrigeratorSim } from "./EinsteinRefrigeratorSim";
 import { EngelbartMouseSim } from "./EngelbartMouseSim";
 import { EricssonPropellerSim } from "./EricssonPropellerSim";
 import { FarnsworthTVSim } from "./FarnsworthTVSim";
 import { FermiReactorSim } from "./FermiReactorSim";
+import { FessendenWirelessSim } from "./FessendenWirelessSim";
 import { GatlingGunSim } from "./GatlingGunSim";
 import { GliddenBarbedWireSim } from "./GliddenBarbedWireSim";
 import { GoddardRocketSim } from "./GoddardRocketSim";
 import { GoodyearRubberSim } from "./GoodyearRubberSim";
 import { GrammeDynamoSim } from "./GrammeDynamoSim";
+import { HaberAmmoniaSim } from "./HaberAmmoniaSim";
 import { HallAluminiumSim } from "./HallAluminiumSim";
+import { HewittMercuryLampSim } from "./HewittMercuryLampSim";
 import { HollerithTabulatingSim } from "./HollerithTabulatingSim";
 import { HopkinsPotashSim } from "./HopkinsPotashSim";
 import { HoweSewingMachineSim } from "./HoweSewingMachineSim";
 import { HyattCelluloidSim } from "./HyattCelluloidSim";
+import { KilbyIntegratedCircuitSim } from "./KilbyIntegratedCircuitSim";
 import { KwolekKevlarSim } from "./KwolekKevlarSim";
 import { LamarrFrequencyHoppingSim } from "./LamarrFrequencyHoppingSim";
+import { LandPolaroidSim } from "./LandPolaroidSim";
 import { LincolnBuoySim } from "./LincolnBuoySim";
 import { LindeAirLiquefactionSim } from "./LindeAirLiquefactionSim";
 import { MarconiRadioSim } from "./MarconiRadioSim";
@@ -45,25 +55,32 @@ import { MaximMachineGunSim } from "./MaximMachineGunSim";
 import { McCormickReaperSim } from "./McCormickReaperSim";
 import { MergenthalerLinotypeSim } from "./MergenthalerLinotypeSim";
 import { MorseTelegraphSim } from "./MorseTelegraphSim";
+import { MultiTouchSim } from "./MultiTouchSim";
 import { NobelDynamiteSim } from "./NobelDynamiteSim";
 import { NoycePlanarICSim } from "./NoycePlanarICSim";
 import { OtisElevatorSim } from "./OtisElevatorSim";
 import { OttoEngineSim } from "./OttoEngineSim";
+import { PageRankSim } from "./PageRankSim";
 import { ParsonsTurbineSim } from "./ParsonsTurbineSim";
 import { PasteurFermentationSim } from "./PasteurFermentationSim";
 import { PeltonWheelSim } from "./PeltonWheelSim";
 import { RenoEscalatorSim } from "./RenoEscalatorSim";
+import { RillieuxEvaporatorSim } from "./RillieuxEvaporatorSim";
+import { RoombaSim } from "./RoombaSim";
 import { SholesTypewriterSim } from "./SholesTypewriterSim";
 import { SpencerMicrowaveSim } from "./SpencerMicrowaveSim";
 import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
 import { TeslaTeleautomatonSim } from "./TeslaTeleautomatonSim";
 import { ThomsonWeldingSim } from "./ThomsonWeldingSim";
+import { TownesLaserSim } from "./TownesLaserSim";
+import { WattRotaryEngineSim } from "./WattRotaryEngineSim";
 import { WattSeparateCondenserSim } from "./WattSeparateCondenserSim";
 import { WestinghouseAirBrakeSim } from "./WestinghouseAirBrakeSim";
 import { WhitneyCottonGinSim } from "./WhitneyCottonGinSim";
 import { WozniakAppleSim } from "./WozniakAppleSim";
 import { WrightFlyerSim } from "./WrightFlyerSim";
+import { YaleLockSim } from "./YaleLockSim";
 import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
 
 const ThreeLoading = () => (
@@ -79,13 +96,29 @@ const ArkwrightWaterFrame3D = dynamic(
   () => import("./three/ArkwrightWaterFrame3D").then((mod) => mod.ArkwrightWaterFrame3D),
   { ssr: false, loading: ThreeLoading },
 );
-const _BaekelandBakelite3D = dynamic(
-  () => import("./three/BaekelandBakelite3D").then((m) => m.BaekelandBakelite3D),
+const DeForestAudion3D = dynamic(
+  () => import("./three/DeForestAudion3D").then((m) => m.DeForestAudion3D || m.default),
+  { ssr: false, loading: ThreeLoading },
+);
+const DeForestAudionSim = dynamic(
+  () => import("./DeForestAudionSim").then((m) => m.DeForestAudionSim || m.default),
   { ssr: false },
 );
+const FessendenWireless3D = dynamic(
+  () => import("./three/FessendenWireless3D").then((m) => m.FessendenWireless3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const HewittMercuryLamp3D = dynamic(() => import("./three/HewittMercuryLamp3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
+const HaberAmmonia3D = dynamic(() => import("./three/HaberAmmonia3D"), {
+  ssr: false,
+  loading: ThreeLoading,
+});
 const BaekelandBakelite3D = dynamic(
   () => import("./three/BaekelandBakelite3D").then((m) => m.BaekelandBakelite3D),
-  { ssr: false },
+  { ssr: false, loading: ThreeLoading },
 );
 const BardeenTransistor3D = dynamic(
   () => import("./three/BardeenTransistor3D").then((mod) => mod.BardeenTransistor3D),
@@ -95,8 +128,17 @@ const BellTelephone3D = dynamic(
   () => import("./three/BellTelephone3D").then((mod) => mod.BellTelephone3D),
   { ssr: false, loading: ThreeLoading },
 );
+const BellPhotophone3D = dynamic(
+  () => import("./three/BellPhotophone3D").then((mod) => mod.BellPhotophone3D || mod.default),
+  { ssr: false, loading: ThreeLoading },
+);
 const BoyleSmithCcd3D = dynamic(
   () => import("./three/BoyleSmithCcd3D").then((mod) => mod.BoyleSmithCcd3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const CarlsonElectrophotography3D = dynamic(
+  () =>
+    import("./three/CarlsonElectrophotography3D").then((mod) => mod.CarlsonElectrophotography3D),
   { ssr: false, loading: ThreeLoading },
 );
 const CarrierAirConditioner3D = dynamic(
@@ -109,6 +151,10 @@ const ColtRevolver3D = dynamic(
 );
 const CorlissSteamEngine3D = dynamic(
   () => import("./three/CorlissSteamEngine3D").then((mod) => mod.CorlissSteamEngine3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const CortPuddlingRolling3D = dynamic(
+  () => import("./three/CortPuddlingRolling3D").then((mod) => mod.CortPuddlingRolling3D),
   { ssr: false, loading: ThreeLoading },
 );
 const DaimlerEngine3D = dynamic(
@@ -239,6 +285,10 @@ const MorseTelegraph3D = dynamic(
   () => import("./three/MorseTelegraph3D").then((mod) => mod.MorseTelegraph3D),
   { ssr: false, loading: ThreeLoading },
 );
+const RillieuxEvaporator3D = dynamic(
+  () => import("./three/RillieuxEvaporator3D").then((mod) => mod.RillieuxEvaporator3D),
+  { ssr: false, loading: ThreeLoading },
+);
 const NobelDynamite3D = dynamic(
   () => import("./three/NobelDynamite3D").then((mod) => mod.NobelDynamite3D),
   { ssr: false, loading: ThreeLoading },
@@ -279,6 +329,19 @@ const SpencerMicrowave3D = dynamic(
   () => import("./three/SpencerMicrowave3D").then((mod) => mod.SpencerMicrowave3D),
   { ssr: false, loading: ThreeLoading },
 );
+const TownesLaser3D = dynamic(
+  () => import("./three/TownesLaser3D").then((mod) => mod.TownesLaser3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const LandPolaroid3D = dynamic(
+  () => import("./three/LandPolaroid3D").then((mod) => mod.LandPolaroid3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const KilbyIntegratedCircuit3D = dynamic(
+  () => import("./three/KilbyIntegratedCircuit3D").then((mod) => mod.KilbyIntegratedCircuit3D),
+  { ssr: false, loading: ThreeLoading },
+);
+
 const TeslaCoil3D = dynamic(() => import("./three/TeslaCoil3D").then((mod) => mod.TeslaCoil3D), {
   ssr: false,
   loading: ThreeLoading,
@@ -293,6 +356,10 @@ const TeslaTeleautomaton3D = dynamic(
 );
 const ThomsonWelding3D = dynamic(
   () => import("./three/ThomsonWelding3D").then((mod) => mod.ThomsonWelding3D),
+  { ssr: false, loading: ThreeLoading },
+);
+const WattRotaryEngine3D = dynamic(
+  () => import("./three/WattRotaryEngine3D").then((mod) => mod.WattRotaryEngine3D),
   { ssr: false, loading: ThreeLoading },
 );
 const WattSeparateCondenser3D = dynamic(
@@ -318,6 +385,13 @@ const WrightFlyer3D = dynamic(
 const ZeppelinAirship3D = dynamic(
   () => import("./three/ZeppelinAirship3D").then((mod) => mod.ZeppelinAirship3D),
   { ssr: false, loading: ThreeLoading },
+);
+const YaleLock3D = dynamic(
+  () => import("./three/YaleLock3D").then((mod) => mod.YaleLock3D || mod.default),
+  {
+    ssr: false,
+    loading: ThreeLoading,
+  },
 );
 const PageRank3D = dynamic(() => import("./three/PageRank3D").then((mod) => mod.PageRank3D), {
   ssr: false,
@@ -394,6 +468,14 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <ArkwrightWaterFrameSim />
             );
+          case "gb-1306-watt-rotary-engine":
+            return renderMode === "3d-physics" ? <WattRotaryEngine3D /> : <WattRotaryEngineSim />;
+          case "gb-1420-cort-puddling-rolling":
+            return renderMode === "3d-physics" ? (
+              <CortPuddlingRolling3D />
+            ) : (
+              <CortPuddlingRollingSim />
+            );
           case "us-x1-hopkins-potash":
             return renderMode === "3d-physics" ? <HopkinsPotash3D /> : <HopkinsPotashSim />;
           case "us-x72-whitney-cotton-gin":
@@ -412,6 +494,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <EricssonPropeller3D /> : <EricssonPropellerSim />;
           case "us-1647-morse-telegraph":
             return renderMode === "3d-physics" ? <MorseTelegraph3D /> : <MorseTelegraphSim />;
+          case "us-3237-rillieux-evaporator":
+            return renderMode === "3d-physics" ? (
+              <RillieuxEvaporator3D />
+            ) : (
+              <RillieuxEvaporatorSim />
+            );
           case "us-3633-goodyear-rubber":
             return renderMode === "3d-physics" ? <GoodyearRubber3D /> : <GoodyearRubberSim />;
           case "us-4750-howe-sewing-machine":
@@ -424,6 +512,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <OtisElevator3D /> : <OtisElevatorSim />;
           case "us-36836-gatling-gun":
             return renderMode === "3d-physics" ? <GatlingGun3D /> : <GatlingGunSim />;
+          case "us-48475-yale-lock":
+            return renderMode === "3d-physics" ? <YaleLock3D /> : <YaleLockSim />;
           case "us-78317-nobel-dynamite":
             return renderMode === "3d-physics" ? <NobelDynamite3D /> : <NobelDynamiteSim />;
           case "us-79265-sholes-typewriter":
@@ -456,6 +546,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             return renderMode === "3d-physics" ? <EdisonBulb3D /> : <EdisonBulbSim />;
           case "us-233692-pelton-water-wheel":
             return renderMode === "3d-physics" ? <PeltonWheel3D /> : <PeltonWheelSim />;
+          case "us-235199-bell-photophone":
+            return renderMode === "3d-physics" ? <BellPhotophone3D /> : <BellPhotophoneSim />;
           case "us-247804-delaval-separator":
             return renderMode === "3d-physics" ? <DeLavalSeparator3D /> : <DeLavalSeparatorSim />;
           case "us-307031-edison-indicator":
@@ -502,6 +594,10 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-621195-zeppelin-airship":
             return renderMode === "3d-physics" ? <ZeppelinAirship3D /> : <ZeppelinAirshipSim />;
+          case "us-682690-hewitt-mercury-lamp":
+            return renderMode === "3d-physics" ? <HewittMercuryLamp3D /> : <HewittMercuryLampSim />;
+          case "us-706737-fessenden-wireless":
+            return renderMode === "3d-physics" ? <FessendenWireless3D /> : <FessendenWirelessSim />;
           case "us-727650-linde-air-liquefaction":
             return renderMode === "3d-physics" ? (
               <LindeAirLiquefaction3D />
@@ -516,8 +612,12 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             );
           case "us-821393-wright-flyer":
             return renderMode === "3d-physics" ? <WrightFlyer3D /> : <WrightFlyerSim />;
+          case "us-879532-de-forest-audion":
+            return renderMode === "3d-physics" ? <DeForestAudion3D /> : <DeForestAudionSim />;
           case "us-942699-baekeland-bakelite":
             return renderMode === "3d-physics" ? <BaekelandBakelite3D /> : <BaekelandBakeliteSim />;
+          case "us-971501-haber-ammonia":
+            return renderMode === "3d-physics" ? <HaberAmmonia3D /> : <HaberAmmoniaSim />;
           case "us-1102653-goddard-rocket":
             return renderMode === "3d-physics" ? <GoddardRocket3D /> : <GoddardRocketSim />;
           case "us-1773980-farnsworth-tv":
@@ -534,12 +634,29 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
             ) : (
               <LamarrFrequencyHoppingSim />
             );
+          case "us-2297691-carlson-electrophotography":
+            return renderMode === "3d-physics" ? (
+              <CarlsonElectrophotography3D />
+            ) : (
+              <CarlsonElectrophotographySim />
+            );
           case "us-2495429-spencer-microwave":
             return renderMode === "3d-physics" ? <SpencerMicrowave3D /> : <SpencerMicrowaveSim />;
           case "us-2524035-bardeen-transistor":
             return renderMode === "3d-physics" ? <BardeenTransistor3D /> : <BardeenTransistorSim />;
           case "us-2708656-fermi-reactor":
             return renderMode === "3d-physics" ? <FermiReactor3D /> : <FermiReactorSim />;
+          case "us-2929922-townes-laser":
+            return renderMode === "3d-physics" ? <TownesLaser3D /> : <TownesLaserSim />;
+          case "us-2543181-land-polaroid":
+            return renderMode === "3d-physics" ? <LandPolaroid3D /> : <LandPolaroidSim />;
+          case "us-3138743-kilby-integrated-circuit":
+            return renderMode === "3d-physics" ? (
+              <KilbyIntegratedCircuit3D />
+            ) : (
+              <KilbyIntegratedCircuitSim />
+            );
+
           case "us-2981877-noyce-ic":
             return renderMode === "3d-physics" ? <NoycePlanarIC3D /> : <NoycePlanarICSim />;
           case "us-3541541-engelbart-mouse":
@@ -552,15 +669,15 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           case "us-4136359-wozniak-apple":
             return renderMode === "3d-physics" ? <WozniakApple3D /> : <WozniakAppleSim />;
           case "us-6120588-eink":
-            return renderMode === "3d-physics" ? <EInk3D /> : <EInk3D />;
+            return renderMode === "3d-physics" ? <EInk3D /> : <EInkSim />;
           case "us-6285999-pagerank":
-            return renderMode === "3d-physics" ? <PageRank3D /> : <PageRank3D />;
+            return renderMode === "3d-physics" ? <PageRank3D /> : <PageRankSim />;
           case "us-6331181-davinci":
-            return renderMode === "3d-physics" ? <DaVinci3D /> : <DaVinci3D />;
+            return renderMode === "3d-physics" ? <DaVinci3D /> : <DaVinciSim />;
           case "us-6594844-roomba":
-            return renderMode === "3d-physics" ? <Roomba3D /> : <Roomba3D />;
+            return renderMode === "3d-physics" ? <Roomba3D /> : <RoombaSim />;
           case "us-7479949-multitouch":
-            return renderMode === "3d-physics" ? <MultiTouch3D /> : <MultiTouch3D />;
+            return renderMode === "3d-physics" ? <MultiTouch3D /> : <MultiTouchSim />;
 
           default:
             return (

@@ -19,10 +19,110 @@ const TESLA_ID = "us-381968-tesla-motor";
 const FERMI_ID = "us-2708656-fermi-reactor";
 const WATT_ID = "gb-913-watt-separate-condenser";
 const ARKWRIGHT_ID = "gb-931-arkwright-water-frame";
+const WATT_ROTARY_ID = "gb-1306-watt-rotary-engine";
+const CORT_ID = "gb-1420-cort-puddling-rolling";
+const FESSENDEN_ID = "us-706737-fessenden-wireless";
 const MARCONI_ID = "us-586193-marconi-radio";
 const BAEKELAND_ID = "us-942699-baekeland-bakelite";
+const HABER_ID = "us-971501-haber-ammonia";
+const HEWITT_ID = "us-682690-hewitt-mercury-lamp";
+const DE_FOREST_ID = "us-879532-de-forest-audion";
+const CARLSON_ID = "us-2297691-carlson-electrophotography";
+const TOWNES_ID = "us-2929922-townes-laser";
+const KILBY_ID = "us-3138743-kilby-integrated-circuit";
 
 export function specClausesFor(patentId: string, params: Record<string, number>): SpecClause[] {
+  if (patentId === WATT_ROTARY_ID) {
+    const spm = params.strokeRateSpm ?? 20;
+    const ratio = params.gearRatioNpOverNs ?? 1.0;
+    const pressureKpa = params.boilerPressureKpa ?? 70;
+    const isRotating = spm >= 10;
+    const isSpeedDoubled = Math.abs(ratio - 1.0) < 0.1;
+    const isPowerDelivered = pressureKpa >= 40;
+
+    return [
+      {
+        id: "sun-wheel",
+        phrase: "Sun wheel",
+        active: isRotating,
+        tone: isRotating ? "held" : "broken",
+        caption: `Sun spur wheel keyed fast to the output shaft and flywheel, turning at ${(spm * (1 + ratio)).toFixed(1)} RPM.`,
+      },
+      {
+        id: "planet-wheel",
+        phrase: "Planet wheel",
+        active: isRotating,
+        tone: isRotating ? "held" : "broken",
+        caption: `Planet wheel rigidly bolted to connecting rod, orbiting around the sun without rotating on its own axis.`,
+      },
+      {
+        id: "two-complete-revolutions",
+        phrase: "two complete revolutions",
+        active: isSpeedDoubled,
+        tone: isSpeedDoubled ? "live" : "held",
+        caption: `Epicyclic gear ratio 1:1 forces the shaft to make exactly 2.0 revolutions per engine beam stroke cycle.`,
+      },
+      {
+        id: "radius-guide-link",
+        phrase: "link, radius arm, or circular guiding groove",
+        active: isRotating && isPowerDelivered,
+        tone: "held",
+        caption:
+          "Maintains exact pitch-circle center-to-center mesh distance between sun and planet gears throughout the 360° orbit.",
+      },
+    ];
+  }
+
+  if (patentId === CORT_ID) {
+    const tempC = params.furnaceTemperatureCelsius ?? 1350;
+    const rabbleRpm = params.rabbleStirringRpm ?? 15;
+    const passes = params.rollerPassCount ?? 5;
+    const isHot = tempC >= 1250;
+    const isRabbling = rabbleRpm > 5;
+    const isMultiPass = passes >= 3;
+
+    return [
+      {
+        id: "reverberatory-furnace",
+        phrase: "reverberatory or air furnace",
+        active: isHot,
+        tone: isHot ? "held" : "broken",
+        caption: `Furnace Temp=${tempC}°C: Coal flame reverberates from arched roof onto iron bath, isolating sulfur fuel.`,
+      },
+      {
+        id: "rabble-stirring",
+        phrase: "constantly stirred, agitated, and worked with an iron paddle or rabble",
+        active: isRabbling,
+        tone: isRabbling ? "held" : "broken",
+        caption: `Rabble Rate=${rabbleRpm} RPM: Continuous mechanical agitation exposes fresh metal to oxidizing gas, burning out carbon.`,
+      },
+      {
+        id: "coming-to-nature",
+        phrase: '"comes to nature,"',
+        active: isHot && isRabbling,
+        tone: "live",
+        caption:
+          "As carbon drops below 0.1%, melting point rises above furnace heat (1535°C), solidifying pasty iron grains.",
+      },
+      {
+        id: "grooved-rollers",
+        phrase:
+          "pairs of large chilled cast-iron rollers furnished with corresponding grooves of graduated dimensions",
+        active: isMultiPass,
+        tone: isMultiPass ? "held" : "live",
+        caption: `Grooved Passes=${passes}: Graduated profile passes exert progressive hydrostatic squeeze on the puddle ball.`,
+      },
+      {
+        id: "slag-expulsion",
+        phrase: "violently expressing and discharging the liquid iron silicate cinder and slag",
+        active: isMultiPass,
+        tone: "live",
+        caption:
+          "Intense roll compression expels liquid silicate slag and welds iron crystals into fibrous wrought bars.",
+      },
+    ];
+  }
+
   if (patentId === ARKWRIGHT_ID) {
     const draftRatio = params.totalDraftRatio ?? 6.0;
     const clampingWeight = params.rollerClampingWeightKg ?? 3.5;
@@ -180,6 +280,258 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
     ];
   }
 
+  if (patentId === KILBY_ID) {
+    const vcc = params.supplyVoltageV ?? 6.0;
+    const lUm = params.resistorLengthUm ?? 500;
+    const wUm = params.resistorWidthUm ?? 50;
+    const vr = params.reverseBiasVoltageV ?? 3.0;
+    const ib = params.baseDriveCurrentUa ?? 40;
+
+    const isBiased = vcc >= 2.0;
+    const isTransistorActive = ib >= 15;
+    const isCapacitorActive = vr >= 1.0;
+
+    return [
+      {
+        id: "monolithic-body",
+        phrase:
+          "wafer of single-crystal semiconductor material containing a plurality of active and passive circuit components",
+        active: isBiased,
+        tone: "live",
+        caption: `Single crystal bar hosting integrated mesa transistors, bulk resistors, and p-n junction capacitors at V_cc = ${vcc} V.`,
+      },
+      {
+        id: "bulk-resistor",
+        phrase: "passive circuit component is an elongated resistor region",
+        active: isBiased,
+        tone: "live",
+        caption: `Aspect ratio L/W = ${(lUm / wUm).toFixed(1)}: Bulk semiconductor path providing calibrated ohmic load resistance.`,
+      },
+      {
+        id: "pn-capacitor",
+        phrase: "passive circuit component is a capacitor defined by a p-n junction",
+        active: isCapacitorActive,
+        tone: isCapacitorActive ? "live" : "broken",
+        caption: `V_R = ${vr} V: Reverse-biased depletion transition capacitance providing AC coupling without discrete capacitors.`,
+      },
+      {
+        id: "conductor-interconnects",
+        phrase: "conductor means for interconnecting said components into an operative circuit",
+        active: isTransistorActive,
+        tone: "held",
+        caption: `Gold flying wire bonds linking isolated component mesas into a functional bistable flip-flop/oscillator.`,
+      },
+    ];
+  }
+
+  if (patentId === TOWNES_ID) {
+    const pPump = params.pumpPowerWatts ?? 350;
+    const r2Pct = params.mirror2ReflectivityPct ?? 94;
+    const isLasing = pPump >= 120;
+    const isTransmitting = r2Pct < 99.5;
+
+    return [
+      {
+        id: "population-inversion",
+        phrase:
+          "pumping means for establishing a population inversion between said first and second states",
+        active: isLasing,
+        tone: isLasing ? "live" : "broken",
+        caption: `Pump Power=${pPump} W: Optical excitation populates upper laser level above ground state, establishing non-equilibrium quantum optical gain.`,
+      },
+      {
+        id: "fabry-perot-reflector-pair",
+        phrase:
+          "an optical cavity resonator containing said medium, said resonator being bounded by a pair of spaced reflecting surfaces",
+        active: true,
+        tone: "live",
+        caption: `Fabry-Pérot Resonator: Parallel plane mirrors reflect axial standing waves back and forth through the inverted gain medium.`,
+      },
+      {
+        id: "non-reflecting-side-boundaries",
+        phrase: "the side boundaries of said resonator being substantially non-reflecting",
+        active: true,
+        tone: "live",
+        caption: `Open Cavity Mode Selection: Non-reflecting open sidewalls discard off-axis modes via high diffraction loss, isolating the fundamental TEM00 mode.`,
+      },
+      {
+        id: "partially-transmitting-output",
+        phrase: "at least one of said reflecting surfaces is partially transmitting",
+        active: isTransmitting,
+        tone: isTransmitting ? "live" : "held",
+        caption: `Output Coupler R2=${r2Pct}%: Extracts a collimated, diffraction-limited coherent optical beam while sustaining intra-cavity oscillation.`,
+      },
+    ];
+  }
+
+  if (patentId === CARLSON_ID) {
+    const vCorona = params.coronaVoltageKv ?? 6.5;
+    const expLux = params.exposureLuxSec ?? 12;
+    const tFuser = params.fuserTemperatureC ?? 185;
+    const isCharged = vCorona >= 5.0;
+    const isDischarged = expLux >= 5;
+    const isFused = tFuser >= 150;
+
+    return [
+      {
+        id: "photoconductive-surface-charge",
+        phrase:
+          "producing an electric charge on the surface of a photo-conductive insulating layer",
+        active: isCharged,
+        tone: isCharged ? "live" : "broken",
+        caption: `Corona Voltage=${vCorona} kV: High-voltage ionization deposits uniform +${Math.round(vCorona * 100)} V electrostatic potential across photoreceptor surface.`,
+      },
+      {
+        id: "selective-light-discharge",
+        phrase:
+          "exposing said layer to a light image whereby to effect selective discharge thereof",
+        active: isDischarged,
+        tone: isDischarged ? "live" : "held",
+        caption: `Optical Exposure=${expLux} lx·s: Photons generate electron-hole pairs, dissipating surface charge in illuminated background regions.`,
+      },
+      {
+        id: "electroscopic-powder-deposition",
+        phrase: "depositing a finely-divided electroscopic material on said layer",
+        active: true,
+        tone: "live",
+        caption: `Triboelectric Toner Development: Pigmented resin powder particles adhere by Coulomb attraction to the remaining latent electrostatic pattern.`,
+      },
+      {
+        id: "thermal-fusing",
+        phrase: "fixed thereon by the application of heat",
+        active: isFused,
+        tone: isFused ? "live" : "broken",
+        caption: `Fuser Temperature=${tFuser}°C: Heated rollers melt thermoplastic toner resin, permanently bonding the image into paper fibers.`,
+      },
+    ];
+  }
+
+  if (patentId === DE_FOREST_ID) {
+    const vPlate = params.plateVoltageV ?? 45;
+    const vGrid = params.gridBiasVoltageV ?? -1.5;
+    const iFilament = params.filamentCurrentA ?? 1.0;
+    const isFilamentHot = iFilament >= 0.8;
+    const isPlateActive = vPlate >= 20;
+
+    return [
+      {
+        id: "heated-filament-emission",
+        phrase: "filament, preferably of metal... heated, preferably to incandescence",
+        active: isFilamentHot,
+        tone: isFilamentHot ? "live" : "broken",
+        caption: `Filament Current=${iFilament} A: Heated incandescent cathode emits thermionic electron space-charge cloud into vacuum.`,
+      },
+      {
+        id: "interposed-control-grid",
+        phrase: "interposed between the members F and b is a grid-shaped member a",
+        active: true,
+        tone: "live",
+        caption: `Grid Bias=${vGrid} V: Intermediate electrostatic grid throttles electron passage with zero input current drain.`,
+      },
+      {
+        id: "blocking-condenser",
+        phrase:
+          "insert a condenser C in said circuit to prevent the members a and b from becoming electrically charged",
+        active: true,
+        tone: "held",
+        caption: `Grid Condenser C: Blocks DC plate potential from biasing grid while coupling high-frequency RF oscillations.`,
+      },
+      {
+        id: "signal-indicator-output",
+        phrase:
+          "local receiving circuit, which includes the battery B... and signal indicating device T",
+        active: isPlateActive,
+        tone: isPlateActive ? "live" : "held",
+        caption: `Plate B-Battery=${vPlate} V: High-voltage plate attracts electrons and drives amplified signal into telephone receiver T.`,
+      },
+    ];
+  }
+
+  if (patentId === HEWITT_ID) {
+    const vMains = params.mainsVoltageV ?? 110;
+    const lenCm = params.tubeLengthCm ?? 100;
+    const rBallast = params.ballastResistanceOhms ?? 12;
+    const cooling = params.condenserCoolingLevel ?? 1.0;
+
+    const isCommercialVoltage = vMains >= 90 && vMains <= 130;
+    const _isBallastStable = rBallast >= 8;
+    const isCoolingActive = cooling >= 0.8;
+
+    return [
+      {
+        id: "cold-cathode-barrier",
+        phrase: "initial electrical resistance at the cold cathode surface",
+        active: true,
+        tone: "held",
+        caption: `Mains=${vMains} V: Cold mercury pool work function (4.49 eV) blocks spontaneous conduction at commercial voltages.`,
+      },
+      {
+        id: "higher-potential-starting",
+        phrase: "momentary higher potential of several thousand volts",
+        active: true,
+        tone: "live",
+        caption: `Starting Pulse ≈ ${Math.round(1200 + 40 * lenCm)} V: High-voltage inductive kick initiates Townsend breakdown and cathode emission spot.`,
+      },
+      {
+        id: "moderate-potential-operation",
+        phrase: "moderate electromotive force (such as 100 to 120 volts)",
+        active: isCommercialVoltage,
+        tone: isCommercialVoltage ? "held" : "live",
+        caption: `Operating Mains=${vMains} V: Once ionized, positive column resistance collapses and conducts multi-ampere arc from standard mains.`,
+      },
+      {
+        id: "condensing-chamber-regulation",
+        phrase: "cooling or condensing chamber for the gas or vapor",
+        active: isCoolingActive,
+        tone: isCoolingActive ? "live" : "broken",
+        caption: `Cooling Rate=${cooling}x: Bulbous globe condenses hot mercury vapor and stabilizes internal vapor pressure.`,
+      },
+    ];
+  }
+
+  if (patentId === HABER_ID) {
+    const pAtm = params.pressureAtm ?? 175;
+    const tempC = params.temperatureCelsius ?? 530;
+    const catActivity = params.catalystActivity ?? 1.0;
+
+    const isHighPressure = pAtm >= 100;
+    const isWorkingRegime = pAtm >= 150 && tempC >= 480 && tempC <= 600;
+    const isCatalyzed = catActivity >= 0.5;
+
+    return [
+      {
+        id: "osmium-catalyst",
+        phrase: "passing gases containing nitrogen and hydrogen over osmium",
+        active: isCatalyzed,
+        tone: isCatalyzed ? "held" : "broken",
+        caption: `Catalyst Activity=${catActivity}x: Active transition-metal contact surface chemisorbs and dissociates the inert N≡N triple bond.`,
+      },
+      {
+        id: "high-pressure-regime",
+        phrase: "increased pressure, for instance at from 100 to 200 atmospheres",
+        active: isHighPressure,
+        tone: isHighPressure ? "held" : "broken",
+        caption: `Pressure=${pAtm} atm (${(pAtm * 0.101325).toFixed(1)} MPa): Super-atmospheric compression shifts Le Chatelier equilibrium toward 2-volume NH3 product.`,
+      },
+      {
+        id: "working-parameters",
+        phrase:
+          "one hundred and seventy-five atmospheres and at a temperature of about five hundred and fifty degrees centigrade",
+        active: isWorkingRegime,
+        tone: isWorkingRegime ? "live" : "held",
+        caption: `P=${pAtm} atm, T=${tempC}°C: The optimal kinetic-thermodynamic compromise balancing catalytic rate and equilibrium conversion.`,
+      },
+      {
+        id: "eight-percent-yield",
+        phrase: "yield of eight per cent. by volume of ammonia can easily be obtained",
+        active: isHighPressure && isWorkingRegime,
+        tone: "live",
+        caption:
+          "Single-pass equilibrium yield (>8%) enables high-pressure condensation and continuous unreacted gas recirculation.",
+      },
+    ];
+  }
+
   if (patentId === BAEKELAND_ID) {
     const temp = params.curingTempC ?? 130;
     const press = params.autoclavePressurePsi ?? 75;
@@ -204,6 +556,41 @@ export function specClausesFor(patentId: string, params: Record<string, number>)
         active: isCured,
         tone: isCured ? "held" : "live",
         caption: `T = ${temp} °C, t = ${time} min: Thermal condensation drives complete 3D covalent crosslinking into insoluble C-stage Bakelite.`,
+      },
+    ];
+  }
+
+  if (patentId === FESSENDEN_ID) {
+    const fCarrier = params.carrierFrequencyKhz ?? 75;
+    const mod = params.audioModulationPct ?? 65;
+    const lUh = params.antennaTuningUh ?? 450;
+    const cPf = 10000;
+    const fResonant = 1 / (2 * Math.PI * Math.sqrt(lUh * 1e-6 * cPf * 1e-12)) / 1000;
+    const isTuned = Math.abs(fCarrier - fResonant) < 2.5;
+
+    return [
+      {
+        id: "continuous-radiation",
+        phrase: "continuous radiation of electromagnetic waves of substantially uniform strength",
+        active: true,
+        tone: "live",
+        caption: `f_c = ${fCarrier} kHz: Steady sinusoidal continuous-wave carrier emitted without spark decay.`,
+      },
+      {
+        id: "sine-wave",
+        phrase:
+          "generating in said conductor continuous alternating currents of substantially sinusoidal waveform",
+        active: mod <= 100,
+        tone: isTuned ? "held" : "live",
+        caption: `Resonance ${isTuned ? "LOCKED" : "DETUNED"} (f_0 = ${fResonant.toFixed(1)} kHz): Pure sinusoidal current in low-loss cage antenna.`,
+      },
+      {
+        id: "electrolytic-detector",
+        phrase: "electrolytic detector responsive to continuous wave oscillations",
+        active: isTuned,
+        tone: "live",
+        caption:
+          "Liquid barretter platinum micro-junction demodulates RF envelope directly into telephone receiver.",
       },
     ];
   }

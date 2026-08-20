@@ -187,8 +187,10 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/einstein|refrigerator|1781541|1,781,541/, "einstein-refrigerator"],
   [/colt|revolver|138|x9430|9430/, "colt-revolver"],
   [/otis|elevator|31128|31,128/, "otis-elevator"],
+  [/watt.*rotary|sun.*planet|1306/, "watt-rotary-engine"],
   [/watt|separate[- ]condenser|913/, "watt-separate-condenser"],
   [/arkwright|water[- ]frame|931/, "arkwright-water-frame"],
+  [/cort|puddling|rolling|1420/, "cort-puddling-rolling"],
   [/hopkins|potash|x1/, "hopkins-potash"],
   [/whitney|cotton[- ]gin|x72/, "whitney-cotton-gin"],
   [/mccormick|reaper|x8277|4895|4,895/, "mccormick-reaper"],
@@ -218,6 +220,8 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/parsons|turbine|608969|608,969|328710|328,710/, "parsons-turbine"],
   [/teleautomaton|613809|613,809/, "tesla-teleautomaton"],
   [/zeppelin|airship|621195|621,195/, "zeppelin-airship"],
+  [/de[- ]?forest|audion|879532|879,532/, "de-forest-audion"],
+  [/hewitt|mercury[- ]lamp|682690|682,690/, "hewitt-mercury-lamp"],
   [/linde|liquefaction|727650|727,650/, "linde-air-liquefaction"],
   [/carrier|condition|808897|808,897/, "carrier-air-conditioner"],
 ];
@@ -626,8 +630,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "edison-bulb": {
-      const filamentTemp = params?.filamentTemp ?? 2100;
-      const bulb = stepEdisonBulb({});
+      const bulb = stepEdisonBulb({
+        voltage: params?.voltage ?? 110,
+        filamentLength: params?.filamentLength ?? 22,
+      });
+      const filamentTemp = bulb.filamentTempK;
       const _glowOpacity = edisonSchematicGlowOpacity(filamentTemp);
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -738,7 +745,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "wozniak-apple": {
-      const apple = stepWozniakApple({});
+      const apple = stepWozniakApple({
+        crystalFreq: params?.crystalFreq,
+        ramCapacityKb: params?.ramCapacityKb,
+      });
       const cpu = wozniakSchematicChip("cpu", apple.schematicChipSeats);
       const mux = wozniakSchematicChip("mux", apple.schematicChipSeats);
       const ram = wozniakSchematicChip("ram", apple.schematicChipSeats);
@@ -857,7 +867,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "engelbart-mouse": {
-      const mouse = stepEngelbartMouse({});
+      const mouse = stepEngelbartMouse({
+        mouseSpeed: params?.mouseSpeed,
+        wheelRadius: params?.wheelRadius,
+        pulsesPerRev: params?.pulsesPerRev,
+      });
       const xWheel = engelbartSchematicWheel("x", {
         x: mouse.schematicXWheelX,
         y: mouse.schematicXWheelY,
@@ -1135,7 +1149,13 @@ function _renderHistoricalSchematic(
       );
     }
     case "bell-phone": {
-      const bell = stepBellTelephone({});
+      const bell = stepBellTelephone({
+        voiceAmplitude: params?.voiceAmplitude,
+        airGap: params?.airGap,
+        batteryVoltage: params?.batteryVoltage,
+        liquidConductivity: params?.liquidConductivity,
+        acousticFrequencyHz: params?.acousticFrequencyHz,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <ellipse
@@ -1194,7 +1214,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "lincoln-buoy": {
-      const lincoln = stepLincolnBuoy({});
+      const lincoln = stepLincolnBuoy({
+        inflationPct: params?.inflationPct,
+        weightTons: params?.weightTons,
+        shoalDepth: params?.shoalDepth,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path
@@ -1457,7 +1481,13 @@ function _renderHistoricalSchematic(
       );
     }
     case "morse-telegraph": {
-      const morse = stepMorseTelegraph({});
+      const morse = stepMorseTelegraph({
+        currentMa: params?.currentMa,
+        wireTurns: params?.wireTurns,
+        lineVoltageV: params?.lineVoltageV,
+        lineLengthMiles: params?.lineLengthMiles,
+        wpmSpeed: params?.wpmSpeed,
+      });
       const key = morseSchematicInstrument("key", {
         x: morse.schematicKeyX,
         y: morse.schematicKeyY,
@@ -1704,7 +1734,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "einstein-refrigerator": {
-      const frige = stepEinsteinRefrigerator({});
+      const frige = stepEinsteinRefrigerator({
+        heatInput: params?.heatInput,
+        totalPressure: params?.totalPressure,
+        ammoniaRatio: params?.ammoniaRatio ?? params?.auxiliaryGasRatio,
+      });
       const generator = einsteinSchematicVessel(
         "generator",
         frige.schematicVesselLeftX,
@@ -2244,7 +2278,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "mergenthaler-linotype": {
-      const lino = stepMergenthalerLinotype({});
+      const lino = stepMergenthalerLinotype({
+        matrixRatePerMin: params?.matrixRate,
+        spacebandWedgeMm: params?.spacebandWedge,
+        potTempC: params?.potTemp,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <polygon
@@ -2319,7 +2357,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "maxim-machine-gun": {
-      const maxim = stepMaximMachineGun({});
+      const maxim = stepMaximMachineGun({
+        firingRateRpm: params?.firingRate ?? params?.fireRateRpm,
+        waterJacketLiters: params?.waterLevel,
+        recoilStrokeMm: params?.recoilStroke,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -2383,7 +2425,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "daimler-engine": {
-      const daimler = stepDaimlerEngine({});
+      const daimler = stepDaimlerEngine({
+        engineRpm: params?.engineRpm,
+        hotTubeTempC: params?.hotTubeTemp,
+        differentialSlipAngleDeg: params?.turnAngle,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -2446,7 +2492,12 @@ function _renderHistoricalSchematic(
       );
     }
     case "eastman-kodak": {
-      const kodak = FrankenSimEngine.stepEastmanKodak({});
+      const kodakShutterRaw = params?.shutterSpeed ?? 0.05;
+      const kodak = FrankenSimEngine.stepEastmanKodak({
+        shutterSpeedSec: kodakShutterRaw > 1 ? 1 / kodakShutterRaw : kodakShutterRaw,
+        apertureFNumber: params?.apertureStop,
+        subjectDistanceM: params?.subjectDist,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -2515,7 +2566,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "hollerith-tabulating": {
-      const hollerith = stepHollerithTabulating({});
+      const hollerith = stepHollerithTabulating({
+        cardsPerMin: params?.cardsPerMin,
+        supplyVoltageV: params?.batteryVolts,
+        activeRelays: params?.activeRelays,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -2610,7 +2665,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "reno-escalator": {
-      const reno = stepRenoEscalator({});
+      const reno = stepRenoEscalator({
+        passengerCount: params?.passengerCount,
+        inclineAngleDeg: params?.inclineAngle,
+        velocityMps: params?.beltSpeed,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <line
@@ -2759,7 +2818,12 @@ function _renderHistoricalSchematic(
       );
     }
     case "zeppelin-airship": {
-      const zep = stepZeppelinAirship({});
+      const zep = stepZeppelinAirship({
+        gasInflation: params?.gasInflation,
+        flightAlt: params?.flightAlt,
+        flightSpeedKnots: params?.flightSpeedKnots,
+        trimWeight: params?.trimWeight,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <ellipse
@@ -2820,6 +2884,186 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "de-forest-audion":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Glass Vacuum Bulb D */}
+          <circle
+            cx="180"
+            cy="140"
+            r="70"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#082f49"
+            fillOpacity="0.4"
+          />
+          <rect
+            x="160"
+            y="210"
+            width="40"
+            height="25"
+            stroke="#f59e0b"
+            fill="#b45309"
+            strokeWidth="1.5"
+          />
+          <text x="115" y="85" fill="#38bdf8" fontSize="10" fontFamily="monospace" stroke="none">
+            Bulb D
+          </text>
+
+          {/* Heated Filament Cathode F */}
+          <path d="M 150 170 L 155 125 L 160 170" stroke="#f59e0b" strokeWidth="2.5" />
+          <text x="135" y="195" fill="#facc15" fontSize="9" fontFamily="monospace" stroke="none">
+            F (Filament)
+          </text>
+
+          {/* Electrostatic Control Grid a */}
+          <line
+            x1="180"
+            y1="110"
+            x2="180"
+            y2="170"
+            stroke="#f43f5e"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
+          <text x="175" y="98" fill="#fb7185" fontSize="9" fontFamily="monospace" stroke="none">
+            a (Grid)
+          </text>
+
+          {/* Cold Plate Anode b */}
+          <rect
+            x="205"
+            y="110"
+            width="6"
+            height="60"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+          />
+          <text x="215" y="145" fill="#93c5fd" fontSize="9" fontFamily="monospace" stroke="none">
+            b (Plate)
+          </text>
+
+          {/* Grid Condenser C */}
+          <line x1="80" y1="140" x2="120" y2="140" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1="120" y1="130" x2="120" y2="150" stroke="#38bdf8" strokeWidth="2" />
+          <line x1="128" y1="130" x2="128" y2="150" stroke="#38bdf8" strokeWidth="2" />
+          <line x1="128" y1="140" x2="180" y2="140" stroke="#38bdf8" strokeWidth="1.5" />
+          <text x="118" y="122" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            Condenser C
+          </text>
+
+          {/* Plate Battery B & Telephone Receiver T */}
+          <path d="M 211 140 L 280 140 L 280 200 L 210 200" stroke="#38bdf8" strokeWidth="1.5" />
+          <rect
+            x="265"
+            y="160"
+            width="30"
+            height="20"
+            stroke="#38bdf8"
+            fill="#0369a1"
+            strokeWidth="1.5"
+          />
+          <text x="270" y="174" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            Tel T
+          </text>
+        </g>
+      );
+    case "hewitt-mercury-lamp":
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Outer Glass Discharge Envelope (Tilted) */}
+          <line
+            x1="70"
+            y1="180"
+            x2="330"
+            y2="120"
+            stroke="#38bdf8"
+            strokeWidth="16"
+            strokeLinecap="round"
+            opacity="0.3"
+          />
+          <line x1="70" y1="180" x2="330" y2="120" stroke="#38bdf8" strokeWidth="2" />
+
+          {/* Liquid Mercury Pool Cathode 1 */}
+          <circle cx="70" cy="180" r="14" fill="#0369a1" stroke="#38bdf8" strokeWidth="2" />
+          <circle cx="74" cy="178" r="3" fill="#ffffff" />
+          <text x="50" y="210" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            1 (Cathode)
+          </text>
+
+          {/* Solid Iron Anode 2 */}
+          <rect
+            x="325"
+            y="112"
+            width="10"
+            height="16"
+            fill="#0284c7"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+          />
+          <text x="325" y="102" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            2 (Anode)
+          </text>
+
+          {/* Condensing Globe 8 */}
+          <circle cx="345" cy="100" r="22" fill="#082f49" stroke="#38bdf8" strokeWidth="1.5" />
+          <text x="325" y="70" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            8 (Condenser)
+          </text>
+
+          {/* Plasma Column Streamer */}
+          <path
+            d="M 82 178 Q 200 150 320 122"
+            stroke="#22d3ee"
+            strokeWidth="4"
+            strokeDasharray="4 2"
+          />
+
+          {/* Ballast Inductor Choke */}
+          <path
+            d="M 70 200 C 70 240 120 240 120 220 C 120 240 170 240 170 220 C 170 240 220 240 220 220"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+          />
+          <text x="130" y="260" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            Ballast Inductor
+          </text>
+
+          {/* High-Voltage Starting Transformer T */}
+          <rect
+            x="250"
+            y="210"
+            width="50"
+            height="35"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            fill="#0369a1"
+            fillOpacity="0.2"
+          />
+          <line
+            x1="260"
+            y1="210"
+            x2="260"
+            y2="245"
+            stroke="#38bdf8"
+            strokeWidth="1"
+            strokeDasharray="2 2"
+          />
+          <line
+            x1="290"
+            y1="210"
+            x2="290"
+            y2="245"
+            stroke="#38bdf8"
+            strokeWidth="1"
+            strokeDasharray="2 2"
+          />
+          <text x="255" y="232" fill="#38bdf8" fontSize="9" fontFamily="monospace" stroke="none">
+            Starter T
+          </text>
+        </g>
+      );
     case "linde-air-liquefaction": {
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
@@ -2934,7 +3178,7 @@ function _renderHistoricalSchematic(
       );
     }
     case "whitney-cotton-gin": {
-      const gin = stepWhitneyCottonGin({});
+      const gin = stepWhitneyCottonGin({ crankRpm: params?.crankRpm });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Hopper Frame */}
@@ -3022,7 +3266,7 @@ function _renderHistoricalSchematic(
       );
     }
     case "mccormick-reaper": {
-      const reel = stepMcCormickReaper({});
+      const reel = stepMcCormickReaper({ forwardSpeedMph: params?.forwardSpeedMph });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <circle
@@ -3118,7 +3362,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "davenport-motor": {
-      const motor = stepDavenportMotor({});
+      const motor = stepDavenportMotor({
+        batteryVoltage: params?.batteryVoltage,
+        loadTorque: params?.loadTorque,
+      });
       const armature = davenportSchematicArmature(
         motor.schematicArmatureX,
         motor.schematicArmatureY,
@@ -3218,7 +3465,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "ericsson-propeller": {
-      const screw = stepEricssonPropeller({});
+      const screw = stepEricssonPropeller({
+        shaftRpm: params?.shaftRpm,
+        bladePitchAngleDeg: params?.bladePitchAngleDeg,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path d={screw.schematicSternD} stroke="#64748b" strokeWidth="3" />
@@ -3479,6 +3729,245 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "watt-rotary-engine": {
+      return (
+        <g stroke="#f59e0b" strokeWidth="1.5" fill="none">
+          {/* Masonry Pillar & Wall */}
+          <rect
+            x="30"
+            y="160"
+            width="80"
+            height="150"
+            stroke="#78716c"
+            strokeWidth="1.5"
+            fill="#1c1917"
+          />
+          <rect
+            x="175"
+            y="100"
+            width="40"
+            height="210"
+            stroke="#78716c"
+            strokeWidth="1.5"
+            fill="#292524"
+          />
+
+          {/* Steam Cylinder & Piston */}
+          <rect
+            x="45"
+            y="180"
+            width="50"
+            height="100"
+            stroke="#64748b"
+            strokeWidth="2"
+            fill="#1e293b"
+          />
+          <rect x="48" y="220" width="44" height="15" fill="#d97706" stroke="#b45309" />
+          <line x1="70" y1="220" x2="70" y2="100" stroke="#e2e8f0" strokeWidth="3" />
+
+          {/* Walking Beam */}
+          <polygon
+            points="65,95 195,85 305,95 305,105 195,115 65,105"
+            fill="#44403c"
+            stroke="#e7e5e4"
+            strokeWidth="1.5"
+          />
+          <circle cx="195" cy="100" r="7" fill="#f59e0b" />
+
+          {/* Connecting Spear / Rod */}
+          <line
+            x1="305"
+            y1="100"
+            x2="340"
+            y2="240"
+            stroke="#e2e8f0"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+
+          {/* Orbit Guideline Circle */}
+          <circle cx="310" cy="270" r="50" stroke="#d97706" strokeWidth="1" strokeDasharray="3,3" />
+
+          {/* Sun Gear (Keyed to Flywheel Shaft) */}
+          <circle
+            cx="310"
+            cy="270"
+            r="25"
+            fill="#b45309"
+            fillOpacity="0.4"
+            stroke="#f59e0b"
+            strokeWidth="2"
+          />
+          <circle cx="310" cy="270" r="8" fill="#1e293b" stroke="#f59e0b" />
+
+          {/* Planet Gear (Bolted to Rod) */}
+          <circle
+            cx="340"
+            cy="240"
+            r="25"
+            fill="#0284c7"
+            fillOpacity="0.4"
+            stroke="#38bdf8"
+            strokeWidth="2"
+          />
+          <circle cx="340" cy="240" r="6" fill="#1e293b" stroke="#38bdf8" />
+
+          {/* Radius Guide Link */}
+          <line
+            x1="310"
+            y1="270"
+            x2="340"
+            y2="240"
+            stroke="#64748b"
+            strokeWidth="2.5"
+            strokeDasharray="3,2"
+          />
+
+          {/* Flywheel Rim */}
+          <circle cx="310" cy="270" r="80" stroke="#64748b" strokeWidth="5" opacity="0.7" />
+          <line x1="230" y1="270" x2="390" y2="270" stroke="#475569" strokeWidth="1.5" />
+          <line x1="310" y1="190" x2="310" y2="350" stroke="#475569" strokeWidth="1.5" />
+
+          {/* Annotations */}
+          <text x="195" y="75" fill="#fef08a" fontSize="8" fontWeight="bold" textAnchor="middle">
+            WALKING BEAM (A)
+          </text>
+          <text x="70" y="300" fill="#38bdf8" fontSize="8" fontWeight="bold" textAnchor="middle">
+            CYLINDER (F)
+          </text>
+          <text x="365" y="170" fill="#e2e8f0" fontSize="8" fontWeight="bold">
+            CONNECTING ROD (B)
+          </text>
+          <text x="370" y="245" fill="#38bdf8" fontSize="8" fontWeight="bold">
+            PLANET (C)
+          </text>
+          <text x="270" y="275" fill="#f59e0b" fontSize="8" fontWeight="bold">
+            SUN (D)
+          </text>
+          <text x="310" y="365" fill="#a8a29e" fontSize="8" fontWeight="bold" textAnchor="middle">
+            FLYWHEEL &amp; SHAFT (E)
+          </text>
+        </g>
+      );
+    }
+    case "cort-puddling-rolling": {
+      return (
+        <g stroke="#f59e0b" strokeWidth="1.5" fill="none">
+          {/* Reverberatory Furnace Brickwork */}
+          <rect
+            x="25"
+            y="70"
+            width="170"
+            height="180"
+            stroke="#78716c"
+            strokeWidth="1.5"
+            fill="#1c1917"
+          />
+          {/* Coal Grate (A) */}
+          <rect x="35" y="160" width="45" height="70" stroke="#f59e0b" fill="#451a03" />
+          <line x1="35" y1="195" x2="80" y2="195" stroke="#f59e0b" strokeDasharray="3,3" />
+          <text x="57" y="185" fill="#fef08a" fontSize="7" fontWeight="bold" textAnchor="middle">
+            GRATE (A)
+          </text>
+
+          {/* Fire Bridge (B) */}
+          <rect x="85" y="150" width="15" height="80" fill="#292524" stroke="#a8a29e" />
+
+          {/* Concave Hearth (C) */}
+          <path d="M 105 170 Q 150 215 190 170" stroke="#ea580c" strokeWidth="2.5" fill="#7c2d12" />
+          <ellipse cx="148" cy="190" rx="16" ry="8" fill="#f59e0b" stroke="#78350f" />
+          <text x="148" y="160" fill="#fed7aa" fontSize="7" fontWeight="bold" textAnchor="middle">
+            HEARTH (C)
+          </text>
+
+          {/* Arched Roof (D) */}
+          <path
+            d="M 30 110 Q 110 75 190 110"
+            stroke="#f97316"
+            strokeWidth="2.5"
+            strokeDasharray="4,2"
+          />
+          <text x="110" y="98" fill="#fdba74" fontSize="7" textAnchor="middle">
+            ROOF (D)
+          </text>
+
+          {/* Chimney Stack (F) */}
+          <rect x="180" y="40" width="25" height="150" fill="#292524" stroke="#78716c" />
+          <text x="192" y="32" fill="#a8a29e" fontSize="7" textAnchor="middle">
+            STACK (F)
+          </text>
+
+          {/* ============================== */}
+          {/* Grooved Rolling Mill (Right)   */}
+          {/* ============================== */}
+          <rect
+            x="225"
+            y="70"
+            width="150"
+            height="180"
+            stroke="#78716c"
+            strokeWidth="1.5"
+            fill="#18181b"
+          />
+          {/* Left & Right Mill Stands (H) */}
+          <rect x="235" y="85" width="22" height="150" fill="#3f3f46" stroke="#a1a1aa" />
+          <rect x="340" y="85" width="22" height="150" fill="#3f3f46" stroke="#a1a1aa" />
+
+          {/* Rollers (J) */}
+          <rect
+            x="257"
+            y="110"
+            width="83"
+            height="38"
+            rx="4"
+            fill="#52525b"
+            stroke="#e4e4e7"
+            strokeWidth="1.2"
+          />
+          <rect
+            x="257"
+            y="162"
+            width="83"
+            height="38"
+            rx="4"
+            fill="#52525b"
+            stroke="#e4e4e7"
+            strokeWidth="1.2"
+          />
+
+          {/* Matching Grooves in Rollers */}
+          <rect x="268" y="120" width="14" height="28" fill="#18181b" stroke="#71717a" />
+          <rect x="268" y="162" width="14" height="28" fill="#18181b" stroke="#71717a" />
+          <rect x="290" y="125" width="10" height="23" fill="#18181b" stroke="#71717a" />
+          <rect x="290" y="162" width="10" height="23" fill="#18181b" stroke="#71717a" />
+          <circle cx="312" cy="148" r="7" fill="#18181b" stroke="#71717a" />
+          <circle cx="328" cy="148" r="4.5" fill="#18181b" stroke="#71717a" />
+
+          {/* Hot Wrought Iron Billet Traversing Pass 1 */}
+          <rect
+            x="264"
+            y="142"
+            width="22"
+            height="26"
+            rx="2"
+            fill="#ef4444"
+            stroke="#b91c1c"
+            strokeWidth="1.5"
+          />
+
+          {/* Adjustment Screws (K) */}
+          <line x1="246" y1="65" x2="246" y2="85" stroke="#e4e4e7" strokeWidth="2.5" />
+          <line x1="351" y1="65" x2="351" y2="85" stroke="#e4e4e7" strokeWidth="2.5" />
+
+          <text x="300" y="98" fill="#e4e4e7" fontSize="8" fontWeight="bold" textAnchor="middle">
+            GROOVED ROLLS (J)
+          </text>
+          <text x="300" y="225" fill="#f87171" fontSize="7" fontWeight="bold" textAnchor="middle">
+            SQUEEZE PASS (P = 45 MPa)
+          </text>
+        </g>
+      );
+    }
     case "hopkins-potash": {
       return (
         <g stroke="#10b981" strokeWidth="1.5" fill="none">
@@ -3535,7 +4024,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "corliss-engine": {
-      const corliss = stepCorlissEngine({});
+      const corliss = stepCorlissEngine({
+        steamPressurePsi: params?.steamPressurePsi,
+        engineRpm: params?.engineRpm,
+        cutoffPct: params?.cutoffPct,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -3624,7 +4117,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "gatling-gun": {
-      const gatling = stepGatlingGun({});
+      const gatling = stepGatlingGun({
+        crankRpm: params?.crankRpm,
+        barrelCount: params?.barrelCount,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* 6 Revolving Barrels */}
@@ -3707,7 +4203,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "nobel-dynamite": {
-      const nobel = stepNobelDynamite({});
+      const nobel = stepNobelDynamite({
+        ngConcentrationPct: params?.ngConcentrationPct ?? params?.ngConcentration,
+        capEnergyJoules: params?.capEnergyJoules,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Cartridge Cylinder */}
@@ -3840,7 +4339,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "hyatt-celluloid": {
-      const hyatt = stepHyattCelluloid({});
+      const hyatt = stepHyattCelluloid({
+        steamTempC: params?.steamTempC ?? params?.tempCelsius,
+        hydraulicPressureMpa: params?.hydraulicPressureMpa,
+      });
       const ram = hyattSchematicRam(
         hyatt.schematicRamX,
         hyatt.schematicRamY,
@@ -3929,7 +4431,7 @@ function _renderHistoricalSchematic(
       );
     }
     case "gramme-dynamo": {
-      const gramme = stepGrammeDynamo({});
+      const gramme = stepGrammeDynamo({ shaftRate: params?.shaftRate ?? params?.rotorRpm });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Continuous Ring Armature */}
@@ -4020,7 +4522,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "pasteur-fermentation": {
-      const pasteur = stepPasteurFermentation({});
+      const pasteur = stepPasteurFermentation({
+        pasteurizationTempC: params?.pasteurizationTempC,
+        holdTimeMin: params?.holdTimeMin,
+        wortTempC: params?.wortTempC ?? params?.tempCelsius,
+      });
       const yeast = pasteurSchematicYeast(
         pasteur.schematicYeastX,
         pasteur.schematicYeastY,
@@ -4074,7 +4580,11 @@ function _renderHistoricalSchematic(
       );
     }
     case "glidden-barbed-wire": {
-      const glidden = stepGliddenBarbedWire({});
+      const glidden = stepGliddenBarbedWire({
+        wireTensionN: params?.wireTensionN,
+        twistsPerFoot: params?.twistsPerFoot,
+        animalPushForceN: params?.animalPushForceN,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Twin Twisted Line Wires */}
@@ -4130,7 +4640,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "otto-engine": {
-      const otto = stepOttoEngine({});
+      const otto = stepOttoEngine({
+        engineRpm: params?.engineRpm,
+        compressionRatio: params?.compressionRatio,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <rect
@@ -4198,7 +4711,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "edison-phonograph": {
-      const phonograph = stepEdisonPhonograph({});
+      const phonograph = stepEdisonPhonograph({
+        mandrelRpm: params?.mandrelRpm ?? params?.cylinderRpm,
+        voiceVolumeDb: params?.voiceVolumeDb,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Threaded Mandrel & Cylinder */}
@@ -4274,7 +4790,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "pelton-water-wheel": {
-      const pelton = stepPeltonWheel({});
+      const pelton = stepPeltonWheel({
+        headMeters: params?.headMeters,
+        runnerRpm: params?.runnerRpm ?? params?.rotorRpm,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Wheel Rim */}
@@ -4338,6 +4857,890 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
+    case "fessenden-wireless": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Ground reference */}
+          <line x1="20" y1="260" x2="380" y2="260" stroke="#475569" strokeWidth="2" />
+          <line x1="50" y1="260" x2="40" y2="270" stroke="#334155" strokeWidth="1" />
+          <line x1="80" y1="260" x2="70" y2="270" stroke="#334155" strokeWidth="1" />
+          <line x1="320" y1="260" x2="310" y2="270" stroke="#334155" strokeWidth="1" />
+          <line x1="350" y1="260" x2="340" y2="270" stroke="#334155" strokeWidth="1" />
+
+          {/* High-Frequency Alternator (3) */}
+          <circle
+            cx="65"
+            cy="220"
+            r="22"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#1e293b"
+            fillOpacity="0.6"
+          />
+          <path d="M 52 220 Q 58 208 65 220 T 78 220" stroke="#38bdf8" strokeWidth="2" />
+          <text
+            x="65"
+            y="252"
+            fill="#94a3b8"
+            fontSize="8"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            3 (Dynamo)
+          </text>
+
+          {/* Series Tuning Loading Inductance (2) */}
+          <path
+            d="M 65 198 L 65 170 C 65 160 85 160 85 170 C 85 160 105 160 105 170 C 105 160 125 160 125 170 L 140 170 L 140 120"
+            stroke="#10b981"
+            strokeWidth="2"
+          />
+          <text
+            x="95"
+            y="152"
+            fill="#10b981"
+            fontSize="8"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            2 (Inductance)
+          </text>
+
+          {/* Cylindrical Cage Radiator (1) */}
+          <rect
+            x="125"
+            y="40"
+            width="30"
+            height="80"
+            rx="3"
+            stroke="#cbd5e1"
+            strokeWidth="1.5"
+            fill="#0f172a"
+            fillOpacity="0.5"
+          />
+          <line x1="130" y1="40" x2="130" y2="120" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1="140" y1="40" x2="140" y2="120" stroke="#38bdf8" strokeWidth="2" />
+          <line x1="150" y1="40" x2="150" y2="120" stroke="#38bdf8" strokeWidth="1.5" />
+          <text
+            x="140"
+            y="32"
+            fill="#38bdf8"
+            fontSize="9"
+            textAnchor="middle"
+            fontWeight="bold"
+            fontFamily="sans-serif"
+          >
+            1 (Cage Aerial)
+          </text>
+
+          {/* Concentric Continuous Electromagnetic Wavefronts */}
+          <path
+            d="M 170 50 A 50 50 0 0 1 170 110"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            strokeDasharray="3 3"
+            opacity="0.8"
+          />
+          <path
+            d="M 195 40 A 80 80 0 0 1 195 120"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            opacity="0.6"
+          />
+          <path
+            d="M 220 30 A 110 110 0 0 1 220 130"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            strokeDasharray="4 2"
+            opacity="0.4"
+          />
+
+          {/* Receiver Aerial (10) */}
+          <line x1="270" y1="40" x2="270" y2="160" stroke="#64748b" strokeWidth="2" />
+          <ellipse cx="270" cy="40" rx="14" ry="4" stroke="#38bdf8" strokeWidth="1.5" />
+          <text
+            x="270"
+            y="30"
+            fill="#94a3b8"
+            fontSize="8"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            10 (Aerial)
+          </text>
+
+          {/* Liquid Barretter / Electrolytic Detector (12) */}
+          <rect
+            x="290"
+            y="170"
+            width="24"
+            height="30"
+            rx="2"
+            stroke="#38bdf8"
+            strokeWidth="1.5"
+            fill="#0284c7"
+            fillOpacity="0.2"
+          />
+          <line x1="302" y1="160" x2="302" y2="185" stroke="#f1f5f9" strokeWidth="1" />
+          <circle cx="302" cy="185" r="2" fill="#fbbf24" />
+          <text
+            x="302"
+            y="212"
+            fill="#38bdf8"
+            fontSize="8"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            12 (Barretter)
+          </text>
+
+          {/* Telephone Earpiece Receiver (11/16) */}
+          <circle cx="350" cy="200" r="14" stroke="#f59e0b" strokeWidth="2" fill="#1e293b" />
+          <path d="M 368 190 A 15 15 0 0 1 368 210" stroke="#f59e0b" strokeWidth="1.5" />
+          <path
+            d="M 374 185 A 22 22 0 0 1 374 215"
+            stroke="#f59e0b"
+            strokeWidth="1.5"
+            opacity="0.6"
+          />
+          <text
+            x="350"
+            y="226"
+            fill="#f59e0b"
+            fontSize="8"
+            textAnchor="middle"
+            fontFamily="monospace"
+          >
+            16 (Telephone)
+          </text>
+
+          {/* Circuit connection loops */}
+          <path d="M 270 160 L 290 185" stroke="#94a3b8" strokeWidth="1" />
+          <path d="M 314 185 L 336 200" stroke="#94a3b8" strokeWidth="1" />
+          <path d="M 350 214 L 350 260" stroke="#94a3b8" strokeWidth="1" />
+        </g>
+      );
+    }
+
+    case "us-971501-haber-ammonia":
+    case "haber-ammonia": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Blueprint Grid / Baseline */}
+          <line
+            x1="20"
+            y1="260"
+            x2="380"
+            y2="260"
+            stroke="#334155"
+            strokeWidth="1"
+            strokeDasharray="4 4"
+          />
+
+          {/* 1. Feed Gas Compressor (Left) */}
+          <rect
+            x="30"
+            y="130"
+            width="55"
+            height="80"
+            rx="4"
+            stroke="#64748b"
+            strokeWidth="1.8"
+            fill="#1e293b"
+            fillOpacity="0.5"
+          />
+          <rect
+            x="42"
+            y="145"
+            width="30"
+            height="16"
+            fill="#334155"
+            stroke="#38bdf8"
+            strokeWidth="1.2"
+          />
+          <circle cx="57" cy="185" r="12" stroke="#94a3b8" strokeWidth="1.2" />
+          <text
+            x="57"
+            y="225"
+            fill="#94a3b8"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            1. Compressor
+          </text>
+
+          {/* 2. Counter-Current Heat Exchanger (Center-Left) */}
+          <rect
+            x="115"
+            y="90"
+            width="50"
+            height="150"
+            rx="6"
+            stroke="#94a3b8"
+            strokeWidth="1.8"
+            fill="#0f172a"
+            fillOpacity="0.6"
+          />
+          <line
+            x1="140"
+            y1="100"
+            x2="140"
+            y2="230"
+            stroke="#ef4444"
+            strokeWidth="2"
+            strokeDasharray="3 3"
+          />
+          <text
+            x="140"
+            y="80"
+            fill="#f87171"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            2. Heat Exchanger
+          </text>
+
+          {/* 3. High-Pressure Synthesis Reactor (Center-Right) */}
+          <rect
+            x="195"
+            y="60"
+            width="80"
+            height="185"
+            rx="12"
+            stroke="#cbd5e1"
+            strokeWidth="2.5"
+            fill="#1e293b"
+            fillOpacity="0.7"
+          />
+          {/* Top & Bottom Heavy Forged Flanges */}
+          <rect
+            x="190"
+            y="65"
+            width="90"
+            height="10"
+            rx="2"
+            fill="#475569"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+          <rect
+            x="190"
+            y="230"
+            width="90"
+            height="10"
+            rx="2"
+            fill="#475569"
+            stroke="#94a3b8"
+            strokeWidth="1"
+          />
+
+          {/* 4. Solid Osmium Catalyst Bed */}
+          <rect
+            x="207"
+            y="95"
+            width="56"
+            height="115"
+            rx="4"
+            stroke="#fbbf24"
+            strokeWidth="1.5"
+            fill="#78350f"
+            fillOpacity="0.6"
+          />
+          <text
+            x="235"
+            y="155"
+            fill="#fef08a"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            4. Catalyst Bed
+          </text>
+          <text
+            x="235"
+            y="50"
+            fill="#cbd5e1"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            3. Autoclave Reactor
+          </text>
+
+          {/* 5. Chiller Condenser & NH3 Separator (Right) */}
+          <rect
+            x="305"
+            y="100"
+            width="60"
+            height="140"
+            rx="8"
+            stroke="#38bdf8"
+            strokeWidth="1.8"
+            fill="#0c4a6e"
+            fillOpacity="0.5"
+          />
+          {/* Liquid Ammonia Pool */}
+          <rect x="309" y="195" width="52" height="40" rx="4" fill="#06b6d4" fillOpacity="0.8" />
+          <text
+            x="335"
+            y="90"
+            fill="#38bdf8"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            5. Condenser
+          </text>
+          <text
+            x="335"
+            y="218"
+            fill="#e0f2fe"
+            fontSize="7.5"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            6. Liquid NH₃
+          </text>
+
+          {/* High-Pressure Connecting Pipes */}
+          {/* 1 -> 2 */}
+          <path d="M 85 160 L 115 160" stroke="#38bdf8" strokeWidth="2" />
+          {/* 2 -> 3 */}
+          <path d="M 165 110 L 195 110" stroke="#f97316" strokeWidth="2" />
+          {/* 3 -> 2 */}
+          <path d="M 195 220 L 165 220" stroke="#ef4444" strokeWidth="2" />
+          {/* 2 -> 5 */}
+          <path d="M 140 240 L 140 250 L 335 250 L 335 240" stroke="#38bdf8" strokeWidth="2" />
+          {/* 5 -> 1 Recycle Loop */}
+          <path
+            d="M 335 100 L 335 40 L 57 40 L 57 130"
+            stroke="#10b981"
+            strokeWidth="1.8"
+            strokeDasharray="4 3"
+          />
+          <text
+            x="195"
+            y="34"
+            fill="#34d399"
+            fontSize="8"
+            fontFamily="sans-serif"
+            textAnchor="middle"
+          >
+            7. Gas Recirculation Loop (N₂ + 3H₂)
+          </text>
+        </g>
+      );
+    }
+
+    case "polaroid-film-stack":
+    case "polaroid-roller-spread": {
+      return (
+        <g stroke="#10b981" strokeWidth="1.5" fill="none">
+          {/* Outer composite envelope */}
+          <rect
+            x="40"
+            y="60"
+            width="320"
+            height="180"
+            stroke="#64748b"
+            strokeWidth="1.5"
+            strokeDasharray="4 4"
+            fill="#0f172a"
+          />
+
+          {/* Negative Emulsion Sheet (Top) */}
+          <rect
+            x="60"
+            y="80"
+            width="280"
+            height="32"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#1e293b"
+          />
+          <text
+            x="200"
+            y="100"
+            fill="#38bdf8"
+            fontSize="9"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            10. PHOTOSENSITIVE NEGATIVE EMULSION (AgBr)
+          </text>
+
+          {/* Metered Viscous Gel Layer (Center) */}
+          <rect
+            x="70"
+            y="120"
+            width="260"
+            height="16"
+            stroke="#10b981"
+            strokeWidth="1.5"
+            fill="rgba(16, 185, 129, 0.15)"
+          />
+          <text
+            x="200"
+            y="131"
+            fill="#34d399"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            40. VISCOUS REAGENT SPREAD (25 µm • pH 12.6)
+          </text>
+
+          {/* Positive Image-Receiving Sheet (Bottom) */}
+          <rect
+            x="60"
+            y="144"
+            width="280"
+            height="32"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#1e293b"
+          />
+          <text
+            x="200"
+            y="164"
+            fill="#fbbf24"
+            fontSize="9"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            20. IMAGE-RECEIVING POSITIVE SHEET (Ag₂S NUCLEI)
+          </text>
+
+          {/* Rupturable Reagent Pod (Left leading edge) */}
+          <rect
+            x="42"
+            y="110"
+            width="24"
+            height="36"
+            stroke="#f59e0b"
+            strokeWidth="2"
+            fill="#78350f"
+          />
+          <text
+            x="54"
+            y="132"
+            fill="#fef08a"
+            fontSize="7"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            30. POD
+          </text>
+
+          {/* Pressure Nip Rollers */}
+          <circle cx="80" cy="52" r="16" stroke="#cbd5e1" strokeWidth="2" fill="#334155" />
+          <circle cx="80" cy="208" r="16" stroke="#cbd5e1" strokeWidth="2" fill="#334155" />
+          <text
+            x="80"
+            y="56"
+            fill="#e2e8f0"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            50
+          </text>
+          <text
+            x="80"
+            y="212"
+            fill="#e2e8f0"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            52
+          </text>
+        </g>
+      );
+    }
+
+    case "kilby-ic-components":
+    case "kilby-ic-transistor":
+    case "kilby-ic-multivibrator": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Header Tab & Ground Substrate */}
+          <rect
+            x="30"
+            y="160"
+            width="340"
+            height="24"
+            stroke="#d4af37"
+            strokeWidth="2"
+            fill="#1e293b"
+          />
+          <text
+            x="200"
+            y="176"
+            fill="#fbbf24"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            GOLD-PLATED KOVAR HEADER TAB
+          </text>
+
+          {/* Monolithic Germanium/Silicon Die */}
+          <rect
+            x="50"
+            y="100"
+            width="300"
+            height="55"
+            stroke="#0ea5e9"
+            strokeWidth="2"
+            fill="#0f172a"
+          />
+          <text
+            x="200"
+            y="125"
+            fill="#38bdf8"
+            fontSize="10"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            SINGLE-CRYSTAL GERMANIUM WAFER (0.200" × 0.080")
+          </text>
+
+          {/* Mesa Transistor T1 */}
+          <rect
+            x="70"
+            y="70"
+            width="45"
+            height="28"
+            stroke="#34d399"
+            strokeWidth="1.5"
+            fill="#064e3b"
+          />
+          <circle cx="92" cy="78" r="4" fill="#fbbf24" stroke="#f59e0b" />
+          <text
+            x="92"
+            y="64"
+            fill="#34d399"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            T1 (Mesa)
+          </text>
+
+          {/* Resistor R1 */}
+          <rect
+            x="130"
+            y="75"
+            width="55"
+            height="23"
+            stroke="#818cf8"
+            strokeWidth="1.5"
+            fill="#1e1b4b"
+          />
+          <path d="M 135 86 L 145 86 L 155 86 L 165 86 L 175 86" stroke="#a5b4fc" strokeWidth="2" />
+          <text
+            x="157"
+            y="68"
+            fill="#818cf8"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            R1 (Bulk)
+          </text>
+
+          {/* P-N Capacitor C1 */}
+          <rect
+            x="205"
+            y="72"
+            width="40"
+            height="26"
+            stroke="#e879f9"
+            strokeWidth="1.5"
+            fill="#701a75"
+          />
+          <line
+            x1="225"
+            y1="72"
+            x2="225"
+            y2="98"
+            stroke="#f5d0fe"
+            strokeWidth="2"
+            strokeDasharray="2 2"
+          />
+          <text
+            x="225"
+            y="64"
+            fill="#e879f9"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            C1 (P-N)
+          </text>
+
+          {/* Mesa Transistor T2 */}
+          <rect
+            x="265"
+            y="70"
+            width="45"
+            height="28"
+            stroke="#34d399"
+            strokeWidth="1.5"
+            fill="#064e3b"
+          />
+          <circle cx="287" cy="78" r="4" fill="#fbbf24" stroke="#f59e0b" />
+          <text
+            x="287"
+            y="64"
+            fill="#34d399"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            T2 (Mesa)
+          </text>
+
+          {/* Gold Flying Wire Bonds */}
+          <path d="M 92 78 Q 110 40 135 86" stroke="#fbbf24" strokeWidth="2" />
+          <path d="M 175 86 Q 190 35 225 72" stroke="#fbbf24" strokeWidth="2" />
+          <path d="M 225 72 Q 245 40 287 78" stroke="#fbbf24" strokeWidth="2" />
+
+          {/* Terminal Contact Balls */}
+          <circle cx="92" cy="78" r="2.5" fill="#f59e0b" />
+          <circle cx="135" cy="86" r="2.5" fill="#f59e0b" />
+          <circle cx="175" cy="86" r="2.5" fill="#f59e0b" />
+          <circle cx="225" cy="72" r="2.5" fill="#f59e0b" />
+          <circle cx="287" cy="78" r="2.5" fill="#f59e0b" />
+
+          {/* Header Contact Pins */}
+          <line x1="80" y1="184" x2="80" y2="225" stroke="#94a3b8" strokeWidth="3" />
+          <line x1="160" y1="184" x2="160" y2="225" stroke="#94a3b8" strokeWidth="3" />
+          <line x1="240" y1="184" x2="240" y2="225" stroke="#94a3b8" strokeWidth="3" />
+          <line x1="320" y1="184" x2="320" y2="225" stroke="#94a3b8" strokeWidth="3" />
+        </g>
+      );
+    }
+
+    case "townes-laser-system":
+    case "townes-laser-cavity":
+    case "townes-laser-energy": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Base Rail */}
+          <line x1="30" y1="230" x2="370" y2="230" stroke="#475569" strokeWidth="3" />
+
+          {/* High Reflector Mirror 21 */}
+          <rect
+            x="50"
+            y="80"
+            width="12"
+            height="120"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#e2e8f0"
+          />
+          <text
+            x="56"
+            y="70"
+            fill="#94a3b8"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            21: R1
+          </text>
+
+          {/* Active Medium Discharge Tube 40 */}
+          <rect
+            x="75"
+            y="105"
+            width="170"
+            height="70"
+            stroke="#64748b"
+            strokeWidth="1.5"
+            fill="#0f172a"
+            fillOpacity="0.8"
+          />
+
+          {/* Helical Pumping Flashlamp 41 */}
+          <path
+            d="M 85 105 Q 95 90 105 105 Q 115 120 125 105 Q 135 90 145 105 Q 155 120 165 105 Q 175 90 185 105 Q 195 120 205 105 Q 215 90 225 105 Q 235 120 240 105"
+            stroke="#fbbf24"
+            strokeWidth="3"
+            fill="none"
+          />
+          <text
+            x="160"
+            y="95"
+            fill="#facc15"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            41: PUMP FLASHLAMP
+          </text>
+
+          {/* Output Coupler Mirror 22 */}
+          <rect
+            x="255"
+            y="80"
+            width="12"
+            height="120"
+            stroke="#38bdf8"
+            strokeWidth="2"
+            fill="#94a3b8"
+            fillOpacity="0.7"
+          />
+          <text
+            x="261"
+            y="70"
+            fill="#94a3b8"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            22: R2
+          </text>
+
+          {/* Intra-Cavity Laser Wave & Extracted Beam 12 */}
+          <line x1="62" y1="140" x2="255" y2="140" stroke="#38bdf8" strokeWidth="4" />
+          <line x1="267" y1="140" x2="330" y2="140" stroke="#38bdf8" strokeWidth="5" />
+          <text
+            x="295"
+            y="130"
+            fill="#38bdf8"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            12: BEAM
+          </text>
+
+          {/* Receiver / Detector 13 */}
+          <rect
+            x="330"
+            y="110"
+            width="35"
+            height="60"
+            stroke="#a855f7"
+            strokeWidth="2"
+            fill="#1e1b4b"
+          />
+          <circle cx="330" cy="140" r="10" stroke="#d8b4fe" fill="#7e22ce" />
+          <text
+            x="347"
+            y="100"
+            fill="#c084fc"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            13: DETECTOR
+          </text>
+
+          {/* Open Side Boundaries Annotation */}
+          <text
+            x="160"
+            y="195"
+            fill="#64748b"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            20: OPEN SIDES (OFF-AXIS LOSS)
+          </text>
+        </g>
+      );
+    }
+
+    case "carlson-electrophotography":
+    case "carlson-electrophotography-charging":
+    case "carlson-electrophotography-rotary": {
+      return (
+        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          {/* Photoconductive Drum 25 */}
+          <circle
+            cx="180"
+            cy="150"
+            r="65"
+            stroke="#818cf8"
+            strokeWidth="3"
+            fill="#1e293b"
+            fillOpacity="0.6"
+          />
+          <circle cx="180" cy="150" r="50" stroke="#64748b" strokeWidth="1.5" fill="#0f172a" />
+          <text
+            x="180"
+            y="154"
+            fill="#c7d2fe"
+            fontSize="9"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            DRUM 25
+          </text>
+
+          {/* Corona Station 26 */}
+          <circle cx="125" cy="95" r="7" stroke="#f59e0b" fill="#fbbf24" />
+          <line x1="125" y1="95" x2="140" y2="110" stroke="#fde047" strokeDasharray="2 2" />
+          <text x="100" y="82" fill="#facc15" fontSize="8" fontFamily="monospace">
+            26: CORONA
+          </text>
+
+          {/* Optical Exposure Slit 27 */}
+          <rect x="160" y="55" width="40" height="14" stroke="#38bdf8" fill="#0284c7" />
+          <path
+            d="M 165 69 L 175 85 L 185 85 L 195 69 Z"
+            fill="#38bdf8"
+            fillOpacity="0.3"
+            stroke="none"
+          />
+          <text
+            x="180"
+            y="48"
+            fill="#38bdf8"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            27: OPTICS
+          </text>
+
+          {/* Developer Chamber 28 */}
+          <rect x="245" y="115" width="35" height="35" stroke="#6366f1" fill="#1e1b4b" />
+          <circle cx="262" cy="132" r="8" stroke="#a855f7" />
+          <text x="245" y="105" fill="#c084fc" fontSize="8" fontFamily="monospace">
+            28: TONER
+          </text>
+
+          {/* Paper Web & Transfer Roll 29 */}
+          <line x1="100" y1="215" x2="340" y2="215" stroke="#f8fafc" strokeWidth="2.5" />
+          <circle cx="180" cy="230" r="14" stroke="#94a3b8" fill="#334155" />
+          <text x="140" y="258" fill="#f1f5f9" fontSize="8" fontFamily="monospace">
+            29: TRANSFER
+          </text>
+
+          {/* Thermal Fuser Rollers */}
+          <circle cx="310" cy="202" r="12" stroke="#f87171" fill="#dc2626" />
+          <circle cx="310" cy="228" r="12" stroke="#64748b" fill="#334155" />
+          <text
+            x="310"
+            y="255"
+            fill="#f87171"
+            fontSize="8"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            FUSER (185°C)
+          </text>
+        </g>
+      );
+    }
+
     case "baekeland-bakelite": {
       return (
         <g stroke="#d97706" strokeWidth="1.5" fill="none">
@@ -4402,7 +5805,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "delaval-separator": {
-      const delaval = stepDeLavalSeparator({});
+      const delaval = stepDeLavalSeparator({
+        bowlRpm: params?.bowlRpm ?? params?.rotorRpm,
+        rawMilkFlowLph: params?.rawMilkFlowLph,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Conical Centrifuge Bowl */}
@@ -4467,7 +5873,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "thomson-welding": {
-      const weld = stepThomsonWelding({});
+      const weld = stepThomsonWelding({
+        weldCurrentAmps: params?.weldCurrentAmps ?? params?.currentAmperes,
+        clampPressureMpa: params?.clampPressureMpa,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Single-Turn Secondary Bar */}
@@ -4539,7 +5948,10 @@ function _renderHistoricalSchematic(
       );
     }
     case "parsons-turbine": {
-      const parsons = stepParsonsTurbine({});
+      const parsons = stepParsonsTurbine({
+        rotorRpm: params?.rotorRpm,
+        inletPressurePsi: params?.inletPressurePsi,
+      });
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           {/* Stepped Rotor Core */}

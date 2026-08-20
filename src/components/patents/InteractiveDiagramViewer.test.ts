@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { allPatents } from "@/data/patents";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 
@@ -68,5 +70,52 @@ describe("InteractiveDiagramViewer React rendering", () => {
       }
     }
     expect(renderedCount).toBeGreaterThanOrEqual(46);
+  });
+
+  test("schematic kernels step live physics-bus sliders instead of empty defaults", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    for (const emptyStep of [
+      "stepEdisonBulb({})",
+      "stepWozniakApple({})",
+      "stepEngelbartMouse({})",
+      "stepBellTelephone({})",
+      "stepLincolnBuoy({})",
+      "stepMorseTelegraph({})",
+      "stepEinsteinRefrigerator({})",
+      "stepMergenthalerLinotype({})",
+      "stepMaximMachineGun({})",
+      "stepDaimlerEngine({})",
+      "stepEastmanKodak({})",
+      "stepHollerithTabulating({})",
+      "stepRenoEscalator({})",
+      "stepZeppelinAirship({})",
+      "stepWhitneyCottonGin({})",
+      "stepMcCormickReaper({})",
+      "stepDavenportMotor({})",
+      "stepEricssonPropeller({})",
+      "stepCorlissEngine({})",
+      "stepGatlingGun({})",
+      "stepNobelDynamite({})",
+      "stepHyattCelluloid({})",
+      "stepGrammeDynamo({})",
+      "stepPasteurFermentation({})",
+      "stepGliddenBarbedWire({})",
+      "stepOttoEngine({})",
+      "stepEdisonPhonograph({})",
+      "stepPeltonWheel({})",
+      "stepDeLavalSeparator({})",
+      "stepThomsonWelding({})",
+      "stepParsonsTurbine({})",
+    ]) {
+      expect(source).not.toContain(emptyStep);
+    }
+    expect(source).toContain("voltage: params?.voltage");
+    expect(source).toContain("filamentTempK");
+    expect(source).toContain("lineVoltageV: params?.lineVoltageV");
+    expect(source).toContain("matrixRatePerMin: params?.matrixRate");
+    expect(source).toContain("engineRpm: params?.engineRpm");
   });
 });
