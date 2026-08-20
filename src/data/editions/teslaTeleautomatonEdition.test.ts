@@ -46,6 +46,18 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
+
+    const figureNineReferences = references.filter((reference) => reference.text === "Fig. 9");
+    expect(figureNineReferences.length).toBeGreaterThan(0);
+    for (const reference of figureNineReferences) {
+      expect(reference.figurePreviews).toContainEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-613809-tesla-teleautomaton/fig-9-source-crop-v2.png",
+          width: 1300,
+          height: 1600,
+        }),
+      );
+    }
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {

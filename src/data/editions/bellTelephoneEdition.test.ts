@@ -106,6 +106,18 @@ describe("US 174,465 manual source edition", () => {
         }),
       );
     }
+
+    const fig2References = figureReferences.filter((reference) => reference.text === "Fig. 2");
+    expect(fig2References.length).toBeGreaterThan(0);
+    for (const reference of fig2References) {
+      expect(reference.figurePreviews).toContainEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-174465-bell-telephone/fig-2-source-crop-v2.png",
+          width: 1200,
+          height: 180,
+        }),
+      );
+    }
   });
 
   test("removes the invented liquid-transmitter reading from the public record", () => {

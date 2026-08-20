@@ -90,6 +90,14 @@ describe("US 223,898 manual source edition", () => {
         ),
       ).toBe(true);
     }
+    const figureOnePreview = figureReferences
+      .flatMap((reference) => reference.figurePreviews ?? [])
+      .find((preview) => preview.alt.includes("Fig. 1"));
+    expect(figureOnePreview).toMatchObject({
+      src: "/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v4.png",
+      width: 600,
+      height: 900,
+    });
     for (const reference of figureReferences) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);

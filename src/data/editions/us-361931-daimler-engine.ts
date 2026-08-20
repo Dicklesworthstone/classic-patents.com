@@ -14,10 +14,10 @@ const FIGURES = {
     height: 1570,
   },
   2: {
-    src: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v1.png",
+    src: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png",
     alt: "Fig. 2 from the US 361,931 source facsimile: cross-section of the vessel installation.",
-    width: 1260,
-    height: 900,
+    width: 1050,
+    height: 700,
   },
   3: {
     src: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",

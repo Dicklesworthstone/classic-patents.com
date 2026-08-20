@@ -49,7 +49,7 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
   test("maps every cited figure to its own source-faithful crop, never a whole drawing sheet", () => {
     const expectedCropByFigure = {
       1: "/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png",
-      2: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v1.png",
+      2: "/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png",
       3: "/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png",
       4: "/patents/figures/us-361931-daimler-engine/fig-4-source-crop-v1.png",
       "4a": "/patents/figures/us-361931-daimler-engine/fig-4a-source-crop-v1.png",

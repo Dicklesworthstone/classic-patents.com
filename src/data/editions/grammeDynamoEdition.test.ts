@@ -49,6 +49,7 @@ describe("grammeDynamoArchivalEdition", () => {
       expect(publicText).toContain(figure);
     }
     const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
+    expectedCropFiles[2] = "fig-3-source-crop-v2.png";
     expectedCropFiles[6] = "fig-7-source-crop.png";
     for (const cropFile of expectedCropFiles) {
       expect(publicText).toContain(`/patents/figures/us-120057-gramme-dynamo/${cropFile}`);

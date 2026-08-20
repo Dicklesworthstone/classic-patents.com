@@ -78,10 +78,10 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 620,
   },
   10: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-10-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-10-source-crop-v2.png",
     alt: "US 347,140, Fig. 10: two rectangular bars prepared for welding.",
-    width: 560,
-    height: 450,
+    width: 480,
+    height: 260,
   },
   11: {
     src: "/patents/figures/us-347140-thomson-welding/figure-11-source-crop-v1.png",

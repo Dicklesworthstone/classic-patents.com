@@ -26,7 +26,7 @@ const crop = (number: number, width: number, height: number, revision = "-v3") =
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 900, 1450),
+  "Fig. 1": crop(1, 600, 900, "-v4"),
   "Fig. 2": crop(2, 430, 1450, "-v6"),
   "Fig. 3": crop(3, 650, 900),
 } as const;

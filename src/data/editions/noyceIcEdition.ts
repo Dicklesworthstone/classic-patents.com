@@ -27,7 +27,7 @@ const crop = (number: number, width: number, height: number, version: "v1" | "v2
 const FIGURES = {
   "Fig. 1": crop(1, 820, 760),
   "Fig. 2": crop(2, 880, 470),
-  "Fig. 3": crop(3, 920, 620),
+  "Fig. 3": crop(3, 1300, 680, "v2"),
   "Fig. 4": crop(4, 1800, 650, "v2"),
   "Fig. 5": crop(5, 920, 440),
   "Fig. 6": crop(6, 780, 600),

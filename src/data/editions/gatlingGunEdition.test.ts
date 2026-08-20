@@ -57,6 +57,27 @@ describe("gatlingGunArchivalEdition", () => {
         return (preview?.width ?? 0) > 0 && (preview?.height ?? 0) > 0;
       }),
     ).toBe(true);
+    expect(references[0]?.figurePreviews).toContainEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-36836-gatling-gun-fig-1-preview-v2.png",
+        width: 590,
+        height: 1120,
+      }),
+    );
+    expect(references[5]?.figurePreviews).toContainEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-36836-gatling-gun-fig-6-preview-v2.png",
+        width: 300,
+        height: 400,
+      }),
+    );
+    expect(references[6]?.figurePreviews).toContainEqual(
+      expect.objectContaining({
+        src: "/patents/figures/us-36836-gatling-gun-fig-7-preview-v2.png",
+        width: 260,
+        height: 280,
+      }),
+    );
   });
 
   test("uses manually declared preview records without scan-sheet framing", () => {

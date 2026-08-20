@@ -92,6 +92,12 @@ describe("coltRevolverArchivalEdition", () => {
 
   test("makes every source drawing citation a semantic reference with a local crop", () => {
     const bareDrawingCitation = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+|(?:section|division)\s+\d+)\b/i;
+    const sourcePreviewByDrawing = {
+      "division-2": "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
+      "division-3": "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png",
+      "division-4": "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
+      "plate-2": "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png",
+    } as const;
 
     for (const block of coltRevolverArchivalEdition.blocks) {
       if (!("inlines" in block)) continue;
@@ -102,6 +108,13 @@ describe("coltRevolverArchivalEdition", () => {
         }
         if (inline.kind === "reference" && inline.referenceType === "figure") {
           expect(inline.figurePreviews?.length).toBeGreaterThan(0);
+          const drawing = inline.href.match(/^#(division-[234]|plate-2)-drawing$/)?.[1];
+          expect(drawing).toBeDefined();
+          if (!drawing) continue;
+          const expectedPreview =
+            sourcePreviewByDrawing[drawing as keyof typeof sourcePreviewByDrawing];
+          expect(inline.figurePreviews).toHaveLength(1);
+          expect(inline.figurePreviews?.[0]?.src).toBe(expectedPreview);
           for (const preview of inline.figurePreviews ?? []) {
             expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
           }
@@ -109,9 +122,8 @@ describe("coltRevolverArchivalEdition", () => {
       }
     }
 
-    for (let number = 1; number <= 9; number += 1) {
-      const sourceCrop = `/patents/figures/us-x9430-colt-revolver/fig-${number}-source-crop-v1.png`;
-      expect(existsSync(resolve(process.cwd(), "public", sourceCrop.slice(1)))).toBe(true);
+    for (const [drawing, sourcePreview] of Object.entries(sourcePreviewByDrawing)) {
+      expect(existsSync(resolve(process.cwd(), "public", sourcePreview.slice(1)))).toBe(true);
       expect(
         coltRevolverArchivalEdition.blocks.some(
           (block) =>
@@ -120,8 +132,8 @@ describe("coltRevolverArchivalEdition", () => {
               (inline) =>
                 inline.kind === "reference" &&
                 inline.referenceType === "figure" &&
-                inline.text === `Figure ${number}` &&
-                inline.figurePreviews?.some((preview) => preview.src === sourceCrop),
+                inline.href === `#${drawing}-drawing` &&
+                inline.figurePreviews?.[0]?.src === sourcePreview,
             ),
         ),
       ).toBe(true);

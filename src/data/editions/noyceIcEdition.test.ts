@@ -152,6 +152,16 @@ describe("US 2,981,877 manual source edition", () => {
       width: 1800,
       height: 650,
     });
+    const figureThreePreviews = figures.flatMap(
+      (reference) =>
+        reference.figurePreviews?.filter((preview) => preview.alt.includes("Fig. 3")) ?? [],
+    );
+    expect(figureThreePreviews).toContainEqual({
+      src: "/patents/figures/us-2981877-noyce-ic/fig-3-source-crop-v2.png",
+      alt: "Source-facsimile crop of Fig. 3 from US 2,981,877.",
+      width: 1300,
+      height: 680,
+    });
   });
 
   test("uses explicitly authored canonical drawing records", () => {

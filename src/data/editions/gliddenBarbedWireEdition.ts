@@ -26,7 +26,12 @@ const crop = (number: number, width: number, height: number) => ({
 
 const FIGURES = {
   "Fig. 1": crop(1, 700, 1470),
-  "Fig. 2": crop(2, 560, 500),
+  "Fig. 2": {
+    src: "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
+    alt: "Source-facsimile crop of Fig. 2 from US 157,124.",
+    width: 350,
+    height: 190,
+  },
   "Fig. 3": crop(3, 700, 800),
 } as const;
 

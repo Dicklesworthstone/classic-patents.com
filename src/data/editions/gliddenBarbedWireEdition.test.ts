@@ -97,6 +97,15 @@ describe("US 157,124 manual source edition", () => {
         ),
       ).toBe(true);
     }
+    expect(
+      figureReferences
+        .flatMap((reference) => reference.figurePreviews ?? [])
+        .find((preview) => preview.alt.includes("Fig. 2")),
+    ).toMatchObject({
+      src: "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
+      width: 350,
+      height: 190,
+    });
     for (const reference of figureReferences) {
       for (const preview of reference.figurePreviews ?? []) {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);

@@ -56,7 +56,7 @@ describe("ericssonPropellerArchivalEdition", () => {
       "/patents/figures/us-588-ericsson-propeller/fig-3-source-crop-v1.png",
       "/patents/figures/us-588-ericsson-propeller/fig-4-source-crop-v1.png",
       "/patents/figures/us-588-ericsson-propeller/fig-5-source-crop-v1.png",
-      "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v1.png",
+      "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v2.png",
     ];
     const sourceTerms = ericssonPropellerArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block

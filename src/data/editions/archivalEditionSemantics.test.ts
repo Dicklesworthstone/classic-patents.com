@@ -11,7 +11,7 @@ import { isArchivalEditionExplicitlyWithheld } from "./publicationApproval";
  */
 const BARE_DRAWING_REFERENCE = /\b(?:(?:fig(?:s)?\.?|figure)\s+\d+[a-z′′]*|division\s+\d+)\b/i;
 const FIGURE_GROUP_REFERENCE =
-  /\b(?:figs\.?|figures)\s+\d+[a-z′′]*(?:\s*(?:,|and|to|through)\s*\d+[a-z′′]*)+/i;
+  /\b(?:figs\.?|figures)\s+\d+[a-z′′]*(?:(?:\s*,\s*(?:and\s+)?|\s+(?:and|to|through)\s+|\s*[-–]\s*)\d+[a-z′′]*)+/i;
 const FIGURE_LABEL = /\d+[a-z′′]*/gi;
 const NUMERIC_FIGURE_RANGE = /(\d+)\s*(?:to|through|[-–])\s*(\d+)/i;
 const SINGLE_FIGURE_REFERENCE = /^fig(?:ure)?\.?\s*(\d+[a-z′′]*)\.?$/i;
@@ -59,17 +59,27 @@ function previewExplicitlyIdentifiesFigure(preview: { src: string; alt: string }
 }
 
 function citedFigureLabels(citation: string): string[] {
-  const labels = (citation.match(FIGURE_LABEL) ?? []).map((entry) => entry.toLowerCase());
+  const labels = new Set((citation.match(FIGURE_LABEL) ?? []).map((entry) => entry.toLowerCase()));
   const range = citation.match(NUMERIC_FIGURE_RANGE);
-  if (range === null) return labels;
+  if (range === null) return [...labels];
 
   const first = Number(range[1]);
   const last = Number(range[2]);
-  if (last < first || last - first > 50) return labels;
-  return Array.from({ length: last - first + 1 }, (_, offset) => String(first + offset));
+  if (last < first || last - first > 50) return [...labels];
+  for (let figure = first; figure <= last; figure += 1) {
+    labels.add(String(figure));
+  }
+  return [...labels];
 }
 
 describe("manual archival-edition semantics", () => {
+  test("parses every figure in comma-separated lists and numeric ranges", () => {
+    expect("Figs. 2, 3, and 7".match(FIGURE_GROUP_REFERENCE)?.[0]).toBe("Figs. 2, 3, and 7");
+    expect(citedFigureLabels("Figs. 2, 3, and 7")).toEqual(["2", "3", "7"]);
+    expect("Figs. 4-10".match(FIGURE_GROUP_REFERENCE)?.[0]).toBe("Figs. 4-10");
+    expect(citedFigureLabels("Figs. 4-10")).toEqual(["4", "10", "5", "6", "7", "8", "9"]);
+  });
+
   test("does not leave source drawing references as inert prose", () => {
     const violations: string[] = [];
 

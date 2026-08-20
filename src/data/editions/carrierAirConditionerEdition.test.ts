@@ -41,6 +41,18 @@ describe("carrierAirConditionerArchivalEdition", () => {
       expect(preview).toBeDefined();
       expect(existsSync(resolve(process.cwd(), "public", preview?.src.slice(1) ?? ""))).toBe(true);
     }
+
+    const figureTwoReferences = references.filter((reference) => reference.text === "Fig. 2");
+    expect(figureTwoReferences.length).toBeGreaterThan(0);
+    for (const reference of figureTwoReferences) {
+      expect(reference.figurePreviews).toContainEqual(
+        expect.objectContaining({
+          src: "/patents/figures/us-808897-carrier-air-conditioner/fig-2-source-crop-v2.png",
+          width: 480,
+          height: 610,
+        }),
+      );
+    }
   });
 
   test("keeps the archival face and canonical drawings explicitly authored", () => {

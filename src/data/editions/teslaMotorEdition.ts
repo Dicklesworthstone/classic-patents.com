@@ -28,7 +28,7 @@ const crop = (file: string, width: number, height: number, label: string) => ({
 // deliberately present the constituent figures rather than a generic sheet crop.
 const FIGURE_1 = crop("fig-1-source-crop-v2", 700, 230, "Fig. 1");
 const FIGURE_2 = crop("fig-2-source-crop-v2", 700, 230, "Fig. 2");
-const FIGURE_3 = crop("fig-3-source-crop-v2", 700, 230, "Fig. 3");
+const FIGURE_3 = crop("fig-3-source-crop-v3", 650, 210, "Fig. 3");
 const FIGURE_4 = crop("fig-4-source-crop-v2", 700, 230, "Fig. 4");
 const FIGURE_5 = crop("fig-5-source-crop-v2", 700, 230, "Fig. 5");
 const FIGURE_6 = crop("fig-6-source-crop-v2", 700, 200, "Fig. 6");

@@ -5,10 +5,10 @@ const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", 
 /** Measured with ImageMagick identify against the committed local PNG crops. */
 const previews: Record<number, { src: string; alt: string; width: number; height: number }> = {
   1: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-1-preview.png",
+    src: "/patents/figures/us-36836-gatling-gun-fig-1-preview-v2.png",
     alt: "Figure 1 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 560,
-    height: 830,
+    width: 590,
+    height: 1120,
   },
   2: {
     src: "/patents/figures/us-36836-gatling-gun-fig-2-preview.png",
@@ -35,16 +35,16 @@ const previews: Record<number, { src: string; alt: string; width: number; height
     height: 290,
   },
   6: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-6-preview.png",
+    src: "/patents/figures/us-36836-gatling-gun-fig-6-preview-v2.png",
     alt: "Figure 6 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 180,
+    width: 300,
     height: 400,
   },
   7: {
-    src: "/patents/figures/us-36836-gatling-gun-fig-7-preview.png",
+    src: "/patents/figures/us-36836-gatling-gun-fig-7-preview-v2.png",
     alt: "Figure 7 from US 36,836, Improvement in Revolving Battery-Guns.",
-    width: 180,
-    height: 170,
+    width: 260,
+    height: 280,
   },
 };
 

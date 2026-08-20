@@ -60,6 +60,13 @@ describe("pasteurFermentationArchivalEdition", () => {
         : [],
     );
     expect(figureReferences).toHaveLength(4);
+    const figureOnePreview = figureReferences.find((reference) => reference.text === "Fig. 1")
+      ?.figurePreviews?.[0];
+    expect(figureOnePreview).toMatchObject({
+      src: "/patents/figures/us-135245-pasteur-fermentation/figure-1-v2.png",
+      width: 1250,
+      height: 920,
+    });
     for (const reference of figureReferences) {
       expect(reference.figurePreviews?.[0]?.src).toStartWith(
         "/patents/figures/us-135245-pasteur-fermentation/",

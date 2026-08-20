@@ -26,7 +26,7 @@ const crop = (number: number, width: number, height: number, revision = "") => (
 
 const FIGURES = {
   "Fig. 1": crop(1, 980, 210),
-  "Fig. 2": crop(2, 980, 185),
+  "Fig. 2": crop(2, 1200, 180, "-v2"),
   // The original v1 selection leaked the adjacent “Fig. 4” label into the
   // Fig. 3 preview. This tighter source-sheet crop contains only Fig. 3.
   "Fig. 3": crop(3, 1200, 250, "-v2"),

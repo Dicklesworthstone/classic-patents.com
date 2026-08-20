@@ -14,13 +14,13 @@ const figure = (number: 1 | 2): CuratedSpecificationInline => ({
   label: `Open the source-faithful Fig. ${number} crop from US 135,245`,
   figurePreviews: [
     {
-      src: `/patents/figures/us-135245-pasteur-fermentation/figure-${number}.png`,
+      src: `/patents/figures/us-135245-pasteur-fermentation/figure-${number}${number === 1 ? "-v2" : ""}.png`,
       alt:
         number === 1
           ? "Fig. 1 from US 135,245: three wort vessels, water-spray piping, carbonic-acid generator, and drainage."
           : "Fig. 2 from US 135,245: a modified vessel with removable top and water-spray cooling.",
-      width: number === 1 ? 1392 : 700,
-      height: number === 1 ? 1210 : 720,
+      width: number === 1 ? 1250 : 700,
+      height: number === 1 ? 920 : 720,
     },
   ],
 });

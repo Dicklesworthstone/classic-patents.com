@@ -28,10 +28,10 @@ const FIGURES = {
     height: 1320,
   },
   2: {
-    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-2-source-crop-v1.png",
+    src: "/patents/figures/us-808897-carrier-air-conditioner/fig-2-source-crop-v2.png",
     alt: "US 808,897 Fig. 2: enlarged horizontal section through the separating device.",
-    width: 900,
-    height: 1000,
+    width: 480,
+    height: 610,
   },
   3: {
     src: "/patents/figures/us-808897-carrier-air-conditioner/fig-3-source-crop-v1.png",

@@ -29,10 +29,10 @@ const FIGURES = {
   "Fig. 3": crop("fig-3-tight-source-crop", 360, 320, "Fig. 3"),
   "Fig. 4": crop("fig-4-tight-source-crop", 360, 260, "Fig. 4"),
   "Fig. 5": crop("fig-5-focus-source-crop", 310, 270, "Fig. 5"),
-  "Fig. 6": crop("fig-6-isolated-source-crop", 390, 165, "Fig. 6"),
+  "Fig. 6": crop("fig-6-isolated-source-crop-v2", 440, 190, "Fig. 6"),
   "Fig. 7": crop("fig-7-verified-source-crop", 760, 360, "Fig. 7"),
   "Fig. 8": crop("fig-8-verified-source-crop", 800, 340, "Fig. 8"),
-  "Fig. 9": crop("fig-9-tight-source-crop", 340, 190, "Fig. 9"),
+  "Fig. 9": crop("fig-9-tight-source-crop-v2", 400, 175, "Fig. 9"),
 } as const;
 
 const figure = (

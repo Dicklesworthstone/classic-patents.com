@@ -2,66 +2,58 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInlines } from "@
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 
-const coltFigureDims: Record<number, { width: number; height: number }> = {
-  1: { width: 470, height: 550 },
-  2: { width: 230, height: 220 },
-  3: { width: 190, height: 180 },
-  4: { width: 160, height: 150 },
-  5: { width: 550, height: 550 },
-  6: { width: 140, height: 90 },
-  7: { width: 350, height: 250 },
-  8: { width: 600, height: 770 },
-  9: { width: 260, height: 250 },
-};
+type ColtDrawingGroup = "division-2" | "division-3" | "division-4" | "plate-2";
 
-const individualFigurePreview = (number: number) => ({
-  src: `/patents/figures/us-x9430-colt-revolver/fig-${number}-source-crop-v1.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US X9430.`,
-  width: coltFigureDims[number]?.width ?? 600,
-  height: coltFigureDims[number]?.height ?? 600,
-});
-
-const individualFigurePreviews: Readonly<
-  Record<string, readonly ReturnType<typeof individualFigurePreview>[]>
+/**
+ * The printed drawing divisions reuse figure numbers.  A reference such as
+ * "Figure 1" is therefore only meaningful together with its division or
+ * plate.  Preserve that context in the preview instead of routing every
+ * identical number to a single, potentially unrelated, crop.
+ */
+const sourceDrawingPreviews: Readonly<
+  Record<ColtDrawingGroup, { src: string; width: number; height: number; description: string }>
 > = {
-  "Figure 1": [individualFigurePreview(1)],
-  "Figure 2": [individualFigurePreview(2)],
-  "Figure 3": [individualFigurePreview(3)],
-  "Figure 4": [individualFigurePreview(4)],
-  "Figure 5": [individualFigurePreview(5)],
-  "Figure 6": [individualFigurePreview(6)],
-  "Figure 7": [individualFigurePreview(7)],
-  "Figure 8": [individualFigurePreview(8)],
-  "Figure 9": [individualFigurePreview(9)],
+  "division-2": {
+    src: "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
+    width: 820,
+    height: 1420,
+    description: "Division 2 sectional pistol drawing",
+  },
+  "division-3": {
+    src: "/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png",
+    width: 760,
+    height: 1080,
+    description: "Division 3 lock-parts drawing",
+  },
+  "division-4": {
+    src: "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
+    width: 1000,
+    height: 1220,
+    description: "Division 4 arbor-and-cylinder drawing",
+  },
+  "plate-2": {
+    src: "/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png",
+    width: 980,
+    height: 1190,
+    description: "Plate 2 lockwork drawing",
+  },
 };
 
-const figure = (
-  text: string,
-  group: "division-2" | "division-3" | "division-4" | "plate-2",
-): CuratedSpecificationInlines[number] => {
-  const previews = {
-    "division-2": [
-      "/patents/figures/us-x9430-colt-revolver/division-2-pistol-section.png",
-      820,
-      1420,
-    ],
-    "division-3": ["/patents/figures/us-x9430-colt-revolver/division-3-lock-parts.png", 760, 1080],
-    "division-4": [
-      "/patents/figures/us-x9430-colt-revolver/division-4-arbor-and-cylinder.png",
-      1000,
-      1220,
-    ],
-    "plate-2": ["/patents/figures/us-x9430-colt-revolver/plate-2-lockwork.png", 980, 1190],
-  } as const;
-  const [src, width, height] = previews[group];
+const figure = (text: string, group: ColtDrawingGroup): CuratedSpecificationInlines[number] => {
+  const preview = sourceDrawingPreviews[group];
   return {
     kind: "reference",
     text,
     href: `#${group}-drawing`,
     referenceType: "figure",
     label: `${text}, ${group.replace("-", " ")} source drawing crop`,
-    figurePreviews: individualFigurePreviews[text] ?? [
-      { src, alt: `${text} in the US X9430 ${group.replace("-", " ")} drawing.`, width, height },
+    figurePreviews: [
+      {
+        src: preview.src,
+        alt: `${text} in the US X9430 ${preview.description}.`,
+        width: preview.width,
+        height: preview.height,
+      },
     ],
   };
 };

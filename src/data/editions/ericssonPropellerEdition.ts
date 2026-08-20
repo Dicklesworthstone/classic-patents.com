@@ -45,10 +45,10 @@ const FIGURES = {
     height: 1250,
   },
   6: {
-    src: "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v1.png",
+    src: "/patents/figures/us-588-ericsson-propeller/fig-6-source-crop-v2.png",
     alt: "Source crop of Figure 6: upright shaft, conical gears, hoops, and coupling arrangement.",
-    width: 1050,
-    height: 1250,
+    width: 1000,
+    height: 950,
   },
 } as const;
 

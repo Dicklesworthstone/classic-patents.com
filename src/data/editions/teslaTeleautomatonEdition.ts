@@ -20,12 +20,13 @@ const figureDimensions: Record<number, readonly [number, number]> = {
   6: [630, 670],
   7: [550, 260],
   8: [310, 350],
-  9: [510, 1390],
+  9: [1300, 1600],
   10: [1150, 1460],
 };
 
 const figure = (number: number, label = `Fig. ${number}`) => {
   const [width, height] = figureDimensions[number] ?? [780, 1390];
+  const revision = number === 9 ? 2 : 1;
   return {
     kind: "reference" as const,
     text: label,
@@ -34,7 +35,7 @@ const figure = (number: number, label = `Fig. ${number}`) => {
     label: `Source drawing ${label} from US 613,809`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-613809-tesla-teleautomaton/fig-${number}-source-crop-v1.png`,
+        src: `/patents/figures/us-613809-tesla-teleautomaton/fig-${number}-source-crop-v${revision}.png`,
         alt: `US 613,809 ${label} source crop.`,
         width,
         height,

@@ -47,7 +47,7 @@ describe("US 381,968 manual source edition", () => {
     const singularPreviewSource = {
       "Fig. 1": "/patents/figures/us-381968-tesla-motor/fig-1-source-crop-v2.png",
       "Fig. 2": "/patents/figures/us-381968-tesla-motor/fig-2-source-crop-v2.png",
-      "Fig. 3": "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v2.png",
+      "Fig. 3": "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v3.png",
       "Fig. 4": "/patents/figures/us-381968-tesla-motor/fig-4-source-crop-v2.png",
       "Fig. 5": "/patents/figures/us-381968-tesla-motor/fig-5-source-crop-v2.png",
       "Fig. 6": "/patents/figures/us-381968-tesla-motor/fig-6-source-crop-v2.png",
@@ -113,7 +113,7 @@ describe("US 381,968 manual source edition", () => {
       "/patents/figures/us-381968-tesla-motor/fig-1a-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-2-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-2a-source-crop-v2.png",
-      "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v2.png",
+      "/patents/figures/us-381968-tesla-motor/fig-3-source-crop-v3.png",
       "/patents/figures/us-381968-tesla-motor/fig-3a-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-4-source-crop-v2.png",
       "/patents/figures/us-381968-tesla-motor/fig-4a-source-crop-v3.png",

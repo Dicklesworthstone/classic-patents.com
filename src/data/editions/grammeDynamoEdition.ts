@@ -16,7 +16,12 @@ const crop = (number: number, width: number, height: number, label: string) => (
 const FIGURE_CROPS = {
   1: crop(1, 380, 500, "Fig. 1"),
   2: crop(2, 320, 520, "Fig. 2"),
-  3: crop(3, 250, 150, "Fig. 3"),
+  3: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-3-source-crop-v2.png",
+    alt: "Source-facsimile crop of Fig. 3 from US 120,057.",
+    width: 300,
+    height: 105,
+  },
   4: crop(4, 1220, 600, "Fig. 4"),
   5: crop(5, 1220, 580, "Fig. 5"),
   6: crop(6, 440, 500, "Fig. 6"),

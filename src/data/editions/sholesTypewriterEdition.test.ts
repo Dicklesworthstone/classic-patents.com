@@ -73,8 +73,10 @@ describe("US 79,265 manual source edition", () => {
     expect(sholesTypewriterPatent.historicalContext.patentWars).toEqual([]);
     const sourceFace = JSON.stringify(sholesTypewriterArchivalEdition.blocks);
     expect(sourceFace).toContain('"kind":"reference"');
+    expect(sourceFace).toContain("fig-6-isolated-source-crop-v2.png");
     expect(sourceFace).toContain("fig-7-verified-source-crop.png");
     expect(sourceFace).toContain("fig-8-verified-source-crop.png");
+    expect(sourceFace).toContain("fig-9-tight-source-crop-v2.png");
     expect(sourceFace).not.toContain("SOURCE PDF PAGE");
     expect(sourceFace).not.toContain("QWERTY");
   });
