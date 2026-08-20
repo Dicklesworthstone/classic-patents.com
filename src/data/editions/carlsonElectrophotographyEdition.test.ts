@@ -1,0 +1,80 @@
+import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import {
+  carlsonElectrophotographyArchivalEdition,
+  carlsonElectrophotographyParallelReadings,
+  manualCarlsonClaimText,
+} from "./carlsonElectrophotographyEdition";
+
+describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Publication Contract", () => {
+  const rootDir = process.cwd();
+  const pdfPath = join(rootDir, "public/patents/pdfs/us-2297691-carlson-electrophotography.pdf");
+  const transcriptPath = join(
+    rootDir,
+    "public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
+  );
+
+  test("passes full curated specification validation suite with zero errors", () => {
+    const result = validateCuratedSpecificationEdition(carlsonElectrophotographyArchivalEdition);
+    expect(result).toEqual({ valid: true, errors: [] });
+  });
+
+  test("matches the cryptographic SHA-256 digest of the pinned 10-page USPTO facsimile PDF", () => {
+    expect(existsSync(pdfPath)).toBe(true);
+    const buffer = readFileSync(pdfPath);
+    const computedDigest = createHash("sha256").update(buffer).digest("hex");
+
+    expect(carlsonElectrophotographyArchivalEdition.sourcePdfSha256).toBe(
+      "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
+    );
+    expect(computedDigest).toBe(carlsonElectrophotographyArchivalEdition.sourcePdfSha256);
+  });
+
+  test("pins and validates the 10-page reviewed ledger transcript", () => {
+    expect(existsSync(transcriptPath)).toBe(true);
+    const transcript = readFileSync(transcriptPath, "utf-8");
+
+    for (let page = 1; page <= 10; page++) {
+      expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 10 ---`);
+    }
+  });
+
+  test("verifies all referenced source figure crops exist on disk", () => {
+    for (const block of carlsonElectrophotographyArchivalEdition.blocks) {
+      if (block.kind === "paragraph" || block.kind === "claim") {
+        for (const inline of block.inlines) {
+          if (inline.kind === "reference" && inline.figurePreviews) {
+            for (const prev of inline.figurePreviews) {
+              const cropPath = join(rootDir, "public", prev.src.replace(/^\//, ""));
+              expect(existsSync(cropPath)).toBe(true);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  test("exposes all 27 printed claims via dynamic single-source lookup", () => {
+    for (let c = 1; c <= 27; c++) {
+      const textVal = manualCarlsonClaimText(c);
+      expect(textVal).toBeDefined();
+      expect(textVal.length).toBeGreaterThan(30);
+    }
+  });
+
+  test("validates parallel readings map covers the archival paragraph blocks", () => {
+    const paragraphIndexes = carlsonElectrophotographyArchivalEdition.blocks
+      .map((block, idx) => (block.kind === "paragraph" ? idx : null))
+      .filter((idx): idx is number => idx !== null);
+
+    for (const idx of paragraphIndexes) {
+      const readings = carlsonElectrophotographyParallelReadings[idx];
+      expect(readings).toBeDefined();
+      expect(readings?.length).toBeGreaterThan(0);
+      expect(readings?.[0].trim().length).toBeGreaterThan(40);
+    }
+  });
+});

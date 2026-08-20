@@ -1,0 +1,102 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 9 ---
+[Drawing Sheet 1: Figures 1–6]
+June 23, 1964 J. S. KILBY 3,138,743
+MINIATURIZED ELECTRONIC CIRCUITS
+Filed Feb. 6, 1959 4 Sheets-Sheet 1
+FIG. 1: Cross-sectional perspective view of integrated bulk semiconductor resistor formed in semiconductor body with ohmic end contacts.
+FIG. 2: Perspective cross-section of integrated p-n junction capacitor formed by diffused semiconductor region reverse-biased by applied potential.
+FIG. 3 & 4: Integrated mesa bipolar transistor structure showing collector substrate, diffused base layer, and alloyed emitter dot.
+FIG. 5 & 6: Distributed resistance-capacitance (R-C) semiconductor network showing tapered resistive region over continuous junction.
+INVENTOR: JACK S. KILBY.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 9 ---
+[Drawing Sheet 2: Figures 7–10]
+June 23, 1964 J. S. KILBY 3,138,743
+MINIATURIZED ELECTRONIC CIRCUITS
+Filed Feb. 6, 1959 4 Sheets-Sheet 2
+FIG. 7: Schematic circuit diagram of bistable multivibrator (flip-flop) circuit.
+FIG. 8a, 8b, 8c: Top plan, side cross-sectional, and bottom layout views of complete monolithic multivibrator solid circuit formed within single bar of semiconductor material with gold wire bonded flying lead interconnects.
+FIG. 9 & 10: High-density modular wafer layouts and terminal lead arrangements.
+INVENTOR: JACK S. KILBY.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 9 ---
+[Drawing Sheet 3: Figures 11–15]
+June 23, 1964 J. S. KILBY 3,138,743
+MINIATURIZED ELECTRONIC CIRCUITS
+Filed Feb. 6, 1959 4 Sheets-Sheet 3
+FIG. 11: Schematic diagram of phase-shift audio oscillator circuit.
+FIG. 12: Top plan view of monolithic phase-shift oscillator semiconductor wafer showing integration of transistor, bulk load resistors, and distributed RC feedback network.
+FIG. 13, 14, 15: Cross-sectional views and interconnection details of phase-shift oscillator wafer.
+INVENTOR: JACK S. KILBY.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 9 ---
+[Drawing Sheet 4: Figures 16–20]
+June 23, 1964 J. S. KILBY 3,138,743
+MINIATURIZED ELECTRONIC CIRCUITS
+Filed Feb. 6, 1959 4 Sheets-Sheet 4
+FIG. 16–20: Further modifications of semiconductor solid circuit packaging, hermetic sealing headers, and multi-wafer module assemblies.
+INVENTOR: JACK S. KILBY.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 9 ---
+United States Patent Office 3,138,743 Patented June 23, 1964
+1
+3,138,743
+MINIATURIZED ELECTRONIC CIRCUITS
+Jack S. Kilby, Dallas, Tex., assignor to Texas Instruments Incorporated, Dallas, Tex., a corporation of Delaware
+Filed Feb. 6, 1959, Ser. No. 791,602
+25 Claims. (Cl. 317-101)
+
+This invention relates to miniature electronic circuits, and more particularly to unique integrated electronic circuits fabricated from semiconductor material.
+Many methods and techniques for miniaturizing electronic circuits have been proposed in the past. At first, most of the effort was spent upon reducing the size of the components and packing them more closely together. Work directed toward reducing component size is still continuing, but has reached a point where component handling and interconnecting problems limit further miniaturization. The large number of individual electrical connections required in complex systems creates a major reliability hazard known as the 'tyranny of numbers'.
+In accordance with the principles of the present invention, the ultimate in circuit miniaturization is attained by fabricating all active and passive components of an entire electronic circuit within a single monolithic body of semiconductor material, utilizing only one material and compatible process steps.
+This is accomplished by utilizing a body of semiconductor material exhibiting one conductivity type (either n-type or p-type) and having formed therein diffused regions forming p-n junctions. Resistors are provided by the bulk resistivity of shaped semiconductor paths, capacitors are provided by reverse-biased p-n junctions or dielectric surface coatings, and transistors and diodes are formed by mesa diffused and alloyed regions.
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 9 ---
+Referring to the drawings, in FIG. 1 there is shown a resistor formed from a wafer of semiconductor material such as silicon or germanium. The resistance value is determined by the length, cross-sectional area, and bulk resistivity of the semiconductor path between ohmic contacts.
+In FIG. 2, an integrated capacitor is formed utilizing the transition capacitance of a reverse-biased p-n junction. The capacitance per unit area is controlled by the doping gradient and applied reverse bias voltage. Alternatively, a thin silicon oxide dielectric layer is formed on the semiconductor surface and covered by an evaporated conductive metal film.
+In FIGS. 3 and 4, an active bipolar junction transistor is integrated into the body. A collector region is provided by the semiconductor substrate, a base region is formed by vapor diffusion of opposite-type impurities, and an emitter region is formed by an alloyed dot or second diffusion.
+In FIGS. 5 and 6, a distributed resistance-capacitance network is formed by a continuous p-n junction where the upper layer provides a distributed resistive path and the junction provides distributed capacitance to ground.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 9 ---
+Referring to FIGS. 7 and 8a-8c, a complete bistable multivibrator (flip-flop) circuit is fabricated within a single rectangular bar of semiconductor material having dimensions of only approximately 0.200 by 0.080 by 0.010 inches.
+The bar includes two diffused mesa transistors, two cross-coupling capacitors, two collector load resistors, and four base biasing resistors.
+Selective mesa etching isolates the individual component regions into mesas extending above the main substrate. Interconnections between components are made by gold flying-wire thermal compression bonds or evaporated conductive film overlays.
+Power supply potentials (+Vcc, -Vbb, Ground) and input/output trigger terminals are connected to peripheral contact areas. When operating, the circuit functions as a complete digital binary counter stage.
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 9 ---
+A further illustration of the invention is shown in FIGS. 11 and 12, illustrating a complete phase-shift audio oscillator integrated within a single semiconductor wafer. The wafer contains a mesa transistor amplifier, bulk load resistors, and a distributed RC phase-shift feedback network producing self-sustained sinusoidal oscillations.
+Using the techniques of the present invention, complete operational electronic circuits are produced with component packing densities exceeding 10,000,000 parts per cubic foot, while eliminating hundreds of soldered wire connections.
+
+What is claimed is:
+1. In an integrated circuit having a plurality of electrical circuit components: a wafer of single-crystal semiconductor material containing a plurality of active and passive circuit components, said active circuit components each including at least two thin layers of semiconductor material of opposite conductivity-types extending to one major face of the wafer with p-n junctions extending to said one major face, said passive circuit components each including at least one discrete region of the semiconductor material spaced on said one major face away from the thin layers of said active components, and conductor means for interconnecting said components into an operative circuit.
+2. In a semiconductor device which includes a single-crystal semiconductor wafer, an active circuit component including at least two thin layers of semiconductor material of opposite conductivity-types extending to one major face of the wafer with the junction between said layers extending to said one major face, and a passive circuit component including at least one discrete region of the semiconductor material spaced on said one major face away from said thin layers, and means for electrically connecting said components.
+3. An integrated circuit comprising a wafer of semiconductor material, an active circuit component provided in the wafer and including at least two thin layers of semiconductor material of opposite conductivity-types extending to one major face of the wafer with p-n junctions extending to said one major face, and a passive circuit component provided in the wafer and including at least one discrete region of the semiconductor material spaced on said one major face away from the thin layers of the active component.
+4. An integrated circuit according to claim 3 wherein said passive circuit component is an elongated resistor region, and said semiconductor material immediately underlying said thin layers of the active component defines the collector region of a junction transistor.
+5. An integrated circuit according to claim 3 which further comprises: at least one other active circuit component provided in the wafer and including at least two thin layers of semiconductor material of opposite conductivity-types extending to said one major face with p-n junctions extending wholly to said one major face; and at least one other passive circuit component provided in the wafer and including at least one discrete region of the semiconductor material spaced on said one major face away from the thin layers of the at least one other active component.
+6. An integrated circuit according to claim 5 wherein said discrete regions of said passive circuit components include thin surface-adjacent regions at said one major face.
+7. An integrated circuit according to claim 3 wherein said passive circuit component is a capacitor defined by a p-n junction within said wafer.
+8. An integrated circuit according to claim 7 wherein said capacitor includes an insulating layer on a surface of the wafer and a conductive layer overlying the insulating layer.
+9. An integrated circuit according to claim 3 wherein said active circuit component is a mesa transistor.
+10. A semiconductor device comprising: a body of semiconductor material, a transistor formed in said body having base, emitter, and collector regions, a resistor formed in said body by an elongated path of semiconductor material, and conductive means interconnecting said transistor and resistor.
+11. A semiconductor device according to claim 10 wherein said body consists of single-crystal silicon.
+12. An integrated circuit comprising a wafer of single-crystal semiconductor material, a plurality of active and passive components formed within said wafer, and conductive leads extending over said wafer interconnecting said components into a complete functional circuit.
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 9 ---
+13. In an integrated circuit having a plurality of circuit components: a single-crystal semiconductor wafer, a plurality of transistors formed in said wafer, a plurality of passive components formed in said wafer, and metallic conductors interconnecting said transistors and passive components to form an operative electronic circuit.
+14. In an integrated circuit according to claim 13, first and second elongated semiconductor regions defining load resistors for said transistors.
+15. An integrated circuit having a plurality of electrical circuit components formed in a single semiconductor wafer, wherein at least one component is a transistor and at least one component is a distributed resistance-capacitance network.
+16. An integrated circuit comprising a wafer of single-crystal semiconductor material, two mesa transistors formed in said wafer, four bulk resistors formed in said wafer, and conductor means interconnecting said transistors and resistors into a multivibrator circuit.
+17. In a semiconductor device according to claim 2, wherein said wafer consists of germanium.
+18. An integrated circuit according to claim 3 wherein said active circuit component is a field-effect transistor.
+19. An integrated circuit according to claim 18 wherein said discrete region of the semiconductor material defines a bias resistor.
+20. A semiconductor device according to claim 10 wherein said interconnecting means comprises gold bonding wires.
+21. A semiconductor device according to claim 20 wherein said interconnecting means comprises evaporated metal film strips.
+22. In an integrated circuit according to claim 13 said circuit being a bistable multivibrator.
+23. In an integrated circuit according to claim 13 said circuit being a phase-shift oscillator.
+24. An integrated circuit according to claim 16 wherein said wafer is hermetically sealed within a protective package.
+25. An integrated circuit according to claim 24 wherein external terminal leads extend through said protective package for connection to external circuitry.
+
+INVENTOR:
+JACK S. KILBY,
+By STEVENS, DAVIS, MILLER & MOSHER,
+Attorneys.

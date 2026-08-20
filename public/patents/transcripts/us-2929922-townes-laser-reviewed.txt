@@ -1,0 +1,58 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 5 ---
+[Drawing Sheet 1: Figures 1–6]
+March 22, 1960 A. L. SCHAWLOW ET AL 2,929,922
+MASERS AND MASER COMMUNICATIONS SYSTEM
+Filed July 30, 1958 1 Sheet-Sheet 1
+FIG. 1: Optical maser communication system comprising modulated optical maser generator 10, transmitting beam 12, and optical receiver amplifier and detector 13.
+FIG. 2: Optical maser Fabry-Pérot resonant cavity showing parallel reflective planar end plates 21, 22 and non-reflective side boundaries 20.
+FIG. 3: Quantum energy level diagram for optical pumping in potassium vapor showing ground state 4s, pumped state 5p, and inverted laser transition 5s -> 4p.
+FIG. 4: Optical maser generator assembly showing cylindrical discharge chamber 40, outer flash/pumping lamp 41, and output coupling aperture in mirror 42.
+FIG. 5: Optical amplifier configuration with anti-reflection coated end windows.
+FIG. 6: Optical heterodyne receiver detector assembly.
+INVENTORS: ARTHUR L. SCHAWLOW, CHARLES H. TOWNES.
+ATTORNEY: R. J. GUENTHER.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 5 ---
+United States Patent Office 2,929,922 Patented Mar. 22, 1960
+1
+2,929,922
+MASERS AND MASER COMMUNICATIONS SYSTEM
+Arthur L. Schawlow, Madison, N. J., and Charles H. Townes, New York, N. Y., assignors to Bell Telephone Laboratories, Incorporated, New York, N. Y., a corporation of New York
+Application July 30, 1958, Serial No. 752,021
+13 Claims. (Cl. 343-200)
+
+This invention relates to the generation and amplification of coherent electromagnetic waves and more particularly to masers and maser communication systems operating in the infrared and optical frequency ranges.
+An object of the present invention is to provide apparatus for generating and amplifying coherent electromagnetic radiation of frequencies higher than those obtainable by conventional microwave masers, and in particular radiation in the infrared, visible, and ultraviolet regions of the spectrum.
+In conventional microwave masers, such as the ammonia beam maser or solid-state paramagnetic maser, an active medium is situated in a closed resonant cavity whose dimensions are comparable to the wavelength of the radiation. When attempting to extend maser techniques to the optical range, where wavelengths are of the order of 10^-4 to 10^-5 centimeters, a closed resonant cavity of wavelength dimensions becomes impossible to construct and contains an impossibly small volume of active material. Conversely, a large closed cavity with dimensions of several centimeters would support billions of degenerate cavity modes, resulting in uncontrolled multi-mode oscillation and spatial incoherence.
+According to the present invention, this fundamental difficulty is overcome by utilizing an open resonator structure comprising a pair of opposed parallel planar reflective plates (21, 22) bounding an active medium, with the side boundaries between the plates being non-reflective or substantially open to ambient space. This Fabry-Pérot open resonator selectively provides high cavity Q exclusively for waves traveling normal to the reflective end plates, while all off-axis wave modes experience heavy diffraction losses out through the open sides and are completely suppressed below the threshold for self-sustained oscillation.
+The active medium within the resonator is subjected to an optical pumping source to create a non-equilibrium population inversion between two energy states of the atomic or molecular system. Optical pumping by intense incoherent radiation selectively populates the upper laser state, establishing a condition where stimulated emission exceeds resonant absorption.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 5 ---
+When the single-pass optical gain through the inverted medium exceeds the round-trip reflection and diffraction losses of the cavity, coherent light oscillates between the end mirrors. One of the end mirrors is made partially transmitting, permitting a highly monochromatic, spatially coherent, and extremely narrow diffraction-limited optical beam to emerge as an output.
+Referring to the drawings, Fig. 1 illustrates an optical maser communication system comprising a modulated optical maser oscillator 10, transmitting an intense coherent optical beam 12 through free space or an optical waveguide to a distant receiver 13 comprising an optical maser pre-amplifier and detector. In Fig. 2, the open resonant cavity 20 is shown, bounded by parallel plane-reflecting end surfaces 21 and 22 separated by distance L, with non-reflecting side boundaries.
+In Fig. 3, an energy level diagram is shown for potassium vapor as an illustrative active medium. Pumping radiation at 4047 Å from an external potassium discharge lamp excites ground-state 4s atoms to the 5p level, from which non-radiative decay rapidly populates the 5s state, creating a strong population inversion relative to the 4p state and yielding stimulated emission oscillation at 3.14 microns.
+In Fig. 4, a practical maser generator is shown comprising an elongated quartz or pyrex container 40 containing the active vapor or solid medium, surrounded by a helical optical pumping flashlamp 41, with parallel reflecting end mirrors 42 and 43. In Fig. 5, an optical traveling-wave amplifier is illustrated having Brewster-angle or anti-reflection coated end windows for non-resonant single-pass amplification.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 5 ---
+What is claimed is:
+1. An optical maser comprising an active medium characterized by a plurality of energy states including a first state and a second higher state between which transitions can occur accompanied by the emission of radiation of a characteristic optical frequency, pumping means for establishing a population inversion between said first and second states, and an optical cavity resonator containing said medium, said resonator being bounded by a pair of spaced reflecting surfaces arranged to reflect optical radiation back and forth through said medium, the dimensions of said reflecting surfaces and the spacing therebetween being large compared to the wavelength of said characteristic optical frequency, and the side boundaries of said resonator being substantially non-reflecting for radiation of said characteristic optical frequency.
+2. An optical maser according to claim 1, in which said spaced reflecting surfaces are substantially planar and parallel to each other.
+3. An optical maser according to claim 2, in which at least one of said reflecting surfaces is partially transmitting to allow extraction of a portion of the coherent optical radiation generated within said resonator.
+4. An optical maser according to claim 1, in which said active medium comprises an atomic vapor.
+5. An optical maser according to claim 4, in which said atomic vapor comprises potassium vapor and said pumping means comprises a source of optical radiation of a frequency corresponding to transitions from the ground state of potassium to an excited state above said second state.
+6. An optical maser according to claim 1, in which said active medium comprises a solid-state host lattice containing paramagnetic activator ions.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---
+7. An optical maser amplifier comprising an elongated active medium having two energy states with an inverted population distribution, optical pumping means for maintaining said population inversion, optical input means for introducing an optical signal wave into one end of said active medium, and optical output means for extracting an amplified optical signal wave from the opposite end of said medium.
+8. An optical communication system comprising an optical maser generator for producing a coherent optical carrier wave, modulating means for impressing information signals upon said coherent optical carrier wave, optical transmission means for directing said modulated carrier wave toward a distant receiver, and optical detector means at said receiver for recovering said information signals.
+9. An optical maser according to claim 1, in which said spaced reflecting surfaces have a lateral dimension d and a spacing L such that d^2 / (L * lambda) is greater than unity, where lambda is the wavelength of said optical radiation.
+10. An optical maser according to claim 1, in which the reflectivity of each of said reflecting surfaces is at least 90 percent at said characteristic optical frequency.
+11. An optical maser according to claim 1, in which the side boundaries of said resonator comprise an absorbing medium for suppressing off-axis optical modes.
+12. The method of generating coherent optical radiation which comprises establishing a population inversion between two atomic energy states of an active medium positioned within an open optical resonator bounded by parallel reflecting end surfaces and non-reflecting sides, and sustaining stimulated emission oscillations along the axis between said end surfaces.
+13. The method according to claim 12, further comprising extracting a portion of the coherent optical radiation through one of said reflecting end surfaces as a diffraction-limited optical beam.
+
+INVENTORS:
+ARTHUR L. SCHAWLOW,
+CHARLES H. TOWNES,
+By R. J. GUENTHER,
+Attorney.

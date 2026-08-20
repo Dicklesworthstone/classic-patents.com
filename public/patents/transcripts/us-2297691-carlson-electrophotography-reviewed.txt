@@ -1,0 +1,979 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 10 ---
+[Drawing Sheet 1: Figures 1–8]
+Oct. 6, 1942. C. F. CARLSON 2,297,691
+ELECTROPHOTOGRAPHY
+Filed April 4, 1939 4 Sheets-Sheet 1
+FIG. 1: Layer 10 on metal backing plate 11.
+FIG. 2: Electrostatic charging of layer 10 by rubbing with cloth or fur 12.
+FIG. 3: Optical exposure through transparency/image 15 with light rays 14.
+FIG. 4: Latent electrostatic charge image formed by selective discharge in exposed areas.
+FIG. 5: Developing latent electrostatic image by applying fine powder 17.
+FIG. 6: Transferring powder image to paper sheet 19 under pressure roll.
+FIG. 7: Transferred powder image on copy sheet 19.
+FIG. 8: Fixing powder image by heat source 21 to fuse resinous powder to paper.
+INVENTOR: CHESTER F. CARLSON.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 10 ---
+[Drawing Sheet 2: Figures 9–14]
+Oct. 6, 1942. C. F. CARLSON 2,297,691
+ELECTROPHOTOGRAPHY
+Filed April 4, 1939 4 Sheets-Sheet 2
+FIG. 9: Continuous electrophotographic copying apparatus with endless belt/drum 25, charging station 26, exposure station 27, developing box 28, transfer roller 29, and cleaning brush 30.
+FIG. 10: Rotary drum electrophotographic machine with optical slit exposure and paper roll feed.
+FIG. 11: Microfilm enlarging and continuous copy printing mechanism.
+FIG. 12: Oscillating mirror optical scanning system.
+FIG. 13: Stencil reproduction and contact printing apparatus.
+FIG. 14: Liquid spray development modification.
+INVENTOR: CHESTER F. CARLSON.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 10 ---
+[Drawing Sheet 3: Figures 15–21]
+Oct. 6, 1942. C. F. CARLSON 2,297,691
+ELECTROPHOTOGRAPHY
+Filed April 4, 1939 4 Sheets-Sheet 3
+FIG. 15: Optical projection camera exposure of document 40 onto photo-conductive plate 41.
+FIG. 16: Corona discharge wire charging assembly with high voltage source.
+FIG. 17: Electrostatic powder cloud dusting chamber.
+FIG. 18: Magnetic brush development modification with iron carrier particles.
+FIG. 19: Electrostatic field transfer to transfer sheet.
+FIG. 20: Vapor solvent fixing chamber for resin-based developer powders.
+FIG. 21: Radiant infrared thermal fusing station.
+INVENTOR: CHESTER F. CARLSON.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 10 ---
+[Drawing Sheet 4: Figures 22–28]
+Oct. 6, 1942. C. F. CARLSON 2,297,691
+ELECTROPHOTOGRAPHY
+Filed April 4, 1939 4 Sheets-Sheet 4
+FIG. 22: Cross-section of sulfur photo-conductive insulating layer on metal foil.
+FIG. 23: Cross-section of anthracene and binder resin composition.
+FIG. 24: Selenium thin-film deposited on aluminum substrate.
+FIG. 25: Transparent conductive glass plate with photo-conductive coating for rear exposure.
+FIG. 26: Multi-layer barrier layer electrophotographic plate.
+FIG. 27: Flexible metallized paper electrophotographic recording web.
+FIG. 28: Micro-crystalline sulfur-tellurium alloy semiconductor layer.
+INVENTOR: CHESTER F. CARLSON.
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 10 ---
+4
+
+2,297,691
+
+accomplished b-y a heat radiating electric re
+
+which already has a negative charge (due to fric
+tion) the dust particles will attach themselves
+strongly to the positively charged areas of the
+image and be repelled from the negative areas,
+
+sistance element 39, for example, as shown in
+
+thereby forming a very sharp image.
+
+Figure 6.
+Figure 7 shows another method of fixing the
+image which comprises spraying the surface of
+the sheet 36 carrying the dust image with a
+
+By another method of using the arrangement
+of Fig. 8 the first charging step is eliminated
+and the layer is charged during emosure to the
+image (by lens 41) resulting in an electrostatic
+
+ñxative lacquer by atomizer 40.
+From the preceding description certain ad
+
+10 latent image in which the light areas of the
+
+temperature at which the resin or wax will melt
+
+or become adhesive thereby permanently aiîix
+ing the image to the sheet. The heating may be
+
+image are charged instead of the unilluminated
+areas. If such an image is dusted with black
+powder the result will be a negative instead of
+graphic methods will be apparent. In the ñrst
+a positive. If it is dusted with a white powder
+place the process yields a direct positive copy,
+instead of a negative. That is, upon exposure 15 and the powder image is transferred to a black
+background a positive will result. If desired, a
+to the original and then dusting with a black
+thin sheet of insulating material may be inter
+or colored powder and transferring to a white
+posed between layers 2l and 42 in Figure 8, in
+sheet of paper, the areas which appeared dark
+
+vantages of my process over ordinary photo
+
+stead of an air space.
+on the original will be reproduced as black or
+In the dusting process, instead of applying the
+colored areas on the copy, and the areas which 20
+powder to the surface of layer 2| a thin sheet
+were white on the original will also be white
+
+matter with the use of an ordinary camera lens
+
+of insulating material 48 may be laid on top of
+the layer 2l carrying an electrostatic latent
+image and the powder deposited on the surface
+of sheet d8 as shown in Figure 9. The dust will
+
+or by contact printing with the printed side
+against the sensitive plate, rather than yielding
+
+then adhere to layer 48 opposite to the charged
+parts of layer 2l.
+
+on the copy.
+
+Another advantage is that the process yields
+directly readable copies of written or printed
+
+a mirror image.
+
+This makes the process espe
+
+My process may also be adapted to the pro
+
+duction of masters for the making of multiple
+cially well adapted to direct reproduction of
+printed matter, drawings, typewritten matter 30 copies by lithographic or typographical methods.
+and the like. For instance, if it is desired to
+Lithographie reproduction
+reproduce a typewritten letter it may be copied
+For
+production
+of masters for offset lithog
+either with the camera, as shown in Figure 2,
+raphy the ñrst steps in the process may be the
+or by contact printing as shown in Figure 2a,
+and the finished copy 36 (Figure 6 or 7) will be 35 same as described in connection with Figures
+1 to 4, inclusive. However the dusting powder
+an
+exact
+black-letters-on-white-background
+must be selected to be a material which is wetted
+duplicate of the original letter.
+by lithographic ink. Many of the resins men
+Figure 8 shows another method of charging
+tioned are suitable for this purpose, such as
+the surface of photo-conductive insulating layer
+copal, sandarac, “VinsoL” and rosin as well as
+2l. In this arrangement a transparent plate 4|
+the hard waxes. While these are ordinarily sat
+coated with a transparent sputtered metal layer
+isfactory it may in some cases be preferred to
+42 is placed parallel to layer 2'I near its surface
+compound the resin with a small amount of
+with the metal layer 42 nearest the layer 2i.
+lithographic crayon material or to add some
+Metal ñlm 42 and metal backing plate Z2 are
+connected to the opposite potential terminals 45 fatty acid or fatty material to improve the ad
+herence of the image to the lithographic plate.
+43, 44 of a high voltage source d5. Source 45
+After the dust image is formed on the electro
+may be any suitable high voltage supply such as
+photographic plate as already described it is
+a multi-cell battery, an electrostatic generator
+transferred as illustrated in Figure 5, but in this
+or a transformer-rectifier system. I have found
+a transformer-rectifier circuit delivering about 50 case the sheet 36 is a lithographic sheet such as a
+specially prepared etched aluminum or Zinc plate
+1300 volts D. C. to be suitable.
+of the type commonly used for offset lithography.
+The layer 2l is illuminated uniformly, as by
+The newly-developed paper or parchment-like
+lamp 45, while the voltage source is connected.
+lithographic sheets known commercially as
+This allows a charge to now to the front surface
+of layer 2|. If the lamp is now turned off and » “Duplimat” sheets (for use on the “Multilith”
+the voltage source disconnected a charge will re
+main on layer 2 I. The plate 20 may now be ex
+
+machines) can also be used.
+The resin or wax image is melted onto the
+
+sheet by heating as shown in Figure 6. Any
+posed photographically as previously described.
+number of copies can then be produced from
+According to another method the layer may
+be charged as just described, for example by 60 such a sheet by oifset lithography, the litho
+graphic ink adhering to the letters but not to
+connecting the positive terminal of the source
+the background, when the sheet is wetted with
+«i5 to the plate 22 and the negative terminal to
+water.
+According to another method the lithographic
+The lamp 46 is then extinguished and the as
+sembly is exposed to an image projected thereon 65 plate, preferably etched aluminum or zinc is
+coated with a thin layer of anthracene (or
+by lens t1. At the same time the connections
+anthraquinone) to produce an electro-photo
+to the source d5 are reversed. The result is that
+graphic plate, by one of the coating methods
+the areas on layer 2| which are illuminated by
+already described. The layer is then exposed
+the image will discharge their positive charge
+and then become negatively charged from the 70 and dusted with resin dust as previously de
+scribed.
+voltage source. This will result in an electro
+Then the plate is heated carefully to a tem
+static latent image in which the light parts of
+perature at which the anthracene evaporates off
+the image are negatively charged and the dark
+leaving the resin image on the plate. If the
+parts of the image positively charged.
+resin has already melted it is merely necessary
+If a dusting powder is used for the above layer
+
+layer 42, resulting in a positive charge on layer 2 I .
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 10 ---
+5
+
+2,297,691
+to cool the plate to solidify the resin image onto
+the surface. If the resin is of a higher melting
+point the heating is continued until the resin
+melts. This method has the .advantage that all
+
+moistened with alcohol or other spirit solvent,
+each of which picks up some of the dye.
+If pure dye is used for the dusting powder it
+may be transferred to a specially prepared sheet
+
+of the resin which becomes attached to the elec
+trostatic latent image is utilized in the finished
+lithographic plate. In this process it may be
+
+having an adhesive on its surface (such as resin
+which can be melted to make the dye stick to
+the sheet).
+
+necessary to use a photostat camera having a
+
+According to a further modification the dyed
+45 degree mirror in combination with the camera
+resin can be melted directly onto the photocon
+lens, or to modify the contact printing process 10 ductive insulating layer and the layer itself used
+by placing the back of the original sheet against
+as a master from which copies can be run off.
+the photoconductive layer so that a direct image
+If anthracene or anthroquinone or some other
+
+will be produced on the layer instead of a mirror
+
+readily volatilized photoconductive layer is used
+it may be evaporated and .the image melted di
+Typography
+15 rectly onto the metal backing.
+My process can also be used for producing
+Half tones
+typographical printing cuts or relief printing
+My
+process
+has
+been
+described particularly with
+surfaces. This can be accomplished by produc
+relation to the reproduction of black-and-white
+ing a photoconductive insulating layer of an
+thracene or anthraquinone on a block of metal 20 copy such as printed matter, drawings and type
+written matter. I have successfully applied it,
+such as zinc or copper, exposing
+dusting
+however, to the production of pictorial photo
+with resin powder to form the image in mirror
+reverse image.
+
+graphs. This is possible by virtue of the fact that
+where “grays” appear in the picture (i. e. areas
+metal surface, cooling and then etching the plate 25 not solid black nor pure white) the electrostatic
+charge is only discharged in part, leaving suücient
+in acid to etch away the metal not covered by
+reverse, heating to drive olf the antrracene (or
+anthraquinone) and to melt the resin onto the
+
+the resin and thereby leave the image in raised
+relief. The cut thus produced can be used for
+printing in the usual way.
+
+Hectcgraphic reproduction
+The present invention may also ‘ce used for
+the preparation of masters for hectograph copy
+
+charge to attract a small amount of powder but
+incapable of retaining enough powder to cover
+
+the surface with a dense layer.
+
+As a result the
+
+30 individual powder particles are spaced apart on
+
+the surface, the powder density depending on the
+intensity of the electric charge on the various
+parts of the surface.
+
+Since the particles are so
+
+In one method use is made of a so-called
+
+extremely small as not to be individually visible
+
+hectograph pan in which a gelatin compound
+is disposed in a layer. The dust image in such
+case is formed of a strong dye, such as crystal
+
+the effect on the naked eye is of a picture of
+varying shades of gray, much the same as with
+
+The same principle can also be extended to
+the process in which the gelatin composition
+
+melted onto the backing and each will serve as a
+tiny printing area in a lithographie or hecto
+graphic process. In the case of half-tone cuts
+the resin areas protect the backing metal while
+the surrounding uncovered areas are etched away.
+
+ing.
+
+an ordinary half -tone picture.
+In fact, the picture thus produced is really a
+violet, or a dye compounded with gelatin and
+form of half tone and as such may be used for
+reduced to a fine dry powder.
+The dust image, formed electrophotographi 40 lithographic or hectographic reproduction of pic
+torial subjects and for the production of half-tone
+cally as heretofore described is transferred to
+cuts. This may be better understood by reference
+the surface of the gelatin compound in the pan
+to Figure 10 which is a highly magnified view of
+by pressing the dusted eelctrophotographic plate
+a dusted electrostatic image of a pictorial subject,
+against the surface of the layer so that the dye
+stuff is absorbed in the surface of the gelatin 45 the part reproduced being an enlargement of a
+human eye. It will be noted that in the darker
+compound. Then copies can be produced by
+parts of the image such as the eyelash and pupil
+pressing sheets of copy paper on the gelatin
+the dust particles 3i are clustered close together,
+compound surface one at a time. In such a
+while in .the lighter parts the particles are more
+process the original photographic exposure
+should be such that a mirror-reverse is pro 50 widely separated, and in the white parts no par
+ticles adhere at all.
+duced on the gelatin compound when the dust
+If the particles are of fusible resin they can be
+is transferred to it.
+is carried in a thin coating on a backing sheet,
+
+instead of being placed in a pan, the copies
+being run olf in a rotary cylinder copying ma
+chine.
+In still another ,process use is made of a
+
+method known in the art as spirit duplication.
+In this case the dusting powder should be an
+alcohol soluble dye or dye composition.
+Such dyes as the basic dyestuffs rhodamine,
+
+Victoria blue, Victoria green, crystal violet, nigro
+sine, methyl violet, induline may be employed
+
+By using powders in which particles of various
+diameters are mixed together in different propor
+tions (rather than using grains all of one di
+ameter, as illustrated) a variety of different ef
+fects can be achieved.
+
+My process is also applicable to the making of
+half-tones by conventional methods such as by
+
+using a half-tone screen in the camera or by
+photographing a half-tone original.
+either alone or compounded with an alcohol
+soluble resin.
+Paper layers
+In the case of a resin-compounded dye the dust
+While I have described the photoconductive in
+image may be transferred to a paper sheet as
+70 sulating layer as attached to a metal backing this
+heretofore described and melted onto the paper
+is not always necessary. Where the material is
+Aor adhered to it by wetting'slightly with alcohol.
+of such nature as to form a sheet it may be used
+Copies can then be run offv by attaching the
+independently, it being only necessary to provide
+master thus formed to the drum of a rotary
+a conductive backing by contact during the ex
+
+duplicator and running through blank sheets
+
+posure step to drain off the charge.
+
+--- REVIEWED TRANSCRIPTION PAGE 7 OF 10 ---
+6
+
+2,297,691
+
+I have also found that certain of the materials
+can be impregnated into paper. It is preferred to
+
+required with ordinary photographic plates, since
+
+use pure cellulose paper and to obtain more or less
+
+the surface each time immediately before ex
+
+of a layer of the photoconductive insulating ma
+
+posure.
+
+the plate is prepared for exposure by charging
+
+terial on a surface of the paper as well as im
+
+The present process is suitable for copying let
+
+pregnated into the sheet. Anthracene is par
+ticularly useful for such a sheet although the
+other materials, including sulfur have also beenA
+used successfully in this way.
+The preferred method is to melt the material
+
+ters, drawings, printed matter, books, typewritten
+
+into the paper but other ways can also be em
+
+ployed such as depositing from a solution.
+
+A metal backing by pressure contact need only
+be used during the exposure step.
+It is also contemplated that the paper may be
+ñrst impregnated with Va conductive material
+which will render the paper fibres conductive and
+then impregnated or coated with the photocon
+ductive insulating material. For example, a silver
+salt, such as silver chloride, may be deposited in -
+
+the paper and reduced to metallic silver by ex
+posure to light, after which the sheet is thor
+oughly washed to eliminate any remaining chem
+
+icals, and then the photoconductive material ap
+plied. Certain conductive metallic compounds .
+such as the sulñdes may also be used.
+
+Another type of “electrophotographic” sheet is
+made by coating a sheet of paper with a layer of
+conductive material such as bronze or carbon pow
+
+der held in a binder, the photoconductive insulat
+ing material being applied to .the conductive sur
+face or impregnated into the sheet.
+The conductive layer may be sprayed or painted
+onto the paper or rolled into the surface before
+applying the photoconductive material and in a
+some cases afterward.
+
+Color photography
+
+matter, enlarging matter from films such as mi
+
+crofilm, pictorial photography, color photogra
+phy, half-tone production and as a means for
+
+producing masters for lithographic, hectographic
+or typographical production of multiple copies.
+In the specification and claims “light” is in
+tended to refer not only to visible radiation but
+also other radiations which affect the photocon
+ductive material, such as ultra-violet radiations,
+
+infra-red, etc.
+The present application is a continuation in
+
+part of my prior-filed co-pending application
+S. N. 169,630, filed October 18, 1937.
+While the present invention, as to its objects
+and advantages, has been described herein as car
+
+ried out in specific embodiments thereof, itis not
+desired to be limited thereby but it is intended
+to cover the invention broadly within the spirit
+and scope of the appended claims.
+What is claimed is:
+1. The method of making a photographic re
+
+production which comprises applying a uniform
+layer of photoconductive insulating material to a
+plane conductive backing, developing a strong
+electrostatic charge on the surface of said layer
+by rubbing said surface, exposing the layer to a
+light image whereby to render the illuminated
+areas thereof sufficiently conductive to drain off
+a substantial proportion of said charge to said
+conductive backing, then bringing a ñne dust into
+contact with the surface whereby to form an
+electro-static dust deposit on the areas of said
+
+It has already been mentioned that colored
+powders may be used in developing the image. It
+is thereby possible to produce a copy in any color,
+either the same as or different from that of the
+
+original.
+The process can also be used for multi-color
+
+surface remaining charged after the exposure,
+then blowing off excess dust not electrostatically
+held on said surface, whereby a dust image will
+be produced in which the dark areas of the origi
+nal image will be reproduced as dust deposit
+areas.
+
+vphotography by exposing a plate first to the orig
+
+2. The method of making a photographic re
+
+inal through light filters which enable one color
+to be recorded, and then developing with colored
+powder to produce a copy of that color, then re
+
+production which comprises applying a uniform
+layer of photoconductive insulating material to a
+plane conductive backing, developing a strong
+electrostatic charge on the surface of said layer
+by rubbing said surface, exposing the layer to a
+light image whereby to render the illuminated
+
+peating for each other color and superimposing
+the dust images on the same copy sheet.
+
+Conclusion
+An outstanding advantage of the process de
+scribed herein is its simplicity and rapidity. It
+
+areas thereof sufficiently conductive to drain off
+a substantial proportion of said charge to said
+conductive backing, then bringing a fine dust
+is a matter of only a few seconds to make a com- â
+into contact with the surface whereby to form an
+plete permanent copy of any original. No com
+electrostatic dust deposit on the areas of said
+plex chemical development process is required.
+surface remaining charged after the exposure,
+This gives the process a further advantage in
+then blowing off excess dust not electrostatically
+that itmay readily be performed by mechanical
+held on said surface, whereby a dust image will
+means, it being only necessary to provide an ap (il) be produced in which the dark areas of the origi
+paratus for performing the necessary operations
+nal image will be reproduced as dust deposit
+areas, then transferring the dust image to a sheet
+in sequence.
+Another advantage resides in the fact that the
+of paper by pressing said pap-er against said sur
+sensitized plates may be used over and over again
+face.
+it merely being necessary to brush off the sur
+3. The method of making a direct-positive
+photographic reproduction which comprises rub
+face and recharge it before each exposure. Since
+bing the surface of a layer of photoconductive
+the insulating photoconductive layer 2l is nor
+insulating material to produce an electrostatic
+mally in contact with the air, which may often be
+
+charge on said surface, then exposing the layer
+quite humid, the material forming the layer
+should preferably be of a type which is not high 70 to a light image while simultaneously engaging
+the side of said layer opposite said charged sur
+ly reactive and which is non-hygroscopic, since
+face with a conductive backing whereby the il
+moisture in the layer will destroy its insulating
+luminated portions of said layer will have their
+properties. All of the materials described herein
+are of this type.
+
+‘
+
+conductivity increased by the illumination and
+
+The plate need not be stored in the dark as is 75 will allow at least part of said charge to drain off
+
+--- REVIEWED TRANSCRIPTION PAGE 8 OF 10 ---
+2,297,691
+to said conductive backing in said illuminated
+areas, then bringing a dark-colored powder into
+contact with said surface whereby to form a dust
+deposit thereon, removing the dust not held onto
+said surface by electrostatic attraction by passing
+an air stream over the surface, whereby a dust
+
+layer of photoconductive insulating material with
+an -electrostatic charge and then exposing said
+layer to a light image while simultaneously en
+
+gaging the sid-e of said layer opposite to said
+charged surface with a conductive backing, said
+light image comprising a pattern of light and
+
+image is produced on said surface, transferring
+said dust image to a sheet of paper by pressing
+said sheet against said surface carrying the dust
+image and afiixing said dust to said paper.
+4. The method of producing an electrostatic
+latent image which comprises rubbing the sur
+
+shadow to be recorded, whereby the illuminated
+portions of said layer will have their conductivity
+increased by the illumination and will conduct
+
+face of a layer of photoconductive insulating ma
+terial supported on a conductive backing to charge
+the surface thereof and produce a strong electric
+
+face corresponding to said light image, and then
+cutting off the illumination of said layer and
+storing said electrostatic image on the surface
+thereof.
+
+potential gradient through the layer between the
+charged surface and the backing and projecting
+a light image onto said layer whereby said layer
+is rendered partially conductive in the areas
+
+at least part of said charge away to said conduc
+tive backing in said illuminated areas, thereby
+leaving an electrostatic latent image on said sur
+
+9. The method of forming an electrostatic
+latent image on the surface of a layer of photo
+conductive insulating material afliXed to a con
+
+thereof illuminated by said image, said light 20 ductive backing which comprises charging the
+
+image comprising a pattern of light and shadow
+to be recorded, said illumination increasing the
+electrical conductivity of said illuminated areas
+and thereby permitting a migration of electric
+charges through said layer in the illuminated
+ar-eas due to said potential gradient, but not to
+
+surface of said layer with a distributed electro
+static charge and then exposing said layer to a
+
+any substantial extent in the unilluminated areas,
+
+and will conduct at least a part of said charge
+away to said conductive backing in said illumi
+nated areas, thereby leaving an electrostatic latent
+
+whereby said electrostatic latent image will be
+produced at the surface of said layer due to the
+chance in charge brought about on the illumi- ‘
+
+nated parts of said surface by said charge migra
+tion, said image being trapped at said surface
+when said illumination is discontinue-d due to the
+return of said layer to its normal dark insulat
+ing value.
+
+light image, said light image comprising a pat
+tern of light and shadow to be recorded, whereby
+the illuminated portions of said layer will have
+their conductivity increased by the illumination
+
+image on said surface corresponding to said light
+image, and then cutting ofi" the illumination of
+said layer and storing said electrostatic image on
+the surface thereof for an indefinite period.
+i0. The method of printing a design on a sur
+
+face which comprises producing an electrostatic
+5. The method of photography which comprises
+charge pattern on the surface of a layer of in
+charging the surface of a layer of photoconduc
+sulating material, depositing a powder on said pat
+tive insulating material with an electric charge,
+tern whereby to produce a corresponding powder
+exposing the layer photographically to a light im
+design, and then transferring the powder design
+age for a period sufficient to substantially dis
+to a second surface by pressing said surfaces to
+charge the areas receiving the highest intensity
+gether, at least one of the materials comprising
+of illumination while at the same time engaging
+said powder and said second surface being ther
+the opposite surface of said layer with a conduc
+moadhesive in nature, and permanently aflixing
+tive backing, and then dusting the charged sur
+said powder design to said second surface by heat
+face with a ñne electroscopic powder to develop 45 ing said surface and design until said thermoad
+’ the charge image, and subsequently fixing the
+hesive material becomes adhesive.
+powder in the configuration in which it is de
+ll. The method of making a photographic re
+posited.
+production which comprises applying an electric
+6. `The method of photography which comprises
+field through a layer of photoconductive insulat
+charging the surface of a layer of photoconduc 50 ing material and projecting an image onto said
+tive insulating material with an electric charge,
+layer whereby a flow of electricity will take place
+exposing the »charged layer photographically
+through said layer producing an electrostatic
+Vwhile maintaining a conductive backing in con
+latent image at a surface thereof, then deposit
+tact with the surface of said layer opposite to
+ing dust particles on said surface where said par
+said charged surface, and then dusting the
+ticles will adhere in a distribution varying in
+charged surface with an electrostatically attract
+density with the intensity of the charge at the
+able finely divided material to develop the charge
+various parts of the surface.
+image.
+l2. A device for electrophotography compris
+'7. The method of photography which comprises
+ing a pair of layers of conductive material dis
+applying a strong electric field through a layer 60 posed in spaced parallel relation, a thin layer of
+of photoconductive insulating material and simul
+photoconductive insulating material attached to
+
+taneously projecting a light image onto said layer,
+one of said conductive layers on its surface near
+said light image comprising a pattern of light
+est the other conductive layer, said photcconduc
+and shadow to be recorded, whereby electricity
+tive layer being spaced from said other conduc
+will ñow through said layer in the illuminated 65 tive layer whereby it is insulated therefrom; one
+parts thereof, thereby producing an electrostatic
+of said conductive layers being permeable to light,
+charge image at a surface thereof, shutting off
+means for projecting a light image onto said
+the illumination and storing said electrostatic
+photoconductive layer by projecting light through
+charge image on said surface by protecting said
+said light-permeable layer, and means for apply
+layer from illumination subsequent to exposure to 70 ing a high-voltage potential difference between
+the light image, and subsequently developing said
+said pair of conductive layers, whereby an elec
+image by dusting said stored charge image with
+trostatic latent image corresponding to said light
+an electroscopic powder.
+image may be produced on the exposed surface of
+8. The method of making an electrostatic latent
+said photoconductive insulating layer by applica
+image. which comprises charging> a surface of a 75 tion of said potential diiference and projecting
+
+--- REVIEWED TRANSCRIPTION PAGE 9 OF 10 ---
+8
+
+2,297,691
+
+said light image thereon, said layers being ex
+posed to air at atmospheric pressure and said
+photoconductive insulating material being non
+
+hygroscopic.
+13. A device for reproducing images comprising
+a layer of photoconductive material of the type
+having a high insulating value in the dark, a con
+
+tiguous contacting layer of conductive material
+
+18. The method of producing an electrostatic
+latent image upon a layer of photoconductive in
+
+sulating material which comprises charging the
+outer surface of said layer with a first polarity
+charge, then exposing said layer to a light image
+while supporting a transparent electrode spaced
+from said outer surface, said electrode being
+charged with the said first polarity charge, and
+continuing said exposure long enough for the
+
+engaging one surface of said photoconductive in
+sulating layer, means for applying an electric 10 most highly illuminated areas of said layer sur
+
+face to discharge and to recharge to opposite
+polarity under influence of said electrode, where
+by an electrostatic latent image is produced hav
+ing areas thereof charged with said ñrst polarity
+insulating layer, said layer of photoconductive 15 charge and other areas thereof charged with the
+opposite polarity charge.
+material being exposed to air at atmospheric
+19. The method of recording a light image
+pressure, said material being non-hygroscopic.
+comprising a pattern of light and 'shadow to be
+14. An electrophotographic camera compris
+recorded which method comprises producing and
+ing a layer of photoconductive insulating ma
+storing an electrostatic latent image correspond
+terial affixed to a conductive backing, a trans
+ing to said light image by creating a strong elec
+parent conductive layer spaced yand insulated
+tric field through a layer of photoconductive insu
+from the front surface of said photoconductive
+lating material and exposing said layer to said
+insulating layer and a lens supported in front of
+light image to be recorded, whereby electricity will
+said layers in a position to project a light image
+onto said photoconductive layer through said 25 flow through said layer in the illuminated areas
+thereof thereby changing the charge condition of
+transparent conductive layer, and means to apply
+the illuminated areas at a surface of said layer
+a high voltage potential difference between said
+thus producing said electrostatic latent image
+transparent conductive layer and said conductive
+thereat, then cutting off the illumination of the
+backing.
+15. An electrophoto camera comprising a light 30 image field of said layer to restore the normal
+dark insulating value to all parts of said layer in
+tight box having a lens and shutter for admitting
+the image ñeld and thereby entrap said electro
+a light image, a layer of photoconductive insulat
+static latent image at said surface for an indefi
+ing material and a backing supporting said layer
+nite period, and subsequently depositing a finely
+in a position within said box to receive an image
+
+i’ield through saidi phbtoconductive insulating
+
+layer and means for projecting a predetermined
+light image comprising a pattern of light and
+shadow to be recorded onto said photoconductive
+
+projected thereon by said lens, spaced parallel 35 divided material on said electrostatic latent image
+conductive electrodes in front of and behind said
+layer, >a high voltage source and means for con
+
+to form a corresponding image out of said ma
+terial.
+
+20. The method of photography which com
+necting the terminals thereof to said electrodes
+prises applying a strong electric field through
+to apply a high potential difference between said
+electrodes, said electrode in front of said layer 40 a layer of photoconductive insulating material
+and simultaneously projecting a light image onto
+being light permeable whereby said image may
+said layer, said light image comprising a pat
+be projected therethrough, and an electric flood
+tern of light and shadow to be recorded, where
+lamp mounted within said box for flooding said
+by electricity will flow through said layer in the
+layer with light at the will of the operator.
+16,. The method of producing an electrostatic 45 illuminated part thereof, thereby producing an
+electrostatic charge image at a surface thereof,
+latent image at the surface of a layer of photo
+and then depositing a finely divided electrostati
+conductive insulating material having a conduc
+cally attractable material on said image to make
+tive backing, which comprises charging the front
+the image Visible.
+surface of said layer with a distributed electro
+static charge and subsequently exposing said 50 21. The method of electrographic recording
+which comprises producing an electrostatic latent
+layer to a light image comprising a pattern of
+image at the surface of a layer of insulating ma
+light and shadow to be recorded, whereby at least
+terial, developing the image by depositing an elec
+part of said charge will drain off through said
+trostatically attractable iinely divided material
+layer to said conductive backing in the illumi
+nated areas of said layer leaving an electrostatic 55 thereon, then transferring the material in the
+image configuration to a second surface by pres
+charge image on said layer, and then cutting oif
+sure contact and aflixing the transferred mate
+said illumination.
+rial to the second surface.
+17. rIfhe method of recording a light image com
+22. The method of printing a design on a sur
+prising a pattern of light and shadow to be re
+corded which method comprises producing and 60 face which comprises producing an electrostatic
+charge pattern on the surface of a layer of in
+storing an electrostatic latent image correspond
+ing to said light image by creating a strong elec
+sulating material, depositing a finely divided ma
+tric ñeld through a layer of photoconductive in
+terial on said pattern whereby to render said pat
+sulating material and exposing said layer to said
+tern visible, and then transferring said material
+light image to be recorded, whereby electricity 65 to a second surface and permanently afñxing said
+will flow through said layer in the illuminated
+material to said second surface in the configura
+tion of said pattern.
+areas thereof thereby changing the charge con
+23. The method of applying a design to a sur
+dition of the illuminated areas at a surface of said
+face which comprises producing an electrostatic
+layer thus producing said electrostatic latent im
+age thereat, then cutting off the illumination of 70 charge pattern at the surface of a layer of insu
+the image field of said layer to restore the normal
+lating material, depositing a powder on said pat
+tern whereby to produce a corresponding powder
+dark insulating value to all parts of said layer in
+design by the electrostatic attraction of said pat
+the image field and thereby entrap said electro
+tern for said powder, and bringing a second sur
+static latent image at said surface for an in
+definite period.
+75 face having an adhesive material thereon into
+
+--- REVIEWED TRANSCRIPTION PAGE 10 OF 10 ---
+2,297,691
+contact with the powder design whereby to trans
+fer said powder design to said second surface.
+
+9
+
+posed surface thereof in a design corresponding
+to said pattern.
+26. The method of producing a half-tone pic
+ture having varied shadings of light and shadow
+
+24. The method of applying a design to a sur
+face which comprises producing an electrostatic
+charge pattern at the surface of a layer of in
+which comprises producing a distribution of in
+sulating material, depositing a powder on said
+dividual solid particles of fusible material on a
+pattern whereby to produce a corresponding pow
+surface in a particle density corresponding to the
+der design by the electrostatic attraction of said
+degree of shading desired on each part of the sur
+pattern for said powder, and bringing a second
+face and then añixing said particles to said sur
+surface having an adhesive material thereon in 10 face, by melting said particles thereon to produce
+to contact with the powder design whereby to
+a half-tone dot from each of said particles.
+transfer said powder design to said second sur
+2'?. The method of producing a half-tone pic
+face, and then permanently affixing the powder
+ture having varied shadings of light and shadow
+design to said second surface.
+which comprises producing an electrostatic charge
+25. The method of producing a powder de 15 image, producing under the iniiuence thereof a
+sign on a sheet of insulating material which com
+distribution of individual solid particles of fusi
+prises ñrst producing an electrostatic charge pat
+ble material on a surface in a particle density
+tern on a second layer of insulating material,
+corresponding to the charge on each part of said
+then placing said sheet in contact with said sec
+electrostatic image and then añixing said par
+ond layer and then bringing a iinely divided elec 20 ticles to said surface by melting said particles
+troscopic material adjacent the exposed surface
+thereon to produce a half-tone dot from each of
+thereof, whereby the electrostatic charge pattern
+said particles.
+acting through said insulating sheet causes ad
+CHESTER F. CARLSON.
+herence of said electrosoopic material to the eX
