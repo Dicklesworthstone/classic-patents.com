@@ -1,0 +1,52 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---
+A.D. 1769 . . . . . . . N° 931.
+
+RICHARD ARKWRIGHT.
+
+Manufacture of Yarn: An Engine for Making of Cotton and Other Yarn.
+
+SPECIFICATION ENROLLED PURSUANT TO THE LETTERS PATENT.
+
+TO ALL TO WHOM THESE PRESENTS SHALL COME, I, RICHARD ARKWRIGHT, of Nottingham, in the County of Nottingham, send greeting:
+
+WHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Fifteenth day of July, in the ninth year of His reign, did give and grant unto me, the said Richard Arkwright, His especial licence, full power, sole privilege and authority, that I, the said Richard Arkwright, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented "Apparatus or Engine for the Making of Weft or Yarn from Cotton, Flax, and Wool;"
+
+NOW KNOW YE, that in compliance with the said proviso, I, the said Richard Arkwright, do hereby describe and ascertain the nature of my said Invention, and the manner in which the same is to be performed, by the Plan or Drawing hereunto annexed, and following explanation thereof:
+
+THE NATURE AND CONSTRUCTION OF THE MACHINE:
+
+A represents the great wheel or pulley, which is driven by a horse, water, or other prime mover, giving motion to the whole machine through intermediate gearing and bands.
+
+B represents the horizontal iron driving shaft, having upon it small pullies or wooden drums with leather bands passing to each spindle, and furnished with a clutch or disengaging lever.
+
+C represents the pairs of cylindrical drawing rollers, whereof the first pair takes in the cotton rove from bobbins above, and by turning with different degrees of velocity, draws out and attenuates the cotton fibers to the required degree of fineness. The top rollers are covered with leather, and the lower rollers are made of fluted iron or brass, to seize and grip the fibers firmly without slipping or cutting.
+
+D represents the lead weights and pressing levers, which hang upon the bearings of the upper rollers, pressing them down upon the fluted cylinders with uniform force to ensure steady and constant drawing.
+
+E represents the high-speed steel flyers, having two curved arms with small wire guide loops or eyes, mounted upon the upright spindles, which twist the attenuated roving as it delivers from the last pair of drawing rollers, producing strong, compact, and even yarn.
+
+F represents the bobbins, loosely fitted upon the spindles beneath the flyers, and retarded by friction bands or drag cords, so that by the difference of speed between the flyer and bobbin, the twisted yarn is continuously and uniformly wound upon the bobbin.
+
+G represents the heart-wheel or cam, driven by slow worm gearing from the main shaft, which raises and lowers the rail supporting the bobbins with a regular reciprocating motion, thereby distributing and winding the thread evenly in cylindrical layers from end to end of each bobbin.
+
+CLAIMS AND DECLARATION:
+
+AND I DO HEREBY DECLARE that the essential principle and distinctive character of my said Invention consists in:
+1. Drawing out and attenuating cotton, wool, or other fibrous substances into a roving or thread of any desired fineness by passing the same successively through two or more pairs of rollers turning with different and accelerating velocities;
+2. Pressing the top leather-covered rollers upon the lower fluted metal cylinders by suspended weights to preserve uniform traction;
+3. Imparting the requisite twist to the drawn fibers continuously by rapidly revolving flyers; and
+4. Winding the twisted yarn onto drag-retarded bobbins traversed uniformly by the action of a heart-cam.
+
+RICHARD ARKWRIGHT. (L.S.)
+
+AND BE IT REMEMBERED, that on the Eighth day of November, in the tenth year of the Reign of King George the Third, the aforesaid Richard Arkwright came before our said Lord the King in His Chancery, and acknowledged the Specification aforesaid, and all and every thing therein contained, in form above written. Enrolled the Eighth day of November, in the year of our Lord One thousand seven hundred and sixty-nine.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---
+[DRAWING SHEET 1: Technical Engraving of the 4-Spindle Water Frame, Lettered A through G with Explanatory Legend]
+A: The Great Wheel or Drum driven by water power.
+B: The Driving Shaft with clutches and whorl bands.
+C: The Differential Drawing Rollers.
+D: Weighted Levers pressing top leather rollers.
+E: High-Speed Steel Flyers.
+F: Retarded Bobbins.
+G: Heart-Cam Traverse Motion.

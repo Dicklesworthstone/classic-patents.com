@@ -1,0 +1,68 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+(No Model.)
+
+C. M. HALL.
+PROCESS OF REDUCING ALUMINIUM BY ELECTROLYSIS.
+
+No. 400,766. Patented Apr. 2, 1889.
+
+Fig. 1.
+[Drawing: Sectional elevation showing crucible A lined with carbon B, molten fluoride bath D with dissolved alumina, carbon anode rods C C suspended into the bath, and reduced molten aluminium pool E collecting at the bottom cathode.]
+
+Fig. 2.
+[Drawing: Top plan view of rectangular reduction pot showing terminal connection lugs, electrolyte bath, and array of suspended carbon anode rods.]
+
+Witnesses:
+Frank F. Schilling.
+M. E. Jones.
+
+Inventor:
+Charles M. Hall,
+by Wm. Bakewell & Kerr,
+his Attorneys.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+UNITED STATES PATENT OFFICE.
+
+CHARLES M. HALL, OF OBERLIN, OHIO.
+
+PROCESS OF REDUCING ALUMINIUM BY ELECTROLYSIS.
+
+SPECIFICATION forming part of Letters Patent No. 400,766, dated April 2, 1889.
+Application filed July 9, 1886. Serial No. 207,601. (No specimens.)
+
+To all whom it may concern:
+Be it known that I, CHARLES M. HALL, a citizen of the United States, residing at Oberlin, in the county of Lorain and State of Ohio, have invented a new and useful Improvement in the Process of Reducing Aluminium by Electrolysis, of which the following is a specification.
+
+This invention has for its object to reduce aluminium from its oxides by dissolving such oxides in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by the aid of an electric current by the operation of which the fluorides are not decomposed, the bath being thus continuously maintained.
+
+Heretofore the reduction of aluminium has been accomplished by chemical processes with sodium or by electrolysis of molten anhydrous double chloride of aluminium and sodium; but these methods are expensive and commercially unsatisfactory.
+
+In the practice of my invention I prepare a bath of a fluoride of aluminium and a fluoride of a metal more electro-positive than aluminium, as sodium, potassium, calcium, or lithium. A fluoride of aluminium and sodium—that is, the mineral cryolite, having the formula Al₂F₆·6NaF—is preferred on account of its low melting point, high solvent power for alumina, and non-decomposition under the electromotive force required to decompose alumina.
+
+This fluoride bath is placed in a suitable crucible or pot, preferably lined with carbon, which forms the cathode or negative electrode, and is fused by external heat or by the action of the electric current itself. Alumina (Al₂O₃) in a finely powdered state is then added to the molten fluoride bath, in which it readily dissolves, forming a clear, fluid solution.
+
+Electrodes of carbon connected to the positive pole of an electric generator are then suspended in the fused bath. Upon passing an electric current of suitable voltage and density through the bath, the dissolved alumina is decomposed into aluminium and oxygen. The aluminium is deposited at the negative electrode (the bottom and sides of the carbon-lined pot) and, being heavier in the molten state than the molten fluoride bath at the operating temperature, sinks to the bottom of the pot and forms a pool of molten metal.
+
+The oxygen liberated at the positive carbon electrodes reacts with the carbon of the electrodes to form carbon monoxide and carbon dioxide gases, which escape from the bath.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
+As the alumina in the bath is decomposed and reduced, fresh quantities of powdered alumina are added from time to time to the bath, which is thus maintained in a continuous operating condition without consuming or decomposing the fluoride solvent. The fluoride salts of the bath undergo no permanent change, serving simply as a fused solvent for the oxide.
+
+The process may be carried on continuously for days or months by periodically siphoning or tapping out the accumulated molten aluminium from the bottom of the crucible and adding alumina as rapidly as it is consumed.
+
+Instead of cryolite alone, mixtures of the fluorides of aluminium and sodium with fluorides of calcium or potassium may be employed to lower the fusion point and adjust the specific gravity of the molten bath so that the reduced aluminium will readily sink to the bottom.
+
+Having thus described my invention, what I claim is:
+
+1. The process of reducing aluminium by electrolysis, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and a metal more electro-positive than aluminium, and then passing an electric current through the fused mass, substantially as described.
+
+2. The process of reducing aluminium by electrolysis, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and sodium, and then passing an electric current through the fused mass, substantially as described.
+
+In testimony whereof I have hereunto set my hand.
+
+CHARLES M. HALL.
+
+Witnesses:
+Frank F. Schilling,
+M. E. Jones.

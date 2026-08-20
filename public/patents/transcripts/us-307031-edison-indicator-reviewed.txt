@@ -1,0 +1,76 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 3 ---
+
+(No Model.)
+T. A. EDISON.
+ELECTRICAL INDICATOR.
+No. 307,031. Patented Oct. 21, 1884.
+
+Figure 1 represents in diagram a system of electric lighting with an indicator constructed and connected in accordance with the present invention, showing main conductors 1 2, multiple-arc circuits 3 4, indicating lamp A, platinum plate b, shunt conductors 5 6, binding-posts c c', and galvanometer B having coils d d, needle e, torsion-wire f, split cross-bar g, screws h h, stud i, thumb-nut j, spring k, nut l, and pointer m moving over scale n.
+
+Fig. 2 represents a diagram of a modified arrangement showing test lamp A' placed in a shunt around the indicator lamp A with an adjustable resistance C.
+
+Fig. 3 represents a view showing the use of the galvanometer needle to carry a circuit-controlling arm o closing circuits at contacts p p for automatically regulating generator electro-motive force.
+
+Fig. 4 represents a view in perspective of the indicating lamp A, showing the evacuated globe, incandescing carbon conductor, central platinum plate b, and sealed-in conductors 3 4 5.
+
+Witnesses: Geo. H. Fraser, T. H. Palmer.
+Inventor: Thomas A. Edison.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 3 ---
+
+UNITED STATES PATENT OFFICE.
+
+THOMAS A. EDISON, OF MENLO PARK, NEW JERSEY.
+
+ELECTRICAL INDICATOR.
+
+SPECIFICATION forming part of Letters Patent No. 307,031, dated October 21, 1884.
+Application filed November 15, 1883. (No model.)
+
+To all whom it may concern:
+Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented a new and useful Improvement in Electrical Indicators, of which the following is a specification.
+
+The object of my invention is to produce an efficient apparatus for indicating the variations of electro-motive force in an electric circuit, preferably for use in connection with systems of electrical distribution to show the changes in pressure in the various parts of the district. The apparatus is also capable of use in automatically regulating the electro-motive force to correspond with such variations. I have discovered that if a conducting substance is interposed anywhere in the vacuous space within the globe of an incandescent electric lamp, and said conducting substance is connected outside of the lamp with one terminal, preferably the positive one, of the incandescent conductor, a portion of the current will, when the lamp is in operation, pass through the shunt-circuit thus formed, which shunt includes a portion of the vacuous space within the lamp. This current I have found to be proportional to the degree of incandescence of the conductor or candle-power of the lamp.
+
+My invention consists in the utilization of this discovery for indicating or regulating variations in electro-motive force, or for affecting electrical apparatus in any desired manner. By connecting a device for indicating current changes in the shunt-circuit, changes in the candle-power of the lamp, and consequently in the electro-motive force of the source of supply, are made apparent; or if, instead of an indicating device, the variations in electro-motive force are made to affect circuit-controlling apparatus, automatic regulators or other electrical apparatus may be controlled thereby.
+
+In applying my invention to a system of incandescent electric lighting I place a standard lamp having within its globe a piece of platinum, preferably a thin plate, though platinum wire may be used, placed preferably between the limbs of its carbon conductor, such platinum piece being in connection with the circuit whose electrical condition is to be indicated. The indicating device is a galvanometer with a torsional device for holding its needle at zero under a normal current, so that variations above or below the normal deflect the needle in one direction or the other. If the electro-motive force in the system, and consequently the candle-power of the lamps, increases, the indicating-lamp varies with the rest, and the current from it to the galvanometer is increased, causing the deflection of the galvanometer-needle; and, conversely, a decrease in electro-motive force in the system produces an opposite deflection. The galvanometer-needle may be made to close circuit to electrically-operated devices for accomplishing the automatic regulation of the generator supplying current to the system, or for any other purpose.
+
+My invention is illustrated in the annexed drawings.
+Figure 1 is a diagram of the system and connections, with a view in perspective of the galvanometer; Fig. 2, a diagram of a modified arrangement; Fig. 3, a view showing the use of the galvanometer to close regulating or other circuits; and Fig. 4 a view of the indicating lamp.
+
+1 2 are main conductors of a system of electric lighting, and a a electric lamps connected across them in multiple-arc circuits 3 4. A is a lamp similarly connected, and similar in every way to the other lamps, except that it has a piece of platinum, b, placed between the limbs of its incandescent conductor, while a wire, 5, attached to said platinum, is sealed in the glass of the globe with the wires 3 4. The wire 5 leads to the binding-post c, while a wire, 6, connected with the positive wire 3 of the lamp, leads to the binding-post c'. These binding-posts are the terminals of a galvanometer which consists of coils d d and a needle, e, carried by a torsion-wire, f. The parts are held in a frame, B. The upper cross-bar of the frame is split at g, the split being held together by screws h h, and the torsion-wire is attached to the smooth stud i, which is held by friction in the split, its torsion being adjusted by turning the thumb-nut j. A spring, k, is attached to the other end of the torsion-wire, serving to keep said wire stiff, and the tension of the spring is adjusted by means of nut l. A pointer, m, extends from the needle to indicate its variations upon a scale, n. The torsion of the wire f is so adjusted as to hold the needle and the pointer centrally with a normal current—that is, when the lamps of the system are at their normal candle-power—and, as previously explained, any variations in the electro-motive force of the system causing changes in the candle-power of the lamps will produce deflections of the galvanometer-needle, which deflections will be indicated on the scale.
+
+Instead of simply causing the variations to be indicated on the scale, a circuit-controlling arm, o, Fig. 3, may be carried by the needle, which may close circuit at contacts p, or in any other suitable manner, to electrical devices for automatically regulating the electro-motive force of the system, to electrically-operated indicating devices, or to any electrically-operated apparatus.
+
+For regulating a dynamo-electric machine, a mechanism such as shown in my Patent No. 287,524 may be used, the lamp A and galvanometer of the present apparatus being used in place of the pressure-magnet B of said patent, the working-magnets C C of said patent being located in the two circuits closed by arm o of the present apparatus, which takes the place of the armature-lever of said pressure-magnet B. An adjustable resistance, C, may be placed in circuit with the lamp A, to maintain said circuit at the standard-lamp resistance.
+
+In Fig. 2 a lamp, A', is shown placed in a shunt around the lamp A. The lamp A being constantly in use, lamp A' is occasionally placed in circuit instead, so by observing its candle-power it may be determined whether or not the resistance of the lamp A has changed.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 3 ---
+
+What I claim is—
+
+1. The combination of an incandescent electric lamp, a circuit including the vacuous space within the globe of said lamp, and electrical apparatus controlled by the current in such circuit, substantially as set forth.
+
+2. The combination, with a system of electrical distribution, of an indicating or regulating apparatus comprising a standard lamp, a circuit therefor including the vacuous space within the globe of said lamp, and electrical apparatus controlled by the current in such circuit, substantially as set forth.
+
+3. The combination, with an incandescent electric lamp, of a circuit having one terminal in the vacuous space within the globe of said lamp, and the other in connection without the lamp with one side of the lamp-circuit, substantially as set forth.
+
+4. The combination, with an incandescent electric lamp, of a circuit having one terminal in the vacuous space within the globe of said lamp, and the other in connection without the lamp with the positive side of the lamp-circuit, substantially as set forth.
+
+5. The combination, with an incandescent electric lamp, of a circuit having one terminal in the vacuous space within the globe of said lamp, and the other connected with one side of the lamp-circuit, and electrically controlled or operated apparatus in said circuit, substantially as set forth.
+
+6. The combination, with an incandescent electric lamp, of a piece of conducting material placed in the vacuous space within its globe, and a conductor connected therewith and passing through and sealed in the glass of the lamp, substantially as set forth.
+
+7. In a system of electrical distribution, the combination, with incandescent electric lamps connected in multiple arc, of a similar lamp similarly connected, a circuit having one terminal in the vacuous space within the globe of said lamp, and the other connected with one side of the lamp-circuit, and electrically-operated apparatus in said circuit, substantially as set forth.
+
+8. The combination, with an incandescent electric lamp, of a piece of conducting material placed between the sides of the incandescent loop, and a conductor leading therefrom to the exterior of the lamp, substantially as set forth.
+
+This specification signed and witnessed this 2d day of November, 1883.
+
+THOS. A. EDISON.
+
+Witnesses:
+H. W. SEELY,
+EDWARD H. PYATT.
