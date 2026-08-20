@@ -55,6 +55,11 @@ export function energyChannelsFor(
     return [
       { name: "Chem. enthalpy", watts: rocket.chemicalEnthalpyWatts, tone: "in" },
       { name: "Exhaust KE", watts: rocket.exhaustKineticWatts, tone: "useful" },
+      {
+        name: "Heat leak",
+        watts: Math.max(0, rocket.chemicalEnthalpyWatts - rocket.exhaustKineticWatts),
+        tone: "loss",
+      },
     ];
   }
   if (patentId === "us-808897-carrier-air-conditioner") {

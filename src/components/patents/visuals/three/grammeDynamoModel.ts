@@ -15,7 +15,7 @@
 
 import * as THREE from "three";
 import { grammeFluxRadius, stepGrammeDynamo } from "@/physics/catalogKernels";
-import { cyclicSol, cyclicSymmetry } from "@/physics/genericWasm";
+import { cyclicFlex } from "@/physics/genericWasm";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface GrammeDynamoModelNodes {
@@ -339,28 +339,23 @@ export function updateGrammeDynamoKinematics(
   materials: GrammeDynamoMaterials,
   dt: number,
   timeSec: number,
-  _shaftRate: number,
+  shaftRate: number,
   _inducedEmfIndex: number,
   displayRadPerFrame: number,
   fluxOpacity: number,
   showMagneticFlux: boolean,
   isCutaway: boolean,
 ) {
-  const gramme = stepGrammeDynamo({});
+  const gramme = stepGrammeDynamo({ shaftRate });
   const radiansPerSec = displayRadPerFrame * gramme.displayFps;
   nodes.armatureGroup.rotation.x += radiansPerSec * dt;
 
-  const ring = cyclicSymmetry(gramme.printedJunctionCount, 0.4 + gramme.shaftRate);
-  let peak = 1e-9;
-  for (let i = 0; i < gramme.printedJunctionCount; i++) {
-    peak = Math.max(peak, Math.abs(cyclicSol(ring, i)));
-  }
   const pos = nodes.fluxPositions;
   for (let i = 0; i < nodes.fluxCount; i++) {
     const idx = i * 3;
     const angle =
       (i * Math.PI * 2) / nodes.fluxCount + timeSec * radiansPerSec * gramme.fluxOrbitCoupling;
-    const flex = 1 + 0.18 * (cyclicSol(ring, i) / peak);
+    const flex = 1 + 0.18 * cyclicFlex(gramme.printedJunctionCount, gramme.ringKappa, i);
     const radius =
       grammeFluxRadius(i, gramme.fluxRadiusBase, gramme.fluxRadiusPitch, gramme.fluxRadiusWrap) *
       flex;
