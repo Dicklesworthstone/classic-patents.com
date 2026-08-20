@@ -40,7 +40,7 @@ export function KwolekKevlar3D() {
   const studioRef = useRef<StudioContext | null>(null);
 
   // Polymer Chemistry State Controls
-  const { params } = usePatentPhysics("us-3671542-kwolek-kevlar");
+  const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const drawRatio = params.drawRatio ?? 6.5;
@@ -309,6 +309,71 @@ export function KwolekKevlar3D() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Polymer Dope Concentration
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {polymerConcentrationPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="25"
+              step="0.5"
+              value={polymerConcentrationPct}
+              onChange={(e) =>
+                updateParam("polymerConcentrationPct", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Mechanical Draw Ratio
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {drawRatio.toFixed(1)}×
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="12"
+              step="0.5"
+              value={drawRatio}
+              onChange={(e) => updateParam("drawRatio", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Spinning Dope Temp</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {temperatureCelsius} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="120"
+              step="5"
+              value={temperatureCelsius}
+              onChange={(e) => updateParam("temperatureCelsius", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

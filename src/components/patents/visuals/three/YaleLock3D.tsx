@@ -91,34 +91,27 @@ export function YaleLock3D({
     return () => {
       cancelAnimationFrame(rafId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
-      {/* 3D Viewport Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
-        <div>
-          <h3 className="text-xl font-bold tracking-tight text-amber-400">
-            Linus Yale Jr. 3D Pin-Tumbler Studio
-          </h3>
-          <p className="text-sm text-neutral-400">
-            Interactive WebGL Mechanics • Real-Time Split-Pin Shear Clearance & Deadbolt Throw
-          </p>
-        </div>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      {/* 3D WebGL Canvas Viewport */}
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Camera and Mode Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center bg-neutral-950 p-1 rounded-lg border border-neutral-800 text-xs">
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <button
               type="button"
               onClick={() => handlePresetChange("iso")}
-              className={`px-2.5 py-1 rounded font-mono ${
+              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "iso"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
               Isometric
@@ -126,10 +119,10 @@ export function YaleLock3D({
             <button
               type="button"
               onClick={() => handlePresetChange("cutaway")}
-              className={`px-2.5 py-1 rounded font-mono ${
+              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "cutaway"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
               Cutaway Side
@@ -137,10 +130,10 @@ export function YaleLock3D({
             <button
               type="button"
               onClick={() => handlePresetChange("top")}
-              className={`px-2.5 py-1 rounded font-mono ${
+              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "top"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
               Top Shear
@@ -148,23 +141,26 @@ export function YaleLock3D({
             <button
               type="button"
               onClick={() => handlePresetChange("keyway")}
-              className={`px-2.5 py-1 rounded font-mono ${
+              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "keyway"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
               Keyway Face
             </button>
           </div>
+        )}
 
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setUseAuthorizedKey(!useAuthorizedKey)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               useAuthorizedKey
-                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
-                : "bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30"
+                ? "bg-emerald-700 text-white border-emerald-800 shadow-md ring-2 ring-emerald-500/30 dark:bg-emerald-600"
+                : "bg-rose-700 text-white border-rose-800 shadow-md ring-2 ring-rose-500/30 dark:bg-rose-600"
             }`}
           >
             {useAuthorizedKey ? "Authorized Key" : "Wrong Key"}
@@ -174,12 +170,12 @@ export function YaleLock3D({
             type="button"
             disabled={!yaleState.isUnlocked}
             onClick={() => setIsRotating(!isRotating)}
-            className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               yaleState.isUnlocked
                 ? isRotating
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                  : "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30"
-                : "bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed"
+                  ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                  : "bg-cyan-700 text-white border-cyan-800 shadow-md ring-2 ring-cyan-500/30 dark:bg-cyan-600"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-400 dark:text-parchment-600 border-parchment-300 dark:border-ink-700 cursor-not-allowed"
             }`}
           >
             {isRotating ? "Return (0°)" : "Turn Key (90°)"}
@@ -188,60 +184,64 @@ export function YaleLock3D({
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-            className="p-1.5 rounded-lg text-xs bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-700 transition-colors"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-neutral-500"}`} />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
-      </div>
 
-      {/* 3D WebGL Canvas Container */}
-      <div className="relative w-full aspect-[16/9] min-h-[420px] bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 shadow-inner">
-        <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-
-        {/* Live HUD Overlay (Pointer Events None) */}
+        {/* Live HUD Overlay */}
         {showUiOverlay && (
-          <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Shear Status: </span>
-              <span
-                className={
-                  yaleState.isUnlocked ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"
-                }
-              >
-                {yaleState.isUnlocked ? "ALIGNED (UNLOCKED)" : "PINS BINDING"}
-              </span>
-            </div>
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Max Pin Error: </span>
-              <span className="text-amber-400 font-bold">
-                {yaleState.maxShearErrorMm.toFixed(3)} mm
-              </span>
-            </div>
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Bolt Throw: </span>
-              <span className="text-cyan-400 font-bold">
-                {yaleState.boltExtensionMm.toFixed(1)} mm{" "}
-                {yaleState.isDeadlocked ? "(DEADLOCKED)" : ""}
-              </span>
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 pointer-events-none flex flex-col gap-1.5 font-sans text-xs max-w-xs">
+            <div className="bg-parchment-50/90 dark:bg-ink-900/90 backdrop-blur-md p-2 rounded-xl border border-parchment-300 dark:border-ink-800 shadow-md">
+              <div className="flex justify-between items-center text-xs pb-1 mb-1 border-b border-parchment-200 dark:border-ink-800">
+                <span className="text-ink-600 dark:text-ink-400">Shear Status:</span>
+                <span
+                  className={
+                    yaleState.isUnlocked
+                      ? "text-emerald-700 dark:text-emerald-400 font-bold"
+                      : "text-rose-700 dark:text-rose-400 font-bold"
+                  }
+                >
+                  {yaleState.isUnlocked ? "ALIGNED (UNLOCKED)" : "PINS BINDING"}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-ink-600 dark:text-ink-400">Max Pin Error:</span>
+                <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                  {yaleState.maxShearErrorMm.toFixed(3)} mm
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-ink-600 dark:text-ink-400">Bolt Throw:</span>
+                <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                  {yaleState.boltExtensionMm.toFixed(1)} mm{" "}
+                  {yaleState.isDeadlocked ? "(LOCKED)" : ""}
+                </span>
+              </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Interactive Controls & Telemetry */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950/60 p-5 rounded-xl border border-neutral-800">
-        <div className="flex flex-col gap-4">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Real-Time Key & Torque Controls
-          </h4>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={insertionId} className="text-neutral-300">
+            <div className="flex justify-between text-xs font-sans">
+              <label htmlFor={insertionId} className="text-ink-700 dark:text-ink-300 font-medium">
                 Key Blade Insertion Depth
               </label>
-              <span className="text-amber-400 font-bold">{(keyInsertion * 100).toFixed(0)}%</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {(keyInsertion * 100).toFixed(0)}%
+              </span>
             </div>
             <input
               id={insertionId}
@@ -250,17 +250,19 @@ export function YaleLock3D({
               max="1"
               step="0.01"
               value={keyInsertion}
-              onChange={(e) => updateParam("keyInsertion", parseFloat(e.target.value))}
-              className="w-full accent-amber-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
+              onChange={(e) => updateParam("keyInsertion", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={torqueId} className="text-neutral-300">
+            <div className="flex justify-between text-xs font-sans">
+              <label htmlFor={torqueId} className="text-ink-700 dark:text-ink-300 font-medium">
                 Applied Rotational Torque
               </label>
-              <span className="text-cyan-400 font-bold">{appliedTorqueNm.toFixed(2)} N·m</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {appliedTorqueNm.toFixed(2)} N·m
+              </span>
             </div>
             <input
               id={torqueId}
@@ -269,33 +271,9 @@ export function YaleLock3D({
               max="0.5"
               step="0.01"
               value={appliedTorqueNm}
-              onChange={(e) => updateParam("appliedTorqueNm", parseFloat(e.target.value))}
-              className="w-full accent-cyan-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
+              onChange={(e) => updateParam("appliedTorqueNm", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 justify-center font-mono text-xs">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Physical Constants & Tolerances
-          </h4>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">PLUG DIAMETER</span>
-              <span className="text-neutral-200">12.7 mm (1/2 in)</span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">SHEAR TOLERANCE</span>
-              <span className="text-emerald-400">&plusmn;0.09 mm</span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">SPRING RATE</span>
-              <span className="text-amber-400">140 N/m</span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">KEY PERMUTATIONS</span>
-              <span className="text-indigo-400">7,776 (6⁵)</span>
-            </div>
           </div>
         </div>
       </div>

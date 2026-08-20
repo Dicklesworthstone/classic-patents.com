@@ -165,13 +165,8 @@ export function ColtRevolver3D() {
       cameraPos: iso.pos,
       targetPos: iso.target,
       fov: 38,
-      isDark: true,
       enableFloorGrid: true,
       enableClouds: true,
-      floorColor: 0x0a0f1d,
-      gridColor: 0x1e293b,
-      ambientIntensity: 1.5,
-      sunIntensity: 2.5,
     });
     studioRef.current = studio;
 

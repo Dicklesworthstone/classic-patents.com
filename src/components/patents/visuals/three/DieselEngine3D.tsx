@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  Eye,
-  EyeOff,
-  Flame,
-  Layers,
-  RotateCcw,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Flame, Layers, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -33,7 +22,7 @@ type CameraPreset = "iso" | "cylinder" | "injector" | "crosshead" | "compressor"
 
 export function DieselEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam, resetParams } = usePatentPhysics("us-542846-diesel-engine");
+  const { params } = usePatentPhysics("us-542846-diesel-engine");
 
   const engineRpm = params.engineRpm ?? 150;
   const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
@@ -98,7 +87,6 @@ export function DieselEngine3D() {
       fov: 40,
       enableClouds: true,
       enableFloorGrid: true,
-      floorColor: 0x0f172a,
     });
     studioRef.current = studio;
     const { scene, renderer, controls } = studio;
@@ -170,251 +158,152 @@ export function DieselEngine3D() {
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-amber-900/20 dark:border-ink-800 bg-slate-950 shadow-2xl">
-      {/* 3D WebGL Canvas Viewport */}
-      <div
-        ref={containerRef}
-        className="w-full h-[520px] sm:h-[640px] cursor-grab active:cursor-grabbing"
-      />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top Floating Header HUD */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
-        <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-4 py-2.5 shadow-lg pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <Flame className="w-5 h-5 text-amber-400 animate-pulse" />
-            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-100">
-              Diesel High-Compression Engine 3D (US 542,846)
-            </h3>
+        {/* Top-Left Title HUD */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
+            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
+              Diesel Internal Combustion Engine 3D
+            </div>
+            <div className="text-[11px] text-parchment-300 font-sans">
+              US Patent 542,846 • Rational Heat Motor Compression Ignition
+            </div>
           </div>
-          <span className="text-[11px] font-mono text-amber-400 block mt-0.5">
-            Augsburg 1893–1897 Prototype · Adiabatic Compression T₂ = T₁ · r^(γ-1)
-          </span>
-        </div>
+        )}
 
-        <div className="flex items-center gap-2 pointer-events-auto">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setIsPlaying(!isPlaying)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              isPlaying
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{isPlaying ? "Pause" : "Run"}</span>
+          </button>
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-mono font-bold transition-all shadow-md ${
+            title={
+              cutawayMode ? "Cutaway Active (Switch to Solid Engine)" : "Switch to Cutaway View"
+            }
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               cutawayMode
-                ? "bg-amber-600/90 border-amber-500 text-white"
-                : "bg-slate-900/90 border-slate-700 text-slate-200 hover:text-white"
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
-            title="Toggle Cutaway Internal Thermo View"
           >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">
+            <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">
               {cutawayMode ? "Cutaway Active" : "Full Exterior"}
             </span>
           </button>
           <button
             type="button"
             onClick={toggleMute}
-            className="p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-colors"
-            title={isMuted ? "Unmute sound" : "Mute sound"}
-            aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            title={isMuted ? "Unmute Engine Audio" : "Mute Engine Audio"}
+            aria-label={isMuted ? "Unmute Engine Audio" : "Mute Engine Audio"}
           >
             {isMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 inline" />
             ) : (
-              <Volume2 className="w-4 h-4 text-emerald-400" />
+              <Volume2 className="w-3.5 h-3.5 inline text-emerald-600 dark:text-emerald-400" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-colors"
-            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-            aria-label={showUiOverlay ? "Hide HUD" : "Show HUD"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <Flame className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
-      </div>
 
-      {/* Interactive Controls Overlay HUD */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end justify-between gap-4 pointer-events-none">
-          {/* Main Controls Card */}
-          <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 shadow-xl pointer-events-auto max-w-md w-full space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-amber-400" /> Thermodynamics &amp; Injection
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["cylinder", "Cylinder"],
+                ["injector", "Air Blast Injector"],
+                ["crosshead", "Crosshead Guide"],
+                ["compressor", "Air Compressor"],
+                ["flywheel", "Flywheel"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setCameraView(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Ignition State:
               </span>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={resetParams}
-                  className="p-1 rounded-md text-slate-400 hover:text-white transition-colors"
-                  title="Reset to 1895 baseline parameters"
-                  aria-label="Reset parameters"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono font-bold shadow-md transition-all ${
-                    isPlaying
-                      ? "bg-amber-600 hover:bg-amber-700 text-white"
-                      : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                  }`}
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  <span>{isPlaying ? "Stop Engine" : "Start Engine"}</span>
-                </button>
-              </div>
+              <span
+                className={`font-bold ${isAutoIgnition ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
+              >
+                {isAutoIgnition ? "COMPRESSION AUTO-IGNITION" : "SUB-CRITICAL"}
+              </span>
             </div>
-
-            {/* Compression Ratio Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono text-slate-300">
-                <span>Compression Ratio (r)</span>
-                <span className="text-amber-400 font-bold">{compressionRatio}:1</span>
-              </div>
-              <input
-                type="range"
-                min="12.0"
-                max="22.0"
-                step="0.5"
-                value={compressionRatio}
-                onChange={(e) => updateParam("compRatio", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-                aria-label="Compression Ratio"
-              />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Peak Pressure:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {peakPressureBar} bar
+              </span>
             </div>
-
-            {/* Engine RPM Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono text-slate-300">
-                <span>Engine Speed</span>
-                <span className="text-amber-400 font-bold">{engineRpm} RPM</span>
-              </div>
-              <input
-                type="range"
-                min="60"
-                max="300"
-                step="10"
-                value={engineRpm}
-                onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-                aria-label="Engine Speed (RPM)"
-              />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Compression Temp:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">{peakTempC} °C</span>
             </div>
-
-            {/* Blast Air Injection Pressure Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono text-slate-300">
-                <span>Blast Air Pressure</span>
-                <span className="text-emerald-400 font-bold">{blastAirPressure} bar</span>
-              </div>
-              <input
-                type="range"
-                min="50"
-                max="90"
-                step="2"
-                value={blastAirPressure}
-                onChange={(e) => updateParam("blastAirPressure", Number(e.target.value))}
-                className="w-full accent-emerald-500 cursor-pointer"
-                aria-label="Blast Air Pressure (bar)"
-              />
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Brake Efficiency:</span>
+              <span className="text-sky-800 dark:text-sky-400 font-bold">
+                {thermalEfficiencyPct}%
+              </span>
             </div>
-
-            {/* Live Readout Badges */}
-            <div className="grid grid-cols-3 gap-2 pt-1">
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[9px] font-mono text-slate-400 block uppercase">P_peak</span>
-                <span className="text-xs font-mono font-bold text-emerald-400">
-                  {peakPressureBar} bar
-                </span>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[9px] font-mono text-slate-400 block uppercase">T_comp</span>
-                <span className="text-xs font-mono font-bold text-amber-400">{peakTempC} °C</span>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[9px] font-mono text-slate-400 block uppercase">
-                  η_thermal
-                </span>
-                <span className="text-xs font-mono font-bold text-sky-400">
-                  {thermalEfficiencyPct}%
-                </span>
-              </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Engine Speed:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {engineRpm} RPM
+              </span>
             </div>
           </div>
-
-          {/* Camera View Switcher */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-xl pointer-events-auto">
-            <Camera className="w-4 h-4 text-slate-400 ml-1.5 mr-0.5" />
-            <button
-              type="button"
-              onClick={() => setCameraView("iso")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "iso"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("cylinder")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "cylinder"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Cylinder &amp; Rings
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("injector")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "injector"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Blast Injector
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("crosshead")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "crosshead"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Crosshead &amp; Rod
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("compressor")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "compressor"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Air Flask &amp; Pump
-            </button>
-            <button
-              type="button"
-              onClick={() => setCameraView("flywheel")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-                activeCamera === "flywheel"
-                  ? "bg-amber-600 text-white font-bold"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800"
-              }`}
-            >
-              Flywheel
-            </button>
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
       <StudioKernelChips

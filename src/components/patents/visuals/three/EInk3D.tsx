@@ -1,5 +1,6 @@
 "use client";
 
+import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -10,6 +11,7 @@ import { type EInkState, stepEInk } from "@/physics/eInkKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildEInkModel } from "./EInkModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 
 const EXHIBIT_ID = "us-6120588-eink";
 
@@ -130,27 +132,58 @@ export function EInk3D() {
   }, [live]);
 
   return (
-    <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-      <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="flex items-center gap-1 bg-white/85 dark:bg-neutral-900/85 backdrop-blur-md p-1 rounded-xl border border-neutral-300 dark:border-neutral-700">
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
             {(
               [
-                ["iso", "ISO"],
-                ["microcapsule", "Capsule"],
-                ["electrodes", "Electrodes"],
-                ["top", "Top"],
+                ["iso", "Isometric"],
+                ["microcapsule", "Microcapsule"],
+                ["electrodes", "Electrode Grid"],
+                ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 text-xs font-sans rounded-lg transition-colors ${
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   activeCamera === preset
-                    ? "bg-sky-600 text-white font-semibold shadow-sm"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white"
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}
@@ -158,38 +191,23 @@ export function EInk3D() {
             ))}
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay((v) => !v)}
-          className="p-2 rounded-xl bg-white/85 dark:bg-neutral-900/85 backdrop-blur-md border border-neutral-300 dark:border-neutral-700 text-xs font-mono"
-        >
-          {showUiOverlay ? "hide" : "show"}
-        </button>
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="E-Ink Electrophoretic State"
+          chips={[
+            { label: "State", value: hud.stateLabel },
+            {
+              label: "Voltage",
+              value: `${hud.voltage > 0 ? `+${hud.voltage}` : hud.voltage}`,
+              unit: "V",
+            },
+            { label: "Reflectance", value: `${hud.reflectance}`, unit: "%" },
+            { label: "Contrast", value: `${hud.contrast}` },
+          ]}
+        />
       </div>
-      {showUiOverlay && (
-        <div className="absolute bottom-3 left-3 z-10 pointer-events-none max-w-xs">
-          <div className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md p-3 rounded-xl border border-neutral-300 dark:border-neutral-700 text-xs space-y-1">
-            <div>
-              State:{" "}
-              <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                {hud.stateLabel}
-              </span>
-            </div>
-            <div>
-              Driving Potential:{" "}
-              <span className="font-mono font-bold">
-                {hud.voltage > 0 ? `+${hud.voltage}` : hud.voltage} V
-              </span>
-            </div>
-            <div>
-              Top Reflectance: <span className="font-mono font-bold">{hud.reflectance}%</span>
-            </div>
-            <div>
-              Contrast Ratio: <span className="font-mono font-bold">{hud.contrast}</span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

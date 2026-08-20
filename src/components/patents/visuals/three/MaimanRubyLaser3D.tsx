@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Camera, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -24,23 +24,23 @@ const CAMERA_PRESETS: Record<
 export function MaimanRubyLaser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-3353115-maiman-ruby-laser");
+  const pumpEnergyJoules = params.pumpEnergyJoules ?? 150;
+  const crystalTemperatureKelvin = params.crystalTemperatureKelvin ?? 300;
+  const outputMirrorReflectivity = params.outputMirrorReflectivity ?? 0.92;
+  const flashDurationMs = params.flashDurationMs ?? 1.0;
+  const rodLengthCm = params.rodLengthCm ?? 5.0;
+
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isFiring, setIsFiring] = useState(false);
   const isFiringRef = useRef(false);
 
-  const pumpEnergy = params.pumpEnergyJoules ?? 150;
-  const flashDuration = params.flashDurationMs ?? 1.0;
-  const rodLength = params.rodLengthCm ?? 5.0;
-  const outputReflectivity = params.outputMirrorReflectivity ?? 0.92;
-  const temperature = params.crystalTemperatureKelvin ?? 300;
-
   const live = useLiveSimParams({
-    pumpEnergyJoules: pumpEnergy,
-    flashDurationMs: flashDuration,
-    rodLengthCm: rodLength,
-    outputMirrorReflectivity: outputReflectivity,
-    crystalTemperatureKelvin: temperature,
+    pumpEnergyJoules,
+    flashDurationMs,
+    rodLengthCm,
+    outputMirrorReflectivity,
+    crystalTemperatureKelvin,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -52,21 +52,12 @@ export function MaimanRubyLaser3D() {
   };
 
   const metrics = stepMaimanRubyLaser({
-    pumpEnergyJoules: pumpEnergy,
-    flashDurationMs: flashDuration,
-    rodLengthCm: rodLength,
-    outputMirrorReflectivity: outputReflectivity,
-    crystalTemperatureKelvin: temperature,
+    pumpEnergyJoules: live.current.pumpEnergyJoules,
+    flashDurationMs: live.current.flashDurationMs,
+    rodLengthCm: live.current.rodLengthCm,
+    outputMirrorReflectivity: live.current.outputMirrorReflectivity,
+    crystalTemperatureKelvin: live.current.crystalTemperatureKelvin,
   });
-
-  const handleTriggerFlash = () => {
-    setIsFiring(true);
-    isFiringRef.current = true;
-    setTimeout(() => {
-      setIsFiring(false);
-      isFiringRef.current = false;
-    }, 700);
-  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -84,23 +75,29 @@ export function MaimanRubyLaser3D() {
     studio.scene.add(laserModel.nodes.group);
 
     let animId = 0;
-    let frame = 0;
+    let flashPhase = 0;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      frame += 1;
-      const time = frame / 60;
-      const p = live.current;
+
+      if (isFiringRef.current) {
+        flashPhase += 0.05;
+        if (flashPhase > 1.0) {
+          flashPhase = 0;
+          setIsFiring(false);
+          isFiringRef.current = false;
+        }
+      }
 
       laserModel.update(
         {
-          pumpEnergyJoules: p.pumpEnergyJoules,
-          flashDurationMs: p.flashDurationMs,
-          rodLengthCm: p.rodLengthCm,
-          outputMirrorReflectivity: p.outputMirrorReflectivity,
-          crystalTemperatureKelvin: p.crystalTemperatureKelvin,
+          pumpEnergyJoules: live.current.pumpEnergyJoules,
+          flashDurationMs: live.current.flashDurationMs,
+          rodLengthCm: live.current.rodLengthCm,
+          outputMirrorReflectivity: live.current.outputMirrorReflectivity,
+          crystalTemperatureKelvin: live.current.crystalTemperatureKelvin,
         },
-        time,
+        flashPhase,
         isFiringRef.current,
       );
 
@@ -113,135 +110,183 @@ export function MaimanRubyLaser3D() {
     return () => {
       cancelAnimationFrame(animId);
       laserModel.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
+  const triggerLaserPulse = () => {
+    if (isFiringRef.current) return;
+    setIsFiring(true);
+    isFiringRef.current = true;
+  };
+
   return (
-    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-      <div
-        className="relative h-[480px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950"
-        ref={containerRef}
-      >
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-4 left-4 z-10 pointer-events-none rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
-            <div className="font-mono text-xs font-bold text-slate-200">
-              MAIMAN RUBY LASER 3D STUDIO (US 3,353,115)
-            </div>
-            <div className="text-[11px] text-slate-400">
-              Interactive WebGL 3D Model • Synthetic Ruby Cylinder • Coiled Helical Flashlamp
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["ruby_rod", "Ruby Rod"],
+                ["flashlamp", "Flashlamp"],
+                ["resonator", "Resonator"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-          {showUiOverlay && (
-            <div className="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-lg border border-slate-700">
-              {(
-                [
-                  ["iso", "ISO"],
-                  ["ruby_rod", "Ruby Rod"],
-                  ["flashlamp", "Flashlamp"],
-                  ["resonator", "Resonator"],
-                  ["top", "Top"],
-                ] as [CameraPreset, string][]
-              ).map(([preset, label]) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`px-2 py-1 text-xs font-sans rounded transition-colors ${
-                    activeCamera === preset
-                      ? "bg-rose-600 text-white font-semibold shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={triggerLaserPulse}
+            disabled={isFiring}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              isFiring
+                ? "bg-rose-700 text-white border-rose-800 animate-pulse"
+                : "bg-rose-600 text-white border-rose-700 hover:bg-rose-500 active:scale-95"
+            }`}
+          >
+            {isFiring ? "⚡ Discharging..." : "⚡ Trigger Flashlamp"}
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-            className="p-1.5 rounded-lg text-xs bg-slate-900/80 text-slate-400 hover:text-white border border-slate-700 transition-colors backdrop-blur-md"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-rose-400" : "text-slate-500"}`} />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
 
-        {showUiOverlay && isFiring && metrics.isLasing && (
-          <div className="absolute bottom-4 left-4 z-10 pointer-events-none animate-pulse rounded-md border border-rose-500/60 bg-rose-950/80 px-3 py-1.5 font-mono text-xs font-bold text-rose-300 backdrop-blur-md">
-            ⚡ STIMULATED EMISSION PULSE ACTIVE (694.3 nm)
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Emission:
+              </span>
+              <span
+                className={`font-bold ${metrics.isLasing ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
+              >
+                {metrics.isLasing ? "COHERENT 694.3 nm" : "SUB-THRESHOLD"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Peak Power:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-bold">
+                {metrics.laserPeakPowerKw.toFixed(1)} kW
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Pulse Energy:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {metrics.laserPulseEnergyJoules.toFixed(2)} J
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Threshold:</span>
+              <span className="text-ink-700 dark:text-ink-300 font-bold">
+                {metrics.thresholdPumpEnergyJoules.toFixed(0)} J
+              </span>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="pumpEnergy3d" className="text-xs font-mono text-slate-400">
-              Pump Energy: {pumpEnergy} J
-            </label>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Xenon Flash Energy</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {pumpEnergyJoules} J
+              </span>
+            </div>
             <input
-              id="pumpEnergy3d"
               type="range"
               min="50"
               max="500"
               step="10"
-              value={pumpEnergy}
-              onChange={(e) => updateParam("pumpEnergyJoules", Number(e.target.value))}
-              className="h-1.5 w-36 accent-rose-500"
+              value={pumpEnergyJoules}
+              onChange={(e) => updateParam("pumpEnergyJoules", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="outputMirror3d" className="text-xs font-mono text-slate-400">
-              Output Coupler R2: {(outputReflectivity * 100).toFixed(0)}%
-            </label>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Crystal Temperature
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {crystalTemperatureKelvin} K
+              </span>
+            </div>
             <input
-              id="outputMirror3d"
+              type="range"
+              min="77"
+              max="400"
+              step="5"
+              value={crystalTemperatureKelvin}
+              onChange={(e) =>
+                updateParam("crystalTemperatureKelvin", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Coupler Reflectivity
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {(outputMirrorReflectivity * 100).toFixed(0)}%
+              </span>
+            </div>
+            <input
               type="range"
               min="0.70"
               max="0.98"
               step="0.01"
-              value={outputReflectivity}
-              onChange={(e) => updateParam("outputMirrorReflectivity", Number(e.target.value))}
-              className="h-1.5 w-32 accent-rose-500"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label htmlFor="temp3d" className="text-xs font-mono text-slate-400">
-              Temperature: {temperature} K
-            </label>
-            <input
-              id="temp3d"
-              type="range"
-              min="100"
-              max="350"
-              step="10"
-              value={temperature}
-              onChange={(e) => updateParam("crystalTemperatureKelvin", Number(e.target.value))}
-              className="h-1.5 w-28 accent-rose-500"
+              value={outputMirrorReflectivity}
+              onChange={(e) =>
+                updateParam("outputMirrorReflectivity", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={handleTriggerFlash}
-          disabled={isFiring}
-          className={`flex items-center gap-2 rounded-md px-6 py-2.5 font-mono text-xs font-bold transition ${
-            isFiring
-              ? "bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/50"
-              : "bg-rose-600 text-white hover:bg-rose-500 active:scale-95 shadow-lg shadow-rose-600/30"
-          }`}
-        >
-          {isFiring ? "⚡ FLASH DISCHARGE ACTIVE" : "⚡ TRIGGER FLASH DISCHARGE"}
-        </button>
       </div>
     </div>
   );

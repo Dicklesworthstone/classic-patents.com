@@ -107,6 +107,7 @@ export function LamarrFrequencyHopping3D() {
     isCutaway,
     jamChannel: params.jamChannel ?? fhPhysics.defaultJamChannel,
     hopSoundStride: fhPhysics.hopSoundStride,
+    drumDisplayOmegaRadPerS: fhPhysics.drumDisplayOmegaRadPerS,
     isAudioMuted,
   });
 
@@ -176,6 +177,7 @@ export function LamarrFrequencyHopping3D() {
         p.isJammingActive,
         jamCenter,
         p.isCutaway,
+        p.drumDisplayOmegaRadPerS,
       );
 
       controls.update();

@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Camera, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -75,25 +75,16 @@ export function BoyleSmithCcd3D() {
     studio.scene.add(ccdModel.nodes.group);
 
     let animId = 0;
-    let frame = 0;
+    let clockPhase = 0;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      frame += 1;
-      const time = frame / 60;
-      const p = live.current;
 
-      ccdModel.update(
-        {
-          gateVoltageV: p.gateVoltageV,
-          clockFrequencyMhz: p.clockFrequencyMhz,
-          incidentLux: p.incidentLux,
-          integrationTimeMs: p.integrationTimeMs,
-          temperatureKelvin: p.temperatureKelvin,
-        },
-        p.isRunning ? time : 0,
-      );
+      if (live.current.isRunning) {
+        clockPhase = (clockPhase + 0.05) % (Math.PI * 2);
+      }
 
+      ccdModel.update(live.current, clockPhase);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
@@ -103,133 +94,164 @@ export function BoyleSmithCcd3D() {
     return () => {
       cancelAnimationFrame(animId);
       ccdModel.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-      <div
-        className="relative h-[480px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950"
-        ref={containerRef}
-      >
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-4 left-4 z-10 pointer-events-none rounded-md border border-slate-800/80 bg-slate-900/80 px-3 py-2 backdrop-blur-md">
-            <div className="font-mono text-xs font-bold text-slate-200">
-              BOYLE & SMITH CCD 3D STUDIO (US 3,858,232)
-            </div>
-            <div className="text-[11px] text-slate-400">
-              Interactive WebGL 3D Model • 3-Phase Gate Array • Clocked Potential Wells • Ceramic
-              DIP Package
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["gate_array", "Gates"],
+                ["package", "Package"],
+                ["potential_well", "Wells"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-          {showUiOverlay && (
-            <div className="flex items-center gap-1 bg-slate-900/80 backdrop-blur-md p-1 rounded-lg border border-slate-700">
-              {(
-                [
-                  ["iso", "ISO"],
-                  ["gate_array", "Gates"],
-                  ["package", "Package"],
-                  ["potential_well", "Wells"],
-                  ["top", "Top"],
-                ] as [CameraPreset, string][]
-              ).map(([preset, label]) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => applyCameraPreset(preset)}
-                  className={`px-2 py-1 text-xs font-sans rounded transition-colors ${
-                    activeCamera === preset
-                      ? "bg-sky-600 text-white font-semibold shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setIsRunning(!isRunning)}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              isRunning
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            {isRunning ? "Pause Clock" : "Run Clock"}
+          </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-            className="p-1.5 rounded-lg text-xs bg-slate-900/80 text-slate-400 hover:text-white border border-slate-700 transition-colors backdrop-blur-md"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-sky-400" : "text-slate-500"}`} />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
 
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-4 left-4 z-10 pointer-events-none rounded-md border border-sky-500/50 bg-slate-950/80 px-3 py-1.5 font-mono text-xs text-sky-300 backdrop-blur-md">
-            CTE: {metrics.ctePct}% • Capacity:{" "}
-            {(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}k e⁻ • Well Depth:{" "}
-            {metrics.depletionDepthUm} µm
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Transfer Efficiency:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {metrics.ctePct}%
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Full-Well Capacity:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {(metrics.fullWellCapacityElectrons / 1000).toFixed(0)}k e⁻
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Depletion Depth:</span>
+              <span className="text-sky-800 dark:text-sky-400 font-bold">
+                {metrics.depletionDepthUm} µm
+              </span>
+            </div>
           </div>
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="gateVoltage3d" className="text-xs font-mono text-slate-400">
-              Gate Bias: {gateVoltage} V
-            </label>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Gate Transfer Voltage
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {gateVoltage} V
+              </span>
+            </div>
             <input
-              id="gateVoltage3d"
               type="range"
               min="5"
-              max="15"
-              step="0.5"
+              max="20"
+              step="1"
               value={gateVoltage}
-              onChange={(e) => updateParam("gateVoltageV", Number(e.target.value))}
-              className="h-1.5 w-32 accent-sky-500"
+              onChange={(e) => updateParam("gateVoltageV", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="clockFreq3d" className="text-xs font-mono text-slate-400">
-              Clock: {clockFreq} MHz
-            </label>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Clock Frequency</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {clockFreq.toFixed(1)} MHz
+              </span>
+            </div>
             <input
-              id="clockFreq3d"
               type="range"
-              min="0.5"
+              min="1"
               max="20"
               step="0.5"
               value={clockFreq}
-              onChange={(e) => updateParam("clockFrequencyMhz", Number(e.target.value))}
-              className="h-1.5 w-32 accent-sky-500"
+              onChange={(e) => updateParam("clockFrequencyMhz", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label htmlFor="incidentLux3d" className="text-xs font-mono text-slate-400">
-              Light: {incidentLux} lux
-            </label>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Incident Illumination
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {incidentLux} lux
+              </span>
+            </div>
             <input
-              id="incidentLux3d"
               type="range"
               min="10"
-              max="2000"
-              step="10"
+              max="1000"
+              step="25"
               value={incidentLux}
-              onChange={(e) => updateParam("incidentLux", Number(e.target.value))}
-              className="h-1.5 w-32 accent-sky-500"
+              onChange={(e) => updateParam("incidentLux", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setIsRunning(!isRunning)}
-          className="flex items-center gap-2 rounded-md bg-sky-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-lg shadow-sky-600/30 transition hover:bg-sky-500 active:scale-95"
-        >
-          {isRunning ? "⏸ PAUSE CLOCK" : "▶ RUN 3-PHASE CLOCK"}
-        </button>
       </div>
     </div>
   );

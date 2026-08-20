@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Activity,
-  Camera,
-  Cog,
-  Eye,
-  EyeOff,
-  Flame,
-  Gauge,
-  Layers,
-  RotateCw,
-  Sparkles,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCw, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
@@ -47,6 +36,7 @@ export function WattRotaryEngine3D() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   const isPlayingRef = useRef(isPlaying);
@@ -124,7 +114,7 @@ export function WattRotaryEngine3D() {
         cancelAnimationFrame(animFrameRef.current);
       }
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
       modelRef.current = null;
     };
@@ -141,233 +131,195 @@ export function WattRotaryEngine3D() {
   );
 
   return (
-    <div className="w-full bg-[#0a0d14] border border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-stone-200">
-      {/* Header & Controls Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-amber-900/30 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              Three.js WebGL 3D Studio
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
-            <h3 className="text-lg font-bold text-amber-100 font-serif">
-              James Watt Sun &amp; Planet Epicyclic Engine
-            </h3>
+            {(
+              [
+                ["overview", "Overview"],
+                ["gear-mesh", "Gear Mesh"],
+                ["beam", "Beam"],
+                ["cylinder", "Cylinder"],
+              ] as const
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => handleCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  cameraPreset === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <p className="text-xs text-stone-400 mt-1">
-            Pure procedural 3D kinematics with 2:1 epicyclic gear acceleration and interactive
-            camera presets
-          </p>
-        </div>
+        )}
 
-        {/* View & Feature Toggles */}
-        <div className="flex items-center flex-wrap gap-2">
-          {/* Camera Presets */}
-          <div className="flex items-center gap-1 bg-stone-900/80 p-1 rounded-lg border border-stone-800 text-xs">
-            <Camera className="w-3.5 h-3.5 text-stone-400 ml-1.5 mr-0.5" />
-            <button
-              type="button"
-              onClick={() => handleCameraPreset("overview")}
-              className={`px-2 py-1 rounded transition-colors ${
-                cameraPreset === "overview"
-                  ? "bg-amber-500/20 text-amber-300 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCameraPreset("gear-mesh")}
-              className={`px-2 py-1 rounded transition-colors ${
-                cameraPreset === "gear-mesh"
-                  ? "bg-amber-500/20 text-amber-300 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
-              }`}
-            >
-              Gear Mesh
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCameraPreset("beam")}
-              className={`px-2 py-1 rounded transition-colors ${
-                cameraPreset === "beam"
-                  ? "bg-amber-500/20 text-amber-300 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
-              }`}
-            >
-              Beam
-            </button>
-            <button
-              type="button"
-              onClick={() => handleCameraPreset("cylinder")}
-              className={`px-2 py-1 rounded transition-colors ${
-                cameraPreset === "cylinder"
-                  ? "bg-amber-500/20 text-amber-300 font-semibold"
-                  : "text-stone-400 hover:text-stone-200"
-              }`}
-            >
-              Cylinder
-            </button>
-          </div>
-
-          {/* Cutaway Toggle */}
-          <button
-            type="button"
-            onClick={() => setCutaway(!cutaway)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              cutaway
-                ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
-                : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>{cutaway ? "Solid Shell" : "Cutaway Cylinder"}</span>
-          </button>
-
-          {/* Callouts Toggle */}
-          <button
-            type="button"
-            onClick={() => setShowCallouts(!showCallouts)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              showCallouts
-                ? "bg-cyan-500/20 border-cyan-500/40 text-cyan-300"
-                : "bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200"
-            }`}
-          >
-            {showCallouts ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
-            <span>{showCallouts ? "Hide Pins" : "Show Pins"}</span>
-          </button>
-
-          {/* Play/Pause */}
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isPlaying
-                ? "bg-amber-600/20 border-amber-500/40 text-amber-200"
-                : "bg-emerald-600/20 border-emerald-500/40 text-emerald-200"
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
             }`}
           >
-            <RotateCw className="w-3.5 h-3.5" />
-            <span>{isPlaying ? "Pause" : "Play"}</span>
+            <RotateCw className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{isPlaying ? "Pause" : "Play"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCutaway(!cutaway)}
+            title={cutaway ? "Switch to Solid Shell" : "Switch to Cutaway Cylinder"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              cutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowCallouts(!showCallouts)}
+            title={showCallouts ? "Hide Callouts" : "Show Callouts"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showCallouts
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            {showCallouts ? (
+              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
+            ) : (
+              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
+            )}
+            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Sparkles className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Shaft Multiplier:
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {telemetry.speedMultiplier.toFixed(1)}× (2:1 Ratio)
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Driveshaft Speed:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {telemetry.shaftRpm.toFixed(1)} RPM
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Indicated Power:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {telemetry.meanPowerKw.toFixed(1)} kW
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Horsepower:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {telemetry.brakeHorsepower.toFixed(1)} hp
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Piston Force:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-bold">
+                {(telemetry.pistonForceN / 1e3).toFixed(1)} kN
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* 3D WebGL Canvas Container */}
-      <div className="relative w-full aspect-[16/10] bg-[#05070b] rounded-xl border border-stone-800 overflow-hidden shadow-inner">
-        <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Boiler Pressure</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {boilerPressureKpa} kPa
+              </span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="120"
+              step="5"
+              value={boilerPressureKpa}
+              onChange={(e) => updateParam("boilerPressureKpa", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
 
-        {/* Live HUD Overlay */}
-        <div className="absolute top-4 right-4 bg-slate-900/85 backdrop-blur-md border border-amber-500/30 p-3.5 rounded-xl shadow-xl space-y-1.5 pointer-events-none text-xs font-sans max-w-[240px]">
-          <div className="flex items-center justify-between text-amber-400 font-mono font-bold border-b border-stone-800 pb-1 text-[11px]">
-            <span>SHAFT MULTIPLIER</span>
-            <span className="text-emerald-400">
-              {telemetry.speedMultiplier.toFixed(1)}× (2:1 Ratio)
-            </span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Stroke Rate</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {strokeRateSpm} SPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="40"
+              step="1"
+              value={strokeRateSpm}
+              onChange={(e) => updateParam("strokeRateSpm", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
           </div>
-          <div className="flex justify-between text-stone-300 text-[11px]">
-            <span>Driveshaft Speed:</span>
-            <span className="font-mono text-amber-300">{telemetry.shaftRpm.toFixed(1)} RPM</span>
-          </div>
-          <div className="flex justify-between text-stone-300 text-[11px]">
-            <span>Indicated Power:</span>
-            <span className="font-mono text-emerald-400">
-              {telemetry.meanPowerKw.toFixed(1)} kW
-            </span>
-          </div>
-          <div className="flex justify-between text-stone-300 text-[11px]">
-            <span>Imperial Horsepower:</span>
-            <span className="font-mono text-purple-300">
-              {telemetry.brakeHorsepower.toFixed(1)} hp
-            </span>
-          </div>
-          <div className="flex justify-between text-stone-300 text-[11px]">
-            <span>Piston Driving Force:</span>
-            <span className="font-mono text-rose-400">
-              {(telemetry.pistonForceN / 1e3).toFixed(1)} kN
-            </span>
-          </div>
-        </div>
-      </div>
 
-      {/* Interactive Controls Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-stone-900/40 p-4 rounded-xl border border-stone-800">
-        {/* Stroke Rate */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Activity className="w-3.5 h-3.5 text-amber-400" /> Beam Stroke Rate
-            </span>
-            <span className="font-mono text-amber-300">{strokeRateSpm} SPM</span>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Flywheel Inertia</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {flywheelMassKg} kg
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1000"
+              max="5000"
+              step="250"
+              value={flywheelMassKg}
+              onChange={(e) => updateParam("flywheelMassKg", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
           </div>
-          <input
-            type="range"
-            min="10"
-            max="30"
-            step="2"
-            value={strokeRateSpm}
-            onChange={(e) => updateParam("strokeRateSpm", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-          />
-        </div>
-
-        {/* Boiler Pressure */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-rose-400" /> Boiler Pressure
-            </span>
-            <span className="font-mono text-rose-300">{boilerPressureKpa} kPa</span>
-          </div>
-          <input
-            type="range"
-            min="40"
-            max="120"
-            step="5"
-            value={boilerPressureKpa}
-            onChange={(e) => updateParam("boilerPressureKpa", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-rose-500"
-          />
-        </div>
-
-        {/* Gear Ratio */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Cog className="w-3.5 h-3.5 text-cyan-400" /> Gear Tooth Ratio
-            </span>
-            <span className="font-mono text-cyan-300">{gearRatioNpOverNs.toFixed(2)} : 1</span>
-          </div>
-          <input
-            type="range"
-            min="0.5"
-            max="2.0"
-            step="0.25"
-            value={gearRatioNpOverNs}
-            onChange={(e) => updateParam("gearRatioNpOverNs", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-cyan-500"
-          />
-        </div>
-
-        {/* Flywheel Mass */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs">
-            <span className="text-stone-400 flex items-center gap-1">
-              <Gauge className="w-3.5 h-3.5 text-purple-400" /> Flywheel Mass
-            </span>
-            <span className="font-mono text-purple-300">{flywheelMassKg} kg</span>
-          </div>
-          <input
-            type="range"
-            min="1000"
-            max="6000"
-            step="250"
-            value={flywheelMassKg}
-            onChange={(e) => updateParam("flywheelMassKg", Number(e.target.value))}
-            className="w-full h-1.5 bg-stone-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
-          />
         </div>
       </div>
     </div>

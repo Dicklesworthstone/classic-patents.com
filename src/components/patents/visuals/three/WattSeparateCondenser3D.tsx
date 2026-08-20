@@ -3,7 +3,7 @@
 import { Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { stepWattCondenser, WATT_DEFAULT_CONTROLS } from "@/physics/wattCondenserKernel";
+import { stepWattCondenser } from "@/physics/wattCondenserKernel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -38,8 +38,23 @@ export function WattSeparateCondenser3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  const { params } = usePatentPhysics(EXHIBIT_ID);
-  const live = useLiveSimParams(params);
+  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const boilerPressurePsi = params.boilerPressurePsi ?? 10.0;
+  const condenserTempC = params.condenserTempC ?? 38.0;
+  const strokesPerMinute = params.strokesPerMinute ?? 16;
+
+  const outputs = stepWattCondenser({
+    boilerPressurePsi,
+    condenserTempC,
+    cylinderBoreInches: params.cylinderBoreInches,
+    pistonStrokeFeet: params.pistonStrokeFeet,
+    strokesPerMinute,
+    hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) > 0.5,
+    hasSteamJacket: (params.hasSteamJacket ?? 1) > 0.5,
+  });
+  const live = useLiveSimParams({
+    cycleOmegaRadPerS: outputs.cycleOmegaRadPerS,
+  });
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -68,10 +83,8 @@ export function WattSeparateCondenser3D() {
       rafId = requestAnimationFrame(animate);
       const p = live.current;
 
-      const spm = p.strokesPerMinute ?? WATT_DEFAULT_CONTROLS.strokesPerMinute;
-      const cycleFreq = spm / 60;
       const dtVirtual = 1 / 60;
-      cyclePhase = (cyclePhase + dtVirtual * cycleFreq * 2 * Math.PI) % (2 * Math.PI);
+      cyclePhase = (cyclePhase + dtVirtual * p.cycleOmegaRadPerS) % (2 * Math.PI);
 
       const pistonPos = Math.sin(cyclePhase);
       const beamAngleRad = -pistonPos * (12 * (Math.PI / 180));
@@ -96,16 +109,6 @@ export function WattSeparateCondenser3D() {
       studioRef.current = null;
     };
   }, [live]);
-
-  const outputs = stepWattCondenser({
-    boilerPressurePsi: params.boilerPressurePsi,
-    condenserTempC: params.condenserTempC,
-    cylinderBoreInches: params.cylinderBoreInches,
-    pistonStrokeFeet: params.pistonStrokeFeet,
-    strokesPerMinute: params.strokesPerMinute,
-    hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) > 0.5,
-    hasSteamJacket: (params.hasSteamJacket ?? 1) > 0.5,
-  });
 
   const chips: KernelChip[] = [
     {
@@ -135,71 +138,148 @@ export function WattSeparateCondenser3D() {
   ];
 
   return (
-    <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-      <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Preset Camera View Buttons */}
-      <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-1.5">
-        {(
-          [
-            ["iso", "Overview"],
-            ["cylinder", "Steam Jacket (B)"],
-            ["condenser", "Condenser (E)"],
-            ["beam", "Walking Beam (H)"],
-            ["boiler", "Boiler (A)"],
-          ] as const
-        ).map(([id, label]) => (
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            {(
+              [
+                ["iso", "Overview"],
+                ["cylinder", "Steam Jacket (B)"],
+                ["condenser", "Condenser (E)"],
+                ["beam", "Walking Beam (H)"],
+                ["boiler", "Boiler (A)"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handlePresetChange(id)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === id
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
-            key={id}
             type="button"
-            onClick={() => handlePresetChange(id)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-              activePreset === id
-                ? "bg-amber-500 text-ink-950 font-bold"
-                : "bg-ink-900/80 hover:bg-ink-800 text-parchment-200 border border-parchment-700/40 backdrop-blur-md"
+            onClick={() => setCutaway((v) => !v)}
+            title={cutaway ? "Switch to Solid Engine" : "Switch to Cylinder Cutaway"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              cutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {label}
+            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
+            <span className="md:hidden">{cutaway ? "Sol" : "Cut"}</span>
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setShowCallouts((v) => !v)}
+            title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showCallouts
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
+            <span className="md:hidden">Pins</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+        </div>
+
+        {/* Bottom SI Telemetry Chips */}
+        <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
       </div>
 
-      {/* Toggles */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setCutaway((v) => !v)}
-          className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors backdrop-blur-md border ${
-            cutaway
-              ? "bg-rose-600 text-white border-rose-400"
-              : "bg-ink-900/80 text-parchment-200 border-parchment-700/40 hover:bg-ink-800"
-          }`}
-        >
-          {cutaway ? "Cutaway ON" : "Cutaway OFF"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowCallouts((v) => !v)}
-          className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors backdrop-blur-md border ${
-            showCallouts
-              ? "bg-emerald-600 text-white border-emerald-400"
-              : "bg-ink-900/80 text-parchment-200 border-parchment-700/40 hover:bg-ink-800"
-          }`}
-        >
-          {showCallouts ? "Pins ON" : "Pins OFF"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay(!showUiOverlay)}
-          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-          className="p-1.5 rounded-lg text-xs bg-ink-900/80 text-parchment-400 hover:text-white hover:bg-ink-800 border border-parchment-700/40 transition-colors backdrop-blur-md"
-        >
-          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-parchment-400"}`} />
-        </button>
-      </div>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Boiler Steam Pressure
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {boilerPressurePsi.toFixed(1)} PSI
+              </span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="30"
+              step="0.5"
+              value={boilerPressurePsi}
+              onChange={(e) => updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
 
-      {/* Bottom SI Telemetry Chips */}
-      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Condenser Temperature
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {condenserTempC.toFixed(0)} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="60"
+              step="1"
+              value={condenserTempC}
+              onChange={(e) => updateParam("condenserTempC", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Stroke Rate</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {strokesPerMinute} SPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="35"
+              step="1"
+              value={strokesPerMinute}
+              onChange={(e) => updateParam("strokesPerMinute", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

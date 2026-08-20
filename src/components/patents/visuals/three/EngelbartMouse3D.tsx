@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
@@ -160,111 +160,122 @@ export const EngelbartMouse3D = memo(() => {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Engelbart Computer Mouse 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            US Patent 3,541,541 (1964)
-          </span>
-        </div>
-
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Isometric"],
-              ["wheels", "Orthogonal Wheels"],
-              ["xray", "Internal X-Ray"],
-              ["microswitch", "Red Button"],
-              ["potentiometers", "Resolvers"],
-              ["top", "Top"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-amber-600 text-white font-semibold shadow-sm"
-                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <button
-            type="button"
-            onClick={handleManualClick}
-            className="px-2.5 py-1 text-xs font-sans rounded-lg bg-red-600/80 text-white hover:bg-red-500 transition-colors shadow-sm"
-          >
-            Click Button
-          </button>
-
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => setIsXRayMode(!isXRayMode)}
             title={isXRayMode ? "Solid Walnut Body" : "X-Ray Walnut Body"}
-            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isXRayMode
-                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
-                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {isXRayMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span>{isXRayMode ? "X-Ray" : "Solid"}</span>
+            {isXRayMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isXRayMode ? "X-Ray" : "Solid"}</span>
           </button>
-
+          <button
+            type="button"
+            onClick={handleManualClick}
+            className="px-2.5 py-1.5 rounded-xl bg-red-600/90 hover:bg-red-600 text-white text-xs font-sans font-medium transition-colors shadow-sm"
+          >
+            Click
+          </button>
           <button
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
-      </div>
 
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Engelbart orthogonal position resolver kinetics"
-        chips={[
-          { label: "Displacement", value: `${mouseSpeedMmPerS}`, unit: "mm/s" },
-          { label: "Wheel Radius", value: `${wheelRadiusMm}`, unit: "mm" },
-          { label: "Encoder Resolution", value: `${mouse.dpi}`, unit: "CPI" },
-          {
-            label: "Pulse Rate",
-            value: `${mouse.pulseRateHz.toFixed(0)}`,
-            unit: "pulses/s",
-            tone: "ok",
-          },
-          { label: "Wheel Angular Vel", value: `${mouse.omegaRadPerS.toFixed(1)}`, unit: "rad/s" },
-          {
-            label: "XY crate",
-            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-          },
-        ]}
-      />
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["wheels", "Orthogonal Wheels"],
+                ["xray", "Internal X-Ray"],
+                ["microswitch", "Red Button"],
+                ["potentiometers", "Resolvers"],
+                ["top", "Plan View"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="Engelbart orthogonal position resolver kinetics"
+          chips={[
+            { label: "Displacement", value: `${mouseSpeedMmPerS}`, unit: "mm/s" },
+            { label: "Wheel Radius", value: `${wheelRadiusMm}`, unit: "mm" },
+            { label: "Encoder Resolution", value: `${mouse.dpi}`, unit: "CPI" },
+            {
+              label: "Pulse Rate",
+              value: `${mouse.pulseRateHz.toFixed(0)}`,
+              unit: "pulses/s",
+              tone: "ok",
+            },
+            {
+              label: "Wheel Angular Vel",
+              value: `${mouse.omegaRadPerS.toFixed(1)}`,
+              unit: "rad/s",
+            },
+            {
+              label: "XY crate",
+              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+            },
+          ]}
+        />
+      </div>
     </div>
   );
 });

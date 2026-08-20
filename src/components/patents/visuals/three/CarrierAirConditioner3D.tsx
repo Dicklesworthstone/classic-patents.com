@@ -130,14 +130,14 @@ export function CarrierAirConditioner3D() {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col">
+    <div className="relative w-full h-[620px] bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent flex flex-col">
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
       {/* Top HUD Controls */}
       <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-slate-900/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
+        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto text-parchment-100">
           <Waves className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-slate-100 uppercase tracking-wider">
+          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
             Carrier Psychrometric Dew-Point 3D
           </span>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">

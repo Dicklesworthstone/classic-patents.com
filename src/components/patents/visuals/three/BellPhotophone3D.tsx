@@ -1,7 +1,7 @@
 "use client";
 
-import { Zap } from "lucide-react";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Camera, Zap } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
@@ -33,9 +33,6 @@ export function BellPhotophone3D({
 }: BellPhotophone3DProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const voiceId = useId();
-  const distId = useId();
-  const solarId = useId();
 
   const { params, updateParam } = usePatentPhysics("us-235199-bell-photophone");
   const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
@@ -90,215 +87,180 @@ export function BellPhotophone3D({
     return () => {
       cancelAnimationFrame(rafId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
-      {/* Viewport Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
-        <div>
-          <h3 className="text-xl font-bold tracking-tight text-amber-400">
-            Alexander Graham Bell 3D Photophone Studio
-          </h3>
-          <p className="text-sm text-neutral-400">
-            Interactive WebGL Free-Space Optical Transmission • Sunbeam Modulation & Parabolic
-            Selenium Receiver
-          </p>
-        </div>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Controls and Presets */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center bg-neutral-950 p-1 rounded-lg border border-neutral-800 text-xs">
-            <button
-              type="button"
-              onClick={() => handlePresetChange("overview")}
-              className={`px-2.5 py-1 rounded font-mono ${
-                cameraPreset === "overview"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("transmitter")}
-              className={`px-2.5 py-1 rounded font-mono ${
-                cameraPreset === "transmitter"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              Transmitter
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("receiver")}
-              className={`px-2.5 py-1 rounded font-mono ${
-                cameraPreset === "receiver"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              Receiver Dish
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("top")}
-              className={`px-2.5 py-1 rounded font-mono ${
-                cameraPreset === "top"
-                  ? "bg-amber-500/30 text-amber-300 font-bold"
-                  : "text-neutral-400 hover:text-neutral-200"
-              }`}
-            >
-              Top View
-            </button>
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["overview", "Overview"],
+                ["transmitter", "Transmitter"],
+                ["receiver", "Receiver Dish"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => handlePresetChange(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  cameraPreset === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
+        )}
 
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setIsAudioActive(!isAudioActive)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isAudioActive
-                ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30"
-                : "bg-neutral-800 text-neutral-400 border-neutral-700"
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {isAudioActive ? "Voice ON" : "Voice OFF"}
+            <span className="hidden md:inline">
+              {isAudioActive ? "Voice Active" : "Voice Muted"}
+            </span>
+            <span className="md:hidden">{isAudioActive ? "Voice" : "Muted"}</span>
           </button>
-
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-            className="p-1.5 rounded-lg text-xs bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-700 transition-colors"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-neutral-500"}`} />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
-      </div>
 
-      {/* 3D WebGL Canvas Container */}
-      <div className="relative w-full aspect-[16/9] min-h-[420px] bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 shadow-inner">
-        <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
-
-        {/* Live HUD Overlay */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute top-4 left-4 pointer-events-none flex flex-col gap-2 font-mono text-xs">
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Beam Modulation: </span>
-              <span className="text-amber-400 font-bold">
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Modulation:
+              </span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
                 {(photoState.modulationDepth * 100).toFixed(1)}%
               </span>
             </div>
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Selenium R: </span>
-              <span className="text-emerald-400 font-bold">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Selenium R:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
                 {photoState.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ
               </span>
             </div>
-            <div className="bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-800 shadow">
-              <span className="text-neutral-400">Audio Signal: </span>
-              <span className="text-cyan-400 font-bold">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Signal Current:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
                 {photoState.audioSignalCurrentUa.toFixed(2)} µA
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Reproduced SPL:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {photoState.reproducedAudioSplDb.toFixed(1)} dB SPL
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Optical Link SNR:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {photoState.linkSnrDb.toFixed(1)} dB
               </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Real-Time Controllers & Physical Telemetry */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950/60 p-5 rounded-xl border border-neutral-800">
-        <div className="flex flex-col gap-4">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Real-Time Optical Link Controllers
-          </h4>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={voiceId} className="text-neutral-300">
-                Vocal Sound Pressure Level
-              </label>
-              <span className="text-amber-400 font-bold">{voiceSplDb} dB SPL</span>
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Voice Acoustic Level
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {voiceSplDb} dB SPL
+              </span>
             </div>
             <input
-              id={voiceId}
               type="range"
               min="50"
               max="95"
               step="1"
               value={voiceSplDb}
-              onChange={(e) => updateParam("voiceSplDb", parseInt(e.target.value, 10))}
-              className="w-full accent-amber-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
+              onChange={(e) => updateParam("voiceSplDb", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={distId} className="text-neutral-300">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
                 Transmission Distance
-              </label>
-              <span className="text-cyan-400 font-bold">{transmissionDistanceM} m</span>
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {transmissionDistanceM} m
+              </span>
             </div>
             <input
-              id={distId}
               type="range"
-              min="10"
+              min="20"
               max="500"
-              step="5"
+              step="10"
               value={transmissionDistanceM}
-              onChange={(e) => updateParam("transmissionDistanceM", parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
+              onChange={(e) =>
+                updateParam("transmissionDistanceM", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={solarId} className="text-neutral-300">
-                Solar Radiant Irradiance
-              </label>
-              <span className="text-yellow-400 font-bold">{solarIrradianceWPerM2} W/m²</span>
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Solar Irradiance</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {solarIrradianceWPerM2} W/m²
+              </span>
             </div>
             <input
-              id={solarId}
               type="range"
-              min="200"
+              min="400"
               max="1200"
-              step="50"
+              step="25"
               value={solarIrradianceWPerM2}
-              onChange={(e) => updateParam("solarIrradianceWPerM2", parseInt(e.target.value, 10))}
-              className="w-full accent-yellow-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
+              onChange={(e) =>
+                updateParam("solarIrradianceWPerM2", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 justify-center font-mono text-xs">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Physical Optics & Link Telemetry
-          </h4>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">CONCENTRATED POWER</span>
-              <span className="text-amber-400">{photoState.concentratedPowerMw.toFixed(2)} mW</span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">BEAM DIVERGENCE</span>
-              <span className="text-neutral-200">
-                {photoState.beamDivergenceMrad.toFixed(1)} mrad
-              </span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">REPRODUCED SPL</span>
-              <span className="text-indigo-400">
-                {photoState.reproducedAudioSplDb.toFixed(1)} dB SPL
-              </span>
-            </div>
-            <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block">LINK SNR</span>
-              <span className="text-emerald-400">{photoState.linkSnrDb.toFixed(1)} dB</span>
-            </div>
           </div>
         </div>
       </div>

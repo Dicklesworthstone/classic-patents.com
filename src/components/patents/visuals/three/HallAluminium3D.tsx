@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { Camera, Zap } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -100,78 +100,89 @@ export default function HallAluminium3D() {
   };
 
   return (
-    <div className="relative w-full h-full min-h-[460px] sm:min-h-[540px] bg-ink-950 rounded-2xl overflow-hidden shadow-xl border border-parchment-300 dark:border-ink-800 font-sans select-none">
-      {/* 3D WebGL Canvas Container */}
-      <div
-        ref={containerRef}
-        className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
-      />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top-Right Control Bar: Camera Presets & UI Toggle */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <div className="flex bg-ink-900/85 backdrop-blur-md p-1 rounded-xl border border-ink-700 shadow-md">
-          {(["overview", "anodes", "molten_bath", "siphon_tap"] as CameraPreset[]).map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => setView(preset)}
-              className={`px-3 py-1 text-xs font-mono rounded-lg capitalize transition-all cursor-pointer ${
-                activePreset === preset
-                  ? "bg-cyan-600 text-white font-bold shadow-xs"
-                  : "text-parchment-400 hover:text-white"
-              }`}
-            >
-              {preset.replace("_", " ")}
-            </button>
-          ))}
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay((prev) => !prev)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay((prev) => !prev)}
-          className="p-2 rounded-xl bg-ink-900/85 backdrop-blur-md border border-ink-700 text-parchment-300 hover:text-white transition-all shadow-md cursor-pointer"
-          title={showUiOverlay ? "Hide Telemetry Overlay" : "Show Telemetry Overlay"}
-        >
-          {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-        </button>
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(["overview", "anodes", "molten_bath", "siphon_tap"] as CameraPreset[]).map(
+              (preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setView(preset)}
+                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                    activePreset === preset
+                      ? "bg-amber-600 text-white shadow-xs"
+                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                  }`}
+                >
+                  {preset.replace("_", " ")}
+                </button>
+              ),
+            )}
+          </div>
+        )}
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Yield:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {sim.currentEfficiencyPct}% Faradaic Yield
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Current:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {(sim.currentAmperes / 1000).toFixed(0)} kA
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Cell Voltage:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {sim.totalCellVoltage} V
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Production Rate:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {sim.aluminiumProductionRateKgPerHour} kg/h
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Bath Temp:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-bold">
+                {sim.bathTemperatureCelsius} °C
+              </span>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Bottom-Left Real-Time Telemetry HUD Overlay */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 z-10 max-w-xs sm:max-w-sm bg-ink-950/85 backdrop-blur-md border border-ink-800/80 p-4 rounded-xl shadow-2xl text-xs space-y-2 pointer-events-none">
-          <div className="flex items-center justify-between border-b border-ink-800 pb-2">
-            <span className="font-mono uppercase tracking-wider text-[11px] text-cyan-400 font-bold">
-              US 400,766 · Hall Smelter
-            </span>
-            <span className="font-mono text-emerald-400 font-bold">
-              {sim.currentEfficiencyPct}% Faradaic Yield
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-ink-300 font-mono text-[11px]">
-            <div>
-              <span className="text-ink-400">Current:</span>{" "}
-              <strong className="text-white">{(sim.currentAmperes / 1000).toFixed(0)} kA</strong>
-            </div>
-            <div>
-              <span className="text-ink-400">Cell Voltage:</span>{" "}
-              <strong className="text-amber-400">{sim.totalCellVoltage} V</strong>
-            </div>
-            <div>
-              <span className="text-ink-400">Production:</span>{" "}
-              <strong className="text-cyan-400">{sim.aluminiumProductionRateKgPerHour} kg/h</strong>
-            </div>
-            <div>
-              <span className="text-ink-400">Bath Temp:</span>{" "}
-              <strong className="text-orange-400">{sim.bathTemperatureCelsius} °C</strong>
-            </div>
-          </div>
-
-          <div className="text-[10px] text-ink-400 pt-1 border-t border-ink-800/60 font-mono">
-            ρ(Al) = 2.28 g/cm³ &gt; ρ(Cryolite) = 2.10 g/cm³ (Sunk metal pad)
-          </div>
-        </div>
-      )}
     </div>
   );
 }

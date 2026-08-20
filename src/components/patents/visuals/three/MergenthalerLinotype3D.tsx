@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
@@ -42,7 +42,7 @@ export function MergenthalerLinotype3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Linotype Mechanical Composing Parameters
-  const { params } = usePatentPhysics("us-313224-mergenthaler-linotype");
+  const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
   const matrixRate = params.matrixRate ?? 60;
   const spacebandWedge = params.spacebandWedge ?? 6.5;
   const potTempC = params.potTemp ?? 260;
@@ -148,101 +148,175 @@ export function MergenthalerLinotype3D() {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-900 rounded-2xl overflow-hidden border border-parchment-700 shadow-2xl flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Mergenthaler Linotype 3D</div>
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Mergenthaler Linotype 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            US Patent 313,224 (1885)
-          </span>
-        </div>
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["matrix_magazine", "Magazine"],
+                ["casting_pot", "Casting Pot"],
+                ["spaceband_justifier", "Spacebands"],
+                ["keyboard", "Keyboard"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-parchment-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Isometric"],
-              ["matrix_magazine", "Magazine"],
-              ["casting_pot", "Casting Pot"],
-              ["spaceband_justifier", "Spacebands"],
-              ["keyboard", "Keyboard"],
-              ["top", "Top"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-amber-600 text-white font-semibold shadow-sm"
-                  : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Castings" : "Cutaway Frame & Pot"}
-            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
+            title={isCutaway ? "Switch to Solid Casting" : "Switch to Framework Cutaway"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isCutaway
-                ? "bg-amber-600/30 text-amber-200 border border-amber-500/40"
-                : "text-parchment-300 hover:text-white hover:bg-parchment-800/60"
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {isCutaway ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-            <span>{isCutaway ? "Cutaway" : "Solid"}</span>
+            {isCutaway ? (
+              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
+            ) : (
+              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
+            )}
+            <span className="hidden md:inline">{isCutaway ? "Solid" : "Cutaway"}</span>
           </button>
-
           <button
             type="button"
             onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+            title={isAudioMuted ? "Unmute Linecaster Sound" : "Mute Linecaster Sound"}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 inline sm:mr-1 text-ink-500" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 inline sm:mr-1 text-amber-600" />
+            )}
+            <span className="hidden md:inline">{isAudioMuted ? "Muted" : "Sound"}</span>
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-parchment-400 hover:text-white hover:bg-parchment-800 transition-colors"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          title="Mergenthaler hot-metal linecaster"
+          chips={[
+            { label: "Lines", value: castingLpm.toFixed(1), unit: "lpm" },
+            { label: "Throughput", value: String(charsPerHour), unit: "char/hr" },
+            { label: "Wedge", value: String(spacebandWedge), unit: "mm" },
+            { label: "Pot", value: String(Math.round(potTempC)), unit: "°C" },
+            { label: "Width", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
+            { label: "Solid", value: String(linotypeIdle.solidificationTimeMs), unit: "ms" },
+            { label: "Hardness", value: String(linotypeIdle.brinellHardness), unit: "HB" },
+            { label: "Dist", value: String(linotypeIdle.distributorFreqHz), unit: "Hz" },
+            {
+              label: "Mag crate",
+              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+            },
+          ]}
+        />
       </div>
 
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Mergenthaler hot-metal linecaster"
-        chips={[
-          { label: "Lines", value: castingLpm.toFixed(1), unit: "lpm" },
-          { label: "Throughput", value: String(charsPerHour), unit: "char/hr" },
-          { label: "Wedge", value: String(spacebandWedge), unit: "mm" },
-          { label: "Pot", value: String(Math.round(potTempC)), unit: "°C" },
-          { label: "Width", value: String(linotypeIdle.justificationWidthMm), unit: "mm" },
-          { label: "Solid", value: String(linotypeIdle.solidificationTimeMs), unit: "ms" },
-          { label: "Hardness", value: String(linotypeIdle.brinellHardness), unit: "HB" },
-          { label: "Dist", value: String(linotypeIdle.distributorFreqHz), unit: "Hz" },
-          {
-            label: "Mag crate",
-            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-          },
-        ]}
-      />
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Matrix Assembly Rate
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {matrixRate} char/min
+              </span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="120"
+              step="5"
+              value={matrixRate}
+              onChange={(e) => updateParam("matrixRate", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Spaceband Wedge Lift
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {spacebandWedge.toFixed(1)} mm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="3"
+              max="10"
+              step="0.5"
+              value={spacebandWedge}
+              onChange={(e) => updateParam("spacebandWedge", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Melting Pot Temperature
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {potTempC} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="230"
+              max="320"
+              step="5"
+              value={potTempC}
+              onChange={(e) => updateParam("potTemp", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

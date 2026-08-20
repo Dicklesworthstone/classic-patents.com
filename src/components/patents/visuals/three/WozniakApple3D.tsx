@@ -101,6 +101,7 @@ export function WozniakApple3D() {
 
       model.updateKinematics(delta, renderedSteps, p.busDisplaySpeed, p.isCpuActive);
 
+      studio.controls.update();
       renderer.render(scene, camera);
     };
 

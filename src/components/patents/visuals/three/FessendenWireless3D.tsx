@@ -1,5 +1,6 @@
 "use client";
 
+import { Camera, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
@@ -33,6 +34,7 @@ export function FessendenWireless3D() {
   const distanceKm = params.transmissionDistanceKm ?? 25;
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
 
   const studioRef = useRef<StudioContext | null>(null);
   const nodesRef = useRef<FessendenWirelessModelNodes | null>(null);
@@ -111,178 +113,164 @@ export function FessendenWireless3D() {
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      pointGlow.dispose();
       nodes.materials.forEach((m) => {
         m.dispose();
       });
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
       nodesRef.current = null;
     };
   }, [live]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
-      {/* HUD Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-        <div>
-          <h2 className="text-xl font-bold tracking-wide text-cyan-400">
-            Reginald Fessenden Continuous-Wave Radio 3D WebGL Studio
-          </h2>
-          <p className="text-sm text-slate-400">
-            Procedural 3D simulation of US Patent 706,737 • Pure WebGL (No GLTF assets)
-          </p>
-        </div>
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Camera Presets & Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          {(["isometric", "alternator", "cageAntenna", "liquidBarretter"] as CameraPreset[]).map(
-            (preset) => (
-              <button
-                type="button"
-                key={preset}
-                onClick={() => handlePresetChange(preset)}
-                className={`px-3 py-1 text-xs font-semibold rounded-lg capitalize transition ${
-                  cameraPreset === preset
-                    ? "bg-cyan-700 text-white"
-                    : "bg-slate-900 text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {preset.replace(/([A-Z])/g, " $1")}
-              </button>
-            ),
-          )}
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
-            className={`px-3 py-1 text-xs font-semibold rounded-lg transition ${
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
-                ? "bg-emerald-700 text-white"
-                : "bg-slate-900 text-slate-400 hover:text-slate-200"
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {isRotating ? "Auto-Rotate ON" : "Auto-Rotate OFF"}
+            {isRotating ? "Stop Orbit" : "Auto Orbit"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
+
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(["isometric", "alternator", "cageAntenna", "liquidBarretter"] as CameraPreset[]).map(
+              (preset) => (
+                <button
+                  type="button"
+                  key={preset}
+                  onClick={() => handlePresetChange(preset)}
+                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                    cameraPreset === preset
+                      ? "bg-amber-600 text-white shadow-xs"
+                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                  }`}
+                >
+                  {preset.replace(/([A-Z])/g, " $1")}
+                </button>
+              ),
+            )}
+          </div>
+        )}
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Resonance:
+              </span>
+              <span
+                className={`font-bold ${sim.isResonant ? "text-emerald-700 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400"}`}
+              >
+                {sim.antennaResonantFreqKhz} kHz ({sim.isResonant ? "LOCKED" : "DETUNED"})
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Radiated RF:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {sim.radiatedPowerWatts} W
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">RF Efficiency:</span>
+              <span className="text-emerald-800 dark:text-emerald-400 font-bold">
+                {sim.radiationEfficiencyPct}%
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Rx Power:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {sim.receivedPowerMicrowatts} µW
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Audio SNR:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {sim.audioSnrDb} dB
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* 3D WebGL Canvas Container */}
-      <div
-        ref={containerRef}
-        className="relative w-full aspect-[16/9] min-h-[440px] bg-slate-950 rounded-lg overflow-hidden border border-slate-800 cursor-grab active:cursor-grabbing"
-      >
-        <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-slate-900/80 backdrop-blur rounded text-xs font-mono text-cyan-400 border border-slate-700">
-          Camera: {cameraPreset} | SI Physics Loop
-        </div>
-      </div>
-
-      {/* Real-time SI Metrics HUD */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Antenna Resonance</div>
-          <div className="text-lg font-bold text-emerald-400">{sim.antennaResonantFreqKhz} kHz</div>
-          <div className="text-xs text-slate-500">{sim.isResonant ? "Locked" : "Detuned"}</div>
-        </div>
-
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Radiated RF Power</div>
-          <div className="text-lg font-bold text-cyan-400">{sim.radiatedPowerWatts} W</div>
-          <div className="text-xs text-slate-500">1 kW RF input</div>
-        </div>
-
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">
-            Radiation Efficiency
+      {showUiOverlay && (
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-t border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/60 rounded-b-2xl text-xs font-mono">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="carrierFreq3d" className="text-ink-700 dark:text-parchment-300">
+              Alternator Frequency: {carrierFreqKhz} kHz
+            </label>
+            <input
+              id="carrierFreq3d"
+              type="range"
+              min="50"
+              max="100"
+              step="1"
+              value={carrierFreqKhz}
+              onChange={(e) => updateParam("carrierFrequencyKhz", Number(e.target.value))}
+              className="h-1.5 w-36 accent-amber-500"
+            />
           </div>
-          <div className="text-lg font-bold text-emerald-400">{sim.radiationEfficiencyPct} %</div>
-          <div className="text-xs text-slate-500">R_loss = {sim.ohmicLossOhms} Ω</div>
-        </div>
-
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Received Power (Rx)</div>
-          <div className="text-lg font-bold text-purple-400">{sim.receivedPowerMicrowatts} µW</div>
-          <div className="text-xs text-slate-500">{distanceKm} km range</div>
-        </div>
-
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Audio SNR</div>
-          <div className="text-lg font-bold text-amber-400">{sim.audioSnrDb} dB</div>
-          <div className="text-xs text-slate-500">Continuous carrier</div>
-        </div>
-
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Earpiece Volume</div>
-          <div className="text-lg font-bold text-amber-400">{sim.audioSoundLevelDbSpl} dB SPL</div>
-          <div className="text-xs text-slate-500">I_sig = {sim.audioSignalCurrentMicroamps} µA</div>
-        </div>
-      </div>
-
-      {/* Interactive Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 bg-slate-900/60 p-4 rounded-lg border border-slate-800">
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">RF Carrier Frequency</span>
-            <span className="text-cyan-400 font-mono">{carrierFreqKhz} kHz</span>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="audioMod3d" className="text-ink-700 dark:text-parchment-300">
+              Audio Modulation: {audioModPct}%
+            </label>
+            <input
+              id="audioMod3d"
+              type="range"
+              min="10"
+              max="100"
+              step="5"
+              value={audioModPct}
+              onChange={(e) => updateParam("audioModulationPct", Number(e.target.value))}
+              className="h-1.5 w-32 accent-amber-500"
+            />
           </div>
-          <input
-            type="range"
-            min={40}
-            max={120}
-            step={1}
-            value={carrierFreqKhz}
-            onChange={(e) => updateParam("carrierFrequencyKhz", Number(e.target.value))}
-            className="w-full accent-cyan-500 cursor-pointer"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Audio Modulation Depth</span>
-            <span className="text-cyan-400 font-mono">{audioModPct} %</span>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="antennaTuning3d" className="text-ink-700 dark:text-parchment-300">
+              Antenna Inductance: {antennaTuningUh} µH
+            </label>
+            <input
+              id="antennaTuning3d"
+              type="range"
+              min="200"
+              max="800"
+              step="10"
+              value={antennaTuningUh}
+              onChange={(e) => updateParam("antennaTuningUh", Number(e.target.value))}
+              className="h-1.5 w-32 accent-amber-500"
+            />
           </div>
-          <input
-            type="range"
-            min={10}
-            max={100}
-            step={5}
-            value={audioModPct}
-            onChange={(e) => updateParam("audioModulationPct", Number(e.target.value))}
-            className="w-full accent-cyan-500 cursor-pointer"
-          />
         </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Loading Inductance (L)</span>
-            <span className="text-cyan-400 font-mono">{antennaTuningUh} µH</span>
-          </div>
-          <input
-            type="range"
-            min={200}
-            max={800}
-            step={10}
-            value={antennaTuningUh}
-            onChange={(e) => updateParam("antennaTuningUh", Number(e.target.value))}
-            className="w-full accent-cyan-500 cursor-pointer"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-slate-300">Distance to Receiver</span>
-            <span className="text-cyan-400 font-mono">{distanceKm} km</span>
-          </div>
-          <input
-            type="range"
-            min={5}
-            max={100}
-            step={5}
-            value={distanceKm}
-            onChange={(e) => updateParam("transmissionDistanceKm", Number(e.target.value))}
-            className="w-full accent-cyan-500 cursor-pointer"
-          />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

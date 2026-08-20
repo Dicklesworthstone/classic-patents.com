@@ -15,7 +15,7 @@ type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube" | "flywheel" | 
 
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
+  const { params } = usePatentPhysics("us-361931-daimler-engine");
 
   const engineRpm = params.engineRpm ?? 750;
   const hotTubeTempC = params.hotTubeTemp ?? 850;
@@ -43,14 +43,29 @@ export function DaimlerEngine3D() {
     outerWheelRpm: daimler.outerWheelRpm,
     innerWheelRpm: daimler.innerWheelRpm,
     runningOmegaRadPerS: daimler.runningOmegaRadPerS,
-    isRunning: daimler.isRunning ? 1 : 0,
-    hotTubeGlow: daimler.hotTubeGlow,
-    cycleWrapRad: daimler.cycleWrapRad,
-    crankWrapRad: daimler.crankWrapRad,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
-  const animRef = useRef<number | null>(null);
+
+  const setCameraView = (preset: CameraPreset) => {
+    setActiveCamera(preset);
+    const studio = studioRef.current;
+    if (!studio) return;
+
+    if (preset === "iso") {
+      studio.controls.setView([4.5, 3.5, 5.5], [0, 0.4, 0]);
+    } else if (preset === "cylinder") {
+      studio.controls.setView([0, 2.2, 3.5], [0, 1.3, 0]);
+    } else if (preset === "crankcase") {
+      studio.controls.setView([0, -0.2, 3.2], [0, -0.6, 0]);
+    } else if (preset === "hottube") {
+      studio.controls.setView([-2.2, 2.6, 1.8], [-0.5, 2.2, 0]);
+    } else if (preset === "flywheel") {
+      studio.controls.setView([3.6, 0.8, 2.4], [0, -0.6, 0]);
+    } else if (preset === "top") {
+      studio.controls.setView([0, 7.0, 0.1], [0, 0.5, 0]);
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -58,227 +73,130 @@ export function DaimlerEngine3D() {
 
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [6.5, 3.8, 6.5],
+      cameraPos: [4.5, 3.5, 5.5],
       targetPos: [0, 0.4, 0],
-      fov: 38,
-      enableClouds: true,
-      enableFloorGrid: true,
-      floorColor: 0x0f172a,
     });
     studioRef.current = studio;
-    const { scene, renderer, controls } = studio;
 
-    // Build procedural 3D model
-    const model = buildDaimlerEngineModel();
-    scene.add(model.rootGroup);
+    const engineModel = buildDaimlerEngineModel();
+    studio.scene.add(engineModel.rootGroup);
 
-    // Kinematic state
-    let crankAngle = 0;
-    let _renderedSteps = 0;
-    let lastAudioStroke = -1;
+    let animId = 0;
+    let crankAngleRad = 0;
+    let virtualTime = 0;
+    let lastAudioTime = 0;
 
-    const renderLoop = () => {
-      _renderedSteps += 1;
-      const dt = 1 / 60;
+    const animate = () => {
+      animId = requestAnimationFrame(animate);
+
       const p = live.current;
+      if (p.isPlaying) {
+        const dtVirtual = 1 / 60;
+        virtualTime += dtVirtual;
+        crankAngleRad = wrapCycleRad(crankAngleRad + dtVirtual * p.runningOmegaRadPerS);
 
-      if (p.isPlaying && p.isRunning > 0) {
-        const speed = p.runningOmegaRadPerS;
-        crankAngle = wrapCycleRad(crankAngle + speed * dt, p.cycleWrapRad);
-
-        const cycleAngle = wrapCycleRad(crankAngle, p.crankWrapRad);
-
-        const { strokeIndex } = updateDaimlerEngineKinematics(
-          model,
-          cycleAngle,
-          crankAngle,
-          p.hotTubeTempC,
-          p.hotTubeGlow,
-          p.isCutaway,
-        );
-
-        // Sound trigger on power stroke
-        if (strokeIndex === 2 && strokeIndex !== lastAudioStroke) {
-          lastAudioStroke = strokeIndex;
-          if (!isMuted) {
-            soundEngine.playPneumaticPuff();
-          }
-        } else if (strokeIndex !== 2) {
-          lastAudioStroke = strokeIndex;
+        const strokePeriod = (2 * Math.PI) / (p.runningOmegaRadPerS || 1);
+        if (virtualTime - lastAudioTime > strokePeriod && !isMuted) {
+          soundEngine.playLockstitchClack();
+          lastAudioTime = virtualTime;
         }
       }
 
-      controls.update();
-      renderer.render(scene, studio.camera);
-      animRef.current = requestAnimationFrame(renderLoop);
+      updateDaimlerEngineKinematics(engineModel, crankAngleRad, crankAngleRad, p.isCutaway);
+
+      studio.controls.update();
+      studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animRef.current = requestAnimationFrame(renderLoop);
+    animate();
 
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      model.dispose();
-      studio.dispose();
+      cancelAnimationFrame(animId);
+      engineModel.dispose();
+      studio.cleanup();
+      studioRef.current = null;
     };
-  }, [isMuted, live]);
-
-  const setCameraView = (view: CameraPreset) => {
-    setActiveCamera(view);
-    const studio = studioRef.current;
-    if (!studio) return;
-    if (view === "iso") studio.controls.setView([6.5, 3.8, 6.5], [0, 0.4, 0]);
-    if (view === "cylinder") studio.controls.setView([0.1, 1.8, 3.8], [0, 1.1, 0]);
-    if (view === "crankcase") studio.controls.setView([2.4, -0.4, 2.8], [0, -0.6, 0]);
-    if (view === "hottube") studio.controls.setView([1.8, 2.5, 1.8], [0.65, 2.3, 0]);
-    if (view === "flywheel") studio.controls.setView([3.8, 0.8, 3.5], [0, 0, 0]);
-    if (view === "top") studio.controls.setView([0, 8.0, 0.1], [0, 0, 0]);
-  };
+  }, [live, isMuted]);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-amber-900/20 dark:border-ink-800 bg-slate-950 shadow-2xl">
-      {/* 3D WebGL Canvas */}
-      <div
-        ref={containerRef}
-        className="w-full h-[520px] sm:h-[620px] cursor-grab active:cursor-grabbing"
-      />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top Floating Header HUD */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-10">
-        <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl px-4 py-2.5 shadow-lg pointer-events-auto">
-          <div className="flex items-center gap-2">
-            <Flame className="w-5 h-5 text-amber-400 animate-pulse" />
-            <h3 className="font-serif text-sm sm:text-base font-bold text-slate-100">
-              Daimler High-Speed Petrol Engine 3D (US 361,931)
-            </h3>
+        {/* Top-Left Title HUD */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
+            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
+              Daimler High-Speed Petrol Engine 3D
+            </div>
+            <div className="text-[11px] text-parchment-300 font-sans">
+              US Patent 361,931 • Hot-Tube Ignition Four-Stroke Engine
+            </div>
           </div>
-          <span className="text-[11px] font-mono text-amber-400 block mt-0.5">
-            1885 &quot;Grandfather Clock&quot; Engine · Enclosed Crankcase &amp; Hot-Tube Ignition
-          </span>
-        </div>
+        )}
 
-        <div className="flex items-center gap-2 pointer-events-auto">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setIsPlaying(!isPlaying)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              isPlaying
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+          >
+            <Play className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{isPlaying ? "Pause" : "Run"}</span>
+          </button>
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
             title={isCutaway ? "Switch to Solid Engine" : "Switch to Cutaway View"}
-            className={`p-2 rounded-xl border transition-colors ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isCutaway
-                ? "bg-amber-600 border-amber-500 text-white shadow-sm"
-                : "bg-slate-900/90 border-slate-700/80 text-slate-200 hover:text-white"
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            <Layers className="w-4 h-4" />
+            <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{isCutaway ? "Solid" : "Cutaway"}</span>
           </button>
           <button
             type="button"
             onClick={toggleMute}
-            className="p-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white transition-colors"
-            title={isMuted ? "Unmute sound" : "Mute sound"}
+            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            title={isMuted ? "Unmute Engine Audio" : "Mute Engine Audio"}
+            aria-label={isMuted ? "Unmute Engine Audio" : "Mute Engine Audio"}
           >
             {isMuted ? (
-              <VolumeX className="w-4 h-4" />
+              <VolumeX className="w-3.5 h-3.5 inline" />
             ) : (
-              <Volume2 className="w-4 h-4 text-emerald-400" />
+              <Volume2 className="w-3.5 h-3.5 inline text-emerald-600 dark:text-emerald-400" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700/80 text-slate-200 hover:text-white text-xs font-mono font-bold transition-colors"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            {showUiOverlay ? "Hide HUD" : "Show HUD"}
+            <Flame className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>
-      </div>
 
-      {/* Interactive Controls Overlay HUD */}
-      {showUiOverlay && (
-        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end justify-between gap-4 pointer-events-none">
-          {/* Main Controls Card */}
-          <div className="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-4 shadow-xl pointer-events-auto max-w-sm w-full space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
-                Engine Throttle
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsPlaying(!isPlaying)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold shadow-md transition-all ${
-                  isPlaying
-                    ? "bg-amber-600 hover:bg-amber-700 text-white"
-                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                }`}
-              >
-                <Play className={`w-3.5 h-3.5 ${isPlaying ? "animate-spin" : ""}`} />
-                <span>{isPlaying ? "Stop Engine" : "Ignite Petrol"}</span>
-              </button>
-            </div>
-
-            {/* Engine RPM Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono text-slate-300">
-                <span>Crankshaft Speed</span>
-                <span className="text-amber-400 font-bold">{engineRpm} RPM</span>
-              </div>
-              <input
-                type="range"
-                min="400"
-                max="950"
-                step="25"
-                value={engineRpm}
-                onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono text-slate-300">
-                <span>Platinum hot-tube</span>
-                <span className="text-amber-400 font-bold">{hotTubeTempC} °C</span>
-              </div>
-              <input
-                type="range"
-                min="650"
-                max="950"
-                step="10"
-                value={hotTubeTempC}
-                onChange={(e) => updateParam("hotTubeTemp", Number(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-            </div>
-
-            {/* Live Readout Badges */}
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">Brake Power</span>
-                <span className="text-xs font-mono font-bold text-emerald-400">
-                  {brakeHorsepower} HP
-                </span>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">BMEP / tube</span>
-                <span className="text-xs font-mono font-bold text-amber-400">
-                  {daimler.bmepBar} bar · {hotTubeTempC} °C
-                </span>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">Diff wheels</span>
-                <span className="text-xs font-mono font-bold text-sky-300">
-                  {daimler.innerWheelRpm}/{daimler.outerWheelRpm} rpm
-                </span>
-              </div>
-              <div className="bg-slate-800/80 rounded-lg p-2 border border-slate-700 text-center">
-                <span className="text-[10px] font-mono text-slate-400 block">P/m</span>
-                <span className="text-xs font-mono font-bold text-slate-200">
-                  {daimler.specificPowerHpPerKg} hp/kg
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Camera View Switcher */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-1.5 shadow-xl pointer-events-auto">
-            <Camera className="w-4 h-4 text-slate-400 ml-1.5 mr-0.5" />
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
             {(
               [
                 ["iso", "Isometric"],
@@ -293,18 +211,54 @@ export function DaimlerEngine3D() {
                 key={preset}
                 type="button"
                 onClick={() => setCameraView(preset)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   activeCamera === preset
-                    ? "bg-amber-600 text-white font-semibold shadow-sm"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800"
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Crankshaft Speed:
+              </span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">{engineRpm} RPM</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Brake Power:</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
+                {brakeHorsepower} HP
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">BMEP:</span>
+              <span className="text-rose-700 dark:text-rose-400 font-bold">
+                {daimler.bmepBar} bar · {hotTubeTempC} °C
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Differential Wheels:</span>
+              <span className="text-sky-800 dark:text-sky-400 font-bold">
+                {daimler.innerWheelRpm}/{daimler.outerWheelRpm} rpm
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Specific Power:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {daimler.specificPowerHpPerKg} hp/kg
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

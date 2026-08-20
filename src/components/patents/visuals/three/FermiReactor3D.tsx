@@ -41,7 +41,7 @@ export function FermiReactor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Nuclear Reactor Kinetics State Controls
-  const { params } = usePatentPhysics("us-2708656-fermi-reactor");
+  const { params, updateParam } = usePatentPhysics("us-2708656-fermi-reactor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
@@ -322,6 +322,69 @@ export function FermiReactor3D() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Control Rod Withdrawal
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {controlRodWithdrawalPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="0.5"
+              value={controlRodWithdrawalPct}
+              onChange={(e) => updateParam("rodWithdrawal", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Moderator Graphite Purity
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {moderatorPurityPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="95"
+              max="100"
+              step="0.1"
+              value={moderatorPurityPct}
+              onChange={(e) => updateParam("moderatorPurity", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Fuel Enrichment</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {fuelEnrichmentPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="2.5"
+              step="0.05"
+              value={fuelEnrichmentPct}
+              onChange={(e) => updateParam("fuelEnrichmentPct", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

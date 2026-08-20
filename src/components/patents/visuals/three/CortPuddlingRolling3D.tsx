@@ -11,23 +11,41 @@ import { useLiveSimParams } from "./useLiveSimParams";
 
 const EXHIBIT_ID = "gb-1420-cort-puddling-rolling";
 
+type CameraPreset = "iso" | "furnace" | "hearth" | "mill" | "grooves";
+
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [0, 2.8, 6.0], target: [0, 1.2, 0] },
+  furnace: { pos: [-2.8, 2.2, 3.8], target: [-2.8, 1.2, 0] },
+  hearth: { pos: [-2.5, 1.8, 1.6], target: [-2.5, 0.9, 0] },
+  mill: { pos: [2.0, 1.8, 3.6], target: [2.0, 1.1, 0] },
+  grooves: { pos: [2.0, 1.3, 1.8], target: [2.0, 1.0, 0] },
+};
+
 export function CortPuddlingRolling3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [activePreset, setActivePreset] = useState<
-    "iso" | "furnace" | "hearth" | "mill" | "grooves"
-  >("iso");
+  const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
 
-  const { params } = usePatentPhysics(EXHIBIT_ID);
+  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
+  const initialCarbon = params.initialCarbonPercent ?? 3.8;
+  const rabbleRpm = params.rabbleStirringRpm ?? 15;
+  const puddlingMin = params.puddlingDurationMinutes ?? 90;
+  const rollerPassCount = params.rollerPassCount ?? 5;
+  const rollSpeedRpm = params.rollSpeedRpm ?? 30;
+
   const live = useLiveSimParams({
-    furnaceTemperatureCelsius: params.furnaceTemperatureCelsius ?? 1350,
-    initialCarbonPercent: params.initialCarbonPercent ?? 3.8,
-    rabbleStirringRpm: params.rabbleStirringRpm ?? 15,
-    puddlingDurationMinutes: params.puddlingDurationMinutes ?? 90,
-    rollerPassCount: params.rollerPassCount ?? 5,
-    rollSpeedRpm: params.rollSpeedRpm ?? 30,
+    furnaceTemperatureCelsius: furnaceTempC,
+    initialCarbonPercent: initialCarbon,
+    rabbleStirringRpm: rabbleRpm,
+    puddlingDurationMinutes: puddlingMin,
+    rollerPassCount: rollerPassCount,
+    rollSpeedRpm: rollSpeedRpm,
   });
 
   const cutawayRef = useRef(cutaway);
@@ -41,16 +59,13 @@ export function CortPuddlingRolling3D() {
     const container = containerRef.current;
     if (!container) return;
 
+    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: [0, 2.8, 6.0],
-      targetPos: [0, 1.2, 0],
+      cameraPos: iso.pos,
+      targetPos: iso.target,
       fov: 42,
       enableFloorGrid: true,
-      floorColor: 0x181512,
-      gridColor: 0x2d241e,
-      ambientIntensity: 0.85,
-      sunIntensity: 1.6,
     });
     studioRef.current = studio;
 
@@ -92,41 +107,24 @@ export function CortPuddlingRolling3D() {
     return () => {
       cancelAnimationFrame(animId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
     };
   }, [live]);
 
-  const handlePreset = (preset: "iso" | "furnace" | "hearth" | "mill" | "grooves") => {
+  const handlePreset = (preset: CameraPreset) => {
     setActivePreset(preset);
     const studio = studioRef.current;
     if (!studio) return;
-
-    if (preset === "iso") {
-      studio.controls.setView([0, 2.8, 6.0], [0, 1.2, 0]);
-    } else if (preset === "furnace") {
-      studio.controls.setView([-2.8, 2.2, 3.8], [-2.8, 1.2, 0]);
-    } else if (preset === "hearth") {
-      studio.controls.setView([-2.5, 1.8, 1.6], [-2.5, 0.9, 0]);
-    } else if (preset === "mill") {
-      studio.controls.setView([2.0, 1.8, 3.6], [2.0, 1.1, 0]);
-    } else if (preset === "grooves") {
-      studio.controls.setView([2.0, 1.3, 1.8], [2.0, 1.0, 0]);
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studio.controls.setView(cfg.pos, cfg.target);
   };
-
-  const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
-  const initialCarbon = params.initialCarbonPercent ?? 3.8;
-  const rabbleRpm = params.rabbleStirringRpm ?? 15;
-  const puddlingMin = params.puddlingDurationMinutes ?? 90;
-  const rollerPasses = params.rollerPassCount ?? 5;
-  const rollSpeedRpm = params.rollSpeedRpm ?? 30;
 
   const outputs = stepCortPuddlingRolling({
     furnaceTemperatureCelsius: furnaceTempC,
     initialCarbonPercent: initialCarbon,
     rabbleStirringRpm: rabbleRpm,
     puddlingDurationMinutes: puddlingMin,
-    rollerPassCount: rollerPasses,
+    rollerPassCount,
     rollSpeedRpm,
   });
 
@@ -158,12 +156,12 @@ export function CortPuddlingRolling3D() {
     {
       label: "Throughput Speedup",
       value: `${outputs.productionSpeedupVsHammer}×`,
-      unit: `${outputs.hourlyIronOutputKg} kg/h`,
+      unit: "vs Tilt Hammer",
       tone: "ok",
     },
   ];
 
-  const presets: { id: "iso" | "furnace" | "hearth" | "mill" | "grooves"; label: string }[] = [
+  const presets: { id: CameraPreset; label: string }[] = [
     { id: "iso", label: "Overview" },
     { id: "furnace", label: "Puddling Furnace" },
     { id: "hearth", label: "Molten Hearth" },
@@ -172,63 +170,140 @@ export function CortPuddlingRolling3D() {
   ];
 
   return (
-    <div className="relative w-full h-[540px] rounded-2xl overflow-hidden bg-ink-950 border border-parchment-700/40 shadow-2xl">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Camera Presets */}
-      <div className="absolute top-4 left-4 z-10 flex flex-wrap gap-1.5 bg-ink-900/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/30">
-        {presets.map(({ id, label }) => (
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
-            key={id}
             type="button"
-            onClick={() => handlePreset(id)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors ${
-              activePreset === id
-                ? "bg-amber-600 text-white font-bold"
-                : "text-parchment-300 hover:text-white hover:bg-ink-800"
+            onClick={() => setCutaway((v) => !v)}
+            title={cutaway ? "Switch to Solid Furnace" : "Switch to Roof Cutaway"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              cutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {label}
+            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
+            <span className="md:hidden">{cutaway ? "Sol" : "Cut"}</span>
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setShowCallouts((v) => !v)}
+            title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showCallouts
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+          >
+            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
+            <span className="md:hidden">Pins</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+        </div>
+
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            {presets.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => handlePreset(id)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === id
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Bottom SI Telemetry Chips */}
+        <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
       </div>
 
-      {/* Toggles */}
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setCutaway((v) => !v)}
-          className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors backdrop-blur-md border ${
-            cutaway
-              ? "bg-rose-600 text-white border-rose-400"
-              : "bg-ink-900/80 text-parchment-200 border-parchment-700/40 hover:bg-ink-800"
-          }`}
-        >
-          {cutaway ? "Roof Cutaway ON" : "Roof Cutaway OFF"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowCallouts((v) => !v)}
-          className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors backdrop-blur-md border ${
-            showCallouts
-              ? "bg-emerald-600 text-white border-emerald-400"
-              : "bg-ink-900/80 text-parchment-200 border-parchment-700/40 hover:bg-ink-800"
-          }`}
-        >
-          {showCallouts ? "Pins ON" : "Pins OFF"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay(!showUiOverlay)}
-          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-          className="p-1.5 rounded-lg text-xs bg-ink-900/80 text-parchment-400 hover:text-white hover:bg-ink-800 border border-parchment-700/40 transition-colors backdrop-blur-md"
-        >
-          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-parchment-400"}`} />
-        </button>
-      </div>
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Reverberatory Temp</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {furnaceTempC} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1100"
+              max="1450"
+              step="10"
+              value={furnaceTempC}
+              onChange={(e) =>
+                updateParam("furnaceTemperatureCelsius", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
 
-      {/* Bottom SI Telemetry Chips */}
-      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Pig Iron Carbon</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {initialCarbon.toFixed(1)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2.5"
+              max="4.5"
+              step="0.1"
+              value={initialCarbon}
+              onChange={(e) =>
+                updateParam("initialCarbonPercent", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Roll Speed</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {rollSpeedRpm} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="50"
+              step="1"
+              value={rollSpeedRpm}
+              onChange={(e) => updateParam("rollSpeedRpm", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

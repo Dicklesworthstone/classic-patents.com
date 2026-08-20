@@ -40,8 +40,18 @@ export function ArkwrightWaterFrame3D() {
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
 
-  const { params } = usePatentPhysics(EXHIBIT_ID);
-  const live = useLiveSimParams(params);
+  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const waterWheelRpm = params.waterWheelRpm ?? 32;
+  const totalDraftRatio = params.totalDraftRatio ?? 4.2;
+  const rollerClampingWeightKg = params.rollerClampingWeightKg ?? 4.5;
+
+  const live = useLiveSimParams({
+    waterWheelRpm,
+    totalDraftRatio,
+    rollerClampingWeightKg,
+    stapleLengthMm: params.stapleLengthMm,
+    inputRovingCountNe: params.inputRovingCountNe,
+  });
 
   const handlePresetChange = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -124,36 +134,30 @@ export function ArkwrightWaterFrame3D() {
     return () => {
       cancelAnimationFrame(rafId);
       model.dispose();
-      studio.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
   const outputs = stepArkwrightWaterFrame({
-    waterWheelRpm: params.waterWheelRpm,
-    totalDraftRatio: params.totalDraftRatio,
-    rollerClampingWeightKg: params.rollerClampingWeightKg,
+    waterWheelRpm,
+    totalDraftRatio,
+    rollerClampingWeightKg,
     stapleLengthMm: params.stapleLengthMm,
     inputRovingCountNe: params.inputRovingCountNe,
   });
 
   const chips: KernelChip[] = [
     {
-      label: "Flyer Spindle",
-      value: `${Math.round(outputs.flyerSpindleRpm).toLocaleString()} RPM`,
-      unit: `${outputs.spindleOmegaRadPerSec.toFixed(0)} rad/s`,
+      label: "Spindle Speed",
+      value: `${outputs.flyerSpindleRpm.toFixed(0)} RPM`,
+      unit: `Draft ×${outputs.totalDraftRatio.toFixed(1)}`,
       tone: "ok",
     },
     {
-      label: "Yarn Count",
-      value: `${outputs.outputYarnCountNe.toFixed(1)} Ne`,
-      unit: `${outputs.yarnLinearDensityTex.toFixed(1)} Tex`,
-      tone: "ok",
-    },
-    {
-      label: "Imparted Twist",
-      value: `${Math.round(outputs.twistTurnsPerMeter).toLocaleString()} TPM`,
-      unit: `${outputs.twistTurnsPerInch.toFixed(1)} TPI`,
+      label: "Twist Density",
+      value: `${outputs.twistTurnsPerInch.toFixed(1)} TPI`,
+      unit: `${outputs.twistMultiplier.toFixed(2)} TM`,
       tone: "ok",
     },
     {
@@ -177,51 +181,127 @@ export function ArkwrightWaterFrame3D() {
   ];
 
   return (
-    <div className="relative w-full h-[580px] bg-stone-950 rounded-2xl overflow-hidden border border-stone-800 shadow-2xl">
-      {/* 3D Canvas Viewport */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Floating HUD Camera Presets & Toggles */}
-      <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-2 bg-stone-900/90 backdrop-blur-md p-1.5 rounded-xl border border-stone-800">
-        {PRESET_CHIPS.map((preset) => (
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            {PRESET_CHIPS.map((preset) => (
+              <button
+                key={preset.id}
+                type="button"
+                onClick={() => handlePresetChange(preset.id)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === preset.id
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
-            key={preset.id}
             type="button"
-            onClick={() => handlePresetChange(preset.id)}
-            className={`px-2.5 py-1 text-xs font-mono font-medium rounded-lg transition-all ${
-              activePreset === preset.id
-                ? "bg-amber-600 text-white shadow-md shadow-amber-900/30"
-                : "text-stone-400 hover:text-stone-200"
+            onClick={() => setShowCallouts((prev) => !prev)}
+            title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showCallouts
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {preset.label}
+            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
+            <span className="md:hidden">Pins</span>
           </button>
-        ))}
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+        </div>
 
-        <div className="h-4 w-px bg-stone-700 mx-1" />
-
-        <button
-          type="button"
-          onClick={() => setShowCallouts((prev) => !prev)}
-          className={`px-2.5 py-1 text-xs font-mono font-medium rounded-lg transition-all ${
-            showCallouts ? "bg-stone-700 text-stone-100" : "text-stone-500 hover:text-stone-300"
-          }`}
-        >
-          Callouts
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setShowUiOverlay(!showUiOverlay)}
-          title={showUiOverlay ? "Hide HUD" : "Show HUD"}
-          className="p-1 rounded-lg text-xs text-stone-400 hover:text-white transition-colors"
-        >
-          <Zap className={`w-4 h-4 ${showUiOverlay ? "text-amber-400" : "text-stone-500"}`} />
-        </button>
+        {/* Bottom SI Telemetry Chips */}
+        <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
       </div>
 
-      {/* Live SI Kernel Telemetry Chips */}
-      <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Water Wheel Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {waterWheelRpm} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="60"
+              step="1"
+              value={waterWheelRpm}
+              onChange={(e) => updateParam("waterWheelRpm", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Total Draft Ratio</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                ×{totalDraftRatio.toFixed(1)}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2.0"
+              max="6.0"
+              step="0.1"
+              value={totalDraftRatio}
+              onChange={(e) => updateParam("totalDraftRatio", Number.parseFloat(e.target.value))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Roller Clamp Weight
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {rollerClampingWeightKg.toFixed(1)} kg
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2.0"
+              max="10.0"
+              step="0.5"
+              value={rollerClampingWeightKg}
+              onChange={(e) =>
+                updateParam("rollerClampingWeightKg", Number.parseFloat(e.target.value))
+              }
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
