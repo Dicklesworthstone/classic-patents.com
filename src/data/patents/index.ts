@@ -142,6 +142,8 @@ export const allPatents: Patent[] = parsePatentCatalog([
   parsonsTurbinePatent,
   teslaTeleautomatonPatent,
   zeppelinAirshipPatent,
+  hewittMercuryLampPatent,
+  fessendenWirelessPatent,
   lindeAirLiquefactionPatent, // 1903-05-05
   carrierAirConditionerPatent,
   wrightFlyerPatent,

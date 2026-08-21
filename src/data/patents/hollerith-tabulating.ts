@@ -532,7 +532,6 @@ export const hollerithTabulatingPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
   usptoClassification:
     "Statistical card-processing apparatus; source classification review pending",
-  archivalEdition: hollerithTabulatingArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt",
     pageCount: 17,

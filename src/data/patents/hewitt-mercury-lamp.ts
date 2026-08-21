@@ -130,7 +130,6 @@ export const hewittMercuryLampPatent: Patent = {
       },
     ],
   },
-  archivalEdition: hewittMercuryLampArchivalEdition,
   originalText:
     "To all whom it may concern: Be it known that I, PETER COOPER HEWITT, a citizen of the United States, residing at New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.\n\nPrior to my invention many attempts have been made to produce light by the passage of electric currents through a gas or vapor contained within an exhausted envelope—such, for instance, as Geissler tubes and vacuum spark discharges. In all such devices, however, the currents employed have been of very high electromotive force and negligible quantity, yielding little useful light and suffering from extreme electrical inefficiency.\n\nI have discovered that when an exhausted tube containing a vaporizable conducting substance, such as mercury, is connected in circuit with a source of electric current of moderate electromotive force (such as 100 to 120 volts), no current will pass through the tube under ordinary conditions because of an enormous initial electrical resistance at the cold cathode surface... To start the lamp I apply a momentary higher potential of several thousand volts... The moment this cathode resistance is broken down, the electrical resistance of the vapor column collapses and the tube continues to operate smoothly from a source of moderate potential.",
   drawings: [

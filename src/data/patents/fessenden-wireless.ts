@@ -76,7 +76,6 @@ export const fessendenWirelessPatent: Patent = {
       },
     ],
   },
-  archivalEdition: fessendenWirelessArchivalEdition,
   originalText:
     "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in Wireless Telegraphy, of which the following is a specification.\n\nIn the systems of wireless telegraphy heretofore used—as, for example, the systems described by Marconi and Lodge—the electromagnetic waves are produced by the discharge of a condenser across a spark-gap. In such systems the waves are emitted in short, highly-damped bursts or wave-trains separated by relatively long intervals of rest, resulting in severe broadband interference and making sharp resonant tuning impossible.\n\nMy invention has for its primary object the continuous radiation of electromagnetic waves of substantially uniform strength and predetermined frequency, whereby sharp resonance is obtained and the energy is transmitted with vastly greater efficiency and selectivity.",
   drawings: [
