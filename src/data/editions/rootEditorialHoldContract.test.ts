@@ -16,7 +16,6 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
-  "us-2297691-carlson-electrophotography",
   "us-3671542-kwolek-kevlar",
 ] as const;
 

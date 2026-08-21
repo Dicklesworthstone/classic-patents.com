@@ -2,7 +2,7 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gatlingBoltCamFlex, gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
+import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -102,20 +102,14 @@ export function GatlingGun3D() {
 
       // Rotate Barrel Cluster & Drive Crank via shared SI speed
       const omega = p.crankOmegaRadPerS;
-      model.nodes.barrelCluster.rotation.x += omega * delta;
-      model.nodes.crankHandle.rotation.x += omega * delta;
+      model.nodes.barrelClusterGroup.rotation.x += omega * delta;
+      model.nodes.crankGroup.rotation.x += omega * delta;
 
       // Reciprocate Bolts along Spiral Cam Track
-      const clusterAngle = model.nodes.barrelCluster.rotation.x;
+      const clusterAngle = model.nodes.barrelClusterGroup.rotation.x;
       model.nodes.bolts.forEach((bolt, i) => {
-        const boltPhase = clusterAngle + i * p.barrelSpacingRad;
-        const camProgress = Math.sin(boltPhase);
-        bolt.position.x = gatlingBoltStudioX(
-          p.boltHomeX,
-          p.camStrokeStudio,
-          camProgress,
-          gatlingBoltCamFlex(p.boltFlexStudio, camProgress),
-        );
+        const boltAngle = clusterAngle + i * p.barrelSpacingRad;
+        bolt.position.x = gatlingBoltStudioX(boltAngle, p.boltHomeX, p.camStrokeStudio);
       });
 
       // Muzzle Flash & Sound Triggering on live fire interval
@@ -123,19 +117,23 @@ export function GatlingGun3D() {
       if (now - lastFireTime > p.fireIntervalS) {
         lastFireTime = now;
         if (p.showMuzzleFlash) {
-          model.nodes.flashLight.intensity = 3.5;
+          model.materials.muzzleFlash.opacity = 1.0;
+          model.muzzleFlashPoints.visible = true;
         }
         if (!p.isAudioMuted) {
-          soundEngine.playGatlingShot();
+          soundEngine.playGunshot();
         }
       }
 
       // Decay Muzzle Flash
-      if (model.nodes.flashLight.intensity > 0) {
-        model.nodes.flashLight.intensity = Math.max(
+      if (model.materials.muzzleFlash.opacity > 0) {
+        model.materials.muzzleFlash.opacity = Math.max(
           0,
-          model.nodes.flashLight.intensity - p.muzzleFlashDecayPerS * delta,
+          model.materials.muzzleFlash.opacity - p.muzzleFlashDecayPerS * delta,
         );
+        if (model.materials.muzzleFlash.opacity <= 0.01) {
+          model.muzzleFlashPoints.visible = false;
+        }
       }
 
       // Cutaway Visibility
