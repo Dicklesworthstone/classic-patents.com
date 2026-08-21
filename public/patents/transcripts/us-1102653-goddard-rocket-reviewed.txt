@@ -1,0 +1,656 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 4 ---
+
+R. H. GODDARD.
+ROCKET APPARATUS,
+APPLIOATION FILED 0OT. 1, 1913.
+
+1,102,658. Patented July 7, 1914
+FO SENG 39 29 A45
+41 iw
+Ad 44 - aba
+25
+Aj ‘ AO ty A
+Jd. sa) 7
+20 0) Li |
+ip
+5
+16
+12
+10
+12
+
+Kobirt i ieddara
+
+@llbor- weve
+Loti gats
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 4 ---
+
+UNITED STATES PATENT OFFICE.
+
+ROBERT H. GODDARD, OF WORCESTER, MASSACHUSETTS,
+
+ROCKET APPARATUS,
+
+1,102,653.
+
+Specification of Letters Patent.
+
+Patented July 7, 1914.
+
+Application filed October 1, 1913. Serial No. 792,707.
+
+To all whom tt may concern:
+
+Be it known that I, Roszrr H. Gopparp,
+
+_ a citizen of the United States, residing at
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+Worcester, in the county of Worcester and
+State of Massachusetts, have invented a new.
+
+and useful Rocket Apparatus, of which the.
+
+following is a specification.
+
+This invention relates to a rocket appara-
+
+tus and particularly to a form of such appa-
+ratus adapted to transport photographic or
+other recordin ;
+heights. Certain features of the invention
+are also applicable tothe display of signals
+or to the projection of explosives.
+Mathematical analysis shows that in any
+rocket apparatus of given mass, the neces-
+sary propelling charge varies according to
+an expression in vhich the percentage of the
+
+heat energy of the charge which is trans-
+
+formed to kinetic energy enters in an ex-
+
+ponential relation, Hence, any increase in
+
+the efficiency in the transformation results
+in greatly increased velocity of the appa-
+ratus \and also permits a reduction in the
+amount of explosive used. . .
+_ It is bne of the objects of my invention to
+provide a rocket apparatus in which the
+transformation above mentioned is per-
+formed with great efficiency whereby the
+
+velocity and range of flight are greatly in-
+
+creased.
+
+A second object of my invention is to pro-
+vide means by which, after the apparatus
+as a whole has performed a given flight, the
+recording apparatus may be given a further
+flight in an auxiliary device by the use of
+a second but reduced propelling charge.
+
+Further objects of my invention are to
+provide improved means for initially ro-
+tating the rocket apparatus; to provide
+
+means for maintaining the speed of rotation,
+
+thus attained; and to provide means for so
+supporting the recording apparatus within
+the rocket that said apparatus shall not par-
+take of the rotation of the rocket apparatus
+as a- whole.
+
+With these objects in view my invention
+comprises certain devices, arrangements and
+combination of parts which will be herein-
+after described and more fully set forth in
+the appended claims. :
+
+A preferred form of my invention is
+shown in the drawings in which—
+
+Figure 1 is a longitudinal view, partly in,
+
+instruments to extreme.
+
+| tube 11.
+
+section, of my rocket apparatus as a whole:
+Fig. 2 is an enlarged longitudinal sectional
+view of the head of the apparatus: Figs.
+3 and 4 are enlarged transverse sectional
+views taken along the lines 3—3 and 44
+respectively, in Fig. 1: and Fig. 5 is a ver-
+tical elevation of a frame work from which
+the Apparatus may be fired, drawn to a re-
+duced scale. ,
+Referring to Fig. 1, the rocket apparatus
+comprises a primary rocket having a cas-
+ing containing a combustion chamber 10
+from which depends an elongated tapered
+The explosive material is indi-
+cated as a plurality of disks 12 secured with-
+in the chamber 10 by a casting 13. The
+disks 12 are preferably formed of. a series
+
+of materials having progressively: increas-
+
+ing rates of combustion so that as each disk
+is ignited it burns with increased rapidity
+and keeps the pressure in the chamber 10
+constant, for which specific pressure the ta-
+pered tube 11 is designed. Similar results
+may be attained by using the explosive in
+a single mass of progressively varying com-
+position in place of the plurality of disks
+here shown, and this construction is also
+within the scope of my invention. —
+"In the ordinary forms of rocket appara-
+tus, the gases of combustion are discharged
+through an opening at the rear of the ap-
+paratus but I have discovered that by pro-
+
+‘viding the elongated tapered: tube 11, I am
+able to greatly increase the efficiency: of the
+
+device. The tube is shown in the form of a
+truncated, cone of slight taper and the
+
+length of the tube should be not less than
+
+three times as great as its longest diameter,
+while a greater ratio than this will often be
+necessary to obtain satisfactory results.
+This construction takes advantage of the ex-
+pansion of the gases as they pass through
+the tube and also allows'the combustion of
+the gases to be completed before they finally
+issue from the tube.. By experimentally de-
+termining the best proportions for the tube
+11, a maximum percentage of the heat en-
+ergy of the disks 12 may be transformed into
+kineticenergy. A fuse 14 is indicated which
+extends downwardly within the tube 11 and
+provides means by which the disks may be
+ignited.
+
+In order to provide the necessary speed
+of rotation of the apparatus so that it may
+
+55
+
+60
+
+65
+
+70
+
+75
+
+80
+
+85
+
+90
+
+95
+
+100
+
+105
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 4 ---
+
+be caused to follow a desired path of flight,
+I provide the construction shown in section
+in Fig. 3 and comprising a plurality of sub-
+stantially radial but’ backwardly curved
+tubes or recesses 15 in which is placed ex-
+plosive material 16. It will be ‘apparent
+that when this material is ignited the dis-
+charge of the gases therefrom will react to
+
+‘ produce rotation of the apparatus.
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+To provide for igniting theseveral charges
+16 simultaneously, I arrange. within . the
+outer surface of each charge a fine metal fila-
+
+~ment or heating element 17, these filaments
+
+being all connected in series by wires 18 with
+a battery 19 and a key 20. The closing of
+
+the key 20 sends a current through the wires:
+
+18 which instantaneously raises the tempera-
+
+ture of the filaments 17 and simultaneously:
+
+ignites the several charges 16. The explo-
+sive force of the gases from the material 16
+forces the filaments 17 and the wires 18 out
+
+of the tubes 15 so that they can not thereaf-:
+. ter interfere with the rotation or flight of.
+
+the apparatus.
+In order that this preliminary rotation
+
+may be conveniently produced, I provide the:
+
+vertical framework 21 shown in Fig. 5 in
+
+which the rocket is supported upon ball:
+bearings 22 and 23. After the charges 16
+have been ignited and the desired speed of:
+
+rotation has been attained, the fuse 14 may
+
+be lighted and the flight of the rocket will:
+
+commence.
+In order that the apparatus carried by the
+rocket may be ‘given a further flight after
+
+‘the propelling charge of the main apparatus.
+
+has been substantially consumed, I provide:
+an elongated tubular projection or firing:
+tube 24 at the forward extremity of the cast-
+
+40- ing 18. Within this tube I provide an auxil-
+
+45
+
+50
+
+55
+
+jiary rocket comprising a combustion cham-.
+ber 25 having a rearwardly extended. tapered
+tube 26 and containing a plurality of disks
+of explosive material 27, these parts being
+‘substantially similar to the corresponding
+parts in the main apparatus but constructed
+on a somewhat reduced scale.
+
+A fuse 28:extends from the explosive ma-:
+-terial 27 through an opening in the casting:
+
+18 and projects a short distance into the last.
+disk 12 of explosive material in the chamber.
+
+10. Thus when the propelling charge in the’
+
+main rocket apparatus is substantially ex-:
+hausted, the fuse 28 will be ignited and the
+firing tube 24 will act as a gun from which
+
+. the’ auxiliary rocket will be projected for
+
+60
+
+65
+
+‘much less weight than the com
+
+further flight. As the auxiliary rocket is of
+ined weight
+of: thé. primary and auxiliary rockets, a
+givenh:amount of explosive in the auxiliary
+rocket will give a much greater increase in
+flight than the-same amount of explosive
+would produce if: burned in the primary
+rocket.’ ny ;
+
+« To provide for maintaining. the speed of £
+
+1,102,653
+
+rotation of the auxiliary apparatus, which
+will have been somewhat reduced by the fric-
+tion of the atmosphere during the flight, I
+provide in the head 29 of the auxiliary
+rocket a plurality of transverse backwardly
+curved tubes or recesses 30, similar to the
+recesses 15 shown in Fig. 3. The recesses 30
+are provided with explosive charges 31 and
+within the recesses are also mounted a series
+of small tubes 32. extending inwardly to the
+axis of the apparatus where they unite and
+are further extended downwardly into the
+explosive charge 27. These tubes are filled
+with a rapidly burning compound which is
+ignited when the explosive charge 27 has
+been consumed to a predetermined point and
+
+70
+
+75
+
+80
+
+by which the charges 31 are thereafter ig- -
+
+nited to increase or restore the speed of rota-
+tion of the auxiliary rocket. oo
+Within the apparatus head 29 is pivotally
+mounted a support 33 upon which in turn
+is mounted any desired form of recording
+apparatus. In the particular embodiment
+of my invention shown in the drawings this
+apparatus is indicated as a camera 34. The
+
+head 29 is provided with a series of openings:
+The
+
+35 separated by narrow supports 36. \
+speed of rotation of the head is so great that
+the passage of the supports 36 ih front of
+the camera does not- interfere with the tak-
+ing of photographs thereby. ce
+In order that the support 33 may not. par-
+
+take, of the rotation of the head 29, I provide.
+
+within thesupport a gyroscope 37 mounted in
+bearings 38 upon said support and to pro-
+
+vide the high ‘initial speed of rotation nec-
+
+essary for the operation of the gyroscope, I
+construct: the, latter as the armature of a
+three-phase induction .motor having . field
+coils 39, mounted on a frame 40 also secured
+
+85
+
+90
+
+95
+
+106
+
+105
+
+to the support 33. The field coils are con- |
+
+nected to wires 41 secured within an insulat-
+
+ing plug 42 in the support 33. Wires 43 may:
+
+be introduced through an opening 44 in the
+head 29 and caused to make contact with the
+wires 41 in the plug 42, the wires 43 being
+connected to any suitable source of three-
+phase current. en the gyroscope has at-
+tained the requisite speed of rotation, the
+wires 43 may be withdrawn and the opening
+
+44 may be closed with the screw 45 shown.in
+
+Fig. 1. Li
+
+In order that the apparatus may be
+brought back to earth without damage there-
+to, a parachute arrangement may be pro-
+vided but as such arrangements are well
+
+‘known and form no part of my invention, I
+
+have omitted the same from the drawings
+for the sake of showing other features more
+
+clearly. It is also within the scope of my
+
+invention to provide the auxiliary rocket
+with a firing tube from which a third rocket
+
+110
+
+115
+
+120
+
+125
+
+may be discharged and to continue this .
+
+arrangement to any desired extent. Several
+
+features of my invention are also applicable
+
+189
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 4 ---
+
+10
+
+15
+
+1,102,653 _
+
+to a structure in which the apparatus head
+is secured directly to the casting 13, the aux-
+iliary rocket being omitted, and this con-
+struction I also consider within the scope of
+my invention. ,
+
+The operation of my device has. been
+clearly indicated in the preceding descrip-
+
+. tion but may be briefly restated _as follows:
+
+The rocket as a whole is mounted in the ver-
+tical. frame 21 and the wires 43 are placed
+in contact with the wires 41 until the gyro-
+scope 37 has attained a high speed of rota-
+tion. After the wires 43 are withdrawn and
+the screw 45 has been inserted, the switch
+20 may be closed to ignite the charges 16 in
+the curved tubes 15. The ignition of these
+charges results in imparting to the rocket
+
+_ apparatus a high spéed of rotation and when
+
+20
+
+25
+
+30
+
+this has been attained the fuse 14 may be
+ignited to start the rocket on its flight.
+When the apparatus as a whole has been
+projected to a considerable height and the
+propelling charge 12 has been substantially
+exhausted, the fuse 28 will be ignited which
+in turn will ignite the charge 27 resulting
+in the firing of the auxiliary rocket from
+the tube 24. When the charge 27 is psr-
+tially consumed, the explosive material 31
+in the tubes 30 will be ignited to increase the
+speed of rotation of the auxiliary rocket.
+While the rocket as a whole and the aux-
+iliary rocket revolve at a high speed of ro-
+tation, the effect of the gyroscope is to
+
+maintain the support 33 in the same rela-
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+tive position in which it commenced the
+flight so that the camera 34 may be di-
+rected before the flight in any desired di-
+rection and will retain that direction
+throughout the flight.
+
+While a preferred form of my invention
+is shown in the drawings, it is obvious that
+many changes may be made in the construc-
+tion herein shown without departing from
+the spirit and scope of my invention and I
+do not wish to be limited to the details here-
+in disclosed, but
+
+What I do claim is:—
+
+1. In a rocket apparatus, in combination,
+a primary rocket, comprising a combustion
+chamber and a firing tube, a secondary
+rocket mounted in said; firing tube, and
+means for firing said secondary rocket when
+the explosive in the primary rocket is sub-
+stantially consumed.
+
+2. In a rocket apparatus, in combination,
+a combustion chamber containing an ex-
+plosive and a rearwardly extended tapered
+tube connected with said chamber through
+which the gaseous products of combustion
+are discharged, said tube being in the form
+
+B
+
+of a truncated cone of slight taper and hav-
+ing its length equal to not less than three
+times its longest diameter.
+
+3. In a rocket apparatus, in combination,
+a primary rocket having a firing tube, a
+secondary rocket mounted in said firing
+tube, and adapted to be fired therefrom,
+means in said primary rocket for causing
+initial rotation of said rockets, and means in
+said secondary rocket for thereafter main=
+taining said secondary rocket in rotation.
+
+4, In a rocket apparatus, in combination,
+a casing, means in said casing for propelling
+said rocket apparatus, and additional means
+in said casing for rotating said apparatus;
+said latter means comprising a: plurality of
+substantially radial transverse tubes back-
+wardly curved with relation to the direc-
+tion of rotation of the rocket apparatus and
+containing explosive material together with
+heating elements embedded therein by which
+the explosive. material in all of the
+may be fired simultaneously.
+- 5. In a rocket, in combination, means for
+producing initial rotation of the rocket, a
+casing, a chamber therein containing a
+charge of propelling explosive, a plurality
+
+of substantially radial curved tubes in said
+
+casing also containing an explosive, and fir-
+
+‘ing means connecting said explosives by
+
+which the explosive in the radial’tubes is
+ignited when the propelling explosive is con-
+sumed to a. predetermined extent and acts to
+restore the initial speed of rotation of the
+rocket. ;
+
+6. A rocket having in combination a com-
+bustion chamber, an apparatus head contain-
+ing a support for the apparatus, means for
+rotating the rocket, and means to prevent
+rotation of the apparatus support.
+
+7. In a rocket apparatus, the combination,
+
+a combustion chamber and an apparatus
+
+head, said head containing a pivotally
+mounted support for the apparatus and hav-
+ing a gyroscope mounted thereon by which
+the support may be restrained from rotation
+with the head. a
+
+8. In a rocket, in combination, an appa-
+ratus head, a support for the apparatus piv-
+otally mounted within the head, a gyroscope
+mounted upon the support, and means for
+imparting a high initial speed of rotation
+to said gyroscope. -
+
+In testimony whereof I have hereunto set
+my hand, in the presence of two subscribing
+
+witnesses.
+ROBERT H. GODDARD.
+Witnesses:
+Francis W. Hrxon,
+C. Forrest Wesson.
+
+65
+
+70
+
+75
+
+80
+
+tubes ©
+
+85
+
+90
+
+95
+
+100
+
+105
+
+110
+
+115

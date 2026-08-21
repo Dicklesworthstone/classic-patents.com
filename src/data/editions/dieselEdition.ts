@@ -16,9 +16,9 @@ const _term = (
 });
 
 export const DIESEL_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 600, height: 470 },
+  1: { width: 1856, height: 2385 },
   2: { width: 430, height: 600 },
-  3: { width: 520, height: 620 },
+  3: { width: 1856, height: 2385 },
 };
 
 function figureAssetPath(number: number): string {

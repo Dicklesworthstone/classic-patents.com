@@ -191,10 +191,10 @@ describe("US 542,846 manual source edition", () => {
     if (!existsSync(transcriptPath)) return;
     const ledger = readFileSync(transcriptPath, "utf8");
     expect(validateReviewedTranscription(ledger, 10)).toEqual({ valid: true });
-    expect(ledger).toContain(dieselManualClaimText(1));
-    expect(ledger).toContain(dieselManualClaimText(2));
-    expect(ledger).toContain(dieselManualClaimText(3));
     expect(JSON.stringify(dieselEngineArchivalEdition)).not.toContain("SOURCE PDF PAGE");
+    const continuousLedger = ledger
+      .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 10 ---/g, "")
+      .replace(/\s+/g, " ");
     const sourceBlocks = dieselEngineArchivalEdition.blocks.filter(
       (
         block,
@@ -203,16 +203,12 @@ describe("US 542,846 manual source edition", () => {
         { kind: "paragraph" | "claim" }
       > => block.kind === "paragraph" || block.kind === "claim",
     );
-    const continuousLedger = ledger
-      .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 10 ---/g, "")
-      .replace(/\s+/g, " ");
     for (const block of sourceBlocks) {
-      expect(continuousLedger).toContain(
-        block.inlines
-          .map((inline) => inline.text)
-          .join("")
-          .replace(/\s+/g, " "),
-      );
+      const blockText = block.inlines
+        .map((inline) => inline.text)
+        .join("")
+        .replace(/\s+/g, " ");
+      expect(continuousLedger).toContain(blockText);
     }
 
     const drawingSheet = (page: number) => {
