@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { parsePatentCatalog } from "@/data/patents/schema";
@@ -17,6 +18,15 @@ describe("pasteurFermentationArchivalEdition", () => {
     expect(pasteurFermentationArchivalEdition.sourcePdfSha256).toBe(
       "7c9145e813b652e9da76472a8e6d0b2fa3088aeb1cea34b5ae3163f4d673a649",
     );
+    expect(
+      createHash("sha256")
+        .update(
+          readFileSync(
+            resolve(process.cwd(), "public/patents/pdfs/us-135245-pasteur-fermentation.pdf"),
+          ),
+        )
+        .digest("hex"),
+    ).toBe(pasteurFermentationArchivalEdition.sourcePdfSha256);
     expect(
       pasteurFermentationArchivalEdition.blocks
         .filter((block) => block.kind === "claim")
@@ -59,19 +69,78 @@ describe("pasteurFermentationArchivalEdition", () => {
           )
         : [],
     );
-    expect(figureReferences).toHaveLength(4);
-    const figureOnePreview = figureReferences.find((reference) => reference.text === "Fig. 1")
-      ?.figurePreviews?.[0];
-    expect(figureOnePreview).toMatchObject({
-      src: "/patents/figures/us-135245-pasteur-fermentation/figure-1-v2.png",
-      width: 1250,
-      height: 920,
-    });
-    for (const reference of figureReferences) {
-      expect(reference.figurePreviews?.[0]?.src).toStartWith(
-        "/patents/figures/us-135245-pasteur-fermentation/",
-      );
+    const expectedReferences = [
+      {
+        text: "Figure 1",
+        src: "/patents/figures/us-135245-pasteur-fermentation/figure-1-v3.png",
+        width: 1750,
+        height: 1150,
+        sha256: "8c5e6f806cc5570a6364168b31e4dc3dcc48a85b2f73494574dce363bbf78541",
+      },
+      {
+        text: "Fig. 1",
+        src: "/patents/figures/us-135245-pasteur-fermentation/figure-1-v3.png",
+        width: 1750,
+        height: 1150,
+        sha256: "8c5e6f806cc5570a6364168b31e4dc3dcc48a85b2f73494574dce363bbf78541",
+      },
+      {
+        text: "Fig. 2",
+        src: "/patents/figures/us-135245-pasteur-fermentation/figure-2-v3.png",
+        width: 900,
+        height: 750,
+        sha256: "adec6a5da1c2b0b36d2fe40412a06bb4bfcd27342fad78bbeec573195474658f",
+      },
+    ] as const;
+    expect(figureReferences).toHaveLength(expectedReferences.length);
+    expect(
+      figureReferences.map((reference) => ({
+        text: reference.text,
+        src: reference.figurePreviews?.[0]?.src,
+        width: reference.figurePreviews?.[0]?.width,
+        height: reference.figurePreviews?.[0]?.height,
+      })),
+    ).toEqual(
+      expectedReferences.map(({ text, src, width, height }) => ({ text, src, width, height })),
+    );
+    for (const expected of expectedReferences) {
+      const filePath = resolve(process.cwd(), "public", expected.src.slice(1));
+      expect(existsSync(filePath)).toBe(true);
+      const image = readFileSync(filePath);
+      expect(image.subarray(1, 4).toString("ascii")).toBe("PNG");
+      expect({ width: image.readUInt32BE(16), height: image.readUInt32BE(20) }).toEqual({
+        width: expected.width,
+        height: expected.height,
+      });
+      expect(createHash("sha256").update(image).digest("hex")).toBe(expected.sha256);
     }
+  });
+
+  test("keeps every visitor-facing literal source block in the reviewed ledger", () => {
+    const ledger = readFileSync(
+      resolve(
+        process.cwd(),
+        "public/patents/transcripts/us-135245-pasteur-fermentation-reviewed.txt",
+      ),
+      "utf8",
+    );
+    const literalBlocks = pasteurFermentationArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind === "masthead") return block.lines;
+      if (block.kind === "heading") return [block.text];
+      if (block.kind === "paragraph" || block.kind === "claim") {
+        return [block.inlines.map((inline) => inline.text).join("")];
+      }
+      return [];
+    });
+    const normalizedLedger = ledger.replace(/^---.*---$/gm, "").replace(/\s+/g, " ");
+    for (const literal of literalBlocks) {
+      expect(normalizedLedger).toContain(literal.trim().replace(/\s+/g, " "));
+    }
+    expect(ledger).toContain("exit or escape tubes at x");
+    expect(ledger).toContain("16° to 18° Reaumur");
+    expect(JSON.stringify(pasteurFermentationArchivalEdition)).not.toContain(
+      "shows the three vessels and the spray arrangement",
+    );
   });
 
   test("is catalog-importable with a reviewed transcription, no invented claims, and no substituted filing date", () => {

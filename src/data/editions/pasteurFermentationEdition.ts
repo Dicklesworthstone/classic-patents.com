@@ -275,12 +275,18 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
         "Subjecting the wort to a process for the expulsion of the air and cooling it off, substantially as and for the purposes set forth.",
       ),
     },
-    { kind: "paragraph", inlines: [{ kind: "small-caps", text: "LOUIS PASTEUR." }] },
     {
       kind: "paragraph",
       inlines: text(
-        "In testimony whereof I have hereunto set my hand this 8th day of December, 1871. Witnesses: CAYON, GRENET FYRE.",
+        "In testimony whereof I have hereunto set my hand this 8th day of December, 1871.",
       ),
+    },
+    {
+      kind: "paragraph",
+      inlines: [
+        { kind: "small-caps", text: "LOUIS PASTEUR." },
+        { kind: "text", text: " Witnesses: CAYON, GRENET FYRE." },
+      ],
     },
     {
       kind: "figure-sheet",

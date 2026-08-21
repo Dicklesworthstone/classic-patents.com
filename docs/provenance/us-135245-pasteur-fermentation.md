@@ -42,7 +42,9 @@ execution signatures. `figure-2-v3.png` uses `x=710, y=1770, width=900,
 height=750`; it contains the complete printed Fig. 2 apparatus and label, but
 no masthead, Fig. 1, or execution signatures. The files are 1750 × 1150 and
 900 × 750 pixels, respectively, and retain the rendered source pixels without
-reconstruction or stylistic alteration.
+reconstruction or stylistic alteration. Their SHA-256 values are, respectively,
+`8c5e6f806cc5570a6364168b31e4dc3dcc48a85b2f73494574dce363bbf78541` and
+`adec6a5da1c2b0b36d2fe40412a06bb4bfcd27342fad78bbeec573195474658f`.
 
 The earlier `figure-1.png`, `figure-1-v2.png`, and `figure-2.png` assets are
 preserved as historical working artifacts and are not referenced by this
