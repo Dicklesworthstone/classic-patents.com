@@ -14,12 +14,16 @@ import * as THREE from "three";
 
 export interface HewittMercuryLampModelNodes {
   root: THREE.Group;
+  lampGroup: THREE.Group;
   glassTube: THREE.Mesh;
   plasmaColumn: THREE.Mesh;
   plasmaLight: THREE.PointLight;
   cathodeSpotMesh: THREE.Mesh;
   mercuryPoolMesh: THREE.Mesh;
   condensingGlobe: THREE.Mesh;
+  tiltingCradle: THREE.Group;
+  pullCord: THREE.Mesh;
+  startingCoil: THREE.Mesh;
   dropletParticles: THREE.Points;
   materials: THREE.Material[];
 }
@@ -44,7 +48,7 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
 
   const plasmaMat = new THREE.MeshStandardMaterial({
     color: 0x06b6d4,
-    emissive: 0x22d3ee,
+    emissive: 0x10b981, // Characteristic cyan-green mercury emission glow
     emissiveIntensity: 2.2,
     roughness: 0.2,
     metalness: 0.1,
@@ -72,6 +76,13 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   });
   materials.push(brassMat);
 
+  const copperMat = new THREE.MeshStandardMaterial({
+    color: 0xb45309,
+    metalness: 0.9,
+    roughness: 0.25,
+  });
+  materials.push(copperMat);
+
   const ironMat = new THREE.MeshStandardMaterial({
     color: 0x334155,
     metalness: 0.7,
@@ -85,6 +96,12 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
     roughness: 0.7,
   });
   materials.push(wallBracketMat);
+
+  const cordMat = new THREE.MeshStandardMaterial({
+    color: 0x78350f,
+    roughness: 0.9,
+  });
+  materials.push(cordMat);
 
   // ==========================================
   // 1. MOUNTING FRAME & WALL BRACKETS
@@ -111,14 +128,38 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   ins1.position.set(0, 1.8, -0.2);
   bracketGroup.add(ins1);
 
-  // Coiled Ballast Choke on spine
+  // Inductive Starting Choke Coil on spine
   const ballastGeo = new THREE.TorusGeometry(0.2, 0.06, 12, 24);
-  const ballastMesh = new THREE.Mesh(ballastGeo, brassMat);
-  ballastMesh.position.set(0, 2.3, -0.4);
-  bracketGroup.add(ballastMesh);
+  const startingCoil = new THREE.Mesh(ballastGeo, copperMat);
+  startingCoil.position.set(0, 2.3, -0.4);
+  bracketGroup.add(startingCoil);
 
   // ==========================================
-  // 2. DISCHARGE LAMP ASSEMBLY (Tilted at 15°)
+  // 2. TILTING SUSPENSION CRADLE
+  // ==========================================
+  const tiltingCradle = new THREE.Group();
+  tiltingCradle.position.set(0, 1.8, 0);
+
+  // Trunnion Pivot Brackets
+  const pivotGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.3, 12);
+  const pivotL = new THREE.Mesh(pivotGeo, brassMat);
+  pivotL.position.set(-1.0, 0, 0);
+  tiltingCradle.add(pivotL);
+
+  const pivotR = new THREE.Mesh(pivotGeo, brassMat);
+  pivotR.position.set(1.0, 0, 0);
+  tiltingCradle.add(pivotR);
+
+  // Starting Tilt Pull Cord / Chain
+  const cordGeo = new THREE.CylinderGeometry(0.015, 0.015, 2.5, 8);
+  const pullCord = new THREE.Mesh(cordGeo, cordMat);
+  pullCord.position.set(-1.6, -1.2, 0);
+  tiltingCradle.add(pullCord);
+
+  root.add(tiltingCradle);
+
+  // ==========================================
+  // 3. DISCHARGE LAMP ASSEMBLY (Tilted at 15°)
   // ==========================================
   const lampGroup = new THREE.Group();
   lampGroup.position.set(0, 1.5, 0);
@@ -150,7 +191,7 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   lampGroup.add(plasmaLight);
 
   // ==========================================
-  // 3. LIQUID MERCURY CATHODE POOL (Left End: x = -1.6)
+  // 4. LIQUID MERCURY CATHODE POOL (Left End: x = -1.6)
   // ==========================================
   const cathodeGroup = new THREE.Group();
   cathodeGroup.position.set(-1.6, 0, 0);
@@ -175,7 +216,7 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   cathodeGroup.add(cap1);
 
   // ==========================================
-  // 4. IRON ANODE & CONDENSING GLOBE (Right End: x = 1.6)
+  // 5. IRON ANODE & CONDENSING GLOBE (Right End: x = 1.6)
   // ==========================================
   const anodeGroup = new THREE.Group();
   anodeGroup.position.set(1.6, 0, 0);
@@ -202,9 +243,9 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   anodeGroup.add(cap2);
 
   // ==========================================
-  // 5. CONDENSED MERCURY DROPLETS PARTICLES
+  // 6. CONDENSED MERCURY DROPLETS PARTICLES
   // ==========================================
-  const dropCount = 35;
+  const dropCount = 45;
   const dropGeo = new THREE.BufferGeometry();
   const dropPositions = new Float32Array(dropCount * 3);
 
@@ -232,12 +273,16 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
 
   return {
     root,
+    lampGroup,
     glassTube,
     plasmaColumn,
     plasmaLight,
     cathodeSpotMesh,
     mercuryPoolMesh,
     condensingGlobe,
+    tiltingCradle,
+    pullCord,
+    startingCoil,
     dropletParticles,
     materials,
   };
