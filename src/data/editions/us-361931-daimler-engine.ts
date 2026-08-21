@@ -88,7 +88,7 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "GOTTLIEB DAIMLER, OF CANNSTADT, WÜRTEMBERG, GERMANY.",
         "EXPLOSIVE-GAS MARINE ENGINE.",
-        "No. 361,931. Specification forming part of Letters Patent, dated April 26, 1887.",
+        "No. 361,931. Specification forming part of Letters Patent No. 361,931, dated April 26, 1887.",
         "Application filed November 9, 1886. Serial No. 218,411. (No model.)",
       ],
     },
@@ -99,7 +99,7 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 1. ",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. (No Model.) 3 Sheets—Sheet 1. Witnesses: George B. Ailes. Robert Garrett. Inventor: Gottlieb Daimler, by James L. Norris, Atty. N. Peters, Photo-Lithographer, Washington, D.C. ",
         },
         figure("Fig. 1", [1]),
         { kind: "text", text: "." },
@@ -112,7 +112,7 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 2. ",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. (No Model.) 3 Sheets—Sheet 2. Witnesses: George B. Ailes. Robert Garrett. Inventor: Gottlieb Daimler, by James L. Norris, Atty. N. Peters, Photo-Lithographer, Washington, D.C. ",
         },
         figure("Figs. 2, 4, 4a, 4b, 5, and 6", [2, 4, "4a", "4b", 5, 6]),
         { kind: "text", text: "." },
@@ -125,7 +125,7 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. 3 Sheets—Sheet 3. ",
+          text: "G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887. (No Model.) 3 Sheets—Sheet 3. Witnesses: George B. Ailes. Robert Garrett. Inventor: Gottlieb Daimler, by James L. Norris, Atty. N. Peters, Photo-Lithographer, Washington, D.C. ",
         },
         figure("Fig. 3", [3]),
         { kind: "text", text: "." },

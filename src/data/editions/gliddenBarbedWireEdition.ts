@@ -53,6 +53,9 @@ const claim = (number: number, value: string) => ({
   inlines: text(value),
 });
 
+// Definitions are attached to the exact historical occurrence and distinguish
+// the source's component from later barbed-wire terminology.
+
 /**
  * A continuous, manually prepared edition of the complete US 157,124
  * facsimile. Its first source sheet is the drawing sheet; the specification,
@@ -112,14 +115,17 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "This invention has relation to means for preventing cattle from breaking through wire-fences; and it consists in combining, with the twisted fence-wires, a short transverse wire, coiled or bent at its central portion about one of the wire strands of the twist, with its free ends projecting in opposite directions, the other wire strand serving to bind the ",
       },
-      term("spur-wire", "A short crosswise wire whose free ends project as barbs."),
+      term(
+        "spur-wire",
+        "The short crosswise piece that Glidden bends around one long strand, leaving its two free ends projecting in opposite directions as the fence's spurs.",
+      ),
       {
         kind: "text",
         text: " firmly to its place, and in position, with its spur ends perpendicular to the direction of the fence-wire, lateral movement, as well as vibration, being prevented. It also consists in the construction and novel arrangement, in connection with such a twisted fence-wire, and its spur-wires, connected and arranged as above described, of a ",
       },
       term(
         "twisting-key or head-piece",
-        "The through-post handle used to retighten the paired fence wires.",
+        "The through-post handle and shank attached to the wire ends; turning it tightens the paired strands again when untwisting has loosened the spurs.",
       ),
       {
         kind: "text",
@@ -131,7 +137,10 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "In the accompanying drawings, the letter B designates the fence-posts, the twisted fence-wire connecting the same being indicated by the letter A. C represents the ",
       },
-      term("twisting-key", "The handle and shank that turn the fence-wire ends through the post."),
+      term(
+        "twisting-key",
+        "The handle and shank that pass through the fence-post and turn the attached wire ends, allowing the paired strands to be tightened again.",
+      ),
       {
         kind: "text",
         text: ", the shank of which passes through the fence-post, and is provided at its end with an eye, b, to which the fence-wire is attached. The outer end of said key is provided with a transverse thumb-piece, c, which serves for its manipulation, and at the same time, abutting against the post, forms a shoulder or stop, which prevents the contraction of the wire from drawing the key through its perforation in said post.",
@@ -142,7 +151,10 @@ export const gliddenBarbedWireArchivalEdition: CuratedSpecificationEdition = {
     ),
     paragraph([
       { kind: "text", text: "The letter D indicates the " },
-      term("spur-wires", "Short transverse pieces whose ends project from the fence wire."),
+      term(
+        "spur-wires",
+        "Short transverse pieces bent around one strand, with free ends projecting from the fence wire in opposite directions as deterrent spurs.",
+      ),
       {
         kind: "text",
         text: ". Each of these is formed of a short piece of wire, which is bent at its middle portion, as at E, around one only of the wire strands, this strand being designated by the letter a. In forming this middle bend or coil several turns are taken in the wire, so that it will extend along the strand-wire for a distance several times the breadth of its diameter, and thereby form a solid and substantial bearing-head for the spurs, which will effectually prevent them from vibrating laterally or being pushed down by cattle against the fence-wire. Although these spur-wires may be turned at once around the wire strand, it is preferred to form the central bend first, and to then slip them on the wire strand, arranging them at suitable distances apart.",

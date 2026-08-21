@@ -7,25 +7,20 @@
  * refuses to manufacture hydraulic telemetry from absent source data.
  */
 export interface PeltonWheelVisualControls {
-  runnerRpm: number;
   jetEnabled: boolean;
 }
 
 export interface PeltonWheelVisualState {
   runnerOmegaRadPerS: number;
-  jetDisplaySpeed: number;
-  sprayDisplaySpeed: number;
   jetOpacity: number;
   sourceTelemetryAvailable: false;
 }
 
 export function stepPeltonWheelVisual(controls: PeltonWheelVisualControls): PeltonWheelVisualState {
-  const runnerRpm = Number.isFinite(controls.runnerRpm) ? Math.max(0, controls.runnerRpm) : 0;
-  const runnerOmegaRadPerS = (runnerRpm * 2 * Math.PI) / 60;
   return {
-    runnerOmegaRadPerS,
-    jetDisplaySpeed: controls.jetEnabled ? 0.08 : 0,
-    sprayDisplaySpeed: controls.jetEnabled ? 0.04 : 0,
+    // The grant gives no operating speed. Keep the archival model posed rather
+    // than converting an invented visitor rpm into a claimed machine state.
+    runnerOmegaRadPerS: 0,
     jetOpacity: controls.jetEnabled ? 0.85 : 0.25,
     sourceTelemetryAvailable: false,
   };

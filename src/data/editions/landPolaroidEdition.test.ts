@@ -1,7 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 import { landPolaroidPatent } from "@/data/patents/land-polaroid";
-import { landPolaroidArchivalEdition, manualLandClaimText } from "./landPolaroidEdition";
+import {
+  landPolaroidArchivalEdition,
+  landPolaroidParallelReadings,
+  manualLandClaimText,
+} from "./landPolaroidEdition";
 
 const reviewedLedger = readFileSync(
   new URL(
@@ -208,5 +212,89 @@ describe("US 2,543,181 Edwin Land Polaroid source-draft hold", () => {
       "Fig. 23",
     ]);
     expect(references.every((reference) => reference.figurePreviews === undefined)).toBe(true);
+  });
+
+  it("covers every edition paragraph with exactly one current-index companion", () => {
+    const paragraphIndexes = landPolaroidArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph" ? [index] : [],
+    );
+    const companionIndexes = Object.keys(landPolaroidParallelReadings)
+      .map(Number)
+      .sort((a, b) => a - b);
+    expect(companionIndexes).toEqual(paragraphIndexes);
+    for (const paragraphIndex of paragraphIndexes) {
+      const reading = landPolaroidParallelReadings[paragraphIndex];
+      expect(reading).toBeDefined();
+      expect(reading?.join(" ").trim().length).toBeGreaterThan(40);
+    }
+  });
+
+  it("retains the final inventor and references-cited formal matter in the edition and ledger", () => {
+    const formalText = landPolaroidArchivalEdition.blocks
+      .flatMap((block) => {
+        if (block.kind === "paragraph") return block.inlines.map((inline) => inline.text);
+        if (block.kind === "heading") return [block.text];
+        return [];
+      })
+      .join("\n");
+    expect(formalText).toContain("EDWIN H. LAND.");
+    expect(formalText).toContain("REFERENCES CITED");
+    expect(formalText).toContain("2,197,994 Butement — Apr. 23, 1940");
+    expect(formalText).toContain("879,995 France — Mar. 5, 1942");
+    expect(reviewedLedger).toContain("EDWIN H. LAND.");
+    expect(reviewedLedger).toContain("REFERENCES CITED");
+    expect(reviewedLedger).toContain("2,197,994 Butement — Apr. 23, 1940");
+    expect(reviewedLedger).toContain("879,995 France — Mar. 5, 1942");
+  });
+
+  it("preserves the source's full diazonium introductory sentence", () => {
+    const paragraphText = landPolaroidArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => block.inlines.map((inline) => inline.text))
+      .join("\n");
+    expect(paragraphText).toContain(
+      "The products of the present invention may be used in conjunction with, or may comprise as elements thereof, diazonium photosensitive layers.",
+    );
+    expect(paragraphText).toContain(
+      "For example, a photosensitive product may be formed by having the physical structure of the photosensitive element 310 of",
+    );
+    expect(reviewedLedger).toContain(
+      "The products of the present invention may be used in conjunction with, or may comprise as elements thereof, diazonium photosensitive layers.",
+    );
+  });
+
+  it("retains the literal visible drawing-sheet labels and signature matter for pages 1–8", () => {
+    const drawingSheetMarkers = [
+      "8 Sheets—Sheet 1.",
+      "8 Sheets—Sheet 2.",
+      "8 Sheets—Sheet 3.",
+      "8 Sheets—Sheet 4.",
+      "8 Sheets—Sheet 5.",
+      "8 Sheets—Sheet 6.",
+      "8 Sheets—Sheet 7.",
+      "8 Sheets—Sheet 8.",
+      "Permeable Anti-Halation Coating",
+      "Ruptured Retaining Wall",
+      "Opaque Barrier",
+      "Frangible Container",
+      "[handwritten signature: Edwin H. Land]",
+      "[handwritten signature: Donald P. Brown]",
+    ];
+    for (const marker of drawingSheetMarkers) {
+      expect(reviewedLedger).toContain(marker);
+    }
+
+    const figureSheets = landPolaroidArchivalEdition.blocks
+      .filter((block) => block.kind === "figure-sheet")
+      .map((block) => block.figureLabel);
+    expect(figureSheets).toEqual([
+      "FIGURES 1–4",
+      "FIGURES 5–8",
+      "FIGURES 9–10",
+      "FIGURES 11–13",
+      "FIGURES 14–17",
+      "FIGURES 18–22",
+      "FIGURES 23–24",
+    ]);
   });
 });

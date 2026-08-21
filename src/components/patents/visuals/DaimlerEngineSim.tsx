@@ -1,291 +1,149 @@
 "use client";
 
-import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import {
-  pistonSvgDisplacement,
-  stepDaimlerEngine,
-  verticalConnectingRod,
-} from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
+
+function DaimlerMarineInstallationFace({
+  shaftPosition,
+  coolingPumpEnabled,
+}: {
+  shaftPosition: number;
+  coolingPumpEnabled: number;
+}) {
+  const aheadContact = Math.max(0, Math.min(1, shaftPosition));
+  const asternEngagement = Math.max(0, Math.min(1, -shaftPosition));
+  const neutral = 1 - Math.min(1, Math.abs(shaftPosition));
+  return (
+    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md">
+      <div className="border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
+        <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+          Gottlieb Daimler Marine Propulsion Installation (US 361,931)
+        </h3>
+        <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-1">
+          In-line motor and sliding propeller shaft; ahead friction coupling, astern disks, cooling
+          pipes, and gas reservoirs.
+        </p>
+      </div>
+      <svg
+        viewBox="0 0 720 300"
+        className="w-full rounded-xl bg-sky-50 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800"
+        role="img"
+        aria-label="Marine installation with in-line motor, sliding propeller shaft, reverse disks, cooling pipes, and gas reservoirs"
+      >
+        <rect x="72" y="100" width="170" height="100" rx="12" fill="#475569" />
+        <text x="157" y="155" textAnchor="middle" fill="white" fontSize="16">
+          motor A
+        </text>
+        <line x1="242" y1="150" x2="588" y2="150" stroke="#b45309" strokeWidth="14" />
+        <circle cx="280" cy="150" r="30" fill="#d97706" opacity={aheadContact} />
+        <circle cx="320" cy="150" r="26" fill="#f59e0b" opacity={aheadContact} />
+        <text x="300" y="90" textAnchor="middle" fontSize="14">
+          sliding forward coupling
+        </text>
+        <circle cx="360" cy="150" r="24" fill="#94a3b8" opacity={asternEngagement} />
+        <circle cx="420" cy="150" r="24" fill="#94a3b8" opacity={asternEngagement} />
+        <line
+          x1="360"
+          y1="110"
+          x2="360"
+          y2="190"
+          stroke="#92400e"
+          strokeWidth="8"
+          opacity={asternEngagement}
+        />
+        <line
+          x1="420"
+          y1="110"
+          x2="420"
+          y2="190"
+          stroke="#92400e"
+          strokeWidth="8"
+          opacity={asternEngagement}
+        />
+        <text x="390" y="230" textAnchor="middle" fontSize="14">
+          reverse disks and levers
+        </text>
+        <path
+          d="M100 90 H520"
+          fill="none"
+          stroke="#b45309"
+          strokeWidth="5"
+          opacity={coolingPumpEnabled ? 1 : 0.35}
+        />
+        <path
+          d="M100 215 H520"
+          fill="none"
+          stroke="#b45309"
+          strokeWidth="5"
+          opacity={coolingPumpEnabled ? 1 : 0.35}
+        />
+        <circle cx="500" cy="90" r="12" fill="#0f766e" opacity={coolingPumpEnabled ? 1 : 0.35} />
+        <text x="500" y="95" textAnchor="middle" fill="white" fontSize="10">
+          u
+        </text>
+        <text x="520" y="80" textAnchor="end" fontSize="13">
+          fore / aft cooling pipes · pump {coolingPumpEnabled ? "on" : "off"}
+        </text>
+        <ellipse cx="610" cy="105" rx="38" ry="25" fill="#38bdf8" opacity="0.65" />
+        <ellipse cx="610" cy="205" rx="38" ry="25" fill="#38bdf8" opacity="0.65" />
+        <text x="610" y="145" textAnchor="middle" fontSize="13">
+          gas
+        </text>
+        <text x="610" y="160" textAnchor="middle" fontSize="13">
+          holders
+        </text>
+        <text x="90" y="270" fontSize="13">
+          thrust-maintained ahead contact
+        </text>
+        <text x="460" y="270" textAnchor="middle" fontSize="13">
+          ahead: {aheadContact.toFixed(2)} · neutral: {neutral.toFixed(2)} · astern:{" "}
+          {asternEngagement.toFixed(2)}
+        </text>
+      </svg>
+      <div className="mt-4 grid grid-cols-2 gap-3 text-center font-mono text-sm">
+        <div className="rounded-xl bg-parchment-100 dark:bg-ink-900 p-2">
+          Shaft position: {shaftPosition.toFixed(2)}
+        </div>
+        <div className="rounded-xl bg-parchment-100 dark:bg-ink-900 p-2">
+          Thrust maintains ahead contact
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function DaimlerEngineSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-361931-daimler-engine");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
-  const engineRpm = params.engineRpm ?? 750;
-  const hotTubeTempC = params.hotTubeTemp ?? 850;
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
-  const animRef = useRef<number | null>(null);
-
-  const daimler = stepDaimlerEngine({
-    engineRpm,
-    hotTubeTempC,
-    differentialSlipAngleDeg: params.turnAngle ?? 15,
-  });
-  const isHotTubeIgniting = hotTubeTempC >= 800;
-  const powerOutputHp = daimler.brakeHorsepower;
-  const specificPowerHpPerKg = daimler.specificPowerHpPerKg;
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      const dt = Math.min(0.1, (time - lastTime) / 1000);
-      lastTime = time;
-
-      setCrankAngleDeg((prev) => (prev + daimler.crankOmegaDegPerS * dt) % daimler.cycleWrapDeg);
-      animRef.current = requestAnimationFrame(loop);
-    };
-
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-  }, [isPlaying, daimler.crankOmegaDegPerS, daimler.cycleWrapDeg]);
-
-  const pistonDisplacement = pistonSvgDisplacement(crankAngleDeg, daimler.pistonStrokePx);
-  const connectingRod = verticalConnectingRod(
-    crankAngleDeg,
-    pistonDisplacement,
-    daimler.pistonStrokePx,
-    daimler.crankCx,
-    daimler.crankCy,
-    daimler.rodOriginY0,
-  );
-
+  const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
+  const shaftPosition = params.shaftPosition ?? 1;
+  const coolingPumpEnabled = params.coolingPumpEnabled ?? 1;
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Gottlieb Daimler High-Speed Engine &amp; Hot-Tube Ignition (US 361,931)
-            </h3>
-          </div>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            High-speed rotation (750+ RPM), incandescent hot tube ignition, and enclosed crankcase.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <button
-            type="button"
-            onClick={() => {
-              setIsPlaying(!isPlaying);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-amber-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-amber-600" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              setCrankAngleDeg(0);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* SVG Animation Stage */}
-      <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
-          {/* Vertical Cylinder Block */}
-          <rect
-            x="230"
-            y="50"
-            width="140"
-            height="150"
-            rx="6"
-            fill="#4A5568"
-            stroke="#1A202C"
-            strokeWidth="2"
-          />
-
-          {/* Incandescent Hot-Tube Ignition Pipe (Top Right) */}
-          <g transform="translate(370, 70)">
-            <rect
-              x="0"
-              y="0"
-              width="45"
-              height="12"
-              rx="3"
-              fill={isHotTubeIgniting ? "#ECC94B" : "#718096"}
-              stroke="#DD6B20"
-              strokeWidth="1.5"
-            />
-            <text
-              x="50"
-              y="10"
-              fill={isHotTubeIgniting ? "#DD6B20" : "#718096"}
-              fontSize="10"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              Hot-Tube ({hotTubeTempC}°C)
-            </text>
-          </g>
-
-          {/* Reciprocating Piston Head */}
-          <g
-            transform={`translate(${daimler.pistonSvgX}, ${daimler.pistonSvgY0 + pistonDisplacement})`}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="110"
-              height="45"
-              rx="3"
-              fill="#A0AEC0"
-              stroke="#2D3748"
-              strokeWidth="2"
-            />
-            <circle cx="55" cy="22" r="6" fill="#1A202C" />
-          </g>
-
-          {/* Enclosed Cast-Iron Crankcase (Bottom) */}
-          <circle
-            cx="300"
-            cy="250"
-            r="70"
-            fill="#2D3748"
-            stroke="#1A202C"
-            strokeWidth="3"
-            opacity={Math.min(1, 0.25 + daimler.jacketHeatSample)}
-          />
-
-          {/* Internal Twin Flywheels on Crankshaft */}
-          <g transform={`translate(${daimler.crankCx}, ${daimler.crankCy})`}>
-            <circle
-              cx="0"
-              cy="0"
-              r={daimler.flywheelRimR}
-              fill="#4A5568"
-              stroke="#1A202C"
-              strokeWidth="2"
-            />
-            <circle cx="0" cy="0" r={daimler.flywheelHubR} fill="#111" />
-            {/* Crank Pin */}
-            <circle
-              cx={connectingRod.x2 - daimler.crankCx}
-              cy={connectingRod.y2 - daimler.crankCy}
-              r={daimler.crankPinR}
-              fill="#D4AF37"
-            />
-          </g>
-
-          {/* Connecting Rod */}
-          <line
-            x1={connectingRod.x1}
-            y1={connectingRod.y1}
-            x2={connectingRod.x2}
-            y2={connectingRod.y2}
-            stroke="#1A202C"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Engine Speed
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {engineRpm} RPM
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Power Output
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {powerOutputHp} hp
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Power-to-Weight
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {specificPowerHpPerKg} hp/kg
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Ignition Mode
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {isHotTubeIgniting ? "Hot-Tube Glow" : "Misfire"}
-          </span>
-        </div>
-      </div>
-
-      {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Rotational Speed (RPM)</span>
-            <span className="font-mono">{engineRpm} RPM</span>
-          </div>
+    <div className="space-y-4">
+      <DaimlerMarineInstallationFace
+        shaftPosition={shaftPosition}
+        coolingPumpEnabled={coolingPumpEnabled}
+      />
+      <div className="grid grid-cols-1 gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:grid-cols-2">
+        <label className="flex flex-col gap-2 text-xs font-medium text-ink-700 dark:text-ink-300">
+          Propeller-shaft position: <span className="font-mono">{shaftPosition.toFixed(2)}</span>
           <input
             type="range"
-            min="400"
-            max="950"
-            step="25"
-            value={engineRpm}
-            onChange={(e) => updateParam("engineRpm", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
+            min="-1"
+            max="1"
+            step="0.05"
+            value={shaftPosition}
+            onChange={(event) => updateParam("shaftPosition", Number(event.target.value))}
           />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Platinum Hot-Tube Temperature</span>
-            <span className="font-mono">{hotTubeTempC}°C</span>
-          </div>
+        </label>
+        <label className="flex flex-col gap-2 text-xs font-medium text-ink-700 dark:text-ink-300">
+          Cooling pump: <span className="font-mono">{coolingPumpEnabled ? "on" : "off"}</span>
           <input
             type="range"
-            min="650"
-            max="950"
-            step="10"
-            value={hotTubeTempC}
-            onChange={(e) => updateParam("hotTubeTemp", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
+            min="0"
+            max="1"
+            step="1"
+            value={coolingPumpEnabled}
+            onChange={(event) => updateParam("coolingPumpEnabled", Number(event.target.value))}
           />
-        </div>
+        </label>
       </div>
     </div>
   );

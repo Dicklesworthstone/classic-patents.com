@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 import { howeSewingMachineArchivalEdition } from "../editions/us-4750-howe-sewing-machine";
 
+function manualClaimText(number: number): string {
+  const block = howeSewingMachineArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Howe manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const howeSewingMachinePatent: Patent = {
   id: "us-4750-howe-sewing-machine",
   patentNumber: "US 4,750",
@@ -11,14 +21,14 @@ export const howeSewingMachinePatent: Patent = {
   inventors: ["Elias Howe Jr."],
   inventorLocation: "Cambridge, Massachusetts",
   grantDate: "1846-09-10",
-  filingDate: "1845-09-22",
+  filingDate: null,
   era: "Industrial Dawn (1840–1870)",
   category: "consumer",
   categoryLabel: "Precision Mechanical Machinery",
   summary:
     "The Machine That Clothed the World: In 1846, Elias Howe Jr. patented the two-thread lockstitch sewing machine. By abandoning attempts to mimic manual hand sewing, Howe placed the thread eye at the pointed tip of a curved reciprocating needle. As the needle pierced the cloth and slightly retracted, fabric friction dilated a thread loop beneath the seam; a bullet-shaped shuttle shot through the loop with a second bobbin thread, interlocking the two threads at the center of the fabric. Howe's lockstitch sparked the Sewing Machine Combination of 1856—the first modern patent pool in industrial history.",
   heroQuote:
-    "Be it known that I, Elias Howe, Jr., of Cambridge, in the County of Middlesex and State of Massachusetts, have invented a new and useful Machine for Sewing Seams in Cloth, Leather, and other substances...",
+    "Be it known that I, ELIAS HOWE, JR., of Cambridge, in the county of Middlesex and State of Massachusetts, have invented a new and useful machine for sewing seams in cloth or other articles requiring to be sewed; and I do hereby declare that the following is a full and exact description thereof.",
   originalPdfUrl: "/patents/pdfs/us-4750-howe-sewing-machine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US4750A/en",
   usptoClassification: "D05B 1/02 (Sewing machines; lockstitch forming)",
@@ -126,10 +136,9 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The forming of the seam by carrying a thread through the cloth by means of a curved needle on the end of a vibrating arm, and the passing of a shuttle furnished with its bobbin, in the manner set forth, between the needle and the thread which it carries under a combination and arrangement of parts substantially the same with that described.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "The historic master claim protecting the formation of a seam using an eye-pointed needle on a vibrating arm to pass a thread loop through cloth, combined with a shuttle carrying a second bobbin thread passing through that loop to lock the stitch.",
+        "This claim covers forming a seam by carrying one thread through the cloth with a curved needle mounted on a vibrating arm, while a shuttle carrying its bobbin passes between that needle and the thread it carries, in the described combination and arrangement.",
       keyInnovations: [
         "Eye-pointed needle mechanism",
         "Two-thread lockstitch formation",
@@ -141,10 +150,9 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The lifting of the thread that passes through the needle-eye by means of the lifting-rod W, for the purpose of forming a loop of loose thread that is to be subsequently drawn in by the passage of the shuttle, as herein fully described, said lifting-rod being furnished with a lifting-pin, u, and governed in its motions by the guide-pieces and other devices, arranged and operating substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
-        "Claims the synchronized thread take-up and lifting-rod mechanism that forms slack thread into an open loop for shuttle transit and cinches the thread tight after the shuttle passes.",
+        "This claim covers lifting the needle thread with lifting-rod W to create a loose loop that the shuttle subsequently draws in, with rod W equipped with lifting-pin u and its motion governed by the described guide-pieces and associated devices.",
       keyInnovations: [
         "Thread loop lifting mechanism",
         "Guided cam-driven lifting pin",
@@ -156,10 +164,9 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.",
+      originalText: manualClaimText(3),
       plainEnglish:
-        "Claims a shuttle friction brake and clipping lever that prevents the lower bobbin from over-spinning and dumping excess slack thread as the shuttle passes through the loop.",
+        "This claim covers holding the thread delivered by the shuttle so it cannot unwind from the shuttle bobbin after the shuttle passes through the loop, using lever or clipping-piece f, or another device substantially equivalent in operation and result.",
       keyInnovations: [
         "Shuttle bobbin friction brake",
         "Clipping tension lever",
@@ -171,10 +178,9 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The manner of arranging and combining the small lever m' n' with the sliding box M, in combination with the spring-piece Z, for the purpose of tightening the stitch as the needle is retracted, as described.",
+      originalText: manualClaimText(4),
       plainEnglish:
-        "Claims the spring-loaded tensioning linkage that draws the stitch tight at the precise instant the needle retracts from the cloth.",
+        "This claim covers arranging small lever m' n' with sliding box M and spring-piece Z so their stated combination tightens the stitch while the needle is retracted, preserving the specific lever, box, spring, and timing relationship.",
       keyInnovations: [
         "Spring-loaded stitch tightener",
         "Sliding shuttle box linkage",
@@ -185,10 +191,9 @@ In sewing a seam with my machine two threads are employed, one of which threads 
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "The holding of the cloth to be sewed by the use of a baster-plate furnished with points for that purpose, and with holes enabling it to operate as a rack in the manner set forth, thereby carrying the cloth forward and dispensing altogether with the necessity of basting the parts together.",
+      originalText: manualClaimText(5),
       plainEnglish:
-        "Claims the pinned metal feed plate that securely grips the fabric edges and advances them stitch by stitch using a rack-and-pinion drive, eliminating preliminary hand basting.",
+        "This claim covers holding cloth on a baster-plate furnished with points, with holes that let the plate operate as a rack and carry the cloth forward as described, thereby dispensing with the need to baste the pieces together beforehand.",
       keyInnovations: [
         "Pinned baster feed plate",
         "Rack-and-pinion intermittent cloth advance",
@@ -201,64 +206,376 @@ In sewing a seam with my machine two threads are employed, one of which threads 
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Side Elevation of Howe Lockstitch Sewing Machine",
+      title: "Front elevation of the machine",
       caption:
-        "Side elevation blueprint showing the hand flywheel, cam-driven vibrating needle arm, eye-pointed needle, and lower reciprocating shuttle race.",
+        "The front elevation identifies the bed, standards, main shaft, fly-wheel, needle-arm, baster-plate, shuttle box, and lifting apparatus described in the specification.",
       svgType: "howe-sewing",
       callouts: [
         {
           id: "hw-1",
           figureRef: "Fig. 1",
           label: "A",
-          element: "Eye-Pointed Needle",
-          description: "Curved needle with thread eye at the sharp piercing point.",
-          x: 45,
-          y: 40,
+          element: "Bed or base of the machine",
+          description: "The machine bed or base from which the standards rise.",
+          x: 50,
+          y: 92,
         },
         {
           id: "hw-2",
           figureRef: "Fig. 1",
           label: "B",
-          element: "Reciprocating Shuttle Race",
-          description: "Machined track holding the flying shuttle and lower bobbin.",
-          x: 55,
-          y: 65,
+          element: "Standards rising from the bed",
+          description: "The paired standards sustaining the main shaft and other apparatus.",
+          x: 30,
+          y: 58,
         },
         {
           id: "hw-3",
           figureRef: "Fig. 1",
           label: "C",
-          element: "Pinned Baster Feed Plate",
-          description: "Rack-and-pinion plate advancing fabric incrementally per stitch.",
-          x: 40,
-          y: 55,
+          element: "Main shaft",
+          description: "The shaft carrying cams that operate the needle and shuttle-drivers.",
+          x: 50,
+          y: 38,
         },
         {
           id: "hw-4",
           figureRef: "Fig. 1",
           label: "D",
-          element: "Main Camshaft & Flywheel",
-          description: "Rotary drive coordinating needle vibration and shuttle transit timing.",
-          x: 75,
-          y: 45,
+          element: "Fly-wheel",
+          description: "The fly-wheel mounted on the main shaft.",
+          x: 84,
+          y: 44,
+        },
+        {
+          id: "hw-5",
+          figureRef: "Fig. 1",
+          label: "G",
+          element: "Needle-arm",
+          description: "The arm carrying the curved needle and vibrating on a pivot.",
+          x: 48,
+          y: 53,
+        },
+        {
+          id: "hw-6",
+          figureRef: "Fig. 1",
+          label: "H",
+          element: "Baster-plate",
+          description:
+            "The metallic plate whose points hold the cloth and whose holes act as rack-teeth.",
+          x: 70,
+          y: 76,
+        },
+        {
+          id: "hw-7",
+          figureRef: "Fig. 1",
+          label: "I",
+          element: "Shuttle box or trough",
+          description: "The trough within which the shuttle is moved back and forth.",
+          x: 58,
+          y: 72,
         },
       ],
     },
     {
       figureNumber: "Fig. 2",
-      title: "Detail of Lockstitch Formation at Needle Retraction",
+      title: "End elevation of the machine",
       caption:
-        "Cross section showing how the eye-pointed needle dilates the upper thread loop, allowing the shuttle to carry the lower bobbin thread through.",
+        "The end elevation shows the needle-arm, shuttle-drivers, lifting-rod, adjustable plate, and the feed and thread-control relationships described for the machine.",
       svgType: "howe-sewing",
       callouts: [
         {
-          id: "hw-5",
+          id: "hw-8",
           figureRef: "Fig. 2",
-          label: "E",
-          element: "Dilated Thread Loop",
-          description: "Open upper thread loop created by friction as needle begins upward stroke.",
-          x: 50,
+          label: "G",
+          element: "Needle-arm",
+          description: "The arm carrying the curved needle in the end elevation.",
+          x: 66,
+          y: 38,
+        },
+        {
+          id: "hw-9",
+          figureRef: "Fig. 2",
+          label: "W",
+          element: "Lifting-rod",
+          description: "The rod carrying the lifting-pin that raises the needle thread.",
+          x: 52,
+          y: 70,
+        },
+        {
+          id: "hw-10",
+          figureRef: "Fig. 2",
+          label: "X",
+          element: "Adjustable plate",
+          description: "The hinged plate in front of which the lifting-rod stands.",
+          x: 64,
+          y: 74,
+        },
+        {
+          id: "hw-11",
+          figureRef: "Fig. 2",
+          label: "J",
+          element: "Shuttle-driver",
+          description: "One of the picker-staves or shuttle-drivers moving the shuttle.",
+          x: 42,
+          y: 65,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Top view of the machine",
+      caption:
+        "The top view shows the baster-plate, rack holes, main shaft, shuttle-driver cam, and regulating screw used to advance and set the stitch length.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-12",
+          figureRef: "Fig. 3",
+          label: "H",
+          element: "Baster-plate",
+          description: "The plate receiving the cloth and carrying the row of rack-like holes.",
+          x: 22,
+          y: 66,
+        },
+        {
+          id: "hw-13",
+          figureRef: "Fig. 3",
+          label: "L",
+          element: "Shuttle-driver cam",
+          description: "The cam that operates the shuttle-drivers alternately.",
+          x: 52,
+          y: 52,
+        },
+        {
+          id: "hw-14",
+          figureRef: "Fig. 3",
+          label: "m",
+          element: "Rack holes in the baster-plate",
+          description:
+            "The regularly spaced holes receiving the pinion teeth to advance the plate.",
+          x: 20,
+          y: 61,
+        },
+        {
+          id: "hw-15",
+          figureRef: "Fig. 3",
+          label: "n",
+          element: "Regulating-screw",
+          description:
+            "The screw moving a stop pin to regulate the play of the feeding arm and stitch length.",
+          x: 69,
+          y: 42,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Needle-and-cloth section",
+      caption:
+        "The section shows the needle-arm down, the needle through the cloth, and the loose thread loop outside the cloth prepared for shuttle passage.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-16",
+          figureRef: "Fig. 4",
+          label: "f",
+          element: "Cloth in section",
+          description: "The cloth shown in section in the needle-and-cloth detail.",
+          x: 42,
+          y: 52,
+        },
+        {
+          id: "hw-17",
+          figureRef: "Fig. 4",
+          label: "e'",
+          element: "Loop or slack thread",
+          description: "The loop formed outside the cloth and drawn through by the shuttle.",
+          x: 60,
+          y: 44,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Top view of the shuttle box",
+      caption:
+        "The shuttle-box detail shows the shuttle, its spool, the sliding box and piece, and the springs that steady the shuttle's motion.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-18",
+          figureRef: "Fig. 5",
+          label: "I",
+          element: "Shuttle box",
+          description: "The convex-sided box or trough adapted to admit the baster-plate.",
+          x: 35,
+          y: 60,
+        },
+        {
+          id: "hw-19",
+          figureRef: "Fig. 5",
+          label: "K",
+          element: "Shuttle",
+          description: "The lower-thread shuttle within the box, with spool g.",
+          x: 58,
+          y: 60,
+        },
+        {
+          id: "hw-20",
+          figureRef: "Fig. 5",
+          label: "M",
+          element: "Sliding box",
+          description: "The sliding box fitted into the shuttle-box behind the shuttle.",
+          x: 78,
+          y: 57,
+        },
+        {
+          id: "hw-21",
+          figureRef: "Fig. 5",
+          label: "N",
+          element: "Sliding piece",
+          description: "The corresponding sliding piece adapted to the pointed end of the shuttle.",
+          x: 28,
+          y: 58,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Feeding apparatus",
+      caption:
+        "The vertical feed section shows the cam, feeding arm and claw, ratchet-wheel, cross shaft, springs, and pinion that advance the baster-plate between stitches.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-22",
+          figureRef: "Fig. 6",
+          label: "R",
+          element: "Feed cam",
+          description: "The cam on the cam-shaft that vibrates arm S.",
+          x: 54,
+          y: 12,
+        },
+        {
+          id: "hw-23",
+          figureRef: "Fig. 6",
+          label: "S",
+          element: "Feeding arm",
+          description: "The arm carrying the feeding-claw.",
+          x: 57,
+          y: 45,
+        },
+        {
+          id: "hw-24",
+          figureRef: "Fig. 6",
+          label: "T",
+          element: "Feeding-claw",
+          description: "The claw taking into ratchet-wheel U.",
+          x: 37,
+          y: 72,
+        },
+        {
+          id: "hw-25",
+          figureRef: "Fig. 6",
+          label: "U",
+          element: "Ratchet-wheel",
+          description: "The ratchet-wheel on shaft V that receives the feeding-claw.",
+          x: 40,
+          y: 83,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Shuttle detail",
+      caption:
+        "The shuttle detail identifies the side hole for thread from the spool and the slot allowing the shuttle-thread to play back and forth.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-26",
+          figureRef: "Fig. 7",
+          label: "d'",
+          element: "Shuttle thread hole",
+          description:
+            "The hole through the shuttle side through which thread passes from the spool.",
+          x: 52,
           y: 50,
+        },
+        {
+          id: "hw-27",
+          figureRef: "Fig. 7",
+          label: "f' f'",
+          element: "Shuttle-box slot",
+          description: "The slot allowing the shuttle-thread to play back and forth.",
+          x: 74,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 8",
+      title: "Small shuttle-thread retaining lever",
+      caption:
+        "The small lever detail shows the pin and lever relationship that receives the thread after shuttle passage and holds it while the needle retracts.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-28",
+          figureRef: "Fig. 8",
+          label: "m'",
+          element: "Projecting pin",
+          description: "The pin projecting from the sliding box and acting against the shuttle.",
+          x: 45,
+          y: 50,
+        },
+        {
+          id: "hw-29",
+          figureRef: "Fig. 8",
+          label: "n'",
+          element: "Small lever part",
+          description: "The lever part received within the sliding-box slot.",
+          x: 62,
+          y: 50,
+        },
+        {
+          id: "hw-30",
+          figureRef: "Fig. 8",
+          label: "p'",
+          element: "Fulcrum-pin",
+          description: "The pin on which the small lever turns.",
+          x: 55,
+          y: 66,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 9",
+      title: "Lever detail for the sliding box",
+      caption:
+        "The separately printed lever detail is represented as its own figure inventory entry, with the spring-piece and adjusting-screw labels described in the specification.",
+      svgType: "howe-sewing",
+      callouts: [
+        {
+          id: "hw-31",
+          figureRef: "Fig. 9",
+          label: "z z'",
+          element: "Adjustable spring-piece",
+          description:
+            "The spring-piece whose pressure bears against the small lever end and is regulated in the described tightening operation.",
+          x: 52,
+          y: 50,
+        },
+        {
+          id: "hw-32",
+          figureRef: "Fig. 9",
+          label: "c'",
+          element: "Adjusting-screw",
+          description:
+            "The screw used to regulate the force of spring Z in the described mechanism.",
+          x: 72,
+          y: 64,
         },
       ],
     },
@@ -310,7 +627,5 @@ In sewing a seam with my machine two threads are employed, one of which threads 
   stats: {
     totalClaims: 5,
     independentClaims: 5,
-    patentWarYears: "1846–1856",
-    impactScore: 99,
   },
 };

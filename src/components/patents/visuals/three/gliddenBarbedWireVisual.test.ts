@@ -29,6 +29,26 @@ describe("US 157,124 Joseph Glidden Twisted Wire Barbed Fence visual & kinematic
     expect(modelSource).not.toContain("0.4 + Math.abs(flyerOmegaRadPerS)");
   });
 
+  test("does not expose a phantom second claim or unsupported gauge/production facts", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "GliddenBarbedWire3D.tsx"),
+      "utf8",
+    );
+    const modelSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "gliddenBarbedWireModel.ts"),
+      "utf8",
+    );
+    const simSource = readFileSync(join(VISUALS_DIRECTORY, "GliddenBarbedWireSim.tsx"), "utf8");
+
+    for (const source of [threeSource, modelSource, simSource]) {
+      expect(source).not.toMatch(/Claim\s*2/i);
+      expect(source).not.toContain("12-gauge");
+      expect(source).not.toContain('"The Winner"');
+    }
+    expect(threeSource).not.toContain('label: "Production Rate"');
+    expect(modelSource).toContain("single printed claim");
+  });
+
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "GliddenBarbedWire3D.tsx"),

@@ -80,7 +80,8 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(spencerLow.allowed).toBe(false);
 
     const spencerHigh = smokePolicy("us-2495429-spencer-microwave", { rfPowerSetting: 800 });
-    expect(spencerHigh.allowed).toBe(true);
+    expect(spencerHigh.allowed).toBe(false);
+    expect(spencerHigh.reason).toContain("does not quantify a plume");
 
     const goddard = smokePolicy("us-1102653-goddard-rocket", {});
     expect(goddard.allowed).toBe(true);
@@ -263,7 +264,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-593138-tesla-coil", { inputVoltageKv: 15 })).toEqual([]);
     expect(coupleLinks("us-132-davenport-electric-motor", {}).length).toBe(1);
     expect(coupleLinks("us-347140-thomson-welding", {})[0]?.from).toBe("I²R");
-    expect(coupleLinks("us-233692-pelton-water-wheel", {})[0]?.from).toBe("jet");
+    expect(coupleLinks("us-233692-pelton-water-wheel", {})).toEqual([]);
     expect(coupleLinks("us-470918-reno-escalator", {})[0]?.from).toBe("motor");
     expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("powder");
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
@@ -273,8 +274,31 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");
     expect(coupleLinks("us-400766-hall-aluminium", {})[0]?.from).toBe("bus");
     expect(coupleLinks("us-879532-de-forest-audion", {})[0]?.from).toBe("filament");
-    expect(coupleLinks("us-307031-edison-indicator", {})[0]?.from).toBe("mains");
+    expect(coupleLinks("us-307031-edison-indicator", {})).toEqual([]);
+    expect(coupleLinks("us-361931-daimler-engine", {})).toEqual([]);
     expect(coupleLinks("gb-913-watt-separate-condenser", {})[0]?.from).toBe("furnace");
+  });
+
+  test("refuses unsupported Daimler performance weaves while retaining source apparatus labels", () => {
+    expect(intervalGhosts("us-361931-daimler-engine", {})).toEqual([]);
+    expect(materialProbe("us-361931-daimler-engine", "coupling", {})).toMatchObject({
+      part: "coupling",
+      qty: "source",
+      value: "not stated",
+      unit: "no numerical material or performance data",
+    });
+  });
+
+  test("refuses unsupported Pelton performance weaves while retaining source bucket labels", () => {
+    expect(intervalGhosts("us-233692-pelton-water-wheel", {})).toEqual([]);
+    expect(fidelityField("us-233692-pelton-water-wheel", {})).toBeNull();
+    expect(datedScenarios("us-233692-pelton-water-wheel")).toEqual([]);
+    expect(materialProbe("us-233692-pelton-water-wheel", "bucket B", {})).toMatchObject({
+      part: "bucket B",
+      qty: "source",
+      value: "not stated",
+      unit: "no numerical material or performance data",
+    });
   });
 
   test("computes Kitty Hawk 1903 empirical flight residuals", () => {

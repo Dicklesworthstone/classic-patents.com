@@ -16,7 +16,6 @@ const same = (canonical: string): ParamAlias => ({ canonical });
 export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = {
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
-  "us-233692-pelton-water-wheel": { rotorRpm: same("runnerRpm") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },
   "us-105338-hyatt-celluloid": { tempCelsius: same("steamTempC") },
   "us-78317-nobel-dynamite": {

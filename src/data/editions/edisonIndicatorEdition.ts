@@ -55,28 +55,28 @@ const p = (
 
 export const edisonIndicatorParallelReadings: Readonly<Record<number, readonly string[]>> = {
   1: [
-    "Formal preamble and legal identification: Thomas Alva Edison of Menlo Park, Middlesex County, New Jersey, declares his invention of an improved Electrical Indicator.",
+    "Formal preamble and legal identification: Thomas A. Edison of Menlo Park, New Jersey, declares an Improvement in Electrical Indicators and identifies Case No. 603.",
   ],
   2: [
-    "The core scientific discovery and objective: an apparatus for detecting line-voltage fluctuations across electric lighting networks by exploiting thermionic electron emission across the vacuum space inside an incandescent bulb from the incandescing filament to an independent electrode.",
+    "The objective is an apparatus for indicating variations in electro-motive force in an electric circuit, especially an electrical-distribution system; the specification reports current through a shunt including part of the lamp's vacuous space and relates that current to the conductor's incandescence or candle-power.",
   ],
   3: [
-    "Broad statement of application: utilizing the unidirectional thermionic vacuum current to actuate visual galvo indicators, audible alarms, or electromechanical relay contacts that automatically adjust generator field excitation.",
+    "Broad statement of application: using the described shunt current to indicate or regulate electro-motive-force variations, or to affect circuit-controlling and other electrical apparatus.",
   ],
   4: [
-    "Operating embodiment in multiple-arc distribution: placing a standard indicator bulb with an internal platinum plate in the circuit, connecting it to a balanced torsion galvanometer whose needle deflects symmetrically in response to line voltage changes.",
+    "Operating embodiment in incandescent lighting: place a platinum plate or wire between the carbon-conductor limbs, connect it to the observed circuit, add a positive lamp-circuit connection to one galvanometer terminal, connect the platinum through a glass-sealed wire to the other, and use the torsional zero to show deviations above or below normal.",
   ],
   5: [
     "Reference to the patent drawing sheets: Figure 1 depicting the general circuit and galvanometer mechanism; Figure 2 depicting a shunt test circuit with calibration lamp A'; Figure 3 illustrating circuit-closing relay contacts; and Figure 4 showing the construction of the indicator bulb.",
   ],
   6: [
-    "Detailed circuitry and mechanical construction: main distribution conductors 1 and 2 feeding multiple-arc lamps a; indicating bulb A containing carbon loop and central platinum plate b; sealed lead wires 3, 4, 5 connecting through binding posts c, c' to galvanometer coils d d, needle e, torsion-wire f, adjustable friction stud i, thumb-nut j, counter-spring k, nut l, and pointer m over calibrated scale n.",
+    "Detailed circuitry and mechanical construction: main conductors 1 and 2 feed lamps a in multiple-arc circuits 3 and 4; lamp A contains platinum b and sealed wire 5, while wire 6 connects positive wire 3 to binding-posts c and c' leading to coils d d, needle e, torsion-wire f, split bar g, screws h h, stud i, thumb-nut j, spring k, nut l, and pointer m over scale n.",
   ],
   7: [
-    "Automatic generator control adaptation: replacing the visual pointer with an articulated contact arm o that closes circuit at contacts p to command electromechanical regulation magnets.",
+    "Automatic-control adaptation: the needle may carry circuit-controlling arm o, which closes contacts p or another suitable circuit to operate regulating, indicating, or other electrical apparatus.",
   ],
   8: [
-    "Integration with Edison's dynamo regulator (Patent No. 287,524): using the vacuum indicator tube and galvanometer to replace the electromagnetic pressure-relay coil, directly driving the generator field rheostat.",
+    "Integration with Edison's Patent No. 287,524: the lamp and galvanometer can replace that patent's pressure-magnet B, with its working magnets in the two circuits closed by arm o; adjustable resistance C may maintain standard-lamp resistance.",
   ],
   9: [
     "Calibration test circuit of Fig. 2: placing a duplicate test bulb A' in parallel with working lamp A to periodically verify filament aging and resistance stability.",
@@ -104,26 +104,26 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       ],
     },
     p(
-      "To all whom it may concern: Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented a new and useful Improvement in Electrical Indicators, of which the following is a specification.",
+      "To all whom it may concern: Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented a new and useful Improvement in Electrical Indicators, (Case No. 603,) of which the following is a specification.",
     ),
     p(
       "The object of my invention is to produce an efficient apparatus for indicating the variations of electro-motive force in an electric circuit, preferably for use in connection with systems of electrical distribution to show the changes in pressure in the various parts of the district. The apparatus is also capable of use in automatically regulating the electro-motive force to correspond with such variations. I have discovered that if a conducting substance is interposed anywhere in the ",
       term(
         "vacuous space",
         "vacuous-space",
-        "High vacuum within the glass globe (typically evacuated to below 10⁻⁶ torr by mercury Sprengel pumps), eliminating atmospheric gas molecules and allowing free thermionic electron flight.",
+        "The patent's term for the evacuated interior of the lamp globe, a portion of which is included in the shunt circuit described here.",
       ),
       " within the globe of an incandescent electric lamp, and said conducting substance is connected outside of the lamp with one terminal, preferably the positive one, of the ",
       term(
         "incandescent conductor",
         "incandescent-conductor",
-        "Carbonized bamboo filament loop heated to incandescence (~1900–2200 K), which thermionically emits free electrons into the vacuum via thermal kinetic energy overcoming the carbon work function.",
+        "The lamp's incandescing carbon conductor; the specification relates the current in the shunt circuit to the conductor's degree of incandescence or candle-power.",
       ),
       ", a portion of the current will, when the lamp is in operation, pass through the ",
       term(
         "shunt-circuit",
         "shunt-circuit",
-        "The external circuit connecting the positive leg of the incandescent filament to the cold central collector plate, through which the thermionic electron flow passes.",
+        "The circuit described as including a portion of the lamp globe's vacuous space and connecting the internal conducting substance with an external lamp-circuit terminal.",
       ),
       " thus formed, which shunt includes a portion of the vacuous space within the lamp. This current I have found to be proportional to the degree of incandescence of the conductor or candle-power of the lamp.",
     ),
@@ -135,13 +135,13 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       term(
         "piece of platinum",
         "platinum-electrode",
-        "An independent cold metallic collector electrode (anode plate) sealed into the evacuated bulb between the filament limbs without contacting the carbon loop.",
+        "A thin platinum plate, or platinum wire, placed preferably between the limbs of the carbon conductor and connected with the circuit whose electrical condition is to be indicated.",
       ),
-      ", preferably a thin plate, though platinum wire may be used, placed preferably between the limbs of its carbon conductor, such platinum piece being in connection with the circuit whose electrical condition is to be indicated. The indicating device is a ",
+      ", preferably a thin plate, though platinum wire may be used, placed preferably between the limbs of its carbon conductor, such platinum piece being in connection with the circuit whose electrical condition is to be observed, connecting said terminals similarly to those of the other lamps of the system, and making an additional connection from the positive terminal, preferably of the lamp-circuit, to one terminal of a galvanometer or other indicator, and from the platinum piece through a wire sealed in the glass to the other terminal of the galvanometer or indicator. The galvanometer, if one is used, is provided ",
       term(
         "galvanometer",
         "torsion-galvanometer",
-        "A sensitive moving-magnet or D'Arsonval current-measuring instrument stabilized by a torsional suspension wire and counter-spring, calibrated to read center-zero at normal line voltage.",
+        "The indicator described with a torsional device that holds its needle at zero under a normal current, so variations above or below normal deflect it in opposite directions.",
       ),
       " with a torsional device for holding its needle at zero under a normal current, so that variations above or below the normal deflect the needle in one direction or the other. If the electro-motive force in the system, and consequently the candle-power of the lamps, increases, the indicating-lamp varies with the rest, and the current from it to the galvanometer is increased, causing the deflection of the galvanometer-needle; and, conversely, a decrease in electro-motive force in the system produces an opposite deflection. The galvanometer-needle may be made to close circuit to electrically-operated devices for accomplishing the automatic regulation of the generator supplying current to the system, or for any other purpose.",
     ),
@@ -181,7 +181,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       term(
         "multiple-arc circuits",
         "multiple-arc-circuits",
-        "Parallel electrical distribution network where constant voltage is maintained across parallel load branches 3 and 4.",
+        "The specification's term for electric lamps connected across the main conductors in circuits numbered 3 and 4.",
       ),
       " 3 4. A is a lamp similarly connected, and similar in every way to the other lamps, except that it has a piece of platinum, b, placed between the limbs of its incandescent conductor, while a wire, 5, attached to said platinum, is sealed in the glass of the globe with the wires 3 4. The wire 5 leads to the binding-post c, while a wire, 6, connected with the positive wire 3 of the lamp, leads to the binding-post c'. These binding-posts are the terminals of a galvanometer which consists of coils d d and a needle, e, carried by a torsion-wire, f. The parts are held in a frame, B. The upper cross-bar of the frame is split at g, the split being held together by screws h h, and the torsion-wire is attached to the smooth stud i, which is held by friction in the split, its torsion being adjusted by turning the thumb-nut j. A spring, k, is attached to the other end of the torsion-wire, serving to keep said wire stiff, and the tension of the spring is adjusted by means of nut l. A pointer, m, extends from the needle to indicate its variations upon a scale, n. The torsion of the wire f is so adjusted as to hold the needle and the pointer centrally with a normal current—that is, when the lamps of the system are at their normal candle-power—and, as previously explained, any variations in the electro-motive force of the system causing changes in the candle-power of the lamps will produce deflections of the galvanometer-needle, which deflections will be indicated on the scale.",
     ),
@@ -229,7 +229,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "2. The combination, with a system of electrical distribution, of an indicating or regulating apparatus comprising a standard lamp, a circuit therefor including the vacuous space within the globe of said lamp, and electrical apparatus controlled by the current in such circuit, substantially as set forth.",
+          text: "2. The combination, with a system of electrical distribution, of an indicating or regulating apparatus therefor, comprising a standard lamp, a circuit including the vacuous space within the globe of said lamp, and electrical apparatus controlled by the current in such circuit, substantially as set forth.",
         },
       ],
     },

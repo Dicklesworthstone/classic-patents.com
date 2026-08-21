@@ -28,7 +28,6 @@ import {
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
-  stepEdisonIndicator,
   stepEinsteinRefrigerator as stepEinsteinRefrigeratorSi,
   stepEngelbartMouse,
   stepGatlingGun,
@@ -45,7 +44,6 @@ import {
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
-  stepPeltonWheel,
   stepTeslaTeleautomaton,
   stepThomsonWelding,
   stepWhitneyCottonGin,
@@ -1762,111 +1760,58 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "A sealed ternary mixture operates at uniform pressure with no moving mechanical parts: introduced butane gas lowers ammonia partial pressure, triggering endothermic evaporative cooling.",
   },
   "us-2495429-spencer-microwave": {
-    domain: "thermodynamics_transport",
-    domainTitle: "Cavity Magnetron Standing Waves & Dielectric Dipole Loss",
-    equationName: "Dielectric Volumetric Microwave Heating Rate",
-    governingEquation:
-      "\\dot{q} = 2\\pi f \\cdot \\varepsilon_0 \\varepsilon'' |\\vec{E}|^2 \\quad (f = 2.45\\ \\text{GHz})",
-    engineMethod: "FrankenSimEngine.stepSpencerMicrowave",
+    domain: "electromagnetics",
+    domainTitle: "Dual-Magnetron Guided Food-Treatment Apparatus",
+    equationName: "Source-Stated Microwave Wavelength Region",
+    governingEquation: "\\lambda \\lesssim 10\\ \\text{cm}",
+    engineMethod: "Source-bounded TypeScript apparatus state; no quantitative tube model",
     controls: [
       {
-        id: "anodeVoltage",
-        label: "Magnetron Anode Voltage",
-        min: 1200,
-        max: 6000,
-        step: 50,
-        defaultValue: 2200,
-        unit: "V",
-      },
-      {
         id: "rfPowerSetting",
-        label: "RF Power Output",
-        min: 200,
-        max: 1200,
-        step: 50,
-        defaultValue: 800,
-        unit: "W",
-      },
-      {
-        id: "magneticFieldGauss",
-        label: "Magnetic Field",
-        min: 800,
-        max: 2200,
-        step: 10,
-        defaultValue: 1450,
-        unit: "G",
+        label: "Illustrative Energy Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "on/off",
       },
     ],
     computeMetrics: (p) => {
-      const v = p.anodeVoltage ?? 2200;
-      const rfWatts = p.rfPowerSetting ?? 800;
-      const rf = FrankenSimEngine.stepSpencerMicrowave(
-        voltsToKv(v),
-        p.magneticFieldGauss ?? 1450,
-        rfWatts,
-      );
+      const energyPathActive = (p.rfPowerSetting ?? 1) > 0;
 
       return [
         {
-          label: "Resonant Frequency",
-          value: rf.microwaveFreqMhz.toLocaleString(),
-          unit: "MHz",
+          label: "Energy Path",
+          value: energyPathActive ? "active" : "disabled",
+          unit: "",
           badgeColor: "cyan",
-          progressPct: clampProgress(80),
+          progressPct: energyPathActive ? 100 : 0,
         },
         {
-          label: "Hull Cutoff",
-          value: rf.hullCutoffGauss.toString(),
-          unit: "G",
-          badgeColor: rf.isOscillating ? "emerald" : "rose",
-          progressPct: Math.min(100, (rf.hullCutoffGauss / 2200) * 100),
+          label: "Oscillators",
+          value: "10 and 11",
+          unit: "source numerals",
+          badgeColor: "emerald",
+          progressPct: 100,
         },
         {
-          label: "Dielectric Loss",
-          value: rf.dielectricLossWattsPerDm3.toString(),
-          unit: "W/dm³",
-          badgeColor: rf.isOscillating ? "emerald" : "amber",
-          progressPct: Math.min(100, (rf.dielectricLossWattsPerDm3 / 2200) * 100),
-        },
-        {
-          label: "Popcorn ΔT",
-          value: `${rf.popcornHeatStepC} °C/tick`,
-          unit: "dT",
-          badgeColor: rf.isOscillating ? "amber" : "cyan",
-          progressPct: Math.min(100, rf.popcornHeatStepC * 30),
-        },
-        {
-          label: "Heat Tick",
-          value: `${rf.heatTickMs}`,
-          unit: "ms",
-          badgeColor: "cyan",
-          progressPct: clampProgress((rf.heatTickMs / 400) * 100),
-        },
-        {
-          label: "Water Heat",
-          value: `${rf.waterHeatSecondsPerK}`,
-          unit: "s/K",
-          badgeColor: rf.isOscillating ? "amber" : "cyan",
-          progressPct: Math.min(100, (rf.waterHeatSecondsPerK / 3) * 100),
-        },
-        {
-          label: "Time to Pop",
-          value: `${rf.timeToPopS}`,
-          unit: "s",
-          badgeColor: rf.isOscillating ? "amber" : "cyan",
-          progressPct: Math.min(100, (rf.timeToPopS / 200) * 100),
-        },
-        {
-          label: "RF Output Power",
-          value: rfWatts.toString(),
-          unit: "W",
+          label: "Common Guide",
+          value: "23",
+          unit: "source numeral",
           badgeColor: "purple",
-          progressPct: clampProgress((rfWatts / 1200) * 100),
+          progressPct: 100,
+        },
+        {
+          label: "Conveyor",
+          value: "28",
+          unit: "source numeral",
+          badgeColor: "amber",
+          progressPct: 100,
         },
       ];
     },
     pedagogicalInsight:
-      "Crossed electric and magnetic fields inside the cavity magnetron induce relativistic electron hub-and-spoke rotating clouds that excite 2.45 GHz standing microwaves, agitating water dipoles.",
+      "The patent drawing shows two magnetron oscillators, 10 and 11, coupled through coaxial lines 24 and 25 and loops 26 and 27 into common wave guide 23, with food carried transversely by conveyor 28. The grant does not state an operating power, tube voltage, magnetic field, cavity count, or household-oven geometry.",
   },
   "us-2981877-noyce-ic": {
     domain: "semiconductor_carrier",
@@ -3774,90 +3719,70 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "The exploding cartridge drives the barrel and breech block rearward; breaking the collinear toggle linkage unlocks the breech, ejects the casing, indexes a fresh cartridge from the cloth belt, and returns under spring tension.",
   },
   "us-361931-daimler-engine": {
-    domain: "thermodynamics_transport",
-    domainTitle: "High-RPM Internal Combustion & Epicyclic Bevel Differential",
-    equationName: "Engine Specific Power & Differential Kinematics",
+    domain: "mechanical_transport",
+    domainTitle: "Marine Ahead/Astern Coupling and Cooling Arrangement",
+    equationName: "Source-Stated Sliding-Shaft Drive Selection",
     governingEquation:
-      "P = \\frac{\\text{BMEP} \\cdot V_d \\cdot N}{120} \\quad \\text{and} \\quad \\omega_{\\text{left}} + \\omega_{\\text{right}} = 2\\omega_{\\text{carrier}}",
-    engineMethod: "FrankenSimEngine.stepDaimlerEngine",
+      "x_b > 0 \\Rightarrow a\\,a^2\\;\\text{engaged}; \\qquad x_b < 0 \\Rightarrow e^{\\prime},e^2\\;\\text{engage}\\;a^2,c",
+    engineMethod: "Source-bounded TypeScript apparatus state; no quantitative motor model",
     controls: [
       {
-        id: "engineRpm",
-        label: "Crankshaft Speed",
-        min: 400,
-        max: 950,
-        step: 25,
-        defaultValue: 750,
-        unit: "RPM",
-      },
-      {
-        id: "hotTubeTemp",
-        label: "Hot-Tube Igniter Temp",
-        min: 650,
-        max: 950,
-        step: 10,
-        defaultValue: 850,
-        unit: "°C",
-      },
-      {
-        id: "turnAngle",
-        label: "Steering Wheel Turn Angle",
-        min: 0,
-        max: 35,
+        id: "shaftPosition",
+        label: "Longitudinal Propeller-Shaft Position",
+        min: -1,
+        max: 1,
         step: 1,
-        defaultValue: 15,
-        unit: "°",
+        defaultValue: 1,
+        unit: "astern / neutral / ahead",
+      },
+      {
+        id: "coolingPumpEnabled",
+        label: "Centrifugal Cooling Pump u",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 0,
+        unit: "off / on",
       },
     ],
     computeMetrics: (p) => {
-      const daimler = FrankenSimEngine.stepDaimlerEngine({
-        engineRpm: p.engineRpm ?? 750,
-        hotTubeTempC: p.hotTubeTemp ?? 850,
-        differentialSlipAngleDeg: p.turnAngle ?? 15,
-      });
-      const bmep = daimler.bmepBar;
-      const hp = daimler.brakeHorsepower.toFixed(2);
+      const shaftPosition = Math.max(-1, Math.min(1, Math.round(p.shaftPosition ?? 1)));
+      const driveState = shaftPosition > 0 ? "ahead" : shaftPosition < 0 ? "astern" : "neutral";
+      const coolingPumpEnabled = (p.coolingPumpEnabled ?? 0) > 0;
 
       return [
         {
-          label: "Brake Horsepower",
-          value: `${hp} hp`,
-          unit: "P_brake",
-          badgeColor: "emerald",
-          progressPct: clampProgress((Number(hp) / 2.5) * 100),
+          label: "Drive Selection",
+          value: driveState,
+          unit: "reader control",
+          badgeColor: driveState === "neutral" ? "amber" : "emerald",
+          progressPct: driveState === "ahead" ? 100 : driveState === "astern" ? 0 : 50,
         },
         {
-          label: "BMEP Pressure",
-          value: `${bmep} bar`,
-          unit: "BMEP",
+          label: "Ahead Contact",
+          value: driveState === "ahead" ? "coupling a / a²" : "open",
+          unit: "source labels",
           badgeColor: "cyan",
-          progressPct: clampProgress((bmep / 6.0) * 100),
+          progressPct: driveState === "ahead" ? 100 : 0,
         },
         {
-          label: "Outer Wheel Speed",
-          value: `${daimler.outerWheelRpm} RPM`,
-          unit: "ω_outer",
+          label: "Astern Contact",
+          value: driveState === "astern" ? "disks e¹ / e² with a² / c" : "open",
+          unit: "source labels",
           badgeColor: "indigo",
-          progressPct: clampProgress((daimler.outerWheelRpm / 250) * 100),
+          progressPct: driveState === "astern" ? 100 : 0,
         },
         {
-          label: "Inner Wheel Speed",
-          value: `${daimler.innerWheelRpm} RPM`,
-          unit: "ω_inner",
-          badgeColor: "amber",
-          progressPct: clampProgress((daimler.innerWheelRpm / 250) * 100),
-        },
-        {
-          label: "Specific Power",
-          value: `${daimler.specificPowerHpPerKg} hp/kg`,
-          unit: "P/m",
+          label: "Cooling Circulation",
+          value: coolingPumpEnabled ? "centrifugal pump u" : "fore-and-aft pipes s¹ / s²",
+          unit: "source alternatives",
           badgeColor: "purple",
-          progressPct: clampProgress((daimler.specificPowerHpPerKg / 0.04) * 100),
+          progressPct: coolingPumpEnabled ? 100 : 0,
         },
       ];
     },
     pedagogicalInsight:
-      "Raising engine RPM by a factor of 4 using incandescent glow-tube ignition slashed weight per horsepower by 80%, while the bevel differential split torque across drive wheels during cornering.",
+      "US 361,931 is a marine-installation patent: longitudinal propeller-shaft movement selects an ahead friction coupling or an astern reversing train, while the grant separately describes steering, thrust support, outside-water cooling, starting, and high-to-low-pressure gas storage. It prints no motor speed, power, efficiency, or road-vehicle differential.",
   },
   "us-388850-eastman-kodak": {
     domain: "optics_waves",
@@ -5653,63 +5578,68 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       "The source describes a diaphragm with a hard indenting point marking metallic foil, paper, or another yielding material on a cylinder. Its ten-groove-per-inch helix and matching ten-thread-per-inch shaft move the cylinder endwise while it turns. The controls animate reader-aid motion only; the grant prints no rate, dimension, diaphragm material, or audio bandwidth.",
   },
   "us-233692-pelton-water-wheel": {
-    domain: "aerodynamics_mbd",
-    domainTitle: "Impulse Hydrodynamics & Momentum Transfer",
-    equationName: "Euler Turbine Equation & Dual-Cup Jet Deflection",
+    domain: "fluid_mechanics",
+    domainTitle: "Source-Bounded Divided-Bucket Water Path",
+    equationName: "Claimed Bucket Geometry Sequence",
     governingEquation:
-      "P = \\rho \\cdot Q \\cdot v_{\\text{jet}} \\cdot u \\cdot (1 - \\cos \\beta) \\quad (\\beta = 165^\\circ)",
-    engineMethod: "FrankenSimEngine.stepPeltonWheel",
+      "\\text{stream} \\rightarrow b \\rightarrow d \\rightarrow c_{\\mathrm{left/right}} \\rightarrow e_{\\mathrm{left/right}}",
+    engineMethod: "Source-bounded TypeScript apparatus state; no quantitative turbine model",
     controls: [
       {
-        id: "headMeters",
-        label: "Hydraulic Water Head",
-        min: 50,
-        max: 600,
-        step: 25,
-        defaultValue: 450,
-        unit: "m",
+        id: "sourceFlowVisible",
+        label: "Show Source Water Path",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "off / on",
       },
       {
-        id: "runnerRpm",
-        label: "Runner Rotational Speed",
-        min: 100,
-        max: 900,
-        step: 25,
-        defaultValue: 600,
-        unit: "RPM",
+        id: "claim1Active",
+        label: "Claim 1 Geometry",
+        min: 0,
+        max: 1,
+        step: 1,
+        defaultValue: 1,
+        unit: "absent / present",
       },
     ],
     computeMetrics: (p) => {
-      const pelton = stepPeltonWheel({ headMeters: p.headMeters, runnerRpm: p.runnerRpm });
-      const vJet = pelton.jetVelocityMps;
-      const eta = pelton.etaPct;
-      const kw = pelton.shaftPowerKw;
+      const sourceFlowVisible = (p.sourceFlowVisible ?? 1) > 0;
+      const claim1Active = (p.claim1Active ?? 1) > 0;
       return [
         {
-          label: "Jet Velocity",
-          value: `${vJet} m/s`,
-          unit: "v_jet",
+          label: "Source Water Path",
+          value: sourceFlowVisible ? "shown" : "hidden",
+          unit: "reader control",
           badgeColor: "cyan",
-          progressPct: clampProgress((vJet / 110) * 100),
+          progressPct: sourceFlowVisible ? 100 : 0,
         },
         {
-          label: "Turbine Efficiency",
-          value: `${eta}%`,
-          unit: "eta",
-          badgeColor: eta >= 85 ? "emerald" : "amber",
-          progressPct: clampProgress(eta),
+          label: "Stream Division",
+          value: claim1Active ? "central apex d" : "claim element removed",
+          unit: "source label",
+          badgeColor: "amber",
+          progressPct: claim1Active ? 100 : 0,
         },
         {
-          label: "Turbine Shaft Power",
-          value: `${kw} kW`,
-          unit: "P_hydro",
+          label: "Curved Bottoms",
+          value: "two bottoms c",
+          unit: "source label",
           badgeColor: "emerald",
-          progressPct: clampProgress((kw / 250) * 100),
+          progressPct: 100,
+        },
+        {
+          label: "Discharge",
+          value: "flaring sides e",
+          unit: "source label",
+          badgeColor: "purple",
+          progressPct: 100,
         },
       ];
     },
     pedagogicalInsight:
-      "The knife-edge splitter divides the jet into two equal halves deflected backward at $165^\\circ$, extracting nearly 90% of kinetic energy while avoiding jet interference.",
+      "The sole claim protects a specific bucket combination: sloping front b admits the stream without face impact, apex d divides it, two curved bottoms c redirect the portions, and flaring sides e discharge them laterally. The grant prints no head, flow, speed, cup quantity, turning angle, efficiency, force, or output wattage.",
   },
   "us-235199-bell-photophone": {
     domain: "telecom",
@@ -6654,89 +6584,57 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-307031-edison-indicator": {
     domain: "electromagnetism",
-    domainTitle: "Thermionic Vacuum Emission & Closed-Loop Voltage Regulation",
-    equationName: "Richardson-Dushman Law & Galvanometer Balance",
+    domainTitle: "Incandescent-Lamp Vacuum Circuit Topology",
+    equationName: "Source-Stated Internal-to-External Circuit Path",
     governingEquation:
-      "J = A T^2 e^{-\\frac{\\Phi}{k_B T}} \\quad \\text{and} \\quad \\theta_{\\text{galvo}} = S_V (V_{\\text{mains}} - V_0)",
-    engineMethod: "FrankenSimEngine.stepEdisonIndicator",
+      "\\text{internal terminal} \\rightarrow \\text{external apparatus} \\rightarrow \\text{lamp circuit}",
+    engineMethod: "Source-bounded TypeScript circuit state; no quantitative emission model",
     controls: [
       {
-        id: "mainsVoltageV",
-        label: "Mains Line Voltage",
-        min: 90,
-        max: 130,
-        step: 1,
-        defaultValue: 110,
-        unit: "V",
-      },
-      {
         id: "plateBiasPolarity",
-        label: "Plate Bias (1=Pos, -1=Neg)",
+        label: "External Connection",
         min: -1,
         max: 1,
         step: 1,
         defaultValue: 1,
-        unit: "bias",
-      },
-      {
-        id: "galvanometerTorsionNullV",
-        label: "Torsion Null Reference",
-        min: 105,
-        max: 115,
-        step: 1,
-        defaultValue: 110,
-        unit: "V₀",
+        unit: "source polarity",
       },
     ],
     computeMetrics: (p) => {
-      const edison = stepEdisonIndicator({
-        mainsVoltageV: p.mainsVoltageV,
-        plateBiasPolarity: p.plateBiasPolarity,
-        galvanometerTorsionNullV: p.galvanometerTorsionNullV,
-      });
+      const positiveSide = (p.plateBiasPolarity ?? 1) > 0;
       return [
         {
-          label: "Thermionic Current",
-          value: `${edison.emissionCurrentMicroAmps.toFixed(1)} µA`,
-          unit: "I_vac",
-          badgeColor: "amber",
-          progressPct: clampProgress((edison.emissionCurrentMicroAmps / 40) * 100),
+          label: "Internal Terminal",
+          value: "in vacuous globe",
+          unit: "source text",
+          badgeColor: "cyan",
+          progressPct: 100,
         },
         {
-          label: "Cathode Temp",
-          value: `${edison.filamentTemperatureK} K`,
-          unit: "T_fil",
-          badgeColor: "amber",
-          progressPct: clampProgress(((edison.filamentTemperatureK - 1800) / 600) * 100),
+          label: "External Connection",
+          value: positiveSide ? "positive side" : "other side",
+          unit: "reader comparison",
+          badgeColor: positiveSide ? "emerald" : "indigo",
+          progressPct: positiveSide ? 100 : 0,
         },
         {
-          label: "Needle Deflection",
-          value: `${edison.galvoDeflectionDeg > 0 ? "+" : ""}${edison.galvoDeflectionDeg.toFixed(1)}°`,
-          unit: "θ",
+          label: "Illustrated Apparatus",
+          value: "galvanometer",
+          unit: "source text",
           badgeColor: "indigo",
-          progressPct: clampProgress(((edison.galvoDeflectionDeg + 25) / 50) * 100),
+          progressPct: 100,
         },
         {
-          label: "Regulator Trip",
-          value:
-            edison.regulatorState === "nominal"
-              ? "Center Nominal"
-              : edison.regulatorState === "high_voltage_trip"
-                ? "Trip: High V"
-                : "Trip: Low V",
-          unit: "status",
-          badgeColor:
-            edison.regulatorState === "nominal"
-              ? "emerald"
-              : edison.regulatorState === "high_voltage_trip"
-                ? "rose"
-                : "indigo",
-          progressPct: edison.regulatorState === "nominal" ? 50 : 100,
+          label: "Printed Conductors",
+          value: "1 and 2",
+          unit: "figure labels",
+          badgeColor: "amber",
+          progressPct: 100,
         },
       ];
     },
     pedagogicalInsight:
-      "The Edison Effect demonstrated that electrons thermionically boil off an incandescing cathode across an absolute vacuum, creating a unidirectional current exponentially sensitive to line voltage fluctuations.",
+      "The grant places one circuit terminal inside an incandescent lamp's vacuous globe and connects the other terminal externally, in some claims specifically to the positive side, so electrical apparatus in that circuit can indicate or control the lamp system. It prints no operating voltage, vacuum pressure, temperature, current, or sensitivity.",
   },
   "us-6285999-pagerank": {
     domain: "network_dynamics",

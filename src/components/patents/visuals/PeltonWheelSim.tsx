@@ -1,45 +1,15 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { stepPeltonWheelVisual } from "@/physics/peltonWheelKernel";
+import { RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function PeltonWheelSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-233692-pelton-water-wheel");
+  const { params, resetParams, updateParam } = usePatentPhysics("us-233692-pelton-water-wheel");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const waterHeadMeters = params.headMeters ?? 0;
-  const wheelRpm = params.runnerRpm ?? 0;
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [wheelAngleDeg, setWheelAngleDeg] = useState<number>(0);
-  const animRef = useRef<number | null>(null);
-
-  const visualState = stepPeltonWheelVisual({
-    runnerRpm: wheelRpm,
-    jetEnabled: waterHeadMeters > 0,
-  });
-  const runnerOmegaDegPerS = (visualState.runnerOmegaRadPerS * 180) / Math.PI;
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    let lastTime = performance.now();
-
-    const loop = (time: number) => {
-      const dt = Math.min(0.1, (time - lastTime) / 1000);
-      lastTime = time;
-
-      setWheelAngleDeg((prev) => (prev + runnerOmegaDegPerS * dt) % 360);
-      animRef.current = requestAnimationFrame(loop);
-    };
-
-    animRef.current = requestAnimationFrame(loop);
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-    };
-  }, [isPlaying, runnerOmegaDegPerS]);
+  const showJet = (params.sourceFlowVisible ?? 1) > 0;
+  const claim1Active = (params.claim1Active ?? 1) > 0;
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -60,13 +30,13 @@ export function PeltonWheelSim() {
           <button
             type="button"
             onClick={() => {
-              setIsPlaying(!isPlaying);
+              updateParam("sourceFlowVisible", showJet ? 0 : 1);
               soundEngine.playSwitchClick();
             }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            aria-label={showJet ? "Hide source water paths" : "Show source water paths"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isPlaying ? <Pause className="w-4 h-4 text-cyan-600" /> : <Play className="w-4 h-4" />}
+            <Waves className={showJet ? "w-4 h-4 text-cyan-600" : "w-4 h-4"} />
           </button>
           <button
             type="button"
@@ -87,7 +57,6 @@ export function PeltonWheelSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setWheelAngleDeg(0);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -123,7 +92,7 @@ export function PeltonWheelSim() {
               fontWeight="bold"
               fontFamily="sans-serif"
             >
-              Penstock Nozzle
+              Pipe and nozzle F
             </text>
           </g>
 
@@ -134,19 +103,19 @@ export function PeltonWheelSim() {
             x2="360"
             y2="260"
             stroke="#3182CE"
-            strokeWidth={waterHeadMeters > 0 ? 7 : 3}
+            strokeWidth={showJet ? 7 : 3}
             strokeLinecap="round"
-            opacity={waterHeadMeters > 0 ? 0.9 : 0.3}
+            opacity={showJet ? 0.9 : 0.15}
           />
 
-          {/* Pelton Turbine Runner Disk (Center) */}
-          <g transform={`translate(360, 150) rotate(${wheelAngleDeg})`}>
+          {/* Wheel A with one representative source bucket B. */}
+          <g transform="translate(360, 150)">
             {/* Center Hub */}
             <circle cx="0" cy="0" r={75} fill="#2D3748" stroke="#1A202C" strokeWidth="4" />
             <circle cx="0" cy="0" r={18} fill="#1A1A1A" />
 
             {/* One enlarged source-faithful bucket; the grant gives no bucket count. */}
-            <g transform="rotate(0) translate(0, -110)">
+            <g transform="rotate(0) translate(0, -110)" opacity={claim1Active ? 1 : 0.18}>
               {/* Double-cup bucket profile */}
               <path
                 d="M -14 0 Q -18 22, -8 30 Q 0 15, 0 5 Q 0 15, 8 30 Q 18 22, 14 0 Z"
@@ -165,14 +134,14 @@ export function PeltonWheelSim() {
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity={waterHeadMeters > 0 ? 0.8 : 0.25}
+            opacity={showJet ? 0.8 : 0.12}
           />
           <path
             d="M 360 260 Q 400 280, 450 310"
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity={waterHeadMeters > 0 ? 0.8 : 0.25}
+            opacity={showJet ? 0.8 : 0.12}
           />
           <text
             x="320"
@@ -188,43 +157,14 @@ export function PeltonWheelSim() {
       </div>
 
       <div className="my-4 rounded-xl border border-parchment-200 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 p-3 text-sm text-ink-700 dark:text-parchment-300">
-        The grant supplies no operating head, speed, bucket count, efficiency, or dimensions.
-        Controls are visitor-set parameters; the drawing and source text establish the bucket
-        geometry and nozzle arrangement only.
+        The grant supplies no operating head, speed, bucket count, efficiency, or dimensions. This
+        view therefore keeps the wheel posed and uses the toggle only to reveal the source-
+        described jet and its two discharge paths.
       </div>
 
-      {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Visitor-set head parameter</span>
-            <span className="font-mono">{waterHeadMeters}</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="1000"
-            step="10"
-            value={waterHeadMeters}
-            onChange={(e) => updateParam("headMeters", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Visitor-set runner speed</span>
-            <span className="font-mono">{wheelRpm}</span>
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="1000"
-            step="10"
-            value={wheelRpm}
-            onChange={(e) => updateParam("runnerRpm", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
-        </div>
+      <div className="pt-2 border-t border-parchment-200 dark:border-ink-800 text-xs text-ink-600 dark:text-ink-400">
+        Source elements: wheel A, bucket B, curved bottoms c, apex d, discharge sides e, nozzles F,
+        and distributing-box G.
       </div>
     </div>
   );

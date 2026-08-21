@@ -100,8 +100,8 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(energyChannelsFor("us-347140-thomson-welding", {})[0]?.watts).toBeGreaterThan(0);
     expect(energyChannelsFor("us-194047-otto-engine", {})[0]?.name).toBe("Brake");
     expect(energyChannelsFor("us-6162-corliss-steam-engine", {})[0]?.name).toBe("Indicated");
-    expect(energyChannelsFor("us-361931-daimler-engine", {})[0]?.name).toBe("Brake");
-    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})[0]?.name).toBe("Shaft");
+    expect(energyChannelsFor("us-361931-daimler-engine", {})).toEqual([]);
+    expect(energyChannelsFor("us-233692-pelton-water-wheel", {})).toEqual([]);
     expect(energyChannelsFor("us-470918-reno-escalator", {})[0]?.name).toBe("Motor");
     expect(energyChannelsFor("us-319596-maxim-machine-gun", {})[0]).toMatchObject({
       name: "Jacket heat",
@@ -118,7 +118,7 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
       "Filament",
       "Audio",
     ]);
-    expect(energyChannelsFor("us-307031-edison-indicator", {})[0]?.name).toBe("Filament");
+    expect(energyChannelsFor("us-307031-edison-indicator", {})).toEqual([]);
     expect(energyChannelsFor("gb-913-watt-separate-condenser", {}).map((c) => c.name)).toEqual([
       "Furnace",
       "Indicated",

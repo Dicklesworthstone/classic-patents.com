@@ -28,7 +28,7 @@ import {
   type ColtRevolverModel,
   updateColtRevolverKinematics,
 } from "./coltRevolverModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -58,7 +58,7 @@ export function ColtRevolver3D() {
   const rammerPositionPct = Number(params.rammerPosition ?? 0); // 0 (latched) to 100 (seated)
   const currentChamberIndex = Math.max(1, Math.round(Number(params.chamberIndex ?? 1)));
 
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);

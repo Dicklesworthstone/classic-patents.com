@@ -8,12 +8,10 @@ import {
   stepBellTelephone,
   stepColtRevolver,
   stepCorlissEngine,
-  stepDaimlerEngine,
   stepDavenportMotor,
   stepDeForestAudion,
   stepDeLavalSeparator,
   stepEdisonBulb,
-  stepEdisonIndicator,
   stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
@@ -33,8 +31,6 @@ import {
   stepOttoEngine,
   stepParsonsTurbine,
   stepPasteurFermentation,
-  stepPeltonWheel,
-  stepSpencerMicrowave,
   stepThomsonWelding,
   stepWattCondenser,
   stepWhitneyCottonGin,
@@ -466,17 +462,13 @@ export function materialProbe(
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters,
-      runnerRpm: params.runnerRpm,
-    });
     return {
       part: calloutLabel,
-      material: "Split bronze bucket, 165° deflection",
-      qty: "v_jet",
-      value: pelton.jetVelocityMps.toString(),
-      unit: "m/s",
-      note: `u/v = ${pelton.speedRatio}. η ${pelton.etaPct}% → ${pelton.shaftPowerKw} kW · ω ${pelton.runnerOmegaRadPerS} rad/s.`,
+      material: "Source-labelled bucket front b, curved bottoms c, apex d, and flaring sides e",
+      qty: "source",
+      value: "not stated",
+      unit: "no numerical material or performance data",
+      note: "US 233,692 prints the bucket geometry and water path but no bucket material, head, flow, speed, turning angle, force, efficiency, or shaft power.",
     };
   }
   if (patentId.includes("gramme") || patentId.includes("120057")) {
@@ -797,18 +789,14 @@ export function materialProbe(
     };
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    const d = stepDaimlerEngine({
-      engineRpm: params.engineRpm,
-      hotTubeTempC: params.hotTubeTemp,
-      differentialSlipAngleDeg: params.turnAngle,
-    });
     return {
       part: calloutLabel,
-      material: "Enclosed crankcase, platinum hot-tube",
-      qty: "BHP",
-      value: d.brakeHorsepower.toString(),
-      unit: "hp",
-      note: `BMEP ${d.bmepBar} bar. Diff ${d.innerWheelRpm}/${d.outerWheelRpm} rpm · ω ${d.runningOmegaRadPerS} rad/s.`,
+      material:
+        "Source-labelled marine motor, sliding propeller shaft, coupling, and reversing disks",
+      qty: "source",
+      value: "not stated",
+      unit: "no numerical material or performance data",
+      note: "US 361,931 identifies the apparatus relationships but prints no motor speed, power, efficiency, inertia, or construction-material specification.",
     };
   }
   if (patentId.includes("hollerith") || patentId.includes("395781")) {
@@ -859,21 +847,17 @@ export function materialProbe(
       note: `CPU ${apple.cpuClockMhz} MHz · color ${apple.colorSubcarrierMhz} MHz. Φ2 duty ${apple.cpuDutyPct}% · visual Φ2 ${apple.phi2DisplayHz} Hz.`,
     };
   }
-  if (patentId.includes("spencer") || patentId.includes("2495429")) {
-    const rf = stepSpencerMicrowave(
-      voltsToKv(params.anodeVoltage ?? 2200),
-      params.magneticFieldGauss,
-      params.rfPowerSetting,
-    );
+  if (patentId === "us-2495429-spencer-microwave") {
+    const energyPathActive = (params.rfPowerSetting ?? 1) > 0;
     return {
       part: calloutLabel,
-      material: "Cavity magnetron, Hull cutoff",
-      qty: "P_dielectric",
-      value: rf.dielectricLossWattsPerDm3.toString(),
-      unit: "W/dm³",
-      note: rf.isOscillating
-        ? `${rf.microwaveFreqMhz} MHz. B > ${rf.hullCutoffGauss} G.`
-        : `Below Hull cutoff ${rf.hullCutoffGauss} G — no RF.`,
+      material: "Two magnetron oscillators feeding one common wave guide",
+      qty: "path",
+      value: energyPathActive ? "1" : "0",
+      unit: "on/off",
+      note: energyPathActive
+        ? "Source path 10/11 → 24/25 → 26/27 → 23 → conveyor 28 is highlighted."
+        : "The illustrative source path is disabled; no unstated electrical rating is inferred.",
     };
   }
   if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
@@ -1003,11 +987,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "η", min: 20, max: 60, live: otto.thermalEfficiencyPct, unit: "%" }];
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters,
-      runnerRpm: params.runnerRpm,
-    });
-    return [{ label: "η", min: 40, max: 93, live: pelton.etaPct, unit: "%" }];
+    return [];
   }
   if (patentId.includes("lincoln") || patentId.includes("6281")) {
     const buoy = stepLincolnBuoy({
@@ -1283,12 +1263,9 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [{ label: "Lift", min: -20, max: 40, live: zep.netLiftKn, unit: "kN" }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    const d = stepDaimlerEngine({
-      engineRpm: params.engineRpm,
-      hotTubeTempC: params.hotTubeTemp,
-      differentialSlipAngleDeg: params.turnAngle,
-    });
-    return [{ label: "BHP", min: 0.2, max: 2.5, live: d.brakeHorsepower, unit: "hp" }];
+    // No source interval can be constructed: the grant prints no quantitative
+    // motor or vessel operating range.
+    return [];
   }
   if (patentId.includes("hollerith") || patentId.includes("395781")) {
     const h = stepHollerithTabulating({
@@ -1312,14 +1289,15 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const apple = stepWozniakApple({ crystalFreq: params.crystalFreq });
     return [{ label: "Φ2", min: 200, max: 800, live: apple.dramWindowNs, unit: "ns" }];
   }
-  if (patentId.includes("spencer") || patentId.includes("2495429")) {
-    const rf = stepSpencerMicrowave(
-      voltsToKv(params.anodeVoltage ?? 2200),
-      params.magneticFieldGauss,
-      params.rfPowerSetting,
-    );
+  if (patentId === "us-2495429-spencer-microwave") {
     return [
-      { label: "Loss", min: 0, max: 3000, live: rf.dielectricLossWattsPerDm3, unit: "W/dm³" },
+      {
+        label: "Source path",
+        min: 0,
+        max: 1,
+        live: (params.rfPowerSetting ?? 1) > 0 ? 1 : 0,
+        unit: "on/off",
+      },
     ];
   }
   if (patentId.includes("kwolek") || patentId.includes("kevlar") || patentId.includes("3671542")) {
@@ -1366,17 +1344,7 @@ export function fidelityField(
     };
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters,
-      runnerRpm: params.runnerRpm,
-    });
-    return {
-      part: "Impulse speed ratio u/v",
-      model: pelton.speedRatio.toFixed(3),
-      reference: "0.500",
-      residual: (pelton.speedRatio - 0.5).toFixed(3),
-      unit: "",
-    };
+    return null;
   }
   if (patentId.includes("otto-engine") || patentId.includes("194047")) {
     const otto = stepOttoEngine({
@@ -1629,12 +1597,12 @@ export function smokePolicy(patentId: string, params: Record<string, number>): S
       reason: `${Math.round(rocket.exhaustVelocityMps)} m/s de Laval exhaust, not a smoke texture.`,
     };
   }
-  if (patentId.includes("spencer")) {
-    const rf = params.rfPowerSetting ?? 800;
-    if (rf < 200) {
-      return { allowed: false, reason: "RF below magnetron oscillation — no steam drawn." };
-    }
-    return { allowed: true, reason: `${rf} W dielectric heating of water, not a smoke texture.` };
+  if (patentId === "us-2495429-spencer-microwave") {
+    return {
+      allowed: false,
+      reason:
+        "US 2,495,429 does not quantify a plume, steam rate, food temperature, or thermal-output field, so no cosmetic plume is drawn.",
+    };
   }
   return { allowed: true, reason: "No cosmetic plume on this patent." };
 }
@@ -1782,14 +1750,7 @@ export function datedScenarios(patentId: string): DatedScenario[] {
     ];
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
-    return [
-      {
-        id: "nevada-city-1880",
-        date: "1880",
-        name: "Nevada City 450 m head",
-        writes: { headMeters: 450, runnerRpm: 600 },
-      },
-    ];
+    return [];
   }
   if (patentId.includes("sholes") || patentId.includes("79265")) {
     return [
@@ -2006,11 +1967,7 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "I²R", to: "nugget", watts: weld.jouleWatts }];
   }
   if (patentId.includes("pelton") || patentId.includes("233692")) {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters,
-      runnerRpm: params.runnerRpm,
-    });
-    return [{ from: "jet", to: "shaft", watts: pelton.shaftPowerKw * 1000 }];
+    return [];
   }
   if (patentId.includes("reno") || patentId.includes("470918")) {
     const reno = stepRenoEscalator({
@@ -2078,12 +2035,9 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     return [{ from: "gas charge", to: "brake", watts: otto.brakeHorsepower * 745.7 }];
   }
   if (patentId.includes("daimler") || patentId.includes("361931")) {
-    const d = stepDaimlerEngine({
-      engineRpm: params.engineRpm,
-      hotTubeTempC: params.hotTubeTemp,
-      differentialSlipAngleDeg: params.turnAngle,
-    });
-    return [{ from: "hot-tube", to: "brake", watts: d.brakeHorsepower * 745.7 }];
+    // The mechanical drive path is source-stated, but the grant provides no
+    // watt-valued input or output for a quantitative coupling link.
+    return [];
   }
   if (patentId.includes("corliss") || patentId.includes("6162")) {
     const corliss = stepCorlissEngine({
@@ -2124,12 +2078,11 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     });
     return [{ from: "filament", to: "audio", watts: tube.audioOutputMilliWatts / 1000 }];
   }
-  if (patentId.includes("307031") || patentId.includes("edison-indicator")) {
-    const lamp = stepEdisonIndicator({
-      mainsVoltageV: params.mainsVoltageV,
-      galvanometerTorsionNullV: params.galvanometerTorsionNullV,
-    });
-    return [{ from: "mains", to: "filament", watts: lamp.filamentPowerW }];
+  if (patentId === "us-307031-edison-indicator") {
+    // The grant identifies the circuit topology but supplies no voltage,
+    // current, resistance, or power values from which a watt flow can be
+    // reconstructed. Keep the energy weave empty instead of inventing one.
+    return [];
   }
   if (patentId.includes("gb-913") || patentId.includes("watt-separate-condenser")) {
     const watt = stepWattCondenser({

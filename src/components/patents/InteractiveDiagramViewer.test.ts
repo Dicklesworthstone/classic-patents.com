@@ -116,7 +116,12 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).toContain("filamentTempK");
     expect(source).toContain("lineVoltageV: params?.lineVoltageV");
     expect(source).toContain("matrixRatePerMin: params?.matrixRate");
-    expect(source).toContain("engineRpm: params?.engineRpm");
+    expect(source).toContain("shaftPosition = Math.round(params?.shaftPosition ?? 0)");
+    expect(source).toContain("sourceFlowVisible ?? 1");
+    expect(source).not.toContain("Needle Nozzle");
+    expect(source).not.toContain("165° Jet Energy Extraction");
+    expect(source).not.toContain("Balanced Crankcase Flywheels");
+    expect(source).not.toContain("Hot Tube");
   });
 
   test("keeps the Pasteur schematic on the apparatus printed in US 135,245", () => {

@@ -26,6 +26,37 @@ layer was used only as a secondary comparison aid.
 | p. 1 | Drawing sheet with Figs. 1-3 | Direct visual review; direct local crops selected for each printed figure |
 | p. 2 | Masthead, complete specification, one claim, signature, witnesses | Direct visual and text-layer comparison; continuous manual transcription |
 
+## Cloud source review and held figure-crop plan
+
+The authoritative cloud facsimile used for this review is the official Google
+Patents image derived from the public patent record:
+
+- Drawing-sheet image: <https://patentimages.storage.googleapis.com/2c/55/5c/a19dadfbcdf4e7/US157124-drawings-page-1.png>
+- Source image dimensions: `2320 x 3408` pixels, portrait, upright (`0°` rotation).
+- Review result: all three currently served local previews are held as
+  sideways and are not accepted as source-face evidence. Existing files are
+  preserved byte-for-byte.
+
+The following are bounded source coordinates in that upright cloud image. The
+coordinates intentionally exclude the drawing-sheet masthead, the neighboring
+figure, signatures, and the printer footer while retaining each figure label,
+its complete linework, and all printed reference letters visible within that
+figure. These are a cloud-worker crop contract only; no replacement crop was
+generated on this host.
+
+| Versioned output | Source rectangle `(x, y, width, height)` | Rotation | Included source content and labels |
+| --- | ---: | ---: | --- |
+| `fig-1-source-crop-v1.png` | `(430, 900, 720, 1900)` | `0°` | Fig. I fence section with `A`, `B`, `C`, `D`, `b`, and `c`; excludes the Fig. II/III neighbors and signatures |
+| `fig-2-source-crop-v1.png` | `(1500, 1780, 520, 520)` | `0°` | Fig. II sectional detail with its printed `D`, `a`, `z`, `E`, and `s` labels; excludes Fig. III |
+| `fig-3-source-crop-v1.png` | `(1360, 700, 700, 900)` | `0°` | Fig. III perspective detail with its printed `D`, `a`, `z`, `E`, and `s` labels; excludes the masthead, Fig. II, signatures, and footer |
+
+The crop worker must preserve the cloud image's portrait orientation and must
+not rotate the extracted rectangles from the source image. The versioned names
+above are intentionally not referenced by the edition until the files exist
+and an independent reviewer confirms labels, leaders, and boundaries. The
+edition continues to point at the preserved legacy previews while publication
+is held.
+
 ## Corrected source facts
 
 The former public record mistakenly presented a two-claim specification and
@@ -36,7 +67,7 @@ other strand. The specification also describes, but does not put in that
 single printed claim, a through-post twisting key used to restore tension.
 
 The facsimile calls the place `De Kalb`, uses `wire-fences`, and identifies the
-two long strands as `a` and `a′`. The registered title, inventor, grant date,
+two long strands as `a` and `z`. The registered title, inventor, grant date,
 application date, drawing references, and claim wording in the manual edition
 preserve those source facts.
 

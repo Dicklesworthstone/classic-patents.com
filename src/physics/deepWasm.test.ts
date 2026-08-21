@@ -195,9 +195,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(coupleEdgesFor("us-586193-marconi-radio", { sparkGapMm: 10 })[0]?.from).toBe(
       "spark train",
     );
-    expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })[0]?.from).toBe(
-      "head",
-    );
+    expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })).toEqual([]);
     expect(coupleEdgesFor("us-194047-otto-engine", { compressionRatio: 4.5 })[0]?.from).toBe(
       "compression",
     );

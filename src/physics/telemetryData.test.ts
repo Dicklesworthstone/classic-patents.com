@@ -150,6 +150,34 @@ describe("Physics Telemetry Data Registry", () => {
     }
   });
 
+  test("keeps Spencer telemetry on the apparatus and quantities printed by US 2,495,429", () => {
+    const spencer = PATENT_PHYSICS_REGISTRY["us-2495429-spencer-microwave"];
+    expect(spencer.engineMethod).toBe(
+      "Source-bounded TypeScript apparatus state; no quantitative tube model",
+    );
+    expect(spencer.controls.map((control) => control.id)).toEqual(["rfPowerSetting"]);
+    expect(spencer.controls[0]).toMatchObject({ min: 0, max: 1, step: 1, unit: "on/off" });
+    expect(spencer.computeMetrics({ rfPowerSetting: 1 })).toMatchObject([
+      { label: "Energy Path", value: "active" },
+      { label: "Oscillators", value: "10 and 11" },
+      { label: "Common Guide", value: "23" },
+      { label: "Conveyor", value: "28" },
+    ]);
+
+    const publicCopy = JSON.stringify(spencer).toLowerCase();
+    for (const unsupported of [
+      "2.45 ghz",
+      "2450",
+      "hull cutoff",
+      "dielectric loss",
+      "popcorn",
+      "anode voltage",
+      "magnetic field gauss",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("routes Goddard US 1,102,653 telemetry through the de Laval kernel", () => {
     const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
     expect(goddard.engineMethod).toContain("stepGoddardRocket");
@@ -227,6 +255,91 @@ describe("Physics Telemetry Data Registry", () => {
     expect(metrics[0]?.label).toBe("Inlet dew point");
     expect(metrics.some((metric) => metric.unit === "g/kg")).toBe(true);
     expect(metrics.some((metric) => metric.unit === "W")).toBe(true);
+  });
+
+  test("keeps Daimler telemetry on the marine installation printed by US 361,931", () => {
+    const daimler = PATENT_PHYSICS_REGISTRY["us-361931-daimler-engine"];
+    expect(daimler.engineMethod).toBe(
+      "Source-bounded TypeScript apparatus state; no quantitative motor model",
+    );
+    expect(daimler.controls.map((control) => control.id)).toEqual([
+      "shaftPosition",
+      "coolingPumpEnabled",
+    ]);
+    expect(daimler.computeMetrics({ shaftPosition: 1, coolingPumpEnabled: 0 })).toMatchObject([
+      { label: "Drive Selection", value: "ahead" },
+      { label: "Ahead Contact", value: "coupling a / a²" },
+      { label: "Astern Contact", value: "open" },
+      { label: "Cooling Circulation", value: "fore-and-aft pipes s¹ / s²" },
+    ]);
+
+    const publicCopy = JSON.stringify(daimler).toLowerCase();
+    for (const unsupported of [
+      "800 rpm",
+      "brake horsepower",
+      "bmep",
+      "motor carriage",
+      "automobile",
+      "epicyclic",
+      "hot-tube ignition",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Pelton telemetry on the bucket geometry printed by US 233,692", () => {
+    const pelton = PATENT_PHYSICS_REGISTRY["us-233692-pelton-water-wheel"];
+    expect(pelton.engineMethod).toBe(
+      "Source-bounded TypeScript apparatus state; no quantitative turbine model",
+    );
+    expect(pelton.controls.map((control) => control.id)).toEqual([
+      "sourceFlowVisible",
+      "claim1Active",
+    ]);
+    expect(pelton.computeMetrics({ sourceFlowVisible: 1, claim1Active: 1 })).toMatchObject([
+      { label: "Source Water Path", value: "shown" },
+      { label: "Stream Division", value: "central apex d" },
+      { label: "Curved Bottoms", value: "two bottoms c" },
+      { label: "Discharge", value: "flaring sides e" },
+    ]);
+    expect(pelton.computeMetrics({ sourceFlowVisible: 1, claim1Active: 0 })[1]).toMatchObject({
+      label: "Stream Division",
+      value: "claim element removed",
+      progressPct: 0,
+    });
+
+    const publicCopy = JSON.stringify(pelton).toLowerCase();
+    for (const unsupported of [
+      "165",
+      "90%",
+      "88%",
+      "headmeters",
+      "runnerrpm",
+      "shaft power",
+      "jet velocity",
+      "bucket count",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Edison Indicator telemetry qualitative because US 307,031 prints no operating values", () => {
+    const edison = PATENT_PHYSICS_REGISTRY["us-307031-edison-indicator"];
+    expect(edison.engineMethod).toBe(
+      "Source-bounded TypeScript circuit state; no quantitative emission model",
+    );
+    expect(edison.controls.map((control) => control.id)).toEqual(["plateBiasPolarity"]);
+    expect(edison.computeMetrics({ plateBiasPolarity: 1 })).toMatchObject([
+      { label: "Internal Terminal", value: "in vacuous globe" },
+      { label: "External Connection", value: "positive side" },
+      { label: "Illustrated Apparatus", value: "galvanometer" },
+      { label: "Printed Conductors", value: "1 and 2" },
+    ]);
+
+    const publicCopy = JSON.stringify(edison).toLowerCase();
+    for (const unsupported of ["110 v", "microamp", "work function", "richardson", "2250"]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
   });
 
   test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {

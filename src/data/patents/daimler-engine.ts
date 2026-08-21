@@ -2,6 +2,20 @@ import { daimlerMarineEngineArchivalEdition } from "@/data/editions/us-361931-da
 import type { Patent } from "@/types/patent";
 
 /**
+ * Claims are authored once in the archival edition. The catalogue record
+ * reads those exact nodes so the legal text cannot drift between projections.
+ */
+function manualClaimText(number: number): string {
+  const block = daimlerMarineEngineArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Daimler manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
+/**
  * US 361,931 is a marine-engine installation patent. Its pinned six-page
  * facsimile does not describe a motor carriage; the record is deliberately
  * limited to what that primary source presents.
@@ -29,7 +43,7 @@ export const daimlerEnginePatent: Patent = {
   usptoClassification:
     "B63H 23/30 (marine-propulsion power transmission characterized by clutches)",
   originalTextAsset: {
-    url: "/patents/transcripts/us-361931-daimler-engine.txt",
+    url: "/patents/transcripts/us-361931-daimler-engine-reviewed.txt",
     pageCount: 6,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (codex-hotel)",
@@ -125,8 +139,7 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combination, with the propeller and propeller-shaft of a vessel and with part of a friction-coupling on said shaft, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling for effecting the forward motion of the vessel and gearing between the propeller-shaft and the part of the friction-coupling on the engine for effecting the backward motion of the vessel, substantially as described.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 covers the specified vessel propulsion combination: an in-line gas or petroleum motor, a propeller shaft with one clutch member, an engine shaft with the other member for ahead motion, and gearing for astern motion.",
       keyInnovations: [
@@ -140,10 +153,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination, with the propeller-shaft having a longitudinal movement in its bearings and provided with part of a friction-clutch, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling which engages and disengages the part of the friction-coupling by the longitudinal movement of said propeller-shaft, substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
-        "Claim 2 focuses on the longitudinally movable propeller shaft and its use to engage and disengage the two friction-coupling parts.",
+        "Claim 2 covers an in-line gas or petroleum motor and a propeller shaft that slides longitudinally in its bearings. That axial movement engages or disengages the shaft's friction-clutch half with the matching half on the engine shaft, defining the claimed ahead-drive control relationship.",
       keyInnovations: [
         "Longitudinally movable propeller shaft",
         "Engageable friction clutch",
@@ -155,10 +167,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "In combination with a gas or petroleum motor-engine, a propeller-shaft connected to the engine-shaft by a friction-coupling and capable of sliding longitudinally in its bearings, so that the thrust of the propeller when in motion will maintain the frictional contact of the coupling.",
+      originalText: manualClaimText(3),
       plainEnglish:
-        "Claim 3 states that propeller thrust maintains frictional clutch contact after the sliding shaft has engaged it.",
+        "Claim 3 requires the gas or petroleum motor, its friction-coupled propeller shaft, and bearings that allow longitudinal sliding. Its distinct legal result is that propeller thrust, once the coupling is engaged, maintains the frictional contact while the propeller is moving.",
       keyInnovations: [
         "Thrust-maintained coupling contact",
         "Sliding shaft bearings",
@@ -170,10 +181,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "In combination with the frictional coupling connecting the engine-shaft with the sliding propeller-shaft, the friction-disks c e' e² and the levers f' f², connected to the propeller-shaft, constituting mechanism for reversing the motion of the propeller, the pull of the latter when reversed being made to effect the required frictional contact between the disks e' e² and c for this purpose.",
+      originalText: manualClaimText(4),
       plainEnglish:
-        "Claim 4 covers the named reversing disks and levers, with reverse propeller pull maintaining their frictional contact.",
+        "Claim 4 covers the reverse train specifically: disks c, e' and e², plus levers f' and f² connected to the sliding propeller shaft. Those parts reverse propeller rotation, and reverse propeller pull is arranged to create the frictional contact needed between the named disks.",
       keyInnovations: [
         "Reversing disk",
         "Intermediate friction disks",
@@ -185,10 +195,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 5,
       isIndependent: true,
-      originalText:
-        "The combination, with a motor-engine, the propeller-shaft of a vessel, and a friction-coupling connecting the engine and propeller-shaft, of a thrust-bearing, q, for taking the thrust of the propeller, and means for starting the engine, comprising the crank-handle r and sliding pin r², substantially as described.",
+      originalText: manualClaimText(5),
       plainEnglish:
-        "Claim 5 combines a propeller-thrust bearing with the crank handle and sliding pin used to start the motor.",
+        "Claim 5 combines a vessel motor, its friction-coupled propeller shaft, and thrust-bearing q, which receives the propeller's axial load. It also requires starting means comprising crank-handle r and sliding pin r², the temporary engagement that turns the engine during starting.",
       keyInnovations: ["Propeller thrust bearing", "Crank-handle starting", "Sliding starting pin"],
       legalSignificance:
         "Its scope is the expressly named bearing-and-starting combination in the propulsion installation.",
@@ -196,10 +205,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 6,
       isIndependent: true,
-      originalText:
-        "The combination, with the rudder and the longitudinally-movable propeller-shaft, of the vertical shaft o', levers o² o³, chain n, or equivalent screw-spindle k, and devices connecting said spindle with the propeller-shaft for steering the vessel and shifting the propeller-shaft, substantially as described.",
+      originalText: manualClaimText(6),
       plainEnglish:
-        "Claim 6 covers a grouped steering and shaft-shifting control using the listed rudder, shaft, lever, chain, spindle, and connecting devices.",
+        "Claim 6 claims the combined control arrangement for steering and shifting propulsion. It names rudder, vertical shaft o', levers o² and o³, chain n or equivalent screw-spindle k, and connecting devices that let one grouped mechanism turn the rudder while moving the longitudinally sliding propeller shaft.",
       keyInnovations: ["Rudder linkage", "Shared control station", "Propeller-shaft shifting"],
       legalSignificance:
         "The claim is limited to the enumerated combination that both steers and shifts the propeller shaft.",
@@ -207,10 +215,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 7,
       isIndependent: true,
-      originalText:
-        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for effecting the cooling of the cylinder by means of the outer water, substantially as described.",
+      originalText: manualClaimText(7),
       plainEnglish:
-        "Claim 7 covers the cylinder water jacket and fore-and-aft siphon-like pipes that use outside water for cooling.",
+        "Claim 7 covers a motor-cylinder water jacket supplied by fore and aft pipes s' and s². The pipes communicate with the surrounding water and are arranged for siphon-like action, so vessel motion can circulate outside water through the jacket to cool the cylinder.",
       keyInnovations: [
         "Cylinder water jacket",
         "Fore-and-aft cooling pipes",
@@ -222,20 +229,18 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 8,
       isIndependent: true,
-      originalText:
-        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for cooling the cylinder, and a centrifugal pump, u, for effecting the circulation of the water, substantially as described.",
+      originalText: manualClaimText(8),
       plainEnglish:
-        "Claim 8 adds centrifugal-pump circulation to the jacket and siphon-like external-water pipes.",
+        "Claim 8 retains the water jacket and fore-and-aft siphon-like pipes communicating with outside water, then adds centrifugal pump u. The pump is the claimed active circulation element, distinguishing this combination from claim 7's outside-water flow arrangement without that named pump.",
       keyInnovations: ["Cylinder water jacket", "Centrifugal pump", "External-water circulation"],
       legalSignificance: "The claim requires the stated jacket, pipe, and pump combination.",
     },
     {
       number: 9,
       isIndependent: true,
-      originalText:
-        "The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water, a centrifugal pump, u, for effecting the circulation of the water, and the branch pipe v, having a three-way cock for enabling the circulating water to be taken either from the outer water or from the bilge, substantially as described.",
+      originalText: manualClaimText(9),
       plainEnglish:
-        "Claim 9 adds a branched pipe and three-way cock so cooling water may be drawn from outside water or the bilge.",
+        "Claim 9 adds branch pipe v and its three-way cock to the jacket, fore-and-aft pipes, siphon-like outside-water communication, and centrifugal pump u. The cock selects whether circulating cooling water comes from the surrounding water or from the vessel's bilge.",
       keyInnovations: ["Three-way cock", "Bilge-water branch", "Pumped cooling circuit"],
       legalSignificance:
         "Its added legal limitation is the branch and three-way selection feature within the specified cooling system.",
@@ -243,10 +248,9 @@ My invention relates to apparatus for effecting the propulsion of a boat or vess
     {
       number: 10,
       isIndependent: true,
-      originalText:
-        "In a vessel propelled by a gas motor-engine, the combination, with the gas motor-engine, of a screw-propeller whose shaft is capable of sliding longitudinally and is geared to the engine-shaft by a friction-coupling, means for longitudinally shifting the propeller-shaft for varying the speed, stopping, and reversing, a low-pressure gas-reservoir for supplying the gas motor-engine with combustible gas, and one or more high-pressure gas-holders that supply the low-pressure reservoir through reducing cocks or valves, substantially as herein described.",
+      originalText: manualClaimText(10),
       plainEnglish:
-        "Claim 10 joins the sliding, friction-coupled propeller drive to a low-pressure gas reservoir supplied from one or more high-pressure holders through reducing valves.",
+        "Claim 10 joins the complete gas-propelled vessel installation: a longitudinally sliding screw-propeller shaft, friction coupling to the engine shaft, and shifting means for varying speed, stopping, and reversing. It also requires a low-pressure combustible-gas reservoir replenished by high-pressure holders through reducing cocks or valves.",
       keyInnovations: [
         "Sliding reversible propeller shaft",
         "Low-pressure gas reservoir",

@@ -194,22 +194,22 @@ export const fessendenWirelessPatent: Patent = {
     ],
   },
   originalText:
-    "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in Wireless Telegraphy, of which the following is a specification.\n\nThe invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.\n\nIt is a further object of the invention to provide for the production of mechanical movements by the direct interaction of currents induced in the receiving-conductor by electromagnetic waves and constant or varying magnetic fields.",
+    "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented or discovered certain new and useful Improvements in Wireless Telegraphy, of which improvements the following is a specification.\n\nThe invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.\n\nIt is a further object of the invention to provide for the production of mechanical movements by the direct interaction of currents induced in the receiving-conductor by electromagnetic waves and constant or independently-varying magnetic fields.",
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Wireless Telegraphy System",
+      title: "Diagrammatic Apparatus for Wireless Telegraphy",
       caption:
-        "Diagrammatic system with radiating portion 1, inductance 2, alternating-current dynamo 3, and receiving-conductor 10 connected to telephone-receiver 11 and ground.",
+        "Diagrammatic apparatus with radiating portion 1, inductance 2, alternating-current dynamo 3, and receiving-conductor 10 connected to translating device 11 and ground.",
       svgType: "fessenden-wireless",
       callouts: [
         {
           id: "fw-1",
           figureRef: "Fig. 1",
           label: "1",
-          element: "Low-Loss Sending Conductor",
+          element: "Radiating Portion",
           description:
-            "Radiating portion of the sending-conductor connected through the source and inductance.",
+            "Radiating portion 1 of the sending-conductor, connected through inductance 2 to the alternating-current dynamo 3.",
           x: 35,
           y: 25,
         },
@@ -217,9 +217,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-2",
           figureRef: "Fig. 1",
           label: "2",
-          element: "Series Tuning Inductance",
+          element: "Inductance",
           description:
-            "Coils in the conductor used to adjust the self-induction of the sending-conductor.",
+            "Inductance 2 in the wire between radiating portion 1 and generator 3; turns may be varied to adjust self-induction.",
           x: 25,
           y: 55,
         },
@@ -229,7 +229,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "3",
           element: "Alternating-Current Dynamo",
           description:
-            "Alternating-current dynamo serving as the source of voltage for the sending-conductor.",
+            "Alternating-current dynamo 3, with one pole connected to ground and the other connected through inductance 2 to radiating portion 1.",
           x: 18,
           y: 75,
         },
@@ -237,8 +237,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-10",
           figureRef: "Fig. 1",
           label: "10",
-          element: "Receiving Aerial Conductor",
-          description: "Receiving-conductor connected to the receiving instrument and ground.",
+          element: "Receiving-Conductor",
+          description: "Receiving-conductor 10 connected to translating device 11 and to ground.",
           x: 70,
           y: 25,
         },
@@ -246,9 +246,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-11",
           figureRef: "Fig. 1",
           label: "11",
-          element: "Telephone Receiver Earpiece",
+          element: "Translating Device",
           description:
-            "Telephone-receiver whose diaphragm responds to the low-frequency induced currents.",
+            "Translating device 11, such as a telephone, whose diaphragm responds to the low-frequency induced currents.",
           x: 88,
           y: 70,
         },
@@ -256,18 +256,18 @@ export const fessendenWirelessPatent: Patent = {
     },
     {
       figureNumber: "Fig. 2",
-      title: "Modified Receiving Apparatus",
+      title: "Modification of the Receiving Apparatus",
       caption:
-        "Modified receiving apparatus with fine wire 12 between magnet poles 13, a normally open microphonic contact 14, local battery 15, and relay or other translating device 16.",
+        "Modification of the receiving apparatus with fine wire 12 held in tension between the poles of magnet 13, normally open microphonic contact 14, battery 15, and relay or other translating device 16.",
       svgType: "fessenden-wireless",
       callouts: [
         {
           id: "fw-12",
           figureRef: "Fig. 2",
           label: "12",
-          element: "Fine Wire Receiver",
+          element: "Fine Wire",
           description:
-            "Fine wire held in tension between the poles of a magnet and moved by the induced current.",
+            "Fine wire 12 held in tension between the poles of magnet 13; induced current interacting with the magnetic field causes it to vibrate.",
           x: 75,
           y: 60,
         },
@@ -275,9 +275,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-13",
           figureRef: "Fig. 2",
           label: "13",
-          element: "Magnet Poles",
-          description:
-            "Magnet poles between which the fine wire 12 is held in tension and moved by the induced current.",
+          element: "Magnet",
+          description: "Magnet 13, whose field interacts with the current in fine wire 12.",
           x: 75,
           y: 75,
         },
@@ -287,7 +286,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "14",
           element: "Microphonic Contact Point",
           description:
-            "Normally open contact point that the vibrating fine wire makes and breaks to complete the secondary circuit.",
+            "Microphonic contact point 14, adjusted normally out of contact with wire 12 and made and broken by its vibration.",
           x: 75,
           y: 50,
         },
@@ -295,9 +294,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-15",
           figureRef: "Fig. 2",
           label: "15",
-          element: "Local Battery",
+          element: "Battery",
           description:
-            "Local battery included in the secondary circuit completed by vibration of the fine wire and microphonic contact.",
+            "Battery 15 in the secondary circuit completed by vibration of wire 12 against contact 14.",
           x: 60,
           y: 70,
         },
@@ -305,9 +304,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-16",
           figureRef: "Fig. 2",
           label: "16",
-          element: "Telephone",
+          element: "Relay or Other Translating Device",
           description:
-            "Telephone included in the local receiving circuit and producing an audible signal.",
+            "Relay 16, or another translating device, energized when vibration of wire 12 completes the secondary circuit.",
           x: 88,
           y: 70,
         },
@@ -315,9 +314,9 @@ export const fessendenWirelessPatent: Patent = {
     },
     {
       figureNumber: "Fig. 3",
-      title: "Low-Loss Cylindrical Cage Antenna Elevation",
+      title: "Sectional Elevation of One Form of Conductor",
       caption:
-        "Side elevation of low-loss cylindrical cage antenna comprising vertical conductors (4), circular metallic spreader rings (5), insulated supporting mast (7), and base connection (8).",
+        "Sectional elevation of a cylindrical cage conductor comprising parallel wires 4, supporting-rings 5 with hubs or central sockets 6, supporting-rods 7, and ground wire 8.",
       svgType: "fessenden-wireless",
       callouts: [
         {
@@ -326,7 +325,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "4",
           element: "Parallel Wires",
           description:
-            "Wires arranged in the form of a cylinder or cage and connected together at top and bottom.",
+            "Parallel wires 4 arranged in the form of a cylindrical cage and connected together at the top and bottom.",
           x: 40,
           y: 40,
         },
@@ -334,28 +333,49 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-5",
           figureRef: "Fig. 3",
           label: "5",
-          element: "Supporting Rings",
+          element: "Supporting-Rings",
           description:
-            "Metal or other suitable rings supporting the wires through hubs or collars.",
+            "Supporting-rings 5 securing the ends of wires 4 and carrying hubs or central sockets 6.",
           x: 50,
           y: 20,
+        },
+        {
+          id: "fw-6",
+          figureRef: "Fig. 3",
+          label: "6",
+          element: "Hubs or Central Sockets",
+          description:
+            "Hubs or central sockets 6 in the supporting-rings 5 receiving the supporting-rods 7.",
+          x: 50,
+          y: 60,
         },
         {
           id: "fw-7",
           figureRef: "Fig. 3",
           label: "7",
-          element: "Central Mast",
-          description: "Central mast or support carrying the hubs or collars of the cage.",
+          element: "Supporting-Rods",
+          description:
+            "Supporting-rods 7 received by the hubs or central sockets 6 and forming the central support of the cage.",
           x: 50,
           y: 50,
+        },
+        {
+          id: "fw-8",
+          figureRef: "Fig. 3",
+          label: "8",
+          element: "Ground Wire",
+          description:
+            "Ground wire 8 connecting the cage or cylinder to ground; turns may be formed in it to adjust self-induction.",
+          x: 50,
+          y: 82,
         },
       ],
     },
     {
       figureNumber: "Fig. 4",
-      title: "Cylindrical Cage Antenna Transverse Cross-Section",
+      title: "Top Plan View of the Conductor",
       caption:
-        "Horizontal transverse section of cylindrical cage antenna showing circumferential radiating wires (4), support ring (5), and insulated hub collar (6).",
+        "Top plan view of the cylindrical cage conductor showing wires 4, supporting-ring 5, hub or central socket 6, and supporting-rod 7.",
       svgType: "fessenden-wireless",
       callouts: [
         {
@@ -363,7 +383,7 @@ export const fessendenWirelessPatent: Patent = {
           figureRef: "Fig. 4",
           label: "4",
           element: "Wires",
-          description: "The wires shown in transverse section around the cylindrical conductor.",
+          description: "Wires 4 shown in top plan around the cylindrical conductor.",
           x: 50,
           y: 15,
         },
@@ -371,8 +391,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-5-ring",
           figureRef: "Fig. 4",
           label: "5",
-          element: "Ring",
-          description: "The supporting ring shown in transverse section.",
+          element: "Supporting-Ring",
+          description: "Supporting-ring 5 shown in top plan.",
           x: 50,
           y: 50,
         },
@@ -380,8 +400,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-6-hub",
           figureRef: "Fig. 4",
           label: "6",
-          element: "Hub or Collar",
-          description: "The hub or collar mounted on the central supporting mast.",
+          element: "Hub or Central Socket",
+          description: "Hub or central socket 6 mounted at the center of the supporting-rod 7.",
           x: 50,
           y: 50,
         },
@@ -389,9 +409,9 @@ export const fessendenWirelessPatent: Patent = {
     },
     {
       figureNumber: "Fig. 5",
-      title: "Cylinder Radiating Portion Detail",
+      title: "Elevation of a Modification of the Conductor",
       caption:
-        "Detail view illustrating a radiating portion formed by a cylinder 9 having continuous metal walls.",
+        "Elevation of a modified radiating portion formed by cylinder 9 with continuous metal walls; enlargement 17 changes the superficial dimensions.",
       svgType: "fessenden-wireless",
       callouts: [
         {
@@ -399,7 +419,8 @@ export const fessendenWirelessPatent: Patent = {
           figureRef: "Fig. 5",
           label: "9",
           element: "Cylinder",
-          description: "Alternative radiating portion formed with continuous metal walls.",
+          description:
+            "Cylinder 9 forming the modified radiating portion with continuous metal walls.",
           x: 50,
           y: 50,
         },
@@ -407,9 +428,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-17-sleeve",
           figureRef: "Fig. 5",
           label: "17",
-          element: "Enlarged Radiating Surface",
+          element: "Enlargement",
           description:
-            "Enlargement 17 changes the local superficial area and therefore introduces an additional periodicity.",
+            "Enlargement 17 changes the local superficial dimensions and capacity, producing an additional periodicity.",
           x: 50,
           y: 30,
         },

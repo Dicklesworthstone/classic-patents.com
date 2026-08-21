@@ -255,72 +255,85 @@ export const edisonIndicatorPatent: Patent = {
       isIndependent: true,
       originalText: edisonIndicatorClaimText(3),
       plainEnglish:
-        "An incandescent lamp circuit where one terminal is located inside the vacuum space of the bulb and the other terminal connects externally to one side of the filament circuit.",
+        "Claim 3 covers the combination of an incandescent electric lamp and a circuit whose one terminal is located in the lamp's vacuous globe while its other terminal remains outside the lamp and connects to one side of the lamp circuit. It claims this two-location circuit arrangement itself, without requiring a named indicator or regulator.",
       keyInnovations: [
-        "Internal vacuum terminal electrode",
-        "External unilateral shunt connection",
+        "Internal vacuum circuit terminal",
+        "External lamp-circuit-side connection",
+        "Two-location circuit arrangement",
       ],
       legalSignificance:
-        "Defines the fundamental structural geometry of a vacuum diode electrode configuration.",
+        "The claim isolates the structural circuit geometry: one terminal is inside the lamp globe's vacuous space and the other is outside the lamp at one side of the lamp circuit.",
     },
     {
       number: 4,
       isIndependent: true,
       originalText: edisonIndicatorClaimText(4),
       plainEnglish:
-        "An incandescent lamp circuit where one terminal is inside the vacuum space and the other connects externally to the positive leg of the lamp supply circuit.",
+        "Claim 4 narrows the circuit arrangement to an incandescent lamp whose first terminal lies in the vacuous globe and whose second terminal is outside the lamp and connected specifically to the positive side of the lamp circuit. The positive-side requirement distinguishes this claim from the broader one-side connection in Claim 3.",
       keyInnovations: [
-        "Positive-bias vacuum circuit connection",
-        "Unidirectional thermionic electron collection",
+        "Internal vacuum circuit terminal",
+        "Positive-side external connection",
+        "Lamp-circuit polarity selection",
       ],
       legalSignificance:
-        "Specifically claims the positive anode bias essential for collecting negative thermionic electrons across the vacuum gap.",
+        "The added positive-side limitation identifies the external connection that Edison specifies for the lamp's vacuum shunt, while retaining the internal terminal and incandescent-lamp combination.",
     },
     {
       number: 5,
       isIndependent: true,
       originalText: edisonIndicatorClaimText(5),
       plainEnglish:
-        "The combination of the vacuum-spanning circuit connected to one side of the lamp circuit with electrically operated or controlled apparatus placed in series with the vacuum circuit.",
+        "Claim 5 adds electrically controlled or operated apparatus to the lamp-and-circuit arrangement: an incandescent lamp, a circuit terminal in the vacuous globe, an external terminal connected to one side of the lamp circuit, and the controlled apparatus located in that same circuit. The apparatus is a claimed circuit element, not merely an optional observer.",
       keyInnovations: [
-        "Series-connected vacuum control apparatus",
-        "Direct vacuum-current actuation",
+        "Internal vacuum circuit terminal",
+        "External lamp-circuit-side connection",
+        "Electrically controlled apparatus in circuit",
       ],
       legalSignificance:
-        "Covers connecting galvanometers, relays, or actuators directly in series with the thermionic vacuum conduction path.",
+        "The claim protects the vacuum-circuit arrangement when electrically controlled or operated apparatus is included in that circuit, extending the structure toward indication or automatic control.",
     },
     {
       number: 6,
       isIndependent: true,
       originalText: edisonIndicatorClaimText(6),
       plainEnglish:
-        "An incandescent lamp having an independent piece of conducting material placed within the vacuum space, with a connecting conductor passing through and hermetically sealed into the glass bulb.",
-      keyInnovations: ["Third sealed lead-in wire", "Isolated internal vacuum conductor"],
+        "Claim 6 is a lamp construction claim: an incandescent electric lamp contains a piece of conducting material in the vacuous space within its globe, and a conductor connected to that material passes through the lamp glass and is sealed there. It does not require the conductor to be between the filament limbs or connected to a specified polarity.",
+      keyInnovations: [
+        "Conducting material in vacuous globe",
+        "Glass-sealed conductor feedthrough",
+        "Isolated internal conductor connection",
+      ],
       legalSignificance:
-        "The physical structural claim covering three-lead vacuum tubes with isolated internal cold anodes.",
+        "The claim fixes the physical feedthrough arrangement for bringing an internal conducting piece's connection through and sealing it in the lamp glass.",
     },
     {
       number: 7,
       isIndependent: true,
       originalText: edisonIndicatorClaimText(7),
       plainEnglish:
-        "In a parallel multiple-arc distribution system, connecting an indicator lamp with an internal vacuum circuit and electrical apparatus across the mains in parallel with the lighting load.",
-      keyInnovations: ["Multiple-arc parallel integration", "Stationary line-voltage sensor"],
+        "Claim 7 places the invention in an electrical-distribution system: incandescent electric lamps are connected in multiple arc, a similar lamp is similarly connected, and its circuit has one terminal in the lamp globe's vacuous space, the other connected to one side of the lamp circuit, with electrically operated apparatus in that circuit. Each listed relationship matters.",
+      keyInnovations: [
+        "Multiple-arc incandescent lamp branches",
+        "Similar indicator lamp connection",
+        "Internal vacuum circuit terminal",
+        "Electrically operated apparatus circuit",
+      ],
       legalSignificance:
-        "Protects the system architecture of parallel grid monitoring using thermionic indicator cells.",
+        "The claim ties the vacuum-circuit indicator to a multiple-arc distribution system and requires the similarly connected lamp plus electrically operated apparatus in the associated circuit.",
     },
     {
       number: 8,
       isIndependent: true,
       originalText: edisonIndicatorClaimText(8),
       plainEnglish:
-        "An incandescent lamp where the internal conducting material is specifically positioned between the two limbs of the incandescent carbon filament loop with an external lead.",
+        "Claim 8 specifies the conducting-piece placement: an incandescent lamp has a piece of conducting material positioned between the sides of its incandescent loop, and a conductor leads from that material to the lamp exterior. Unlike Claim 6, this claim supplies the between-the-loop location but does not require a sealed glass passage in its wording.",
       keyInnovations: [
-        "Inter-filament electrode geometry",
-        "Symmetrical space-charge interception",
+        "Conducting material between loop sides",
+        "Incandescent-loop electrode placement",
+        "External conductor lead",
       ],
       legalSignificance:
-        "Covers the physical placement of the collector anode between the horseshoe filament legs for maximum electron capture.",
+        "The claim protects the between-the-sides placement of the conducting material together with its exterior lead, without adding Claim 6's express glass-sealing limitation.",
     },
   ],
   drawings: [

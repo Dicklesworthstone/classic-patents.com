@@ -38,6 +38,12 @@ emergency deflector, materials, dimensions, pressure, speed, and several
 historical and legal assertions not found in this three-sheet facsimile. Those
 claims are not used in the public edition.
 
+The visitor visual is likewise source-bounded: it shows the wheel, a
+representative bucket, the pipe/nozzle and distributing-box arrangement, and
+the two described discharge paths. It does not show a later turbine casing,
+bearings, tailrace, pressure gauge, runner-speed control, or hydraulic
+performance telemetry, because none is specified by this grant.
+
 The source has one claim. It protects a specified combination: curved bottoms
 `c` meeting at apex `d`, continuing to inclined discharge sides `e`, together
 with sloped bucket front `b`, so the nozzle stream enters without striking the

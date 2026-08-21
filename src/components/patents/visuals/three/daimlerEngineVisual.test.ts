@@ -2,11 +2,14 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
+import {
+  buildDaimlerMarineEngineModel,
+  updateDaimlerMarineEngineKinematics,
+} from "./daimlerEngineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kinematics boundary", () => {
+describe("US 361,931 Gottlieb Daimler Boat Propulsion Engine visual & kinematics boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "DaimlerEngine3D.tsx"),
@@ -20,8 +23,8 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildDaimlerEngineModel");
-    expect(modelSource).toContain("updateDaimlerEngineKinematics");
+    expect(modelSource).toContain("buildDaimlerMarineEngineModel");
+    expect(modelSource).toContain("updateDaimlerMarineEngineKinematics");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -40,21 +43,18 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     }
   });
 
-  test("exposes authentic camera presets and UI overlay for four-stroke hot-tube observation", () => {
+  test("exposes authentic camera presets and UI overlay for marine engine observation", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "DaimlerEngine3D.tsx"),
       "utf8",
     );
 
-    for (const preset of ["iso", "cylinder", "crankcase", "hottube", "flywheel", "top"]) {
+    for (const preset of ["iso", "motor", "coupling", "reverse", "cooling", "reservoirs"]) {
       expect(threeSource).toContain(preset);
     }
-
-    expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Daimler High-Speed Petrol Engine 3D");
   });
 
-  test("computes genuine high-speed four-stroke BMEP and brake horsepower in SI units", () => {
+  test("computes genuine marine engine shaft and hot-tube mechanics in SI units", () => {
     const result = FrankenSimEngine.stepDaimlerEngine({
       engineRpm: 750,
       hotTubeTempC: 850,
@@ -67,47 +67,28 @@ describe("US 361,931 Gottlieb Daimler High-Speed Four-Stroke Engine visual & kin
     expect(result.pistonStrokePx).toBe(30);
   });
 
-  test("builds and articulates procedural enclosed flywheels, hot-tube igniter, and valve pushrod correctly", () => {
-    const model = buildDaimlerEngineModel();
+  test("builds and articulates procedural in-line motor, reversing disks, and cooling jacket correctly", () => {
+    const model = buildDaimlerMarineEngineModel();
 
     expect(model.rootGroup.children.length).toBeGreaterThan(4);
-    expect(model.crankshaftGroup).toBeDefined();
-    expect(model.flywheelGroup).toBeDefined();
-    expect(model.pistonGroup).toBeDefined();
-    expect(model.conRodGroup).toBeDefined();
-    expect(model.hotTubeMesh).toBeDefined();
-    expect(model.materials.hotTubeMat).toBeDefined();
+    expect(model.motorGroup).toBeDefined();
+    expect(model.propellerShaftGroup).toBeDefined();
+    expect(model.couplingGroup).toBeDefined();
+    expect(model.reverseGroup).toBeDefined();
+    expect(model.thrustGroup).toBeDefined();
+    expect(model.coolingGroup).toBeDefined();
+    expect(model.reservoirGroup).toBeDefined();
 
-    // Test 4-stroke cycle kinematics
-    // Power stroke (stroke 2)
-    const daimler = FrankenSimEngine.stepDaimlerEngine({
-      engineRpm: 750,
-      hotTubeTempC: 850,
-      differentialSlipAngleDeg: 15,
-    });
-    const power = updateDaimlerEngineKinematics(
-      model,
-      Math.PI * 0.1,
-      Math.PI * 2.1,
-      850,
-      daimler.hotTubeGlow,
-      true,
-    );
-    expect(power.strokeIndex).toBe(2);
-    expect(model.combustionFlame.visible).toBe(true);
-    expect(model.materials.castIron.opacity).toBe(0.35);
+    // Ahead engagement
+    updateDaimlerMarineEngineKinematics(model, 1.0, 1.0);
+    expect(model.propellerShaftGroup.position.x).toBeCloseTo(0.35, 2);
+    expect(model.thrustGroup.scale.x).toBeCloseTo(1.0, 2);
 
-    // Exhaust stroke (stroke 3)
-    const exhaust = updateDaimlerEngineKinematics(
-      model,
-      Math.PI * 1.5,
-      Math.PI * 3.5,
-      850,
-      daimler.hotTubeGlow,
-      false,
-    );
-    expect(exhaust.strokeIndex).toBe(3);
-    expect(model.exhaustPushrod.position.y).toBeGreaterThan(0.2);
+    // Astern engagement
+    updateDaimlerMarineEngineKinematics(model, -1.0, 0.0);
+    expect(model.propellerShaftGroup.position.x).toBeCloseTo(-0.35, 2);
+    expect(model.reverseGroup.scale.y).toBeCloseTo(1.0, 2);
+    expect(model.coolingGroup.scale.x).toBeCloseTo(0.82, 2);
 
     model.dispose();
   });

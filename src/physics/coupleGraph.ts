@@ -6,7 +6,6 @@
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
   stepBellPhotophone,
-  stepDaimlerEngine,
   stepEdisonBulb,
   stepGoodyearRubber,
   stepGrammeDynamo,
@@ -15,8 +14,6 @@ import {
   stepMorseTelegraph,
   stepNoyceIC,
   stepOttoEngine,
-  stepPeltonWheel,
-  stepSpencerMicrowave,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
@@ -109,16 +106,12 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-2495429-spencer-microwave") {
-    const mag = stepSpencerMicrowave(
-      (params.anodeVoltage ?? 2200) / 1000,
-      params.magneticFieldGauss ?? 1450,
-      params.rfWatts ?? 800,
-    );
+    const energyPathActive = (params.rfPowerSetting ?? params.rfWatts ?? 1) > 0;
     return [
       {
-        from: "B field",
-        to: "Hull oscillation",
-        gain: mag.isOscillating ? 1 : 0,
+        from: "oscillators 10 and 11",
+        to: "common wave guide 23 and conveyor region 28",
+        gain: energyPathActive ? 1 : 0,
         unit: "on/off",
         crate: "fs-couple",
         source: "ts-fallback",
@@ -126,20 +119,9 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-233692-pelton-water-wheel") {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters ?? 450,
-      runnerRpm: params.runnerRpm ?? 600,
-    });
-    return [
-      {
-        from: "head",
-        to: "jet velocity",
-        gain: Number((pelton.jetVelocityMps / Math.max(1, params.headMeters ?? 450)).toFixed(4)),
-        unit: "m/s / m",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-    ];
+    // The source describes a geometric water path, not a numerical
+    // head-to-velocity transfer gain.
+    return [];
   }
   if (patentId === "us-2708656-fermi-reactor") {
     const k = fermiKeff(params.rodWithdrawalPct ?? 83.5, params.moderatorPurityPct ?? 99.5);
@@ -304,17 +286,9 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-361931-daimler-engine") {
-    const daimler = stepDaimlerEngine({ engineRpm: params.engineRpm ?? 750 });
-    return [
-      {
-        from: "hot-tube rpm",
-        to: "brake hp",
-        gain: Number((daimler.brakeHorsepower / Math.max(1, params.engineRpm ?? 750)).toFixed(5)),
-        unit: "hp / rpm",
-        crate: "fs-couple",
-        source: "ts-fallback",
-      },
-    ];
+    // The source states a mechanical connection and thrust-maintained contact,
+    // not a numerical rpm-to-power coupling gain.
+    return [];
   }
   if (patentId === "us-3633-goodyear-vulcanization" || patentId === "us-3633-goodyear-rubber") {
     const gum = stepGoodyearRubber(params.vulcanizationTempC ?? 145, params.sulfurPct ?? 8);

@@ -3936,8 +3936,73 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 13. Percy Spencer Microwave Oven (US 2,495,429)
+  // 13. Percy Spencer food-treatment apparatus (US 2,495,429)
   "us-2495429-spencer-microwave": [
+    {
+      id: "spencer-source-wavelength-region",
+      patentId: "us-2495429-spencer-microwave",
+      title: "Source-Stated Microwave Wavelength Region",
+      category: "Applied Electromagnetics",
+      rawLatex: "\\lambda \\lesssim 10\\,\\mathrm{cm}, \\qquad \\lambda = \\frac{c}{f}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\lambda} \\lesssim 10\\,\\mathrm{cm}, \\qquad \\textcolor{#2563eb}{\\lambda} = \\frac{\\textcolor{#059669}{c}}{\\textcolor{#d97706}{f}}",
+      plainEnglishSentence: [
+        { text: "Spencer specifies " },
+        { text: "wavelengths in the microwave region", variableId: "wavelength" },
+        {
+          text: ", giving wavelengths of about ten centimetres or less as the example. The usual wave relation connects that wavelength to ",
+        },
+        { text: "propagation speed", variableId: "wave_speed" },
+        { text: " and " },
+        { text: "frequency", variableId: "frequency" },
+        {
+          text: ", but the grant does not assign one exact operating frequency to the illustrated apparatus.",
+        },
+      ],
+      variables: [
+        {
+          id: "wavelength",
+          symbol: "\\lambda",
+          name: "Microwave-region wavelength",
+          color: "sapphire",
+          role: "The source's example is a wavelength of the order of ten centimetres or less.",
+          unit: "centimetres",
+          dimension: "[L]",
+          explanation:
+            "This preserves Spencer's printed wavelength boundary without silently converting it into a fixed modern appliance frequency.",
+        },
+        {
+          id: "wave_speed",
+          symbol: "c",
+          name: "Electromagnetic-wave propagation speed",
+          color: "emerald",
+          role: "The propagation speed in the standard wavelength-frequency relation.",
+          unit: "metres per second",
+          dimension: "[L T^-1]",
+          explanation:
+            "The relation is a modern engineering aid; it does not add an unstated voltage, magnetic field, power, or cavity design to the grant.",
+        },
+        {
+          id: "frequency",
+          symbol: "f",
+          name: "Electromagnetic frequency",
+          color: "amber",
+          role: "The reciprocal-wave variable corresponding to wavelength.",
+          unit: "hertz",
+          dimension: "[T^-1]",
+          explanation:
+            "Because the patent states a wavelength region rather than one exact operating value, this card intentionally provides no live frequency number.",
+        },
+      ],
+      pedagogicalNote:
+        "The legal teaching is the generated-and-guided microwave-region treatment path. This card refuses the later 2.45-GHz appliance, dielectric-loss, turntable, Hull-cutoff, and commercial-magnetron parameters that the grant does not print.",
+      claimRef: 1,
+      historicalSignificance:
+        "Claim 1 covers generating microwave-region energy, concentrating and guiding it within a restricted region, and exposing food there long enough to cook it to a predetermined degree.",
+    },
+  ],
+
+  "_legacy-unpublished-us-2495429-spencer-microwave": [
     {
       id: "spencer-dielectric-microwave-heating",
       patentId: "us-2495429-spencer-microwave",
@@ -5811,6 +5876,80 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
   // 20. Lester Pelton Split-Bucket Impulse Water Wheel (US 233,692)
   "us-233692-pelton-water-wheel": [
+    {
+      id: "pelton-source-bucket-path",
+      patentId: "us-233692-pelton-water-wheel",
+      title: "Claimed Divided-Bucket Water Path",
+      category: "Source-Bounded Hydraulic Apparatus",
+      rawLatex:
+        "\\text{stream} \\rightarrow b \\rightarrow d \\rightarrow c_{\\mathrm{left/right}} \\rightarrow e_{\\mathrm{left/right}}",
+      colorizedLatex:
+        "\\textcolor{#2563eb}{\\text{stream}} \\rightarrow \\textcolor{#d97706}{b} \\rightarrow \\textcolor{#dc2626}{d} \\rightarrow \\textcolor{#059669}{c_{\\mathrm{left/right}}} \\rightarrow \\textcolor{#7c3aed}{e_{\\mathrm{left/right}}}",
+      plainEnglishSentence: [
+        { text: "The source-described stream passes the " },
+        { text: "sloping bucket-front b", variableId: "front_b" },
+        { text: ", divides at " },
+        { text: "central apex d", variableId: "apex_d" },
+        { text: ", follows the two " },
+        { text: "curved bottoms c", variableId: "bottoms_c" },
+        { text: ", and leaves through the flaring " },
+        { text: "discharge sides e", variableId: "sides_e" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "front_b",
+          symbol: "b",
+          name: "Sloping Bucket Front",
+          color: "amber",
+          role: "Lets the entering stream pass without striking the bucket face before reaching the divided interior.",
+          unit: "Source label",
+          dimension: "not a measured telemetry value",
+          explanation:
+            "The sole printed claim expressly includes the sloping front as part of the protected bucket combination.",
+        },
+        {
+          id: "apex_d",
+          symbol: "d",
+          name: "Central Dividing Apex",
+          color: "coral",
+          role: "Divides the incoming stream between the bucket's two parts.",
+          unit: "Source label",
+          dimension: "not a measured telemetry value",
+          explanation:
+            "The grant identifies the apex by letter d; it supplies no apex radius, included angle, or efficiency value.",
+        },
+        {
+          id: "bottoms_c",
+          symbol: "c",
+          name: "Two Curved Bottoms",
+          color: "emerald",
+          role: "Carry the divided portions of the stream through the two-part bucket.",
+          unit: "Source label",
+          dimension: "not a measured telemetry value",
+          explanation:
+            "The claim requires two curved bottoms meeting at the central dividing apex.",
+        },
+        {
+          id: "sides_e",
+          symbol: "e",
+          name: "Flaring Discharge Sides",
+          color: "amethyst",
+          role: "Lead the divided water outward for side discharge.",
+          unit: "Source label",
+          dimension: "not a measured telemetry value",
+          explanation:
+            "The source states the discharge relationship qualitatively and prints no numerical turning angle or flow measurement.",
+        },
+      ],
+      pedagogicalNote:
+        "This is an authored source-path diagram, not a performance equation. US 233,692 prints no elevation drop, flow rate, wheel speed, cup quantity, discharge angle, efficiency, force, or output wattage.",
+      claimRef: 1,
+      historicalSignificance:
+        "The card keeps the named geometry of the sole claim visible without importing later Pelton-turbine operating data into the 1880 grant.",
+    },
+  ],
+  "_legacy-unpublished-us-233692-pelton-water-wheel": [
     {
       id: "pelton-hydraulic-efficiency-optimal-speed",
       patentId: "us-233692-pelton-water-wheel",
@@ -14011,6 +14150,56 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 49. Gottlieb Daimler Marine Engine (US 361,931)
   "us-361931-daimler-engine": [
     {
+      id: "daimler-source-thrust-maintained-coupling",
+      patentId: "us-361931-daimler-engine",
+      title: "Claim 3: Propeller Thrust Maintains Coupling Contact",
+      category: "Marine Propulsion Mechanism",
+      rawLatex: "F_{\\text{contact}} \\leftarrow F_{\\text{propeller thrust}}",
+      colorizedLatex:
+        "\\textcolor{#059669}{F_{\\text{contact}}} \\leftarrow \\textcolor{#2563eb}{F_{\\text{propeller thrust}}}",
+      plainEnglishSentence: [
+        { text: "With the sliding propeller shaft placed in ahead engagement, " },
+        { text: "propeller thrust", variableId: "propeller_thrust" },
+        { text: " supplies the axial action that maintains " },
+        { text: "frictional coupling contact", variableId: "contact_force" },
+        {
+          text: ". The patent states this mechanical relationship but gives no force, torque, speed, power, cone angle, or efficiency value.",
+        },
+      ],
+      variables: [
+        {
+          id: "contact_force",
+          symbol: "F_{\\text{contact}}",
+          name: "Coupling Contact Action",
+          color: "emerald",
+          role: "The frictional contact maintained between the engine and longitudinally sliding propeller-shaft coupling members in ahead motion.",
+          unit: "source-stated qualitative relation",
+          dimension: "[M L T^-2]",
+          explanation:
+            "Claim 3 states that propeller thrust maintains the coupling's frictional contact; the grant does not quantify that contact force.",
+        },
+        {
+          id: "propeller_thrust",
+          symbol: "F_{\\text{propeller thrust}}",
+          name: "Propeller Thrust",
+          color: "sapphire",
+          role: "The axial action of the moving propeller on the longitudinally movable shaft.",
+          unit: "source-stated qualitative relation",
+          dimension: "[M L T^-2]",
+          explanation:
+            "The source uses the propeller's thrust as the self-maintaining action after the ahead coupling has been engaged, without printing a magnitude.",
+        },
+      ],
+      pedagogicalNote:
+        "This is a source-bounded force-path diagram, not a measured performance model. It supplies no later engine-specific speed, ignition timing, displacement, brake-power, clutch-material, or vessel-dimension claim that US 361,931 does not print.",
+      claimRef: 3,
+      historicalSignificance:
+        "The claimed installation couples an in-line gas or petroleum motor to a vessel propeller shaft and uses the propeller's own axial thrust to maintain ahead-drive frictional contact.",
+    },
+  ],
+
+  "_legacy-unpublished-us-361931-daimler-engine": [
+    {
       id: "daimler-hot-tube-compression-ignition",
       patentId: "us-361931-daimler-engine",
       title: "Hot-Tube Auto-Ignition Timing & High-Speed Brake Power",
@@ -19152,6 +19341,70 @@ ALL_COLORIZED_EQUATIONS["gb-1420-cort-puddling-rolling"] = [
 ];
 
 ALL_COLORIZED_EQUATIONS["us-307031-edison-indicator"] = [
+  {
+    id: "edison-indicator-source-circuit-path",
+    patentId: "us-307031-edison-indicator",
+    title: "Claim 4: Internal Terminal to Positive-Side Circuit Path",
+    category: "Source-Bounded Circuit Topology",
+    rawLatex:
+      "\\text{terminal in vacuous globe} \\longrightarrow \\text{external apparatus} \\longrightarrow \\text{positive side of lamp circuit}",
+    colorizedLatex:
+      "\\textcolor{#06b6d4}{\\text{terminal in vacuous globe}} \\longrightarrow \\textcolor{#9333ea}{\\text{external apparatus}} \\longrightarrow \\textcolor{#059669}{\\text{positive side of lamp circuit}}",
+    plainEnglishSentence: [
+      { text: "The claimed circuit places one " },
+      { text: "terminal inside the lamp's vacuous globe", variableId: "internal_terminal" },
+      { text: ", routes the circuit through " },
+      { text: "external indicating or controlled apparatus", variableId: "external_apparatus" },
+      { text: ", and connects the other terminal to the " },
+      { text: "positive side of the lamp circuit", variableId: "positive_side" },
+      {
+        text: ". The grant does not state a line voltage, vacuum pressure, filament temperature, current, work function, or sensitivity percentage.",
+      },
+    ],
+    variables: [
+      {
+        id: "internal_terminal",
+        symbol: "T_{\\mathrm{inside}}",
+        name: "Internal Circuit Terminal",
+        color: "cyan",
+        role: "One circuit terminal placed in the vacuous space within the incandescent lamp globe.",
+        unit: "source circuit node",
+        dimension: "[1]",
+        explanation:
+          "This is the internal terminal required by the printed claim, not a numerical thermionic-emission parameter.",
+      },
+      {
+        id: "external_apparatus",
+        symbol: "A_{\\mathrm{external}}",
+        name: "External Electrical Apparatus",
+        color: "amethyst",
+        role: "The electrically operated or controlled apparatus included in the circuit in the applicable claims.",
+        unit: "source circuit element",
+        dimension: "[1]",
+        explanation:
+          "The specification illustrates a galvanometer and regulator relationship, while the claims use broader apparatus language.",
+      },
+      {
+        id: "positive_side",
+        symbol: "T_{+}",
+        name: "Positive-Side Connection",
+        color: "emerald",
+        role: "The external terminal connection to the positive side of the incandescent-lamp circuit required by Claim 4.",
+        unit: "source circuit node",
+        dimension: "[1]",
+        explanation:
+          "The claim states circuit polarity but supplies no numerical mains voltage or electrode potential.",
+      },
+    ],
+    pedagogicalNote:
+      "This card decodes the patented circuit topology. It supplies no later emission-law constants, filament-material assignment, fixed temperature, fixed voltage, current-density value, or diode-performance claim that the facsimile does not print.",
+    claimRef: 4,
+    historicalSignificance:
+      "The grant claims an incandescent lamp with a circuit terminal inside its evacuated globe and an external circuit connection that can operate or control apparatus.",
+  },
+];
+
+ALL_COLORIZED_EQUATIONS["_legacy-unpublished-us-307031-edison-indicator"] = [
   {
     id: "edison-indicator-emission",
     patentId: "us-307031-edison-indicator",

@@ -137,7 +137,7 @@ export function EdisonIndicatorSim() {
               y="32"
               className="text-[11px] font-mono font-bold fill-red-600 dark:fill-red-400"
             >
-              Main Conductor 1 (+ {mainsVoltage} V)
+              Main Conductor 1
             </text>
 
             {/* Negative Main (-) (2) */}
@@ -147,7 +147,7 @@ export function EdisonIndicatorSim() {
               y="430"
               className="text-[11px] font-mono font-bold fill-blue-600 dark:fill-blue-400"
             >
-              Main Conductor 2 (0 V Return)
+              Main Conductor 2
             </text>
           </g>
 

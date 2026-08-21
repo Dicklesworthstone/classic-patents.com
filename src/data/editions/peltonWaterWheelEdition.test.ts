@@ -10,6 +10,7 @@ import {
 import type { CuratedSpecificationEdition } from "@/types/patent";
 import {
   peltonWaterWheelArchivalEdition,
+  peltonWaterWheelClaimText,
   peltonWaterWheelParallelReadings,
 } from "./peltonWaterWheelEdition";
 
@@ -41,6 +42,7 @@ describe("US 233,692 manual source edition", () => {
     );
     expect(peltonWaterWheelPatent.claims.map((claim) => claim.number)).toEqual([1]);
     expect(peltonWaterWheelPatent.claims[0]?.isIndependent).toBe(true);
+    expect(peltonWaterWheelPatent.claims[0]?.originalText).toBe(peltonWaterWheelClaimText(1));
   });
 
   test("keeps all authored source blocks in its review ledger", () => {
@@ -91,6 +93,43 @@ describe("US 233,692 manual source edition", () => {
       ).toBe(true);
     }
     expect(references.every((reference) => !reference.figurePreviews)).toBe(true);
+  });
+
+  test("keeps the drawing-sheet formal matter in the candidate edition", () => {
+    const sheet = peltonWaterWheelArchivalEdition.blocks.find(
+      (block) => block.kind === "figure-sheet",
+    );
+    expect(sheet?.kind).toBe("figure-sheet");
+    const sheetText =
+      sheet?.kind === "figure-sheet" ? sheet.description.map((inline) => inline.text).join("") : "";
+    for (const printedLine of [
+      "No Model.",
+      "L. A. Pelton.",
+      "Water Wheel.",
+      "No. 233,692.",
+      "Patented Oct. 26, 1880.",
+      "Witnesses: Frank A. Brooks. Geo. H. Strong.",
+      "Inventor: Lester A. Pelton.",
+      "N. Peters, Photo-Lithographer, Washington, D. C.",
+    ]) {
+      expect(sheetText).toContain(printedLine);
+    }
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt`,
+      "utf8",
+    );
+    const normalizedLedger = normalized(ledger);
+    for (const printedLine of [
+      "No Model.",
+      "Water Wheel.",
+      "No. 233,692. Patented Oct. 26, 1880.",
+      "Witnesses: Frank A. Brooks.",
+      "Geo. H. Strong.",
+      "Inventor: Lester A. Pelton.",
+      "N. Peters, Photo-Lithographer, Washington, D. C.",
+    ]) {
+      expect(normalizedLedger).toContain(normalized(printedLine));
+    }
   });
 
   test("removes invented numeric turbine claims and the fabricated second claim", () => {

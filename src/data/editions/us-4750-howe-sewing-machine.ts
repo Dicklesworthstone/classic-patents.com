@@ -193,7 +193,18 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         },
         {
           kind: "text",
-          text: " carrying a bobbin filled with silk or thread is then made to pass entirely through this open space between the needle and the thread which it carries, and when the shuttle is returned, which is done by means of a picker-staff or shuttle-driver, the thread which was carried in by the needle is surrounded by that received from the shuttle, and as the needle is drawn out it forces that which was received from the shuttle into the body of the cloth, and as this operation is repeated a seam is formed which has on each side of the cloth the same appearance as that given by stitching, with this peculiarity, that the thread shown on one side of the cloth is exclusively that which was given out by the needle, and the thread seen on the other side is exclusively that which was given out by shuttle. It will therefore be seen that a stitch is made at every back-and-forth movement of the shuttle.",
+          text: " carrying a bobbin filled with silk or thread is then made to pass entirely through this open space between the needle and the thread which it carries, and when the shuttle is returned, which is done by means of a ",
+        },
+        {
+          kind: "term",
+          text: "picker-staff",
+          definition:
+            "A reciprocating shuttle-driver or pusher used to return the shuttle through the needle-thread loop; it is a machine part, not a hand-operated staff.",
+          label: "Period mechanism term",
+        },
+        {
+          kind: "text",
+          text: " or shuttle-driver, the thread which was carried in by the needle is surrounded by that received from the shuttle, and as the needle is drawn out it forces that which was received from the shuttle into the body of the cloth, and as this operation is repeated a seam is formed which has on each side of the cloth the same appearance as that given by stitching, with this peculiarity, that the thread shown on one side of the cloth is exclusively that which was given out by the needle, and the thread seen on the other side is exclusively that which was given out by shuttle. It will therefore be seen that a stitch is made at every back-and-forth movement of the shuttle.",
         },
       ],
     },
@@ -258,7 +269,18 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 2", [2]),
         {
           kind: "text",
-          text: '. The thread from the bobbin F passes round a small friction-roller, b, or round a smooth groove in the situation of said roller, then up through the eye of the needle at a, which eye is situated near to the needle-point. The cloth is stuck on the points d d, that project from the metallic plate H, which I will call the "baster-plate." This plate is shown most distinctly in the top view, ',
+          text: '. The thread from the bobbin F passes round a small friction-roller, b, or round a smooth groove in the situation of said roller, then up through the eye of the needle at a, which eye is situated near to the needle-point. The cloth is stuck on the points d d, that project from the metallic plate H, which I will call the "',
+        },
+        {
+          kind: "term",
+          text: "baster-plate",
+          definition:
+            "Howe's perforated metal cloth-supporting plate, fitted with points to hold the layers and holes that engage a pinion as a rack.",
+          label: "Period sewing term",
+        },
+        {
+          kind: "text",
+          text: '". This plate is shown most distinctly in the top view, ',
         },
         figure("Fig. 3", [3]),
         { kind: "text", text: "." },
@@ -290,8 +312,16 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "I in the respective figures is the shuttle box or trough, within which the shuttle is moved back and forth by means of the picker-staves or shuttle-drivers J J. In ",
+          text: "I in the respective figures is the shuttle box or trough, within which the shuttle is moved back and forth by means of the ",
         },
+        {
+          kind: "term",
+          text: "picker-staves",
+          definition:
+            "The paired reciprocating shuttle-drivers that push the shuttle back and forth through the needle-thread loop during stitch formation.",
+          label: "Period mechanism term",
+        },
+        { kind: "text", text: " or shuttle-drivers J J. In " },
         figure("Fig. 5", [5]),
         {
           kind: "text",
@@ -384,7 +414,18 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 1", [1]),
         {
           kind: "text",
-          text: ", at the upper end of the needle-arm, and is returned through the notch r. It then passes down in front of said arm, then around the roller b, and through the needle-eye. To regulate the giving out of the thread from the bobbin, friction is made on it by the semicircular clasp s, that is made to press on it by a spring, t, regulated by a tempering-screw.",
+          text: ", at the upper end of the needle-arm, and is returned through the notch r. It then passes down in front of said arm, then around the roller b, and through the needle-eye. To regulate the giving out of the thread from the bobbin, friction is made on it by the semicircular clasp s, that is made to press on it by a spring, t, regulated by a ",
+        },
+        {
+          kind: "term",
+          text: "tempering-screw",
+          definition:
+            "An adjusting screw used to set the pressure of the spring clasp that meters thread delivery from the needle bobbin.",
+          label: "Period adjustment term",
+        },
+        {
+          kind: "text",
+          text: ".",
         },
       ],
     },
@@ -401,7 +442,18 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         figure("Figs. 1 and 2", [1, 2]),
         {
           kind: "text",
-          text: ", is a lifting-rod, from the side of which projects the lifting-pin u. The lifting-rod is attached at its upper end to a crank-arm, v, which works on a shaft, w, and this shaft is made to vibrate by means of the cam x on the cam-shaft. This cam operates on a friction-roller, y, on a short arm on the inner end of the shaft w. The lifting-rod stands in front of a plate, X, ",
+          text: ", is a ",
+        },
+        {
+          kind: "term",
+          text: "lifting-rod",
+          definition:
+            "The reciprocating rod carrying lifting-pin u; its guided motion raises the needle thread into the temporary loop the shuttle must enter.",
+          label: "Period mechanism term",
+        },
+        {
+          kind: "text",
+          text: ", from the side of which projects the lifting-pin u. The lifting-rod is attached at its upper end to a crank-arm, v, which works on a shaft, w, and this shaft is made to vibrate by means of the cam x on the cam-shaft. This cam operates on a friction-roller, y, on a short arm on the inner end of the shaft w. The lifting-rod stands in front of a plate, X, ",
         },
         figure("Figs. 1 and 2", [1, 2]),
         {
@@ -493,9 +545,23 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "claim",
       number: 3,
-      inlines: text(
-        "The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or clipping-piece f, as herein made known, or in any other manner that is substantially the same in its operation and result.",
-      ),
+      inlines: [
+        {
+          kind: "text",
+          text: "The holding of the thread that is given out by the shuttle, so as to prevent its unwinding from the shuttle-bobbin after the shuttle has passed through the loop, said thread being held by means of the lever or ",
+        },
+        {
+          kind: "term",
+          text: "clipping-piece",
+          definition:
+            "The lever or clip that holds the shuttle thread after the shuttle passes, preventing the bobbin from unwinding before the stitch is tightened.",
+          label: "Period mechanism term",
+        },
+        {
+          kind: "text",
+          text: " f, as herein made known, or in any other manner that is substantially the same in its operation and result.",
+        },
+      ],
     },
     {
       kind: "claim",

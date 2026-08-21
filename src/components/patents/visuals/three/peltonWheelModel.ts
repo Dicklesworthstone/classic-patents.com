@@ -3,25 +3,24 @@
  *
  * Museum-Grade Procedural 3D Model for Lester Pelton's 1880 Impulse Water Wheel (US Patent 233,692).
  *
- * Reconstructs the authentic 19th-century California Gold Rush / Nevada City mining turbine:
- * 1. Heavy ribbed cast-iron runner disc with a representative source-drawn split bucket.
+ * Reconstructs only the apparatus the 1880 grant actually describes:
+ * 1. A wheel with a flat rim face and a representative split bucket.
  * 2. Source-faithful double-cup bucket geometry: central dividing apex, twin curved bottoms,
  *    inclined discharge sides, and a sloped front for clear jet entry.
  * 3. Generic nozzle and distributing-box arrangement shown in the source drawing.
- * 4. Heavy split-casing cast-iron housing with viewing cutaway, pillow block journal bearings, grease cups,
- *    and lower discharge tailrace pit.
- * 5. Source-described water stream and twin split discharge paths,
- *    and animated tailrace discharge mist.
+ * 4. Source-described water stream and twin split discharge paths.
+ *
+ * The grant supplies no casing, bearing, tailrace, material, head, speed, or
+ * bucket count. Those are deliberately absent rather than inferred from a
+ * modern Pelton turbine.
  */
 
 import * as THREE from "three";
-import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 
 export interface PeltonWheelModel {
   rootGroup: THREE.Group;
   runnerGroup: THREE.Group;
-  casingGroup: THREE.Group;
-  casingCutaway: THREE.Mesh;
+  sourceArrangementGroup: THREE.Group;
   jetPoints: THREE.Points;
   sprayPoints: THREE.Points;
   materials: {
@@ -271,7 +270,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   nozzleGroup.position.set(-3.4, -2.25, 0);
   rootGroup.add(nozzleGroup);
 
-  // Penstock Supply Pipe Flange
+  // The source permits a pipe or pipes feeding the distributing-box.
   const pipeGeo = new THREE.CylinderGeometry(0.48, 0.48, 2.2, 24);
   geometriesToDispose.push(pipeGeo);
   const pipe = new THREE.Mesh(pipeGeo, castIron);
@@ -280,7 +279,8 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   pipe.castShadow = true;
   nozzleGroup.add(pipe);
 
-  // Convergent Nozzle Barrel (Claim 1)
+  // One source-described nozzle; the claim is about the bucket geometry,
+  // not a particular nozzle barrel.
   const nozzleGeo = new THREE.CylinderGeometry(0.18, 0.48, 1.6, 24);
   geometriesToDispose.push(nozzleGeo);
   const nozzle = new THREE.Mesh(nozzleGeo, bronzeBucket);
@@ -289,52 +289,15 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   nozzle.castShadow = true;
   nozzleGroup.add(nozzle);
 
-  // --- 4. HEAVY CAST-IRON HOUSING & CASING ---
-  const casingGroup = new THREE.Group();
-  rootGroup.add(casingGroup);
+  // --- 4. SOURCE ARRANGEMENT ---
+  // Keep the group for the separately drawn nozzle/manifold arrangement. The
+  // patent does not show or claim a surrounding casing, bearings, or tailrace.
+  const sourceArrangementGroup = new THREE.Group();
+  rootGroup.add(sourceArrangementGroup);
+  sourceArrangementGroup.add(nozzleGroup);
 
-  // Lower Base Bedplate & Tailrace Pit
-  const baseBedGeo = new THREE.BoxGeometry(7.2, 1.2, 4.4);
-  geometriesToDispose.push(baseBedGeo);
-  const baseBed = new THREE.Mesh(baseBedGeo, darkCastIron);
-  baseBed.position.set(0, -3.2, 0);
-  baseBed.receiveShadow = true;
-  casingGroup.add(baseBed);
-
-  // Tailrace discharge trough
-  const troughGeo = new THREE.BoxGeometry(4.8, 0.6, 2.8);
-  geometriesToDispose.push(troughGeo);
-  const trough = new THREE.Mesh(troughGeo, castIron);
-  trough.position.set(0, -2.6, 0);
-  casingGroup.add(trough);
-
-  // Split-casing wheel hood with a front viewing cutaway.
-  const hoodGeo = new THREE.CylinderGeometry(3.1, 3.1, 1.8, 32, 1, true, 0, Math.PI * 1.4);
-  geometriesToDispose.push(hoodGeo);
-  const casingCutaway = new THREE.Mesh(hoodGeo, castIron);
-  casingCutaway.rotation.x = Math.PI / 2;
-  casingCutaway.position.set(0, 0, 0);
-  casingCutaway.castShadow = true;
-  casingGroup.add(casingCutaway);
-
-  // Pillow Block Journal Bearings on Both Sides
-  for (const bSign of [-1, 1]) {
-    const blockGeo = new THREE.BoxGeometry(0.8, 1.4, 0.6);
-    geometriesToDispose.push(blockGeo);
-    const block = new THREE.Mesh(blockGeo, castIron);
-    block.position.set(0, -0.6, bSign * 2.2);
-    casingGroup.add(block);
-
-    // Brass grease lubricator cup
-    const cupGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.28, 12);
-    geometriesToDispose.push(cupGeo);
-    const cup = new THREE.Mesh(cupGeo, brass);
-    cup.position.set(0, 0.25, bSign * 2.2);
-    casingGroup.add(cup);
-  }
-
-  // --- 5. WATER JET & SPRAY PARTICLE SYSTEMS ---
-  // High-Speed Concentrated Water Jet (Nozzle -> Bucket Splitter)
+  // --- 5. STATIC SOURCE-DESCRIBED STREAMS ---
+  // These are posed source illustrations, not a simulated pressure or flow.
   const jetCount = 200;
   const jetGeo = new THREE.BufferGeometry();
   const jetPos = new Float32Array(jetCount * 3);
@@ -359,7 +322,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   const jetPoints = new THREE.Points(jetGeo, waterJet);
   rootGroup.add(jetPoints);
 
-  // Split discharge spray particles.
+  // Split discharge paths are represented as a second static point set.
   const sprayCount = 300;
   const sprayGeo = new THREE.BufferGeometry();
   const sprayPos = new Float32Array(sprayCount * 3);
@@ -394,8 +357,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   return {
     rootGroup,
     runnerGroup,
-    casingGroup,
-    casingCutaway,
+    sourceArrangementGroup,
     jetPoints,
     sprayPoints,
     materials: {
@@ -412,66 +374,10 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
 }
 
 /**
- * Updates runner rotation, source-described jet/split discharge, and cutaway state.
+ * Updates only source visibility. The grant has no operating speed or
+ * hydraulic measurements, so the visitor sees a faithful posed apparatus.
  */
-export function updatePeltonWheelKinematics(
-  model: PeltonWheelModel,
-  dt: number,
-  runnerOmegaRadPerS: number,
-  jetDisplaySpeed: number,
-  sprayDisplaySpeed: number,
-  showJet: boolean,
-  isCutaway = false,
-): void {
-  // Runner wheel rotation
-  model.runnerGroup.rotation.z += runnerOmegaRadPerS * dt;
-
-  if (showJet) {
-    model.jetPoints.visible = true;
-    model.sprayPoints.visible = true;
-    const fluid = fluidFrames(16, 8);
-    const frame = Math.abs(Math.floor(model.runnerGroup.rotation.z * 3)) % 8;
-
-    // High-speed jet streamline flow
-    const jPos = model.jetPoints.geometry.attributes.position.array as Float32Array;
-    const jetSpeed = jetDisplaySpeed * dt;
-    const jetResetX = -3.2;
-    const jetResetY = -2.25;
-    const jetWrapX = 0;
-    const jetYOverX = 0.7;
-    const spanX = Math.max(0.1, jetWrapX - jetResetX);
-    for (let i = 0; i < jPos.length; i += 3) {
-      const u = ((jPos[i] ?? 0) - jetResetX) / spanX;
-      const v = ((jPos[i + 1] ?? 0) - jetResetY + 3) / 6;
-      const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
-      const local = 1 + dens;
-      jPos[i] += jetSpeed * local;
-      jPos[i + 1] += jetSpeed * jetYOverX * local;
-      if (jPos[i] > jetWrapX) {
-        jPos[i] = jetResetX;
-        jPos[i + 1] = jetResetY;
-      }
-    }
-    model.jetPoints.geometry.attributes.position.needsUpdate = true;
-
-    // Deflected spray mist flow downwards
-    const sPos = model.sprayPoints.geometry.attributes.position.array as Float32Array;
-    const spraySpeed = sprayDisplaySpeed * dt;
-    for (let i = 0; i < sPos.length; i += 3) {
-      sPos[i + 1] -= spraySpeed;
-      if (sPos[i + 1] < -2.8) {
-        sPos[i + 1] = -1;
-      }
-    }
-    model.sprayPoints.geometry.attributes.position.needsUpdate = true;
-  } else {
-    model.jetPoints.visible = false;
-    model.sprayPoints.visible = false;
-  }
-
-  // Cutaway transparency
-  model.materials.castIron.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.castIron.transparent = isCutaway;
-  model.materials.darkCastIron.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.darkCastIron.transparent = isCutaway;
+export function updatePeltonWheelKinematics(model: PeltonWheelModel, showJet: boolean): void {
+  model.jetPoints.visible = showJet;
+  model.sprayPoints.visible = showJet;
 }

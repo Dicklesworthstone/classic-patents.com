@@ -41,13 +41,10 @@ import {
   mccormickSchematicSickleX,
   morseSchematicInstrument,
   nobelSchematicKieselguhr,
-  peltonSchematicBucket,
-  spencerSchematicCavity,
   stepBardeenTransistor,
   stepBellTelephone,
   stepColtRevolver,
   stepCorlissEngine,
-  stepDaimlerEngine,
   stepDavenportMotor,
   stepDeLavalSeparator,
   stepEdisonBulb,
@@ -69,8 +66,6 @@ import {
   stepMorseTelegraph,
   stepNobelDynamite,
   stepOttoEngine,
-  stepPeltonWheel,
-  stepSpencerMicrowave,
   stepThomsonWelding,
   stepWhitneyCottonGin,
   stepWozniakApple,
@@ -1012,61 +1007,55 @@ function _renderHistoricalSchematic(
       );
     }
     case "spencer-microwave": {
-      const spencer = stepSpencerMicrowave();
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x={spencer.schematicOvenX}
-            y={spencer.schematicOvenY}
-            width={spencer.schematicOvenW}
-            height={spencer.schematicOvenH}
-            rx="8"
-            fill="#0f172a"
-            fillOpacity="0.45"
-            stroke="#94a3b8"
-            strokeWidth="2"
-          />
-          <circle
-            cx={spencer.schematicAnodeCx}
-            cy={spencer.schematicAnodeCy}
-            r={spencer.schematicAnodeR}
-            fill="#1e293b"
-            stroke="#f59e0b"
-            strokeWidth="2"
-          />
-          {Array.from({ length: spencer.schematicCavityCount }, (_, i) => {
-            const cav = spencerSchematicCavity(
-              i,
-              spencer.schematicCavityCount,
-              spencer.schematicAnodeCx,
-              spencer.schematicAnodeCy,
-              spencer.schematicCavityR,
-            );
-            return (
-              <circle
-                key={i}
-                cx={cav.cx}
-                cy={cav.cy}
-                r={spencer.schematicCavityDotR}
-                fill="#0f172a"
-                stroke="#fbbf24"
-              />
-            );
-          })}
-          <path
-            d={spencer.schematicWaveguideD}
-            fill="#7c3aed"
-            fillOpacity="0.15"
-            stroke="#a78bfa"
-          />
-          <circle
-            cx={spencer.schematicLoadCx}
-            cy={spencer.schematicLoadCy}
-            r={spencer.schematicLoadR}
-            fill="#f59e0b"
-            fillOpacity="0.25"
-            stroke="#fbbf24"
-          />
+        <g stroke="#38bdf8" strokeWidth="1.5">
+          <rect x="18" y="18" width="364" height="264" rx="8" fill="#0f172a" />
+          <g fill="#1e293b" stroke="#cbd5e1">
+            <rect x="34" y="62" width="66" height="48" rx="4" />
+            <rect x="34" y="190" width="66" height="48" rx="4" />
+            <rect x="124" y="95" width="66" height="110" rx="4" />
+            <rect x="218" y="120" width="80" height="60" rx="4" />
+            <rect x="320" y="98" width="46" height="104" rx="4" />
+          </g>
+          <g fill="none" stroke="#67e8f9" strokeWidth="2">
+            <path d="M100 86 H124 M100 214 H124 M190 116 H218 M190 184 H218 M298 150 H320" />
+            <circle cx="218" cy="116" r="5" stroke="#fbbf24" />
+            <circle cx="218" cy="184" r="5" stroke="#fbbf24" />
+          </g>
+          <g fill="#e2e8f0" stroke="none" fontSize="8" textAnchor="middle">
+            <text x="67" y="82">
+              MAGNETRON 10
+            </text>
+            <text x="67" y="210">
+              MAGNETRON 11
+            </text>
+            <text x="157" y="143">
+              TRANSFORMER 18
+            </text>
+            <text x="157" y="156">
+              LINES 19
+            </text>
+            <text x="258" y="145">
+              WAVE GUIDE 23
+            </text>
+            <text x="258" y="158">
+              24 / 25
+            </text>
+            <text x="343" y="144">
+              CONVEYOR
+            </text>
+            <text x="343" y="157">
+              28
+            </text>
+          </g>
+          <g fill="#fbbf24" stroke="none" fontSize="7">
+            <text x="200" y="106">
+              26
+            </text>
+            <text x="200" y="198">
+              27
+            </text>
+          </g>
         </g>
       );
     }
@@ -2437,68 +2426,42 @@ function _renderHistoricalSchematic(
       );
     }
     case "daimler-engine": {
-      const daimler = stepDaimlerEngine({
-        engineRpm: params?.engineRpm,
-        hotTubeTempC: params?.hotTubeTemp,
-        differentialSlipAngleDeg: params?.turnAngle,
-      });
+      const shaftPosition = Math.round(params?.shaftPosition ?? 0);
+      const coolingVisible = (params?.coolingPumpEnabled ?? 1) > 0;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x={daimler.schematicCylinderX}
-            y={daimler.schematicCylinderY}
-            width={daimler.schematicCylinderW}
-            height={daimler.schematicCylinderH}
-            rx="4"
-            stroke="#94a3b8"
-          />
-          <rect
-            x={daimler.schematicHotTubeX}
-            y={daimler.schematicHotTubeY}
-            width={daimler.schematicHotTubeW}
-            height={daimler.schematicHotTubeH}
-            rx="2"
-            fill="#f97316"
-            stroke="#ea580c"
-          />
-          <text x="60" y="56" fill="#f97316" fontSize="8" textAnchor="middle">
-            Hot Tube
+          <rect x="35" y="85" width="82" height="100" rx="8" stroke="#94a3b8" />
+          <text x="76" y="76" fill="#93c5fd" fontSize="8" textAnchor="middle">
+            Motor A
           </text>
-          <rect
-            x={daimler.schematicPistonX}
-            y={daimler.schematicPistonY}
-            width={daimler.schematicPistonW}
-            height={daimler.schematicPistonH}
-            rx="3"
-            fill="#38bdf8"
-            fillOpacity="0.2"
-            stroke="#38bdf8"
-          />
+          <line x1="117" y1="135" x2="185" y2="135" stroke="#e2e8f0" strokeWidth="5" />
+          <circle cx="205" cy="135" r="20" stroke="#fbbf24" />
+          <circle cx="255" cy="105" r="18" stroke="#4ade80" />
+          <circle cx="255" cy="165" r="18" stroke="#f97316" />
           <line
-            x1={daimler.schematicRodX}
-            y1={daimler.schematicRodY0}
-            x2={daimler.schematicRodX}
-            y2={daimler.schematicRodY1}
-            stroke="#e2e8f0"
-            strokeWidth="6"
-            strokeLinecap="round"
+            x1="225"
+            y1="135"
+            x2={shaftPosition < 0 ? 245 : shaftPosition > 0 ? 245 : 235}
+            y2={shaftPosition < 0 ? 165 : shaftPosition > 0 ? 105 : 135}
+            stroke="#f8fafc"
+            strokeWidth="4"
           />
-          {/* Enclosed Flywheel Crankcase */}
-          <circle
-            cx={daimler.schematicFlywheelCx}
-            cy={daimler.schematicFlywheelCy}
-            r={daimler.schematicFlywheelR}
-            stroke="#fbbf24"
-            strokeWidth="2"
-          />
-          <circle
-            cx={daimler.schematicFlywheelCx}
-            cy={daimler.schematicFlywheelCy - 10}
-            r={daimler.schematicHubR}
-            fill="#fbbf24"
-          />
-          <text x="200" y="285" fill="#fbbf24" fontSize="9" textAnchor="middle">
-            Balanced Crankcase Flywheels
+          <line x1="273" y1="105" x2="350" y2="135" stroke="#4ade80" strokeWidth="4" />
+          <line x1="273" y1="165" x2="350" y2="135" stroke="#f97316" strokeWidth="4" />
+          <text x="255" y="78" fill="#4ade80" fontSize="8" textAnchor="middle">
+            ahead a / a²
+          </text>
+          <text x="255" y="198" fill="#f97316" fontSize="8" textAnchor="middle">
+            astern e′ / e²
+          </text>
+          <text x="350" y="125" fill="#93c5fd" fontSize="8" textAnchor="middle">
+            propeller shaft c
+          </text>
+          {coolingVisible && (
+            <path d="M 55 205 C 110 245, 250 245, 330 205" stroke="#38bdf8" strokeDasharray="5 3" />
+          )}
+          <text x="190" y="260" fill="#38bdf8" fontSize="8" textAnchor="middle">
+            cooling pump and water pipes
           </text>
         </g>
       );
@@ -4846,69 +4809,46 @@ function _renderHistoricalSchematic(
       );
     }
     case "pelton-water-wheel": {
-      const pelton = stepPeltonWheel({
-        headMeters: params?.headMeters,
-        runnerRpm: params?.runnerRpm ?? params?.rotorRpm,
-      });
+      const flowVisible = (params?.sourceFlowVisible ?? 1) > 0;
+      const claim1Active = (params?.claim1Active ?? 1) > 0;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Wheel Rim */}
-          <circle
-            cx={pelton.schematicRunnerCx}
-            cy={pelton.schematicRunnerCy}
-            r={pelton.schematicRunnerR}
-            stroke="#94a3b8"
-            strokeWidth="2"
+          <circle cx="245" cy="135" r="78" stroke="#94a3b8" strokeWidth="2" />
+          <circle cx="245" cy="135" r="13" stroke="#94a3b8" />
+          <path
+            d="M 224 48 Q 218 78 234 94 Q 245 78 245 58 Q 245 78 256 94 Q 272 78 266 48 Z"
+            stroke="#fbbf24"
+            fill="#d97706"
+            opacity={claim1Active ? 1 : 0.18}
           />
-          {/* Double Split-Buckets */}
-          {Array.from({ length: pelton.schematicBucketCount }, (_, i) => {
-            const bucket = peltonSchematicBucket(
-              i * pelton.schematicBucketPitchDeg,
-              pelton.schematicRunnerCx,
-              pelton.schematicRunnerCy,
-              pelton.schematicRunnerR,
-            );
-            return (
-              <g key={i}>
-                <ellipse
-                  cx={bucket.x}
-                  cy={bucket.y}
-                  rx={pelton.schematicBucketRx}
-                  ry={pelton.schematicBucketRy}
-                  stroke="#fbbf24"
-                  fill="#d97706"
-                />
-                <line
-                  x1={bucket.x - pelton.schematicSplitDx}
-                  y1={bucket.y}
-                  x2={bucket.x + pelton.schematicSplitDx}
-                  y2={bucket.y}
-                  stroke="#ef4444"
-                  strokeWidth="1.5"
-                />
-              </g>
-            );
-          })}
-          {/* Needle Nozzle High-Pressure Water Jet */}
-          <polygon points={pelton.schematicNozzlePoints} fill="#0284c7" stroke="#38bdf8" />
           <line
-            x1={pelton.schematicJetX1}
-            y1={pelton.schematicJetY}
-            x2={pelton.schematicJetX2}
-            y2={pelton.schematicJetY}
-            stroke="#38bdf8"
-            strokeWidth={2 + pelton.jetCrateDensity * 4}
-            strokeDasharray="4 2"
-            opacity={pelton.jetOpacity}
+            x1="245"
+            y1="58"
+            x2="245"
+            y2="91"
+            stroke="#f8fafc"
+            opacity={claim1Active ? 1 : 0.18}
           />
-          <text x="70" y="175" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Needle Nozzle
+          <text x="245" y="35" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            bucket B: apex d, bottoms c, sides e
           </text>
-          <text x="200" y="55" fill="#fbbf24" fontSize="8" textAnchor="middle">
-            Split-Bucket Runner
+          <rect x="30" y="118" width="65" height="34" rx="4" stroke="#94a3b8" />
+          <text x="62" y="110" fill="#93c5fd" fontSize="8" textAnchor="middle">
+            distributing-box G
           </text>
-          <text x="200" y="220" fill="#4ade80" fontSize="8" textAnchor="middle">
-            165° Jet Energy Extraction
+          <polygon points="95,124 130,130 130,140 95,146" fill="#d97706" stroke="#fbbf24" />
+          <text x="112" y="165" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            nozzle F
+          </text>
+          {flowVisible && (
+            <>
+              <line x1="130" y1="135" x2="245" y2="58" stroke="#38bdf8" strokeWidth="4" />
+              <path d="M 245 58 Q 205 28 160 18" stroke="#38bdf8" strokeDasharray="4 2" />
+              <path d="M 245 58 Q 285 28 330 18" stroke="#38bdf8" strokeDasharray="4 2" />
+            </>
+          )}
+          <text x="245" y="245" fill="#4ade80" fontSize="8" textAnchor="middle">
+            source arrangement only; no stated head, speed, angle, or efficiency
           </text>
         </g>
       );

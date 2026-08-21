@@ -173,11 +173,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 1",
-      title: "Gramme and d’Ivernois magneto-electric machines, Figs. 1–6",
+      title: "MAGNETO-ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871.",
       description: [
         {
           kind: "text",
-          text: "Four sheets—Sheet 1. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+          text: "4 Sheets—Sheet 1. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5. FIG. 6. Printed reference letters and numerals visible on this sheet include A, B, C, D, E, F, G, H, I, J, K, M, N, O, R, S, V, t, a′, g, and i. ",
         },
         figure1To3,
         { kind: "text", text: " and " },
@@ -188,11 +188,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 2",
-      title: "Gramme and d’Ivernois magneto-electric machines, Figs. 7–9",
+      title: "MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871.",
       description: [
         {
           kind: "text",
-          text: "Four sheets—Sheet 2. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+          text: "Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. 4 SHEETS—SHEET 2. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 7. FIG. 8. FIG. 9. Printed reference letters and numerals visible on this sheet include A, A′, B, C, D, E, F, G, H, I, J, K, L, N, P, P′, S, V, X, X′, c, and c′. Z. TH. GRAMME. E. L. Ch. D’IVERNOIS. WITNESSES: A. G. BRADE. AUGUSTE MEDARD. ",
         },
         figure7To9,
         { kind: "text", text: "." },
@@ -201,11 +201,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 3",
-      title: "Gramme and d’Ivernois magneto-electric machines, Figs. 10–13",
+      title: "MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871.",
       description: [
         {
           kind: "text",
-          text: "Four sheets—Sheet 3. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+          text: "FIG. 10. 4 SHEETS—SHEET 3. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 11. FIG. 12. FIG. 13. Printed reference letters and numerals visible on this sheet include A, A′, B, D, E, G, H, I, J, K, and N. Z. TH. GRAMME. E. L. Ch. D’IVERNOIS. WITNESSES: A. G. BRADE. AUGUSTE MEDARD. ",
         },
         figure10To13,
         { kind: "text", text: "." },
@@ -214,11 +214,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "figure-sheet",
       figureLabel: "DRAWING SHEET 4",
-      title: "Gramme and d’Ivernois magneto-electric machine, Fig. 14",
+      title: "MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871.",
       description: [
         {
           kind: "text",
-          text: "Four sheets—Sheet 4. Z. Th. GRAMME & E. L. Ch. d’IVERNOIS. Magneto-Electric Machines. No. 120,057. Patented Oct. 17, 1871. This source sheet contains ",
+          text: "4 SHEETS—SHEET 4. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 14. Printed reference letters and numerals visible on this sheet include A, A², B, C, D, H, h, h′, i, i′, K, S, X, and X′. No witness, inventor-signature, or attorney line is visible on this sheet. ",
         },
         figure14,
         { kind: "text", text: "." },
@@ -291,9 +291,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 2", 1),
         { kind: "text", text: " shows a vertical section, and " },
         sourceFigure("Fig. 3", 1),
-        { kind: "text", text: " a view of a detached part. See " },
-        figure1To3,
-        { kind: "text", text: "." },
+        { kind: "text", text: " a view of a detached part." },
       ],
     },
     {
@@ -367,12 +365,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 6", 1),
         {
           kind: "text",
-          text: " a vertical section of another construction of magneto-electric machine arranged according to our invention. See ",
+          text: " a vertical section of another construction of magneto-electric machine arranged according to our invention. ",
         },
-        figure4To6,
         {
           kind: "text",
-          text: ". The same consists of six fixed compound permanent magnets which, three by three, have their similar poles connected together so as to form what may be considered two magnets.",
+          text: "The same consists of six fixed compound permanent magnets which, three by three, have their similar poles connected together so as to form what may be considered two magnets.",
         },
       ],
     },
@@ -419,10 +416,8 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 9", 2),
         {
           kind: "text",
-          text: " a modification of parts of another construction of magneto-electric machine, arranged according to our invention. See ",
+          text: " a modification of parts of another construction of magneto-electric machine, arranged according to our invention. ",
         },
-        figure7To9,
-        { kind: "text", text: "." },
       ],
     },
     {
@@ -506,12 +501,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 11", 3),
         {
           kind: "text",
-          text: " a horizontal section of another construction of magneto-electric machine arranged according to our invention. See ",
+          text: " a horizontal section of another construction of magneto-electric machine arranged according to our invention. ",
         },
-        figure10To13,
         {
           kind: "text",
-          text: ". H are four fixed straight permanent magnets connected together by an iron plate, B, and two revolving cylinders, A A′, arranged as has been described in respect to the two first apparatuses, and fixed on the shaft D by a wooden boss, G. Each of the cylinders forms twenty small bobbins, and have their wires all wound in the same direction.",
+          text: "H are four fixed straight permanent magnets connected together by an iron plate, B, and two revolving cylinders, A A′, arranged as has been described in respect to the two first apparatuses, and fixed on the shaft D by a wooden boss, G. Each of the cylinders forms twenty small bobbins, and have their wires all wound in the same direction.",
         },
       ],
     },
@@ -560,10 +554,8 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 13", 3),
         {
           kind: "text",
-          text: " an end vertical projection of another construction of magneto-electric apparatus arranged according to our invention. See ",
+          text: " an end vertical projection of another construction of magneto-electric apparatus arranged according to our invention. ",
         },
-        figure10To13,
-        { kind: "text", text: "." },
       ],
     },
     {
@@ -608,12 +600,11 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
         sourceFigure("Fig. 14", 4),
         {
           kind: "text",
-          text: " represents a longitudinal elevation view, some parts being shown as partly removed, of another construction of apparatus arranged according to our invention. See ",
+          text: " represents a longitudinal elevation view, some parts being shown as partly removed, of another construction of apparatus arranged according to our invention. ",
         },
-        figure14,
         {
           kind: "text",
-          text: ". On a wooden or other bad conducting bed-plate, K, is fixed a permanent or an electro-magnet, H, having additional poles h and h′, of a circular shape, so as to correspond with that of the cylinder or endless large bobbin A.",
+          text: "On a wooden or other bad conducting bed-plate, K, is fixed a permanent or an electro-magnet, H, having additional poles h and h′, of a circular shape, so as to correspond with that of the cylinder or endless large bobbin A.",
         },
       ],
     },

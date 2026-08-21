@@ -474,18 +474,9 @@ export function computeParameterSensitivity(
 
     case "us-233692-pelton-water-wheel":
     case "us-233692-pelton-wheel": {
-      if (controlKey === "waterHeadM" || controlKey === "head") {
-        const flowLps = params.flowRateLps ?? 45.0;
-        // P = rho * g * Q * H * eta -> dP/dH = rho * g * Q * eta
-        const dP_dH = 1000.0 * 9.80665 * (flowLps / 1000.0) * 0.88;
-        return {
-          metricName: "Hydraulic Shaft Power",
-          derivativeSymbol: "∂P / ∂H",
-          derivativeValue: Number((dP_dH / 1000.0).toFixed(2)),
-          derivativeUnit: "kW / m",
-          interpretation: "Gravitational potential energy conversion gradient per meter head.",
-        };
-      }
+      // The grant supplies no head, flow, efficiency, speed, or power values.
+      // Its only visitor control reveals the described water path, so a
+      // numerical sensitivity would manufacture evidence the source lacks.
       break;
     }
 
@@ -651,15 +642,9 @@ export function computeParameterSensitivity(
     }
 
     case "us-361931-daimler-engine": {
-      if (controlKey === "engineRpm" || controlKey === "rpm") {
-        return {
-          metricName: "High-Speed Shaft Power",
-          derivativeSymbol: "∂P / ∂RPM",
-          derivativeValue: 1.4,
-          derivativeUnit: "W / RPM",
-          interpretation: "Power scaling achieved by enclosed crankcase high rotational velocity.",
-        };
-      }
+      // The source controls select ahead/neutral/astern coupling and reveal
+      // the cooling-water path. Neither state has a source-stated numerical
+      // output whose derivative could be reported honestly.
       break;
     }
 

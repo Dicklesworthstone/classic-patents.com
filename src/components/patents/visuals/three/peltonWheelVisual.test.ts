@@ -5,7 +5,7 @@ import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWhee
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics boundary", () => {
+describe("US 233,692 Lester Pelton source-bounded visual", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
     const modelSource = readFileSync(
@@ -18,11 +18,19 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildPeltonWheelModel");
     expect(modelSource).toContain("updatePeltonWheelKinematics");
-    expect(modelSource).toContain("jetDisplaySpeed");
-    expect(modelSource).toContain("fluidFrames");
-    expect(modelSource).toContain("sampleFluidAt");
-    expect(modelSource).not.toContain("/ 90");
+    expect(modelSource).toContain("sourceArrangementGroup");
+    expect(modelSource).toContain("representative source bucket");
+    expect(modelSource).not.toContain("fluidFrames");
+    expect(modelSource).not.toContain("sampleFluidAt");
+    expect(modelSource).not.toContain("headMeters");
+    expect(modelSource).not.toContain("runnerRpm");
     expect(modelSource).not.toContain("stepPeltonWheel({})");
+    expect(threeSource).toContain("params.sourceFlowVisible ?? 1");
+    expect(threeSource).toContain('updateParam("sourceFlowVisible"');
+    expect(threeSource).toContain("params.claim1Active ?? 1");
+    expect(threeSource).toContain("model.runnerGroup.visible = p.claim1Active");
+    expect(threeSource).not.toContain("setClaimStates");
+    expect(threeSource).not.toContain("setShowJet");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -41,11 +49,10 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   test("exposes authentic camera presets and UI overlay for impulse turbine observation", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
 
-    for (const preset of ["iso", "split_bucket", "nozzle", "runner_wheel", "tailrace", "top"]) {
+    for (const preset of ["iso", "split_bucket", "nozzle", "runner_wheel", "discharge", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
-    expect(threeSource).toContain("isCutaway");
     expect(threeSource).toContain("Pelton Water Wheel 3D");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("cameraRef");
@@ -57,6 +64,8 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(source).not.toContain("needle spear");
     expect(source).not.toContain("pressure gauge");
     expect(source).not.toContain("bucketCount = 18");
+    expect(source).not.toContain("casingGroup");
+    expect(source).not.toContain("tailrace");
   });
 
   test("builds and articulates the source bucket, nozzle, and spray particles correctly", () => {
@@ -64,12 +73,11 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
 
     expect(model.rootGroup.children.length).toBeGreaterThan(3);
     expect(model.runnerGroup).toBeDefined();
-    expect(model.casingGroup).toBeDefined();
+    expect(model.sourceArrangementGroup).toBeDefined();
     expect(model.materials.bronzeBucket).toBeDefined();
     expect(model.materials.waterJet).toBeDefined();
 
-    updatePeltonWheelKinematics(model, 0.016, 0, 0.1, 0.1, true, true);
-    expect(model.materials.castIron.opacity).toBe(0.35);
+    updatePeltonWheelKinematics(model, true);
     expect(model.jetPoints.visible).toBe(true);
 
     model.dispose();

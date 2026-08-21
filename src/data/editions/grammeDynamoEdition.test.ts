@@ -76,7 +76,29 @@ describe("grammeDynamoArchivalEdition", () => {
       }
     }
 
-    const acceptedCropProof = [
+    // Every printed figure number must have an occurrence-specific authored
+    // reference. A grouped drawing-sheet description may provide additional
+    // context, but it cannot be the only link for a cited figure, and no
+    // reference may silently point at a neighboring figure's crop.
+    for (const figureNumber of Array.from({ length: 14 }, (_, index) => index + 1)) {
+      const references = figureReferences.filter((reference) =>
+        Boolean(reference.text.match(/\d+/g)?.includes(String(figureNumber))),
+      );
+      expect(references.length).toBeGreaterThan(0);
+      const hasMatchingPreview = references.some((reference) =>
+        (reference.figurePreviews ?? []).some(
+          (preview) =>
+            preview.src.includes(`/fig-${figureNumber}.png`) ||
+            preview.src.includes(`/fig-${figureNumber}-source-crop`),
+        ),
+      );
+      expect(hasMatchingPreview).toBe(true);
+    }
+
+    // These are byte-identity proofs for the currently bound candidates, not
+    // visual acceptance. The provenance receipt records the separate visual
+    // publication gate and its blocked figures.
+    const hashPinnedCandidateProof = [
       [
         "fig-1-source-crop-v3.png",
         315,
@@ -114,7 +136,7 @@ describe("grammeDynamoArchivalEdition", () => {
         "7866ed1c0d216575176f617b1b3645b9d469ae55e04af510bbae7ad4f82b45e7",
       ],
     ] as const;
-    for (const [filename, width, height, sha256] of acceptedCropProof) {
+    for (const [filename, width, height, sha256] of hashPinnedCandidateProof) {
       const preview = figureReferences
         .flatMap((reference) => reference.figurePreviews ?? [])
         .find((candidate) => candidate.src.endsWith(filename));

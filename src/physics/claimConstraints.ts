@@ -512,14 +512,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-2495429-spencer-microwave",
-      claimTitle: "Volumetric Dielectric Microwave Cooking",
+      claimTitle: "Generated, Guided Microwave-Region Food Treatment",
       activeDescription:
-        "Claim 1 exposes foodstuff directly to enclosed 2.45 GHz microwave radiation to excite dipole water molecules and cook from within.",
+        "Claim 1 generates electromagnetic wave energy in the microwave region, concentrates and guides it within a restricted region of space, and exposes food there long enough to cook it to a predetermined degree.",
       invertedDescription:
-        "Conductive surface heating: heat penetrates slowly via surface conduction, scorching outer layers while the core remains frozen/raw.",
-      failureModeName: "Conductive Thermal Surface Scorching",
+        "With the generated-and-guided microwave-region energy path removed, the illustrated apparatus no longer performs the treatment sequence recited by Claim 1.",
+      failureModeName: "Claimed Microwave Energy Path Removed",
       historicalPriorArt:
-        "Conventional ovens relied exclusively on external hot air convection and radiative conduction from vessel walls.",
+        "The specification contrasts the claimed microwave-region process with earlier electromagnetic food treatment at frequencies not over about fifty megacycles, which Spencer describes as impractical because of the energy required.",
     },
   ],
   "us-194047-otto-engine": [
@@ -582,28 +582,42 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-361931-daimler-engine",
-      claimTitle: "Enclosed Crankcase High-Speed Hot-Tube Ignition Engine",
+      claimTitle: "Marine Motor, Ahead Coupling, and Astern Gearing",
       activeDescription:
-        "Claim 1 encloses twin counter-rotating flywheels within an oil-tight crankcase and employs glow-tube ignition to achieve high rotational speeds (>800 RPM).",
+        "Claim 1 combines a vessel, an in-line gas or petroleum motor and propeller shaft, mating coupling members for ahead propulsion, and gearing that drives the propeller shaft in the opposite direction for astern propulsion.",
       invertedDescription:
-        "Heavy open-flame slide valve: slow ignition flame propagation caps engine speed to 150 RPM, yielding excessive weight unsuitable for vehicles.",
-      failureModeName: "Slide-Valve Flame Quench & Low Power-to-Weight",
+        "Without the claimed coupling and reverse-gearing relationship, the source-defined installation no longer establishes both ahead and astern drive from the continuously rotating motor shaft.",
+      failureModeName: "Claimed Ahead/Astern Drive Path Incomplete",
       historicalPriorArt:
-        "Stationary gas engines weighed several hundred pounds per horsepower and operated under 200 RPM.",
+        "The patent frames the problem as a vessel-installation arrangement; it does not claim an automobile differential, an enclosed crankcase, a hot-tube ignition system, or a numerical speed threshold.",
+    },
+  ],
+  "us-307031-edison-indicator": [
+    {
+      claimNumber: 1,
+      patentId: "us-307031-edison-indicator",
+      claimTitle: "Lamp Vacuum-Space Circuit Controlling Electrical Apparatus",
+      activeDescription:
+        "Claim 1 combines an incandescent lamp, a circuit that includes the vacuous space within its globe, and electrical apparatus controlled by current in that circuit.",
+      invertedDescription:
+        "With the vacuum-space circuit path removed, the claim's electrical apparatus is no longer controlled by current in the specified circuit; no numerical current or sensitivity is inferred.",
+      failureModeName: "Claimed Vacuum-Space Control Path Open",
+      historicalPriorArt:
+        "The grant describes indicating and regulating uses of the circuit but prints no operating voltage, current, vacuum pressure, temperature, or response calibration.",
     },
   ],
   "us-233692-pelton-water-wheel": [
     {
       claimNumber: 1,
       patentId: "us-233692-pelton-water-wheel",
-      claimTitle: "Split Crescent Bucket 180° Impulse Flow Reversal",
+      claimTitle: "Sloped Front, Dividing Apex, Curved Bottoms, and Flaring Sides",
       activeDescription:
-        "Claim 1 divides incoming high-pressure water jet with a central knife-edge wedge, smoothly reversing stream direction through 180° to extract >85% kinetic energy.",
+        "Claim 1 combines sloping bucket-front b, two curved bottoms c meeting at central dividing apex d, and inclined flaring discharge sides e, with the front arranged so the entering stream can pass without striking the bucket face.",
       invertedDescription:
-        "Flat impact bucket: jet strikes flat surface at 90°, retaining 50% residual kinetic energy and causing severe back-splash against oncoming buckets.",
-      failureModeName: "Flat Bucket Back-Splashing & Kinetic Loss",
+        "Removing any named part breaks the printed combination: the source no longer establishes admission past front b, division at apex d, travel through both curved bottoms c, and side discharge through e.",
+      failureModeName: "Claimed Bucket Geometry Incomplete",
       historicalPriorArt:
-        "Traditional water wheels and flat impulse paddles suffered from turbulence and back-splash drag with <40% efficiency.",
+        "Pelton describes earlier flat or flat-bottomed buckets as throwing water against following buckets, but the grant prints no numerical efficiency, force, turning angle, speed, or head comparison.",
     },
   ],
   "us-319596-maxim-machine-gun": [
@@ -1042,13 +1056,10 @@ export function applyClaimConstraintModifications(
     case "us-2495429-spencer-microwave": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.rfPowerSetting = 0.0; // Zero microwave emission
-        modified.anodeVoltage = 200.0; // Sub-cutoff magnetron voltage
-        activeFailures.push(
-          "Conductive Heat Stagnation: Loss of 2.45 GHz dielectric rotation slows core heating by 40x",
-        );
+        modified.rfPowerSetting = 0;
+        activeFailures.push("Claim 1 microwave-region generation and guided exposure are disabled");
         refusalWarning =
-          "THERMAL PENETRATION FAILURE: Without volumetric microwave dielectric heating, thermal conduction rate caps cooking speed.";
+          "CLAIM 1 INVERSION: the apparatus no longer generates and guides microwave-region energy into the restricted food-treatment region.";
       }
       break;
     }
@@ -1113,13 +1124,25 @@ export function applyClaimConstraintModifications(
     case "us-361931-daimler-engine": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.engineRpm = 120.0; // Slow slide-valve speed ceiling
-        modified.powerToWeightHpKg = 0.015; // Heavy stationary engine ratio
-        activeFailures.push(
-          "Slide-Valve Flame Quench: Slow flame travel limits crank speed to 150 RPM, preventing vehicular power density",
-        );
+        modified.claim1Active = 0;
+        modified.aheadCouplingEngaged = 0;
+        modified.asternGearingEngaged = 0;
+        activeFailures.push("Claim 1 ahead-coupling and astern-gearing path is incomplete");
         refusalWarning =
-          "SPEED CEILING: Unenclosed low-speed slide valve produces insufficient power-to-weight ratio for locomotion.";
+          "CLAIM 1 INVERSION: the source-defined vessel installation no longer establishes both ahead and astern propulsion paths.";
+      }
+      break;
+    }
+
+    case "us-307031-edison-indicator": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.claim1Active = 0;
+        modified.plateBiasPolarity = 0;
+        modified.circuitPathEstablished = 0;
+        activeFailures.push("Claim 1 vacuum-space circuit path is open");
+        refusalWarning =
+          "CLAIM 1 INVERSION: current in a circuit including the lamp globe's vacuous space can no longer control the specified electrical apparatus.";
       }
       break;
     }
@@ -1127,13 +1150,16 @@ export function applyClaimConstraintModifications(
     case "us-233692-pelton-water-wheel": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.deflectionAngleDeg = 90.0; // Flat impact paddle
-        modified.hydraulicEfficiencyPct = 38.0; // Collapsed from 88% to 38%
+        modified.claim1Active = 0;
+        modified.bucketFrontAdmitsStream = 0;
+        modified.dividingApexPresent = 0;
+        modified.curvedBottomsPresent = 0;
+        modified.flaringSidesPresent = 0;
         activeFailures.push(
-          "Flat Impact Back-Splashing: 90° jet deflection retains 50% residual kinetic energy and impinges oncoming buckets",
+          "Claim 1 bucket-front, apex, curved-bottom, and flaring-side combination is incomplete",
         );
         refusalWarning =
-          "IMPULSE SPLITTER LOSS: Knife-edge wedge required to divide and reverse water jet through 180°.";
+          "CLAIM 1 INVERSION: the source-defined stream-admission, division, curved-bottom, and side-discharge path is no longer established.";
       }
       break;
     }

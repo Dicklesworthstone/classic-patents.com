@@ -33,11 +33,11 @@ export function GliddenBarbedWireSim() {
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Joseph Glidden "The Winner" Twisted Barbed Wire (US 157,124)
+              Joseph F. Glidden's Twisted Wire-Fence Improvement (US 157,124)
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Two-strand helical interlock, coiled spur barbs, and high contact stress deterrence.
+            A transverse spur wire bent around one strand and clamped by the twisted fellow strand.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">

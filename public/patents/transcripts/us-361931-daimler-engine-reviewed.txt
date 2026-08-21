@@ -1,0 +1,115 @@
+--- REVIEWED TRANSCRIPTION PAGE 1 OF 6 ---
+
+G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
+
+(No Model.) 3 Sheets—Sheet 1.
+Fig. 1.
+Witnesses: George B. Ailes. Robert Garrett.
+Inventor: Gottlieb Daimler, by James L. Norris, Atty.
+N. Peters, Photo-Lithographer, Washington, D.C.
+
+--- REVIEWED TRANSCRIPTION PAGE 2 OF 6 ---
+
+G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
+
+(No Model.) 3 Sheets—Sheet 2.
+Fig. 2. Fig. 4. Fig. 4a. Fig. 4b. Fig. 5. Fig. 6.
+Witnesses: George B. Ailes. Robert Garrett.
+Inventor: Gottlieb Daimler, by James L. Norris, Atty.
+N. Peters, Photo-Lithographer, Washington, D.C.
+
+--- REVIEWED TRANSCRIPTION PAGE 3 OF 6 ---
+
+G. DAIMLER. EXPLOSIVE GAS MARINE ENGINE. No. 361,931. Patented Apr. 26, 1887.
+
+(No Model.) 3 Sheets—Sheet 3.
+Fig. 3.
+Witnesses: George B. Ailes. Robert Garrett.
+Inventor: Gottlieb Daimler, by James L. Norris, Atty.
+N. Peters, Photo-Lithographer, Washington, D.C.
+
+--- REVIEWED TRANSCRIPTION PAGE 4 OF 6 ---
+
+UNITED STATES PATENT OFFICE.
+
+GOTTLIEB DAIMLER, OF CANNSTADT, WÜRTEMBERG, GERMANY.
+
+EXPLOSIVE-GAS MARINE ENGINE.
+
+SPECIFICATION forming part of Letters Patent No. 361,931, dated April 26, 1887.
+
+Application filed November 9, 1886. Serial No. 218,411. (No model.) Patented in France October 26, 1886, No. 179,236; in England November 1, 1886, No. 14,043; in Italy November 23, 1886, No. 20,721; in Belgium December 15, 1886, No. 75,352; and in Germany March 1, 1887, No. 39,367.
+
+To all whom it may concern:
+
+Be it known that I, GOTTLIEB DAIMLER, a citizen of Würtemberg, residing at Cannstadt, in the Kingdom of Würtemberg and Empire of Germany, have invented a new and useful Apparatus for Effecting Marine Propulsion by Gas or Petroleum Motor-Engines, (for which I have obtained a patent in France, dated October 26, 1886, No. 179,236; in Belgium, dated December 15, 1886, No. 75,352; in Italy, dated November 23, 1886, No. 20,721; in Germany, dated March 1, 1887, No. 39,367, and have made application for patent in Great Britain, dated November 1, 1886, No. 14,043,) of which the following is a specification.
+
+My invention relates to apparatus for effecting the propulsion of a boat or vessel by a gas or petroleum motor instead of by a steam-engine, whereby a maximum of speed is obtained with a minimum extent of immersion of the vessel, inasmuch as the load of coals, water, and metal ballast required with the latter is greatly diminished, so that the capacity and power of the vessel are utilized to a much greater extent in the transport of loads.
+
+As the motor I employ, by preference, the gas or petroleum motor-engine described in the specification to my United States Patent No. 349,983, dated September 28, 1886. The motor-engine is so arranged as to drive the screw-propeller through a friction-coupling for the forward motion, and through friction or toothed gearing for the backward motion, in such manner that the motion of the screw-propeller produces automatically the required frictional contact of the coupling or of the gearing.
+
+The improvements consist, furthermore, in arranging the propeller-shaft, with its propeller and half-coupling, to slide longitudinally somewhat for the above purpose, and in combining together the apparatus for stopping, starting, and reversing the screw-propeller, and for the steering of the vessel, so as to effect these operations at one and the same point; also, in the provision of a thrust-bearing at the motor-engine for taking the thrust of the screw, in combination with the starting-gear; also, in effecting the cooling of the motor-cylinder by means of the water in which the vessel is running, this being made to circulate round the cylinder either by a siphon arrangement operating in combination with the motion of the vessel or by a centrifugal pump driven by the motor, and, lastly, in utilizing the waste-spaces of the vessel as gas-reservoirs, either at atmospheric or higher pressure, and in arranging these in such manner as to make the ship more or less unsinkable.
+
+On the accompanying drawings, Figure 1 shows a part longitudinal section of a vessel with gas or petroleum motor-engine constructed according to my invention. Fig. 2 shows a cross-section. Fig. 3 shows a plan; Figs. 4, 4a, 4b, detail views of the thrust-bearing for the propeller; Fig. 5, a broken longitudinal sectional view showing one of the high-pressure gas-holders, and Fig. 6 a transverse sectional view of Fig. 5.
+
+A is the motor-engine. a is the half-coupling fixed on the motor-shaft; a², that fixed on the propeller-shaft b, which is in line with the motor-shaft and can shift longitudinally somewhat in its bearings. In addition to the coupling a² it carries the reversing-disk c, and at its outer end the screw-propeller d, all being fixed thereon. The half-coupling a² acts with its projecting flange as friction-disk for reversing.
+
+The motor-engine is driven continuously in one and the same direction.
+
+For the forward propulsion of the vessel the propeller-shaft is in the first instance pressed by hand or otherwise toward the motor, so that the half-couplings a a² are in sufficient frictional contact to effect the starting of the screw, whereupon the thrust of the latter itself maintains the required contact. The coupling a a² may be either conical or flat.
+
+For the backward motion of the vessel the propeller-shaft is drawn backward, so as to disconnect the coupling a a², while the intermediate friction-disks, e' e², are at the same time pressed by elbow-levers f' f² against the disks a² c, in consequence of which the screw will be rotated in the contrary direction, so as to propel the ship backward. The elbow-levers f' f² have their fulcra at g' g², and transmit by their connection with the boss of the disk c the longitudinal motion of the propeller-shaft to the disks e' e² by pressing on the projecting centers e³ e⁴ thereof. In order to transmit such pressure equally to the two disks e' e², a cross-head, h' h², pivoted at h³, is
+
+--- REVIEWED TRANSCRIPTION PAGE 5 OF 6 ---
+
+employed. The disks e' e² rotate free in their bearings e⁵ e⁶, and when not acted on by the levers f' f² they are pushed outward by helical springs e⁷ e⁸, so as to be out of contact with the disks a² c. In place of the disks a² e' c may also be used bevel-wheels always kept in gear, in which case the wheel taking the place of c would be loose on the propeller-shaft and formed with a coupling similar to a'. A bearing behind the latter would then take the pull of the reversed propeller-shaft, and this pull would effect the frictional contact of the coupling of c for running backward.
+
+For pressing the propeller-shaft forward toward the motor-engine, a helical spring, i', is provided, which always tends to move the shaft forward, so as to keep the coupling a a² slightly in contact. In order to prevent the coupling a a² from being brought too rapidly into forcible contact by the thrust of the propeller, so as to insure a gradual starting, as also a gradual stopping and reversing, a screw-spindle, k', with hand wheel or crank k², elbow-lever l, and fixed collar i², are provided. The collar i² serves as abutment for the spring i' and is loose on the shaft. In place of the spring i' and collar i², a second fixed collar may be fixed on the shaft in front of the lever l, so that the forward motion of the shaft is also effected by this. The lever may also be arranged either straight or as an elbow-lever to be acted upon directly by hand or foot, instead of through a screw-spindle.
+
+By the above-described arrangement, wherein the propeller-shaft is connected to the engine-shaft by a frictional coupling controlled by the spindle k' and lever l, it will be seen that without altering the speed of the engine the speed of the propeller, and consequently the motion of the vessel, can be increased or decreased at will or entirely stopped by simply causing the frictional coupling to be brought in contact with greater or less force.
+
+For steering the vessel the rudder m is connected by a chain or other mechanism with the shaft o', which is turned in one direction or the other, by means of the levers o² o³, by the steersman sitting on the seat p. The spindle k' is either carried through the steering-shaft o', as shown, or it is arranged at the side thereof, so as to have the whole controlling mechanism arranged conveniently together at the seat p.
+
+The thrust of the propeller is taken by the thrust-bearing q on the front side of the motor-engine. This bearing is shown to an enlarged scale at Figs. 4, 4a, and 4b. It is provided with a crank-handle, r', by means of which the engine can be started. For this purpose the bearing has a sliding pin, r², which can be pushed inward, so as to gear with a stud, r³, on the motor-shaft, so that the rotation of the bearing will also cause the shaft to be rotated, so as to start the engine. The pin r² being formed with an incline, it will be pushed out of gear by the pressure of the stud when the engine is started, as shown at Fig. 4a, so that the bearing q and its crank-handle r' will then remain stationary.
+
+The cooling of the motor-cylinder is effected by a current of water passing through the pipe s' from the bows of the vessel to the jacket of the cylinder, and thence through the pipe s² to the stern, the current being produced on the forward motion of the vessel by the forcing action at the trumpet-mouthed forward end of s' and by the exhaust action at the rear end of s². For starting the siphon-like action, the pipes and water-jacket are in the first instance filled with water through a funnel, t, with cock t', the supply-pipe s' being provided with a stop-valve, s³. According to another arrangement, the water is drawn up from the outside by a centrifugal pump, u, and, after circulating through the jacket, flows back to the outside again. The two arrangements may be combined, as shown on the drawings.
+
+For discharging bilge-water, the pipe s' has a funnel-opening, v, provided with a three-way stop-cock, so that the circulating water can either be drawn from the bilge or from the external water. In place of a centrifugal pump an air-fan for cooling the cylinder by means of air-currents may be used.
+
+When using combustible gas for working the motor-engine, high-pressure gas-holders w² are provided on the vessel in suitable places—such as under the seats—while other parts of the vessel—as, for instance, spaces w' in the hold under the deck—may themselves be formed into reservoirs of gas at atmospheric pressure, for which purposes these spaces are lined with a gas-tight fabric, which may be made as a bag, so as to expand against the under side of the deck when charged with gas, as indicated on the drawings. These gas-holders or reservoirs are charged, respectively, with gas at high pressure and at atmospheric pressure at the end station. The motor-engine draws in the gas from the bag-like reservoir w', and this is replenished from the high-pressure reservoir w² through a cock, x, that is opened and closed either by hand or automatically by a tappet connected to the rising and falling bag y. The several high-pressure gas-holders are all connected either directly to the low-pressure reservoir or they are connected with each other by means of pipes provided with stop-cocks. They also serve as floats for rendering the vessel entirely or partially unsinkable.
+
+When using petroleum for working the motor-engine, I employ, by preference, the petroleum apparatus described in my before-mentioned prior patent.
+
+Having thus described the nature of my invention and the best means I know for carrying the same into practical effect, I claim—
+
+1. The combination, with the propeller and propeller-shaft of a vessel and with part of a friction-coupling on said shaft, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided
+
+--- REVIEWED TRANSCRIPTION PAGE 6 OF 6 ---
+
+with part of a friction-coupling for effecting the forward motion of the vessel and gearing between the propeller-shaft and the part of the friction-coupling on the engine for effecting the backward motion of the vessel, substantially as described.
+
+2. The combination, with the propeller-shaft having a longitudinal movement in its bearings and provided with part of a friction-clutch, of a gas or petroleum motor-engine having its shaft arranged in line with the propeller-shaft and provided with part of a friction-coupling which engages and disengages the part of the friction-coupling by the longitudinal movement of said propeller-shaft, substantially as described.
+
+3. In combination with a gas or petroleum motor-engine, a propeller-shaft connected to the engine-shaft by a friction-coupling and capable of sliding longitudinally in its bearings, so that the thrust of the propeller when in motion will maintain the frictional contact of the coupling.
+
+4. In combination with the frictional coupling connecting the engine-shaft with the sliding propeller-shaft, the friction-disks c e' e² and the levers f' f², connected to the propeller-shaft, constituting mechanism for reversing the motion of the propeller, the pull of the latter when reversed being made to effect the required frictional contact between the disks e' e² and c for this purpose.
+
+5. The combination, with a motor-engine, the propeller-shaft of a vessel, and a friction-coupling connecting the engine and propeller-shaft, of a thrust-bearing, q, for taking the thrust of the propeller, and means for starting the engine, comprising the crank-handle r and sliding pin r², substantially as described.
+
+6. The combination, with the rudder and the longitudinally-movable propeller-shaft, of the vertical shaft o', levers o² o³, chain n, or equivalent screw-spindle k, and devices connecting said spindle with the propeller-shaft for steering the vessel and shifting the propeller-shaft, substantially as described.
+
+7. The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for effecting the cooling of the cylinder by means of the outer water, substantially as described.
+
+8. The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water for cooling the cylinder, and a centrifugal pump, u, for effecting the circulation of the water, substantially as described.
+
+9. The combination, with the water-jacket of the motor-cylinder, of fore and aft pipes, s' s², arranged with siphon-like action and communicating with the outer water, a centrifugal pump, u, for effecting the circulation of the water, and the branch pipe v, having a three-way cock for enabling the circulating water to be taken either from the outer water or from the bilge, substantially as described.
+
+10. In a vessel propelled by a gas motor-engine, the combination, with the gas motor-engine, of a screw-propeller whose shaft is capable of sliding longitudinally and is geared to the engine-shaft by a friction-coupling, means for longitudinally shifting the propeller-shaft for varying the speed, stopping, and reversing, a low-pressure gas-reservoir for supplying the gas motor-engine with combustible gas, and one or more high-pressure gas-holders that supply the low-pressure reservoir through reducing cocks or valves, substantially as herein described.
+
+In testimony whereof I have signed my name to this specification, in the presence of two subscribing witnesses, this 23d day of October, A. D. 1886.
+
+GOTTLIEB DAIMLER.
+
+Witnesses:
+WILHELM MAYBACH.
+HERMAN KEPPLER.

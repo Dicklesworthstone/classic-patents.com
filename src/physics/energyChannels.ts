@@ -1,11 +1,9 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
 import {
   stepCorlissEngine,
-  stepDaimlerEngine,
   stepDavenportMotor,
   stepDeForestAudion,
   stepEdisonBulb,
-  stepEdisonIndicator,
   stepEinsteinRefrigerator,
   stepEricssonPropeller,
   stepHallAluminium,
@@ -13,7 +11,6 @@ import {
   stepMaximMachineGun,
   stepOttoEngine,
   stepParsonsTurbine,
-  stepPeltonWheel,
   stepThomsonWelding,
   stepWattCondenser,
 } from "./catalogKernels";
@@ -202,21 +199,15 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-361931-daimler-engine") {
-    const daimler = stepDaimlerEngine({
-      engineRpm: params.engineRpm,
-      hotTubeTempC: params.hotTubeTemp,
-      differentialSlipAngleDeg: params.turnAngle,
-    });
-    return [
-      { name: "Brake", watts: daimler.brakeHorsepower * MECHANICAL_HORSEPOWER_W, tone: "useful" },
-    ];
+    // US 361,931 describes the marine coupling, reversing, cooling, steering,
+    // starting, and gas-storage arrangement but supplies no closed power
+    // balance or numerical motor operating point.
+    return [];
   }
   if (patentId === "us-233692-pelton-water-wheel") {
-    const pelton = stepPeltonWheel({
-      headMeters: params.headMeters,
-      runnerRpm: params.runnerRpm,
-    });
-    return [{ name: "Shaft", watts: pelton.shaftPowerKw * 1000, tone: "useful" }];
+    // US 233,692 prints no water head, flow, wheel speed, force, efficiency,
+    // or shaft-power value from which a quantitative channel can be derived.
+    return [];
   }
   if (patentId === "us-470918-reno-escalator") {
     const reno = stepRenoEscalator({
@@ -264,11 +255,10 @@ export function energyChannelsFor(
     ];
   }
   if (patentId === "us-307031-edison-indicator") {
-    const lamp = stepEdisonIndicator({
-      mainsVoltageV: params.mainsVoltageV,
-      galvanometerTorsionNullV: params.galvanometerTorsionNullV,
-    });
-    return [{ name: "Filament", watts: lamp.filamentPowerW, tone: "in" }];
+    // US 307,031 states the circuit topology and qualitative indication
+    // relationship, but prints no voltage, current, resistance, temperature,
+    // or power values from which a source-faithful channel can be computed.
+    return [];
   }
   if (patentId === "gb-913-watt-separate-condenser") {
     const watt = stepWattCondenser({

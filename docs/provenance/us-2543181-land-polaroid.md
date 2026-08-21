@@ -237,14 +237,15 @@ against the cloud rasters for pages 21–24, including the page-21 continuation
 and the claim-3 punctuation correction; no claim mapper, parser, or generated
 decoder was introduced.
 
-This checkpoint is still held: pages 1–8 contain authored drawing summaries
-rather than literal sheet matter (and the first four sheets require correction
-to the confirmed Serial No. 64,870), small claim glyphs remain unresolved, and
-pages 21–24 now have a cloud-raster claim pass covering printed claims 1–20;
-the pages 25–32 checkpoint is held pending image-level acceptance. Every sampled Land v2 figure crop is rejected
-for the isolation/completeness failures recorded in §4, so no crop is mapped by
-the edition. No source PDF bytes, figure assets, registry, test, or build
-artifacts were changed. The edition remains unbound with
+This checkpoint is still held: pages 1–8 now carry a literal visible-sheet
+reconciliation (including the repeated printed headers, Figure labels,
+reference numerals, and inventor/attorney signature matter), while small claim
+glyphs remain unresolved and pages 21–24 retain their cloud-raster claim pass
+covering printed claims 1–20. The pages 25–32 checkpoint is held pending
+image-level acceptance. Every sampled Land v2 figure crop is rejected for the
+isolation/completeness failures recorded in §4, so no crop is mapped by the
+edition. No source PDF bytes, figure assets, registry, test, or build artifacts
+were changed. The edition remains unbound with
 `completeFacsimileReviewed: false`.
 
 ## 8. Pages 25–32 continuation checkpoint
@@ -361,3 +362,78 @@ primary exposes page-image endpoints such as
 v3 split previews are to be added only after the host load gate permits
 source-pixel cropping and each file passes independent visual acceptance; no
 old asset was overwritten.
+
+## 10. Independent v2 crop audit and formal-matter repair
+
+On 2026-08-21, the fourteen preserved v2 crops for Figures 11–24 were opened
+with lightweight local image viewing only. No rasterization, OCR, or crop
+generation was performed. Every candidate is rejected under the same hard
+criteria: upright orientation, complete target figure, all labels/numerals and
+leaders retained, and no header, signature, or neighboring-figure
+contamination.
+
+| Crop | Orientation | Complete target | Labels/leaders | Contamination | Verdict |
+| :--- | :---: | :---: | :---: | :--- | :--- |
+| `fig-11-source-crop-v2.png` | Pass | Pass | Pass | Figure 13 fragment below | REJECT |
+| `fig-12-source-crop-v2.png` | Pass | Reject | Reject | Figure 11 fragment clipped at top/left | REJECT |
+| `fig-13-source-crop-v2.png` | Pass | Pass | Pass | Inventor/attorney signature below | REJECT |
+| `fig-14-source-crop-v2.png` | Pass | Reject | Reject | Figure 15 below; right-side target content clipped | REJECT |
+| `fig-15-source-crop-v2.png` | Pass | Reject | Pass | Figure 16 below and target boundary clipped | REJECT |
+| `fig-16-source-crop-v2.png` | Pass | Reject | Pass | Figure 15 above and Figure 17 below | REJECT |
+| `fig-17-source-crop-v2.png` | Pass | Pass | Pass | Inventor/attorney signature below | REJECT |
+| `fig-18-source-crop-v2.png` | Pass | Reject | Reject | Figure 19 below; left labels clipped | REJECT |
+| `fig-19-source-crop-v2.png` | Pass | Reject | Reject | Figure 20 below; target boundary clipped | REJECT |
+| `fig-20-source-crop-v2.png` | Pass | Reject | Reject | Severe clipping; only label/fragments retained | REJECT |
+| `fig-21-source-crop-v2.png` | Pass | Reject | Reject | Figure 22 below and inventor/attorney signature at right | REJECT |
+| `fig-22-source-crop-v2.png` | Pass | Reject | Reject | Severe clipping; neighboring/signature material | REJECT |
+| `fig-23-source-crop-v2.png` | Pass | Reject | Pass | Figure 24 below | REJECT |
+| `fig-24-source-crop-v2.png` | Pass | Reject | Reject | Severe clipping and inventor/attorney signature at right | REJECT |
+
+The continuous edition now also carries the source-grounded final formal
+matter after Claim 116: the printed `EDWIN H. LAND.` line, the `REFERENCES
+CITED` heading, and all 24 United States plus 9 foreign references from the
+final ledger page. The two added paragraph blocks are covered by the current
+edition-index companion map. This repair does not alter the publication hold:
+all figure references remain without previews, the v2 assets remain rejected
+and unreferenced, and `completeFacsimileReviewed` remains `false`.
+
+## 11. Pages 1–8 cloud visual literal-sheet reconciliation
+
+On 2026-08-21, the eight drawing sheets were read from the official
+high-resolution page-image endpoints
+`https://patentimages.storage.googleapis.com/pages/US2543181-0.png` through
+`US2543181-7.png`, with the Google Patents PDF as the primary record. No local
+OCR, PDF rasterization, image crop generation, or text-layer substitution was
+used. The bracketed signature notation below records visible handwriting and
+does not claim that the handwriting is ordinary printed source prose.
+
+| PDF page | Printed sheet / figures | Literal visible coverage |
+| :--- | :--- | :--- |
+| 1 | 8 Sheets—Sheet 1; Figure 1 | Header `Feb. 27, 1951`, `E. H. LAND`, `2,543,181`, title, `Filed Dec. 11, 1948`; labels Transparent Base, Image Receiving Layer, Photosensitive Layer, Liquid Containing and Distributing Means, Liquid Containing Layer, Porous Layer, Frangible Liquid-Retaining Wall, Water-Vapor Impervious Coating, EXPOSE AND RELEASE LIQUID, White Precipitate, Positive Image, Negative Image, Transfer Print, STRIP, and OBTAIN TRANSFER PRINT; numerals 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56; inventor/attorney matter. |
+| 2 | 8 Sheets—Sheet 2; Figures 2–4 | Labels Liquid, Frangible Retaining Wall, Cells, Base Member, Photosensitive Layer, Base, Permeable Anti-Halation Coating, Positive Image Receiving Layer, Positive Print Layer, and Liquid Containing and Distributing Means; numerals 46a, 48, 60, 62, 64, 66, 68, 70, 70a, 72, 74, 74a, and 76; inventor/attorney matter. |
+| 3 | 8 Sheets—Sheet 3; Figures 5–8 | Labels Liquid Containing and Distributing Means, Photosensitive Layer, Opaque Porous Layer, Base, Positive Image Receiving Layer, Ruptured Retaining Wall, Exposed Photosensitive Layer, Transfer Prints, Solarized Photosensitive Layer, Porous Layer, Frangible Wall, Porous Liquid Containing Layer, Transparent Film Base, and Water Permeable Layer; numerals 60, 66, 68, 80, 80a, 80b, 81, 82, 82a, 83, 84, 85, 86, 87, 88, 89, 90, 91; inventor/attorney matter. |
+| 4 | 8 Sheets—Sheet 4; Figures 9–10 | Figure 9 labels Liquid Containing Means and Rupturable Membrane; Figure 10 visibly carries numerals 92, 92a, 92b, 94, 96, 100, and 102; inventor/attorney matter. |
+| 5 | 8 Sheets—Sheet 5; Figures 11–13 | Figure 11 marks 110, 112, F, 114, 116, 118, 119, 120; Figure 12 marks F', 112a, 121; Figure 13 marks F, 122, 124, 126, 126'; inventor/attorney matter. |
+| 6 | 8 Sheets—Sheet 6; Figures 14–17 | Figure 14 labels Liquid Containing Means, Base, Photosensitive Layer, Image Receiving Layer and marks 210, 212, 214, 216, 218, 220; Figure 15 marks 218; Figure 16 marks 218, 222; Figure 17 labels Liquid Containing Means, Base, Image Receiving Layer and marks 214, 216, 218, 220, 224; inventor/attorney matter. |
+| 7 | 8 Sheets—Sheet 7; Figures 18–22 | Figure 18 labels Coating, Metal Foil, Paper Backing, Sealing Strip and marks 230, 230a, 230b, 230c, 232, 234, 236; Figure 19 marks 240, 232, 234; Figure 20 marks 20—20, 230, 235, 240, 234; Figure 21 labels Container, Sheet Support and marks 240, 242, 234; Figure 22 labels Photosensitive Layer, Film Base, Print Receiving Layer and marks 246, 240, 248, 242; inventor/attorney matter. |
+| 8 | 8 Sheets—Sheet 8; Figures 23–24 | Figure 23 labels Opaque Barrier, Photosensitive Layer, Container, Print Receiving Layer and marks 294, 300, 310, 312, 314, 318, 319, 320, 322; Figure 24 labels Porous Retainer, Frangible Container, Sheet Support and marks 242, 350, 352; inventor/attorney matter. |
+
+Each sheet visibly ends with `INVENTOR`, the handwritten Edwin H. Land
+signature, `BY`, the handwritten signature read as Donald P. Brown, and
+`Attorney`. The ledger records these as bracketed handwriting annotations;
+the edition's figure-sheet descriptions use the same boundary. This is a
+literal-sheet source repair, not complete-facsimile acceptance: the figure
+references still have no accepted preview files, all fourteen v2 crops remain
+rejected, the canonical record remains unbound, and
+`completeFacsimileReviewed` remains `false`.
+
+The edition's authored reference-node occurrence map is complete and source
+ordered: Figure 1 (9), 2 (6), 3 (5), 4 (3), 5 (4), 6 (1), 7 (1), 8 (1), 9
+(5), 10 (2), 11 (6), 12 (2), 13 (2), 14 (8), 15 (3), 16 (2), 17 (3), 18
+(3), 19 (2), 20 (3), 21 (3), 22 (2), 23 (3), and 24 (2). These are 79
+authored reference inline nodes; expanding the two range references (`Figs.
+14 to 17` and `Figs. 14 and 15`) yields 80 individual figure-number
+occurrences. The exact source-sheet map is Figures 1 → PDF page 1 / Sheet 1,
+2–4 → page 2 / Sheet 2, 5–8 → page 3 / Sheet 3, 9–10 → page 4 / Sheet 4,
+11–13 → page 5 / Sheet 5, 14–17 → page 6 / Sheet 6, 18–22 → page 7 / Sheet
+7, and 23–24 → page 8 / Sheet 8.

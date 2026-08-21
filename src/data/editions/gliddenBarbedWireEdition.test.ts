@@ -113,6 +113,44 @@ describe("US 157,124 manual source edition", () => {
     }
   });
 
+  test("records the cloud-reviewed upright crop contract while preserving the held legacy previews", () => {
+    const provenance = readFileSync(
+      resolve(process.cwd(), "docs/provenance/us-157124-glidden-barbed-wire.md"),
+      "utf8",
+    );
+    expect(provenance).toContain(
+      "https://patentimages.storage.googleapis.com/2c/55/5c/a19dadfbcdf4e7/US157124-drawings-page-1.png",
+    );
+    expect(provenance).toContain("2320 x 3408");
+    expect(provenance).toContain("all three currently served local previews are held as");
+    expect(provenance).toContain("fig-1-source-crop-v1.png");
+    expect(provenance).toContain("(430, 900, 720, 1900)");
+    expect(provenance).toContain("fig-2-source-crop-v1.png");
+    expect(provenance).toContain("(1500, 1780, 520, 520)");
+    expect(provenance).toContain("fig-3-source-crop-v1.png");
+    expect(provenance).toContain("(1360, 700, 700, 900)");
+    expect(provenance).toContain("must preserve the cloud image's portrait orientation");
+
+    const previewSources = gliddenBarbedWireArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.flatMap((inline) =>
+        inline.kind === "reference"
+          ? (inline.figurePreviews ?? []).map((preview) => preview.src)
+          : [],
+      );
+    });
+    expect(previewSources).toContain(
+      "/patents/figures/us-157124-glidden-barbed-wire/fig-1-source-crop.png",
+    );
+    expect(previewSources).toContain(
+      "/patents/figures/us-157124-glidden-barbed-wire/fig-2-source-crop-v2.png",
+    );
+    expect(previewSources).toContain(
+      "/patents/figures/us-157124-glidden-barbed-wire/fig-3-source-crop.png",
+    );
+    expect(previewSources.every((src) => !src.endsWith("-v1.png"))).toBe(true);
+  });
+
   test("keeps the source drawing-sheet header and printed z strand instead of editorial replacements", () => {
     const ledger = readFileSync(
       resolve(
@@ -138,6 +176,57 @@ describe("US 157,124 manual source edition", () => {
     expect(visible).toContain("two strands, a and z");
     expect(visible).not.toContain("a′");
     expect(visible).not.toContain("a-prime");
+  });
+
+  test("keeps the single printed claim sourced from the edition block", () => {
+    const claimBlock = gliddenBarbedWireArchivalEdition.blocks.find(
+      (block) => block.kind === "claim" && block.number === 1,
+    );
+    if (!claimBlock || claimBlock.kind !== "claim") {
+      throw new Error("Glidden edition is missing its printed claim block.");
+    }
+    expect(gliddenBarbedWirePatent.claims).toHaveLength(1);
+    expect(gliddenBarbedWirePatent.claims[0]?.originalText).toBe(
+      claimBlock.inlines.map((inline) => inline.text).join(""),
+    );
+  });
+
+  test("keeps historical term annotations substantive and occurrence-local", () => {
+    const terms = gliddenBarbedWireArchivalEdition.blocks.flatMap((block) => {
+      if (!("inlines" in block)) return [];
+      return block.inlines.filter(
+        (inline): inline is Extract<(typeof block.inlines)[number], { kind: "term" }> =>
+          inline.kind === "term",
+      );
+    });
+    expect(terms.map((entry) => entry.text)).toEqual([
+      "spur-wire",
+      "twisting-key or head-piece",
+      "twisting-key",
+      "spur-wires",
+    ]);
+    for (const entry of terms) {
+      expect(entry.definition.length).toBeGreaterThan(80);
+    }
+  });
+
+  test("keeps the canonical drawing inventory aligned with the cloud source label plan", () => {
+    const labelsFor = (figureNumber: string) =>
+      gliddenBarbedWirePatent.drawings
+        .find((drawing) => drawing.figureNumber === figureNumber)
+        ?.callouts.map((callout) => callout.label)
+        .sort();
+    expect(labelsFor("Fig. 1")).toEqual(["A", "B", "C", "D", "b", "c"].sort());
+    expect(labelsFor("Fig. 2")).toEqual(["D", "E", "a", "s", "z"].sort());
+    expect(labelsFor("Fig. 3")).toEqual(["D", "E", "a", "s", "z"].sort());
+    for (const drawing of gliddenBarbedWirePatent.drawings) {
+      for (const callout of drawing.callouts) {
+        expect(callout.x).toBeGreaterThanOrEqual(0);
+        expect(callout.x).toBeLessThanOrEqual(100);
+        expect(callout.y).toBeGreaterThanOrEqual(0);
+        expect(callout.y).toBeLessThanOrEqual(100);
+      }
+    }
   });
 
   test("removes invented claims, materials, and dimensions from the public record", () => {

@@ -64,6 +64,11 @@ export const peltonWaterWheelArchivalEdition: Omit<
       ],
     },
     {
+      kind: "heading",
+      level: 3,
+      text: "Drawing sheet: printed title and execution matter",
+    },
+    {
       kind: "figure-sheet",
       figureLabel: "FIGURES 1-4",
       title: "Wheel, water-distribution arrangement, bucket, and bucket section",
@@ -165,37 +170,37 @@ export const peltonWaterWheelArchivalEdition: Omit<
 };
 
 export const peltonWaterWheelParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  2: ["This is the conventional notice that opens the specification."],
-  3: [
+  3: ["This is the conventional notice that opens the specification."],
+  4: [
     "Pelton identifies himself, Camptonville, Yuba County, and California, then offers the full technical account that follows.",
   ],
-  4: [
+  5: [
     "Pelton calls the relevant machines “hurdy-gurdy” wheels. He defines them by their mode of drive: a pressurized stream enters buckets around the rim. The cited failure is not a measured efficiency number. It is splash and reaction against the next bucket when a flat or flat-bottomed bucket receives the jet.",
   ],
-  5: [
+  6: [
     "The proposed bucket splits the incoming stream at its center. Each half enters its own curved bottom, travels upward along an outward-flaring side, and exits away from both the following bucket and the wheel. Pelton's stated gain is that the momentum delivered at entry is supplemented by the force associated with changing the stream's direction.",
   ],
-  6: [
+  7: [
     "The four figures separate the overall wheel, the water-distribution arrangement, a perspective bucket, and a cross-section of that bucket. The references open cropped portions of the historical drawing sheet rather than a generic turbine illustration.",
   ],
-  7: [
+  8: [
     "The wheel has a flat rim face carrying buckets B. Each bucket may be separate or integral with the rim. Its two curved bottoms c meet at central apex d. The jet strikes d, divides in two, passes down the curved bottoms, rises along sides e, and exits laterally. The source's mechanism is the full bucket geometry, not merely a center splitter considered alone.",
   ],
-  8: [
+  9: [
     "The sloped front b keeps a bucket that is not yet in position from cutting through the jet. Once the bucket reaches the stream line, the stream meets the apex d instead of the front face.",
   ],
-  9: [
+  10: [
     "Pelton permits one or more nozzles. In the illustrated two-nozzle arrangement, each nozzle is aimed so a bucket has time to drain before another nozzle reaches it. The claimed bucket can therefore be used in a multiple-nozzle layout without enlarging the bucket area.",
   ],
-  10: [
+  11: [
     "Pelton allows variations in exact form but names three features he will not discard: a two-part bucket, the dividing apex, and curved bottoms with flaring discharge sides.",
   ],
-  11: [
+  12: [
     "The following single claim defines the protected combination. It is not a broad claim to every split-cup wheel or every high-head hydroelectric system.",
   ],
-  13: ["The execution line records Pelton's adoption of the completed specification."],
-  14: ["Lester A. Pelton signs the instrument."],
-  15: ["S. H. Nourse and Frank A. Brooks are listed as witnesses to execution."],
+  14: ["The execution line records Pelton's adoption of the completed specification."],
+  15: ["Lester A. Pelton signs the instrument."],
+  16: ["S. H. Nourse and Frank A. Brooks are listed as witnesses to execution."],
 };
 
 /** Read the sole printed claim from the authored edition, never a duplicate literal. */

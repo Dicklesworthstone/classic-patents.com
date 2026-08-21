@@ -84,6 +84,19 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
     }
   });
 
+  it("keeps every canonical claim synchronized with the explicit edition nodes", () => {
+    expect(edisonIndicatorPatent.claims).toHaveLength(8);
+    const ledgerText = readFileSync(ledgerPath, "utf8");
+
+    for (const claim of edisonIndicatorPatent.claims) {
+      expect(claim.originalText).toBe(edisonIndicatorClaimText(claim.number));
+      expect(ledgerText).toContain(claim.originalText);
+      expect(claim.plainEnglish.trim().split(/\s+/).length).toBeGreaterThanOrEqual(30);
+      expect(claim.keyInnovations.length).toBeGreaterThan(0);
+      expect(new Set(claim.keyInnovations).size).toBe(claim.keyInnovations.length);
+    }
+  });
+
   it("provides non-empty parallel readings for every paragraph block", () => {
     edisonIndicatorArchivalEdition.blocks.forEach((block, index) => {
       if (block.kind === "paragraph") {

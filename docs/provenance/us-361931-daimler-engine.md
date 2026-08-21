@@ -27,9 +27,9 @@ about any third-party website's terms or scan-specific rights.
 
 | PDF page | Source-facing material reviewed | Used in the edition |
 | --- | --- | --- |
-| 1 | Drawing sheet 1 of 3: title header, Figure 1, drawing-sheet witness and attorney signatures | Figure-sheet block; `/patents/figures/us-361931-daimler-engine-fig-1.png` |
-| 2 | Drawing sheet 2 of 3: title header, Figures 2, 4, 4a, 4b, 5, and 6 | Figure-sheet block; `/patents/figures/us-361931-daimler-engine-fig-2.png` |
-| 3 | Drawing sheet 3 of 3: title header and Figure 3 plan | Figure-sheet block; `/patents/figures/us-361931-daimler-engine-fig-3.png` |
+| 1 | Drawing sheet 1 of 3: title header, Figure 1, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-1-source-crop-v1.png` |
+| 2 | Drawing sheet 2 of 3: title header, Figures 2, 4, 4a, 4b, 5, and 6, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-2-source-crop-v2.png`, `fig-4-source-crop-v1.png`, `fig-4a-source-crop-v1.png`, `fig-4b-source-crop-v1.png`, `fig-5-source-crop-v2.png`, `fig-6-source-crop-v1.png` |
+| 3 | Drawing sheet 3 of 3: title header, Figure 3 plan, `(No Model.)`, witness names, inventor/attorney line, and N. Peters imprint | Figure-sheet block; `/patents/figures/us-361931-daimler-engine/fig-3-source-crop-v1.png` |
 | 4 | Patent Office heading, title, grant and application data, inventor declaration, object, improvement list, figure key, and forward/reverse coupling description | Manual-edition masthead and paragraphs through the reverse coupling introduction |
 | 5 | Continuation of reverse coupling, springs and controls, steering, thrust-bearing starter, cooling, bilge-water and gas-storage descriptions; start of claim 1 | Manual-edition paragraphs and claims 1–10 source text |
 | 6 | Completion of claim 1, claims 2–10, execution statement, Daimler signature, and Maybach/Keppler witness names | Claim blocks 1–10 and final execution paragraphs |
@@ -39,7 +39,9 @@ about any third-party website's terms or scan-specific rights.
 1. The immutable primary facsimile remains
    `public/patents/pdfs/us-361931-daimler-engine.pdf`.
 2. The reviewed, complete public transcription is
-   `public/patents/transcripts/us-361931-daimler-engine.txt`.
+   `public/patents/transcripts/us-361931-daimler-engine-reviewed.txt`. The
+   earlier path is retained as an immutable pre-correction artifact and is
+   not the record's active source-text URL.
 3. The hand-authored continuous edition is
    `src/data/editions/us-361931-daimler-engine.ts`; it has explicit source
    blocks, figure references and a patent-local paragraph companion map.
@@ -67,3 +69,23 @@ It is preserved for audit and is not evidence for the new transcription.
 No vehicle-carriage text, road-wheel differential, automotive performance
 number, Selden litigation account, or automobile-company history is retained
 in the corrected record. None appears in this six-page primary facsimile.
+
+## Cloud-source vNext crop requests
+
+The following are deterministic crop requests against the official drawing
+sheet rasters (each raster is 1238 × 1818 pixels). Coordinates are integer
+`[x0, y0, x1, y1]`, with the right and bottom edge excluded. They are a cloud
+handoff only: no crop was generated or rewritten on this machine. Each request
+must omit the sheet header, signatures, neighboring figure, and page edge while
+retaining the complete target, printed label, leaders, and numerals.
+
+| PDF page / target | Cloud vNext asset | Source rectangle | Authored mapping |
+| --- | --- | --- | --- |
+| 1 / Fig. 1 | `fig-1-source-crop-v2.png` | `[235, 215, 1010, 1480]` | Fig. 1 longitudinal vessel installation; claims 1–3 |
+| 2 / Fig. 2 | `fig-2-source-crop-v3.png` | `[155, 245, 1015, 825]` | Fig. 2 cross-section; claims 1–4 |
+| 2 / Fig. 4 | `fig-4-source-crop-v2.png` | `[145, 1060, 405, 1395]` | Fig. 4 thrust-bearing; claim 5 |
+| 2 / Fig. 4a | `fig-4a-source-crop-v2.png` | `[145, 1375, 405, 1575]` | Fig. 4a sliding-pin detail; claim 5 |
+| 2 / Fig. 4b | `fig-4b-source-crop-v2.png` | `[380, 1040, 620, 1505]` | Fig. 4b crank-handle detail; claim 5 |
+| 2 / Fig. 5 | `fig-5-source-crop-v3.png` | `[150, 735, 1015, 1045]` | Fig. 5 high-pressure gas-holder section; claim 10 |
+| 2 / Fig. 6 | `fig-6-source-crop-v2.png` | `[505, 1040, 1015, 1425]` | Fig. 6 transverse gas-holder section; claim 10 |
+| 3 / Fig. 3 | `fig-3-source-crop-v2.png` | `[235, 215, 1010, 1480]` | Fig. 3 plan of vessel installation; claims 1, 6, and 10 |

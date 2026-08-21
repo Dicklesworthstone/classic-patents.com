@@ -74,6 +74,81 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Spencer's public card within the wavelength region printed by US 2,495,429", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-2495429-spencer-microwave"];
+    expect(cards.map((card) => card.id)).toEqual(["spencer-source-wavelength-region"]);
+    expect(cards[0]?.rawLatex).toContain("10\\,\\mathrm{cm}");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    for (const unsupported of [
+      "2.45 ghz",
+      "2450",
+      "hull cutoff",
+      "dielectric loss",
+      "popcorn",
+      "anode voltage",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Edison Indicator's public card within the circuit topology printed by US 307,031", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-307031-edison-indicator"];
+    expect(cards.map((card) => card.id)).toEqual(["edison-indicator-source-circuit-path"]);
+    expect(cards[0]?.rawLatex).toContain("terminal in vacuous globe");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    for (const unsupported of [
+      "richardson",
+      "4.60 ev",
+      "1900",
+      "2200",
+      "carbonized bamboo",
+      "current density",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Daimler's public card within the marine coupling relation printed by US 361,931", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-361931-daimler-engine"];
+    expect(cards.map((card) => card.id)).toEqual(["daimler-source-thrust-maintained-coupling"]);
+    expect(cards[0]?.rawLatex).toContain("propeller thrust");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    for (const unsupported of [
+      "standuhr",
+      "hot-tube",
+      "800 rpm",
+      "264",
+      "4.5-meter",
+      "motorcycle",
+      "automobile",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
+  test("keeps Pelton's public card on the bucket geometry printed by US 233,692", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-233692-pelton-water-wheel"];
+    expect(cards.map((card) => card.id)).toEqual(["pelton-source-bucket-path"]);
+    expect(cards[0]?.rawLatex).toContain("c_{\\mathrm{left/right}}");
+
+    const publicCopy = JSON.stringify(cards).toLowerCase();
+    for (const unsupported of [
+      "165-degree",
+      "165^",
+      "90%",
+      "88%",
+      "water head",
+      "wheel rpm",
+      "shaft power",
+      "needle spear",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("keeps Goddard US 1,102,653 on its printed solid-charge tapered-tube limitation", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-1102653-goddard-rocket"];
     expect(cards.map((card) => card.id)).toEqual(["goddard-source-tapered-tube-minimum"]);

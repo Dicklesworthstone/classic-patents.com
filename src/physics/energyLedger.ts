@@ -99,14 +99,14 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-2495429-spencer-microwave": {
-      const powerW = params.rfPowerWatts ?? 800.0;
-      const anodeV = params.anodeVoltage ?? 2200.0;
-      // Stored cavity EM resonant field energy
-      em = (powerW / (2 * Math.PI * 2.45e9)) * 50.0; // Q-factor scaled
-      const anodeCurrentA = powerW / (anodeV * 0.62); // 62% magnetron efficiency
-      powerIn = anodeV * anodeCurrentA; // DC anode electrical input
-      dissipated = powerW; // Dielectric heating in food load
-      thermal = 0.5 * 4184.0 * 25.0; // 500g water thermal capacity
+      // US 2,495,429 gives comparative cooking-energy observations, but it
+      // does not specify the electrical input, cavity Q, conversion
+      // efficiency, food mass, or a closed energy balance for the illustrated
+      // apparatus. Refuse a numeric ledger instead of inventing those values.
+      powerIn = 0;
+      em = 0;
+      thermal = 0;
+      dissipated = 0;
       break;
     }
 
@@ -280,16 +280,9 @@ export function computePortHamiltonianEnergy(
 
     case "us-233692-pelton-water-wheel":
     case "us-233692-pelton-wheel": {
-      const headM = params.waterHeadM ?? 150.0;
-      const flowLps = params.flowRateLps ?? 45.0;
-      const rpm = params.wheelRpm ?? 320.0;
-      const omega = (rpm * 2 * Math.PI) / 60;
-
-      // Hydraulic input power P_in = rho * g * Q * H
-      powerIn = 1000.0 * 9.80665 * (flowLps / 1000.0) * headM;
-      kinetic = 0.5 * 18.5 * omega * omega; // Runner flywheel kinetic energy
-      potential = 1000.0 * (flowLps / 1000.0) * 9.80665 * 2.0; // Tailrace discharge head
-      dissipated = powerIn * 0.12; // Fluid splash & bearing friction (88% efficiency)
+      // The grant gives bucket geometry but no head, flow, runner inertia,
+      // speed, tailrace elevation, loss fraction, or efficiency. Keep the
+      // energy ledger at its zero/unsupported boundary.
       break;
     }
 
@@ -321,13 +314,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-361931-daimler-engine": {
-      const rpm = params.engineRpm ?? 800.0;
-      const omega = (rpm * 2 * Math.PI) / 60.0;
-      const twinFlywheelsInertia = 0.85; // Twin enclosed crankcase flywheels
-      kinetic = 0.5 * twinFlywheelsInertia * omega * omega;
-      powerIn = 1.1 * 745.7; // 1.1 Brake Horsepower gasoline combustion rate
-      thermal = 18000.0; // Enclosed aluminium/iron crankcase thermal mass
-      dissipated = powerIn * 0.8; // Cylinder cooling air + exhaust enthalpy
+      // The grant does not print a motor speed, power, inertia, material heat
+      // capacity, or loss budget. Preserve the zero/unsupported ledger instead
+      // of manufacturing a closed balance for its marine installation.
       break;
     }
 
@@ -671,12 +660,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-307031-edison-indicator": {
-      const mainsVoltageV = params.mainsVoltageV ?? 110.0;
-      const emissionCurrentUa = params.emissionCurrentUa ?? 85.0;
-      powerIn = (mainsVoltageV * mainsVoltageV) / 110.0 + mainsVoltageV * (emissionCurrentUa / 1e6);
-      em = 0.5 * 12.0e-12 * mainsVoltageV * mainsVoltageV; // Platinum plate electrostatic field
-      thermal = 0.0008 * 710.0 * (2250.0 - 293.15); // Carbon filament thermal capacity
-      dissipated = powerIn * 0.99; // Stefan-Boltzmann thermal radiation
+      // The grant prints no operating voltage, current, capacitance,
+      // temperature, material heat capacity, or radiative-loss measurement.
+      // A quantitative energy ledger would therefore be invented.
       break;
     }
 

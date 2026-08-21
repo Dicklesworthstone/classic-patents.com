@@ -509,11 +509,41 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     {
       kind: "figure-sheet",
+      figureLabel: "FIGURES 1–4",
+      title: "Film-stack and liquid-containing means",
+      description: [
+        text(
+          "The pinned Sheet 1 drawing visibly labels Transparent Base, Image Receiving Layer, Photosensitive Layer, Liquid Containing and Distributing Means, Liquid Containing Layer, Porous Layer, Frangible Liquid-Retaining Wall, Water-Vapor Impervious Coating, White Precipitate, Positive Image, Negative Image, Transfer Print, EXPOSE AND RELEASE LIQUID, STRIP, and OBTAIN TRANSFER PRINT; reference numerals are 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, and 56. Sheet 2 visibly labels Liquid, Frangible Retaining Wall, Cells, Base Member, Photosensitive Layer, Base, Permeable Anti-Halation Coating, Positive Image Receiving Layer, and Positive Print Layer; reference numerals are 46a, 48, 60, 62, 64, 66, 68, 70, 70a, 72, 74, 74a, and 76. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
+        ),
+      ],
+    },
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 5–8",
+      title: "Additional film-stack embodiments",
+      description: [
+        text(
+          "The pinned Sheet 3 drawing visibly labels Liquid Containing and Distributing Means, Photosensitive Layer, Opaque Porous Layer, Base, Positive Image Receiving Layer, Ruptured Retaining Wall, Exposed Photosensitive Layer, Transfer Prints, Solarized Photosensitive Layer, Porous Layer, Frangible Wall, Porous Liquid Containing Layer, Transparent Film Base, and Water Permeable Layer; reference numerals are 60, 66, 68, 80, 80a, 80b, 81, 82, 82a, 83, 84, 85, 86, 87, 88, 89, 90, and 91. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
+        ),
+      ],
+    },
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 9–10",
+      title: "Rupturable membrane and filling apparatus",
+      description: [
+        text(
+          "The pinned Sheet 4 drawing visibly labels Liquid Containing Means and Rupturable Membrane in Figure 9, then shows the Figure 10 reference numerals 92, 92a, 92b, 94, 96, 100, and 102; the sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
+        ),
+      ],
+    },
+    {
+      kind: "figure-sheet",
       figureLabel: "FIGURES 11–13",
       title: "Camera means and membrane-fracturing rolls",
       description: [
         text(
-          "The pinned Sheet 5 drawings are upright as printed. Figure 11 labels film roll 110, shutter and lens means 112, film F, rolls 114 and 116, film portion 118, film-cutting means 119, and film-frame discharge opening 120. Figure 12 labels film F', lens means 112a, and image-reversing optical element 121. Figure 13 labels film F, corrugations 126 and 126', rigid roll 122, and yielding roll 124.",
+          "The pinned Sheet 5 drawings visibly show Figure 11 reference marks 110, 112, F, 114, 116, 118, 119, and 120; Figure 12 marks F', 112a, and 121; and Figure 13 marks F, 122, 124, 126, and 126'. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
         ),
       ],
     },
@@ -523,7 +553,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       title: "Pod, reagent, and composite sheet constructions",
       description: [
         text(
-          "The pinned Sheet 6 drawings are upright as printed. Figure 14 labels film base 210, photosensitive layer 212, image receiving layer 214, base 216, pod 218, and reagent 220. Figure 15 shows pod 218. Figure 16 shows pod 218 and cavity 222. Figure 17 labels liquid-containing means 218, reagent 220, sheet 224, base 216, and image receiving layer 214.",
+          "The pinned Sheet 6 drawings visibly label Figure 14 Liquid Containing Means, Base, Photosensitive Layer, and Image Receiving Layer, with reference numerals 210, 212, 214, 216, 218, and 220; Figure 15 marks 218; Figure 16 marks 218 and 222; and Figure 17 labels Liquid Containing Means, Base, and Image Receiving Layer, with reference numerals 214, 216, 218, 220, and 224. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
         ),
       ],
     },
@@ -533,7 +563,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       title: "Multilayer container and composite products",
       description: [
         text(
-          "The pinned Sheet 7 drawings are upright as printed. Figure 18 labels sheet 230, layers 230a, 230b, and 230c, margins 232 and 234, space 235, and sealing strip 236. Figure 19 labels filled container 240, end margins 232, longitudinal margins 234, and section indicators 20–20. Figure 20 is the section through 230, 240, 235, and 234. Figure 21 labels container 240, sheet support 242, and margins 234. Figure 22 labels photosensitive layer 246, container 240, print receiving layer 248, and sheet support 242.",
+          "The pinned Sheet 7 drawings visibly label Figure 18 Coating, Metal Foil, Paper Backing, and Sealing Strip, with reference numerals 230, 230a, 230b, 230c, 232, 234, and 236; Figure 19 marks 240, 232, and 234; Figure 20 marks 20—20, 230, 235, 240, and 234; Figure 21 labels Container and Sheet Support, with reference numerals 240, 242, and 234; and Figure 22 labels Photosensitive Layer, Film Base, and Print Receiving Layer, with reference numerals 246, 240, 248, and 242. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
         ),
       ],
     },
@@ -543,7 +573,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       title: "Hinged image unit and brittle tube retainer",
       description: [
         text(
-          "The pinned Sheet 8 drawings are upright as printed. Figure 23 labels opaque barrier 318, photosensitive layer 310, seal 294, container 300, hinges 314 and 319, print receiving layer 312, image receiving area 320, and marginal portions 322. Figure 24 labels sheet support 242, porous retainer 352, and frangible tube or container 350.",
+          "The pinned Sheet 8 drawings visibly label Figure 23 Opaque Barrier, Photosensitive Layer, Container, and Print Receiving Layer, with reference numerals 294, 300, 310, 312, 314, 318, 319, 320, and 322; and Figure 24 Porous Retainer, Frangible Container, and Sheet Support, with reference numerals 242, 350, and 352. The sheet closes with INVENTOR, the handwritten Edwin H. Land signature, BY, the handwritten Donald P. Brown signature, and Attorney.",
         ),
       ],
     },
@@ -743,53 +773,53 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
       text(
-        ". The camera mounts a roll 110 of film F and has conventional shutter and lens means 112 for exposing a frame. Two laterally spaced pairs of rolls 114 and 116 frictionally engage and positively drive the film. Leading rolls 116 drive at a higher linear velocity than rolls 114, placing film portion 118 under sufficient tension to fracture the retaining membrane. Rolls 116 also compress the film to assist complete discharge of the liquid.",
+        " and comprises means for operatively mounting, for example, a roll 110 of one of the films F of the invention, and shutter and lens means 112 of a conventional type adapted to effect exposure of a frame of said film. To release the developer and assist in the metering of the film after each exposure, two pairs 114 and 116 of laterally spaced rolls may be provided, each pair frictionally engaging said film to positively drive the latter and each being positively driven by the camera winding mechanism (not shown), which may be manually actuated. The leading pair of rolls 116 is adapted to drive the film at a higher linear velocity than the other pair 114, whereby film portion 118 between said rolls is subjected to a sufficient tension to fracture the liquid-retaining membrane. Rolls 116 also compress the film and thereby tend to insure a complete discharge of the liquid from the containing means therefor.",
       ),
     ),
     p(
       text(
-        "After rolls 116 meter the exposed frame, the actuating mechanism operates film-cutting means 119 to cut that frame from the remainder. Guideways direct the film as it travels from rolls 116 to the camera exit; the travel is sufficient for development and formation of the positive print. Opening 120 discharges the cut frame. With the films of ",
+        "After rolls 116 have metered the exposed frame therethrough, the actuating mechanism renders operative a film-cutting means 119 which cuts the exposed frame from the remainder of the film. The film as it travels from rolls 116 to the point at which it leaves the camera is guided by suitable guideways (not shown) and the travel is generally sufficient to insure development of the exposed area and formation of the positive print. An opening 120 is provided for discharging the cut film frame from the camera and if either of the films of ",
       ),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(" or "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
       text(
-        ", the positive print material may then be stripped from the remainder of the frame, including by suitable means within the camera. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame can thus be developed and printed without exposing the remainder of the film. It will be apparent that, in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed.",
+        ", the positive print material may then be stripped from the remainder of said film frame to provide the positive picture. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame may thus be developed and a print thereof formed without requiring that the remainder of the film be exposed. It will be apparent that in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed.",
       ),
     ),
     p(
-      text("Certain film means, including the film illustrated in "),
+      text("Certain of the film means, for example, the film illustrated in "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
       text(
-        ", give a positive print that is not corrected for reversal. A camera arrangement shown in ",
+        ", gives a positive print which is not corrected for reversal. Accordingly, camera means shown in ",
       ),
       ref("Fig. 12", "#fig-12", "Figure 12 — Modified camera means"),
       text(
-        " provides geometric reversal before projection onto the film frame. It comprises lens 112a and means similar to those in ",
+        " may effect geometric reversal of the image prior to its projection on the film frame. The camera comprises a lens 112a and means similar to those shown in ",
       ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
       text(
-        " for mounting film F'. Mirror 121 is positioned with respect to lens system 112a and film F' to reflect and reverse the light before it reaches the film; the mirror is disposed at substantially 45 degrees to the optical axis. The camera of ",
+        " for mounting the novel film F'. A mirror 121 is located with relation to lens system 112a and the plane of film F' so as to reflect and reverse light transmitted through the lens before it reaches said film, the mirror being disposed at an angle of substantially 45 degrees to the optical axis. The camera of ",
       ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
       text(
-        " may instead receive an attachment of prisms or mirrors to reverse the entering light.",
+        " may instead have an attachment comprising prisms or mirrors for reversing the entering light.",
       ),
     ),
     p(
       text("In the camera of "),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
       text(
-        ", rolls 114 and 116 uniformly stretch the film portion between them, but the membrane may also be fractured by differential stretching over a cylindrical roll or drum whose curvature is sufficient to stretch the membrane. The film may thereafter pass between friction rolls to ensure complete release of the liquid. Novel means shown in ",
+        ", rolls 114 and 116 operate to uniformly stretch the portion of film therebetween, but it is expressly understood that the liquid-retaining membrane can be fractured in various other ways. The several layers may be subjected to differential stretching by causing the film to travel under tension over a cylindrical roll or drum whose surface curvature is such that the membrane will be stretched sufficiently to fracture during this travel. The film may thereafter be compressed to insure complete release of the liquid by passing it between friction rolls. Novel means for fracturing the membrane and causing release of the liquid are shown in ",
       ),
       ref("Fig. 13", "#fig-13", "Figure 13 — Means for fracturing a membrane"),
       text(
-        " comprise rolls 122 and 124 between which film F travels. Roll 122 is preferably rigid metal with surface corrugations 126; roll 124 is yielding material such as rubber and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. Successive film lengths undergo differential stretching, ensuring at least one membrane fracture per predetermined unit length. The maximum distance between fractures is controlled by the radius and spacing of corrugations 126.",
+        " comprise a pair of rolls 122 and 124 between which film F is adapted to travel. Roll 122 is preferably formed of a rigid material, such as metal, and is provided with a plurality of surface corrugations 126. Roll 124 is formed of a yielding material, such as rubber, and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. When film F is metered between the rolls, successive lengths are subjected to differential stretching, insuring at least one fracture of the liquid-retaining membrane for each predetermined unit length. This unit length, the maximum distance separating fractures, may be controlled by controlling the radius of curvature and spacing of corrugations 126 on roll 122.",
       ),
     ),
     p(
       text(
-        "By controlling the thickness of the several layers, the liquid-retaining membrane may be located closer to one face of the film than the other. It may then be compressed when the film is wound in one direction and tensioned, sufficiently to fracture, when wound in the other direction. Liquid is retained when the film is wound in the first direction and released when wound in the other. For roll film, materials somewhat less vapor-impervious than paraffin may be used in sufficient thickness, including polyvinylidene chloride, polyvinyl acetate-chloride, and cellulose acetate butyrate. In a wound roll, the aggregate layers of vapor-resistant material prevent appreciable vapor loss for a relatively long time, although outer frames may eventually lose liquid by vaporization.",
+        "By controlling the thickness of the several layers, the liquid-retaining membrane may be located substantially closer to one face of the film than to the other. The membrane may thereby be subjected to compression when the film is wound in one direction and to tension when the film is wound in the other direction, the tension being sufficient to fracture the membrane. The liquid is retained whenever the film is wound in one direction and released whenever it is wound in the other direction. Where the novel film is to be used in roll form, a water-impervious material somewhat less vapor-impervious than paraffin may be used in sufficient thickness to prevent vapor loss. Satisfactory materials include polyvinylidene chloride, polyvinyl acetate-chloride, and cellulose acetate butyrate. When the film is wound as a roll, the aggregate layers of vapor-resistant material protect it from appreciable vapor loss for a relatively long time, although one or more outer frames may eventually lose liquid by vaporization.",
       ),
     ),
     p(
@@ -800,11 +830,11 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
         "Figures 14–17 — Viscous liquid-containing film and pod constructions",
       ),
       text(
-        " and comprises means for releasably containing a preferably viscous liquid adapted, when released, to permeate a predetermined area of a photosensitive layer. In the form illustrated in ",
+        " and comprises novel means for releasably containing a liquid, preferably viscous, adapted when released to permeate a predetermined area of a photosensitive layer to process the same. The liquid may comprise a film-forming high polymer which, upon release, also forms a layer that eventually solidifies; this component may serve as the thickening agent imparting high viscosity. The invention also comprehends a sheetlike product having a base and liquid-reagent containing means without a photosensitive layer, constructed to release the reagent when pressed into face-to-face contact with a photosensitive layer. In the form illustrated in ",
       ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
       text(
-        ", the photosensitive layer is an element of the composite product, which can carry out the foregoing transfer-print methods. The liquid may contain a film-forming high polymer; on release it both performs the desired processing and forms a layer that eventually solidifies. That film-forming component may also thicken the liquid and impart the desired viscosity.",
+        ", the photosensitive layer is an element of the composite product which can be employed to carry out the above described methods of forming transfer prints.",
       ),
     ),
     p(
@@ -816,27 +846,27 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       text("Referring to "),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
       text(
-        ", one form of the novel film means comprises film base 210, preferably transparent plastic such as a cellulose ester or mixed ester, supporting photosensitive layer 212 of a silver-halide or mixed-silver-halide emulsion. Adjacent layer 212 is image-receiving layer 214 of water-permeable material, including regenerated cellulose, polyvinyl alcohol, sodium alginate, certain cellulose ethers such as methyl cellulose and their derivatives, paper, gelatin, glue, gums, starch, or compatible mixtures. If the reagent contains a film-forming thickening agent, layer 214 may be selected from materials having an affinity for the film. It may be desirable that layer 214 and/or the film formed by the liquid reagent be nontransparent; a suitable pigment such as titanium dioxide can form a white, substantially opaque layer. Receiving layer 214 is mounted on base 216, which may be cellulose plastic, nylon-type plastic, polyvinyl plastic, or paper.",
+        ", one form of the novel film means comprises a film base 210 formed preferably of transparent plastic, such as cellulose acetate, cellulose nitrate, cellulose acetate propionate, or cellulose acetate butyrate. Base 210 supports a layer 212 of photosensitive material, such as a silver halide or mixed silver halide emulsion. Mounted adjacent layer 212 is an image-receiving layer 214 formed of a water-permeable material, for example regenerated cellulose, polyvinyl alcohol and other high-molecular-weight film-forming polyhydroxy alkanes, sodium alginate, certain of the cellulose ethers such as methyl cellulose and their derivatives such as sodium carboxymethyl cellulose or hydroxyethyl cellulose, papers, gelatin or glue, gums or starch, and compatible mixtures. If the reagent contains a film-forming thickening agent, layer 214 may be selected from those materials which have an affinity for the film. It may be desirable that layer 214 and/or the film formed by the liquid reagent be nontransparent, and it is possible to form a white and substantially opaque layer by incorporating in the materials used for film 214, or as the film-forming component of the liquid reagent, a suitable pigment, as, for example, titanium dioxide. Receiving layer 214 is mounted on a base 216 which may be any suitable base material such as a cellulose plastic, a nylon-type plastic, a polyvinyl plastic, or paper.",
       ),
     ),
     p(
       text(
-        "To releasably contain the reagent, the composite film has one or more elongated containers 218 in the form of sacs or pods mounted preferably transversely between layers 212 and 214. Each contains a sufficient quantity of liquid reagent to permeate a frame of the photosensitive layer and is adapted to release the reagent longitudinally in only one direction. One of sacs 218 is provided for each film frame, preferably adjacent the leading or trailing edge of the frame. The composite film may be provided as a roll, a film pack, or single frames. Sacs 218 are preferably formed so that suitable mechanical stress, such as squeezing together the faces of the composite film, releases the liquid reagent toward the exposed frame. As shown in ",
+        "To releasably contain the liquid reagent, the composite film is provided with one or more elongated containers 218 in the form of sacs or pods, preferably mounted transversely between layers 212 and 214. Each contains a sufficient quantity of liquid reagent to permeate a frame of the photosensitive layer of the composite film and is adapted to release said reagent longitudinally in only one direction. One of sacs 218 is provided for each film frame, preferably adjacent the leading or trailing edge of said frame. The composite film comprising these several layers and the container may be provided in the form of a roll or a film pack or in single frames. Sacs 218 are preferably so formed that the application of suitable mechanical stress thereto, as, for example, the squeezing together of the faces of the composite film, releases the liquid reagent in the direction of the exposed frame. As shown in ",
       ),
       ref("Figs. 14 and 15", "#fig-14", "Figures 14–15 — Pod construction"),
       text(
-        " of a single sheet of oxygen- and water-vapor-impervious material, such as wax-impregnated, metal-coated paper or wax-coated metal foil, the sheet is folded and one face is formed to obtain a cavity ",
+        ", pods 218 may be formed from a single sheet of oxygen- and water-vapor-impervious material, such as wax-impregnated, metal-coated paper or wax-coated metal foil. The sheet is folded and one face is subjected to a forming operation whereby a cavity ",
       ),
       text("222"),
       text(" as shown in "),
       ref("Fig. 16", "#fig-16", "Figure 16 — Sac before filling"),
       text(
-        ". The cavity is filled with liquid reagent, the faces are folded into engagement, and the edges are sealed by heat. To exclude oxygen, the cavity is completely filled or filling is carried out in an inert atmosphere. The seal breaks before the folded edge fractures, so pressure on the sac releases liquid from the side containing the seal. End seals offer greater resistance to separation than the longitudinal seal, producing a water-vapor-impervious container whose contents for relatively long periods will neither become dry nor oxidize.",
+        ", is obtained therein. This cavity is thereafter filled with the liquid reagent and the faces of the sheet are folded into engagement with one another and the edges sealed by the application of heat. To exclude oxygen, the cavity is completely filled or the filling operation is carried out in an inert atmosphere. The seal is such that it will break before the folded edge will fracture, so that upon application of pressure to the sac the liquid is released from the side of the sac containing the seal. The seals at the end of the sac are preferably formed so as to offer a greater resistance to separation than the longitudinal seal. There is thus obtained a water-vapor-impervious container whose contents for relatively long periods will neither become dry nor oxidize.",
       ),
     ),
     p(
       text(
-        "The reagent is preferably more than fifty centipoises in viscosity so it permeates the exposed frame completely and relatively uniformly. A substantially less viscous reagent may be absorbed too greatly in some portions of the photosensitive layer while other portions remain dry. Suitable thickening agents include gelatin and water-soluble, film-forming high-molecular-weight compounds such as hydroxyethyl cellulose and sodium or aluminum carboxymethyl cellulose; a spreading layer can thereby form a firm, dimensionally stable film.",
+        "The reagent is relatively viscous, preferably having a viscosity in excess of fifty centipoises, to insure complete and relatively uniform permeation of the exposed frame. A reagent substantially less viscous may be absorbed too greatly in some portions of the photosensitive layer while other portions remain relatively dry. A suitable thickening agent is preferably a water-soluble, film-forming high-molecular-weight polymer or protein, such as gelatin, hydroxyethyl cellulose, or sodium or aluminum carboxymethyl cellulose, which forms a relatively firm, dimensionally stable film.",
       ),
     ),
     p(
@@ -861,7 +891,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       text(
-        "Example 3. Water — cubic centimeters — 150; hydroquinone — grams — 2.8; sodium sulfite — grams — 20; Metol — grams — 1.55; sodium thiosulfate — grams — 10; aqueous solution of medium viscosity sodium carboxymethyl cellulose consisting of 20 g. of the latter compound in 100 cc. of water — grams — 100; sodium hydroxide — grams — 5.6.",
+        "Example 3\n\nWater — cubic centimeters — 150\nHydroquinone — grams — 2.8\nSodium sulfite — grams — 20\nMetol — grams — 1.55\nSodium thiosulfate — grams — 10\nAqueous solution of medium viscosity sodium carboxymethyl cellulose consisting of 20 g. of the latter compound in 100 cc. of water — grams — 100\nSodium hydroxide — grams — 5.6",
       ),
     ),
     p(
@@ -1046,7 +1076,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       text(
-        "The products may use diazonium photosensitive layers. One form has the physical structure of the photosensitive element of ",
+        "The products of the present invention may be used in conjunction with, or may comprise as elements thereof, diazonium photosensitive layers. For example, a photosensitive product may be formed by having the physical structure of the photosensitive element 310 of ",
       ),
       ref("Fig. 23", "#fig-23", "Figure 23 — Another embodiment"),
       text(
@@ -2163,6 +2193,17 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
         ),
       ],
     },
+    p(text("EDWIN H. LAND.")),
+    {
+      kind: "heading",
+      level: 2,
+      text: "REFERENCES CITED",
+    },
+    p(
+      text(
+        "The following references are of record in the file of this patent:\n\nUNITED STATES PATENTS\n786,534 Thornton et al. — Apr. 4, 1905\n916,325 Kelley — Mar. 23, 1909\n1,207,042 Hochstetter — Dec. 5, 1916\n1,277,048 de Brayer — Aug. 27, 1918\n1,360,624 Dodge — Nov. 30, 1920\n1,592,379 Merle — July 13, 1926\n1,592,584 Wiegelmann — July 13, 1926\n1,742,809 Hoover — Jan. 7, 1930\n2,071,821 Eckhardt — Feb. 23, 1937\n2,121,397 Downing — June 21, 1938\n2,136,007 Gish — Nov. 8, 1938\n2,139,040 Salfisberg — Dec. 6, 1938\n2,197,994 Butement — Apr. 23, 1940\n2,211,498 Files — Aug. 13, 1940\n2,259,796 Clark — Oct. 21, 1941\n2,299,694 Green — Oct. 20, 1942\n2,319,560 Salfisberg — May 18, 1943\n2,322,005 Fierke — June 15, 1943\n2,322,006 Fierke — June 15, 1943\n2,322,027 Jelley et al. — June 15, 1943\n2,347,640 Peters — May 2, 1944\n2,352,014 Rott — June 20, 1944\n2,361,936 Gaspor — Nov. 7, 1944\n2,430,995 Roos — Nov. 18, 1947\n\nFOREIGN PATENTS\n9,248 Great Britain — 1905\n7,521 Great Britain — June 28, 1906\n21,692 Great Britain — Oct. 1, 1908 (of 1907)\n369,146 Germany — Feb. 15, 1923\n370,821 Germany — Mar. 8, 1923\n328,762 Great Britain — May 8, 1930\n567,011 Germany — July 22, 1931\n541,045 Great Britain — Nov. 11, 1941\n879,995 France — Mar. 5, 1942",
+      ),
+    ),
   ],
 };
 
@@ -2182,7 +2223,7 @@ const landPolaroidLegacyIndexToCurrent = (legacyIndex: number): number => {
  * legacy map above predates the pages 9–12 source repair and is remapped here
  * so consumers cannot silently attach a reading to the wrong paragraph.
  */
-export const landPolaroidParallelReadings: Readonly<Record<number, readonly string[]>> = {
+const landPolaroidParallelReadingsByBlock: Readonly<Record<number, readonly string[]>> = {
   ...Object.fromEntries(
     Object.entries(landPolaroidLegacyParallelReadings).map(([legacyIndex, reading]) => [
       landPolaroidLegacyIndexToCurrent(Number(legacyIndex)),
@@ -2381,7 +2422,21 @@ export const landPolaroidParallelReadings: Readonly<Record<number, readonly stri
   122: [
     "Dispersion includes a solution; the continuation applications and illustrative, nonlimiting character of the description immediately precede the formal claim preamble.",
   ],
+  240: [
+    "The inventor line closes the formal claim section with Edwin H. Land's printed name. The attorney's handwritten signature matter appears only on the drawing sheets and is not silently reconstructed as typed text.",
+  ],
+  242: [
+    "The final formal section identifies the references of record, listing 24 United States patents and 9 foreign patents exactly as printed after the inventor line.",
+  ],
 };
+
+export const landPolaroidParallelReadings: Readonly<Record<number, readonly string[]>> =
+  Object.fromEntries(
+    Object.entries(landPolaroidParallelReadingsByBlock).map(([index, reading]) => {
+      const blockIndex = Number(index);
+      return [blockIndex + (blockIndex >= 37 ? 3 : 0), reading];
+    }),
+  ) as Readonly<Record<number, readonly string[]>>;
 
 export function manualLandClaimText(claimNumber: number): string {
   const claimBlock = landPolaroidArchivalEdition.blocks.find(

@@ -21,7 +21,7 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     expect(daimlerEnginePatent.title).toBe("Explosive-Gas Marine Engine");
     expect(daimlerEnginePatent.filingDate).toBe("1886-11-09");
     expect(daimlerEnginePatent.originalTextAsset).toMatchObject({
-      url: "/patents/transcripts/us-361931-daimler-engine.txt",
+      url: "/patents/transcripts/us-361931-daimler-engine-reviewed.txt",
       pageCount: 6,
       kind: "reviewed-transcription",
       sourcePdfSha256: daimlerMarineEngineArchivalEdition.sourcePdfSha256,
@@ -102,15 +102,31 @@ describe("US 361,931 Daimler manual marine-engine edition", () => {
     }
   });
 
-  test("has a reviewed full transcription with the source title, ten claims, and no carriage heading", () => {
+  test("has a reviewed full transcription with formal drawing matter and no carriage heading", () => {
     const transcript = readFileSync(
-      join(process.cwd(), "public/patents/transcripts/us-361931-daimler-engine.txt"),
+      join(process.cwd(), "public/patents/transcripts/us-361931-daimler-engine-reviewed.txt"),
       "utf8",
     );
     expect(transcript).toContain("EXPLOSIVE-GAS MARINE ENGINE.");
     expect(transcript).toContain("Application filed November 9, 1886. Serial No. 218,411.");
     expect(transcript).toContain("10. In a vessel propelled by a gas motor-engine");
+    expect(transcript).toContain("N. Peters, Photo-Lithographer, Washington, D.C.");
     expect(transcript).not.toContain("MOTOR-CARRIAGE.");
+  });
+
+  test("keeps the visible Daimler visual lane source-bounded to the marine installation", () => {
+    const visualSources = [
+      "src/components/patents/visuals/DaimlerEngineSim.tsx",
+      "src/components/patents/visuals/three/DaimlerEngine3D.tsx",
+      "src/components/patents/visuals/three/daimlerEngineModel.ts",
+    ].map((path) => readFileSync(join(process.cwd(), path), "utf8").toLowerCase());
+    for (const source of visualSources) {
+      expect(source).not.toMatch(
+        /hot[- ]?tube|standuhr|bmep|flywheel|crankcase|motor[- ]?carriage|automobile/,
+      );
+    }
+    expect(visualSources.every((source) => source.includes("shaftposition"))).toBe(true);
+    expect(visualSources.every((source) => source.includes("coolingpumpenabled"))).toBe(true);
   });
 
   test("gives every authored source paragraph a patent-local, non-lossy companion", () => {

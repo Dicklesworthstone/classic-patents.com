@@ -136,7 +136,9 @@ export const GliddenBarbedWire3D = memo(() => {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Joseph Glidden Barbed Wire Machine 3D</div>
+      <div className="sr-only">
+        Glidden Barbed Wire Machine 3D (Joseph F. Glidden twisted wire-fence assembly)
+      </div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -150,9 +152,9 @@ export const GliddenBarbedWire3D = memo(() => {
               [
                 ["iso", "Isometric"],
                 ["barb_lock", "Barb Locking"],
-                ["twisting_helix", "Twister Flyer"],
-                ["takeup_drum", "Take-up Reel"],
-                ["feed_spools", "Feed Spools"],
+                ["twisting_helix", "Twisted Strands"],
+                ["takeup_drum", "Wire Ends"],
+                ["feed_spools", "Post / Key"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -177,7 +179,7 @@ export const GliddenBarbedWire3D = memo(() => {
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Frame" : "Cutaway Machine View"}
+            title={isCutaway ? "Solid Assembly" : "Cutaway Assembly View"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -258,7 +260,7 @@ export const GliddenBarbedWire3D = memo(() => {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Glidden locked barb fencing kinematics"
+          title="Glidden source-described wire-fence kinematics"
           chips={[
             { label: "Twist Rate", value: String(twistsPerFoot), unit: "twists/ft" },
             { label: "Barb Spacing", value: barbSpacingInches.toFixed(1), unit: "in" },
@@ -268,11 +270,6 @@ export const GliddenBarbedWire3D = memo(() => {
               label: "Lock State",
               value: glidden.isLocked ? "LOCKED" : "SLIPPAGE",
               tone: glidden.isLocked ? "ok" : "warn",
-            },
-            {
-              label: "Production Rate",
-              value: glidden.productionRateFtPerMin.toFixed(1),
-              unit: "ft/min",
             },
             { label: "Tensile Strength", value: String(glidden.tensileStrengthLbs), unit: "lbs" },
             { label: "ω_flyer", value: glidden.flyerOmegaRadPerS.toFixed(1), unit: "rad/s" },

@@ -4,35 +4,50 @@
 
 Z. TH. GRAMME & E. L. Ch. D’IVERNOIS.
 
-MAGNETO-ELECTRIC MACHINES.
+MAGNETO ELECTRIC MACHINES.
 
-No. 120,057. Patented October 17, 1871.
+No. 120,057. Patented Oct. 17, 1871.
 
-Drawing sheet 1 contains Figs. 1, 2, 3, 4, 5, and 6.
+FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5. FIG. 6.
+
+Printed reference letters and numerals visible on this sheet include A, B, C,
+D, E, F, G, H, I, J, K, M, N, O, R, S, V, t, a′, g, and i. The lower-edge
+printer imprint is retained as source-sheet matter; no attorney line is printed
+on this sheet.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 9 ---
 
-4 SHEETS—SHEET 2.
+Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. 4 SHEETS—SHEET 2.
 
-Z. TH. GRAMME & E. L. Ch. D’IVERNOIS.
+MAGNETO ELECTRIC MACHINES.
 
-MAGNETO-ELECTRIC MACHINES.
+No. 120,057. Patented Oct. 17, 1871.
 
-No. 120,057. Patented October 17, 1871.
+FIG. 7. FIG. 8. FIG. 9.
 
-Drawing sheet 2 contains Figs. 7, 8, and 9. The printed witness and inventor lines are retained on the facsimile drawing sheet.
+Printed reference letters and numerals visible on this sheet include A, A′, B,
+C, D, E, F, G, H, I, J, K, L, N, P, P′, S, V, X, X′, c, c′, and the printed
+figure labels. The formal lines read: Z. TH. GRAMME. E. L. Ch. D’IVERNOIS.
+WITNESSES: A. G. BRADE. AUGUSTE MEDARD. The lower-edge printer imprint is
+retained as source-sheet matter; no separate attorney line is printed.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 9 ---
 
-4 SHEETS—SHEET 3.
+FIG. 10. 4 SHEETS—SHEET 3.
 
 Z. TH. GRAMME & E. L. Ch. D’IVERNOIS.
 
-MAGNETO-ELECTRIC MACHINES.
+MAGNETO ELECTRIC MACHINES.
 
-No. 120,057. Patented October 17, 1871.
+No. 120,057. Patented Oct. 17, 1871.
 
-Drawing sheet 3 contains Figs. 10, 11, 12, and 13. The printed witness and inventor lines are retained on the facsimile drawing sheet.
+FIG. 11. FIG. 12. FIG. 13.
+
+Printed reference letters and numerals visible on this sheet include A, A′, B,
+D, E, G, H, I, J, K, N, and the printed figure labels. The formal lines read:
+Z. TH. GRAMME. E. L. Ch. D’IVERNOIS. WITNESSES: A. G. BRADE. AUGUSTE MEDARD.
+The lower-edge printer imprint is retained as source-sheet matter; no separate
+attorney line is printed.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 9 ---
 
@@ -40,11 +55,16 @@ Drawing sheet 3 contains Figs. 10, 11, 12, and 13. The printed witness and inven
 
 Z. TH. GRAMME & E. L. Ch. D’IVERNOIS.
 
-MAGNETO-ELECTRIC MACHINES.
+MAGNETO ELECTRIC MACHINES.
 
-No. 120,057. Patented October 17, 1871.
+No. 120,057. Patented Oct. 17, 1871.
 
-Drawing sheet 4 contains Fig. 14.
+FIG. 14.
+
+Printed reference letters and numerals visible on this sheet include A, A², B,
+C, D, H, h, h′, i, i′, K, S, X, and X′. No witness, inventor-signature, or
+attorney line is visible on this sheet; the lower-edge printer imprint is
+retained as source-sheet matter.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 9 ---
 
@@ -148,7 +168,7 @@ Fig. 14 represents a longitudinal elevation view, some parts being shown as part
 
 The said poles are kept isolated from each other by means of the bad conducting parts i and i' and the bobbin or cylinder A is arranged, as has been described above, in reference to the apparatus of Figs. 1 and 2, viz., composed of a continuous series of small bobbins connected end to end, the junctions being each connected to a conductor C, which conductors are kept isolated from each other; on the free ends of which conductors act the rubbers or connecting-rollers S and S' for carrying the currents respectively to the posts X and X'.
 
-The cylinder or large bobbin A revolves by means of the shaft D in standards B, and motion may be transmitted to the shaft D by means of a winch-handle, I, and pulleys or other suitable mechanical contrivances. A2 represents the soft-iron core of the cylinder, ring, or large endless bobbin A.
+The cylinder or large bobbin A revolves by means of the shaft D in standards B, and motion may be transmitted to the shaft D by means of a winch-handle, I, and pulleys or other suitable mechanical contrivances. A² represents the soft-iron core of the cylinder, ring, or large endless bobbin A.
 
 As has been mentioned in the beginning of this specification, our invention allows of giving rise either to continuous or to alternate currents. Thus, for instance, in the second apparatus described, in respect to Figs. 4, 5, and 6, if the conductors C and metal rubbers or conducting-springs S be done away with, and the shaft D be connected metallically with two diametrically-opposite junctions of the small bobbins of the cylinder A, the said small bobbins remaining connected in an endless manner, as has been described; and if, in the manner as shown in Fig. 11, we connect together by a metal conductor a small rod, inserted in an isolated manner in the shaft D, two other diametrically-opposite junctions situated in a perpendicular direction in respect to the two first-mentioned junctions, we will then obtain alternate currents—the current taken from the frame B in metallic communication by means of its bearings with the shaft D, and that taken from a metal rubber pressing against the end of the small isolated rod inserted in the shaft D being alternate.
 

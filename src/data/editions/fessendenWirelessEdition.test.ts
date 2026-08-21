@@ -201,6 +201,16 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(() => manualFessendenClaimText(22)).toThrow(
       "Claim 22 not found in fessendenWirelessArchivalEdition",
     );
+
+    // The canonical record must remain a projection of the edition nodes.  In
+    // particular, do not let a hand-maintained claim table drift from the
+    // literal source face while the edition is being reconciled.
+    expect(fessendenWirelessPatent.claims).toHaveLength(21);
+    for (const number of Array.from({ length: 21 }, (_, index) => index + 1)) {
+      const claim = fessendenWirelessPatent.claims.find((candidate) => candidate.number === number);
+      expect(claim).toBeDefined();
+      expect(claim?.originalText).toBe(manualFessendenClaimText(number));
+    }
   });
 
   test("keeps the candidate withheld until independent facsimile and crop acceptance", () => {
@@ -237,6 +247,62 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
         (ref) => ref.text === "Fig. 5" && (ref.label?.includes("elevation") ?? false),
       ),
     ).toBe(true);
+  });
+
+  test("keeps the canonical drawing inventory aligned with the printed numeral labels", () => {
+    const expectedLabels: Record<string, string[]> = {
+      "Fig. 1": ["1", "2", "3", "10", "11"],
+      "Fig. 2": ["12", "13", "14", "15", "16"],
+      "Fig. 3": ["4", "5", "6", "7", "8"],
+      "Fig. 4": ["4", "5", "6", "7"],
+      "Fig. 5": ["9", "17"],
+    };
+
+    for (const drawing of fessendenWirelessPatent.drawings) {
+      expect(drawing.callouts.map((callout) => callout.label)).toEqual(
+        expectedLabels[drawing.figureNumber],
+      );
+      expect(new Set(drawing.callouts.map((callout) => callout.id)).size).toBe(
+        drawing.callouts.length,
+      );
+      for (const callout of drawing.callouts) {
+        expect(callout.figureRef).toBe(drawing.figureNumber);
+        expect(callout.description).toContain(callout.label);
+        expect(callout.x).toBeGreaterThanOrEqual(0);
+        expect(callout.x).toBeLessThanOrEqual(100);
+        expect(callout.y).toBeGreaterThanOrEqual(0);
+        expect(callout.y).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  test("keeps the record excerpt literal where the specification identifies its improvements", () => {
+    expect(fessendenWirelessPatent.originalText).toContain(
+      "of which improvements the following is a specification.",
+    );
+    expect(fessendenWirelessPatent.originalText).not.toContain(
+      "of which the following is a specification.",
+    );
+  });
+
+  test("does not silently paraphrase source sentences in the archival edition", () => {
+    const editionText = fessendenWirelessArchivalEdition.blocks
+      .flatMap((block) => {
+        if (block.kind === "masthead") return block.lines;
+        if (block.kind === "paragraph" || block.kind === "claim") {
+          return [block.inlines.map((inline) => inline.text).join("")];
+        }
+        return [];
+      })
+      .join(" ");
+
+    expect(editionText).toContain(
+      "By thus increasing the capacity and self-induction of either of them the frequency of the electric oscillations in the conductors, and consequently of the waves generated, will be sufficiently low",
+    );
+    expect(editionText).toContain("which is adjusted normally out of contact with the wire 12");
+    expect(editionText).toContain(
+      "grounded conductor is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance, so that the current in the conductor flows through the conductor to ground, and vice versa",
+    );
   });
 
   test("keeps the bounded pages 1-3 ledger and edition source-faithful", () => {

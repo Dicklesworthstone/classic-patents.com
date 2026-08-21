@@ -4,18 +4,17 @@
  * Museum-Grade Procedural 3D Model for Joseph F. Glidden's 1874 Twisted Wire Barbed Fence
  * (US Patent 157,124 - "Improvement in Wire-Fences").
  *
- * Reconstructs the authentic apparatus and claimed mechanical invention from the 1874 patent drawings:
- * 1. Double-Strand Twisted Galvanized Steel Wire (Claim 1, Figs. 1–3):
- *    - True parametric double helix where Strand 1 (y) and Strand 2 (z) interlock under uniform pitch.
- * 2. Transverse Diamond-Point Coiled Spur Barbs (Claim 2, Figs. 2 & 3):
- *    - Short wire bent at the middle into a helical loop around strand y, with sharp opposite-pointing spurs (B)
+ * Reconstructs the source-described mechanism from the 1874 patent drawings:
+ * 1. Double-strand twisted fence wire (the single printed claim, Figs. 1–3):
+ *    - True parametric double helix where strand a and strand z interlock under uniform pitch.
+ * 2. Transverse spur wires (the same claim, Figs. 1–3):
+ *    - Short wire bent at the middle into a helical loop around strand a, with opposite-pointing spur ends
  *      firmly clamped and locked against rotation and longitudinal slip by the twisting of strand z.
- * 3. Fence Post, Staple C, and Slotted Retensioning Key D (Fig. 1):
- *    - Weathered timber fence post with iron staple (C) and rotating tensioner key (D) that restores twist.
- * 4. Dual Feed Spools & Flyer Twister Arbor:
- *    - Twin wire creel spools delivering raw 12-gauge wire into a rotating twister flyer with bevel gears.
- * 5. Take-Up Reel Drum with Ratchet & Pawl:
- *    - Slotted collection spool with cast iron flanges and winding arbor.
+ * 3. Fence posts B and the through-post twisting key C (Fig. 1):
+ *    - A source-described post and key are shown as context for tightening the twisted fence wire.
+ *
+ * The workshop bench, feed spools, flyer, and take-up reel below are presentation props for
+ * showing the twist operation. They are not figures or separately claimed structures in US 157,124.
  */
 
 import * as THREE from "three";
@@ -221,7 +220,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   rail2.position.set(0, -1.74, -0.8);
   benchGroup.add(rail1, rail2);
 
-  // --- 2. Dual Feed Spools (Raw 12-Gauge Wire Supply) ---
+  // --- 2. Presentation feed-spool props (not specified by the patent) ---
   const feedSpools: THREE.Mesh[] = [];
   const spoolLocations = [
     { x: -4.4, y: 0.75, z: -1.2 },
@@ -272,7 +271,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
     spoolAssembly.add(wireCoil);
   });
 
-  // --- 3. Rotating Twister Flyer Arbor Mechanism (Claim 1) ---
+  // --- 3. Presentation twist arbor (not a source-drawn or separately claimed structure) ---
   const flyerGroup = new THREE.Group();
   flyerGroup.position.set(-2.0, 0, 0);
   rootGroup.add(flyerGroup);
@@ -333,7 +332,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   flyerPillowBlock.position.set(0, -0.85, 0);
   flyerGears.add(flyerPillowBlock);
 
-  // --- 4. Mathematical Double-Helix Wire Strands (Claims 1 & 2) ---
+  // --- 4. Double-helix wire strands (single printed claim) ---
   const wireAssemblyGroup = new THREE.Group();
   rootGroup.add(wireAssemblyGroup);
 
@@ -374,7 +373,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   strand2Mesh.castShadow = true;
   wireAssemblyGroup.add(strand2Mesh);
 
-  // --- 5 Discrete 2-Point Diamond Barbs Coiled Around Strand 1 (Claim 2) ---
+  // --- 5. Transverse spur wires around strand 1 (single printed claim) ---
   const barbCount = 5;
   const barbGroups: THREE.Group[] = [];
   const barbSpacing = 1.25;
@@ -386,7 +385,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
     const theta = fraction * totalTurns * 2 * Math.PI;
 
     const barbGroup = new THREE.Group();
-    // Position barb right on Strand 1's helical locus
+    // Position the spur wire at strand a's helical locus.
     barbGroup.position.set(bx, Math.cos(theta) * helixRadius, Math.sin(theta) * helixRadius);
     barbGroup.rotation.x = theta;
 
@@ -442,7 +441,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
     barbGroups.push(barbGroup);
   }
 
-  // --- 5. Fence Post, Staple C, and Tensioner Winding Key D (Fig. 1) ---
+  // --- 6. Fence post B and through-post twisting key C (Fig. 1) ---
   const fencePostGroup = new THREE.Group();
   fencePostGroup.position.set(1.6, 0, 1.6);
   rootGroup.add(fencePostGroup);
@@ -457,7 +456,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   post.receiveShadow = true;
   fencePostGroup.add(post);
 
-  // Iron Staple C (Securing Strand y to post)
+  // Source drawing context: the post and wire-end/key relationship.
   const staple = new THREE.Mesh(
     trackGeo(new THREE.TorusGeometry(0.16, 0.04, 8, 16, Math.PI)),
     materials.castIron,
@@ -466,7 +465,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   staple.rotation.z = Math.PI / 2;
   fencePostGroup.add(staple);
 
-  // Slotted Rotating Key / Tensioner D with cross-pin (Fig. 1)
+  // Through-post twisting key C with transverse thumb-piece (Fig. 1)
   const tensionKey = new THREE.Mesh(
     trackGeo(new THREE.CylinderGeometry(0.07, 0.07, 0.9, 12)),
     materials.castIron,
@@ -482,7 +481,7 @@ export function buildGliddenBarbedWireModel(): GliddenBarbedWireModelResult {
   keyHandle.position.set(0, 0.35, 0.1);
   fencePostGroup.add(keyHandle);
 
-  // --- 6. Take-Up Reel Drum (Claim 1 Winding Drum) ---
+  // --- 7. Presentation take-up reel (not part of the printed claim) ---
   const reelGroup = new THREE.Group();
   reelGroup.position.set(3.8, 0, 0);
   rootGroup.add(reelGroup);

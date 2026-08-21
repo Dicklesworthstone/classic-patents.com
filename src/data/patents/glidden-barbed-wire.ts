@@ -1,6 +1,16 @@
 import { gliddenBarbedWireArchivalEdition } from "@/data/editions/gliddenBarbedWireEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = gliddenBarbedWireArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Glidden manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const gliddenBarbedWirePatent: Patent = {
   id: "us-157124-glidden-barbed-wire",
   patentNumber: "US 157,124",
@@ -124,8 +134,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A twisted fence-wire having the transverse spur-wire D bent at its middle portion about one of the wire strands a of said fence-wire, and clamped in position and place by the other wire strand z, twisted upon its fellow, substantially as specified.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "The protected combination is a two-strand twisted fence wire in which a short crosswise spur wire is bent around one strand and the other strand clamps it in place. The legal work of the claim is the locking relationship, not every fence that happens to have sharp projections.",
       keyInnovations: [
@@ -181,6 +190,24 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
           x: 50,
           y: 60,
         },
+        {
+          id: "gb-4b",
+          figureRef: "Fig. 1",
+          label: "b",
+          element: "Key eye",
+          description: "The eye at the inner end of key C to which the fence wire is attached.",
+          x: 42,
+          y: 68,
+        },
+        {
+          id: "gb-4c",
+          figureRef: "Fig. 1",
+          label: "c",
+          element: "Thumb-piece",
+          description: "The transverse handle at the outer end of key C, bearing against the post.",
+          x: 42,
+          y: 76,
+        },
       ],
     },
     {
@@ -198,6 +225,42 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
           description: "The short wire crossing the fence-wire section.",
           x: 64,
           y: 53,
+        },
+        {
+          id: "gb-5a",
+          figureRef: "Fig. 2",
+          label: "a",
+          element: "First strand",
+          description: "The strand around which the spur wire is bent at its middle portion.",
+          x: 50,
+          y: 48,
+        },
+        {
+          id: "gb-5z",
+          figureRef: "Fig. 2",
+          label: "z",
+          element: "Fellow strand",
+          description: "The other strand, twisted upon its fellow to clamp the spur wire.",
+          x: 58,
+          y: 48,
+        },
+        {
+          id: "gb-5e",
+          figureRef: "Fig. 2",
+          label: "E",
+          element: "Central bend",
+          description: "The central bend or coil of the spur wire around strand a.",
+          x: 55,
+          y: 57,
+        },
+        {
+          id: "gb-5s",
+          figureRef: "Fig. 2",
+          label: "s",
+          element: "Shoulder or stop",
+          description: "The close approach of the twisted strands that prevents spur rotation.",
+          x: 72,
+          y: 52,
         },
       ],
     },
@@ -226,6 +289,33 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
             "A close part of the twist that the specification says prevents spur rotation.",
           x: 71,
           y: 52,
+        },
+        {
+          id: "gb-8",
+          figureRef: "Fig. 3",
+          label: "D",
+          element: "Spur wire",
+          description: "The short transverse spur wire projecting from the twisted fence wire.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "gb-9",
+          figureRef: "Fig. 3",
+          label: "a",
+          element: "First strand",
+          description: "The strand carrying the bent central portion of the spur wire.",
+          x: 54,
+          y: 46,
+        },
+        {
+          id: "gb-10",
+          figureRef: "Fig. 3",
+          label: "z",
+          element: "Fellow strand",
+          description: "The second strand twisted on strand a to clamp the spur wire.",
+          x: 66,
+          y: 47,
         },
       ],
     },
@@ -263,6 +353,5 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     totalClaims: 1,
     independentClaims: 1,
     patentWarYears: "1874–1892",
-    impactScore: 100,
   },
 };
