@@ -3,8 +3,8 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildLindeLiquefactionModel,

@@ -345,7 +345,8 @@ export function updateFermiReactorKinematics(
       const gx = Math.floor(u * 15);
       const gy = Math.floor(v * 15);
       const fluxSample = fluxField[gy * 16 + gx] ?? 0.5;
-      const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v)) * (0.5 + 0.5 * fluxSample);
+      const local =
+        1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v)) * (0.5 + 0.5 * fluxSample);
       const lattice = 1 + 0.35 * laplacianModeShape(modes, 17, 3, 0, i);
       pos[idx] += (vel[idx] ?? 0) * speed * 2.0 * local;
       pos[idx + 1] += (vel[idx + 1] ?? 0) * speed * 2.0 * lattice;

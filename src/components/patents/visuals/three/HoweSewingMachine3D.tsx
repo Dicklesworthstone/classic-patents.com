@@ -4,9 +4,9 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
 import { StudioKernelChips } from "./StudioKernelChips";

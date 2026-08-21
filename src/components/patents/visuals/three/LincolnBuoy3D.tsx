@@ -4,8 +4,8 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";

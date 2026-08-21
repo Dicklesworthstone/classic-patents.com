@@ -4,9 +4,9 @@ import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-re
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";

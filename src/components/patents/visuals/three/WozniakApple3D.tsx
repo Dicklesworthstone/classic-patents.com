@@ -3,8 +3,8 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepWozniakApple } from "@/physics/catalogKernels";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";

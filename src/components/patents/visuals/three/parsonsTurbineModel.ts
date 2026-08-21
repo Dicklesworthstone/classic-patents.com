@@ -15,6 +15,7 @@
 
 import * as THREE from "three";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
+import { computeSteamEnthalpyField } from "@/physics/fieldTextures";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
@@ -344,21 +345,30 @@ export function updateParsonsTurbineKinematics(
   nodes.rotorGroup.rotation.x += displayOmegaRadPerS * dt;
 
   // 2. Steam Streamline Particle Advection
+  const inletPsi = steamPressureBar * 14.5038;
   const parsons = stepParsonsTurbine({
     rotorRpm,
-    inletPressurePsi: steamPressureBar * 14.5038,
+    inletPressurePsi: inletPsi,
   });
+  const enthalpyField = computeSteamEnthalpyField(inletPsi, 48, 16);
   const fluid = fluidFrames(16, 8);
   const frame = Math.abs(Math.floor(_timeSec * 4)) % 8;
   const pos = nodes.steamPositions;
   for (let i = 0; i < nodes.steamCount; i++) {
     const idx = i * 3;
-    const u =
-      ((pos[idx] ?? 0) - parsons.steamResetX) /
-      Math.max(0.1, parsons.steamWrapX - parsons.steamResetX);
+    const u = Math.max(
+      0,
+      Math.min(
+        1,
+        ((pos[idx] ?? 0) - parsons.steamResetX) /
+          Math.max(0.1, parsons.steamWrapX - parsons.steamResetX),
+      ),
+    );
     const v = 0.5 + ((pos[idx + 1] ?? 0) + 2.5) / 5;
     const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
-    pos[idx] += steamAdvancePerS * dt * (1 + dens);
+    const gx = Math.floor(u * 15);
+    const enthalpyFactor = 0.8 + 0.4 * (enthalpyField[gx] ?? 0.5);
+    pos[idx] += steamAdvancePerS * dt * (1 + dens) * enthalpyFactor;
     let x = pos[idx];
 
     if (x > parsons.steamWrapX) {

@@ -390,7 +390,14 @@ export function updateGoddardRocketKinematics(
 
     for (let i = 0; i < model.plumePos.length / 3; i++) {
       const idx = i * 3;
-      const u = Math.max(0, Math.min(1, Math.abs((model.plumePos[idx + 1] ?? 0) - goddard.plumeResetY) / Math.abs(goddard.plumeWrapY - goddard.plumeResetY)));
+      const u = Math.max(
+        0,
+        Math.min(
+          1,
+          Math.abs((model.plumePos[idx + 1] ?? 0) - goddard.plumeResetY) /
+            Math.abs(goddard.plumeWrapY - goddard.plumeResetY),
+        ),
+      );
       const v = Math.max(0, Math.min(1, 0.5 + (model.plumePos[idx] ?? 0) / 4.0));
       const gx = Math.floor(u * 15);
       const gy = Math.floor(v * 15);

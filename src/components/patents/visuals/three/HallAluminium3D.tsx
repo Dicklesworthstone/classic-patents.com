@@ -4,8 +4,8 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -88,7 +88,7 @@ export function HallAluminium3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const { dt, simTimeSec: timeSec } = clock.pump(now);
+      const { simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       const currentSim = stepHallAluminium({
         currentAmperes: p.currentAmperes,

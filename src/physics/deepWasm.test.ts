@@ -194,6 +194,32 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })[0]?.from).toBe(
       "head",
     );
+    expect(coupleEdgesFor("us-194047-otto-engine", { compressionRatio: 4.5 })[0]?.from).toBe(
+      "compression",
+    );
+    expect(coupleEdgesFor("us-120057-gramme-dynamo", { shaftRate: 1 })[0]?.from).toBe("shaft rate");
+  });
+
+  test("catalog 3Ds no longer fake const dt = 1/60 inside the rAF loop", () => {
+    const dir = join(import.meta.dir, "../components/patents/visuals/three");
+    const leftover: string[] = [];
+    for (const name of [
+      "GrammeDynamo3D.tsx",
+      "OttoEngine3D.tsx",
+      "FermiReactor3D.tsx",
+      "GatlingGun3D.tsx",
+      "DieselEngine3D.tsx",
+      "WozniakApple3D.tsx",
+      "MergenthalerLinotype3D.tsx",
+      "WattRotaryEngine3D.tsx",
+      "TeslaCoil3D.tsx",
+      "GoodyearRubber3D.tsx",
+    ]) {
+      const src = readFileSync(join(dir, name), "utf8");
+      expect(src).toContain("createStudioClock");
+      if (/const (dt|delta) = 1 \/ 60/.test(src)) leftover.push(name);
+    }
+    expect(leftover).toEqual([]);
   });
 
   test("3D models drain kernel seats instead of indexing crate tapes with timeSec * 8", () => {

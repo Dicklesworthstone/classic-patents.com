@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {

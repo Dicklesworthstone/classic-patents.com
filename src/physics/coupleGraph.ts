@@ -6,7 +6,9 @@
 import {
   stepEdisonBulb,
   stepGoodyearRubber,
+  stepGrammeDynamo,
   stepMarconiRadio,
+  stepOttoEngine,
   stepPeltonWheel,
   stepSpencerMicrowave,
 } from "./catalogKernels";
@@ -139,6 +141,45 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
         to: "k_eff",
         gain: Number((k / Math.max(1, params.rodWithdrawalPct ?? 83.5)).toFixed(5)),
         unit: "1 / %",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-194047-otto-engine") {
+    const cr = params.compressionRatio ?? 4.5;
+    const otto = stepOttoEngine({
+      engineRpm: params.engineRpm ?? 180,
+      compressionRatio: cr,
+    });
+    const dEta = 0.4 / cr ** 1.4;
+    return [
+      {
+        from: "compression",
+        to: "thermal efficiency",
+        gain: Number((dEta * 100).toFixed(3)),
+        unit: "% / ratio",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+      {
+        from: "rpm",
+        to: "brake hp",
+        gain: Number((otto.brakeHorsepower / Math.max(1, params.engineRpm ?? 180)).toFixed(4)),
+        unit: "hp / rpm",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-120057-gramme-dynamo") {
+    const gramme = stepGrammeDynamo({ shaftRate: params.shaftRate ?? 1 });
+    return [
+      {
+        from: "shaft rate",
+        to: "EMF index",
+        gain: Number((gramme.inducedEmfIndex / Math.max(0.4, params.shaftRate ?? 1)).toFixed(2)),
+        unit: "index / rate",
         crate: "fs-couple",
         source: "ts-fallback",
       },

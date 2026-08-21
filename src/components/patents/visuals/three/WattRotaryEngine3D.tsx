@@ -12,9 +12,9 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";

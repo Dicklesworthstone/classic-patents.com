@@ -505,7 +505,7 @@ export function computeSteamEnthalpyField(
       }
 
       // Isentropic enthalpy drop curve h(x)
-      const enthalpyFrac = Math.pow(1 - 0.75 * u, 0.28);
+      const enthalpyFrac = (1 - 0.75 * u) ** 0.28;
       // Blading tier ripple
       const bladeRipple = 0.08 * Math.sin(u * stages * Math.PI);
       const intensity = Math.max(0, enthalpyFrac + bladeRipple) * Math.min(1, pr / 10);

@@ -14,9 +14,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";

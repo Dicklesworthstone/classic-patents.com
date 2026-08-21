@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildMaximMachineGunModel,

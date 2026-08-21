@@ -4,8 +4,8 @@ import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepRenoEscalator } from "@/physics/machineKernels";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildRenoEscalatorModel,
