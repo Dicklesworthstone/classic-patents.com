@@ -24,11 +24,11 @@
     "types": ["bun-types"]
   },
   "include": [
+    ".next/types/**/*.ts",
     "next-env.d.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.tsx",
-    ".next/types/**/*.ts"
+    "src/**/*.tsx"
   ],
   "exclude": ["node_modules", ".next", "doctor.config.ts"]
 }
