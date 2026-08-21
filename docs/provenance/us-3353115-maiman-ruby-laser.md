@@ -65,10 +65,12 @@ was unambiguous. Pages 4–5 remain withheld from literal promotion because the
 workspace has no corresponding source-page render and their existing draft is
 visibly garbled; no labels or signatures were invented to fill that gap.
 
-The held edition has five authored figure occurrences. Each points to a
-versioned PNG rendered from the pinned PDF at 300 dpi, then cropped to the
-printed figure and its reference numerals. Earlier assets are preserved. These
-preview repairs do not lift the publication hold.
+The held edition now has explicit semantic references for every printed figure
+number 1–18. Only occurrences with source pixels available in this workspace
+carry previews: the three broad drawing sheets and the versioned crops listed
+below. Sheet 3 is evidence only for Figures 8–11; Figures 12–17 remain
+semantic-only until Sheets 4–5 can be reviewed. Earlier assets are preserved.
+These preview repairs do not lift the publication hold.
 
 | Authored occurrence | PDF drawing page | Source-pixel crop | Dimensions | SHA-256 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -84,9 +86,9 @@ preview repairs do not lift the publication hold.
 
 The full source drawing inventory is Figs. 1–3 on Sheet 1, Figs. 4–7 on
 Sheet 2, Figs. 8–11 on Sheet 3, Figs. 12–15 on Sheet 4, and Figs. 16–18 on
-Sheet 5. The earlier held edition had no authored preview occurrences for the
-remaining figures. The repaired edition adds those occurrences at their
-specific source citations; it does not infer links during rendering.
+Sheet 5. The repaired edition adds semantic references for every occurrence at
+its specific source citation; it does not infer links during rendering. The
+unavailable Sheets 4–5 are intentionally not represented by guessed previews.
 
 The repaired edition now authors the printed Figure 1–18 descriptions. The
 sheet renders used for Figures 3, 5, 6, and 8–11 are broad drawing-sheet
