@@ -1,7 +1,6 @@
 import {
   FERMI_REACTOR_FIGURE_CAPTIONS,
   fermiReactorArchivalEdition,
-  fermiReactorClaims,
   fermiReactorManualClaimText,
 } from "@/data/editions/fermiReactorEdition";
 import type { Patent } from "@/types/patent";
