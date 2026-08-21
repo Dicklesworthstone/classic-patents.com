@@ -3,7 +3,7 @@
 import { Compass, Github, Menu, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PatentSearchPalette } from "./PatentSearchPalette";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -20,6 +20,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
 
   const isLinkActive = (href: string) => {
     if (!pathname) return false;
@@ -45,9 +46,35 @@ export function Header() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Close the mobile drawer on Escape or any press outside the header shell.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      if (
+        headerRef.current &&
+        e.target instanceof Node &&
+        !headerRef.current.contains(e.target)
+      ) {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [mobileOpen]);
+
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md isolate">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-40 w-full pt-[env(safe-area-inset-top)] border-b border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md isolate"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
@@ -124,7 +151,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/80 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-parchment-300 text-xs font-sans font-medium transition-colors shadow-2xs cursor-pointer"
+              className="flex items-center gap-2 px-3 py-2 sm:py-1.5 min-h-11 sm:min-h-0 rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/80 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-700 dark:text-parchment-300 text-xs font-sans font-medium transition-colors shadow-2xs cursor-pointer"
               title="Search all patents (⌘K)"
               aria-label="Search patents"
             >
@@ -140,7 +167,7 @@ export function Header() {
               href="https://github.com/Dicklesworthstone/classic-patents.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 sm:p-2.5 rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors"
+              className="p-2 sm:p-2.5 min-h-11 min-w-11 sm:min-h-0 sm:min-w-0 flex items-center justify-center rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors"
               title="View on GitHub"
               aria-label="View Classic Patents on GitHub"
             >
@@ -148,7 +175,7 @@ export function Header() {
             </a>
             <button
               type="button"
-              className="md:hidden p-2 rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
+              className="md:hidden p-2 min-h-11 min-w-11 flex items-center justify-center rounded-xl border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
               aria-expanded={mobileOpen}
               aria-controls="mobile-museum-nav"
               aria-label={mobileOpen ? "Close navigation" : "Open navigation"}
@@ -162,7 +189,7 @@ export function Header() {
         {mobileOpen && (
           <nav
             id="mobile-museum-nav"
-            className="md:hidden border-t border-parchment-300 dark:border-ink-800 bg-parchment-50/98 dark:bg-ink-950/98 px-4 py-3 flex flex-col gap-1 shadow-xl"
+            className="drawer-in md:hidden border-t border-parchment-300 dark:border-ink-800 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md px-4 py-3 flex flex-col gap-1 shadow-xl"
           >
             {NAV_LINKS.map((link) => {
               const active = isLinkActive(link.href);
@@ -171,7 +198,7 @@ export function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  className={`px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
                     active
                       ? "bg-amber-600 text-white font-bold"
                       : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800"
