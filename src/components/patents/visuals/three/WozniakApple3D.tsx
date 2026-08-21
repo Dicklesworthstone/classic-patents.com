@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -31,6 +31,7 @@ export function WozniakApple3D() {
   // Microcomputer Architecture State Controls
   const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [videoMode] = useState<"text" | "lores" | "hires">("lores");
   const [isCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -58,6 +59,7 @@ export function WozniakApple3D() {
     videoMode,
     ramCapacityKb,
     isCpuActive,
+    isCutaway,
     isAudioMuted,
     phi2DisplayHz: apple.phi2DisplayHz,
     busDisplaySpeed: apple.busDisplaySpeed,
