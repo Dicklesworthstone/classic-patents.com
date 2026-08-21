@@ -38,8 +38,8 @@
 ## 3. Preservation & Editorial Boundaries
 
 1. **Facsimile Layer**: Pinned immutable PDF (`public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf`) with SHA-256 `3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6`.
-2. **Page-marked transcription candidate**: `public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt` is preserved for comparison, but is not accepted as a reviewed ledger. Its drawing-sheet summaries conflict with the pinned facsimile.
-3. **Held archival-edition candidate**: `src/data/editions/maimanRubyLaserEdition.ts` retains its typed blocks and dynamic claim lookup for repair work, but is not a published source face.
+2. **Page-marked transcription WIP**: `public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt` is a page-complete literal-source candidate for comparison, but remains held pending independent visual review of drawing callouts and signatures.
+3. **Held archival-edition WIP**: `src/data/editions/maimanRubyLaserEdition.ts` is a continuous typed source-face candidate with dynamic claim lookup, `completeFacsimileReviewed: false`, and no canonical-record binding.
 4. **Editorial & Engineering Face**: Complete mathematical and physical breakdown in `src/data/patents/maiman-ruby-laser.ts`, 2D simulator `MaimanRubyLaserSim.tsx`, and 3D WebGL studio `MaimanRubyLaser3D.tsx`.
 
 ## 4. Root Figure-QC Hold (2026-08-20)
@@ -57,15 +57,14 @@ reconstructs the source face against all ten PDF pages.
 
 ## 5a. Ledger reconciliation boundary (2026-08-21)
 
-Pages 6–10 were manually reconciled against the existing PDF text-layer
+Pages 6–10 were manually reconciled against the pinned grant's text-layer
 research evidence: the continuation metadata, drawing descriptions, closing
-specification paragraph, two claims, and cited references are now represented
-in the ledger. OCR-like spelling errors were corrected where the source text
-was unambiguous. Pages 4–5 now contain a bounded online-text reconciliation
-candidate for Sheets 4 and 5: the clean sheet headers and the source's literal
-Figure 12–18 descriptions are recorded, while drawing pixels, internal
-callouts, and signatures remain withheld. This candidate is not visual
-facsimile acceptance and does not lift the publication hold.
+specification paragraph, two claims, cited references, and formal examiner
+matter are represented in the ledger. Pages 4–5 now contain the printed sheet
+headers, literal Figure 12–18 descriptions, and inventor/attorney signature
+matter as a source-text WIP; drawing pixels and internal callouts remain
+unverified. This is not visual facsimile acceptance and does not lift the
+publication hold.
 
 The online research source for Pages 4–5 is the exact grant record at
 https://patents.google.com/patent/US3353115A/en and its linked official grant
@@ -76,10 +75,10 @@ candidate ledger. These online text/image representations are research
 evidence only until the pinned local PDF pages can be visually reviewed.
 
 The held edition now has explicit semantic references for every printed figure
-number 1–18. Only occurrences with source pixels available in this workspace
-carry previews: the three broad drawing sheets and the versioned crops listed
-below. Sheet 3 is evidence only for Figures 8–11; Figures 12–17 remain
-semantic-only until Sheets 4–5 can be reviewed. Earlier assets are preserved.
+number 1–18. Only independently accepted source-pixel crops carry previews:
+Figures 1, 2, 4, 7, and 18. Figures 3, 5, 6, and 8–17 remain semantic-only;
+no broad sheet image is presented as an individual figure crop. Earlier assets
+are preserved.
 These preview repairs do not lift the publication hold.
 
 | Authored occurrence | PDF drawing page | Source-pixel crop | Dimensions | SHA-256 |
@@ -100,13 +99,11 @@ Sheet 5. The repaired edition adds semantic references for every occurrence at
 its specific source citation; it does not infer links during rendering. The
 unavailable Sheets 4–5 are intentionally not represented by guessed previews.
 
-The repaired edition now authors the printed Figure 1–18 descriptions. The
-sheet renders used for Figures 3, 5, 6, and 8–11 are broad drawing-sheet
-evidence rather than individual figure crops; Figures 12–17 have authored
-semantic references but no preview until their source sheets can be reviewed.
-These remain a publication hold until cloud-reviewed, source-pixel crops for
-those figures are supplied. No broad render is presented as an individual crop
-in the provenance table above.
+The repaired edition now authors the printed Figure 1–18 descriptions. Figures
+3, 5, 6, and 8–17 have authored semantic references but no preview until their
+source sheets can be cloud-reviewed and accepted. These remain a publication
+hold; no broad render is presented as an individual crop in the provenance
+table above.
 
 On the source sheets, the FIG. 7 label overlaps the signature horizontally and
 the FIG. 18 apparatus, output/target detail, and label are spatially separated.

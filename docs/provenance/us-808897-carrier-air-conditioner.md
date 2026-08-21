@@ -48,6 +48,31 @@ from the first PDF sheet. They add no reconstructed linework, labels, or
 synthetic annotations. Every printed occurrence of `Fig.` or `Figure` in the
 source edition is an explicit reference node to the appropriate crop.
 
+### Cloud-only recrop handoff (pending)
+
+The current previews are preserved as comparison evidence. Before any
+replacement is bound, a GPT-5.6 Luna image worker must inspect PDF page 1 at
+the native 2320 × 3408 source-pixel raster and return an image-space rectangle
+`(left, top, width, height)` for each target below. The rectangle must include
+the complete printed figure, its printed `Fig.` caption, and all source letters
+needed by the matching description, while excluding neighboring figures,
+page borders, and synthetic labels. The worker must also return the crop's
+pixel dimensions and a visual note explaining the boundary. No local render,
+crop, OCR, or image-processing operation is authorized for this handoff.
+
+| Figure | Target on PDF page 1 | Required versioned output | Binding rule |
+| --- | --- | --- | --- |
+| 1 | Complete apparatus, part elevation and part vertical section; retain the `m`, `h`, `i`, and `k` source letters where printed | `fig-1-source-crop-v2.png` | Keep `fig-1-source-crop-v1.png` and bind v2 only after independent visual review |
+| 2 | Enlarged horizontal section through the separator; retain the `j`, `b`, `c`, and adjacent sinuous passage lettering | `fig-2-source-crop-v3.png` | Keep v1/v2; do not repoint the edition until v3 exists and is accepted |
+| 3 | Diagram of the separating device; include the complete diagram and its printed source letters, without inferred airflow arrows | `fig-3-source-crop-v2.png` | Keep v1; bind only a cloud-reviewed replacement |
+| 4 | Perspective of one separator plate or element; retain the `i`, `j`, `f`, `g`, `b`, `c`, and `a` letters when present | `fig-4-source-crop-v2.png` | Keep v1; no generated plate geometry may substitute for the facsimile |
+| 5 | Enlarged spray-nozzle section in its first plane; retain the printed `h` lettering | `fig-5-source-crop-v2.png` | Keep v1; bind only after the worker confirms nozzle boundaries |
+| 6 | Enlarged spray-nozzle section in the second plane; retain the printed `h` lettering | `fig-6-source-crop-v2.png` | Keep v1; bind only after the worker confirms the distinct plane |
+
+Until all six native-pixel rectangles and replacement files exist, this record
+remains withheld. Existing edition references intentionally continue to point
+at the preserved previews rather than an unverified crop.
+
 The five typed claims are source-faithful:
 
 1. The two-zone upright sinuous plate system with an unobstructed wet front

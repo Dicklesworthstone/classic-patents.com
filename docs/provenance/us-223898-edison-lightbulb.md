@@ -73,7 +73,7 @@ public complete-source edition.
 
 | Source figure | Local selected crop |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v3.png` |
+| Fig. 1 | `public/patents/figures/us-223898-edison-lightbulb/fig-1-source-crop-v4.png` |
 | Fig. 2 | `public/patents/figures/us-223898-edison-lightbulb/fig-2-source-crop-v6.png` |
 | Fig. 3 | `public/patents/figures/us-223898-edison-lightbulb/fig-3-source-crop-v3.png` |
 

@@ -44,17 +44,35 @@ published reading.
 
 ## Exact figure locators
 
-| Printed figures | PDF page | Local preview asset |
+| Printed figure | PDF page | Currently served individual preview (dimensions) |
 | --- | --- | --- |
-| 1–8 | 1 | `figs-1-to-8-source-crop-v1.png` |
-| 1a–8a | 1 | `figs-1a-to-8a-source-crop-v1.png` |
-| 9 | 2 | `fig-9-source-crop-v1.png` |
-| 10–12 | 2 | `figs-10-to-12-source-crop-v1.png` |
-| 13–14 | 3 | `figs-13-to-14-source-crop-v1.png` |
-| 15–16 | 3 | `figs-15-to-16-source-crop-v1.png` |
-| 17 | 4 | `fig-17-source-crop-v1.png` |
-| 18 | 4 | `fig-18-source-crop-v1.png` |
-| 19 | 4 | `fig-19-source-crop-v1.png` |
+| 1 | 1 | `fig-1-source-crop-v2.png` (700 × 230 px) |
+| 2 | 1 | `fig-2-source-crop-v2.png` (700 × 230 px) |
+| 3 | 1 | `fig-3-source-crop-v3.png` (650 × 210 px) |
+| 4 | 1 | `fig-4-source-crop-v2.png` (700 × 230 px) |
+| 5 | 1 | `fig-5-source-crop-v2.png` (700 × 230 px) |
+| 6 | 1 | `fig-6-source-crop-v2.png` (700 × 200 px) |
+| 7 | 1 | `fig-7-source-crop-v2.png` (700 × 230 px) |
+| 8 | 1 | `fig-8-source-crop-v2.png` (700 × 230 px) |
+| 1a | 1 | `fig-1a-source-crop-v2.png` (900 × 220 px) |
+| 2a | 1 | `fig-2a-source-crop-v2.png` (900 × 220 px) |
+| 3a | 1 | `fig-3a-source-crop-v2.png` (900 × 220 px) |
+| 4a | 1 | `fig-4a-source-crop-v3.png` (800 × 190 px) |
+| 5a | 1 | `fig-5a-source-crop-v3.png` (800 × 180 px) |
+| 6a | 1 | `fig-6a-source-crop-v3.png` (800 × 180 px) |
+| 7a | 1 | `fig-7a-source-crop-v2.png` (900 × 190 px) |
+| 8a | 1 | `fig-8a-source-crop-v2.png` (900 × 160 px) |
+| 9 | 2 | `fig-9-source-crop-v1.png` (1120 × 800 px) |
+| 10 | 2 | `fig-10-source-crop-v2.png` (930 × 650 px) |
+| 11 | 2 | `fig-11-source-crop-v2.png` (900 × 600 px) |
+| 12 | 2 | `fig-12-source-crop-v2.png` (1950 × 600 px) |
+| 13 | 3 | `fig-13-source-crop-v2.png` (1800 × 650 px) |
+| 14 | 3 | `fig-14-source-crop-v2.png` (650 × 550 px) |
+| 15 | 3 | `fig-15-source-crop-v2.png` (1850 × 830 px) |
+| 16 | 3 | `fig-16-source-crop-v2.png` (700 × 350 px) |
+| 17 | 4 | `fig-17-source-crop-v1.png` (650 × 750 px) |
+| 18 | 4 | `fig-18-source-crop-v1.png` (570 × 500 px) |
+| 19 | 4 | `fig-19-source-crop-v1.png` (1060 × 700 px) |
 
 ## Known editorial scope
 

@@ -16,8 +16,19 @@
 | Source PDF page | Matter manually checked | Local editorial output |
 | --- | --- | --- |
 | 1 | Drawing sheet: Fig. 1, Fig. 2, title, patent date, inventor and witness signatures | `figure-1-v3.png`, `figure-2-v3.png`; figure-sheet blocks in `pasteurFermentationEdition.ts` |
-| 2 | Masthead; opening specification through the start of the operating sequence | Reviewed transcript page 2; archival blocks 0–12 |
-| 3 | Completion of operating sequence; optional filtered/hot air; scale note; gas reuse; asserted results; sole claim; execution and witnesses | Reviewed transcript page 3; archival blocks 12–23; typed claim 1 |
+| 2 | Masthead; opening specification through the start of the operating sequence | Reviewed transcript page 2; archival blocks 0–13 |
+| 3 | Completion of operating sequence; optional filtered/hot air; scale note; gas reuse; asserted results; sole claim; execution and witnesses | Reviewed transcript page 3; archival blocks 13–24; typed claim 1 |
+
+The reviewed drawing-sheet ledger inventories the readable reference characters
+printed beside both figures rather than substituting a generic drawing summary.
+This inventory is comparison evidence only; the continuous visitor edition keeps
+the drawing-page boundary out of its prose and exposes the source pixels through
+the authored figure references.
+
+The continuous edition preserves the source paragraph break between the
+introductory sentence ending “my said improved process” and the following
+apparatus paragraph beginning “At Figure 1.” It removes scan-page boundaries,
+not the patent's own rhetorical structure.
 
 The edition is manually authored from the facsimile. Existing
 `source-text/us-135245-pasteur-fermentation.txt` and
@@ -52,6 +63,38 @@ edition. The v3 files are pinned by the edition test with their exact paths,
 dimensions, and SHA-256 values. There are exactly three printed specification
 citations in the source text: `Figure 1`, `Fig. 1`, and `Fig. 2`; each is an
 authored semantic reference to the corresponding v3 source crop.
+
+Root visual QC on 2026-08-21 separately opened both active v3 files. Fig. 1 is
+upright and contains the whole three-vessel apparatus and printed label without
+the sheet masthead, Fig. 2, or signatures. Fig. 2 is upright and contains the
+whole modified vessel B, its label, rim marks `g` and `g′`, outlet `R`, and
+spray head without masthead, Fig. 1, or signatures.
+
+## Visitor-facing model boundary
+
+The 2D, Three.js, schematic, telemetry, weave, and colorized-equation paths are
+limited to the sequence and apparatus printed in this grant: closed vessels A,
+carbonic-acid-gas generator M M and line w, pipe E and nozzles P, exterior
+spray cooling, exit tube x and cup v, and the 16°–18° Réaumur yeast-addition
+band. The process percentages are explicitly labelled reader-animation
+controls. The source gives no gas flow, pressure, residual oxygen, water flow,
+cooling time, or vessel dimensions for a numerical simulator. It permits
+galvanized iron, wood, or another suitable vessel material without selecting a
+single construction for the reader model.
+
+The Three.js studio deliberately isolates one representative vessel A with the
+shared gas and spray services so its labeled flow path remains legible. The 2D
+face and archival Fig. 1 preview retain the complete printed three-vessel
+arrangement; the isolated 3D composition is not presented as a facsimile.
+
+An earlier visitor implementation instead taught a later modern pasteurization
+story—thermal hold, microbial log kill, alcohol yield, pressure, shelf life,
+swan-neck/cotton-filter hardware, and invented construction details. Those
+claims and controls are retained only in a non-serving legacy equation entry;
+they are not reachable through the public patent id. The active 2D, 3D, and
+schematic paths were replaced with source-bounded apparatus readers on
+2026-08-21. Fig. 1 and Fig. 2 now have distinct schematic treatments rather
+than presenting the three-vessel Fig. 1 diagram for both catalogue drawings.
 
 ## Editorial claims and limits
 

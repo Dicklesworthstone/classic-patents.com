@@ -40,11 +40,13 @@ comparison.
 
 ## Figure-preview source crop map
 
-The source previews below were rendered directly from the pinned PDF at 300
-dpi and cropped without rotation, retouching, masking, or signature removal.
-The older preview files remain preserved beside these versioned replacements.
+The retained pre-rejection previews below were rendered directly from the
+pinned PDF at 300 dpi and cropped without rotation, retouching, masking, or
+signature removal. They are comparison evidence only, not accepted publication
+assets. The older preview files remain preserved beside these versioned
+replacements.
 
-| Literal figure reference | PDF page | Source-pixel rectangle (left, top, width, height) | Published preview |
+| Literal figure reference | PDF page | Source-pixel rectangle (left, top, width, height) | Retained preview (rejected) |
 | --- | --- | --- | --- |
 | Fig. 1 | 1 | `420, 570, 1500, 1250` | `fig-1-source-crop-v2.png` |
 | Fig. 2 | 1 | `500, 1900, 1340, 660` | `fig-2-source-crop-v2.png` |
@@ -62,6 +64,39 @@ single rectangular crop would either hide a source feature or include a
 signature. The two panels retain only the actual source pixels for the labeled
 left circuit and its right-side continuation; no pixels were erased,
 reconstructed, or supplied by a different figure.
+
+## 2026-08-21 independent rejection, recrop plan, and publication hold
+
+Independent review rejected the visitor-reachable Fig. 3 v3 preview because
+its lower edge reaches into the Fig. 4 drawing band. The two Fig. 5 v2 panels
+also remain rejected: their split does not provide a reliable complete-label
+boundary for the equivalent-circuit panels and leaves neighboring sheet matter
+in the source preview. The old files and their hashes above remain preserved
+as comparison evidence; they are not silently relabeled or overwritten.
+
+The bounded cloud-source recrop plan is below. Coordinates are source pixels
+on the 300-dpi render of pinned PDF page 2, whose full render is 2320 x 3408.
+The Fig. 3 rectangle ends above the Fig. 4 band. The Fig. 5 rectangles are
+non-overlapping adjacent panels, each retaining its printed figure label,
+leaders, and circuit callouts while excluding the Fig. 4 band and the
+signature/attorney neighbor band.
+
+| Figure | Planned versioned preview | Rectangle `(left, top, width, height)` | PNG dimensions | State |
+| --- | --- | --- | --- | --- |
+| Fig. 3 | `fig-3-source-crop-v4.png` | `(430, 570, 1500, 800)` | `1500 x 800` | Cloud crop required; not created or bound |
+| Fig. 5, left source panel | `fig-5-source-crop-v3-left.png` | `(360, 2130, 860, 680)` | `860 x 680` | Cloud crop required; not created or bound |
+| Fig. 5, right source panel | `fig-5-source-crop-v3-right.png` | `(1250, 2130, 780, 680)` | `780 x 680` | Cloud crop required; not created or bound |
+
+No replacement path is referenced by the archival edition or canonical
+drawings until the corresponding cloud source image exists and an independent
+review confirms that the complete labels and callouts are present and that
+Fig. 4 and signature-neighbor pixels are absent. This plan therefore does not
+lift the hold.
+
+The canonical Noyce record, reviewed ledger, archival edition, and all figure
+previews remain **visitor-withheld** pending the independent crop review and
+root acceptance. The hold is enforced by the root editorial publication
+contract, not by the edition's local validation alone.
 
 ## Editorial boundaries
 

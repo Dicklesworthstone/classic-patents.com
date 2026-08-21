@@ -8,7 +8,7 @@
 - Grant date: 1895-07-16; application filed: 1892-08-26; serial No. 444,246
 - Primary public record: https://patents.google.com/patent/US542846A/en
 - Pinned facsimile: `public/patents/pdfs/us-542846-diesel-engine.pdf`
-- Retrieved and visually reviewed in full: 2026-08-18
+- Retrieved: 2026-08-18. Full pixel-level facsimile review remains pending; cloud OCR conflicts on the Swiss foreign-patent number and does not establish the source face.
 - SHA-256: `57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866`
 - Page count: 10
 - Rights basis: an issued United States patent; its historic text and drawings are public-domain United States Government material.
@@ -38,12 +38,15 @@ All crop pixels below are direct crops from the pinned PDF rendered at 300 DPI. 
 
 | Printed figure reference | Candidate preview asset | Source-sheet crop coordinates at 300 DPI | Review result |
 | --- | --- | --- | --- |
-| Fig. 1 | `fig-1-source-crop-v1.png` | Existing individually reviewed crop | Complete, upright individual drawing; no neighboring figure, header, or execution material. |
-| Fig. 2 | `fig-2-source-crop-v4.png` | Existing individually reviewed crop | Complete, upright individual drawing; no neighboring figure, header, or execution material. |
-| Fig. 3 | `fig-3-source-crop-v4.png` | Existing individually reviewed crop | Complete, upright individual drawing; no neighboring figure, header, or execution material. |
-| Figs. 4, 5, and 6 | `figs-4-6-source-crop-v3.png` | PDF page 2, `x=100`, `y=650`, `width=2100`, `height=2450` | Grouped source crop. The printed sheet nests and touches these three drawings, so an honest individual crop would clip printed labels, leader lines, or reference numerals. The header is excluded; the lower execution material is retained only where physically adjacent to the complete group. |
-| Fig. 7 | `fig-7-source-crop-v7.png` | PDF page 3, `x=250`, `y=740`, `width=1450`, `height=2200` | Complete upright drawing with its printed label and reference numerals. The sheet's execution material physically borders the lower edge; retaining it is preferable to clipping the reservoir or inventing erased pixels. |
-| Figs. 8 and 10 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, `x=100`, `y=750`, `width=2100`, `height=2350` | Grouped source crop. Figs. 8 and 10 are physically nested on the printed sheet. The header is excluded; lower execution material remains where inseparable from the complete source group. |
-| Fig. 9 | `fig-9-source-crop-v7.png` | PDF page 5, `x=350`, `y=680`, `width=1600`, `height=2350` | Complete upright drawing with printed label, leaders, and reference numerals. The execution material physically borders the bottom edge and is retained rather than clipping the lower apparatus. |
+| Fig. 1 | `fig-1-source-crop-v1.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; no acceptance of the crop or its figure semantics. |
+| Fig. 2 | `fig-2-source-crop-v4.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; this is a theoretical cycle diagram, not an engine section. |
+| Fig. 3 | `fig-3-source-crop-v4.png` | PDF page 1, individual crop plan; exact pixel bounds pending cloud facsimile review | Existing candidate only; this is a cooled-compression theoretical cycle diagram, not a nozzle. |
+| Fig. 4 | `figs-4-6-source-crop-v3.png` | PDF page 2, grouped split plan, `x=100`, `y=650`, `width=2100`, `height=2450` | Grouped candidate; split into an individual preview only after cloud pixel review confirms labels would not be clipped. |
+| Fig. 5 | `figs-4-6-source-crop-v3.png` | PDF page 2, same grouped split plan as Fig. 4 | Grouped candidate; preserve the shared source crop until an independent reviewer accepts a clean split. |
+| Fig. 6 | `figs-4-6-source-crop-v3.png` | PDF page 2, same grouped split plan as Figs. 4 and 5 | Grouped candidate; admission-plug detail must not be relabeled as a cylinder or injector. |
+| Fig. 7 | `fig-7-source-crop-v7.png` | PDF page 3, `x=250`, `y=740`, `width=1450`, `height=2200` | Existing candidate; exact clean boundary and lower execution-material treatment remain pending independent pixel review. |
+| Fig. 8 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, grouped split plan, `x=100`, `y=750`, `width=2100`, `height=2350` | Grouped candidate; preserve the shared source crop until a clean split is independently accepted. |
+| Fig. 9 | `fig-9-source-crop-v7.png` | PDF page 5, `x=350`, `y=680`, `width=1600`, `height=2350` | Existing candidate; exact clean boundary remains pending independent pixel review. |
+| Fig. 10 | `figs-8-and-10-source-crop-v2.png` | PDF page 4, same grouped split plan as Fig. 8 | Grouped candidate; plan a multi-preview split only after cloud review confirms the branch-pipe detail boundary. |
 
-This lane establishes only source-crop lineage and authored occurrence-to-asset routing. It does **not** accept the Diesel archival edition for publication: the canonical record intentionally leaves `archivalEdition` and `originalTextAsset` unset until root independently completes full source-text, figure-sheet, and visitor-facing review. The adjacent execution material on pages 2 through 5 is an explicit acceptance issue for that reviewer, not a claim that the crops are isolated when the printed layout makes isolation impossible.
+This lane establishes only a version-preserving crop plan and authored occurrence-to-asset routing. It does **not** accept the Diesel archival edition for publication: the canonical record intentionally leaves `archivalEdition` and `originalTextAsset` unset until root independently completes full source-text, figure-sheet, foreign-patent-number, and visitor-facing review. Existing assets are preserved; no uncreated crop is referenced. The adjacent execution material on pages 2 through 5 is an explicit acceptance issue for that reviewer, not a claim that the crops are isolated when the printed layout makes isolation impossible.

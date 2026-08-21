@@ -13,7 +13,7 @@
 - **PDF SHA-256 Digest**: `924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85`
 - **PDF Page Count**: 13 pages
 - **Retrieval Date**: August 19, 2026
-- **Full-Facsimile Review Status**: Candidate complete. On August 21, 2026, all 13 pinned-PDF pages were re-read; pages 4–13 were transcribed into the reviewed ledger and converted into the continuous typed edition. Publication remains reserved for root independent acceptance.
+- **Full-Facsimile Review Status**: Candidate complete for the text lane. On August 21, 2026, all 13 pinned-PDF pages were re-read; pages 4–13 were transcribed into the reviewed ledger and converted into the continuous typed edition. Publication remains reserved for root independent acceptance.
 - **Rights Basis**: Public domain United States Government patent grant (1880).
 
 ---
@@ -42,7 +42,27 @@
 
 ### Candidate-completion boundary (2026-08-21)
 
-Direct review corrected the drawing inventory: page 1 prints Figs. 1–6; page 2 prints Figs. 3–17; page 3 repeats Fig. 10 and prints Figs. 18–24. The edition points Figs. 16–17 to one clean, upright source crop because those two views touch on the sheet, and Figs. 18–24 to individually reviewed upright crops. Earlier clipped, sideways, and misnumbered assets remain preserved as evidence and are not used by the edition. The reviewed ledger and edition now carry the complete source prose, printed claims, and formal signatures. This is a candidate only: root independent acceptance controls publication.
+Direct review corrected the drawing inventory: page 1 prints Figs. 1–6; page 2 prints Figs. 3–17; page 3 repeats Fig. 10 and prints Figs. 18–24. The edition points Figs. 16–17 to one grouped source-pixel crop because those two views touch on the sheet, and Figs. 18–24 to versioned source crops. The text lane now carries the complete source prose, printed claims, and formal signatures, with paragraph-specific companions. Strict crop acceptance is still pending: sampled v3/v4 previews for Figs. 1, 2, 6, 8, 10, 14, and 15 retain unrelated sheet headers or neighboring figures. No local crop generation is permitted while the host load gate is closed; retain these assets and withhold publication until cloud/source-pixel replacements are independently reviewed. This is a candidate only: root independent acceptance controls publication.
+
+### Cloud vision crop audit and exact replacement plan (2026-08-21)
+
+The existing previews were audited as cloud vision evidence only. Figs. 1–15 are not accepted: the current candidates are rotated and/or composite, and several include sheet headers or neighboring drawings. The grouped Figs. 16–17 preview and the v5 previews for Figs. 18–24 are provisionally clean, but remain unaccepted until an independent reviewer checks each against the pinned sheet. No image was rendered, rotated, converted, or cropped on this host.
+
+| Printed figure(s) | Pinned source page | Required final orientation | Cloud crop boundary | Current disposition |
+| :--- | :--- | :--- | :--- | :--- |
+| Fig. 1 | PDF p. 1, Sheet 1 | Upright, 0° clockwise | Isolate the complete general transmitting/receiving apparatus and its printed Fig. 1 label; exclude masthead, signatures, and every neighboring view. | Replace v3; rotated/composite. |
+| Fig. 2 | PDF p. 1, Sheet 1 | Upright, 0° clockwise | Isolate the interrupter wheel/detail and printed Fig. 2 label; exclude Sheet 1 header and Figs. 1, 3–6. | Replace v3; rotated/composite. |
+| Figs. 3–9 | PDF p. 2, Sheet 2 (also cross-check p. 1 for Figs. 3–6) | Upright, 0° clockwise | One preview per printed figure, bounded by the figure outline/label; exclude all adjacent views, sheet furniture, and repeated labels. | Replace v3; rotated/composite. |
+| Fig. 10 | PDF p. 3, Sheet 3 (cross-check duplicate on p. 2) | Upright, 0° clockwise | Isolate the reflector transmitter/receiver system and printed Fig. 10 label; exclude the Sheet 3 header, Figs. 18–24, and any duplicate-sheet neighbor. | Replace v3; rotated/composite. |
+| Figs. 11–15 | PDF p. 2, Sheet 2 | Upright, 0° clockwise | Isolate each selenium-cell plan/section/detail with its own printed label; exclude Figs. 10 and 16–17, sheet furniture, and neighboring cell views. | Replace v3/v4; rotated and/or contaminated. |
+| Figs. 16–17 | PDF p. 2, Sheet 2 | Upright, 0° clockwise | Preserve one grouped source crop containing both touching views and both printed labels, with no sheet header or Fig. 15/18 neighbor. | v5 provisionally clean; independent review required. |
+| Figs. 18–24 | PDF p. 3, Sheet 3 | Upright, 0° clockwise | One preview per printed figure, preserving the complete numbered cell detail and labels while excluding every adjacent detail and Sheet 3 furniture. | v5 provisionally clean; independent review required. |
+
+The final crop filenames must retain the existing catalogue convention (`fig-<n>-source-crop-v<next>.png`, with the grouped `figs-16-and-17-source-crop-v<next>.png`). The edition remains held and may retain the current versioned candidates as WIP evidence, but those rejected v3/v4 previews must be replaced and independently accepted before the edition is unbound from the root hold. Crop replacement and independent visual acceptance remain external cloud work; this lane intentionally leaves those files untouched.
+
+### Source erratum corrected in the text lane
+
+On PDF page 9, the receiver description reads: “The electrodes u¹ u² pass out through the said tube, and may be connected with a battery and telephonic or electrical instruments, as before described in connection with Fig. 8.” The reviewed ledger and continuous edition now carry that exact sentence. The prior “end of the tube t passes through the said tube” wording was a scan/transcription corruption, not a claim or a new apparatus element.
 
 - **Visitor Source Face**: `src/data/editions/bellPhotophoneEdition.ts`
 - **Reviewed Ledger**: `public/patents/transcripts/us-235199-bell-photophone-reviewed.txt`

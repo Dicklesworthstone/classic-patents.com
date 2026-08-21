@@ -14,14 +14,19 @@
 ## Direct facsimile review
 
 The pinned document has three source sheets. Page 1 is the drawing sheet with
-Figs. 1 through 4. Page 2 contains the masthead and the complete specification
-through the transition to the claim. Page 3 contains the one printed claim,
-execution, signature, and witnesses. Every sheet was rendered and visually
-read. The raw PDF text layer was comparison evidence only.
+Figs. 1 through 4, the printed title block, witness/inventor signatures, and
+the N. Peters photo-lithographer line. Page 2 contains the masthead and the
+complete specification through the transition to the claim. Page 3 contains
+the one printed claim, execution, signature, and witnesses. The specification
+and claim sheets were read in the cloud. The drawing sheet was independently
+inspected against the pinned facsimile, and its printed title block, four figure
+labels, reference letters, witness/inventor lines, and photo-lithographer line
+are entered in the reviewed ledger. The raw PDF text layer was comparison
+evidence only.
 
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
-| p. 1 | Figs. 1-4: wheel, nozzle layout, bucket, bucket section | Direct visual review; direct local crops for each figure |
+| p. 1 | Figs. 1-4: wheel, nozzle layout, bucket, bucket section; title block and signatures | Direct visual review and literal printed-matter ledger; crop binding withheld pending clean source-coordinate crops |
 | p. 2 | Masthead and complete specification body | Direct visual review and manual transcription |
 | p. 3 | Single claim, execution, signature, witnesses | Direct visual review and manual transcription |
 
@@ -40,27 +45,32 @@ front face. The specification permits separately fastened or integral buckets
 and one or more nozzles, but it does not turn those optional details into a
 second claim.
 
-## Published edition, ledger, and figure crops
+## Candidate edition, ledger, and figure crops
 
 `peltonWaterWheelArchivalEdition` in
 `src/data/editions/peltonWaterWheelEdition.ts` is a manually authored typed
 React/TypeScript edition. It is continuous reading content, not OCR cleanup,
-HTML, Markdown, a PDF text dump, or scan-page reconstruction.
+HTML, Markdown, a PDF text dump, or scan-page reconstruction. Its
+`completeFacsimileReviewed` attestation remains false while the drawing-sheet
+ledger and clean preview crops are unfinished.
 
 `public/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt` is the
 separate source ledger. Its page markers establish ordered review coverage but
 are never shown in the visitor reader. The older source-text layer remains
 research evidence only.
 
-| Source figure | Local selected crop |
+| Source figure | Crop status and next source-coordinate plan |
 | --- | --- |
-| Fig. 1 | `public/patents/figures/us-233692-pelton-water-wheel/fig-1-source-crop-v2.png` |
-| Fig. 2 | `public/patents/figures/us-233692-pelton-water-wheel/fig-2-source-crop-v3.png` |
-| Fig. 3 | `public/patents/figures/us-233692-pelton-water-wheel/fig-3-source-crop-v2.png` |
-| Fig. 4 | `public/patents/figures/us-233692-pelton-water-wheel/fig-4-source-crop-v2.png` |
+| Fig. 1 | Hold: source coordinates x=10–70%, y=21–69%; include the full wheel/nozzle arrangement, exclude the title header and Fig. 2 overlap. |
+| Fig. 2 | Hold: source coordinates x=11–77%, y=53–84%; isolate the side elevation/distributing box, exclude Fig. 1, Fig. 4, and signature matter. |
+| Fig. 3 | Hold: source coordinates x=69–85%, y=23–40%; regenerate a bounded bucket-only crop after the load gate permits image work. |
+| Fig. 4 | Hold: source coordinates x=70–83%, y=63–77%; include both `e` labels and the bucket section, exclude neighboring drawing matter. |
 
-The selected crops are unmodified selections from the pinned drawing sheet.
-They add no reconstructed linework, labels, or historical claims.
+Versioned crop files remain on disk as prior research artifacts but are not
+bound by the archival edition: the current Fig. 1, Fig. 2, and Fig. 4 files
+include neighboring source matter, and the crop pass is load-gated. No crop
+is currently attested as a clean public figure preview. No reconstructed
+linework, labels, or historical claims may be added.
 
 ## Review boundary
 

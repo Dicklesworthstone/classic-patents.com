@@ -14,9 +14,17 @@
 
 | PDF page | Material reviewed | Editorial treatment |
 | --- | --- | --- |
-| 1 | `C. H. McCormick. Reaper. Patented June 21, 1834.` and the single unnumbered, lettered drawing sheet | `figure-sheet` node; locally derived source-faithful preview at `/patents/figures/us-x8277-mccormick-reaper-drawing-preview.png`. The record callouts use the drawing key: A platform, B tongue, D cross-bar, L divider, W reel, T cutter. |
+| 1 | `C. H. McCormick. Reaper. Patented June 21, 1834.` and the single unnumbered, lettered drawing sheet | `figure-sheet` node; locally derived source-faithful preview at `/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png`. The record callouts use the drawing key: A platform, B tongue, D cross-bar, L divider, W reel, T cutter. |
 | 2 | Patent-office masthead, inventor and title, opening declaration, platform/tongue/draft construction, braces, divider, and reel-post construction | Authored masthead and source-order paragraphs. No scan page break is shown to a visitor. |
 | 3 | Ground-wheel gearing, crank-driven cutter apparatus, reel and platform operation, both unnumbered claim paragraphs, attestation, signature, and witnesses | Authored source-order paragraphs, claim nodes 1–2, and execution nodes. |
+
+### Drawing-crop receipt
+
+- Served crop: `/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png`
+- PNG dimensions and encoding: `3000 × 1900` pixels, 8-bit grayscale, non-interlaced.
+- Crop SHA-256: `d149fb663fe501a72fc49521f7a1b6293e7fa982c014b24c37ef0c82ff3748ea`
+- Source operation: the complete drawing on pinned PDF page 1 was rotated 90° clockwise from the portrait scan orientation into an upright landscape crop. The crop excludes page-header and signature matter while preserving the complete printed drawing and its lettered elements.
+- Semantic mapping: `A` platform, `B` tongue, `D` cross-bar, `L` divider, `W` reel, and `T` cutter. The served preview is the edition's sole authored figure reference. The earlier portrait asset `/patents/figures/us-x8277-mccormick-reaper-drawing-preview.png` remains preserved but is not served.
 
 ## Exact high-value locators
 

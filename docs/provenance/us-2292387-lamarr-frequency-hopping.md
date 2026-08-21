@@ -36,3 +36,25 @@ The companion readings explain the same paragraph or claim without changing lega
 - Specification and figure list: PDF pages 3–6.
 - Claims 1–4: PDF page 6.
 - Claims 4–6 and inventor names: PDF page 7.
+
+## Deferred source-crop plan (cloud-only)
+
+The existing preview files are preserved as historical working assets and are
+not re-bound by this repair. Publication remains withheld until clean crops
+are reviewed from the pinned facsimile by an independent editor. The exact
+cloud crop plan uses the primary facsimile at
+`https://patents.google.com/patent/US2292387A/en` (drawing-sheet images for
+PDF pages 1–2) and is:
+
+| Figure | PDF page | Crop target | Required boundary | Output (after independent review) |
+| --- | ---: | --- | --- | --- |
+| Fig. 1 | 1 | Transmitting-station schematic | Entire printed Fig. 1 box, including labels 20–58 and no adjacent Fig. 2/3 material | `fig-1-source-crop-v1.png` |
+| Fig. 2 | 1 | Receiving-station schematic | Entire printed Fig. 2 box, including antenna 60, selector 61, filters, and rudder mechanism; exclude Fig. 1/3 | `fig-2-source-crop-v1.png` |
+| Fig. 3 | 1 | Simultaneous-release circuit | Entire printed Fig. 3 circuit and its labels 100–106; exclude neighboring drawing borders | `fig-3-source-crop-v1.png` |
+| Fig. 4 | 2 | Perforated record strip | Full strip plan with rows A–H and starting hole 101; retain printed row letters and figure label | `fig-4-source-crop-v1.png` |
+| Fig. 5 | 2 | Pneumatic switching head | Full cross-section through shoe 45, passages 46–58, manifold 48, pump 50, and strip; exclude Fig. 6 | `fig-5-source-crop-v1.png` |
+| Fig. 6 | 2 | Starting-pin section | Full perpendicular section showing pin 100, hole 101, spring 102, solenoid 103, and plunger 104 | `fig-6-source-crop-v1.png` |
+| Fig. 7 | 2 | Torpedo-course plan | Full plan containing mother ship 10/10a/10b, torpedo 11, paths 12–16, enemy ship 17/17a–c, airplane 18, and current arrows 19 | `fig-7-source-crop-v1.png` |
+
+Do not create, process, or point edition references at these output names
+until the cloud source review and independent acceptance are complete.

@@ -23,9 +23,9 @@
 
 | PDF Page | Facsimile Content Description | Review Notes |
 |:---|:---|:---|
-| **Page 1** | Drawing Sheet (Figs. 1 & 2) | Fig. 1: Sectional elevation of the crucible, fused cryolite bath, and carbon electrodes. Fig. 2: Top plan view of the crucible and electrode array. Signatures of Charles M. Hall, witnesses, and attorneys. |
-| **Page 2** | Specification Masthead & Description | Letters Patent No. 400,766 masthead; full preamble reciting the discovery of molten fluoride solvent for alumina ($Al_2O_3$); chemical bath composition ($Na_3AlF_6$ / cryolite); electrolysis current dynamics. |
-| **Page 3** | Specification Conclusion & Claims | Description of continuous alumina replenishment and non-corrosive carbon linings; formal Claims 1 and 2; signature of Charles M. Hall; signatures of witnesses. |
+| **Page 1** | Drawing sheet and execution matter | Printed `(Specimens.)`, `C. M. HALL.`, title, patent number/date, `Fig. 1`, `Fig. 2`, source labels A/A-prime/B/C/D/P/N/N-prime, inventor line, and witnesses George E. Hall and Robt. L. Fenwick. The attorney handwriting is preserved as a facsimile note rather than guessed. |
+| **Page 2** | Specification masthead and first description column pair | Letters Patent No. 400,766 masthead; enabling preamble; fused fluoride solution; drawing references; fluoride proportions and cryolite addition; electrode voltage and materials; metal crucible, carbon lining, and furnace; Fig. 1 and Fig. 2 apparatus relationship; lithium substitution begins on the final paragraph. |
+| **Page 3** | Specification continuation, exclusions, claims, and execution | Lithium-fluoride proportions; adjustable bath composition and aluminium globules; carbonic-oxide/copper-electrode paragraph; excluded subject matter and serial applications; formal Claims 1, 2, and 3; Hall signature and witnesses. |
 
 ---
 
@@ -34,5 +34,9 @@
 1. **Facsimile**: Pinned immutable source PDF at `public/patents/pdfs/us-400766-hall-aluminium.pdf` (SHA-256 `8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791`).
 2. **Reviewed Ledger**: Full page-complete transcription ledger at `public/patents/transcripts/us-400766-hall-aluminium-reviewed.txt`.
 3. **Archival Edition**: Hand-authored interactive React edition at `src/data/editions/hallAluminiumEdition.ts` with inline term definitions, figure previews, and dynamic claim text lookup.
-4. **Figure Crops**: Local high-resolution PNG crops located at `public/patents/figures/us-400766-hall-aluminium/` and root `public/patents/figures/`.
-5. **Claims Count**: Exactly 2 printed claims, both fully decoded with legal significance and mechanical breakdowns.
+4. **Figure Crops**: Existing v1 crops are preserved at `public/patents/figures/us-400766-hall-aluminium/`. The candidate edition plans new source-derived files `fig-1-source-crop-v2.png` and `fig-2-source-crop-v2.png` (with matching preview paths) but remains withheld from the served record until those files exist and are independently viewed. No existing crop is overwritten.
+5. **Claims Count**: Exactly 3 printed claims, all dynamically read from the candidate archival edition and decoded in the canonical record.
+
+## 4. Editorial and publication status
+
+The continuous candidate edition and reviewed ledger were manually authored against all three pinned facsimile pages by a GPT-5.6 Luna worker. The ledger is complete for the printed text and uses explicit editorial facsimile notes for drawing-sheet labels without inventing illegible attorney handwriting. The candidate edition's `completeFacsimileReviewed` attestation is deliberately `false`, and the canonical record leaves `archivalEdition` detached, until the v2 Fig. 1 and Fig. 2 crops are generated from the upright source images, checked for neighboring-figure contamination, and independently accepted. The existing v1 files remain preserved research assets.

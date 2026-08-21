@@ -12,6 +12,12 @@
   are public-domain United States Government material. This receipt does not
   claim rights in a third party’s scan presentation or metadata.
 
+The working cache at `artifacts/raw_pdfs/us-727650-linde-air-liquefaction.pdf`
+is byte-identical to the pinned public PDF: both files are 600,056 bytes,
+report five pages at 2320 × 3408 source pixels per page, and have the same
+SHA-256 above. The cache is therefore a container copy, not a competing
+facsimile or a reason to change the pinned digest.
+
 ## Direct facsimile review
 
 | PDF page | Checked material | Editorial treatment |
@@ -46,6 +52,29 @@ Every edition claim is an explicit typed node. The terms and figure reference
 are authored nodes; the direct patent-local companion export is
 `lindeAirLiquefactionParallelReadings`. Root must register that export in the
 shared map separately.
+
+## Pending figure-crop repair
+
+The current upright crop is clipped at the right-hand separation branch near
+G³. Keep the edition’s figure reference on the existing source crop until a
+cloud worker completes this exact versioned plan:
+
+1. Read only PDF page 1 from the pinned five-page facsimile (source raster
+   2320 × 3408, 300 dpi); do not use the cache as a separate source and do not
+   redraw or label the image.
+2. Make `public/patents/figures/us-727650-linde-air-liquefaction/fig-1-g3-side-source-crop-v1.png`
+   from the original page pixels, preserving the complete right-side G³ path,
+   its connection from V², the outer outlet, and a clean margin around each.
+   The worker must record the source-page pixel rectangle and output dimensions
+   alongside the artifact for review.
+3. Independent review must confirm that C, K, G′, N, R′, V′, V², S, G², and
+   G³ are source labels and that no synthetic vessel, temperature, material,
+   frost, or flow annotation has entered the crop. Only after that review may
+   the edition reference be repointed from `fig-1-source-crop-v2.png`.
+
+Until the crop exists and passes that review, the G³-side crop is withheld and
+the edition remains pending; no local image tool or image-processing command is
+authorized for this repair.
 
 ## Independent-review boundary
 

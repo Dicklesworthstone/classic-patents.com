@@ -23,7 +23,7 @@ for this source and is not the transcription authority.
 | pp. 1-17 | The 17 drawing sheets; printed title; figure labels 1 through 51; drawing-sheet signatures | Direct visual review; figure crop work is still in progress and is not yet visitor-facing |
 | p. 18 | Masthead, assignee, August 30, 1884 application date, purpose, matrix/casting groups, bar selection, alignment, and casting cycle | Cloud-authoritative US313224A comparison plus manual source-led transcription; ledger and continuous edition now cover this page |
 | pp. 19-25 | Overlap cycle, correction, Figs. 1-51 descriptions, principal parts, matrix-bar geometry, lower-case recesses, bar connections, stop-pin frame, adjusting-pin escapement, inactive bars, spacing/justification, and indicator | Bounded cloud-only continuation slice manually reconciled into the ledger and continuous edition; every printed figure citation is authored as a typed reference (local crops remain staged only where already present) |
-| pp. 26-30 | Continuation of the specification: remaining casting, pump, drive, operating cycle, and modifications | Explicit continuation boundary: not changed by this slice and remains an independent source-completion gap |
+| pp. 26-30 | Continuation of the specification: remaining casting, pump, drive, operating cycle, and modifications | Five authored continuous React source blocks now preserve the complete literal continuation; later figure previews remain unbound pending drawing-sheet acceptance |
 | pp. 31-35 | Claims 1-70, execution, signature, and witness names | Direct visual review; every claim manually transcribed and source-pinned in `mergenthalerLinotypeClaims` |
 
 ## Source observations and corrections
@@ -63,16 +63,16 @@ page 30. Page 31 begins the formal claims; pages 31 through 35 retain all
 F. E. Stephens, and C. E. Tully signature sequence.
 
 The exact continuation boundary is the final modifications paragraph on page
-30, followed by the claim introduction on page 31. The edition remains
-unbound pending reconciliation of its continuous React blocks, dynamic claim
-derivation, and direct local crops for every figure reference. Pages 1-17
-remain the independent drawing-sheet/crop boundary.
+30, followed by the claim introduction on page 31. The edition now contains
+the p26-30 continuation blocks and derives its claim literals from the typed
+edition claim nodes. The canonical record remains unbound pending direct local
+crops for every figure reference and independent acceptance of drawing pages
+1-17.
 
 ## Published-edition boundary
 
-The public record has **not** yet been switched to this edition. The complete
-continuous transcription, the semantic React source blocks, the companion
-plain-English readings, and direct local crops for all figure references must
+The public record has **not** yet been switched to this edition. Direct local
+crops for all figure references and independent drawing-sheet acceptance must
 be complete before it may replace the current source face. The claim
 transcription is deliberately staged in
 `src/data/editions/mergenthalerLinotypeEdition.ts`, where a focused test pins
@@ -84,7 +84,7 @@ coverage as a complete historical edition.
 ### Root re-hold (2026-08-20)
 
 The canonical record remains unbound. The ledger now has literal specification
-content through pages 18-30 and retains the complete 70-claim/signature tail,
-but publication still requires the edition's continuous React blocks, dynamic
-claim binding, complete figure-reference previews, and independent facsimile
-acceptance for drawing pages 1-17.
+content through pages 18-30 and retains the complete 70-claim/signature tail;
+the edition has the p26-30 continuation and dynamic claim binding, but
+publication still requires complete figure-reference previews and independent
+facsimile acceptance for drawing pages 1-17.
