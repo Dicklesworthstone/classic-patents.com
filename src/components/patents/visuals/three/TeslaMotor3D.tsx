@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
@@ -34,6 +34,7 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const acFrequencyHz = teslaMotorPhaseHz(params);
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const fig13Unavailable = phaseCount === 3;
@@ -62,6 +63,7 @@ export function TeslaMotor3D() {
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
     isAudioMuted,
     rotorSpeedRpm,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -156,6 +158,7 @@ export function TeslaMotor3D() {
       );
 
       bFieldArrow.visible = p.showMagneticFlux && fig9Available;
+      fig9Model.setCutaway?.(p.isCutaway ?? false);
 
       controls.update();
       renderer.render(scene, camera);
