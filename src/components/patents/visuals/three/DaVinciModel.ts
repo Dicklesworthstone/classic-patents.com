@@ -24,7 +24,7 @@ export interface DaVinciModel {
 
 export function buildDaVinciModel(): DaVinciModel {
   const root = new THREE.Group();
-  root.name = "Intuitive Surgical Da Vinci EndoWrist Robotic System";
+  root.name = "US 6,331,181 Robotic Surgical Tool Interface Model";
   const mainGroup = new THREE.Group();
   root.add(mainGroup);
 
@@ -132,7 +132,9 @@ export function buildDaVinciModel(): DaVinciModel {
   shaft.castShadow = true;
   baseGroup.add(shaft);
 
-  // 4. EndoWrist 7-Degree-of-Freedom Articulation Stack
+  // 4. Illustrative distal articulation stack. The grant claims tool data,
+  // drive interfaces, and calibration memory; it does not fix a commercial
+  // EndoWrist name or a universal degree-of-freedom count.
   // Wrist Pitch Joint
   const wristPitchGroup = new THREE.Group();
   wristPitchGroup.position.set(0, -0.42, 0);

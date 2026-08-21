@@ -204,7 +204,7 @@ export function WestinghouseAirBrakeSim() {
             {wh.alarmWhistleActive && (
               <div className="px-2.5 py-1 bg-amber-500/20 border border-amber-500 rounded-lg text-amber-300 font-bold flex items-center gap-1 animate-pulse">
                 <Bell className="w-3.5 h-3.5" />
-                <span>WHISTLE $h$ BLASTING</span>
+                <span>WHISTLE h BLASTING</span>
               </div>
             )}
           </div>
@@ -832,7 +832,7 @@ export function WestinghouseAirBrakeSim() {
             {/* Selecting Cock d¹ Role Reversal Button (Claim 3) */}
             <div className="space-y-1.5 pt-1">
               <span className="text-xs font-mono font-semibold text-ink-800 dark:text-parchment-200 block">
-                Selecting Cock $d^1$ (Case $d$)
+                Selecting Cock d¹ (Case d)
               </span>
               <button
                 type="button"
@@ -857,7 +857,7 @@ export function WestinghouseAirBrakeSim() {
             {/* Automatic Accident Tripping Triggers (Claim 4) */}
             <div className="space-y-2 pt-2 border-t border-parchment-200 dark:border-ink-800">
               <span className="text-xs font-mono font-semibold text-ink-800 dark:text-parchment-200 block">
-                Accident Tripping Cocks $e$ (Claim 4)
+                Accident Tripping Cocks e (Claim 4)
               </span>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -892,7 +892,7 @@ export function WestinghouseAirBrakeSim() {
               <div className="flex justify-between items-center text-xs font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200 flex items-center gap-1">
                   <Radio className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-                  <span>Signal Code (Fig. 4 Dial $g^2$)</span>
+                  <span>Signal Code (Fig. 4 Dial g²)</span>
                 </span>
                 <span className="text-cyan-600 dark:text-cyan-400 font-bold">
                   Step {wh.signalIndexStep}/5

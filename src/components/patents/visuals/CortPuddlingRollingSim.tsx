@@ -49,6 +49,10 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
           <p className="text-xs font-mono text-ink-500 dark:text-parchment-400 mt-0.5">
             Reverberatory Decarburization &amp; Continuous Grooved Roll Squeeze
           </p>
+          <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-amber-800 dark:text-amber-300">
+            Editorial process model only. GB 1420&apos;s source edition is withheld; this instrument
+            is not a reconstruction of a surviving patent drawing or a measured production record.
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900/80 p-1 rounded-lg border border-parchment-300 dark:border-ink-700">
@@ -526,8 +530,8 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
               fill="#a8a29e"
               textAnchor="middle"
             >
-              Continuous 3D Hydrostatic Squeeze (P = {sim.hydrostaticSqueezePressureMpa.toFixed(0)}{" "}
-              MPa) • Reduction = {sim.totalAreaReductionRatio.toFixed(1)}×
+              Modelled roll-bite pressure (P = {sim.hydrostaticSqueezePressureMpa.toFixed(0)} MPa) •
+              Modelled reduction = {sim.totalAreaReductionRatio.toFixed(1)}×
             </text>
           </svg>
         )}

@@ -127,7 +127,7 @@ export function DaVinci3D() {
         if (hudCounter % 10 === 0) {
           setHud({
             scale: p.motionScaleRatio ?? 3,
-            tremorAtten: currentState.tremorAttenuationPercent,
+            tremorAtten: currentState.compatibilitySignalPercent,
             tipVelocity: currentState.tipVelocityMms,
           });
         }
@@ -149,7 +149,7 @@ export function DaVinci3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Intuitive Surgical DaVinci Telepresence 3D</div>
+      <div className="sr-only">US 6,331,181 robotic surgical tool interface 3D model</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -245,28 +245,30 @@ export function DaVinci3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Scale Ratio:
+                Illustrative offset:
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
-                {motionScaleRatio}:1
+                {motionScaleRatio}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Master Speed:</span>
+              <span className="text-ink-600 dark:text-ink-400">Illustrative drive speed:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">
                 {masterInputSpeedMps.toFixed(2)} m/s
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Grip Angle:</span>
+              <span className="text-ink-600 dark:text-ink-400">
+                Illustrative end-effector angle:
+              </span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
                 {gripAngleDeg}°
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Tremor Filter:</span>
+              <span className="text-ink-600 dark:text-ink-400">Compatibility signal:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                {hud.tremorAtten > 0 ? "ACTIVE (-26 dB)" : "BYPASS"}
+                {hud.tremorAtten > 0 ? "PRESENT" : "ABSENT"}
               </span>
             </div>
           </div>
@@ -275,12 +277,12 @@ export function DaVinci3D() {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="DaVinci Telesurgical Kinematics"
+          title="Da Vinci Tool Interface Data"
           chips={[
-            { label: "Scale Ratio", value: `${hud.scale}:1` },
+            { label: "Illustrative offset", value: `${hud.scale}` },
             {
-              label: "Tremor Filter",
-              value: hud.tremorAtten > 0 ? "Active (-26 dB)" : "Bypassed",
+              label: "Compatibility signal",
+              value: hud.tremorAtten > 0 ? "Present" : "Absent",
               tone: hud.tremorAtten > 0 ? "ok" : "warn",
             },
             { label: "Tip Speed", value: hud.tipVelocity.toFixed(1), unit: "mm/s" },
@@ -295,12 +297,12 @@ export function DaVinci3D() {
             id="davinciScaleRatio"
             patentId="us-6331181-davinci"
             paramKey="motionScaleRatio"
-            label="Motion Scale (Master:Slave)"
+            label="Illustrative calibration offset"
             value={motionScaleRatio}
             min={1}
             max={10}
             step={1}
-            unit=":1"
+            unit=""
             onChange={(val) => updateParam("motionScaleRatio", val)}
             allParams={params}
           />
@@ -309,7 +311,7 @@ export function DaVinci3D() {
             id="davinciHandSpeed"
             patentId="us-6331181-davinci"
             paramKey="masterInputSpeedMps"
-            label="Surgeon Hand Speed"
+            label="Illustrative drive speed"
             value={masterInputSpeedMps}
             min={0.2}
             max={1.5}
@@ -323,7 +325,7 @@ export function DaVinci3D() {
             id="davinciGripAngle"
             patentId="us-6331181-davinci"
             paramKey="gripAngleDeg"
-            label="EndoWrist Grip Angle"
+            label="Illustrative end-effector angle"
             value={gripAngleDeg}
             min={0}
             max={60}

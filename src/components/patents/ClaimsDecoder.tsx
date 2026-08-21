@@ -149,6 +149,12 @@ export function claimLiveState(
   if (patentId.includes("engelbart-mouse") && claimNum === 1) {
     return (params.mouseSpeed ?? 350) > 0 ? "held" : "broken";
   }
+  if (patentId.includes("townes-laser") && claimNum === 1) {
+    return (params.pumpPowerWatts ?? 350) >= 100 ? "held" : "broken";
+  }
+  if (patentId.includes("kilby") && claimNum === 1) {
+    return (params.supplyVoltageV ?? 6.0) >= 2.0 ? "held" : "broken";
+  }
   return null;
 }
 

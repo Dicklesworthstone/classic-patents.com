@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type * as THREE from "three";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
 
@@ -71,11 +72,13 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Visual Boundary", () => {
 
     // Update with non-lasing condition
     model.update({ pumpEnergyJoules: 50 }, 0.0, false);
-    expect((model.nodes.laserBeam.material as any).opacity).toBe(0.0);
+    expect((model.nodes.laserBeam.material as THREE.MeshBasicMaterial).opacity).toBe(0.0);
 
     // Update with lasing flash condition
     model.update({ pumpEnergyJoules: 250 }, 0.1, true);
-    expect((model.nodes.laserBeam.material as any).opacity).toBeGreaterThan(0.5);
+    expect((model.nodes.laserBeam.material as THREE.MeshBasicMaterial).opacity).toBeGreaterThan(
+      0.5,
+    );
 
     model.dispose();
   });

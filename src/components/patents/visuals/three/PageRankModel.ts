@@ -9,7 +9,7 @@ export interface PageRankModel {
   edges: THREE.Group[];
   surferParticles: THREE.Points;
   surferPositions: Float32Array;
-  updateSurfers: (timeSec: number, omegaRadPerSec?: number) => void;
+  updateSurfers: (timeSec: number, displayRate?: number) => void;
   setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
@@ -35,7 +35,7 @@ export function buildPageRankModel(): PageRankModel {
   };
 
   // Node Materials with Google-Themed Vibrant PBR Colors
-  const nodeColors = [0x4285f4, 0xea4335, 0xfbbc05, 0x34a853, 0x9333ea];
+  const nodeColors = [0x4285f4, 0xea4335, 0xfbbc05];
   const nodeMats = nodeColors.map((color) =>
     trackMat(
       new THREE.MeshStandardMaterial({
@@ -81,13 +81,11 @@ export function buildPageRankModel(): PageRankModel {
   const sphereGeo = trackGeo(new THREE.SphereGeometry(0.85, 32, 32));
   const ringGeo = trackGeo(new THREE.TorusGeometry(1.2, 0.04, 12, 32));
 
-  // 3D coordinates for the 5 graph nodes
+  // 3D coordinates for the three-document FIG. 2 example.
   const positions = [
     new THREE.Vector3(0, 2.2, 0), // Node A (Hub)
     new THREE.Vector3(2.4, 0.4, 0.4), // Node B
     new THREE.Vector3(0, -2.0, 0), // Node C (Target authority)
-    new THREE.Vector3(-2.4, -0.2, -0.4), // Node D
-    new THREE.Vector3(-1.8, 2.0, 0.2), // Node E
   ];
 
   const nodes: THREE.Mesh[] = [];
@@ -116,9 +114,6 @@ export function buildPageRankModel(): PageRankModel {
     [0, 2],
     [1, 2],
     [2, 0],
-    [3, 2],
-    [4, 0],
-    [4, 3],
   ];
 
   const edgeGroups: THREE.Group[] = [];
@@ -188,13 +183,13 @@ export function buildPageRankModel(): PageRankModel {
   const surferParticles = new THREE.Points(surferGeo, surferMat);
   mainGroup.add(surferParticles);
 
-  const updateSurfers = (timeSec: number, omegaRadPerSec = stepPageRank({}).omegaRadPerSec) => {
+  const updateSurfers = (timeSec: number, displayRate = stepPageRank({}).displayRate) => {
     links.forEach(([srcIdx, dstIdx], linkIdx) => {
       const src = positions[srcIdx];
       const dst = positions[dstIdx];
       for (let p = 0; p < 4; p++) {
         const particleIdx = linkIdx * 4 + p;
-        const progress = (timeSec * omegaRadPerSec + p * 0.25) % 1.0;
+        const progress = (timeSec * displayRate + p * 0.25) % 1.0;
         const pos = src.clone().lerp(dst, progress);
         surferPositions[particleIdx * 3] = pos.x;
         surferPositions[particleIdx * 3 + 1] = pos.y;

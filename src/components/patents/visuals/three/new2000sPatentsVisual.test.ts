@@ -13,11 +13,11 @@ import { buildRoombaModel } from "./RoombaModel";
 describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
   describe("US 6,285,999 Google PageRank", () => {
     test("computes deterministic Markov probability convergence", () => {
-      const initial = [0.2, 0.2, 0.2, 0.2, 0.2];
+      const initial = [1 / 3, 1 / 3, 1 / 3];
       const step1 = stepPageRank({ dampingFactor: 0.85 }, initial);
       const step2 = stepPageRank({ dampingFactor: 0.85 }, step1.ranks);
-      expect(step1.ranks.length).toBe(5);
-      expect(step2.ranks.length).toBe(5);
+      expect(step1.ranks.length).toBe(3);
+      expect(step2.ranks.length).toBe(3);
       const sum = step2.ranks.reduce((a, b) => a + b, 0);
       expect(sum).toBeCloseTo(1.0, 3);
     });
@@ -25,19 +25,19 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
     test("builds procedural graph geometry without external GLTF models", () => {
       const model = buildPageRankModel();
       expect(model.root).toBeDefined();
-      expect(model.nodes.length).toBe(5);
-      expect(model.edges.length).toBe(7);
+      expect(model.nodes.length).toBe(3);
+      expect(model.edges.length).toBe(4);
       expect(() => model.dispose()).not.toThrow();
     });
 
-    test("surfer ω drains the kernel (0.85 damping → leftover 0.8)", async () => {
+    test("display rate follows the link-follow probability", async () => {
       const atDefault = stepPageRank({ dampingFactor: 0.85 });
       const frozen = stepPageRank({ dampingFactor: 0 });
-      expect(atDefault.omegaRadPerSec).toBeCloseTo(0.8, 3);
-      expect(frozen.omegaRadPerSec).toBe(0);
+      expect(atDefault.displayRate).toBeCloseTo(0.68, 3);
+      expect(frozen.displayRate).toBe(0);
       const modelSource = await Bun.file(new URL("./PageRankModel.ts", import.meta.url)).text();
       expect(modelSource).not.toContain("timeSec * 0.8");
-      expect(modelSource).toContain("omegaRadPerSec");
+      expect(modelSource).toContain("displayRate");
     });
   });
 

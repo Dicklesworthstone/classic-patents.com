@@ -436,6 +436,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       {viewMode === "interactive-sim" && (
         <div className="space-y-6">
           <PatentVisualDispatcher patentId={patent.id} />
+          <PhysicsTelemetryBadge patentId={patent.id} />
           <WeaveInstrument patentId={patent.id} />
         </div>
       )}

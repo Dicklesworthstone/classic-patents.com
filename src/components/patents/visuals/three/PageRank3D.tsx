@@ -75,7 +75,7 @@ export function PageRank3D() {
     let rafId = 0;
     let lastFrameTimeMs: number | undefined;
 
-    let currentRanks = [0.2, 0.2, 0.2, 0.2, 0.2];
+    let currentRanks = [1 / 3, 1 / 3, 1 / 3];
     let iteration = 0;
 
     const animate = (frameTimeMs: number) => {
@@ -88,17 +88,17 @@ export function PageRank3D() {
       renderedSteps += 1;
       const p = live.current;
 
-      let surferOmega = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }).omegaRadPerSec;
+      let surferRate = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }).displayRate;
       sched.pump(renderedSteps / 60, () => {
         const out = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }, currentRanks);
         currentRanks = out.ranks;
-        surferOmega = out.omegaRadPerSec;
+        surferRate = out.displayRate;
         iteration += 1;
       });
 
-      displayAngle += surferOmega * delta * (0.15 / 0.8);
+      displayAngle += surferRate * delta * (0.15 / 0.8);
       model.mainGroup.rotation.y = displayAngle;
-      model.updateSurfers(timeSec, surferOmega);
+      model.updateSurfers(timeSec, surferRate);
 
       currentRanks.forEach((rank, i) => {
         const targetScale = 0.25 + rank * 3.2;
@@ -228,7 +228,7 @@ export function PageRank3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Damping Factor:
+                Link-follow probability (1−α):
               </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">
                 {dampingFactor.toFixed(2)}
@@ -258,7 +258,7 @@ export function PageRank3D() {
           side="right"
           title="PageRank Centrality Vector"
           chips={[
-            { label: "Damping d", value: hud.damping.toFixed(2) },
+            { label: "Link-follow (1−α)", value: hud.damping.toFixed(2) },
             { label: "Iteration", value: `${hud.iter}` },
             { label: "Max Centrality", value: hud.topRank.toFixed(3), tone: "ok" },
           ]}
@@ -270,7 +270,9 @@ export function PageRank3D() {
         <div className="grid grid-cols-1 gap-4 max-w-sm">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Damping Factor (d)</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Link-follow probability (1−α)
+              </span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
                 {dampingFactor.toFixed(2)}
               </span>

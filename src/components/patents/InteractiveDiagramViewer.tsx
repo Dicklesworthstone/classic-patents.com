@@ -5935,7 +5935,7 @@ function _renderHistoricalSchematic(
             strokeWidth="2"
           />
           <text x="200" y="55" fill="#ef4444" fontSize="8" textAnchor="middle">
-            Plastic Fusion Interface ($I^2Rt$)
+            Plastic Fusion Interface (I²Rt)
           </text>
           <text x="200" y="145" fill="#f59e0b" fontSize="8" textAnchor="middle">
             Massive Secondary Transformer Bar

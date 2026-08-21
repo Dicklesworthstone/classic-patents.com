@@ -11,25 +11,19 @@ interface PageRankSimProps {
   initialDampingFactor?: number;
 }
 
-// Directed graph node layout
-// 0: Page A, 1: Page B, 2: Page C, 3: Page D, 4: Page E
+// FIG. 2 directed graph node layout: A, B, and C.
 const GRAPH_NODES = [
   { id: 0, label: "Page A", x: 120, y: 130, color: "#38bdf8" },
   { id: 1, label: "Page B", x: 260, y: 80, color: "#a855f7" },
   { id: 2, label: "Page C", x: 380, y: 190, color: "#10b981" },
-  { id: 3, label: "Page D", x: 240, y: 250, color: "#f59e0b" },
-  { id: 4, label: "Page E", x: 100, y: 260, color: "#ec4899" },
 ];
 
-// Adjacency edges: [from, to]
+// Adjacency edges shown or implied by the patent's three-document example.
 const GRAPH_EDGES = [
   [0, 1], // A -> B
   [0, 2], // A -> C
   [1, 2], // B -> C
   [2, 0], // C -> A
-  [3, 2], // D -> C
-  [4, 0], // E -> A
-  [4, 3], // E -> D
 ];
 
 export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
@@ -42,7 +36,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
   const [iterationCount, setIterationCount] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [ranks, setRanks] = useState<number[]>([0.2, 0.2, 0.2, 0.2, 0.2]);
+  const [ranks, setRanks] = useState<number[]>([1 / 3, 1 / 3, 1 / 3]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -86,7 +80,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 6,285,999 • Dominant Eigenvector Power Iteration • Damping d: ${dampingFactor.toFixed(2)} • Iterations: ${iterationCount}`,
+        `US 6,285,999 • Power Iteration • Link-follow (1−α): ${dampingFactor.toFixed(2)} • Iterations: ${iterationCount}`,
         20,
         42,
       );
@@ -109,7 +103,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("DIRECTED WEB CITATION GRAPH (N = 5 NODES)", gX + 12, gY + 22);
+      ctx.fillText("DIRECTED WEB CITATION GRAPH (N = 3 NODES)", gX + 12, gY + 22);
 
       // Draw Directed Hyperlink Arrows & Flowing Surfer Particles
       for (const [fromIdx, toIdx] of GRAPH_EDGES) {
@@ -285,7 +279,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
   };
 
   const handleReset = () => {
-    setRanks([0.2, 0.2, 0.2, 0.2, 0.2]);
+    setRanks([1 / 3, 1 / 3, 1 / 3]);
     setIterationCount(0);
   };
 
@@ -298,8 +292,8 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
             PageRank Hyperlink Analysis (US 6,285,999)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Method for node ranking in a linked database: random surfer Markov model, stochastic
-            transition matrix, and damping factor power iteration.
+            Method for node ranking in a linked database: a random-jump probability α, normalized
+            forward-link propagation, and power iteration on the linked graph.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -359,10 +353,10 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
 
       {/* Interactive Controls */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
-        {/* Damping Factor Slider */}
+        {/* Link-follow probability slider; the patent names its complement α. */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
-            <label htmlFor={dampingId}>Damping Factor d (Surfer Probability):</label>
+            <label htmlFor={dampingId}>Link-follow probability (1−α):</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {dampingFactor.toFixed(2)}
             </span>
@@ -378,8 +372,8 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
             className="w-full accent-amber-500 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-neutral-500">
-            Probability d = 0.85 that the random surfer follows a hyperlink; 1 - d = 0.15 for random
-            jump
+            The patent calls α the random-jump probability; this control exposes its complement,
+            1−α, for hyperlink propagation.
           </span>
         </div>
 

@@ -13,7 +13,7 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
     expect(model.topRollGroup).toBeDefined();
     expect(model.bottomRollGroup).toBeDefined();
     expect(model.billetMesh).toBeDefined();
-    expect(model.calloutSprites.length).toBe(10);
+    expect(model.calloutSprites.length).toBe(0);
     model.dispose();
   });
 

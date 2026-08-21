@@ -92,11 +92,11 @@ export function DaVinciSim({
       // Title & Masthead
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 13px system-ui, -apple-system, sans-serif";
-      ctx.fillText("INTUITIVE SURGICAL DA VINCI TELEPRESENCE SIMULATOR", 20, 26);
+      ctx.fillText("US 6,331,181 SURGICAL TOOL INTERFACE INSTRUMENT", 20, 26);
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 6,331,181 • Master-Slave Kinematics • Scale: ${motionScale.toFixed(1)}:1 • Tremor Filter: ${tremorFilter ? "ACTIVE (8Hz LPF)" : "OFF"}`,
+        `US 6,331,181 • Tool-interface data path • Compatibility: ${tremorFilter ? "PRESENT" : "ABSENT"} • Illustrative offset: ${motionScale.toFixed(1)}`,
         20,
         42,
       );
@@ -180,7 +180,7 @@ export function DaVinciSim({
 
       ctx.fillStyle = "#34d399";
       ctx.font = "bold 11px system-ui, sans-serif";
-      ctx.fillText("PATIENT SURGICAL SITE (EndoWrist Slave)", sX + 12, sY + 22);
+      ctx.fillText("PATIENT SURGICAL SITE (illustrative distal tool)", sX + 12, sY + 22);
 
       // Trocar Cannula Port (Fulcrum Inversion Constraint)
       const trocarX = sX + sW / 2;
@@ -249,7 +249,7 @@ export function DaVinciSim({
       ctx.fillStyle = "#6ee7b7";
       ctx.font = "10px monospace";
       ctx.fillText(
-        `Tip Velocity: ${state.tipVelocityMms.toFixed(1)} mm/s  Tremor Attenuation: ${state.tremorAttenuationPercent.toFixed(0)}%`,
+        `Tip Velocity (illustrative): ${state.tipVelocityMms.toFixed(1)} mm/s  Compatibility: ${tremorFilter ? "signal present" : "no signal"}`,
         sX + 12,
         sY + sH - 14,
       );
@@ -266,7 +266,7 @@ export function DaVinciSim({
 
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 9px monospace";
-      ctx.fillText("1000 Hz SERVO BUS", (mX + mW + sX) / 2 - 45, mY + mH / 2 - 8);
+      ctx.fillText("PROCESSOR DATA BUS", (mX + mW + sX) / 2 - 45, mY + mH / 2 - 8);
 
       animId = requestAnimationFrame(render);
     };
@@ -281,11 +281,11 @@ export function DaVinciSim({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
           <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            da Vinci Surgical Robotic System (US 6,331,181)
+            Surgical Tool Data Interface (US 6,331,181)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Master-slave telemanipulation: 7-DOF EndoWrist wrist articulators, 8Hz tremor filtering,
-            and variable hand motion scaling.
+            Source-bounded tool interface: compatibility, tool type, measured calibration offsets,
+            and engagement data cross the processor boundary.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -347,9 +347,9 @@ export function DaVinciSim({
         {/* Motion Scaling Slider */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
-            <label htmlFor={motionScaleId}>Motion Scaling Ratio:</label>
+            <label htmlFor={motionScaleId}>Illustrative calibration offset:</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
-              {motionScale.toFixed(1)}:1
+              {motionScale.toFixed(1)}
             </span>
           </div>
           <input
@@ -363,14 +363,14 @@ export function DaVinciSim({
             className="w-full accent-amber-500 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-neutral-500">
-            10:1 scales 50mm hand moves to 5mm micro-suturing
+            Numeric value is illustrative; the grant claims stored measured offsets, not a ratio.
           </span>
         </div>
 
         {/* Input Trajectory Speed */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
-            <label htmlFor={speedId}>Master Motion Speed:</label>
+            <label htmlFor={speedId}>Illustrative drive speed:</label>
             <span className="text-cyan-600 dark:text-cyan-400 font-bold">
               {inputSpeed.toFixed(2)} m/s
             </span>
@@ -386,14 +386,14 @@ export function DaVinciSim({
             className="w-full accent-cyan-500 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-neutral-500">
-            Simulates surgeon hand traverse speed
+            Presentation-only motion for the explanatory instrument
           </span>
         </div>
 
         {/* Micro-Forceps Jaw Grip */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
-            <label htmlFor={gripId}>EndoWrist Jaw Grip:</label>
+            <label htmlFor={gripId}>Illustrative end-effector angle:</label>
             <span className="text-emerald-600 dark:text-emerald-400 font-bold">
               {gripAngleDeg}°
             </span>
@@ -409,7 +409,7 @@ export function DaVinciSim({
             className="w-full accent-emerald-500 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-neutral-500">
-            Direct cable tension control of forceps jaws
+            Presentation-only distal pose; not a numeric claim limitation
           </span>
         </div>
       </div>
@@ -429,13 +429,15 @@ export function DaVinciSim({
                 : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
-            {tremorFilter ? "✓ 8Hz Tremor Filter: ACTIVE" : "✗ 8Hz Tremor Filter: DISABLED"}
+            {tremorFilter ? "✓ Compatibility signal: PRESENT" : "✗ Compatibility signal: ABSENT"}
           </button>
         </div>
 
         <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
-          Inverse Kinematics:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400">7-DOF EndoWrist</span>
+          Tool-boundary probe:{" "}
+          <span className="text-indigo-600 dark:text-indigo-400">
+            compatibility and calibration data
+          </span>
         </span>
       </div>
     </div>

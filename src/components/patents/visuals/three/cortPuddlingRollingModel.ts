@@ -1,8 +1,12 @@
 /**
  * cortPuddlingRollingModel.ts
  *
- * Procedural museum-grade 3D WebGL model of Henry Cort's 1784
- * Reverberatory Puddling Furnace & Grooved Rolling Mill (GB 1420).
+ * Procedural editorial teaching model of the process described in the
+ * 1854 Patent Office abridgment for Henry Cort's GB 1420.
+ *
+ * The enrolled specification and any drawing sheet are not currently
+ * available in a reviewed facsimile, so this model is deliberately unlabelled
+ * and must not be presented as an archival reconstruction.
  *
  * Faithfully constructs:
  * - Reverberatory Puddling Furnace: brick hearth, coal firebox, arched roof crown,
@@ -307,18 +311,9 @@ export function buildCortPuddlingRollingModel(): CortModel {
   // 3. CALLOUT SPRITES
   // ==========================================
   const calloutSprites: THREE.Sprite[] = [];
-  const labels: { text: string; pos: [number, number, number] }[] = [
-    { text: "A: Coal Grate", pos: [-4.0, 1.6, 0] },
-    { text: "B: Fire Bridge", pos: [-3.35, 1.5, 0] },
-    { text: "C: Puddling Hearth", pos: [-2.5, 1.2, 0] },
-    { text: "D: Arched Crown", pos: [-2.7, 2.3, 0] },
-    { text: "F: Chimney Stack", pos: [-1.4, 3.2, 0] },
-    { text: "G: Rabble Rod", pos: [-2.5, 1.8, 0.8] },
-    { text: "H: Mill Stands", pos: [1.15, 2.1, 0] },
-    { text: "J: Grooved Rolls", pos: [2.0, 1.5, 0.5] },
-    { text: "K: Screws", pos: [2.0, 2.4, 0] },
-    { text: "L: Hot Billet", pos: [1.6, 0.9, 0.7] },
-  ];
+  // No numbered source drawing is accepted for GB 1420. Keep the model
+  // unlabelled rather than presenting invented letters as archival callouts.
+  const labels: readonly { text: string; pos: [number, number, number] }[] = [];
 
   function createTextSprite(message: string): THREE.Sprite {
     if (typeof document === "undefined") {

@@ -553,7 +553,11 @@ export function TownesLaserSim({
           <select
             id="active-medium-select"
             value={activeMedium}
-            onChange={(e) => setActiveMedium(e.target.value as any)}
+            onChange={(e) =>
+              setActiveMedium(
+                e.target.value as "potassium_vapor" | "ruby_solid" | "he_ne_gas" | "nd_yag",
+              )
+            }
             className="w-full py-1 px-2 text-xs bg-parchment-100 dark:bg-slate-800 text-ink-900 dark:text-slate-200 rounded border border-parchment-300 dark:border-slate-700"
           >
             <option value="potassium_vapor">Potassium (3.14 µm)</option>
