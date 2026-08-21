@@ -527,6 +527,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.434 Hewitt plasma flicker and cathode-spot wander drain `plasmaFlickerOmegaRadPerS` (30 when the ballast holds, 90 when the kernel reports unstable) and current-scaled spot ω. Leftover `timeSec * 30` / `8` / `11` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.435 Kilby mesa switching glow drains `switchingDisplayOmegaRadPerS` from `maxClockFrequencyMhz` (Ge 60.3 MHz → leftover 6 rad/s; silicon is slower). Leftover `timeSec * 6.0` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.436 Linde 3D rAF now passes `(dt, timeSec, p, showFlowTracer, cutaway)` in the kinematics order — leftover swapped `timeSec` as `dt` and cutaway/tracer. JT handwheel / liquid ripple ω scale with grant `p` (75 atm → 0.4 / 3.0). Engine step accepts inlet pressure instead of ignoring the slider. No fabricated yield. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.437 Haber compressor flywheel drains `compressorDisplayOmegaRadPerS` from feed flow (50 mol/s → leftover 4 rad/s). Loop particles drain `loopFlowAdvance`. Leftover `const compSpeed = 4.0` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.438 Rillieux tube-bundle boil drains `boilDisplayOmegaRadPerS` from total evaporation (`m_evap / 1000`, ~8 rad/s at 10 t/h). Leftover `const boilSpeed = 8.0` is gone. Per-effect amplitude still uses `heatTransferKw`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

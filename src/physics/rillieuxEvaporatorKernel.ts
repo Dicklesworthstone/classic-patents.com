@@ -54,6 +54,8 @@ export interface RillieuxEvaporatorState {
   fuelSavingsPct: number;
   /** Per-effect state array */
   effects: RillieuxEffectState[];
+  /** Tube-bundle boil display ω; leftover 8 rad/s at ~8000 kg/h total evaporation */
+  boilDisplayOmegaRadPerS: number;
 }
 
 export function stepRillieuxEvaporator(
@@ -140,6 +142,7 @@ export function stepRillieuxEvaporator(
   );
 
   const thermalEfficiencyPct = (steamEconomyRatio / N) * 100;
+  const boilDisplayOmegaRadPerS = Number(Math.max(0.5, totalEvaporationKgPerH / 1000).toFixed(3));
 
   return {
     juiceFeedRateKgPerH,
@@ -150,5 +153,6 @@ export function stepRillieuxEvaporator(
     thermalEfficiencyPct,
     fuelSavingsPct,
     effects,
+    boilDisplayOmegaRadPerS,
   };
 }

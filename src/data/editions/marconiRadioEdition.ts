@@ -21,10 +21,10 @@ const previews = {
     height: 1350,
   },
   "9-11": {
-    src: "/patents/figures/us-586193-marconi-radio/figs-9-to-11-source-crop-v1.png",
+    src: "/patents/figures/us-586193-marconi-radio/figs-9-to-11-source-crop-v2.png",
     alt: "Figures 9 through 11 from US 586,193: long-distance, earth-or-water transmission arrangements.",
-    width: 1180,
-    height: 1260,
+    width: 1520,
+    height: 1850,
   },
 } as const;
 

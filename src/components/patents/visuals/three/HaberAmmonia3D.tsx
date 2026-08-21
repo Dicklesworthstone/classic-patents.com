@@ -65,6 +65,8 @@ export default function HaberAmmonia3D({
     temperatureCelsius,
     ammoniaYieldPct: sim.ammoniaYieldPct,
     ammoniaProductionKgPerHour: sim.ammoniaProductionKgPerHour,
+    compressorDisplayOmegaRadPerS: sim.compressorDisplayOmegaRadPerS,
+    loopFlowAdvance: sim.loopFlowAdvance,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -108,6 +110,8 @@ export default function HaberAmmonia3D({
           temperatureCelsius: p.temperatureCelsius,
           ammoniaYieldPct: p.ammoniaYieldPct,
           ammoniaProductionKgPerHour: p.ammoniaProductionKgPerHour,
+          compressorDisplayOmegaRadPerS: p.compressorDisplayOmegaRadPerS,
+          loopFlowAdvance: p.loopFlowAdvance,
         },
         timeRef.current,
       );

@@ -20,6 +20,12 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
     expect(threeSource).not.toContain("US 4,879");
     expect(threeSource).toContain("juiceFeedRateKgPerH: p.juiceFeedRateKgPerH");
     expect(simSource).not.toContain("setJuiceFeedRateKgPerH");
+    const modelSource = readFileSync(
+      join(process.cwd(), "src/components/patents/visuals/three/rillieuxEvaporatorModel.ts"),
+      "utf8",
+    );
+    expect(modelSource).not.toContain("const boilSpeed = 8.0");
+    expect(modelSource).toContain("boilDisplayOmegaRadPerS");
   });
 
   test("creates valid Three.js model hierarchy with 3 vessels, tube bundles, and condenser", () => {
@@ -73,5 +79,13 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
     expect(state.steamEconomyRatio).toBeGreaterThan(2.5);
     // Primary steam consumption must be less than half of total water evaporated
     expect(state.primarySteamConsumptionKgPerH).toBeLessThan(state.totalEvaporationKgPerH * 0.5);
+    expect(state.boilDisplayOmegaRadPerS).toBeCloseTo(state.totalEvaporationKgPerH / 1000, 3);
+    const halfFeed = stepRillieuxEvaporator({
+      juiceFeedRateKgPerH: 5000,
+      initialBrixDeg: 14,
+      targetBrixDeg: 65,
+      numberOfEffects: 3,
+    });
+    expect(halfFeed.boilDisplayOmegaRadPerS).toBeLessThan(state.boilDisplayOmegaRadPerS);
   });
 });

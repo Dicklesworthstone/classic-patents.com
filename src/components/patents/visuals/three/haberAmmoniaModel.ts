@@ -302,11 +302,14 @@ export function articulateHaberAmmoniaModel(
     temperatureCelsius: number;
     ammoniaYieldPct: number;
     ammoniaProductionKgPerHour: number;
+    compressorDisplayOmegaRadPerS?: number;
+    loopFlowAdvance?: number;
   },
   timeSec: number,
 ) {
-  // 1. Compressor Piston & Flywheel rotation
-  const compSpeed = 4.0;
+  // 1. Compressor Piston & Flywheel rotation from kernel feed-flow ω
+  const compSpeed =
+    telemetry.compressorDisplayOmegaRadPerS ?? 1.0 + (telemetry.pressureAtm / 200) * 3.43;
   nodes.compressorFlywheel.rotation.z = timeSec * compSpeed;
   nodes.compressorPiston.position.y = 1.3 + Math.sin(timeSec * compSpeed) * 0.12;
 
@@ -326,12 +329,13 @@ export function articulateHaberAmmoniaModel(
   nodes.condenserLiquidMesh.scale.set(1, liquidHeight, 1);
 
   // 4. Flow Particles along synthesis loop
+  const flowAdv = telemetry.loopFlowAdvance ?? 0.05;
   const posAttr = nodes.flowParticles.geometry.getAttribute("position") as THREE.BufferAttribute;
   const posArr = posAttr.array as Float32Array;
   const count = posArr.length / 3;
 
   for (let i = 0; i < count; i++) {
-    posArr[i * 3] += 0.02;
+    posArr[i * 3] += flowAdv;
     if (posArr[i * 3] > 2.2) {
       posArr[i * 3] = -2.0;
     }

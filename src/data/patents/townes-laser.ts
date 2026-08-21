@@ -34,7 +34,6 @@ export const townesLaserPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2929922-townes-laser.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2929922A/en",
   usptoClassification: "372/43",
-  archivalEdition: townesLaserArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-2929922-townes-laser-reviewed.txt",
     pageCount: 5,

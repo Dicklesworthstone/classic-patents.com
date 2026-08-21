@@ -260,7 +260,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
   // Update loop
   const update = (state: RillieuxEvaporatorState, timeSec: number) => {
     // Thermal vibration and boiling bubbling
-    const boilSpeed = 8.0;
+    const boilSpeed = state.boilDisplayOmegaRadPerS;
     tubeBundles.forEach((tb, idx) => {
       const eff = state.effects[idx];
       const intensity = eff ? eff.heatTransferKw / 2000.0 : 1.0;

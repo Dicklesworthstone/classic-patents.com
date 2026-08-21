@@ -3967,6 +3967,8 @@ export function stepHaberAmmonia(params: {
   // Recycle gas ratio (recirculated volume / fresh makeup volume)
   const singlePassConversion = Math.max(0.01, ammoniaMoleFraction);
   const recycleRatio = Number(((1 - singlePassConversion) / singlePassConversion).toFixed(1));
+  const compressorDisplayOmegaRadPerS = Number(((flowMolS / 50) * 4).toFixed(3));
+  const loopFlowAdvance = Number(((flowMolS / 50) * 0.02).toFixed(4));
 
   return {
     pressureAtm: pAtm,
@@ -3984,6 +3986,8 @@ export function stepHaberAmmonia(params: {
     n2ConsumptionKgPerHour,
     h2ConsumptionKgPerHour,
     recycleRatio,
+    compressorDisplayOmegaRadPerS,
+    loopFlowAdvance,
   };
 }
 

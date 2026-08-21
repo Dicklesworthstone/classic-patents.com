@@ -26,7 +26,7 @@ export default function EdisonIndicator3D() {
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
-  const { params } = usePatentPhysics("us-307031-edison-indicator");
+  const { params, updateParam } = usePatentPhysics("us-307031-edison-indicator");
 
   const mainsVoltage = (params.mainsVoltageV as number) ?? 110;
   const plateBias = (params.plateBiasPolarity as number) ?? 1;
@@ -86,30 +86,13 @@ export default function EdisonIndicator3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Thomas Edison Electrical Indicator 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay((prev) => !prev)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              showUiOverlay
-                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
-            }`}
-            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
-          >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
-          </button>
-        </div>
-
-        {/* Camera Views Bar */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
@@ -131,6 +114,24 @@ export default function EdisonIndicator3D() {
             )}
           </div>
         )}
+
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay((prev) => !prev)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+        </div>
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
@@ -175,6 +176,84 @@ export default function EdisonIndicator3D() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Mains Voltage</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {mainsVoltage} V
+              </span>
+            </div>
+            <input
+              type="range"
+              min="90"
+              max="130"
+              step="1"
+              value={mainsVoltage}
+              onChange={(e) => updateParam("mainsVoltageV", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Plate Bias Polarity
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {plateBias > 0 ? "Positive (+)" : "Negative (-)"}
+              </span>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => updateParam("plateBiasPolarity", 1)}
+                className={`flex-1 py-1 text-xs rounded-lg font-medium transition-colors ${
+                  plateBias > 0
+                    ? "bg-purple-600 text-white shadow-xs font-semibold"
+                    : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300"
+                }`}
+              >
+                Positive Plate
+              </button>
+              <button
+                type="button"
+                onClick={() => updateParam("plateBiasPolarity", -1)}
+                className={`flex-1 py-1 text-xs rounded-lg font-medium transition-colors ${
+                  plateBias < 0
+                    ? "bg-purple-600 text-white shadow-xs font-semibold"
+                    : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300"
+                }`}
+              >
+                Negative Plate
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Torsion Null Ref</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {nullRefVoltage} V₀
+              </span>
+            </div>
+            <input
+              type="range"
+              min="105"
+              max="115"
+              step="1"
+              value={nullRefVoltage}
+              onChange={(e) =>
+                updateParam("galvanometerTorsionNullV", Number.parseInt(e.target.value, 10))
+              }
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

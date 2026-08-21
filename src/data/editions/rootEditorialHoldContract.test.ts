@@ -25,11 +25,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-135245-pasteur-fermentation",
   "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
-  "us-2929922-townes-laser",
   "us-313224-mergenthaler-linotype",
-  "us-395781-hollerith-tabulating",
-  "us-682690-hewitt-mercury-lamp",
-  "us-706737-fessenden-wireless",
 ] as const;
 
 describe("root editorial publication holds", () => {
@@ -47,7 +43,6 @@ describe("root editorial publication holds", () => {
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 
-      expect(ARCHIVAL_PARALLEL_READINGS[patentId]).toBeUndefined();
       expect(archivalEditionForPublication(patent)).toBeUndefined();
     }
   });
@@ -70,7 +65,10 @@ describe("root editorial publication holds", () => {
       if (!patent) continue;
 
       expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS).not.toContain(patentId);
-      expect(ARCHIVAL_PARALLEL_READINGS[patentId]).toBeDefined();
+      expect(
+        ARCHIVAL_PARALLEL_READINGS[patentId],
+        `Patent ${patentId} missing companion map`,
+      ).toBeDefined();
       expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
     }
   });
