@@ -338,7 +338,6 @@ export function WestinghouseAirBrake3D() {
           <SensitivitySlider
             id="westinghouseTrainPipe"
             patentId="us-124404-westinghouse-air-brake"
-            paramKey="trainPipePressure"
             paramKey="brakePipePressure"
             label="Operating Pipe (Pipe B)"
             value={trainPipePressurePsi}
@@ -384,13 +383,6 @@ export function WestinghouseAirBrake3D() {
             />
           </div>
         </div>
-
-        <ClaimConstraintToggle
-          patentId="us-124404-westinghouse-air-brake"
-          params={params}
-          onUpdateParam={updateParam}
-          className="mt-2"
-        />
 
         <PortHamiltonianEnergyStrip
           patentId="us-124404-westinghouse-air-brake"
