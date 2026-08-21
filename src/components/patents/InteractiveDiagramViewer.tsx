@@ -6343,7 +6343,7 @@ export function InteractiveDiagramViewer({
                   onMouseEnter={() => setHoveredCalloutId(callout.id)}
                   onMouseLeave={() => setHoveredCalloutId(null)}
                   style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[28px] max-w-[3.5rem] h-7 px-2 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
+                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[36px] max-w-[4rem] h-9 px-2 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
                     isSelected
                       ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/50 scale-125 z-20 shadow-amber-500/30"
                       : isHovered

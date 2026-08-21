@@ -60,6 +60,13 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
     }
   };
 
+  // Keep the keyboard-highlighted result visible when navigating with ↑/↓.
+  useEffect(() => {
+    document
+      .getElementById(`patent-search-result-${selectedIndex}`)
+      ?.scrollIntoView({ block: "nearest" });
+  }, [selectedIndex]);
+
   return (
     <dialog
       ref={dialogRef}
@@ -67,6 +74,10 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
       className="fixed inset-0 z-50 m-auto w-[min(44rem,calc(100vw-2rem))] max-h-[85vh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
       onKeyDown={handleKeyDown}
+      onClick={(e) => {
+        // Clicks on the native <dialog> backdrop land on the dialog element.
+        if (e.target === dialogRef.current) onClose();
+      }}
     >
       <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-3xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Search Input Bar */}
@@ -81,7 +92,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            className="w-full bg-transparent border-none text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none"
+            className="w-full bg-transparent border-none text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/60 dark:focus-visible:ring-amber-400/60 rounded-lg transition-shadow"
             aria-label="Search patents"
           />
           {query && (
@@ -97,7 +108,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
           <button
             type="button"
             onClick={onClose}
-            className="px-2 py-1 rounded-md text-[11px] font-mono text-ink-500 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors border border-parchment-300 dark:border-ink-700 cursor-pointer"
+            className="px-3 py-2 min-h-11 min-w-11 flex items-center justify-center rounded-md text-[11px] font-mono text-ink-500 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors border border-parchment-300 dark:border-ink-700 cursor-pointer"
           >
             ESC
           </button>
@@ -120,6 +131,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
               return (
                 <Link
                   key={patent.id}
+                  id={`patent-search-result-${idx}`}
                   href={`/patents/${patent.id}`}
                   onClick={onClose}
                   onMouseEnter={() => setSelectedIndex(idx)}

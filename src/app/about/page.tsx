@@ -31,7 +31,7 @@ export default function AboutPage() {
           <Scroll className="w-5 h-5 text-amber-700 dark:text-amber-500" />
           The Dilemma of Historical Patents
         </h2>
-        <div className="text-xs sm:text-sm font-sans text-ink-800 dark:text-parchment-200 space-y-3 leading-relaxed">
+        <div className="text-sm sm:text-base font-sans text-ink-800 dark:text-parchment-200 space-y-3 leading-relaxed">
           <p>
             When Wilbur Wright twisted a bicycle box in Dayton, Ohio, or Nikola Tesla sketched a
             rotating magnetic field in the dust of a Budapest park, they changed the trajectory of
@@ -64,7 +64,7 @@ export default function AboutPage() {
           <Layers className="w-5 h-5 text-amber-700 dark:text-amber-500" />
           The Dual-Projection (Diptych) Architecture
         </h2>
-        <div className="text-xs sm:text-sm font-sans text-ink-800 dark:text-parchment-200 space-y-3 leading-relaxed">
+        <div className="text-sm sm:text-base font-sans text-ink-800 dark:text-parchment-200 space-y-3 leading-relaxed">
           <p>Every patent in our museum is projected into two synchronized, complementary faces:</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div className="p-5 rounded-xl bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 space-y-2">
@@ -101,7 +101,7 @@ export default function AboutPage() {
             Pedagogical Physical Simulations
           </h2>
         </div>
-        <p className="text-xs sm:text-sm font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
+        <p className="text-sm sm:text-base font-sans text-ink-800 dark:text-parchment-200 leading-relaxed">
           Rather than static stock illustrations, every invention features an interactive simulation
           governed by the authentic physical laws described in the patent. Visitors can manipulate
           aerodynamic wing-warping angles, adjust alternating-current stator phase offsets, regulate
@@ -115,7 +115,7 @@ export default function AboutPage() {
         <h2 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
           Open Source Digital Museum
         </h2>
-        <p className="text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300 leading-relaxed">
+        <p className="text-sm sm:text-base font-sans text-ink-700 dark:text-ink-300 leading-relaxed">
           Classic Patents is built with Next.js 15, React 19, TypeScript, Three.js, and Tailwind
           CSS. All historical transcripts, schemas, and interactive models are open-source and
           freely available for educational and research use.

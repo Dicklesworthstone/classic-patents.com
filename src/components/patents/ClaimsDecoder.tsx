@@ -282,7 +282,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
                   type="button"
                   onClick={selectPrevClaim}
                   disabled={activeIndex === 0}
-                  className="p-1 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 transition-colors cursor-pointer"
+                  className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 transition-colors cursor-pointer"
                   title="Previous Claim"
                   aria-label="Previous Claim"
                 >
@@ -295,7 +295,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
                   type="button"
                   onClick={selectNextClaim}
                   disabled={activeIndex === claims.length - 1}
-                  className="p-1 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 transition-colors cursor-pointer"
+                  className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 transition-colors cursor-pointer"
                   title="Next Claim"
                   aria-label="Next Claim"
                 >

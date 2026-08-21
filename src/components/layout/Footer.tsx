@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-parchment-300 dark:border-ink-800 bg-parchment-100 dark:bg-ink-950 text-ink-700 dark:text-ink-300 py-12 transition-colors">
+    <footer className="w-full border-t border-parchment-300 dark:border-ink-800 bg-parchment-100 dark:bg-ink-950 text-ink-700 dark:text-ink-300 py-12 pb-[max(3rem,env(safe-area-inset-bottom))] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Col 1: Brand & Mission */}

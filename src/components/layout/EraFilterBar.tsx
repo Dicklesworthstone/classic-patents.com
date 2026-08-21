@@ -54,7 +54,7 @@ export function EraFilterBar({
             placeholder="e.g. Wright, US 821,393, magnetron"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-11 pr-16 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"
+            className="w-full pl-11 pr-16 py-3 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-700 rounded-xl text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-100 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-amber-600 dark:focus:ring-amber-400 transition-colors shadow-inner"
           />
           {searchQuery && (
             <button
