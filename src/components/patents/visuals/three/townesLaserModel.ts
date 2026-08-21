@@ -24,6 +24,7 @@ export interface TownesLaserModelNodes {
   outputBeam: THREE.Mesh;
   detectorHousing: THREE.Group;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export interface TownesLaserArticulationState {
@@ -300,6 +301,11 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
 
   root.add(detectorHousing);
 
+  const setCutaway = (cutaway: boolean) => {
+    glassTubeMat.opacity = cutaway ? 0.08 : 0.35;
+    glassTubeMat.needsUpdate = true;
+  };
+
   return {
     root,
     baseRail,
@@ -314,6 +320,7 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
     outputBeam,
     detectorHousing,
     materials,
+    setCutaway,
   };
 }
 
