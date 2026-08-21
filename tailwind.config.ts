@@ -94,10 +94,19 @@ const config: Config = {
           "monospace",
         ],
       },
+      backgroundImage: {
+        "linear-to-r": "linear-gradient(to right, var(--tw-gradient-stops))",
+      },
       boxShadow: {
         patent: "0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04)",
         "patent-lg": "0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 4px 10px -2px rgba(0, 0, 0, 0.06)",
         glow: "0 0 25px rgba(12, 135, 235, 0.25)",
+        xs: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "2xs": "0 1px rgb(0 0 0 / 0.05)",
+      },
+      scale: {
+        "98": "0.98",
+        "102": "1.02",
       },
       animation: {
         "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
