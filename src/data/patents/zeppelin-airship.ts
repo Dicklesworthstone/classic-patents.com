@@ -1,4 +1,5 @@
 import type { Patent } from "@/types/patent";
+import { zeppelinArchivalEdition } from "../editions/zeppelinEdition";
 
 export const zeppelinAirshipPatent: Patent = {
   id: "us-621195-zeppelin-airship",
@@ -21,6 +22,15 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
+  archivalEdition: zeppelinArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-20",
+    sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
+  },
   // The immutable supplied grant cites Figs. 11 and 12 but contains only
   // Figs. 1–10. Preserve the source materials for remediation, but do not
   // bind a partial source face or label its ledger as publishable.
@@ -227,8 +237,57 @@ This invention relates to a navigable balloon which is characterized essentially
     civilizationalImpact:
       "Zeppelin's rigid airship framework proved that large-scale controlled aerial navigation was possible. His designs led directly to the first commercial airlines (DELAG) and proved that humanity could build structures capable of crossing oceans in the air.",
   },
+  claims: [
+    {
+      number: 1,
+      isIndependent: true,
+      originalText:
+        "In a balloon, the combination of a framework divided into separate compartments, with a main gas-bag in each compartment, adapted to expand and fill the same when permitted, and auxiliary gas-bags in the compartments for maneuvering, to permit the main gas-bags to retain their full quantity of gas unaffected by the admission of air, substantially as set forth.",
+      plainEnglish:
+        "In a balloon, the combination of a framework divided into separate compartments, each containing an independent gas-bag.",
+      keyInnovations: [
+        "Rigid compartmentalized framework",
+        "Independent internal gas-bags",
+        "Structural outer envelope",
+      ],
+    },
+    {
+      number: 2,
+      isIndependent: true,
+      originalText:
+        "The combination of a balloon, with a running-weight suspended beneath the same, rotary drums provided with fusees, and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
+      plainEnglish:
+        "The combination of a balloon with a running-weight suspended beneath to adjust longitudinal inclination.",
+      keyInnovations: [
+        "Movable longitudinal running-weight",
+        "Pitch trim adjustment",
+        "Dynamic flight inclination",
+      ],
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText:
+        "The combination of a balloon, with a weight suspended beneath the same, and adjustable in height, a movable carriage supporting the weight, rotary drums to which the carriage is connected and which are provided with fusees and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
+      plainEnglish:
+        "The combination of a balloon with a weight suspended beneath and adjustable towing or trailing ropes.",
+      keyInnovations: ["Suspended stabilizing weight", "Trailing rope trim control"],
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText:
+        "An air-craft comprising a series of balloons coupled together and provided with rigid casings, the foremost of said balloons being provided with driving mechanism, and the remainder adapted to carry the load or freight, and extensible covers secured to the rigid casings and covering the intermediate spaces between two adjacent balloons. In testimony that I claim the foregoing as my invention I have signed my name in presence of two subscribing witnesses. FERDINAND GRAF ZEPPELIN. [L. S.] Witnesses: WM. HAHN, H. WAGNER.",
+      plainEnglish: "An air-craft comprising a series of balloons coupled together in a train.",
+      keyInnovations: [
+        "Articulated airship train",
+        "Multi-hull tandem dirigible",
+        "Flexible inter-car coupling",
+      ],
+    },
+  ],
   stats: {
     totalClaims: 4,
-    independentClaims: 3,
+    independentClaims: 4,
   },
 };
