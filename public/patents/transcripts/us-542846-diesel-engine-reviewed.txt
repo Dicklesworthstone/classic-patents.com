@@ -991,67 +991,17 @@ essentially always the same body of gas, & |
 
 small exhaust of course excepted.
 
-‘What I claim as new, and desire to secure
-by Letters Patent, is— .
+‘What I claim as new, and desire to secure by Letters Patent, is—
 
-1. The herein described process for convert- |
+1. The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and neutral gas or vapor, to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding against a resistance sufficiently to prevent an essential increase of temperature and pressure, then discontinuing the supply of fuel and further expanding without transfer of heat.
 
-ing the heat energy of fuel into work, consist-
-ing in first compressing air, or a mixture of
-air and neutral gas or vapor, to a degree pro-
-ducing a temperature above the igniting point
-of the fuel to be consumed, then gradually
-introducing the fuel for combustion into the
-compressed air while expanding against a re-
+2. In an internal combustion engine, the combination with the cylinder and piston, of a valved suction inlet for air or a mixture of air and neutral gas, a valved fuel feed constructed to gradually discharge the fuel into the cylinder, and means in operative connection with the feed valve for opening the same at the commencement of the working stroke of the piston and for closing the same at a predetermined part of the stroke, substantially as described.
 
-45
+3. In an internal combustion engine of the character specified, the combination of a combustion cylinder provided with means for gradually introducing fuel therein up to the point of cut-off, a compressor for air, a reservoir connected with the latter and with the cylinder, and an expansion chamber for the exhaust gases, substantially as described.
 
-5°
+In testimony whereof I have signed my name to this specification in the presence of two subscribing witnesses.
 
-sistance sufficiently to prevent an essential —
-
-increase of temperature and pressure, then
-discontinuing the supply of fuel and further
-expanding without transfer of heat.
-
-9, In an internal combustion engine, the
-combination with the cylinder and piston, of
-a valved suction inlet for air or a mixture of
-air and neutral gas, a valved fuel feed con-
-structed to gradually discharge the fuel into
-the cylinder, and means in operative connec-
-tion with the feed valve for opening the same
-at the commencement of the working stroke
-of the piston and for closing the same at a
-predetermined part of the stroke, substan-
-tially as described..
-
-8. In an internal
-character specified, the combination of a com-
-bustion cylinder provided with means for
-gradually introducing fuel therein up to the
-point of cut-off, a compressor for air, a reser-
-voir connected with the latter and with the
-cylinder, and an expansion chamber for the
-exhaust gases, substantially as described.
-
-In testimony whereof I have signed my
-name to this specification in the presence of
-two subscribing witnesses. vs
-
-RUDOLF. DIESEL.
+RUDOLF DIESEL.
 Witnesses:
-LUDWIG GLASER, .
-EDUARD PEITZ. -
-
-55
-
-Co
-
-65
-
-combustion engine of the .
-
-7°
-
-75
+LUDWIG GLASER.
+EDUARD PEITZ.
