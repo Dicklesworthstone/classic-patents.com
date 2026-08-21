@@ -4,7 +4,7 @@
 
 - **Catalogue ID**: `us-3353115-maiman-ruby-laser`
 - **Patent Number**: `US 3,353,115`
-- **Granted Title**: `RUBY LASER SYSTEM`
+- **Granted Title**: `RUBY LASER SYSTEMS`
 - **Inventor**: Theodore H. Maiman, Pacific Palisades, California
 - **Assignee**: Hughes Aircraft Company, Culver City, California
 - **Filing Date**: April 13, 1961 (Application Serial No. 102,698)
@@ -28,7 +28,7 @@
 | **Page 4** | Drawing Sheet 4: FIGS. 12–15 | High-index coolant (FIG. 12); prism/interferometer path (FIG. 13); and two plate interferometers (FIGS. 14–15). |
 | **Page 5** | Drawing Sheet 5: FIGS. 16–18 | Parabolic pump reflectors (FIG. 16); elliptical pump reflector (FIG. 17); Colidar transmitter, receiver, and target (FIG. 18). |
 | **Page 6** | Specification Column 1 & 2 | Heading, abstract, historical background, prior art microwave masers, optical maser challenge, summary of invention, drawing descriptions. |
-| **Page 7** | Specification Column 3 & 4 | Detailed quantum mechanics of Cr3+ ions in sapphire lattice ($\text{Al}_2\text{O}_3$), nonradiative relaxation kinetics, 694.3 nm emission, threshold equation. |
+| **Page 7** | Specification Column 3 & 4 | Energy-level model for the active material, radiationless relaxation, population inversion, and threshold discussion. |
 | **Page 8** | Specification Column 5 & 6 | Helical xenon flashtube optical coupling, silvered Fabry-Perot end facets, transmission aperture, coherent beam generation mechanics. |
 | **Page 9** | Specification Column 7 & 8 | Resonator variants, prism retroreflectors, mode discrimination, Colidar laser radar architecture and timing synchronization. |
 | **Page 10** | Specification Column 9 & 10 | Summary of optical amplification, Claims 1 & 2, references cited, signatures. |
@@ -74,9 +74,16 @@ preview repairs do not lift the publication hold.
 
 The full source drawing inventory is Figs. 1–3 on Sheet 1, Figs. 4–7 on
 Sheet 2, Figs. 8–11 on Sheet 3, Figs. 12–15 on Sheet 4, and Figs. 16–18 on
-Sheet 5. The present held edition has no authored preview occurrences for the
-remaining figures. A future literal edition must add them at the specific
-source citations rather than infer links during rendering.
+Sheet 5. The earlier held edition had no authored preview occurrences for the
+remaining figures. The repaired edition adds those occurrences at their
+specific source citations; it does not infer links during rendering.
+
+The repaired edition now authors the printed Figure 1–18 descriptions and
+keeps each occurrence linked to an existing source render. The sheet renders
+used for Figures 3, 5, 6, and 8–17 are broad drawing-sheet evidence rather than
+individual figure crops; they remain a publication hold until cloud-reviewed,
+source-pixel crops for those figures are supplied. No broad render is presented
+as an individual crop in the provenance table above.
 
 On the source sheets, the FIG. 7 label overlaps the signature horizontally and
 the FIG. 18 apparatus, output/target detail, and label are spatially separated.

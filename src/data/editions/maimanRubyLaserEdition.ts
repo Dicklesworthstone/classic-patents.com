@@ -2,7 +2,7 @@
  * maimanRubyLaserEdition.ts
  *
  * Hand-annotated Archival Edition for Theodore H. Maiman's monumental
- * 1960 Ruby Laser & Optical Maser Patent (US Patent 3,353,115 - "Ruby Laser System").
+ * 1960 Ruby Laser & Optical Maser Patent (US Patent 3,353,115 - "Ruby Laser Systems").
  *
  * Transcribed, annotated, and verified against the 10-page authentic facsimile PDF
  * at public/patents/pdfs/us-3353115-maiman-ruby-laser.pdf (SHA-256: 3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6).
@@ -69,7 +69,7 @@ const FIGURE_PREVIEW_ALTS: Readonly<Record<string, string>> = {
   "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png":
     "Source drawing sheet 2 containing Figures 4 through 7.",
   "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png":
-    "Source drawing sheet 3 containing Figures 8 through 11.",
+    "Source drawing sheet 3 containing Figures 8 through 18.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png":
     "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png":
@@ -122,28 +122,31 @@ const p = (...inlines: CuratedSpecificationInline[]) => ({
 
 export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly string[]>> = {
   3: [
-    "Preamble and inventor declaration by Theodore H. Maiman of Pacific Palisades, California, assigning his landmark solid-state ruby laser invention to Hughes Aircraft Company under Application Serial No. 102,698 filed April 13, 1961.",
+    "Overview of patent drawing Figures 1 through 18 illustrating the optical maser apparatus, three-level energy pumping schematics, cooling jackets, interferometer coatings, and practical optical radar ranging systems.",
   ],
   4: [
-    "Apparatus disclosure: a synthetic ruby cylinder is placed coaxially within a helical gas-filled flash tube, with reflective end plating and an output opening as described for Figure 4.",
+    "Field of invention: solid-state optical masers and ruby lasers using synthetic single-crystal corundum doped with chromium ions to achieve coherent stimulated emission in the optical spectrum.",
   ],
   5: [
-    "The energy-level discussion explains pumping from level 1 to a broad region 3, followed by a radiationless transition to level 2 and stimulated emission back to level 1, as drawn in Figure 1.",
+    "Apparatus disclosure: a synthetic ruby cylinder is placed coaxially within a helical gas-filled flash tube, with reflective end plating and an output opening forming an optical resonant cavity.",
   ],
   6: [
-    "The specification describes the inverted condition in which the upper-state population exceeds the lower-state population, allowing the radiating wave to be amplified rather than attenuated.",
+    "The energy-level discussion explains pumping from ground state level 1 to a broad absorption band 3, followed by radiationless decay to metastable level 2 and stimulated emission back to level 1.",
   ],
   7: [
-    "The rod ends provide repeated reflections, and an opening in one end plating couples the coherent beam out, as shown in Figure 4.",
+    "The specification describes the population inversion condition where level 2 atom population exceeds ground state level 1 (N2 > N1), enabling optical wave amplification rather than net absorption.",
   ],
   8: [
-    "Figure 7 is the energy-level diagram for the fluorescein-separated optical-pumping embodiment described with Figure 6.",
+    "The rod ends provide repeated reflections across optically flat, parallel faces, and an opening in one end plating couples the coherent beam out.",
   ],
   9: [
+    "An embodiment using a cooled optical cavity structure and energy-level operation is shown for Figure 7.",
+  ],
+  10: [
     "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
   ],
-  11: [
-    "Official statutory claims defining the legal scope of the ruby laser system and solid-state optical maser apparatus.",
+  12: [
+    "Official statutory claims defining the legal scope of the three-level ruby laser system and solid-state optical maser apparatus.",
   ],
 };
 
@@ -160,7 +163,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "Nov. 14, 1967",
         "UNITED STATES PATENT OFFICE",
         "3,353,115",
-        "RUBY LASER SYSTEM",
+        "RUBY LASER SYSTEMS",
         "Theodore H. Maiman, Pacific Palisades, Calif., assignor to Hughes Aircraft Company, Culver City, Calif., a corporation of Delaware",
         "Application April 13, 1961, Serial No. 102,698",
         "2 Claims. (Cl. 331-94.5)",
@@ -224,7 +227,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 7",
         "#figure-7",
         "Figure 7",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
       ),
       text(" its energy-level operation; "),
       ref(

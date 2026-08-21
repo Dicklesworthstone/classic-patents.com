@@ -124,10 +124,9 @@ In the apparatus, Fig. 8, the movable part of a screen-grating, kl, like that sh
 
 It is obvious that the diaphragm, instead of being operated directly by the sound-waves, could be made to vibrate by electrical means, such as used for imparting vibration to the diaphragm of a receiving-telephone.
 
-It is well known that the extent of motion
+It is well known that the extent of motion which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 13 ---
-which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.
 
 In Fig. 8 the radiant body is shown as the flame of a candle, p, and the lens brings the divergent rays thereof to the condition of a parallel beam, which is controlled by the gratings kl.
 
@@ -149,10 +148,9 @@ It is obvious that this construction enables the selenium to be used in the shap
 
 The electric circuit being under control of the selenium resistance therein, and the selenium under control of the pencil of rays, and the rays under the control of the transmitting-instruments, it is obvious that any instruments which can be controlled by slight variations in an electric current—such as, for instance, the usual telephonic instruments—if placed in the electric circuit with the said selenium, will be controlled by and will emit sounds corresponding to the action of the said transmitting apparatus on the beam which falls on the selenium.
 
-Fig. 10 illustrates another apparatus for transmitting complex sounds or articulate speech. As in the form last described, the sound-waves due to the voice serve to give to the movable part of the transmitter a vibrational movement of corresponding character, and this movement, in turn, impresses a vibra-
+Fig. 10 illustrates another apparatus for transmitting complex sounds or articulate speech. As in the form last described, the sound-waves due to the voice serve to give to the movable part of the transmitter a vibrational movement of corresponding character, and this movement, in turn, impresses a vibrational or alternate variation of corresponding character upon the amount of radiant energy falling upon the sensitive part of the receiver.
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 13 ---
-tional or alternate variation of corresponding character upon the amount of radiant energy falling upon the sensitive part of the receiver.
 
 The pencil of rays is passed through a suitable concentrating apparatus, a, (shown here as a lens,) and also through a heat-absorbing apparatus, a', which prevents the heat-rays from warping the reflector of the transmitter. It then falls upon a reflector, r, (shown as a plane reflector placed at such an angle as to direct the rays to the receiver e.) After leaving this reflector the rays may be caused to pass through a lens, d', in order to give them the desired parallelism, if they do not already possess it. In the drawings they are shown more concentrated on the reflector r than in their path from the transmitter to the receiver. Arrived there they are caused to fall upon the sensitive receiver either directly, or, as in the drawings, after further concentration by the mirror s'. Tracing the path of a single ray from the lens a and cell a', it will be seen that its path from the reflector r will depend upon the angle at which that portion of the reflector r on which it falls is presented to it.
 
@@ -193,10 +191,9 @@ A cylinder of conducting material of a diameter equal to that of the small holes
 
 In order to insure a more perfect connection between the plates a⁵ and cylinders f⁵, and the plates b⁵ and cylinders g⁵, the said cylinders are made tubular and one or more slots, 40, cut longitudinally through their sides. Washers c⁶, of insulating material, are placed within the large holes 30 31 in the conducting-disks, so that the said washers completely insulate and separate that portion of the said disks from the cylinders.
 
-Melted conducting material—as, for example, type-metal—is poured into the tubes f⁵ g⁵, and, passing through the longitudinal slots,
+Melted conducting material—as, for example, type-metal—is poured into the tubes f⁵ g⁵, and, passing through the longitudinal slots, makes a perfect connection with the plates having small holes 32 33 around the said tubes, as shown in Fig. 23, where the type-metal is indicated by the letter f⁷; but is prevented by the washers c⁶ from making a contact with the plates having the large holes adjacent to it, as shown in Fig. 22.
 
 --- REVIEWED TRANSCRIPTION PAGE 11 OF 13 ---
-makes a perfect connection with the plates having small holes 32 33 around the said tubes, as shown in Fig. 23, where the type-metal is indicated by the letter f⁷; but is prevented by the washers c⁶ from making a contact with the plates having the large holes adjacent to it, as shown in Fig. 22.
 
 Instead of the washers c⁶, of insulating material, smaller washers or rings of any material—as, for instance, metal—may be used to confine the molten metal and prevent its contact with the plates at the large holes, the said rings themselves being too small in diameter to touch the said disks.
 
@@ -214,9 +211,8 @@ I have called the apparatus a “photophone” because an ordinary beam of light
 
 I have also employed with the selenium cell the rays of gas, of a petroleum-lamp, and of a candle, and of the lime-light. For many purposes, an artificial source of light the position of which can be adjusted at pleasure, and kept unchanged and unaffected by night or weather, is more convenient than sunlight.
 
-I have employed prepared selenium as a type of one class of sensitive bodies whose changed condition is manifested by the variation in the resistance they afford to a constant current, and a disk of hard rubber as a type
+I have employed prepared selenium as a type of one class of sensitive bodies whose changed condition is manifested by the variation in the resistance they afford to a constant current, and a disk of hard rubber as a type of another class of bodies the changes in which can become directly audible as sound.
 
-of another class of bodies the changes in which can become directly audible as sound.
 
 I have described forms of apparatus in which the radiant energy falling upon a sensitive body operates to vary the resistance of the circuit of which it forms part, others to vary the electro-motive force of current in the circuit.
 
@@ -236,10 +232,9 @@ The instruments may be arranged with reference to each other according to the us
 
 If the transmitter be operated by an electric current, the circuit which carries that current may be of any desired length and arranged in any appropriate way known to electricians.
 
-If an electrically-sensitive receiver be used—as, for example, a selenium cell—the circuit which contains it may be extended to any suitable distance, or may be connected with another circuit by induction-coils, in a manner and for purposes well known to electricians,
+If an electrically-sensitive receiver be used—as, for example, a selenium cell—the circuit which contains it may be extended to any suitable distance, or may be connected with another circuit by induction-coils, in a manner and for purposes well known to electricians, and to those who are familiar with variable-resistance electric speaking-telephones.
 
 --- REVIEWED TRANSCRIPTION PAGE 12 OF 13 ---
-and to those who are familiar with variable-resistance electric speaking-telephones.
 
 Inasmuch as the rays have no inertia and are inflexible, a slight motion of a reflector—such, for example, as it will receive if attached to the diaphragm of a receiving-telephone—can not only be made to manifest itself as light, (as in a reflecting-galvanometer,) but also as sound, or as a variation of an electric current in a secondary or local circuit supplied with its own battery.
 

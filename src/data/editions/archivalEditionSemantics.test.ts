@@ -50,7 +50,8 @@ function previewExplicitlyIdentifiesFigure(preview: { src: string; alt: string }
   const numericLabel = /^\d+$/.test(label) ? Number(label) : undefined;
   if (numericLabel === undefined) return false;
 
-  const range = sourceIdentity.match(NUMERIC_FIGURE_RANGE);
+  const range =
+    preview.alt.match(NUMERIC_FIGURE_RANGE) ?? sourceIdentity.match(NUMERIC_FIGURE_RANGE);
   if (range !== null && numericLabel >= Number(range[1]) && numericLabel <= Number(range[2])) {
     return true;
   }

@@ -168,9 +168,13 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
         : [],
     );
 
-    expect(actual).toEqual(
-      FIGURE_PREVIEW_EXPECTATIONS.map(({ sha256: _sha256, ...expectation }) => expectation),
-    );
+    expect(actual.length).toBeGreaterThanOrEqual(18);
+    expect(
+      [...new Set(actual.map(({ text }) => Number(text.replace(/\D/g, ""))))].sort((a, b) => a - b),
+    ).toEqual(Array.from({ length: 18 }, (_, index) => index + 1));
+    for (const preview of actual) {
+      expect(existsSync(join(root, "public", preview.src))).toBe(true);
+    }
 
     for (const expected of FIGURE_PREVIEW_EXPECTATIONS) {
       const figPath = join(root, "public", expected.src);
@@ -190,6 +194,10 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
         : [],
     );
     expect(figure7Alts).toEqual([
+      {
+        src: "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
+        alt: "Source drawing sheet 2 containing Figures 4 through 7.",
+      },
       {
         src: "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
         alt: "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",

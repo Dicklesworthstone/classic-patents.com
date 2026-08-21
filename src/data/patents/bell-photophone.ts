@@ -138,10 +138,10 @@ export const bellPhotophonePatent: Patent = {
     },
     {
       number: 2,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(2),
       plainEnglish:
-        "The method of producing sound by forming a beam of rays, varying the beam in accordance with sound waves, and receiving the variable beam on a sensitive receiver that varies electric circuit resistance to reproduce the sound in a telephone.",
+        "Covers transmitting or reproducing sound by giving a radiant beam an undulating or intermittent pattern that follows the desired sound waves, then using a receiver that responds to that pattern by producing corresponding air vibrations or sound; it does not require a particular selenium cell.",
       keyInnovations: [
         "Voice acoustic modulation of optical beam",
         "Telephonic reproduction via photoconductive receiver",
@@ -151,17 +151,17 @@ export const bellPhotophonePatent: Patent = {
     },
     {
       number: 3,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(3),
       plainEnglish:
-        "The method of optical wireless communication consisting of varying the divergence of a beam of light by vocal sound vibrations and receiving the rays on a selenium receiver.",
+        "Covers the waveform-preserving method in which radiant energy traveling from a photophonic transmitter to its receiver is varied in an undulatory form similar to the accompanying articulate or other sound waves; the claim does not limit the transmitter to mirror divergence or the receiver to selenium.",
       keyInnovations: ["Beam divergence modulation via flexible mirror"],
       legalSignificance:
         "Covers the specific mechanism of acoustic mirror flexing for beam divergence modulation.",
     },
     {
       number: 4,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(4),
       plainEnglish:
         "The method of producing sounds of any desired pitch, amplitude, and quality by exposing a body sensitive to radiant energy to rays whose effective energy is caused to vary in accordance with the vibrational form of the sound-waves.",
@@ -171,7 +171,7 @@ export const bellPhotophonePatent: Patent = {
     },
     {
       number: 5,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(5),
       plainEnglish:
         "The method of transmitting articulate and other sounds by causing the sound-waves to produce similar variations in the beam of rays proceeding from a photophonic transmitter to a photophonic receiver.",
@@ -183,34 +183,34 @@ export const bellPhotophonePatent: Patent = {
       isIndependent: true,
       originalText: manualPhotophoneClaimText(6),
       plainEnglish:
-        "An apparatus for communicating signals combining a beam-controlling apparatus to impart a varying character to a beam of rays and a receiving apparatus sensitive to the beam and operated thereby to give signals.",
+        "Covers an apparatus combination: one controller changes the character of a beam from a radiant body, and a sensitive receiving apparatus is operated by those changes to give corresponding signals. The legal combination is defined functionally rather than by a named optical component.",
       keyInnovations: ["Complete optical transmitter and receiver signaling combination"],
       legalSignificance: "Foundational master apparatus claim for optical signaling links.",
     },
     {
       number: 7,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(7),
       plainEnglish:
-        "The apparatus for transmitting articulate sounds by causing undulatory variations in radiant energy similar in form to the sound-waves proceeding from a photophonic transmitter to a photophonic receiver.",
+        "Covers the apparatus arrangement that transmits articulate or other sound by imposing on the radiant energy between photophonic transmitter and receiver undulatory variations similar in form to the sound waves. It claims the end-to-end apparatus relationship, not a single shutter or cell geometry.",
       keyInnovations: ["Undulatory radiant speech transmission apparatus"],
       legalSignificance: "Protects end-to-end voice-modulated photophonic hardware.",
     },
     {
       number: 8,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(8),
       plainEnglish:
-        "In combination with a photophonic receiver, a photophonic transmitter where the source of radiant energy is varied or controlled directly.",
+        "Covers a photophonic receiver used with a transmitter whose radiant-energy source itself is varied or controlled, such as a voice-operated lamp or manometric flame. This is source modulation, distinct from placing a moving screen or reflector in the beam path.",
       keyInnovations: ["Direct source modulation photophonic transmitter"],
       legalSignificance: "Covers direct modulation of the illuminant (e.g. manometric flames).",
     },
     {
       number: 9,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(9),
       plainEnglish:
-        "In an apparatus for producing or reproducing sound at a distant station by means of variations in radiant energy, means for varying the amount of energy reaching the distant station by motion imparted to the transmitter.",
+        "Covers a distant-station sound apparatus in which transmitter motion changes how much radiant energy reaches the remote receiver. The protected causal step is mechanical movement of the transmitting apparatus producing the delivered-energy variation, rather than a particular mirror, grating, or detector.",
       keyInnovations: ["Mechanical motion beam-intensity modulation"],
       legalSignificance: "Covers modulating radiant flux via mechanical diaphragm displacements.",
     },
@@ -219,53 +219,53 @@ export const bellPhotophonePatent: Patent = {
       isIndependent: true,
       originalText: manualPhotophoneClaimText(10),
       plainEnglish:
-        "A photophonic receiver adapted to produce, by the action of a beam of varying character from a radiant source, dynamic or electric effects corresponding with said character.",
+        "Covers the receiving instrument itself when a varying beam from a radiant source makes it produce corresponding dynamic effects, such as direct sound, or corresponding electrical effects. The claim leaves the sensitive material and the chosen output instrument open.",
       keyInnovations: ["Universal dynamic/electric radiant energy receiver"],
       legalSignificance: "Broad master claim for radiant energy photodetectors.",
     },
     {
       number: 11,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(11),
       plainEnglish:
-        "In an apparatus for sound-transmission, a device for controlling the beam during its passage from its source, in contradistinction to controlling the source itself, actuated by sound-waves.",
+        "Covers sound-actuated control applied during the beam's travel from source to receiver, expressly distinguishing an in-path screen, grating, reflector, or equivalent from control of the radiant source itself. The controller gives the beam sound-shaped undulation or effective-strength variation.",
       keyInnovations: ["Extracavity / in-flight beam modulation"],
       legalSignificance:
         "Foundational claim distinguishing in-flight beam modulation from source modulation.",
     },
     {
       number: 12,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(12),
       plainEnglish:
-        "In a photophonic transmitter, the combination of a movable and an immovable portion to control the amount of radiant energy passing from it.",
+        "Covers a photophonic transmitter made from cooperating movable and fixed portions whose relative position controls the amount of radiant energy passing through or from the transmitter. Slidable gratings and opposed shutter parts are examples, but the claim is not limited to their shape.",
       keyInnovations: ["Slotted shutter / grating variable aperture modulator"],
       legalSignificance: "Protects variable optical slit and shutter modulators.",
     },
     {
       number: 13,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(13),
       plainEnglish:
-        "The combination, with the movable part of a photophonic transmitter, of mechanism operating electrically for giving motion to said part.",
+        "Covers the combination of a moving transmitter part with electrically operated mechanism that supplies its motion. An electromagnet or electrically controlled vibrator may drive a grating, shutter, or other beam controller; the claim adds the electrical actuator to the movable photophonic part.",
       keyInnovations: ["Electrically actuated optical beam modulator"],
       legalSignificance: "Covers electromagnetic relay and electro-acoustic modulators.",
     },
     {
       number: 14,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(14),
       plainEnglish:
-        "The method of producing a beam of varying character for photophonic transmission by controlling the amount of radiant energy allowed to pass from a constant source.",
+        "Covers producing a varying photophonic beam from a constant radiant source by controlling how much energy is allowed to pass in the desired direction. The source remains steady while an intervening controller supplies the signal-shaped variation.",
       keyInnovations: ["Constant-source external optical modulation method"],
       legalSignificance: "Protects continuous-wave constant-power source modulation.",
     },
     {
       number: 15,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(15),
       plainEnglish:
-        "A beam-controlling device comprising a vibratory medium and means for varying the amount of radiant energy allowed to proceed from a constant source in a given direction in accordance with vibrations.",
+        "Covers a beam controller with a vibrating medium and associated means that vary the amount of energy proceeding from a constant source in a selected direction according to that medium's vibrations. It reaches vibrating shutters, gratings, reflectors, and equivalent directional controllers.",
       keyInnovations: ["Vibratory medium directional radiant energy modulator"],
       legalSignificance:
         "Protects acoustic vibrating membranes controlling directional beam energy.",
@@ -275,16 +275,16 @@ export const bellPhotophonePatent: Patent = {
       isIndependent: true,
       originalText: manualPhotophoneClaimText(16),
       plainEnglish:
-        "The combination, with a transmitting apparatus to give a beam an undulatory character, of a receiving apparatus sensitive to the beam and having the property of emitting sound under its influence.",
+        "Covers a transmitter that gives a radiant beam undulatory or effective-strength variation together with a receiver sensitive to that beam and capable of emitting sound under its influence. This is the direct photoacoustic path and does not require an intervening electrical circuit.",
       keyInnovations: ["Direct photoacoustic receiver link"],
       legalSignificance: "Master claim for non-electric photoacoustic communication systems.",
     },
     {
       number: 17,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualPhotophoneClaimText(17),
       plainEnglish:
-        "In an apparatus for sound-transmission, a transmitting apparatus to control a beam from a radiant body, and a receiving apparatus containing an electric circuit device whose electrical condition is varied by the beam, and telephonic instruments in circuit.",
+        "Covers the electrical Photophone system: a transmitter controls a beam from a radiant body; a receiver contains a circuit device whose electrical condition follows the beam's strength or character; and telephonic instruments are connected in that circuit to reproduce the sound.",
       keyInnovations: ["Optoelectronic telephonic speech transmission system"],
       legalSignificance: "Master system claim for optoelectronic telephonic communications.",
     },
@@ -293,7 +293,7 @@ export const bellPhotophonePatent: Patent = {
       isIndependent: true,
       originalText: manualPhotophoneClaimText(18),
       plainEnglish:
-        "In an instrument containing selenium as a portion of an electric circuit, two or more strips of conducting material separated by insulating material leaving unoccupied space, and selenium placed in the unoccupied space to complete the circuit.",
+        "Covers the selenium-cell structure: selenium forms part of an electric circuit; at least two conducting strips are separated by insulating material that leaves an exposed intervening space; and selenium occupies that space to complete the electrical path between the conductors.",
       keyInnovations: ["Interdigital multi-strip high-surface-area selenium cell structure"],
       legalSignificance: "Master structural claim for interdigital semiconductor photodetectors.",
     },
@@ -378,6 +378,6 @@ export const bellPhotophonePatent: Patent = {
 
   stats: {
     totalClaims: 18,
-    independentClaims: 5,
+    independentClaims: 18,
   },
 };

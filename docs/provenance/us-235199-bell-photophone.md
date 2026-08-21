@@ -28,9 +28,9 @@
 | **Page 4** | Specification Masthead & Column 1–2 | Preamble, statement of invention, discovery of photo-acoustic effect across substances, transmitter principles, and description of Figures 1–3. |
 | **Page 5** | Specification Page 2 (Cols 1–2) | Beam modulation physics, mirror diaphragms of mica/glass/metal, acoustic beam focus, and slotted grating shutter mechanics. |
 | **Page 6** | Specification Page 3 (Cols 1–2) | Slotted grid shutters, Venetian blind slats, optical ray interference, and voice diaphragm coupling. |
-| **Page 7** | Specification Page 4 (Cols 1–2) | Polarization modulation, liquid crystal/liquid cell refraction, and variable absorption filters. |
-| **Page 8** | Specification Page 5 (Cols 1–2) | Articulate speech transmission via modulated radiant beams, parabolic collection geometry, and receiver dynamics. |
-| **Page 9** | Specification Page 6 (Cols 1–2) | Selenium crystalline annealing, dark resistance vs illuminated resistance, and cylindrical stacked disk cell construction. |
+| **Page 7** | Specification Page 4 (Cols 1–2) | Completion of the grating-reflection discussion; Figs. 5–7 slat beam controllers; tuned-reed actuation; Fig. 8 articulate-speech transmitter and diaphragm coupling; the page ends at the small-motion discussion. |
+| **Page 8** | Specification Page 5 (Cols 1–2) | Fine-slit/interference limitation; Fig. 8 candle and parallel beam; Fig. 9 focal aperture; selenium receiver conductivity and circuit; low-resistance cell geometry; Fig. 10 reflector transmitter begins and wraps “vibrational” across the page boundary. |
+| **Page 9** | Specification Page 6 (Cols 1–2) | Completion of the Fig. 10 “vibrational” sentence; reflector steering and voice modulation; receiver parabolic mirror and finder; Figs. 11–13 spiral selenium cell begins. |
 | **Page 10** | Specification Page 7 (Cols 1–2) | Interdigital flat cells, type-metal casting methods, and multi-disc low-resistance high-surface-area cell architecture. |
 | **Page 11** | Specification Page 8 (Cols 1–2) | Direct photo-acoustic sound generation in substances without electricity (spectrophone/photoacoustic effect), hard rubber discs, and lampblack absorbers. |
 | **Page 12** | Specification Page 9 & Claims 1–15 | Acoustical variable-resistance telephone theory, Claims 1–15. |
