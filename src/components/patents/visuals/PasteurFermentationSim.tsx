@@ -70,7 +70,11 @@ export function PasteurFermentationSim() {
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            {isPlaying ? <Pause className="w-4 h-4 text-emerald-600" /> : <Play className="w-4 h-4" />}
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-emerald-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"

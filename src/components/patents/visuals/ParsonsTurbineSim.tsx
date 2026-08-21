@@ -55,7 +55,8 @@ export function ParsonsTurbineSim() {
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Compound pressure-staging ({stageCount} rings), expanding conical casing, and dummy piston thrust balance.
+            Compound pressure-staging ({stageCount} rings), expanding conical casing, and dummy
+            piston thrust balance.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
