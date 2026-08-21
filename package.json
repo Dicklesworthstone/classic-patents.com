@@ -6,7 +6,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "mkdir -p .next/server/pages && next build",
     "start": "next start",
     "lint": "biome check .",
     "format": "biome format --write .",
