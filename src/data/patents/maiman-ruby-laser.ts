@@ -164,7 +164,7 @@ export const maimanRubyLaserPatent: Patent = {
           figureRef: "Fig. 4",
           label: "m2",
           element: "m2",
-          description: "Output coupler / partially transmitting aperture (R2 ~ 92%).",
+          description: "Output coupler / partially transmitting aperture.",
           x: 82,
           y: 48,
         },
@@ -207,11 +207,11 @@ export const maimanRubyLaserPatent: Patent = {
       {
         title: "Colidar Laser Radar Ranging System",
         summary:
-          "The first optical radar instrument, combining the pulsed ruby laser transmitter with a photoelectric receiver and oscilloscope time-of-flight display.",
+          "A colidar embodiment combines a pulsed ruby laser transmitter with a photoelectric receiver and oscilloscope time-of-flight display.",
         technicalDetails:
           "The colidar sends a laser beam toward a target and uses a photoelectric receiver and oscillograph traces to compare the transmitted and received pulse times. The specification identifies the time difference as an indication of range.",
-        archaicTerm: "Colidar (Coherent Light Detection and Ranging)",
-        modernEquivalent: "optical radar or lidar ranging system",
+        archaicTerm: "Colidar (coherent light ranging)",
+        modernEquivalent: "coherent-light optical radar ranging system",
       },
     ],
     scientificPrinciples: [
@@ -253,9 +253,9 @@ export const maimanRubyLaserPatent: Patent = {
       "The disclosed architecture combines a solid-state active medium, broadband optical pumping, radiationless transfer into a discrete upper level, and an optical feedback path that repeatedly traverses the material.",
     patentWars: [],
     civilizationalImpact:
-      "Maiman's creation of the first laser inaugurated the multi-hundred-billion-dollar photonics industry, fundamentally enabling fiber-optic global telecommunications, precision laser surgery, satellite laser ranging, and quantum optics.",
+      "The disclosed solid-state optical pumping, resonant feedback, and coherent beam extraction establish the architecture that later generations of photonic instruments use for communications, measurement, surgery, manufacturing, and scientific research.",
     funFact:
-      "Physical Review Letters famously rejected Maiman's paper announcing the world's first working laser because the editor mistakenly thought optical masers were 'just more maser work'; Maiman then published it in Nature in August 1960 in a historic 300-word paper.",
+      "The specification itself connects the disclosed coherent optical beam to practical optical radar, communications, investigations of matter, and selective medical sterilization or vaporization.",
   },
   stats: {
     totalClaims: 2,
