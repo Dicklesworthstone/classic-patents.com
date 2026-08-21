@@ -283,7 +283,11 @@ COOPEL oo. eeeeesseseeseeeeeeeneeees 600/102
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 1 of 22 gk”
+U.S. Patent Dec. 18, 2001 Sheet 1 of 22 US 6,331,181 B1
+
+150
+
+gk”
 g
 
 O
@@ -296,13 +300,13 @@ FIG. 1
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 2 of 22 US 6,331,181 B1
 
-[FIG. 2: Drawing Sheet 2]
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 3 of 22 b |
+U.S. Patent Dec. 18, 2001 Sheet 3 of 22 US 6,331,181 B1
+
+64b |
 
 68
 
@@ -310,7 +314,11 @@ FIG. 2A.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 4 of 22 32
+U.S. Patent Dec. 18, 2001 Sheet 4 of 22 US 6,331,181 B1
+
+62
+
+32
 
 64
 62
@@ -449,9 +457,42 @@ FIG. BA.
 
 --- REVIEWED TRANSCRIPTION PAGE 18 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 16 of 22 US 6,331,181 B1
+US 6,331,181 B1
 
-[FIG. 16: Drawing Sheet 16]
+Sheet 16 of 22
+
+Dec. 18, 2001
+
+U.S. Patent
+
+6 Old
+
+eR Ee|
+
+yt
+oe
+
+ob J ow
+SVTIWG I svTIVq)
+OOL vs
+LANOVIN
+Aaa
+1001 -) WS
+po SZ
+
+AOVIEEVO
+
+eg /
+
+og /
+
+OWN
+OdW
+dio
+
+SISSVHO
+
+my)
 
 --- REVIEWED TRANSCRIPTION PAGE 19 OF 34 ---
 
@@ -612,7 +653,10 @@ FIG. 140.
 
 --- REVIEWED TRANSCRIPTION PAGE 24 OF 34 ---
 
-U.S. Patent Dec. 18, 2001 Sheet 22 of 22 a
+U.S. Patent Dec. 18, 2001 Sheet 22 of 22 US 6,331,181 B1
+
+166
+a
 
 ALGORITHM
 | an
@@ -644,6 +688,10 @@ FIG. 15.
 
 --- REVIEWED TRANSCRIPTION PAGE 25 OF 34 ---
 
+US 6,331,181 B1
+
+1
+
 SURGICAL ROBOTIC TOOLS, DATA
 ARCHITECTURE, AND USE
 
@@ -673,7 +721,8 @@ patient in the operating room. Regardless, the controller will
 typically include one or more hand input devices (such as
 joysticks, exoskeletol gloves, master manipulators, or the
 like) which are coupled by a servo mechanism to the surgical
-instrument. More specifically, servo motors move a manipulator or “slave” supporting the surgical instrument based on
+instrument. More specifically, servo motors move a manipu-
+lator or “slave” supporting the surgical instrument based on
 the surgeon’s manipulation of the hand input devices. Dur-
 ing an operation, the surgeon may employ, via the robotic
 surgery system, a variety of surgical instruments such as
@@ -814,6 +863,10 @@ mable EPROM, Flash EPROM, EEPROM, battery-backed-
 
 --- REVIEWED TRANSCRIPTION PAGE 26 OF 34 ---
 
+US 6,331,181 B1
+
+3
+
 up SRAM, or similar memory technology where data can be
 updated and retained in either a serial or random access
 method, or with any of a wide variety of alternative
@@ -847,7 +900,8 @@ an arbitrary compatibility data string, or the like.
 
 In another aspect, the invention provides a robotic surgi-
 cal component for use in a robotic surgical system having a
-processor and a component holder. The component comprises a component body having an interface mountable to
+processor and a component holder. The component com-
+prises a component body having an interface mountable to
 the component holder. The body supports a surgical end
 effector, and a drive system is coupled to the body for
 moving the end effector per commands from the processor.
@@ -855,7 +909,8 @@ Circuitry is mounted on the body and defines a signal for
 transmitting to the processor. The signal may indicate com-
 patibility of the component with the system, may define a
 component type of the component, may indicate coupling of
-the component to the system, and/or may indicate calibration of the component. Typically, the component will com-
+the component to the system, and/or may indicate calibra-
+tion of the component. Typically, the component will com-
 prise a surgical tool, a manipulator arm, a pre-positioning
 linkage supporting the manipulator arm, or the like.
 
@@ -979,13 +1034,18 @@ a base and tool holder which moves relative to the base. The
 
 --- REVIEWED TRANSCRIPTION PAGE 27 OF 34 ---
 
+US 6,331,181 B1
+
+5
+
 tool holder has a plurality of drive elements. A sterile drape
 covers at least a portion of the manipulator. A sterile tool has
 a proximal interface and distal end effector. The distal end
 effector has a plurality of degrees of motion relative to the
 proximal interface. The degrees of motion are coupled to
 drive elements of the interface. An adapter is disposed
-adjacent the sterile drape between the holder and the interface. The adapter comprises a plurality of movable bodies.
+adjacent the sterile drape between the holder and the inter-
+face. The adapter comprises a plurality of movable bodies.
 Each movable body has a first surface driven by the drive
 elements of the holder, and a second surface driving the
 driven elements of the tool.
@@ -1041,7 +1101,8 @@ FIGS. 7A through E illustrate an adapter for coupling the
 interface of FIG. 6 to the surgical manipulator.
 
 FIGS. 7G through I illustrate the adapter of FIGS. 7A
-through E mounted to a holder or carriage of the manipulator.
+through E mounted to a holder or carriage of the manipu-
+lator.
 
 FIGS. 7J through L illustrate the holder, its driving
 elements, and its electrical contacts.
@@ -1086,7 +1147,8 @@ between the software modules related to tool change.
 6
 
 FIG. 11 is a logic flow chart illustrating an exemplary
-method for sensing engagement of a tool with the manipulator.
+method for sensing engagement of a tool with the manipu-
+lator.
 
 FIG. 12 is a flow diagram illustrating how the tool
 engagement signals are used to change the operating state of
@@ -1159,6 +1221,10 @@ the procedure views a stereo display. The master controllers
 are manual input devices which preferably move with six
 
 --- REVIEWED TRANSCRIPTION PAGE 28 OF 34 ---
+
+US 6,331,181 B1
+
+7
 
 degrees of freedom, and which often further have an actu-
 atable handle for actuating tools (for example, for closing
@@ -1326,6 +1392,10 @@ cessor of the robotic surgical system, it should be understood
 that similar communication may take place between cir-
 
 --- REVIEWED TRANSCRIPTION PAGE 29 OF 34 ---
+
+US 6,331,181 B1
+
+9
 
 cuitry of a manipulator, a set-up joint, an endoscope or other
 image capture device, or the like, and the processor of the
@@ -1497,6 +1567,10 @@ holder, as the drive pins will push the rotatable bodies into
 
 --- REVIEWED TRANSCRIPTION PAGE 30 OF 34 ---
 
+US 6,331,181 B1
+
+11
+
 the limited rotation position until the pins are aligned with
 (and slide into) openings 140.
 
@@ -1638,7 +1712,8 @@ processor CTP may comprise an Analog Device ADSP
 tive commercially available processors. A master diagnostic
 controller MDC monitors and verifies the health of the
 processing and servo mechanical system. In the exemplary
-embodiment, the master diagnostic controller MDC comprises a Dallas DS 87C530 processor. A Dallas DS 87C520
+embodiment, the master diagnostic controller MDC com-
+prises a Dallas DS 87C530 processor. A Dallas DS 87C520
 processor is used as the user interface master controller
 UMC to handle the input and output to and from the surgeon
 seated at the console. Once again, these functions may
@@ -1669,7 +1744,12 @@ by a magnet mounted on the tool 54. Hence, reed switch 147
 
 --- REVIEWED TRANSCRIPTION PAGE 31 OF 34 ---
 
-ensures that tool 54 is positioned in the holder of manipulator 58, the reed switch acting as a tool sensor. Electrical
+US 6,331,181 B1
+
+13
+
+ensures that tool 54 is positioned in the holder of manipu-
+lator 58, the reed switch acting as a tool sensor. Electrical
 coupling of the tool memory 126 and an electrical loop-back
 circuit 149 connecting pins of tool 54 each act as additional
 independent tool sensors. Optionally, an end-of-use detector
@@ -1779,7 +1859,8 @@ presence of the adapter. So long as the adapter is present, the
 system then checks for the presence of the tool based on
 coupling with the tool memory 126. The presence or absence
 of the tool is verified by checking for the end of use or pin
-short circuit 148 of the tool breadboard. The remote interface adapter RIA transmits the sensed signals from the
+short circuit 148 of the tool breadboard. The remote inter-
+face adapter RIA transmits the sensed signals from the
 sensor scan to the master digital controller MDC for use by
 the Procedure Management/Data Handler software.
 
@@ -1839,6 +1920,10 @@ through E, rotatable bodies 134 can move axially relative to
 
 --- REVIEWED TRANSCRIPTION PAGE 32 OF 34 ---
 
+US 6,331,181 B1
+
+15
+
 a floating plate 136. Prior to perfecting mechanical coupling
 between the holder drive elements and the rotatable bodies,
 pins of driving elements (which are similar in configuration
@@ -1895,7 +1980,8 @@ processor. In the exemplary embodiment, the data from the
 tool memory will include a character string indicating tool
 compatibility with the robotic system. Additionally, the data
 from the tool memory will often include a tool-type. In some
-embodiments, the data will also include tool offset calibration information. This data may be provided from the tool
+embodiments, the data will also include tool offset calibra-
+tion information. This data may be provided from the tool
 memory 148 in response to a request signal from the
 processor 152. A simplified version of path PD is performed
 if a camera is changed, as shown.
@@ -2009,6 +2095,10 @@ surgical end effector distally through cannula 72 and sliding
 interface 110 of tool 54 into engagement with a mounted
 
 --- REVIEWED TRANSCRIPTION PAGE 33 OF 34 ---
+
+US 6,331,181 B1
+
+17
 
 adapter, as illustrated in FIG. 14C. The tool can be removed
 and replaced by reversing the tool mounting procedure
@@ -2186,7 +2276,8 @@ endar date, clock time, number of surgical procedures,
 number of times the tool has been coupled to the system, and
 number of end effector actuations.
 
-15. The tool of claim 6, wherein the end effector comprises an image capture device to define a field of view.
+15. The tool of claim 6, wherein the end effector com-
+prises an image capture device to define a field of view.
 
 16. The tool of claim 6, further comprising a wrist joint
 coupling the end effector to the probe for varying an
@@ -2207,12 +2298,17 @@ the processor; and
 
 --- REVIEWED TRANSCRIPTION PAGE 34 OF 34 ---
 
+US 6,331,181 B1
+
+19
+
 circuitry mounted on the body, the circuitry defining a
 signal for transmitting to the processor, the signal
 comprising at least one member selected from the
 group consisting of compatibility of the component
 with the system, a component-type of the component,
-coupling of the component to the system, and calibration of the component;
+coupling of the component to the system, and calibra-
+tion of the component;
 
 wherein the component comprises a tool including a shaft
 having a proximal end and a distal end, the end effector
@@ -2229,14 +2325,17 @@ effector relative to the driven elements;
 
 wherein the circuitry comprises a memory storing data
 
-indicating the offsets, the memory coupled to the interface so as to transmit the offsets to the processor.
+indicating the offsets, the memory coupled to the inter-
+face so as to transmit the offsets to the processor.
 
 18. The component of claim 17, wherein the component
 body comprises an elongate shaft for distal insertion via a
 minimally invasive aperture to an internal surgical site of a
 patient body.
 
-19. A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising;
+19. A robotic surgical tool for use with a robotic manipu-
+lator having a tool holder, the tool holder having magneti-
+cally actuatable circuitry, the tool comprising;
 
 a probe having a proximal end and a distal end;
 
@@ -2281,7 +2380,8 @@ robotic manipulator comprises a drive system coupled to the
 probe, the drive system moving the end effector in response
 to commands from a processor.
 
-25. The robotic surgical tool of claim 19, further comprising a wrist joint coupling the end effector to the probe for
+25. The robotic surgical tool of claim 19, further com-
+prising a wrist joint coupling the end effector to the probe for
 varying an orientation of the end effector within an internal
 surgical site.
 
@@ -2289,7 +2389,8 @@ surgical site.
 effector comprises an image capture device to define a field
 of view.
 
-27. The robotic surgical tool of claim 20, further comprising at least one joint disposed between the interface and
+27. The robotic surgical tool of claim 20, further com-
+prising at least one joint disposed between the interface and
 end effector, the joint defining a joint axis geometry, wherein
 the signal indicates the joint geometry of the tool to the
 processor.

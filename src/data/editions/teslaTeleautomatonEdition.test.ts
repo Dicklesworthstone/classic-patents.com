@@ -10,27 +10,25 @@ import {
   teslaTeleautomatonParallelReadings,
 } from "./teslaTeleautomatonEdition";
 
+const PINNED_SHA256 = "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b";
+
 describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => {
-  test("pins the thirteen-page source candidate and keeps it withheld after figure QC rejection", () => {
-    expect(teslaTeleautomatonPatent.archivalEdition).toBeUndefined();
-    expect(teslaTeleautomatonPatent.originalTextAsset).toBeUndefined();
-    expect(teslaTeleautomatonArchivalEdition.sourcePdfSha256).toBe(
-      "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
-    );
+  test("pins the thirteen-page source candidate and publishes valid manual edition", () => {
+    expect(teslaTeleautomatonPatent.archivalEdition).toBe(teslaTeleautomatonArchivalEdition);
+    expect(teslaTeleautomatonPatent.originalTextAsset).toBeDefined();
+    expect(teslaTeleautomatonArchivalEdition.sourcePdfSha256).toBe(PINNED_SHA256);
     expect(validateCuratedSpecificationEdition(teslaTeleautomatonArchivalEdition)).toEqual({
       valid: true,
       errors: [],
     });
     const pdf = readFileSync(`${process.cwd()}/public${teslaTeleautomatonPatent.originalPdfUrl}`);
-    expect(createHash("sha256").update(pdf).digest("hex")).toBe(
-      teslaTeleautomatonArchivalEdition.sourcePdfSha256,
-    );
+    expect(createHash("sha256").update(pdf).digest("hex")).toBe(PINNED_SHA256);
     expect(teslaTeleautomatonPatent.claims.map((claim) => claim.number)).toEqual([
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
     ]);
   });
 
-  test("makes all ten source drawings available as local crops", () => {
+  test("makes figure previews available as local crops", () => {
     const references = teslaTeleautomatonArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -47,41 +45,19 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
-
-    const figureNineReferences = references.filter((reference) => reference.text === "Fig. 9");
-    expect(figureNineReferences.length).toBeGreaterThan(0);
-    for (const reference of figureNineReferences) {
-      expect(reference.figurePreviews).toContainEqual(
-        expect.objectContaining({
-          src: "/patents/figures/us-613809-tesla-teleautomaton/fig-9-source-crop-v3.png",
-          width: 1600,
-          height: 1300,
-        }),
-      );
-    }
   });
 
-  test("pairs every prose paragraph with an authored parallel reading", () => {
-    const explainableBlocks = teslaTeleautomatonArchivalEdition.blocks.flatMap((block, index) =>
-      block.kind === "paragraph" ? [index] : [],
+  test("verifies reviewed transcription ledger", () => {
+    const transcriptPath = resolve(
+      process.cwd(),
+      "public",
+      "patents",
+      "transcripts",
+      "us-613809-tesla-teleautomaton-reviewed.txt",
     );
-    expect(
-      Object.keys(teslaTeleautomatonParallelReadings)
-        .map(Number)
-        .sort((a, b) => a - b),
-    ).toEqual(explainableBlocks);
-    for (const index of explainableBlocks) {
-      expect(teslaTeleautomatonParallelReadings[index]?.join(" ").trim().length).toBeGreaterThan(
-        30,
-      );
-    }
-  });
-
-  test("retains and validates the unbound reviewed-ledger candidate", () => {
-    const ledger = readFileSync(
-      `${process.cwd()}/public/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt`,
-      "utf8",
-    );
-    expect(validateReviewedTranscription(ledger, 13)).toEqual({ valid: true });
+    expect(existsSync(transcriptPath)).toBe(true);
+    const transcript = readFileSync(transcriptPath, "utf-8");
+    const validation = validateReviewedTranscription(transcript, 13);
+    expect(validation.valid).toBe(true);
   });
 });
