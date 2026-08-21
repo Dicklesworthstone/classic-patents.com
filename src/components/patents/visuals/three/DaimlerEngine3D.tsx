@@ -13,16 +13,29 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cylinder" | "crankcase" | "hottube" | "flywheel" | "top";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [4.5, 3.5, 5.5], target: [0, 0.4, 0] },
+  cylinder: { pos: [0, 2.2, 3.5], target: [0, 1.3, 0] },
+  crankcase: { pos: [0, -0.2, 3.2], target: [0, -0.6, 0] },
+  hottube: { pos: [-2.2, 2.6, 1.8], target: [-0.5, 2.2, 0] },
+  flywheel: { pos: [3.6, 0.8, 2.4], target: [0, -0.6, 0] },
+  top: { pos: [0, 7.0, 0.1], target: [0, 0.5, 0] },
+};
+
 export function DaimlerEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params } = usePatentPhysics("us-361931-daimler-engine");
+  const { params, updateParam } = usePatentPhysics("us-361931-daimler-engine");
 
   const engineRpm = params.engineRpm ?? 750;
   const hotTubeTempC = params.hotTubeTemp ?? 850;
+  const turnAngle = params.turnAngle ?? 15;
   const daimler = FrankenSimEngine.stepDaimlerEngine({
     engineRpm,
     hotTubeTempC,
-    differentialSlipAngleDeg: params.turnAngle ?? 15,
+    differentialSlipAngleDeg: turnAngle,
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -49,22 +62,8 @@ export function DaimlerEngine3D() {
 
   const setCameraView = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const studio = studioRef.current;
-    if (!studio) return;
-
-    if (preset === "iso") {
-      studio.controls.setView([4.5, 3.5, 5.5], [0, 0.4, 0]);
-    } else if (preset === "cylinder") {
-      studio.controls.setView([0, 2.2, 3.5], [0, 1.3, 0]);
-    } else if (preset === "crankcase") {
-      studio.controls.setView([0, -0.2, 3.2], [0, -0.6, 0]);
-    } else if (preset === "hottube") {
-      studio.controls.setView([-2.2, 2.6, 1.8], [-0.5, 2.2, 0]);
-    } else if (preset === "flywheel") {
-      studio.controls.setView([3.6, 0.8, 2.4], [0, -0.6, 0]);
-    } else if (preset === "top") {
-      studio.controls.setView([0, 7.0, 0.1], [0, 0.5, 0]);
-    }
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   useEffect(() => {
@@ -120,18 +119,39 @@ export function DaimlerEngine3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Daimler High-Speed Petrol Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Daimler High-Speed Petrol Engine 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 361,931 • Hot-Tube Ignition Four-Stroke Engine
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["cylinder", "Cylinder"],
+                ["crankcase", "Crankcase"],
+                ["hottube", "Hot Tube"],
+                ["flywheel", "Flywheels"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setCameraView(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -191,38 +211,6 @@ export function DaimlerEngine3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
-        {showUiOverlay && (
-          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["cylinder", "Cylinder"],
-                ["crankcase", "Crankcase"],
-                ["hottube", "Hot Tube"],
-                ["flywheel", "Flywheels"],
-                ["top", "Top"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setCameraView(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
@@ -258,6 +246,69 @@ export function DaimlerEngine3D() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {engineRpm} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="200"
+              max="1200"
+              step="50"
+              value={engineRpm}
+              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Hot-Tube Igniter Temp
+              </span>
+              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
+                {hotTubeTempC} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="600"
+              max="1100"
+              step="25"
+              value={hotTubeTempC}
+              onChange={(e) => updateParam("hotTubeTemp", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-rose-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Differential Turn Angle
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {turnAngle}°
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="45"
+              step="5"
+              value={turnAngle}
+              onChange={(e) => updateParam("turnAngle", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

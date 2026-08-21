@@ -20,9 +20,21 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "cylinder" | "injector" | "crosshead" | "compressor" | "flywheel";
 
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
+  iso: { pos: [7.5, 3.2, 7.5], target: [0, 0.4, 0] },
+  cylinder: { pos: [0.1, 2.4, 3.4], target: [0, 2.0, 0] },
+  injector: { pos: [0.1, 4.4, 2.2], target: [0, 3.8, 0] },
+  crosshead: { pos: [0.1, -0.4, 3.0], target: [0, -0.6, 0] },
+  compressor: { pos: [-3.6, 0.6, -1.8], target: [-1.0, -0.2, -0.8] },
+  flywheel: { pos: [4.5, -0.8, 3.8], target: [0, -1.6, 1.6] },
+};
+
 export function DieselEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params } = usePatentPhysics("us-542846-diesel-engine");
+  const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
 
   const engineRpm = params.engineRpm ?? 150;
   const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
@@ -147,30 +159,45 @@ export function DieselEngine3D() {
 
   const setCameraView = (view: CameraPreset) => {
     setActiveCamera(view);
-    const studio = studioRef.current;
-    if (!studio) return;
-    if (view === "iso") studio.controls.setView([7.5, 3.2, 7.5], [0, 0.4, 0]);
-    if (view === "cylinder") studio.controls.setView([0.1, 2.4, 3.4], [0, 2.0, 0]);
-    if (view === "injector") studio.controls.setView([0.1, 4.4, 2.2], [0, 3.8, 0]);
-    if (view === "crosshead") studio.controls.setView([0.1, -0.4, 3.0], [0, -0.6, 0]);
-    if (view === "compressor") studio.controls.setView([-3.6, 0.6, -1.8], [-1.0, -0.2, -0.8]);
-    if (view === "flywheel") studio.controls.setView([4.5, -0.8, 3.8], [0, -1.6, 1.6]);
+    const cfg = CAMERA_PRESETS[view];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Diesel Internal Combustion Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Diesel Internal Combustion Engine 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 542,846 • Rational Heat Motor Compression Ignition
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["cylinder", "Cylinder"],
+                ["injector", "Injector"],
+                ["crosshead", "Crosshead"],
+                ["compressor", "Compressor"],
+                ["flywheel", "Flywheel"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setCameraView(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -234,38 +261,6 @@ export function DieselEngine3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
-        {showUiOverlay && (
-          <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["cylinder", "Cylinder"],
-                ["injector", "Air Blast Injector"],
-                ["crosshead", "Crosshead Guide"],
-                ["compressor", "Air Compressor"],
-                ["flywheel", "Flywheel"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setCameraView(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
@@ -303,6 +298,67 @@ export function DieselEngine3D() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {engineRpm} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="60"
+              max="300"
+              step="10"
+              value={engineRpm}
+              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Compression Ratio</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {compressionRatio}:1
+              </span>
+            </div>
+            <input
+              type="range"
+              min="12"
+              max="24"
+              step="1"
+              value={compressionRatio}
+              onChange={(e) => updateParam("compressionRatio", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Air Blast Injection
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {blastAirPressure} bar
+              </span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="90"
+              step="5"
+              value={blastAirPressure}
+              onChange={(e) => updateParam("blastAirPressure", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
