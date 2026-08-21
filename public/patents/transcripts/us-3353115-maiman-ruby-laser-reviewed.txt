@@ -115,9 +115,9 @@ FIG. 13 is a schematic diagram of a portion of a laser system illustrating the
 use of an interferometer.
 _”7 \ LU 13.
 y a 8 \
-ar) _
-“a, “ee
-io
+ 
+FIGS. 14 and 15 are schematic diagrams illustrating additional types of
+interferometers.
 L— = —— | Z
 a a ar
 tad ( tbo hg FAO4.
