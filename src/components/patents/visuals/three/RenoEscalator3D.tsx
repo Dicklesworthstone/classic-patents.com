@@ -223,12 +223,18 @@ export function RenoEscalator3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Tread Speed:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{deckSpeedFpm} FPM ({beltSpeedMps.toFixed(2)} m/s)</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Tread Speed:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {deckSpeedFpm} FPM ({beltSpeedMps.toFixed(2)} m/s)
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Hourly Throughput:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{passengersPerHour.toLocaleString()} pass/h</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {passengersPerHour.toLocaleString()} pass/h
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Truss Incline:</span>
@@ -236,7 +242,9 @@ export function RenoEscalator3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Motor Power:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{renoIdle.motorPowerKw.toFixed(1)} kW</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {renoIdle.motorPowerKw.toFixed(1)} kW
+              </span>
             </div>
           </div>
         )}
@@ -265,7 +273,9 @@ export function RenoEscalator3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Tread Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{beltSpeedMps.toFixed(2)} m/s</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {beltSpeedMps.toFixed(2)} m/s
+              </span>
             </div>
             <input
               type="range"
@@ -280,8 +290,12 @@ export function RenoEscalator3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Live Passenger Load</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{passengerCount} riders</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Live Passenger Load
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {passengerCount} riders
+              </span>
             </div>
             <input
               type="range"
@@ -296,8 +310,12 @@ export function RenoEscalator3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Truss Incline Angle</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{inclineAngleDeg}°</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Truss Incline Angle
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {inclineAngleDeg}°
+              </span>
             </div>
             <input
               type="range"
