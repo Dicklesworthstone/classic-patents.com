@@ -3663,15 +3663,582 @@ ture. It is then combined with water and stirred at high speeds
 
 --- REVIEWED TRANSCRIPTION PAGE 27 OF 58 ---
 
-Sheet 27 of 58
+3,671,542
+
+33
+
+in a gallon-size (3.785 liter) blender. The solid is washed three
+times with water by being stirred in a blender and isolated by
+being filtered on a sintered-glass coarse-pore Buchner funnel.
+‘The solid is dried overnight in a vacuum oven at about 70° C.
+The resulting solid (21.0 g.) is ground in a Wiley Mill until it
+passes through a 20 mesh screen. It is then triturated with hot
+formic acid for about 6 hr. The acid is removed by filtering
+through a sintered-glass coarse-pore Buchner funnel and the
+polymer washed with several portions of distilled water. The
+polymer is dried in a vacuum oven at about 70°C. The yield of
+polymer is 15.2 g. (93.7 percent of theoretical). The inherent
+viscosity, measured as a solution of 125 mg. of polymer in 25.0
+ml. of 85—98 percent (by weight) sulfuric acid, is 3.90.
+Film Preparation
+A mixture of the above polymer (0.02 g.) and 8.0 ml. of a
+solvent, prepared from 4.0 g. lithium chloride and 96 ml. of N-
+methyl-2-pyrrolidone, is agitated in a test-tube with a spatula
+at room temperature. Mixing is continued (i.e., 24 hr.) until a
+clear fluid solution is obtained. The solution is then spread on
+to a glass plate with a 5 mil. (0.0127 cm.) knife. The plate is
+then submerged in cold water. As the dope is coagulated, the
+resulting film separates from the glass plate and is dried by
+being pressed between absorbent paper towels at 70° C. ina
+vacuum oven for about 6 hr. The dry film is clear, tough, and
+flexible.
+Anisotropic Dope Preparation
+A mixture of 5.0 g. of the above polymer and 45.0 g. of 99.2
+percent (by weight) sulfuric acid is mixed anhydrously with a
+mechanically driven paddle-type stirrer in a 200 ml. round-
+bottom flask while cooling with an ice/water bath. The mix-
+ture is stirred overnight. The resulting fluid dope exhibits stir-
+opalesence and depolarizes polarized light.
+Fiber Prepared By Wet Spinning
+The spin dope prepared above is centrifuged to remove en-
+
+15
+
+20
+
+25
+
+30
+
+35
+
+trapped gases. It is then extruded by means of a mechanically |
+
+driven syringe through a 0.025 in. (0.064 cm.) thick precious
+metal spinneret having 20 holes of 0.003 in. (0.0076 cm.)
+diameter into an aqueous bath at 25°C. The bath is about 2 in.
+(5.1 cm.) wide and about 1 in. (2.54 cm.) deep. After passing
+through the bath for about 2.5 ft. (0.76 m.), the yarn is
+snubbed out of the water at about 45° angle to an electrically
+driven wind-up device. The yarn is collected on a perforated
+bobbin at 30 ft./min. (9.15 m./min.). It is then washed in cool
+running water overnight and a portion removed for heat-treat-
+ment, the remainder is dried on the bobbin in air at room tem-
+perature. The dry filaments are amorphous and have an orien-
+tation angle of 38° as measured from a wide angle X-ray pat-
+tern. Filaments exhibit the following T/E/Mi/Den. values:
+5.5/7.8/222/5.64.
+Heat Treatment of Wet Yarn
+
+The wet (washed) yarn prepared above is passed at 25
+ft./min. (7.63 m./min.) through a tube [Device B] heated to
+510° C. and collected at 29 ft./min (8.84 m./min.). The fibers
+exhibit an orientation angle of 11°, and the following tensile
+properties (yarn): T/E/Mi/Den.: 8.5/2.3/480/73.8.
+
+EXAMPLE 11
+
+This example illustrates the preparation of copolyamide
+comprised of repeating units selected nN the Mae of
+
+-NH-€ \y-NH-, and CoS ‘SH <__y-<0 _
+
+(relative molar ratio of Lt2:1, respectively), (2) an
+anisotropic dope of the copolyamide, and (3) fibers of the
+copolyamide. Also shown is preparation of a film of the
+copolyamide from a N,N-dimethylacetamide.
+
+Terpolymer Preparation: p-Aminobenzoyl chloride
+hydrochloride (4.8 g., 0.025 mole) is weighted into a
+polyethylene bag in a dry-box, i.e., a chamber maintained
+under anhydrous conditions. The open end of the bag is
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+34
+
+secured to a glass tube of about 3 in. (7.6 cm.) long on one
+end of which is a 29/26 inner joint. The bag assembly is
+removed from the dry-box and attached via the joint to a 500
+mi. resin-making kettle equipped with a stirrer and calcium
+chloride drying tube. The contents of the bag are emptied as
+rapidly as possible into a solution of p-phenylenediamine
+(5.40 g., 0.050 mole; sublimed through silica gel) in a mixture
+of hexamethyl phosphoramide (55 ml., distilled from CaH, at
+reduced pressure and stored over 5A molecular sieves) and N-
+methyl-2-pyrrolidone (55 ml., distilled from CaH, at reduced
+pressure and stored over SA molecular sieves). After mixing
+for 5 min., 4,4’-bibenzoyl chloride (6.93 g., 0.025 mole) is
+added at once. After a further 2 min. of mixing, 2,6-napthaloyl
+chloride (6.43 g., 0.025 mole) is added at once while cooling
+with a cool (i.e., 20° C.) water bath. The mixture sets up to a
+clear, rubber-like mass in 7 min. and is allowed to stand over-
+night at room temperature. It is then combined with water and
+stirred at high speeds in a gallon-size (3.785 liter) blender.
+The solid is washed three times with water by being stirred ina
+blender and isolated by being filtered on a sintered-glass
+course-pore Buchner funnel. The polymer is dried overnight
+in a vacuum oven at about 70° C. The yield is 17.3 g. (94.8
+percent of theoretical), ninh = 3.1.
+
+Film Preparation: A mixture of the above polymer (0.20
+g.) and 8.0 mi. of a solvent prepared from 2.4 g. lithium
+chloride and 100 ml. of N,N-dimethylacetamide, is agitated in
+a test tube with a spatula at room temperature. Mixing is con-
+tinued (i.e., 24 hr.) until a clear fluid solution is obtained and
+is then spread onto a glass plate with a 0.005 inch (0.0127
+cm.) knife. The plate is then submerged in cold water. As the
+dope is coagulated, the resulting film separates from the glass
+plate and is dried by being pressed between absorbent paper
+towels at 70° C. in a vacuum oven. The dry film is clear, tough,
+and flexible.
+
+Anisotropic Dope Preparation: A mixture of 5.0 g. of the
+above polymer and 45.0 g. of 99.2 percent (by weight) sul-,
+furic acid is mixed anhydrously with a mechanically driven
+paddle-type stirrer in a 200 ml. round-bottom flask while cool-
+ing with an ice/water bath. The mixture is stirred overnight.
+The resulting dope exhibits stir-opalescence and depolarizes
+polarized light.
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared above is centrifuged to remove entrapped gases. It is
+then extruded by means of a mechanically driven syringe
+through a 0.025 in. (0.064 cm.) thick precious metal spinneret
+having 20 holes of 0.003 in. (0.0076 cm.) diameter into an
+aqueous bath at 25° C. The bath is about 2 in. (5.1 cm.) wide
+and about | in. (2.54 cm.) deep. After passing through the
+bath for about 2.5 ft. (0.76 m.), the yarn is snubbed out of the ©
+water at about a 45° angle onto an electrically driven wind-up
+device. The yarn is collected on a perforated bobbin at 38
+ft./min. (11.6 m./min. ). Itis then washed in cool running water
+overnight and is dried in air at room temperature. The fila-
+ments are amorphous and have an orientation angle of 38° as
+measured from a wide angle X-ray pattern. Filaments exhibit
+the following T/E/Mi/Den. values: 5.5/10.2/163/4.01 (10 per-
+cent rate of extension).
+
+Heat Treatment of Fibers: The above yarn is passed at 25
+ft./min. (7.62 m/min.) through a tube (Device B) heated to
+400° C. and collected at 27.5 ft./min. (8.39 m/min.). The
+resulting fibers exhibit medium crystallinity and have an orien-
+tation angle of 15°. Filaments exhibit the following
+T/E/Mi/Den. values: 10.3/2.3/567/2.46.
+
+EXAMPLE 12
+
+This example illustrates the preparation (1) of a random
+copolyamide comprised of repeating units selected from the
+
+<
+
+group of
+
+Nu ‘Sy
+
+—CO--, —NH
+
+and
 
 --- REVIEWED TRANSCRIPTION PAGE 28 OF 58 ---
 
-Sheet 28 of 58
+3,671,542
+
+35
+(relative molar ratio of 1:3:3, respectively), (2) an anisotropic
+oleum dope of the copolyamide, and (3) fibers of the copolya-
+mide.
+
+Polymer _ Preparation: p-Aminobenzoy! chloride
+hydrochloride (4.8 g., 0.025 mole) is weighed into a
+polyethylene bag in a drybox, i.e., a chamber maintained
+under anhydrous conditions. The open end of the bag is
+secured to a glass tube of about 3 in. (7.61 cm.) length on one
+end of which is a 29/26 inner joint. The bag assembly is
+removed from the drybox and attached via the $ joint to a
+500 ml. resin-making kettle equipped with a stirrer and calci-
+um chloride drying tube. The contents of the bag are emptied
+as rapidly as possible into a solution of p-phenylenediamine
+(8.10 g., 0.075 mole; sublimed through silica gel) in a mixture
+of hexamethylphosphoramide (130 ml., distilled from CaH, at
+reduced pressure and stored over 5A molecular sieves) and N-
+methyl-2-pyrrolidone (140 ml., distilled from CaH, at reduced
+pressure and stored over 5A molecular sieves). After mixing 5
+min. powdered terephthaloyl chloride (15.23 g., 0.075 mole)
+is added at once with vigorous stirring: The temperature of the
+reaction mixture is moderated with a cool (i.e., 20° C.) water
+bath. The mixture becomes a rubber-like mass in 5 min. and is
+allowed to stand overnight at room temperature. The mixture
+is then combined with water and stirred at high speeds in a gal-
+lon-size (3.785 liter) blender. The solid is washed three times
+with water by being stirred in a blender and isolated by being
+filtered on a sintered-glass coarse-pore Buchner funnel. The
+solid is dried overnight in a vacuum oven at about 70° C. The
+resulting solid yellow beads (25.6 g.) are ground in a Wiley
+mill until they pass through a 20-mesh screen. They are then
+triturated in hot 98 percent formic acid for several hours. The
+acid is removed by filtering and the solid washed with several
+portions of water and then dried overnight at about 70°C. ina
+vacuum oven. The yield of polymer is 19.0 g. (91 percent of
+theoretical). The inherent viscosity, measured as a solution of
+125 mg. of polymer in 25.0 ml. of 95-98 percent (by weight)
+sulfuric acid,.is 6.22.
+
+’ Dope Preparation: A mixture of 7.5 g. of the above
+polymer.and 67.5 g. of fuming (0.8% free SO,) sulfuric acid is
+mixed anhydrously with a mechanically driven paddle-type
+stirrer in a 200 ml. round-bottom flask while cooling with an
+ice/water bath. The mixture is stirred for several hours until no
+
+20
+
+25
+
+30
+
+40
+
+solid particles can be visually observed, during which time the ©
+
+cooling bath is allowed to warm to room temperature. The
+resulting dope exhibits stir-opalescence and depolarizes plane
+polarized light. :
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared as above is centrifuged to remove entrapped gases. It
+is then extruded by means of a mechanically driven syringe
+through a 0.025 inch (0.064 cm.) thick precious metal spin-
+neret having 20 holes of 0.002 inch (0.005 cm.) diameter into
+a water coagulating bath at 27° C. The water bath is about 2 in
+(5.1.cm.) wide and about 1 in. (2.54 cm.) deep. After passing
+through the bath for about 2 ft. (0.61 m.), the yarn is snubbed
+out of the water at about a 45° angle to an electrically driven
+wind-up device. The yarn is collected on a perforated bobbin
+at 31 ft./min. (9.45 m./min.). It is then washed in.cool running
+water for several (i.e., 3 hr.) hours and a portion dried in air
+on a bobbin at room temperature. The dry filaments exhibit
+low crystallinity. and an orientation angle of 28° as measured
+from a wide angle X-ray pattern. Filaments exhibit the follow-
+ing T/E/Mi/Den. values: 9.2/10.1/268/3.41.
+
+Heat Treatment of Wet Fibers: The above wet (washed)
+yarn is passed at 25-ft./min. through a tube (Device B) heated
+to 610° C. and collected at 26.5 ft./min. (8.1 m./min.). The
+resulting fibers exhibit high crystallinity and an orientation
+angle of 10° as measured from a wide angle X-ray pattern.
+Filaments exhibit the following T/E/Mi/Den. values:
+
+20, 1/2.0/1069/2.78.
+_ EXAMPLE 13
+
+This example illustrates the preparation (1) of a random
+copolyamide comprised of repeating units selected from the
+group of
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+36
+
+—Nu-¢ y—c o-, —wn-{ Sve,
+and
+
+(relative molar ratio of 1:1:1, respectively), (2) an anisotropic -
+oleum dope of the copolyamide, and (3) fibers of the copolya-
+mide.
+
+Polymer _ Preparation: p-aminobenzoyl chloride
+hydrochloride (14.4 g., 0.075 mole) is weighed into a
+polyethylene bag in a drybox, i.e., a chamber maintained
+under anhydrous conditions. The open end of the bag is
+secured to a glass tube of about 3 in. (7.6 cm.) length and | in.
+(2.54 cm.) inner diameter on one end of which is a 29/26 ¥
+inner joint. The bag assembly is removed from the drybox and
+attached via the € joint to a one-liter, resin-making kettle
+equipped with a stirrer and calcium chloride drying tube, and
+cooled with an ice/water bath. The contents of the bag are
+emptied as rapidly as possible (generally, within 3 minutes)
+into a solution of p-phenylenediamine (8.10 g., 0.075 mole;
+sublimed through silica gel) in a mixture of hex-
+amethylphosphoramide (160 ml., distilled from CaH, at
+reduced pressure and stored over 5A molecular sieves) and N-
+methyl-2-pyrrolidone (100 ml., distilled from CaH, at reduced
+pressure and stored over 5A molecular sieves). After the
+above ingredients are mixed for five minutes, powdered
+terephthaloyl chloride (15.23 g., 0.075 mole) is added at once
+with vigorous stirring and continued cooling with an ice/water
+bath. A clear gel is obtained after about 20 min. and is allowed
+to stand overnight at room temperature. The clear gel is then
+combined with water and stirred at high speeds in a gallon-size
+(3.785 liter) blender. The polymer is washed three’ times with
+water by being stirred in a blender and isolated by being fil-
+tered on a sintered-glass coarse-pore Buchner funnel. The
+polymer is dried overnight in a vacuum oven at about 70°C,
+The resulting yellow beads (37.1 g.) are triturated with hot 98
+percent formic acid for several hours. The acid is removed by
+filtering through a sintered-glass coarse-pore Buchner funnel.
+The polymer is washed twice with water in a blender as
+described above and finally with acetone. It is dried in ‘a
+vacuum oven overnight at about 70°C. The yield of polymer is
+24.0 g. (90.8 percent). The inherent viscosity, measured as a
+solution of 125 mg. polymer in 25.0 ml. of 95-98 percent (by
+weight) sulfuric acid, is 3.73.
+
+Dope Preparation: A mixture of 5.0 g. of the above
+polymer and 45.0 g. of fuming (0.8 percent free SO3) sulfuric
+acid is mixed anhydrously with a mechanically driven paddle-
+type stirrer in a 200 ml. round bottom flask while cooling with
+an ice/water bath. The mixture is allowed to stir for several
+hours at which time no solid particles can be observed. The
+resulting dope exhibits stir-opalescence and depolarizes plane
+polarized light.
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared as above is centrifuged to remove entrapped gases. It
+is then extruded by means of a mechanically driven syringe
+through a 0.010 in. (0.025 cm.) thick stainless steel spinneret
+having 20 holes of 0.003 inch (0.0076 cm.) diameter into a
+water bath at 27° C. The water bath is about 2 in. (5.1 cm.)
+wide and about | in. (2.54 cm.) deep. After passing through
+the bath for about 2 ft. (0.61 m.), the yarn is snubbed out of
+the water at about a 45° angle to an electrically driven windup
+device. The yarn is collected on a perforated bobbin at 42
+ft./min. (12,8 m./min.). It is then washed in cool running water
+for several (i.e., 3 hr.) hours and dried in air at room tempera-
+ture. The filaments exhibit low crystallinity, an orientation
+
+‘angle of 32° and a sonic velocity of 4.72 km./sec. Filaments
+
+exhibit the following T/E/Mi/Den. values: 8.6/10.8/205/5.89.
+Heat Treatment of Fibers: The yarn prepared as above is
+passed at 25 ft./min (7.63 m./min.) through a tube (Device A)
+heated to 600° C. and collected at 27 ft./min. (8.24 m./min. ).
+The resulting filaments exhibit high crystallinity and an orien-
+tation angle of 10°. a sonic velocity of 9.29 kg./sec. and exhibit
+the following T/E/Mi/Den. values: 10.7/1.2/821/5.39.
+Film: The above polymer (0.20 g.) is placed in a test tube
 
 --- REVIEWED TRANSCRIPTION PAGE 29 OF 58 ---
 
-Sheet 29 of 58
+3,671,542
+
+37
+
+with 4.0 ml. of a solvent, prepared by dissolving 3.0 g. of lithi-
+um chloride in a mixture of 66 % mi. of hex-
+
+amethylphosphoramide and 33 % ml. of N-methyl-2-pyr- _
+
+rolidone, the mixture is agitated with a spatula at room tem-
+perature until a fluid clear solution is obtained. More solvent
+(4.0 ml.) is added and the resulting clear solution spread out
+on the surface of a glass plate with a 0.005 inch (0.0127 cm.)
+knife. The plate is then placed in cold water. As the dope is
+coagulated, the resulting film separates from the glass plate
+and is dried by being pressed between absorbent paper towels
+at 70°C. in a vacuum oven. The dry film is tough and has a
+slight haze.
+
+EXAMPLE 14
+
+This example illustrates the preparation (1) of a random
+copolyamide comprised of repeating units selected from the
+group of
+
+-NH-Y = “| "NH, —NH
+
+and
+
+-co-¥ = “Y-co-
+(relative molar ratio of 3:1:1, respectively ), (2) an anisotropic
+dope of the copolyamide, and (3) fibers of the copolyamide.
+
+Polymer. Preparation: p-Aminobenzoyl chloride
+hydrochloride (57.6 g., 0.30 mole) is weighed into a
+polyethylene bag in a drybox, i.e., a chamber maintained
+under anhydrous conditions. The open end of the bag is
+secured to a glass tube of about 3 in. (7.6 cm.) length on one
+end of which is a 29/26 & inner joint. The bag assembly is
+removed from the drybox and attached via the ¥ joint to a 1-
+liter resin-making kettle equipped with a stirrer and calcium
+chloride drying tube. The contents of the bag are emptied as
+rapidly as possible into a solution of p-phenylenediamine
+(10.8 g., 0.10 mole; sublimed through silica gel) in a mixture
+of hexamethylphosphoramide (260 ml., distilled from CaH, at
+reduced pressure and stored over 5A molecular sieves) and N-
+methyl-2-pyrrolidone (280 ml., distilled from CaH, at reduced
+pressure and stored over SA molecular sieves). After mixing
+three minutes powdered terephthaloyl chloride (20.30 g., 0.10
+mole; sublimed) is added with vigorous stirring. The tempera-
+ture of the mixture is moderated with a water bath at room
+temperature. The mixture rapidly becomes viscous and a solid
+mass is obtained within about 10 minutes. This solid mass is al-
+lowed to stand for two days. The solid mass is then combined
+with water and stirred at high speeds in a gallon-size (3.785
+liter) blender. The polymer is washed three times with water
+by being stirred in a blender and isolated by being filtered on a
+sintered-glass coarse-pore Buchner funnel. The polymer is
+dried overnight in a vacuum oven at about 70° C. The yield of
+polymer is 58.0 g. (97.5 percent of theoretical). The inherent
+viscosity, measured as a solution of 125 mg. polymer in 25.0
+mi. of 95-98 percent (by weight) sulfuric acid, is 3.77.
+
+Dope Preparation: A mixture of 40.0 g. of the above
+polymer and 360 g. of 99.5 percent (by weight) sulfuric acid is
+mixed anhydrously with a mechanically driven stainless steel
+stirrer in a 500 ml. resin-making kettle while cooling with an
+ice/water bath. The mixture is stirred overnight during which
+time the cooling bath is allowed to warm to room temperature.
+The resulting dope exhibits stir-opalescence and depolarizes
+plane polarized light.
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared above is centrifuged to remove entrapped gases and
+any solid particles. It is then extruded at the rate of about 0.8
+mi./min. under a pressure of 380 Ib./in.? (26.6 kg./cm.?)
+through a 0.025 in. (0.064 cm.) thick precious metal spinneret
+having 20 holes of 0.002 inch (0.005 cm.) diameter into an
+aqueous bath maintained at 16°C. The bath is about 16 in. (40
+cm.) wide, 5.5 in. (14. cm.) deep and 37 in. (94 cm.) long with
+stainless steel rollers placed about 2 ft. (0.61 m.) apart. The
+yarn is drawn through the bath and around the rollers such
+that it makes three passes through the water bath. It is then
+‘snubbed by means of a pig-tail guide at about a 45° angle to an
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+38
+
+electrically driven wind-up device. The yarn is collected on a
+perforated bobbin at 33 ft./min. (10.1 m./min.). It is then
+washed in cool running water for several hours (i.¢., 3 hr.) and
+dried in air at room temperature. The filaments exhibit medi-
+um crystallinity and an orientation angle of 28°. Filaments ex-
+hibit the following T/E/Mi/Den. values: 10.2/7.8/264/2.13.
+Heat Treatment of Fibers: The yarn prepared as above is
+passed at 25 ft./min. (7.6 m./min.) through a tube (Device B)
+heated to 586° and w ound up at 25.8 ft./min. (7.86 m./min.).
+The resulting fibers exhibit high crystallinity, an orientation
+angle of 10° and a sonic velocity of 11.51 km./sec. Filaments
+exhibit the following T/E/Mi/Den. values: 15.6/1.8/838/2.00.
+EXAMPLES 15-17
+
+The following three examples illustrate the preparation of
+anisotropic oleum dopes comprising mixtures of poly(p-
+benzamide) and poly(p-phenylene terephthalamide) and the
+preparation of fibers from these dopes. Preparations of
+poly(p-benzamide) and poly(p-benzamide) and poly(p-phen-
+ylene terephthalamide) are separately shown.
+
+Poly(p-benzamide) Preparation: p-Aminobenzoy!
+chloride hydrochloride (120 g., 0.625 mole) is weighed into a
+polyethylene bag in a drybox, i.e., a chamber maintained
+under anhydrous conditions. The open end of the bag is
+secured to a glass tube of about 3 in. (7.6 cm.) in length on
+one end of which is a 29/26 ¥ inner joint. The bag assembly is
+removed from the drybox and attached via the ¥ joint to a
+one-liter resin-making kettle equipped with an air driven
+stirrer and calcium chloride drying tube. The contents of the
+bag are emptied as rapidly as possible into a mixture of hex-
+amethylphosphoramide (360 ml., distilled from CaH, at
+reduced pressure and stored over 5A molecular sieves) and N-
+methyl-2-pyrrolidone (180 ml., distilled from CaH, at reduced
+pressure and stored over SA molecular sieves) with vigorous
+stirring and cooling with an ice/water bath. The mixture
+becomes solid mass in 13 min. It is allowed to stand overnight
+at room temperature. The solid mass is then combined with
+water and stirred at high speeds in a gallon-size (3.785 liter)
+blender. The polymer is washed three times with water by
+being stirred in a blender and isolated by being filtered on a
+sintered-glass coarse-pore Buchner funnel. The polymer is
+dried overnight in a vacuum oven at about 70° C. The yield of
+polymer is 70.0 g. (94.3 percent of theoretical). The inherent -
+viscosity, measured as a solution of 125 mg. polymer in 25.0
+ml. of 95-98 percent (by weight) sulfuric acid is 2.83.
+
+Poly(p-phenylene Terephthalamide) Preparation: Pow-
+dered terephthaloyl chloride (20.31 g., 0.10 mole) is added to
+a solution of p-phenylenediamine (10.8 g., 0.10 mole) and N-
+methyl-2-pyrrolidone (60 ml.) and stirred at high speeds in a
+one-quart blender. A stiff mass is obtained within minutes.
+After 20 min. the mass is combined with water and stirred at
+high speeds in a quart-size (0.964 liter) blender. The polymer
+is washed four times with water, once with alcohol, and finally
+with acetone by being stirred in a blender and is isolated by
+being filtered. The polymer is dried overnight in a vacuum
+oven at about 100° C. The yield of polymer is 23.0 g. (96.7
+percent of theoretical). The inherent viscosity, measured as a
+solution of 125 mg. polymer in 25.0 ml. of 95-98 percent (by
+weight) sulfuric acid, is 3.67.
+
+Anisotropic Dope Preparation: Poly-1,4-benzamide and
+poly(p-phenylene terephthalamide), prepared as above, in the
+quantities listed in Table I are mixed together with 45.0 g. of
+fuming (0.8 percent free SO,) sulfuric acid in a 200 ml. round
+bottom flask equipped with a mechanically driven paddle-type
+stirrer while cooling with an ice/water bath. The mixture is
+stirred overnight during which time the cooling bath is allowed
+to warm to room temperature. The dopes are fluid and exhibit
+stir-opalescence.
+
+TABLE I - DOPES
+Poly(p-phenylene
+
+Dope:Example Poly( p-benzamide ) (p-
+benzamide) terephthalamide)
+15 2.5 g. 2.5 g.
+16 1.25 g. 3.75 g.
 
 --- REVIEWED TRANSCRIPTION PAGE 30 OF 58 ---
 
@@ -3679,9 +4246,7 @@ Sheet 29 of 58
 
 39
 
-7 3.75
-
-1.25 g.
+17 3.75 g. 1.25 g.
 
 Fiber Preparation by Wet Spinning: Each spin dope,
 prepared as above, is centrifuged to remove entrapped gases
@@ -3689,7 +4254,7 @@ and is then extruded by means of a mechanically driven piston
 through a 0.025 in. (0.064 cm.) thick precious metal spinneret
 having 20 holes of 0.003 inch (0.0076 cm.) diameter into a
 coagulating water bath at 25° C. The water bath is about 2 in.
-(5.1 em.) wide and about 1 in. (2.54 cm.) deep. After passing
+(5.1 cm.) wide and about | in. (2.54 cm.) deep. After passing
 through the bath for about 2.5 ft. (0.76 m.) the yarn is
 snubbed out of the water at about a 45° angle to an electrically
 driven wind-up device. The yarn is collected on a perforated
@@ -3700,99 +4265,108 @@ Toom temperature. The filaments exhibit the orientation an-
 gles (O.A.) and T/E/Mi/Den. values listed in Table II (all at 10
 percent rate of extension).
 
-TABLE I—As-EXTRUDED FIBER
+TABLE Il.—AS-EXTRUDED FIBER
 
 Fiber
-collee-
-tion Fiber properties
-rete,
-Dope fin, T E Mi Den.
+collec-
+tion - Fiber properties
+rate.
+Dope ft. ‘rein. T E Mi Den. O.A.®
 Example
-18 HbR ke 654.48 2
-6 Fs re ee ese %
-1 ES es me a
+a 30 5.4 2.6 165 4.95 28
+16.-.... 35 71 10,0 220 4.11 25
+Vee... 35 45 10.5 161 5.42 31
 
-Heat Treatment of Wet Fibers: The above wet as-ex-
+Heat Treatment of Wet Fibers: The above wet as-ex-|
+
 truded (washed) yarn is passed at 25 ft./min. (7.64 m./min.)
 through a tube (Device B) heated to 640° and collected at the
-rates tabulated in Table III. The resulting fibers exhibit orien-
-tation angles and T/E/Mi/Den. values as tabulated in Table 11.
-The dry yarn spun from dope 15 (Table Il) is passed at 25
-ft/min. (7.63 m./min.) through the nitrogen filled tube as-
-sembly heated to 600° and collected at 26.5 ft/min. (8.1
-m./min, ). The resulting fibers exhibit high crystallinity and an
+rates tabulated in Table II. The resulting fibers exhibit orien-
+tation angles and T/E/Mi/Den. values as tabulated in Table Il.
+The dry yarn spun from dope 15 (Table II) is passed at 25
+ft./min. (7.63 m./min.) through the nitrogen filled tube as-
+sembly heated to 600° and collected at 26.5 ft./min. (8.1
+m./min.). The resulting fibers exhibit high crystallinity and an
 orientation angle of 12° as measured from a wise angle X-ray
 pattern. Filaments exhibit the following T/E/M,/Den. values:
+
 11.8/1.3/889/.80.
+TABLE WI.-HEAT TREATED FIBER
 
-TABLE Ill.—HEAT TREATED FIBER
-
-Fiber col-
-lection
-
-Fiber properties
-
-T E Mi OA. Den.
-we LS HG S598
-14.3 de 1,056 o 3.58,
-10.2 ld 505 1g 3.76
-EXAMPLE 18 i
+. Fiver col-
+Fiber lection Fiber properties
+from rate. -
+dope ft./min, T E Mi OAS Den.
+15.222... 28.5 15.9 1$ 346 5 5. 98
+16.2 el... 27.0 14.3 14 1, 056 9 3.58
+Ve. e eee. 27.5 10.2 ld 805 19 3.76
+; EXAMPLE 18 ~ ,
 
 This example illustrates the preparation of (1) a random
-
 copolyamide comprised of repeating units selected from the
-group of
-a CU aia and —co-L VO oo
 
+group of
+NH~2Z NH-, and —C¢ S—-CO-
+Va , and ) UY ny Aad
 (relative molar ratio of 9:1:1, respectively), (2) an anisotropic
 urea dope of the copolyamide, and (3) fibers of the copolya-
 mide.
 
-Polymer Preparation: A  I-liter resin-making kettle
+Polymer Preparation: A
 equipped with an air-driven Carpenter 20 stainless steel shear-
 disc stirrer, nitrogen-inlet tube and calcium chloride drying
 tube is flamed with a Bunsen burner and simultaneously
 flushed with nitrogen. The kettle is sealed and placed in a dry-
 box, i.e., a chamber maintained under anhydrous conditions.
-‘Tetramethylurea (352 ml.) is poured in a dry-box into an Er-
+Tetramethylurea (352 ml.) is poured in a dry-box into an Er-
 lenmeyer flask which is then sealed and cooled in ice. p-Phen-
-ylenediamine (3.888 g., 0.036 mole) and terephthaloyl
+ylenediamine (3.888 g., 0.036 mole) and terephthaloyi
 chloride (7.308 g., 0.036 mole) are weighed in the drybox,
 ground together with a pestle in a mortar and transferred to an
 Erlenmeyer flask which is then sealed. p-Aminobenzoyl
 chloride hydrochloride (62.220 g., 0.324 mole) is weighed out
-in the dry-box and transferred to the “resin kettle." The kettle
+in the dry-box and transferred to the ‘‘resin kettle.” The kettle
 is removed from the dry-box, reconnected with the stirring
-motor and nitrogen line, and cooled in ah ice-bath.
+motor and nitrogen line, and cooled in an ice-bath.
 
 Tetramethylurea is poured rapidly into the p-aminobenzoyl
 chloride hydrochloride which is being stirred at high speed.
 
+i-liter resin-making kettle.
+
 20
 
-2
+25
 
-a
+35
 
 40
 
+45
+
+50
+
+55
+
+60
+
 65
 
-75
+70
 
 40
 
 Immediately, the mixture of p-phenylenediamine and
 terephthaloyl chloride is added to the above reaction solution.
 The latter is stirred 15 min. with cooling in an ice-bath for
-2.25 hour at about 25°C. The solution is combined with water
+2.25 hour at about 25° C. The solution is combined with water
 in a blender, stirred at high speed for 5 min., and the resulting
 precipitate is filtered. The precipitate is washed three times
 with water and once with alcohol by stirring in a blender (3-5
-min,). It is filtered after each wash on a sintered-glass medi-
+min.). It is filtered after each wash on a sintered-glass medi-
 um-pore Buchner funnel. The product is dried for 16 hr. at 90°
 C. in a vacuum oven with a nitrogen bleed. The yield of
-polymer is 99.6 percent and the man = 1.40.
+polymer is 99.6 percent and the mn, = 1.40.
 
 Dope Preparation: Into a 500 ml. resin-making kettle
 equipped with an air-driven shear-disc stirrer, condenser, and
@@ -3812,27 +4386,27 @@ thin layer depolarizes plane polarized light.
 
 Fiber Preparation by Dry Spinning: The dope prepared as
 above is heated to about 110° C. and extruded at a rate of
-about 2.34 ml./min. under a pressure of 80-85 Ib./in.?
-(5,625-5,976 g,/em.2), through a heated (125° C.) protrusion-
+about 2.34 ml./min. under a pressure of 80-85 ib./in.?
+(5,625-5,976 g./cm.?), through a heated (125° C.) protrusion-
 type spinneret having 6 holes of 0.004 inch (0.01 cm.) diame-
-ter, into.a drying column whose walls are kept within the range
+ter, into a drying column whose walls are kept within the range
 of 198°-207° C. The column is swept with a cocurrent flow (4
-% f2/min.; 0.1344 m/min.) of dry nitrogen which enters the
+% ft.3/min.; 0.1344 m/min.) of dry nitrogen which enters the
 column at 235° C. The emerging filaments are passed over a
 small guide roll bearing a finish solution and are wound up on
 a bobbin at the rate of 152 yd./min. (139 m./min.). This con-
 stitutes a spin stretch factor of 2.91. These opaque extruded
 filaments become lustrous upon being soaked in changes of
-water (25° C.) to remove residual solvent and salt. The in-
+water (25° C.) to remove residual solvent and salt: The in-
 herent viscosity of the polymer in the filaments is 1.48. The
 water-leached, air-dried (70° F. 65% R.H.) filaments exhibit
 medium crystallinity and an orientation angle of 27°. Fila-
 ments that have been boiled-off display the following
-‘T/E/M/Den. values: 8.5/2.8/443/3.01.
+T/E/M,/Den. values: 8.5/2.8/443/3.01.
 
 Heat Treatment of Fibers: The filaments prepared above
 are passed taut over a 3-inch (7.62 cm.) plate maintained at
-530°C. under a cover of nitrogen in a single stage operation so
+530° C. under a cover of nitrogen in a single stage operation so
 as to increase their length by 0-1 percent. Residence time
 over the hot plate is about 2 seconds. The resulting fibers ex-
 hibit high crystallinity and have an orientation angle of 12°.
@@ -3851,14 +4425,14 @@ the same as described in Example 18 with the following excep-
 tions:
 
 ‘The intermediates are p-phenylenediamine (8.110 g., 0.075
-mole), terephthaloy! chloride (15.227 g., 0.075 mole), p-
+mole), terephthaloyl chloride (15.227 g., 0.075 mole), p-
 aminobenzoyl chloride hydrochloride (28.805 g., 0.150 mole)
-and hexamethylphosphoramide (300 ml.).
+and hexamethyiphosphoramide (300 mi.).
 
 The reaction solution is stirred for 0.5 hr. at approximately
-°C. and 1.5 hr. at about 25°C.
+O° C. and 1.5 hr. at about 25°C.
 
-The yield of polymer is 99.4 percent and the thay = 1.16.
+The yield of polymer is 99.4 percent and the 74, = 1.16.
 
 Dope Preparation:
 
@@ -3874,60 +4448,58 @@ driven shear-disc stirrer, condenser and calcium chloride dry-
 ing tube are placed 30 g. of the above polymer and 270 g. of
 tetramethylurea/lithium chloride solution containing 6.54 per-
 cent by weight of the salt. Repeated cooling in solid carbon
-dioxide and stirring at 125° C. (oil bath temperature) does not
+dioxide and stirring at 125°C. (oil bath temperature) does not
 bring about complete disintegration of solid material but an
 additional two coolings in solid carbon dioxide for 3 hr. and
 stirrings at 100° C. for 4 hr. yields a dope which contains 10
-percent polymer by weight.
+percent polymer by weight. ;
 
 Fiber Preparation by Dry-Spinning: The dope prepared as
 above is heated to 90° C. and extruded at the rate of about 3.5
-ml/min. under a pressure of 140 Ib/in? (9843 g/em.*)
+ml./min. under a pressure of 140 tb./in.? (9843 g./em.*)
 through a heated (116° C.) spinneret having 9 holes of 0.005
 inch (0.0127 cm.) diameter, each, into a drying column whose
 walls are kept within the range of 197°-207°C. The column is
-swept with a cocurrent flow (4.5 ft.°/min., 0.1274 m.%/min. ) of
+swept with a cocurrent flow (4.5 ft.3/min., 0.1274 m.3/min.) of
 dry nitrogen which enters the column at 264° C. The emerging
 filaments are passed over a small guide roll bearing a finish
 solution and are wound up on a bobbin at the rate of 152
 yd./min. (139 m./min.). This constitutes a spin stretch factor
 of 4.6. These extruded filaments are soaked in changes of
-water (25° C.) to remove residual solvent and salt, The water-
+water (25° C.) to remove residual solvent and salt. The water-
 leached, air-dried (70° F., 65% R.H.) filaments exhibit medi-
 um crystallinity and an orientation angle of 35°. Filaments that
 have been boiled-off display the following T/E/M,/Den.
-values: 3.4/2.5/216/3.34.
+values: 3.4/2.5/216/3.34. ;
 
 Heat Treatment of Fibers: The equipment and procedure
-are the same as described in Example 18, The resulting fibers
+are the same as described in Example 18. The resulting fibers
 exhibit high crystallinity and have an orientation angle of 15°.
-Filaments have the following T/E/M,Den. properties (boiled-
+Filaments have the following T/E/M,/Den. properties (boiled-
 off fiber): 7.2/0.7/886/1.68.
 
 EXAMPLE 20
 
 This example illustrates the preparation of (1) copoly(p-
-phenylene —_p,p’-biphenyldicarboxamide/isophthalamide)
-(96/10), (2) an anisotropic oleum dope thereof, and (3) fibers
-thereof. :
+phenylene p.p’-biphenyldicarboxamide/isophthalamide )
+(90/10), (2) an anisotropic oleum dope thereof, and (3) fibers
+thereof. .
 
 Polymer Preparation: A 500 ml. resin-making kettle
 equipped with a stainless steel egg-beater type stirrer,
 nitrogen-inlet tube and calcium chloride drying tube is flamed
-‘a Bunsen burner and simultaneously flushed with
+with a Bunsen burner and simultaneously flushed with
 nitrogen. The kettle is sealed and placed in a dry-box. p-Phen-
 ylenediamine (9.733 g., 0.09 m.) is weighed in the dry-box
-and placed in the “resin kettle." Hexamethylphosphoramide
-(192 ml.) and N- methyl-2-pyrrolidone (48 ml.) are measured
+and placed in the ‘resin kettle.” Hexamethylphosphoramide
+(192 ml.) and N- methy!-2-pyrrolidone (48 ml.) are measured
 in the dry-box and poured into the kettle. The kettle is
 removed from the dry-box, reconnected with the stirring
 motor and nitrogen line. The mixture is stirred until solution
-
-of the diamine occurs and then the kettle is cooled in an ice- 5
-
+of the diamine occurs and then the kettle is cooled in an ice-
 bath.
 
-Isophthaloy! chloride (1.827 g., 0.009 mole) and 4,
+Isophthaloy! chloride (1.827 g., 0.009 mole) and 4,4’-
 dibenzoyl chloride (22.609 g., 0.081 mole) are weighed in the
 dry-box, combined and added at once to the diamine solution.
 Rapid stirring and ice-cooling are continued for 2 hr. About
@@ -3940,7 +4512,7 @@ pore Buchner funnel. The precipitate is washed three times
 with water and twice with alcohol by stirring in a blender and
 filtering after each wash. The product is dried 16 hr. at 80°C.
 in a vacuum oven with a nitrogen bleed. The yield of polymer
-is about 100 percent and the ian = 2.51.
+is about 100 percent and the 7g, = 2.51.
 
 Dope Preparation: Ina centrifuge bottle equipped with a
 stirrer are combined 25.812 g. of the above polymer and
@@ -3953,20 +4525,39 @@ sulfuric acid is 98.2.
 fiber preparation by Wet-Spinning: The dope, at 25° C.
 and prepared as above, is placed in a Carpenter 20 stainless
 
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+65
+
+70
+
+75
+
 42
 
 steel cell and extruded through a spinneret with 20 holes of
-
 0.003 inch 90.076 mm.) diameter into 10 percent sulfuric acid
-
 (by weight) at 25° C. The coagulated filaments are wound up
-
 on a bobbin, with water dripping over it, at a rate of 43 ft./min.
-5 (13 m./min.). These filaments are soaked in changes of water
+(13 m./min.). These filaments are soaked in changes of water
 925°C.) until the latter is no longer acidic. The water-leached,
 air-dried (70° F., 65% R.H.) filaments exhibit low crystallinity
 with an orientation angle of 28° and a sonic velocity of 6.10
-km/sec. Filaments (as is) have the following T/E/Mi/Den.
+km./sec. Filaments (as is) have the following T/E/Mi/Den.
 values: 5.2/4.7/273/10.72.
 
 Heat Treatment of Fibers: The dry fibers prepared above
@@ -3976,21 +4567,16 @@ exhibit high crystallinity and have an orientation angle of 12°.
 Filaments have the following T/E/M,/Den. properties (boiled-
 off fiber): 8.8/1.4/706/12.26.
 
-a
-
 EXAMPLE 21
 
 This example illustrates the preparation of (1) a random
 copolyamide comprised of repeating units selected from the
 group of
 
-30 axn-Z Sy, -x- 7
-— ly
-/
-4a
-35 F
-oS 'S <y —CO-, and—CO
-40
+pe S - . Orn .
+—NH < y—-NH-, “Ee a
+
+-C a <a y-C0--, and —C0- | pe o-
 
 (relative ratio of 95:5:95:5, respectively), (2) an anisotropic
 oleum dope of the copolyamide, and (3) fibers of the copolya-
@@ -4003,7 +4589,7 @@ with a Bunsen burner and simultaneously flushed with
 nitrogen. The kettle is sealed and placed in a dry-box. p-Phen-
 ylenediamine (9.246 g., 0.0855 mole) and m-phen-
 ylenediamine (0.487 g., 0.0045 mole) are weighed in the dry-
-box and placed in the “resin kettle.” Hexamethylphosphora-
+box and placed in the “resin kettle.” Hexamethy!phosphora-
 mide (192 ml.) and N-methyl-2-pyrrolidone (48 ml.) are mea-
 sured in the dry-box and poured into the kettle. The kettle is
 removed from the dry-box and reconnected with the stirring
@@ -4011,7 +4597,7 @@ motor and nitrogen line. When solution of the diamines oc-
 curs, the kettle is cooled in an ice-bath.
 
 Isophthaloyl chloride (0.914 g., 0.0045 mole) and 4,4’-
-dibenzoyl chloride (23.865 g., 0.0855 mole) are weighed in
+dibenzoy! chloride (23.865 g., 0.0855 mole) are weighed in
 the dry-box, combined and added at once to the above solu-
 tion which is being rapidly stirred. The reaction is stirred for
 18 hr. with cooling. The viscous gel is combined with water,
@@ -4019,19 +4605,15 @@ stirred in a blender and the precipitate is filtered. The
 precipitate is washed three times with water and once with al-
 cohol by stirring in a blender and filtering. The product is
 dried 16 hr. at 80° C. in a vacuum oven with a nitrogen bleed.
-The yield is 100 percent and the -ian= 2.79.
+The yield is 100 percent and the 144, = 2.79.
 
 Dope Preparation: In a centrifuge bottle equipped with a
 stirrer are combined 28.41 g. of the above polymer and 161.0
-g. of 100.72 percent sulfuric acid (3.2 percent free $O,). The
+g. of 100.72 percent sulfuric acid (3.2 percent free SQ,). The
 mixture is stirred at about 25° C. until a smooth anisotropic
 dope (contains 15 percent by weight copolymer) is formed.
 The DDA value of a 15 percent by weight dope in 100.81 per-
-75 cent sulfuric acid is 95.4.
-
-65
-
-70
+cent sulfuric acid is 95.4.
 
 --- REVIEWED TRANSCRIPTION PAGE 32 OF 58 ---
 
@@ -4045,7 +4627,7 @@ extruded through a spinneret with 20 holes of 0.003 inch
 (0.076 mm.) diameter into 10 percent sulfuric acid (by
 weight) at about 19.5°C. The coagulated filaments pass over a
 guide onto a wind-up bobbin immersed in water at a rate of
-37.5 ft/min. (11.4 m./min.). These filaments are soaked in
+37.5 ft./min. (11.4 m./min.). These filaments are soaked in
 changes of water (25° C.) until the latter is no longer acidic.
 The water-leached, air-dried (70° F., 65% R.H.) filaments ex-
 hibit low crystallinity with an orientation angle of 27°. and a
@@ -4054,7 +4636,7 @@ lowing T/E/Mi/Den. values: 5.6/5.3/297/8.98.
 
 Heat Treatment of Fibers: Dry and wet fibers (never al-
 lowed to dry) are passed through a tube at 600° C. at a rate of
-25 ft/min. (7.62 m./min.) (Device A). Wet fibers which are
+25 ft./min. (7.62 m./min.) (Device A). Wet fibers which are
 drawn 1.04X exhibit high crystallinity and an orientation
 angle of 9°. The filaments (as is) have T/E/M,/Den. values =
 12.3/1.6/8377.997. Dry fibers which are drawn 1.04X have
@@ -4068,12 +4650,12 @@ This example illustrates the preparation of (1) a random
 copolyamide comprised of repeating units selected from the
 group of
 
-aC Noe, NE-Y i
--c -€ S-<_S-00-, and ~00-€ Sco
+avn-€ Sve —NH—\ —
+—C < SK S-co-, and ~co-€__S-c0-
 
 (relative molar ratio of 9:1:9:1, respectively). (2) an
 anisotropic oleum dope of the copolyamide, and (3) fibers of
-the copolyamide,
+the copolyamide.
 
 Polymer Preparation: The equipment and procedure are
 the same as described in Example 21 with the following excep-
@@ -4082,31 +4664,31 @@ tions:
 The intermediates are p- phenylenediamine (8.760 g., 0.081
 mole), m-phenylenediamine (0.973 g., 0.009 mole), hex-
 amethylphosphoramide (192 ml.), N-methyl-2-pyrrolidone
-(48 ml.), terephthaloyl chloride (1.827 g., 0.009 mole) and
-4,4'-dibenzoyl chloride (22.609
+(48 ml.), terephthaloy! chloride (1.827 g., 0.009 mole) and
+4,4'-dibenzoyl chloride (22.609 g., 0.081 mole).
 
 The polymerization mixture is stirred for 2 hr. and cooled in
 an ice-bath. The polymer system gradually forms a viscous,
 non-stirrable gel. This mass is allowed to stand for 16 hr.
 
 The product is dried 16 hr. at 90° C. in a vacuum oven with
-anitrogen bleed. The yield is 100 percent and the Minn = 2.26.
+a nitrogen bleed. The yield is 100 percent and the ninp = 2.26.
 
 Dope Preparation: In a centrifuge bottle equipped with a
 stirrer are combined 27.864 g. of the above polymer and
 157.90 g. of 100.72 percent sulfuric acid (3.2 percent free
 SO,). This mixture is stirred at about 25° C. for 8 hr. to form
 an anisotropic dope containing 15 percent by weight
-copolymer. The DDA value of a 15 percent by weight dope in
+copolymer, The DDA value of a 15 percent by weight dope in
 100.81 percent sulfuric acid is 52.3.
 
 Fiber Preparation by Wet-Spinning: The above anisotrop-
 ic dope, at about 25° C., is placed in a Carpenter 20 spinning
 cell and is extruded through a spinneret containing 20 holes of
 0.003 inch (0.076 mm.) diameter into 10 percent sulfuric acid
-(by weight) at 23°C. The fibers are passed over a guide onto a
+(by weight) at 23° C. The fibers are passed over a guide onto a
 wind-up bobbin (with water dripping over it) at a rate of 46
-ft/min. (14 m./min.). The extruded filaments are soaked in
+ft./min. (14 m./min.). The extruded filaments are soaked in
 changes of water (25° C.) until the latter is no longer acidic.
 The water-leached, air-dried (70° F., 65% R.H.) filaments ex-
 hibit trace crystallinity with an orientation angle of about 36°
@@ -4116,6 +4698,34 @@ rate of extension).
 
 Heat Treatment of Fibers: The dry filaments prepared
 above are passed at 25 ft./min. (7.62 m./min.) through a tube
+
+5
+
+10
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
 
 44
 
@@ -4127,43 +4737,39 @@ perties (as is fiber): 10.3/2.2/596/8.85
 EXAMPLE 23
 
 This example illustrates the preparation of (1) copoly(p-
-phenylene _p,p'-biphenyldicarboxamide/terephthalamide)
+phenylene p,p’-biphenyldicarboxamide/terephthalamide)
 (75/25 in Part A, 60/40 in Part B), (2) anisotropic oleum
 dopes thereof, and (3) fibers thereof.
 
-5
-
-3
-
 PARTA
 
-Polymer Preparation: A onecliter resin-making kettle
+Polymer Preparation: A one-liter resin-making kettle
 equipped with a stainless steel egg-beater type stirrer,
 nitrogen-inlet tube, and calcium chloride drying-tube is
 flamed with a Bunsen burner and simultaneously flushed with
 nitrogen. The kettle is sealed and placed in a dry-box. p-Phen-
 ylenediamine (8.652 g., 0.08 mole) is weighed in the dry-box
-and placed in the “resin kettle.” Hexamethylphosphoramide
-(171 ml.) and N-methyl-2-pyrrolidone (43 mi.) are measured
+and placed in the ‘resin kettle.” Hexamethylphosphoramide
+(171 ml.) and N-methyl-2-pyrrolidone (43 ml.) are measured
 in the dry-box, reconnected with the stirring motor and
 nitrogen line. When solution of the diamine has occurred, the
 kettle is cooled in an ice-bath.
 
-4,4'-Dibenzoyl chloride (16.7473 g., 0.06 mole) and
+4,4’-Dibenzoyl chloride (16.7473 g., 0.06 mole) and
 terephthaloyl chloride (4.0604 g., 0.02 mole) (both finely
 ground) are weighed in the dry-box, combined, and added at
 once to the rapidly stirring diamine solution. The reaction
 mixture is stirred and cooled with an ice-bath for | hr. It sets
-up into a viscous gel. It is stirred 16 hr. at 25° C, The gel is
+up into a viscous gel. It is stirred 16 hr. at 25° C. The gel is
 combined with water, stirred in a blender, and the resulting
 precipitate is filtered. The product is washed three times with
 water and once with alcohol by stirring in a blender and then
 filtering. It is dried 16 hr. at 80° C. in a vacuum oven with a
-nitrogen bleed. The yield is 100 percent and yyy = 4.17, 4.13.
+nitrogen bleed. The yield is 100 percent and yyy, = 4.17, 4.13.
 
 Dope Preparation: In a centrifuge bottle equipped with a
 stirrer, are combined 169.3 g. of 100.70 percent sulfuric acid
-(3.1 percent free SO;) and 22.0 g. of the above polymer. This
+(3.1 percent free SO,) and 22.0 g. of the above polymer. This
 mixture is stirred at about 25° C. until a smooth anisotropic
 dope, containing 11.5 percent by weight polymer, forms. The
 DDA value of an 11.5 percent (by weight) dope in 100.81 per-
@@ -4173,7 +4779,7 @@ Fiber Preparation by Wet Spinning: The above anisotrop-
 ic solution is placed in a Carpenter 20 stainless steel spinning
 cell and extruded through a spinneret containing 20 holes of
 0.003 inch (0.076 mm.) diameter into 10 percent sulfuric acid
-(by weight) at 25° C. The filaments pass over a guide and to a
+(by weight) at 2S° C. The filaments pass over a guide and to a
 wind-up bobbin at a rate of 67 ft./min. (20.4 m./min.). These
 extruded filaments are soaked in changes of water (25°C.)
 until the latter is no longer acidic. The water-leached, air-
@@ -4183,20 +4789,13 @@ km./sec. Filaments (boiled off sample) have the following
 T/E/Mi/Den. values: 7.8/6.6/239/10.10.
 
 Heat Treatment of Fibers: Wet fibers (never dried) are
-passed at 25 ft./min, (7.62 m./min.) through a tube with the
+passed at 25 ft./min. (7.62 m./min.) through a tube with the
 center at 600° C. (Device A). Wet fibers which are drawn
 1.07X display high crystallinity with an orientation angle of
-60 1!°and a sonic velocity of 8.95 km./sec. The filaments (as is)
-
+11° and a sonic velocity of 8.95 km./sec. The filaments (as is)
 have the following T/E/Mi/Den. values: 17.5/2.2/744/7.57.
 
-a
-
-3.
-
-a
-
-PARTB
+PART B
 
 Polymer Preparation: The equipment and procedure are
 the same as described in Part A with the following exceptions:
@@ -4211,10 +4810,10 @@ rolidone (75 ml.), 4,4’dibenzoyl chloride (7.536 g., 0.0270
 mole) and terephthaloyl chloride (3.654 g., 0.0180 mole).
 
 The reaction solution is stirred and cooled for 2 hrs. with an
-ice-bath,
+ice-bath.
 
 The polymer is dried 18 hours at 80° C. in a vacuum over
-75 with a nitrogen bleed.
+with a nitrogen bleed.
 
 --- REVIEWED TRANSCRIPTION PAGE 33 OF 58 ---
 
@@ -4223,13 +4822,13 @@ The polymer is dried 18 hours at 80° C. in a vacuum over
 45
 
 The yield is 100 percent and ninh (0.1 percent conc.) =
-5.71.
+5.71,
 
 The dried polymer is stirred and soaked in a 5 percent sodi-
 um bicarbonate solution. It is washed with water and dried 16
-hours at 80°C. in a vacuum oven with a nitrogen bleed.
+hours at 80° C. in a vacuum oven with a nitrogen bleed.
 
-The qinh (0.1 g. of polymer in 100 ml. of solvent 95-98 per-
+The minh (0.1 g. of polymer in 100 ml. of solvent 95-98 per-
 cent conc. sulfuric acid) is 5.48.
 
 Dope Preparation: The above polymer (11.0 g.) is com-
@@ -4243,17 +4842,17 @@ ic solution is placed in a Carpenter 20 stainless steel spinning
 cell and extruded through a spinneret containing 20 holes of
 0.003 inch (0.076 mm.) diameter into a water bath at 23°C.
 The filaments pass over a guide and onto a wind-up bobbin at
-arate of 47.5 ft/min. (14.5 m./min.) These extruded filaments
+a rate of 47.5 ft./min. (14.5 m./min.) These extruded filaments
 are soaked in changes of water (25° C.) until the latter is no
 longer acidic. The water-leached, air dried (70° F., 65% R.H.)
 filaments (as is) exhibit low crystallinity with an orientation
 angle of 29° and a sonic velocity of 6.24 km./sec. Filaments
-(as is) have the following T/E/Mi/Den. values: 1 1.9/6.4/274/8
+(as is) have the following T/E/Mi/Den. values: 11.9/6.4/274/8
 45.
 
 Heat Treatment of Fibers: Fibers are passed at 25 ft./min.
-(7.62 m.fmin.) through a tube with the center at 550° C.
-(Device A). Fibers which are drawn 1.06X display medium
+(7.62 m./min.) through a tube with the center at 550° C.
+(Device A). Fibers which are drawn !.06X display medium
 crystallinity with an orientation angle of 12° and a sonic
 velocity of 7.18 km./sec. The filaments (as is) have the follow-
 ing T/E/Mi/Den. values: 16.5/4.4/639/7.64.
@@ -4261,9 +4860,9 @@ ing T/E/Mi/Den. values: 16.5/4.4/639/7.64.
 EXAMPLE 24
 
 This example illustrates the preparation of (1) copoly(p-
-phenylene _p,p'-biphenyldicarboxamide/terephthalamide)
-(55/45), (2) an anisotropic oleum dope thereof, and (3) fibers
-thereof.
+phenylene p,p’-biphenyldicarboxamide/terephthalamide )
+(55/45 ), (2) an anisotropic oleum dope thereof, and (3) fibers
+thereof. :
 
 Polymer Preparation: The equipment and procedure are
 the same as described in Example 23A with the following ex-
@@ -4272,13 +4871,13 @@ ceptions:
 The resin-making kettle is the 500 ml. size.
 
 The intermediates are p-phenylenediamine (9.733 g., 0.09
-mole), hexamethylphosphoramide (192 ml.), N-methyl-2-pyr-
-rolidone (48 ml.), 4,4'-dibenzoyl chloride (13.817 g., 0.0495
-mole and terephthaloyl chloride (8.223 g., 0.0405 mole).
+mole ), hexamethylphosphoramide (192 ml.), N-methyl-2-pyr-
+rolidone (48 ml.), 4,4’-dibenzoyl chloride (13.817 g., 0.0495
+mole ) and terephthaloyl chloride (8.223 g., 0.0405 mole).
 
 The polymeric gel is stirred 16 hr. with cooling in tap water.
 
-The yield is 100 percent and the 7a, = 6.39, 6.54.
+The yield is 100 percent and the ny = 6.39, 6.54.
 
 Dope Preparation: The above polymer (24.80 g.) in com-
 bined with 223.2 g. of 100.70 percent sulfuric acid in a cen-
@@ -4291,28 +4890,39 @@ sulfuric acid is 100.
 Fiber Preparation by Wet-Spinning: The above anisotrop-
 ic dope, at about 25° C., is placed in a Carpenter 20 stainless
 steel cell and extruded through a spinneret containing 20
-holes of 0.003 inch (0.076 mm.) diameter 10 percent sulfuric
+holes of 0.003 inch (6.076 mm.) diameter 10 percent sulfuric
 acid (by weight) at 29° C. The filaments pass over a guide and
-onto a wind-up roll at a rate of 100 ft/min. (30.5 m./min.).
+onto a wind-up roll at a rate of 100 ft./min. (30.5 m./min.).
 These extruded filaments are soaked in changes of water (25°
 C.) until the latter is no longer acidic. The water-leached, air-
 dried (70° F., 65% R.H.) filaments are amorphous and have an
-orientation angle of about 40°, Filaments (as is) have the fol-
-lowing T/E/MyDen. values: 9.7/8.7/256/3.42.
+orientation angle of about 40°. Filaments (as is) have the fol-
+lowing T/E/M,Den. values: 9.7/8.7/256/3.42.
 
 Heat Treatment of Fibers: The above dried fiber is passed
-at 25 ft/min. (7.62 m./min.) into a tube whose center is at
-600°C. (Device A).
+at 25 ft./min. (7.62 m./min.) into a tube whose center is at
+600° C. (Device A).
 
 Fibers which are drawn 1.07X display low crystallinity with
 an orientation angle of 18°. The filaments (as is) have the fol-
 lowing T/E/M,/Den. values: 22.5/3.2/668/2.77.
 
 EXAMPLE 25
-
 This example illustrates the preparation of a random
 
+25
+
+30
+
+35
+
 40
+
+45
+
+50
+
+55
 
 65
 
@@ -4321,22 +4931,16 @@ This example illustrates the preparation of a random
 75
 
 46
-
 copolyamide comprised of repating units selected from the
 group of
+—ya-4'5-co-, -xu-F
 
-re
+‘ > y—NM—, and,
 
-- y-c0-, -xn-4
+—C 0S 7S y— CO
 
-—/
-
-NIT, and,
-
-00S Fh -co-
-
-(relative molar ratio of respectively), (2) an anisotropic
-‘oleum dope of the copolyamide, and (3) fibers of the copolya-
+(relative molar ratio of 1:3:3, respectively), (2) an anisotropic
+oleum dope of the copolyamide, and (3) fibers of the copolya-
 mide.
 
 Polymer Preparation: A 500-ml. resin-making kettle
@@ -4344,7 +4948,7 @@ equipped with a stainless steel egg-beater type stirrer,
 nitrogen-inlet tube, and calcium chloride drying-tube is
 flamed with a Bunsen burner and simultaneously flushed with
 nitrogen. The kettle is sealed and placed in a dry-box. p-Phen-
-ylenediamine (7.300'g., 0.0675 mole) is weighed in the dry-
+ylenediamine (7.300-g., 0.0675 mole) is weighed in the dry-
 box and placed in the kettle. Hexamethylphosphoramide (192
 ml.) and N-methyl-2-pyrrolidone (48 ml.) are measured in the
 dry-box and poured into the kettle. The kettle is removed
@@ -4353,7 +4957,7 @@ nitrogen line. When solution of the diamine has occurred, the
 kettle is cooled in an ice-bath.
 
 p-Aminobenzoyl chloride hydrochloride (4.321 g., 0.0225
-mole) and 4,4'-dibenzoyl chloride (18.842 g., 0.0675 mole)
+mole) and 4,4’-dibenzoyl chloride (18.842 g., 0.0675 mole)
 are weighed in the dry-box, combined, and added at once to
 the rapidly stirring diamine solution. The reaction mixture is
 stirred and cooled in an ice-bath for 1 hr. and then stirred 16
@@ -4362,10 +4966,10 @@ blender and the precipitate is filtered. The precipitate is
 washed three times with water and once with alcohol by stir-
 ring in a blender and filtering. The product is dried at 80° C.
 for 16 hr. in a vacuum oven with a nitrogen bleed. The yield is
-100 percent and 7jq_, = 4.92, 4.81.
+100 percent and 7),, = 4.92, 4.81.
 
 Dope Preparation: In a centrifuge bottle equipped with a
-stirrer are combined 177 g. of 100.70 percent sulfuric acid
+stirrer are combined 177 g. of 100.70 percent sulfuric acid’
 and 23.0 g. of the above polymer. The mixture is stirred at 25°
 C. until a smooth anisotropic dope which contains 11.5 per-
 cent by weight copolymer results. The DDA value of an 11.5
@@ -4375,14 +4979,14 @@ percent (by weight) dope in 100.81 percent sulfuric acid is
 Fiber Preparation by Wet-Spinning: The above anisotrop-
 ic dope, at 25° C., is placed in a Carpenter 20 stainless steel
 spinning cell and extruded through a spinneret containing 20
-holes of 0.003 inch (0.076 mm.) diameter into 10 percent sul-
+holes of 0.003 inch (0.076 mm. ) diameter into 10 percent sul-
 furic acid (by weight) at 23°C. The filaments are wound up at
-a rate of 72 ft./min. (22 m./min.). These filaments are soaked
-in changes of water (25° C.) until the latter is no longer acidic,
+arate of 72 ft./min. (22 m./min.). These filaments are soaked
+in changes of water (25° C.) until the Jatter is no longer acidic.
 The water-leached, air-dried (70° F., 65% R.H.) filaments ex-
 hibit trace crystallinity with an orientation angle of 32°. and a
 sonic velocity of 5.67 km./sec. Filaments (boiled-off) have the
-following T/E/Mi/Den. valu ..3/7.1/183/4.86.
+following T/E/Mi/Den. values: 8.3/7.1/183/4.86.
 
 Heat Treatment of Fibers: The above dried fibers are
 passed at 25 ft./min. (7.62 m./min.) through a tube heated at
@@ -4401,7 +5005,7 @@ Polymer Preparation: The equipment and procedure are
 the same as described in Example 25 with the following excep-
 tions:
 
-‘The intermediates are p-phenylenediamine (6.489 g., 0.06
+The intermediates are p-phenylenediamine (6.489 g., 0.06
 mole), hexamethylphosphoramide (214 ml. ), N-methyl-2-pyr-
 rolidone (53 ml.), p-aminobenzoyl chloride hydrochloride
 (7.628 g., 0.04 mole) and 4,4’-dibenzoyl chloride (16.747 g.,
@@ -4413,15 +5017,397 @@ parent, flexible and tough.
 
 --- REVIEWED TRANSCRIPTION PAGE 34 OF 58 ---
 
-Sheet 34 of 58
+3,671,542
+
+47
+
+The yield of polymer is 100 percent and the mj, = 4.80,
+4.88.
+
+Dope Preparation: In a centrifuge bottle equipped with a
+stirrer are combined 182.0 g. of 100.70 percent sulfuric acid
+and 22.5 g. of the above polymer. This mixture is stirred at 25°
+C. until there results a smooth anisotropic dope which con-
+tains 11 percent by weight of copolymer. The DDA value of
+an 11.0 percent dope in 100.81 percent sulfuric acid is 100.
+
+Fiber Preparation by Wet-Spinning: The above anisotrop-
+ic dope, at 25° C., is placed in a Carpenter 20 stainless steel
+spinning cell and extruded through a spinneret containing 20
+holes of 0.003 inch (0.076 mm.) diameter into 10 percent sul-
+furic acid (by weight) at 27° C. The coagulated filaments are
+wound-up on a bobbin immersed in water at a rate of 65
+ft./min. (19.8 m./min.). These filaments are soaked in changes
+of water (25° C.) until the latter is no longer acidic. The water-
+leached, air-dried (70° F., 65% R.H.) filaments exhibit trace
+crystallinity with an orientation angle of about 60°. and a sonic
+velocity of 4.47 km./sec. Filaments (boiled-off) have the fol-
+lowing T/E/Mi/Den. values: 8.5/9.6/194/6.31.
+
+Heat Treatment of Fibers: Wet fibers (no drying at any
+time) of the above spin are passed at 25 ft./min (7.62 m./min.)
+through a tube heated at the center to 600° C. (Device A).
+These fibers drawn 1.08% display high crystallinity with an
+orientation angle of 9° and have T/E/M,/Den. values of
+12.7/2.0/622/4.43 (as is filaments). Dry fibers with the same
+heat treatment but a draw ratio of 0.09X display high crystal-
+linity with a 12° orientation angle. and a sonic velocity of 7.08
+km./sec. Filaments (as is) have T/E/Mi/Den. values of
+14.3/2.4/645/5.46
+
+EXAMPLE 27
+
+This example illustrates the preparation of (1) poly(p-phen-
+ylene p,p’-biphenyldicarboxamide), (2) an anisotropic oleum
+dope thereof, and (3) fibers thereof.
+
+Polymer Preparation: A 500-ml. resin-making kettle
+equipped with a stainless steel egg-beater type stirrer, nitrogen
+inlet tube and calcium chloride drying-tube is flamed with a
+Bunsen burner and simultaneously flushed with nitrogen. The
+kettle is sealed and placed in a dry-box. p-Phenylenediamine
+(6.488 g., 0.06 mole) is weighed in the dry-box and placed in
+the kettle, Hexamethylphosphoramide (128 ml.) and N-
+methyl-2-pyrrolidone (32 ml.) are measured in the dry-box
+and poured into the kettle. The kettle is removed from the
+dry-box, reconnected with the stirring motor and nitrogen
+line. When the diamine has dissolved, the kettle is cooled in an
+ice-bath.
+
+4,4'-Dibenzoyl chloride (16.748 g., 0.06 mole, finely
+ground) is added at once to the rapidly stirring diamine solu-
+tion. This mixture is stirred and cooled in an ice-bath for one-
+half hr. It is stirred for 16 hr. at about 25° C. The gel is com-
+bined with water and stirred in a blender after which the
+precipitate is filtered. It is washed three times with water and
+once with alcohol by stirring in a blender and filtering. After
+the alcohol wash, ether is poured over the polymer and fil-
+tered. The polymer is dried 16 hr. at 80° C. in a vacuum oven
+with a nitrogen bleed. The yield is 100 percent and the yp, =
+2.28.
+
+A second similar preparation gave a 100% yield and an Hin,
+= 2.00.
+
+Dope Preparation: Ina centrifuge bottle equipped with a
+stirrer are combined approximately equal amounts (37.08 g.,
+total) of the above two polymers and 303 g. of 100.25 percent
+sulfuric acid. This mixture is stirred with cooling in an ice-bath
+until there results a smooth anisotropic dope which contains
+10.9 percent by weight copolyamide and is stir opalescent.
+
+Fiber Preparation by Wet-Spinning:
+ic dope, at 25° C., is placed in-a Carpenter 20 stainless steel
+cell and extruded through a spinneret containing 20 holes of
+0.003 inch (0.076 mm.) diameter into 16.4 percent sulfuric
+acid (by weight) at 19° C. The fibers are wound-up on a bob-
+bin immersed in water at a rate of 55 ft./min. (16.8 m./min.).
+The water-leached, air-dried (70° F., 65% R.H.) fibers exhibit
+
+The above anisotrop--
+
+20
+
+25
+
+30
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+48
+
+low crystallinity with an orientation angle of 37°. Filaments
+(boiled-off) have the following T/E/M,/Den. values:
+2.2/3.5/120/6.92; sonic velocity is 4.51 km./sec.
+
+Heat Treatment of Fibers: The above dried fibers are
+passed at 25 ft./min. through a tube whose center is at 600° C.
+(Device A). Fibers drawn 1.05X exhibit medium crystallinity
+with an orientation angle of 16°. and a sonic velocity of 8.19
+km./sec. The filaments (boiled-off) have T/E/Mi/Den. values
+of 3.2/0.8/239/6.46.
+
+DDA Determination: . When a sample of poly(p-phen-
+ylene p,p’-biphenylid-carboxamide) of jinn = 1.86 (prepared
+in a manner similar to that above) is dissolved in 100.8 per-
+cent sulfuric acid to form anisotropic dopes containing 10 per-
+cent and 15 percent by weight polymer, the DDA values
+determined for these dopes are 30.4 and 100, respectively.
+
+EXAMPLE 28
+
+This example illustrates the preparation of (1) poly(p,p’-
+phenylenebenzamide), (2) an anisotropic dope thereof, and
+(3) fibers thereof. Preparations of intermediate compounds
+are also shown.
+
+Preparation of 4-(4'-Thionylaminophenyl )benzoy]
+Chloride: A solution of 48 g. of 4-(4’-aminopheny!)benzoic
+acid and 3 drops of N,N-dimethylformamide in 300 ml. of
+thionyl chloride is refluxed on a steam bath for 1.5 hours. Ex-
+cess thionyl chloride is removed under reduced pressure.
+Toluene (50 ml.) is added to the flask and the suspension is
+concentrated under reduced pressure. This step is repeated
+with 100 ml. of toluene. Toluene (~100 ml.) is added to the
+flask to suspend the yellow solid which is filtered onto a sin-
+tered glass funnel under a nitrogen atmosphere. The solid is
+washed with toluene or petroleum ether (30°-60°) and then
+dried in a vacuum dessicator over phosphorus pentoxide and
+paraffin shavings. The 4-(4'-thionylaminophenyl])benzoyl
+chloride melts at 145°-146.5°C.
+
+Preparation of 4-(4’-Aminophenyl)benzoyl Chloride
+Hydrochloride: 4-(4'-Thionylaminophenyl)benzoy! chloride
+(24 g.) is suspended in 500 ml. of methylene chloride in a
+flame dried three-necked round bottom flask equipped with a
+mechanical stirrer and a gas inlet and outlet tube. The mixture
+is saturated with hydrogen chloride for two hours. The solid is
+filtered with fuction onto a sintered glass funnel and washed
+with 100 ml. of methylene chloride under an atmosphere of
+nitrogen. The solid is suspended in 250 ml. of anhydrous ether
+and stirred by means of a magnetic stirrer for one hour. The
+solid is filtered under nitrogen and then dried in a vacuum des-
+sicator for two days. The yield of 4-(4’-aminophenyl )benzoyl
+chloride hydrochloride is 88 percent.
+
+Polymer Preparation: A 1-liter resin-making kettle
+equipped with an egg-beater stirrer, nitrogen inlet tube and
+calcium chloride drying tube is flamed with a burner and
+simultaneously flushed with nitrogen. Hexamethylphosphora-
+mide (210 ml., distilled from calcium hydride at reduced pres-
+sure and stored over molecular sieves) and N-methylpyr-
+rolidone-2 (210 ml., distilled from calcium hydride at reduced
+pressure and stored over molecular sieves) are filtered in the
+dry-box into a graduated cylinder. The cylinder is removed
+from the dry-box and the contents are poured into the “‘resin-
+kettle” which is cooled in an ice-water bath. 4-(4’-aminophen-
+yl)benzoyl chloride hydrochloride (46.6 g., 0.174 mole) is
+weighed out in the dry-box into a polyethylene bag and then
+transferred rapidly, with moderate stirring, into the “‘resin-ket-
+tle.” The resulting mixture is stirred for thirty minutes at
+which time the ice-water bath is removed. The reaction mix-
+ture is stirred for an additional two hours and fifteen minutes.
+Lithium carbonate (12.9 g., 0.175 mole) is added to the
+“resin-kettle” and the mixture is stirred for another 35
+minutes. After standing overnight, the polymeric mass is com-
+bined with water and stirred in a blender wherein it is con-
+verted to a fine powder. The polymer is washed three times
+with water and once with alcohol by means of stirring in the
+blender and filtration on a sintered glass Buchner funnel. The
 
 --- REVIEWED TRANSCRIPTION PAGE 35 OF 58 ---
 
-Sheet 35 of 58
+3,671,542
+
+49
+
+polymer is dried overnight in a vacuum oven at 60° C. The
+yield of poly(p,p’-phenylenebenzamide) is 96.4 percent (nin,
+= 1.99 in 99.8 percent sulfuric acid).
+
+Dope Preparation: Into a three-necked polymer dope bot-
+tle equipped with a stirrer and placed in an ice-water bath is
+added 46 g. of 99.83 percent sulfuric acid. Five grams of the
+polymer are introduced into the bottle and the resulting mix-
+ture is stirred overnight during which time an anisotropic dope
+is obtained. The dope exhibits opalescence on stirring and is
+spinnable.
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared above is placed in a “Teflon” TFE fluorocarbon
+lined stainless steel cylinder and the unit is centrifuged to
+remove air bubbles. The polymer dope is then extruded by
+means of a mechanically driven syringe through a platinum
+spinneret having 20 holes of 0.003 in. (0.076 mm.) diameter
+into a water bath at a temperature of 20°-30° C. After passing
+through the water for a distance of two feet (61 cm.), the fila-
+ments are wound up on a bobbin. at a rate of about 26 ft./min.
+(7.93 m./min,). The dried filaments that have not been boiled
+off display the following T/E/M,/Den. values: 2.24/3.9/145.4/
+4.90 and a sonic velocity of 4.06 km./sec.
+
+Heat Treatment of Fibers: The filaments prepared above
+are passed through a hot tube (Device A) 32 in. (81.3 cm.) in
+length whose inside wall temperature at the center is 600° C.
+The fiber is drawn by a factor of 1.1 times and is passed into
+the hot tube at a rate of 25 ft./min.(7.62 m./min.). The result-
+ing fibers exhibit high crystallinity and have an orientation
+angle of 27°. and a sonic velocity of 5.28 km./sec. Filaments
+have the following T/E/Mi/Den. values (non-boiled off fiber):
+4.17/1.6/288.2/4.80.
+
+EXAMPLE 29
+
+This example illustrates the preparation of (1) a copolymer
+comprised of equimolar amounts of randomly repeating units
+of poly(p,p’-phenylenebenzamide) and poly(p-benzamide),
+(2) an anisotropic oleum dope thereof, and (3) fibers thereof.
+
+Polymer Preparation: A 1-liter resin-making kettle
+equipped with an egg-beater stirrer, nitrogen inlet tube and
+calcium chloride drying tube is flamed with a burner and
+simultaneously flushed with nitrogen. Hexamethylphosphora-
+mide and N-methylpyrrolidone-2 (200 ml. of each, distilled
+from calcium hydride at reduced pressure and stored over
+molecular sieves) are filtered in the dry-box into a graduated
+cylinder. The. cylinder is removed from the dry-box and the
+contents are poured into the ‘“‘resin-kettle.” 4-(4'-
+Aminophenyl)benzoyl chloride. hydrochloride (22.6: g.,
+0.0843 mole) and. p-aminobenzoy! chloride hydrochloride
+(17.04 g., 0.0843 mole of monomer containing about 5 per-
+cent on inert, solvent impurity) are weighed in the dry-box
+into a polyethylene bag. The solids are mixed together in the
+bag and then transferred rapidly, with moderate stirring, into
+the “resin-kettle.”” Within 2 hours the contents of the flask
+formed a‘“‘rubbery” mass. After standing over the weekend,
+lithium carbonate (12.55 g., 0.17 mole) in 100 ml. of N-
+methylpyrrolidone-2 is added to the bulky mass. The mixture
+is stirred for 10 min. and then allowed to stand for 4 hours.
+The polymeric mass is combined with water and stirred in the
+blender wherein it is converted to rather fibrous particles. The
+polymer is washed five times with water and three times with
+alcohol by means of stirring in the blender and filtration on a
+sintered-glass Buchner funnel. The polymer is dried overnight
+in the vacuum oven at 60° C. The yield of the copolymer is
+98.2 percent (in, = 3.03 in 99.5 percent sulfuric acid).
+
+Dope Preparation: Into a three-necked polymer dope
+bottle equipped with a stirrer and placed in an ice-water bath
+is added 25 mi. of 100.7 percent sulfuric acid. Six grams of the
+polymer are added into the bottle and the resulting mixture is
+stirred overnight during which time an anisotropic dope which
+exhibits stir opalescence is obtained.
+
+Fiber Preparation by Wet Spinning: The spin dope
+prepared above is placed into a “Teflon” TFE fluorocarbon
+
+10
+
+15
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+50
+
+lined stainless steel cylinder and the unit is centrifuged to
+remove air bubbles. The dope is then extruded by means of a
+mechanically driven syringe through a platinum spinneret hav-
+ing 20 holes of 0.003 in. (0.076 mm.) diameter into a water
+bath at a temperature of 20°-30° C. After passing through the
+water for a distance of two feet (0.61 m.), the filaments are
+wound up on a wet bobbin at a rate of about 26 ft./min. (7.93
+m./min.), are soaked in fresh water for about 4 hr. before
+being dried. Filaments that have not been boiled off display
+the following T/E/M,/Den. values: 4.6/7.3/188/2.66 and a
+sonic velocity of 3.45 km./sec.
+
+Heat Treatment of Fibers: The filaments prepared above
+are passed through a hot tube (Device A) 32 inches (81.3
+cm.) in length whose inside wall temperature at the tube
+center is 450° C. The fiber is drawn by a factor of 1.1 times
+and is passed into the tube at a rate of 25 ft./min. (7.63
+m./min.). The resulting fibers exhibit medium crystallinity and
+have an orientation angle of 22°. and a sonic velocity of 7.37
+km./sec. Filaments have the following T/E/Mi/Den. values
+(non-boiled off fibers): 6.9/1.5/530/6.93.
+
+EXAMPLE 30
+
+This example illustrates the preparation of (1) a copolymer
+comprised of randomly repeating units of poly(p,p’-phenylene
+benzamide) and poly(p-benzamide), (2) an anisotropic dope
+thereof, and (3) fibers thereof.
+
+Polymer Preparation
+
+A one-liter resin making kettle equipped with an egg-beater
+stirrer, nitrogen inlet tube and calcium chloride drying tube is
+flamed with a burner and simultaneously flushed with
+nitrogen. Hexamethylphosphoramide (230 ml.) and N-
+methylpyrrolidone-2 (230 ml.) are filtered in the dry-box into
+a graduated cylinder. The cylinder is removed from the dry
+box and the contents are poured into the “‘resin-kettle” which
+is cooled in an ice-water bath. 4-(4’-Aminophenyl)benzoyl
+hydrochloride (15.7 g., 0.0570 mole of monomer containing
+about 2.5 percent of inert solvent impurity) and p-
+aminobenzoyl chloride hydrochloride (34.9 g., 0.01728 mole
+of monomer containing about 5 percent inert solvent impuri-
+ty) are weighed out in the dry-box into a polyethylene bag.
+The solids are mixed together in the bag and then transferred
+rapidly, with moderate stirring, into the ‘resin kettle.” Within
+1 hour the contents of the flask form a ‘trubbery” mass. The
+polymeric substance is allowed to stand for 4 days and then
+combined with water and stirred in a blender wherein it is con-
+verted into rather fibrous particles. The polymer is washed
+three times with water and twice with alcohol by means of stir-
+ring in the blender and filtration on a sintered-glass Buchner
+funnel. The polymer is dried in the vacuum oven at 70° C.,
+pulverized in a ball mill and then placed in the vacuum oven
+again until dry. The yield of polymer is 91.5 percent (yinh =
+3.83 in 100.2 percent sulfuric acid).
+
+Dope Preparation
+
+Into a three-necked polymer dope bottle equipped with a
+stirrer and placed in an ice-water bath is added 45.0 g. of 99.8
+percent sulfuric acid. Five grams of the polymer are added and
+the mixture is stirred overnight during which time an
+anisotropic dope which exhibits stir opalescence is obtained.
+Fiber Preparation by Wet Spinning
+
+The spin dope prepared above is placed into a “‘Teflon”
+TFE fluorocarbon lined stainless steel cylinder and the unit is
+centrifuged to remove air bubbles. The dope is then extruded
+by means of a mechanically driven syringe through a platinum
+spinneret having 20 holes of 0.003 inch (0.076 mm.) diameter
+into a water bath at a temperature of 20°-30° C. After passing
+through the water for a distance of two feet (61 cm.), the fila-
+ments are wound up on a bobbin at a rate of about 30 ft./min.
+(9.19 m./min). The bobbin is soaked in water overnight and
+then air dried. Filaments that have not been boiled off display
+the following T/E/M,/Den. values: 6.73/7.7/229/3.42 and a
+sonic velocity of 4.24 km./sec.
+
+Heat Treatment of Fibers
 
 --- REVIEWED TRANSCRIPTION PAGE 36 OF 58 ---
 
-3,671
+3,671,542
+
 51
 
 The filaments prepared above are passed through a hot tube
@@ -4429,148 +5415,718 @@ The filaments prepared above are passed through a hot tube
 temperature at the tube center is 400° C. The fiber is drawn by
 a factor of 1.1 times and is passed into the tube at a rate of 25
 
-542
 52
-Wet Spinning
-Wet spinning is done with a motor driven hypodermic syr-
 
+Wet Spinning ,
+
+Wet spinning is done with a motor driven hypodermic syr-
 inge which is fitted with a heavy face spinneret having twenty
 0.003 inch (0.076 mm.) holes. The filaments are coagulated in
 
-ft/min. (7.62 m./min.). The resulting fibers exhibit medium 5 room temperature water. The length of immersion is 24-32 in,
-crystallinity, have an orientation angle of 19° and a sonic _(60.0-81.3 cm.). The filaments are wound up at maximum
-velocity of 7.73 km./sec. Filaments that have not been boiled _ possible speed (see Table) while the bobbin is rotated in a pan
+ft./min. (7.62 m./min.). The resulting fibers exhibit medium 5 room temperature water. The length of immersion is 24-32 in.
+crystallinity, have an orientation angle of 19° and a sonic (60.0-81.3 cm.). The filaments are wound up at maximum
+velocity of 7.73 km./sec. Filaments that have not been boiled possible speed (see Table) while the bobbin is rotated in a pan
 off display the following T/E/Mi/Den. values: 11.84/2.6/541/2 of water. The fiber is then soaked in distilled water 16-24
-70. hours.
+-70. ° hours.
 DDA Determination; Fiber Preparation 10 Fiber Heat Treatment
-When the polymer, described above (minh 3:83), is dis- The extracted, wet fibers are drawn and/or annealed
+When the polymer, described above (ninh 3:83), is dis- The extracted, wet fibers are drawn and/or annealed
 solved in 100.2% sulfuric acid to form an 11% dope by weight, through a hot tube (Device A). The input rate is 12-25
-‘an anisotropic system is formed which has a DDA value of __ft./min. (3.66-7.62 m./min.). Draw ratios, temperatures, and
-100. A 7 percent dope of the same materials is isotropic and ,, filament properties are shown in the Table.
+an anisotropic system is formed which has a DDA value of ft./min. (3.66-7.62 m./min.). Draw ratios, temperatures, and
+100. A.7 percent dope of the same materials is isotropic and ,, filament properties are shown in the Table. oo,
 the DDA value is 0. The 11 percent dope is spun in the The copolyamides whose fibers are described in Table IV
 manner also described above, and the as-extruded, washed are comprised of repeating units selected from the group of:
-and dried filaments have T/E/M,/Den. of 6.58/9.1/183/2.85. . . a
-After heat treatment at 450° C. (Device A) the T/E/M/Den, Nt ‘NHCO —Nuco-€ con
-values are 11.9/2.4/614/4.92, the orientation angleis 15°." 29
-an
-EXAMPLES 31-35 .
-The following examples illustrate the preparation of (1) or- wsa-€__S-saco-CS-sute o-
-dered and semi-ordered p-oriented aromatic copolyamides —= — _
-from p,p’-diaminobenzanilide, terephthaloyl chloride (X), 25 ee co
-and p,p"-bibenzoyl chloride (Y), (2) anisotropic dopes of the a
+and dried filaments have T/E/M,/Den. of 6.58/9.1/183/2.85. . VY ae V Ne
+After heat treatment at 450° C. (Device A) the T/E/M,/Den. -xu-€__S-saco < PoNTCO 4 Sy co-
+values are 11.9/2.4/614/4.92, the orientation angle is 15°. - 20 d
+EXAMPLES 31-35 “ .
+The following examples illustrate the preparation of (1) or- —Nu-Y S—NHC o—< SS-NHCO-
+dered and semi-ordered p-oriented aromatic copolyamides ——= ——
+from p,p’-diaminobenzanilide, terephthaloyl chloride (X), 25 f ~ SS coe
+and p,p'-bibenzoy! chloride (Y), (2) anisotropic dopes of the —— a,
 TABLE IV
-Copoly: p.p'-diaminobenzanilide with terephthaloy] and p,p’-bibenzoyl chlorides:
-Fiber prope
-be ber proper ”
-Copolymer As-extruded
-crys ~
-Ex- xY tallin- tal
-ample ratio T/E/Mi/Den. ity 0.A,' T E’Mi'Den. ity OAS
-Ao 3.6 100.7, 10 7 6.4/11/173/6.7 Low._ 364.96 10/1. 2/27/42 High. M4.
-75/25 45 100.7 10 we 4 45/5.4 Trace. ~45 4.14 14/2.4/t 1 Med... A
-er ww 8.8/8/250/5.1 do... 38 2
-550.
-Ww 9.6/9. 6/257) 18, lo 21
-ty 5. chan 2 13/2.4/% h wD
 
-ned at 10%, rate of extension.
-rnilned at 60%; rate of extension
+Copolymers of p.p’-diaminobenzanilide with terephthaloyl and p,p’-bibenzoy! chlorides
 
-other sample of the polymer of Example
-served for the resulting dope is 100.
+Fiber properties
 
-extruded tensile
-DDaA Determination; When
-_Weight polymer, the DDA value ol
+Dope ss ve ttn re et ee
+Copolymer preparation Spin- As-extruded Heat-treated
+_ ning Heat —— er
+Weight Wit treatment Crys- sv Crys- BV
+Ex- XY Percent percent Sp., ft. drawn at - tallin- (kin./ tallin- (kin./
+ample ratio inh HeSOs polymer min. © C. T/E/Mi/Den. ity O.A.2 sec.) T E/Mi/Den. ity O.A.° see.)
+31* Le. 1/0 3.6 100.7 10 98.5 1.36X 597 6.4/11/173/6.7 Low_- 36 4.96 10/1.2/827;'4.2 High. W4e2 ee
+32.....-- 75 /. 25 4.5 100.7 10 41 oi Hox 600) 4.9/12/145/5.4 Trace. ~45 4.14 14/2.4/622/5.1  Med_.. i4 TAT
+1.00X 580
+33**_ 2. 5/5 3.7 yy. 2 10 $2. 1.07X 600-8. 8/8/259/5.1 ...do... 38 5.73 18/2.1/554/4.5 Med... 12 sees
+; LOX 550
+34__ 225/275 5.9 49.2 10 42. 1.07N 600) 9.6/9,.6/257/5.5...do...  ~45 5.45 18/2.5/800/5.8 High... 10 4.2)
+35*_.--.- O/1 2.4 99.2 il 43 1.08X 600 5.6/9/216/7.2 Low... 35 §.55 13/2.4/707/6.6 _..do... 11 Ko
 
-~copolyamides, and (3) high tenacity, high modulus fibers of —
+*As-extruded tensile data determined at 10% rate of extension.
+** As-extruded tensile data determined at 60% rate of extension.
+
+DDA Determination: When another sample of the polymer of Example 35 is combined with 94.2%
+
+_ Weight polymer, the DDA yalue observed for the resulting dope is 100.
+copolyamides, and (3) high tenacity, high modulus fibers of
 the copolyamides.
 Copolymer Preparation
 
-The copolymers listed in the following Table IV are
-prepared in an identical manner using the proper ratio of.
+The copolymers listed in the following Table IV are.
+prepared in an identical manner using the proper ratio of |
 diacid chlorides for the composition under consideration. All
-glassware is dried at least 2 hours in a 120°C. oven; weighings 5q
-and measurements are carried out in a drybox; and the reac- '
+
+45
+
+sulfuric acid to form a dope containing 11% by
+
+~ “EXAMPLE 36
+This example illustrates (1) the preparation of a random,
+multi-component, p-oriented aromatic copolyamide, (2) an
+anisotropic dope thereof, and (3) high tenacity, high modulus
+fibers thereof.
+The copolyamide is comprised of equimolar amounts of
+
+glassware is dried at least 2 hours in a 120°C. oven; weighings 59 random repeating units represented by the following struc-
+
+and measurements are carried out in a drybox; and the reac- >
+
 tions are run under a blanket of nitrogen.
 
 The diamine is dissolved in a blender in a 2:1 by volume
 mixture of hexamethylphosphoramide and N-methylpyr-
-rolidone-2 in an amount to give a 10-13 percent concentra- 55
+rolidone-2 in an amount to give a 10-13 percent concentra-
 tion (weight per total weight) of final polymer. An equivalent
 amount of diacid chloride is added very rapidly with the
 fastest possible stirring. In one minute the polymer sets up to a
 rubbery gel which cannot be stirred. This is left undisturbed
-for at least ! hour. The polymer is isolated in water, is washed 60
-in the blender four times with water and once each with;
-acetone and alcohol, and is dried overnight at 100°C. under,
-vacuum. The polymer may be purified further by first grinding |
+
+55
+
+*
+
+tures:
+
+—xa-€__S-vuc o~¢ YNH-,
+and
+
+for at least | hour. The polymer is isolated in water, is washed 60 Polymer Preparation
+
+in the blender four times with water and once each with:
+acetone and alcohol, and is dried overnight at 100° C. under,
+vacuum. The polymer may be purified further by first grinding :
 it in a mill to reduce the particle size and then treating it with
 formic acid on the steam bath for one hour. After thorough
 washing with water the polymer is again dried.
 
 Polymers 32-35 in Table IV are prepared in this manner.
-Polymer 31 is prepared in hexamethylphosphoramide alone,
-although similar results should be obtained in a mixed solvent” 70
-system.
+Polymer 3! is prepared in hexamethylphosphoramide alone,
 
+although similar results should be obtained in a mixed solvent “20
+
+system.
 Dope Preparation
 
 The spin dopes are prepared by combining appropriate
 amounts of polymer and solvent and stirring at room tempera-
-ture in a closed system. Anisotropic dopes, which are stir 75
-opalescent, are obtained. The dopes are centrifuged before
+ture in a closed system. Anisotropic dopes, which are stir
+opalescent, are obtained. The dopes are centrifuged before |
 wet spinning.
-
-45
 
 65
 
-36 is combined with 9.2% sulfuric acid to form a dope containing 13% by
+75
 
-“EXAMPLE 36 ~~
-
-This example illustrates (1) the preparation of a random,
-multicomponent, p-oriented aromatic copolyamide, (2) an
-anisotropic dope thereof, and (3) high tenacity, high modulus
-fibers thereof.
-
-The copolyamide is comprised of equimolar amounts of
-random repeating units represented by the following struc-
-tures:
-
-axu-C_S-xatco ‘SS xu,
-
-4
-Polymer Preparation
 A solution of 4.55 g. (0.02 mole) p,p’-diaminobenzanilide
-and 2.16 g. (0.02 mole) of p-phenylenediamine in a mixture of
+‘and 2.16 g. (0.02 mole) of p-phenylenediamine in a mixture of
 90 ml. of hexamethylphosphoramide and 45 ml. of N-methyl-
 pyrrolidone-2 is prepared in the drybox. It is transferred into a
 blender jar, blanketed with nitrogen and a mixture of 4.06 g.
-(0.02 mole) of terephthaloyl chloride and 5.58 g. (0.02 mole)
-of dibenzoyl chloride is added quickly with very rapid stirring.
+(0.02 mole) of terephthaloy! chloride and 5.58 g. (0.02 mole)
+of dibenzoy] chloride is added quickly with very rapid stirring.
 The system sets up to a rubbery gel in 2 minutes. After 2.5
 hours the polymer is worked up in water. It is washed in the
 blender three times with water and once each with acetone
-and alcohol, and is dried in a 100° C. vacuum oven. The yield
-is quantitative and the inherent viscosity is 5.
+and alcohol, and is dried in a 100° C. vacuum oven. The yield -
+is quantitative and the inherent viscosity is 5.4.
 Dope Preparation
-‘An anisotropic dope is prepared from the above polymer by
+
+An anisotropic dope is prepared from the above polymer by
 ‘combining at room temperature 5.5 g. of polymer, 45 g. of
 100.7 percent sulfuric acid and 5.0 g. of 20 percent fuming
 
 --- REVIEWED TRANSCRIPTION PAGE 37 OF 58 ---
 
-Sheet 37 of 58
+3,671,542
+
+53
+
+sulfuric acid. Initially a stiff gel results which on standing for
+six days becomes a fluid, but viscous, stir opalescent dope.
+Spinning and As-extruded Properties
+
+Wet spinning is done with a motor-drive hypodermic syr-
+inge fitted with a heavy face spinneret having 20 holes of
+0.003 in. (0.076 mm.) diameter. The filaments are coagulated
+in room temperature water. The length of immersion is 32 in.
+(71.3 cm.). The filaments are wound up at 43 ft./min. (13.1
+m./min.) while the bobbin is rotated in a pan of water. The
+fiber is then soaked in distilled water 16 hours. As-extruded
+filament properties are T/E/Mi/Den.: 6.3/13.1/149/4.04. The
+yarn has trace crystallinity, an orientation angle of ~45° and a
+sonic velocity of 4.42 km./sec.
+Fiber Heat Treatment and Properties
+
+The wet fiber from above is drawn 1.1X through a hot tube
+(Device A) at 550° C. with an input speed of 12.5 ft./min.
+(3.81 m./min.). The drawn yarn has the following properties:
+T/E/Mi/Den.: 12.4/2.3/629/67.8. It has low crysallinity with
+low perfection, an orientation angle of 17° and a sonic velocity
+of 7.84 km./sec.
+
+The following Examples 37-39 illustrate the preparation of
+random co(polyamide)-ureas comprised of repeating units
+selected from the group of
+
+and
+—va-€__ Sve oxu-€__S-nuc o—
+
+together with dopes and fibers of these random copolymers. It
+will be observed that the anisotropic dopes of Examples 37-38
+yield stronger fibers (e.g., of higher tenacity and modulus)
+than does the isotropic dope of Example 39. Relative ratios of
+the above-described randomly repeating units (in the order
+given above) are shown for each of Examples 37-39.
+
+EXAMPLE 37
+
+Polymer Preparation
+
+A quart-size (946 ml.) glass blender jar is dried by heating
+the inside surface with hot air at 150° C. The blender jar is al-
+lowed to cool to room temperature inside a dry box, i.e., a
+chamber maintained under anhydrous conditions. Hex-
+amethylphosphoramide (180 ml., distilled from calcium
+hydride at reduced pressure and stored in the dry box over
+molecular sieves), N-methylpyrrolidone (90 ml., distilled from
+calcium hydride at reduced pressure and stored in the dry box
+over molecular sieves), and lithium chloride (7.5 g., dried ina
+vacuum oven at 200° C. and stored in the dry box) are trans-
+ferred to the blender jar. A plastic cover for the blender jar is
+wrapped in aluminum foil and placed on the blender. The
+blender jar is removed from the dry box. A flow of dried
+nitrogen gas is introduced into the blender jar through a hole
+in the plastic cover and aluminum foil. The mixture is stirred
+at a moderate speed until all the lithium chloride has dis-
+solved. Sublimed p-phenylenediamine (16.22 g., 0.150 mole)
+
+5
+
+10
+
+15
+
+20
+
+25
+
+30
+
+40
+
+45
+
+50
+
+55
+
+is weighed out in the dry box and transferred to the blender .
+
+jar. The mixture is stirred at a moderate speed until all the p-
+phenylenediamine has dissolved.
+
+p-Phenylene diisocyanate (2.40 g., 0.015 mole) is weighed
+out in the dry box and transferred to the blender jar. The mix-
+ture is stirred at a moderate speed for twelve minutes.
+Sublimed terephthaloyl chloride (27.41 g., 0.135 mole) is
+weighed out in the dry box. The solution in the blender jar is
+stirred very rapidly as the terephthaloyl chloride is added. The
+solution gels to a solid mass in less than 10 seconds after addi-
+tion of the terephthaloy] chloride. This gel is allowed to stand
+for 5 hours, and is then added to water in a gallon-size (3.79 1.)
+blender and stirred at high speed. The precipitated polymer is
+filtered on a coarse, sintered-glass Buchner funnel. The
+polymer is washed three additional times with water, and one
+
+65
+
+70
+
+75
+
+54
+
+time with acetone, filtering the polymer after each washing.
+The polymer is dried in a vacuum oven at 80°-100° C. The
+yield of polymer is 35.9 g. (99 percent). The polymer has an
+inherent viscosity of 1.83. Ratio of units is 9:9:1.
+Dope Preparation
+
+A 500-ml. resin kettle equipped with a stainless steel “egg-
+beater” type stirrer is dried in a vacuum oven and allowed to
+cool to room temperature in a dry box. In the resin kettle are
+placed 34 g. of polymer and 145 ml. concentrated sulfuric
+acid (100.54 percent by titration). The resin kettle is removed
+from the dry box and connected to an air driven stirrer motor.
+The mixture is stirred overnight, moderating the temperature
+by a water bath at room temperature. A smooth, hazy dope
+containing 13 percent polymer by weight is formed. The dope
+depolarizes light when observed as a thin layer between
+crossed polarizers
+Fiber Preparation and Fiber Properties as Extruded
+
+The polymer dope prepared above is placed in a stainless -
+steel spinning cell and extruded at a pressure of 400 lb./in.?
+(28.12 Kg/cm?) through a platinum spinneret having 20 holes
+of 0.003 inches (0.076 mm) diameter into a water bath at
+10°20 C. The fibers are guided out of the water bath and the
+yarn is wound up at the rate of 12 ft/min. (3.66 m/min). The
+bobbins containing the yarn are allowed to stand in distilled
+water overnight, and then dried in air. The inherent viscosity
+of the polymer in the yarn is 1.75 determined in concentrated
+sulfuric acid. The fibers have low crystallinity, an orientation
+angle of approximately 45° and a sonic velocity of 4.40
+km./sec. The average tensile properties are T/E/Mi/Den.
+3.52/16.5/1194.01.
+Fiber Heat Treatment and Properties
+
+The fiber is heat treated by passing the yarn (20 filaments)
+through a heated tube (Device A). The wall of the tube in the
+center is maintained at 599° C. The fiber input speed is 25
+ft./min. (7.62 m./min.), and the yarn is increased in length by
+10 percent on passing through the tube. The resulting yarn has
+high crystallinity, an orientation angle of 14°, a sonic velocity
+of 8.47 km./sec. and the following average filament tensile
+properties; T/E/Mi/Den. = 8.41/1.5/581/3.47.
+
+EXAMPLE 38
+
+Polymer Preparation
+
+A quart-size ( 946 ml.) glass blender jar is dried by heating
+the inside surface with hot air at 150° C. The blender is al-
+lowed to cool to room temperature inside a dry box, i.e., a
+chamber maintained under anhydrous conditions. Hex-
+amethylphosphoramide (120 ml., distilled from calcium
+hydride at reduced pressure and stored in the dry box over
+molecular sieves), N-methylpyrrolidone (60 ml., distilled from
+calcium hydride at reduced pressure and stored in the dry box
+over molecular sieves), lithium chloride (5.0 g., dried in a
+vacuum oven at 200° C. and stired in the dry box), and
+sublimed p-phenylenediamine (10.81 g., 0.10 mole) are trans-
+ferred to the blender jar. A plastic cover for the blender jar is
+wrapped in aluminum foil and placed on the blender jar. The
+blender jar is removed from the dry box. A flow of dried
+nitrogen gas is introduced into the blender jar through a hole
+in the plastic cover and aluminum foil. The mixture is stirred
+at a moderate speed until all the solids have dissolved.
+
+p-Phenylene diisocyanate (0.80 g., 0.005 mole) is weighed
+out in the dry box and transferred to the blender jar. The mix-
+ture is stirred at a moderate speed for five minutes. Sublimed
+terephthaloyl chloride (19.29 g., 0.095 mole) is weighed out
+in the dry box. The solution in the blender jar is stirred vary
+rapidly as the terephthaloyl chloride is added. The solution
+gels to a stiff mass in about fifteen seconds. The gelled solution
+is allowed to stand overnight, after which it is added to water
+in a gallon-size (3.79 1.) blender and stirred at high speed. The
+polymer is filtered on a coarse sintered-glass Buchner funnel.
+The polymer is washed three additional times with water and
+one time with acetone in the blender and filtered after each
+washing. After the final filtration the polymer is dried in a
 
 --- REVIEWED TRANSCRIPTION PAGE 38 OF 58 ---
 
-Sheet 38 of 58
+3,671,542
+
+55
+
+vacuum oven at 80°-100° C. The yield of polymer is 25.1 g.
+(92 percent yield). The polymer has an inherent viscosity of
+2.87. Ratio of units is 95:95:5.
+Dope Preparation
+
+A 100 ml. round-bottom flask is dried in a vacuum oven and
+cooled to room temperature in a dry box. (The flask is
+equipped with a Teflon TFE-fluorocarbon stirrer.) In the flask
+are placed 15 g. of the polymer and 65 ml. concentrated sul-
+furic acid (100.44 percent by titration), The mixture is stirred,
+moderating the temperature by means of a water bath at room
+temperature. Stirring soon becomes difficult, and additional
+acid (10 ml.) is added. Cooling with an ice-water bath also
+helps in the preparation of the dope. After stirring for the
+necessary period, the mixture becomes a smooth, hazy dope.
+This dope depolarizes light when observed as a thin layer
+between crossed polarizers.
+Fiber Preparation and Fiber Properties As Extruded
+
+The polymer dope prepared above is placed in a Teflon TFE
+— fluorocarbon lined, mechanically driven, stainless steel syr-
+inge and extruded through a platinum spinneret having 20
+holes of 0.003 in. (0.076 mm) diameter into a water bath at
+10°-20 C. The fibers are guided out of the water bath and
+wound up at the rate of 10.5 ft./min. (3.2 m/min.). The bob-
+bins containing the fiber are allowed to stand in distilled water
+overnight, then dried in air. The inherent viscosity of the
+polymer in the fiber is 2.84. The average tensile properties of
+the filaments are (70° F., 65% R.H.) T/E/Mi/Den
+5.55/10.7/1813.00. The fibers have medium crystallinity, an
+orientation angle of 45° and a sonic velocity of 4.44 km./sec.
+Fiber Heat Treatment and Properties
+
+Yarn from a second bobbin of the above spinning experi-
+ment, having average filament tensile properties T/E/Mi/Den
+= 5.24/14.8/168/8.55, is heat-treated by passing the fibers
+through a heated tube (Device A). The wall of the tube in the
+center is maintained at 599° C. The fiber input speed is 25
+ft./min. (7.62 m./min.), and the fiber is increased in length by
+10% on passing through the tube. The resulting fiber has high
+crystallinity, an orientation angle of 11°, a sonic velocity of
+8.98 km./sec. and the following average filament tensile pro-
+perties: T/E/Mi/Den. = 9.96/1.1/847/4.60.
+
+EXAMPLE 39
+
+Polymer Preparation
+
+A quart-size (946 ml.) glass blender jar is dried by heating
+the inside surface with hot air at 150° C. The blender jar is al-
+lowed to cool to room temperature inside a dry box, i.e., a
+chamber maintained under anhydrous conditions. Hex-
+amethylphosphoramide (90 ml., distilled from calcium
+hydride at reduced pressure and stored in the dry box over
+molecular sieves), N-methylpyrrolidone (45 ml., distilled from
+calcium hydride at reduced pressure and stored in the dry box
+over molecular sieves), lithium chloride (3.75 g., dried in a
+vacuum oven at 200° C. and stored in the dry box), and
+sublimed p-phenylenediamine (4.05 g., 0.0375 mole) are
+transferred to the blender jar. A plastic cover for the blender
+jar is wrapped in aluminum foil and placed on the blender jar.
+The blender jar is removed from the dry box. A flow of dried
+nitrogen gas is introduced into the blender jar through a hole
+in the plastic cover and aluminum foil. The mixture is stirred
+at a moderate speed until the solids have dissolved.
+
+p-Phenylene diisocyanate (1.20 g., 0.0075 mole) is weighed
+out in the dry box and transferred to the blender jar. The mix-
+ture is stirred ata moderate speed for five minutes. Sublimed
+terephthaloy! chloride (6.09 g., 0.030 mole) is weighed out in
+the dry box. The solution in the blender jar is stirred very
+rapidly as the terephthaloyl chloride is added. The solution
+gels to a stiff mass in 30 seconds. The gel is allowed to stand
+overnight, and is then added to water in a gallon-size (3.79 1.)
+blender and stirred at a high speed. The precipitated polymer
+is filtered on a coarse sintered-glass Buchner funnel. The
+polymer is washed three times with water and one time with
+acetone, filtering the polymer after each washing. After the
+
+56
+
+final filtration, the polymer is dried in a vacuum oven at
+80°-100bL C. The yield of the polymer is 9.2 g. (100 percent).
+The polymer has an inherent viscosity of 2.82. Ratio of units is
+4:4:1.
+Dope Preparation
+
+In a 100 ml. round-bottom flask equipped with a Teflon
+TFE-fluorocarbon stirring blade is placed 5.0 g. polymer and
+35 ml. of 100.7 percent (by titration) sulfuric acid. The mix-
+ture is stirred, moderating the temperature by means of a
+water bath at room temperature. The polymer dissolves to a
+clear, very viscous solution. Additional acid (15 ml.) is added
+so that after mixing a clear, viscous spinnable solution is
+formed. This dope does not depolarize plane polarized light.
+Fiber Preparation and Fiber Properties As Extruded
+
+The polymer dope prepared above is placed in a Teflon TFE
+fluorocarbon lined mechanically-driven, stainless steel syringe
+and extruded through a platinum spinneret having 20 holes of
+
+- 0.003 inches (0.076 mm.) diameter into a water bath at
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+55
+
+60
+
+65
+
+70
+
+75
+
+10°-20 C. The fibers are guided out of the water bath and
+
+wound up at the rate of 13 ft./min. (3.96 m./min.). The bob-
+bins containing the fiber are allowed to stand in distilled water
+overnight, and then dried in air. The fibers have trace crystal-
+linity, an orientation angle of 65°, a sonic velocity of 3.21
+km./sec. and the following average filament tensile properties
+: T/E/Mi/Den. = 2.40/41.1/79/4.85.
+
+Fiber Heat Treatment and Properties
+
+The fibers prepared above are heat treated by passing the
+yarn through a heated tube (Device A) while increasing the
+length of the fiber by 10 percent. The input speed of the fibers
+is 25 ft./min. (8.2 m./min.), and the wall of the tube is main-
+tained at 554°C. near the center of the length of the tube. The
+resulting fiber has high crystallinity, an orientation angle of
+18°, and average filament tensile properties T/E/Mi/Den. =
+3.93/1.3/3004.34.
+
+The following Examples 40-48 illustrate the preparation of
+hydrogen fluoride (HF) dopes, both anisotropic and isotropic,
+comprising poly(p-benzamide), poly(p-phenylene
+terephthalamide), and a copoly[(p-benzamide)/(p-phenylene
+terephthalamide)]. It will be observed that the anisotropic HF
+dopes yield stronger as-extruded fibers (e.g., of higher tenaci-
+ty and modulus) than do comparable isotropic dopes.
+
+EXAMPLE 40
+
+This example illustrates the dry spinning of an anisotropic,
+HF dope comprising poly( p-benzamide).
+
+Poly(p-benzamide) (20 g., ninh=3.04, prepared in N,N-
+dimethylacetamide, with lithium carbonate as an acid accep-
+tor, by general procedures shown herein) and 105 ml. of an-
+hydrous HF are placed in a polyethylene screw-cap bottle
+(180 ml. volume) and stirred for 2-4 hr. with a Hastelloy
+stirrer, the shaft of which protrudes through a hole in the bot-
+tle cap. The bottle is cooled externally by an ice/water bath. A
+stir opalescent, anisotropic dope containing 16 percent by
+weight polymer is formed (a similar 18 percent dope is
+birefringent when viewed between crossed polarizers). The 16
+percent dope, having about the viscosity of glycerine, is
+poured into an externally cooled (to about 10°C.) Inconel cell
+and pressure is applied to a piston above the solution to cause
+a filament to jet from a 0.006 in. x 0.003 in. (dia-length)
+(0.0152 cm. X 0.0076 cm.) platinum spinneret hole into a 3 ft.
+long (0.9 m.) “Lucite” column, 6 in. (15.2 cm.) sq., heated to
+about 70° C. by a warm stream of nitrogen directed counter-
+current to the direction of the threadline. The pressure ap-
+plied is about 25 Ib./in.? (1.8 Kg./cm.) and the windup speed
+is 470 ft./min. (140 m./min.) The bobbin of fiber collected is
+boiled off for 15-30 min. in water, after which samples of
+fibers are removed and dried prior to testing. The dry sample
+exhibits . the following filament tensile _ properties:
+T/E/Mi/Den.: 4.7/2.8/276/3.2; the fiber exhibits medium
+crystallinity and an orientation angle of 23°. After the fiber is
+subjected to successive one to two second exposures across a
+hot bar (350° C., air atmosphere, taut, 1.008X draw) and ina
 
 --- REVIEWED TRANSCRIPTION PAGE 39 OF 58 ---
 
-Sheet 39 of 58
+3,671,542
+
+57
+
+hot tube (Device A, no drawing) at 540° C., the following fila-
+ment tensile properties are exhibited: T/E/Mi: 5.6/1.7/396;
+the fiber has high crystallinity and an orientation angle of 25°.
+
+EXAMPLE 41
+
+This example illustrates the dry spinning of an isotropic, HF
+dope comprising poly(p-benzamide).
+
+Poly(p-benzamide) (15 g., ninh=2.8, prepared by general
+procedures shown herein) is combined with 90 ml. of an-
+hydrous HF as in Exaniple 40 to form a viscous, isotropic dope
+containing 14% by weight of the polyamide. This dope is ex-
+truded from the'spinning. cell described in Example 40, using a
+pressure on the piston of 78 Ib./in.? (5.5 Kg./cm.?) and a win-
+dup speed of 175 ft./min. (53 m./min.). After this filament is
+thoroughly extracted in water and dried, it exhibits the follow-
+ing. filament tensile. properties: T/E/Mi: 2.1/27/73; it exhibits
+low crystallinity and an orientation angle of 50°. This fiber is
+passed successively through a tube (Device A) whose center is
+heated to 300°_C. (1.3X draw; contact time of about 2
+seconds) and a similar tube heated to 535° C. (1.05X draw;
+contact time of 2: seconds). After this treatment, the filament
+exhibits the following tensile properties: T/E/Mi: 4.6/2.3/283;
+the fiber has medium crystallinity and an orientation angle of
+33°.
+
+EXAMPLE 42
+
+This example illustrates the dry spinning of an isotropic, HF
+dope comprising poly(p-phenyleneterephthalamide).
+
+Poly(p-phenyleneterephthalamide) (10 g., ninh=3.6,
+prepared by general procedures shown herein) is combined
+with 85-90 ml. of anhydrous HF as in Example 40; 0.9 g. of
+methylene chloride is added dropwise to form a viscous,
+isotropic, clear dope containing 10 percent by weight polya-
+mide. This dope is extruded from the cell described in Exam-
+ple 40, with a pressure on the piston of 50-60 lb./in.? (3.5-4.2
+Kg./cm.?) and a slow product windup speed of about 20
+ft/min. (6.9 m./min.); a 0.007 in. X 0.006 in. (diame-
+ter/length): (0.018 cm. xX 0.015 cm.) platinum spinneret is
+used. After the filament collected is boiled off in water and
+dried, it exhibits the following tensile properties: T/E/Mi:
+3.4/55/79. After this filament is drawn 2.0X at the rate of 12
+ft./min. (3.7 m./min.) through a tube (Device A) heated in its
+center 2 in. (5 cm.) portion to 535° C., the filament exhibits
+the following tensile properties: T/E/Mi: 11/1.8/698; the fila-
+ment has high crystallinity and an orientation angle of 13°,
+whereas the as-extruded filament. has low crystallinity and
+only trace orientation.
+
+EXAMPLE 43
+
+This example illustrates the wet spinning of an isotropic HF
+dope comprising poly(p-phenyleneterephthalamide).
+
+Poly(p-phenyleneterephthalamide) (10 g., minh=3.6,
+prepared by the general procedures shown herein but a dif-
+ferent sample from that in Example 42) is combined with 120
+ml. of anhydrous HF as in Example 40 to form an isotropic
+dope containing 7.7% by weight of the polymer. This dope is
+placed in the cell described in Example 40 and extruded
+through a nickel spinneret attached to the cell by a stainless
+steel gooseneck tube bent at an angle of 90° so that the dope is
+jetted horizontally and at 90° to the axis of the spinning cell.
+The spinneret has about 175 round holes of 0.001 in. (0.025
+mm.) diameter, each. The filaments are extruded through
+about 70 cm. of a water bath (cooled to 0—4° C.) after which
+they are wound up at about 24 ft./min. (7.3 m./min.). The
+pressure On the piston in the cell is 300 Ib./in.? (21 kg./cm.?).
+After the filaments are boiled off in distilled water for two suc-
+cessive 15 min. intervals and dried, they exhibit the following
+filament tensile properties: T/E/Mi: 3.2/63/77; sonic velocity
+is 2.59 km./sec. After these filaments are drawn 1.6X at 50
+ft./min. (15 m./min.) through a heated tube (Device D) in
+which the central 2 in. portion (5.08 cm.) is at a temperature
+of 705° C., the following filament tensile properties are ex-
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+58
+
+hibited: T/E/Mi/Den.: 8.0/1.2/800/0.55; the filaments. have
+high crystallinity and an orientation angle of 13°.
+
+EXAMPLE 44
+
+This example illustrates the wet spinning. of an anisotropic
+HF dope comprising poly(p-phenyleneterephthalamide).
+
+Poly(p-phenyleneterephthalamide) (28 g., 7inh=4.0,
+prepared by the general procedures shown herein) is com-
+bined with 100 ml. of anhydrous HF as in Example 40 to form
+an anisotropic, stir opalescent dope containing 20 percent by
+weight of the polymer. This dope is placed in the cell
+described in Example 40 and is extruded as in Example 43
+through a 100-hole spinneret, each hole being 0.0025 in.
+(0.063 mm.) in diameter. The filaments are guided through a
+water bath (6° C.) for a distance of 210 cm. after which they
+are wound up at 232 ft./min. (71 m./min.). Pressure on the
+piston in the cell is 130-136 1b./in?. (9.1-9.6 kg./cm.?). After
+the filaments are washed overnight in running water and dried,
+they exhibit the following filament tensile properties:
+T/E/Mi/Den. 8.7/5.4/260/1.72; the filaments exhibit medium
+crystallinity and an orientation angle of 21°; sonic velocity is
+6.35 km/sec. After these filaments are drawn 1.05X at 50
+ft./min. (15 m./min.) through a nitrogen-filled, heated tube
+(Device C) in which the central 2 in. portion (5 cm.) is at tem-
+perature of 562° C. the following filament tensile properties
+are exhibited: T/E/Mi: 17.1/2.2/817; the filaments have high
+crystallinity and an orientation angle of 11°.
+
+EXAMPLE 45
+
+This example illustrates the wet spinning of an anisotropic,
+HF dope comprising poly(p-benzamide).
+
+Poly(p-benzamide) (28 g., ninh = 2.9, prepared by the
+general procedures shown herein) is combined with 110 ml. of
+anhydrous HF as in Example 40 to form an anisotropic stir
+opalescent dope. This dope is placed in the cell described in
+Example 40, modified for wet spinning as in Example 43. The
+dope is extruded through a 100-hole spinneret, each hole
+being 0.0025 in. (0.063 mm.) diameter, into a water bath (6°
+C.). The filaments are guided through the bath for 210 cm.
+and wound up at 265 ft./min. (80.8 m./min.). Pressure on the
+piston in the spinning cell is 100 Ib./in.? (7.03 Kg./cm.?). After
+these filaments are washed over the weekend in running water
+and dried, they exhibit the following filament tensile proper-
+ties: T/E/Mi: 6.2/4.7/304; filaments exhibit medium crystal-
+linity, and an orientation angle of 20°; sonic velocity is 6.37
+km./sec.. These filaments are then immersed in water and
+drawn at the rate of 50 ft./min. (15.2m./min.) through a tube
+(Device C) heated in its central 2 in. (5.8 cm.) portion to a
+temperature of 580° C.; draw ratio is 1.06X. The filaments ex-
+hibit the following tensile properties: T/E/Mi: 14.2/2.4/802;
+the filaments have high crystallinity, and an orientation angle
+of 11°; sonic velocity is 9.32 km./sec.
+
+EXAMPLE 46
+
+This example illustrates the wet spinning of an anisotropic,
+HF dope comprising poly( p-benzamide).
+
+Poly(p-benzamide) (28 g., ninh=3.7, prepared by general
+procedures shown herein) is combined with 110 ml. of an-
+hydrous HF as in Example 40 to give an anisotropic, stir
+opalescent dope containing 20 percent by weight polymer.
+This solution is placed in the cell described in Example 40,
+modified for wet spinning as shown in Example 43. The dope
+is extruded as in Example 45 and the resultant filaments
+wound up at 300 ft./min. (91.4 m./min.). The pressure on the
+piston in the spinning cell is about 138 1b./in.? (9.7 kg./cm.*).
+After the filaments are washed overnight in running water and
+dried, they exhibit the following filament tensile properties:
+T/E/Mi/Den.: 7.2/3.2/350/1.45; they exhibit medium crystal-
+linity and an orientation angle of 27°. The filaments are drawn
+1.03X at 50 ft./min. (15.2 m./min.) through a heated tube
+(Device C) in which the central 2 in. portion (5 cm.) is ata
+temperature of 560° C.; the filaments exhibit the following
 
 --- REVIEWED TRANSCRIPTION PAGE 40 OF 58 ---
 
@@ -4590,13 +6146,13 @@ terephthalamide)] (90/10).
 The above-described copolyamide (30.0 g., ninh = 3.7
 prepared by general procedures shown herein) is combined
 with 110 ml. of anhydrous HF to form an anisotropic, stir
-opalescent dope containing 21 percent by weight of the
+opalescent’ dope containing 21 percent by weight of the
 copolyamide. This dope is extruded as in Example 43 (water
 bath cooled to 2° C. and contains 0.05 percent by wt. deter-
 gent) with the extruded filaments being snubbed on a pigtail
 guide and twisted 90° with respect to the threadline direction
-ata 3 in. (7.62 cm.) distance from the spinneret. Pressure on
-the spinning cell is 96 Ib./in.? (6,75 kg./cm.*) and the filaments
+at a 3 in. (7.62 cm.) distance from the spinneret. Pressure on
+the spinning cell is 96 Ib./in.? (6.75 kg./cm.”) and the filaments
 are wound up at 265-315 ft./min. (80.8-96 m./min.). After
 these filaments are washed and dried they exhibit the follow-
 ing tensile properties: T/E/Mi/Den.: 11.6/3.0/410/1.24; the
@@ -4622,11 +6178,11 @@ through a water bath (0°-6° C.) as in Example 43 through a
 60-hole platinum spinneret, each hole being 0.003 in. (0.076
 mm.) diameter. The threadline is guided around on rollers
 such that the path length in the bath is 210 cm. The pressure
-on the piston in the cell is 220 Ib./in.? (15.5 kg./cm.2) and the
+on the piston in the cell is 220 Ib./in.? (15.5 kg./cm.?) and the
 yarn is wound up at 44 ft./min. (13.4 m./min.). After the yarn
-is rinsed in running water for 1 hr. and dried, it exhibits the fol-
+is rinsed in running water for ! hr. and dried, it exhibits the fol-
 lowing filament tensile properties; T/E/Mi/Den.: 2.8/28/83/2.
-4 and a sonic velocity of 3.33 km./sec. After a sample of the
+4 and a sonic. velocity of 3.33 km./sec. After a sample of the
 rinsed as-extruded wet yarn is drawn at the rate of 48 ft./min.
 (14.6 m./min.) through a heated tube (Device C) whose cen-
 tral 2 in. (5.08 cm.) portion is at a temperature of 593° C.
@@ -4636,11 +6192,11 @@ highly crystalline and exhibit an orientation angle of 17°.
 
 EXAMPLE 49
 
-This example illustrates the preparation of poly(p.p’-
-biphenylene terephthalamide) and an anisotropic oleum dope
+This example illustrates the preparation of poly(p,p’-
+biphenylene terephthalamide) and an anisotropic. oleum dope
 thereof.
 
-Polymer Preparation; In a flamed-out 100 ml. tubular
+Polymer Preparation: In a flamed-out 100 ml. tubular
 flask (equipped with a stirrer and openings for flushing with
 nitrogen and introduction of materials) are placed 25 ml. of
 hexamethylphosphoramide, 25 ml. of N-methylpyrrolidone-2,
@@ -4651,34 +6207,59 @@ tetrahydrofuran is added quickly with stirring. In one minute
 the mixture becomes highly viscous and unstirrable. The mix-
 ture is allowed to stand 16 hrs. at room temperature, after
 which the polymer is precipitated by being agitated with water
-ina blender with alternate filtration and then washed one time
+in a blender with alternate filtration and then washed one time
 each with alcohol and ether. The vacuum dried polymer
 weighs 2.96 g. and has an inherent viscosity of 1.45.
 
 Dope Preparation: The polymer (1.9 g.) is stirred
 mechanically in.a closed testtube with 7.0 ml. of 100.95 per-
 
+5
+
+10
+
+20
+
+25
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
 60
 
 cent sulfuric acid. The dissolving polymer at first forms a clear
-
 viscous dope; but as dissolution continues, the dope becomes
-
 hazy and smooth. The dope exhibits stir opalescence and
-
 depolarizes plane-polarized light as a thin layer under a cover
-5 glass on a microscope slide.
+glass on a microscope slide.
 
 EXAMPLE 50
 
 This example illustrates the preparation of poly(1,5-
-
-10 Raphthylene terephthalamide) and an anisotropic oleum dope
+naphthylene terephthalamide) and an anisotropic oleum dope
 thereof.
+
 Polymer Preparation
 
-Terephthaloyl chloride (10.15 g., 0.05 mole) is added at
-once to a warm (i.¢., 35°C.) slurry of 1,5-naphthalenediamine
+Terephthaloyi chloride (10.15 g., 0.05 mole) is added at
+once to a warm (i.e., 35°C.) slurry of 1,5-naphthalenediamine
 (7.90 g., 0.05 mole; sublimed) in a mixture of hex-
 amethylphosphoramide (60 ml.) and N-methyl-2-pyrrolidone
 (30 ml.) contained in a 500 ml. resin-making kettle equipped
@@ -4704,35 +6285,31 @@ the cooling bath is allowed to warm to room temperature. The
 resulting fluid dope exhibits stir-opalescence and depolarizes
 plane-polarized light.
 
-25
-
-30
-
 EXAMPLE 51
 
 This example illustrates (1) the preparation of a random
 copolyamide comprised of equimolar amounts of random re-
 peating units selected from the group of
 
-aC S owe,
+a C
+|
+—HIN
 
-NH—
-I
+N H—
 
-1
-HN
-aC S-conn-€ Sone
-\ oo ™\
-Co —-CO—, —CO— << d0-
+-vi-€__S-o onm—-€ S-Ni
+-
+co ‘SS-co-, -o-€ S< S—co—,
 
 and
-co
+S\N co~
+Al
 
 (2) an anisotropic dope of the copolyamide, and (3) fibers of
 the copolyamide.
 Polymer Preparation
 
-A solution of 1.08 g. (0.01 mole) p-phenylenediamine, 1.58
+A solution of 1.08 g. (0.01 mole) p-phenylenediamine, !.58
 g. (0.01 mole) 1,5-naphthalenediamine and 2.27 g. (0.01
 mole) p,p’-diaminobenzanilide in a mixture of 60 ml. of hex-
 amethylphosphoramide and 30 ml. of N-methylpyrrolidone-2
@@ -4740,14 +6317,7 @@ is prepared in a blender jar in a drybox. A mixture of 2.03 g.
 (0.01 mole) terephthaloyl chloride, 2.79 g. (0.01 mole) 4,4’-
 bibenzoyl dichloride and 2.53 g. (0.01 mole) 2,6-naphthoyl
 dichloride is added quickly with very rapid stirring. The result-
-75. ing very viscous clear solution is stirred for 15 min. and is then
-
-55
-
-65
-
-3
-3
+ing very viscous clear solution is stirred for 15 min. and is then
 
 --- REVIEWED TRANSCRIPTION PAGE 41 OF 58 ---
 
@@ -4758,18 +6328,18 @@ dichloride is added quickly with very rapid stirring. The result-
 left undisturbed for 16 hrs. The polymer is worked up in
 water; it is washed in a blender four times with water, one time
 each with acetone and alcohol, and is dried in a 100° C.
-vacuum oven. The yield is 9.5 g. (94 percent); ninh is 2.93.
+vacuum oven. The yield is 9.5'g. (94 percent); ninh is 2.93.
 Dope Preparation
 
-‘A spin dope is prepared from the above polymer by combin-
+A spin dope is prepared from the above polymer by combin-
 ing at room temperature 4 g. of polymer and 36 g. of 99.2%
-H,SO,. A very viscous dope results which depolarizes plane-
+H3SO,. A very viscous dope results which depolarizes plane-
 polarized light.
 Spinning and As-Extruded Properties
 
-Wet spinning is done from a motor-driven syringe fitted
+Wet spinning is done fromm a motor-driven syringe fitted
 with a spinneret. Because of the high viscosity of the dope a
-specially constructed heavy face spinneret is used having
+specially constructed heavy face spinneret is used. having
 twenty holes of 0.003 inch (0.076 mm.) diameter each. The
 filaments are coagulated in room temperature water con-
 tained in a metal trough. The length of immersion is 33 in.
@@ -4785,7 +6355,7 @@ The wet yarn is drawn 1.1X through a hot tube (Device A)
 at 380° C. with an input speed of 12.5 ft./min. (3.81 m./min.).
 The drawn yarn has the following properties: T/E/Mi/Den.
 6.9/2.1/413/74. It has trace crystallinity and an orientation
-angle of 24° and a sonic velocity of 6.37 km./sec.
+angle-of 24° and a sonic velocity of 6.37 km./sec.
 
 EXAMPLE 52
 
@@ -4793,57 +6363,70 @@ This example illustrates (1) the preparation of a random
 copolyamide comprised of equimolar amounts of random re-
 peating units selected from the group of
 
-3
+10
 
-a
+15
 
 20
 
+25
+
 30
 
-+35
+. 35
 
-aC S-c ON uC S-nu-
+—NH— —NH—
 
-—co~ Co
+au-€_S-0 a
+-co-¢ S. CO
+
+U
 
 and
-
---co-
 
 (2) an anisotropic dope of the copolyamide, and (3) fibers of
 the copolyamide.
 Polymer Preparation
 
 A solution of 1.62 g. (0.015 mole) p-phenylenediamine and
-3.35 g. (0.015 mole) 4,4'-diaminobenzanilide in a mixture of
+3.35 g. (0.015 mole) 4,4’-diaminobenzanilide in a mixture of
 60 ml. of hexamethylphosphoramide and 30 ml. of N-methyl-
 pyrrolidone is prepared in a blender jar in a drybox. A mixture
-of 3.045 g. (0.015 mole) terephthaloyl chloride and 3.795 g.
+of 3.045 g. (0.015 molé) terephthaloyl chloride and 3.795 g.
 (0.015 mole) 2,6-naphthaloyl chloride is added quickly with
 very rapid stirring. In two minutes a clear unstirrable gel
 results. After standing for two hours, the polymer is worked up
 in water, washed in the blender four times with water, one
-time each with acetone and alcohol, and is dried in a 100° C.
+time each with acetone and alcohol, and is dried in a 100°C.
 vacuum oven. The yield is 9.5 g. (99 percent), ninh is 2.77.
 Dope Preparation
 
 A dope is prepared from the above polymer by combining at
-room temperature 2 g. of polymer and 18 g. of 99.2% H,SQ,.
+room temperature 2 g. of polymer and 18 g. of 99.2% H,SO,.
 A viscous anisotropic dope results after six hours of intermit-
 tent stirring; this dope shows stir opalescence.
 Spinning and As-Extruded Properties
 
 Wet spinning is done from a motor-driven syringe which is
-fitted with a spinneret having 20 holes of 0,003 in. (0.076
+fitted with a spinneret having 20 holes of 0.003 in. (0.076
 mm.) diameter each. The filaments are coagulated in room
 temperature water contained in a metal trough. The length of
 immersion is 33 in. (81 cm.). The filaments are wound up at
 71.5 ft./min. (21.7 m./min.) while the bobbin is rotated with a
 
+40
+
 45
 
+50
+
+55
+
+60
+
 65
+
+70
 
 75
 
@@ -4851,15 +6434,15 @@ immersion is 33 in. (81 cm.). The filaments are wound up at
 
 lower face in a pan of water. The fiber is then soaked in water
 for 16 hrs. and dried. As-extruded yarn properties are:
-‘T/E/Mi/Den. 2.14/17.3/78/176. The yarn is amorphous and
+T/E/Mi/Den. 2.14/17.3/78/176. The yarn is amorphous and
 has an orientation angle of 60°.
 Fiber Heat Treatment and Properties
 
-‘The wet fiber from above is drawn 1.1X through a hot tube
+The wet fiber from above is drawn 1.1X through a hot tube
 (device A) at 475° C. with an input speed of 12.5 ft./min.
-(3.81 m/min.). The drawn yarn has the following properties:
+(3.81 m./min.). The drawn yarn has the following properties:
 T/E/Mi/Den. 6.8/0.9/698/72.7. It has medium crystallinity, an
-orientation angle of 12° and a sonic velocity of 8.84 km,/sec.
+orientation angle of 12° and a sonic velocity of 8.84 km./sec.
 
 EXAMPLE 53
 
@@ -4867,8 +6450,8 @@ This example illustrates (1) the preparation of a random
 co(polyamide-oxadiazole) comprised of repeating units
 selected from the group of
 
-a -o o<_S-co-
-a oC
+—nu—¢ \-NE-, —co—¢ ‘y—coe
+/ ° \
 N——N
 
 (relative ratio of 3:4:1, respectively), (2) an anisotropic oleum
@@ -4877,21 +6460,21 @@ co(polyamide-oxadiazole).
 Polymer Preparation
 
 A solution 3.24 g. (0.03 mole) p-phenylenediamine and
-2.52 g. (0.01 mole) 2,5-bis(p-aminophenyl)-1,3,4-oxadiazole
+2.52 g. (0.01 mole) 2,5-bis(p-aminophenyl)-1!,3,4-oxadiazole
 in a mixture of 90 ml. of hexamethylphosphoramide and 45
-ml. of N-methylpyrrolidone is prepared in a blender jar in a
+ml. of N-methylpyrrolidone is prepared in a blender jar in a ~
 drybox. Terephthaloy! chloride, 8.12 g. (0.04 mole) is added
 at once with rapid stirring. A very viscous, clear solution
 results which in two minutes becomes unstirrable. It is left
 undisturbed for 16 hrs. The polymer is worked up in water and
 is washed in the blender four times with water, one time each
 with acetone and alcohol, and is dried in a 100°C. vacuum
-oven; ninh is 3.28.
+oven; inh is 3.28.
 Dope Preparation
 
 A dope is prepared from the above polymer by combining 6
-g. of polymer, 44 g, of 100.7% H,SO, and 10 g. of fuming (20
-percent free SO) sulfuric acid. This mixture is stirred until a
+g. of polymer, 44 g. of 100.7% H,SO, and 10 g. of fuming (20
+percent free SO ) sulfuric acid. This mixture is stirred until a
 very stiff gel results. It is left undisturbed for two weeks.
 Although the dope appears to be a fracturable gel, it can be
 poured slowly into the spinning cell. The dope depolarizes
@@ -4904,56 +6487,1338 @@ motor driven syringe fitted with a heavy face spinneret having
 20 holes of 0.003 in. (0.076 mm.) diameter each. The fila-
 ments are coagulated in room temperature water contained in
 a metal trough. The length of immersion is 33 in. (83.8 cm.).
-The filaments are wound up at 26.5 ft./min. (8.1 m/min.)
+The filaments are wound up at 26.5 ft./min. (8.1 m./min.)
 while the bobbin is rotated in a pan of water. The yarn is then
 soaked in distilled water for 16 hrs. and dried. As-extruded
 yarn properties are: T/E/Mi/Den.: 2.4/14.4/94.5/103 (10 per-
 cent rate of extension). The yarn has trace amounts of crystal-
 linity, an orientation angle of 50° and a sonic velocity of 3.35
-km,/sec.
+km/sec. ;
 Heat Treatment and Properties
 
 The wet yarn from above is drawn 1.1X through a hot tube
 (Device A) at 475° C. with an input speed of 12.5 ft./min.
+
+and
+
 (3.81 m./min.). The drawn yarn has the following properties:
+
 T/E/Mi/Den.: 3.8/0.9/500/57. It has medium crystallinity and
 an orientation angle of 15°, and a sonic velocity of 6.80
 km./sec.
-
-and
 
 EXAMPLE 54
 
 This example illustrates the preparation of high modulus
 poly(2-chloro-p-phenylene terephthalamide) fibers from an
 
+tainal oof
+
 --- REVIEWED TRANSCRIPTION PAGE 42 OF 58 ---
 
-Sheet 42 of 58
+63
+
+optically anisotropic dope comprising about 20% by weight of
+the polyamide. :
+
+To a stirred solution of 2-chloro-p-phenylenediamine (35
+g., 0.245 mole) dissolved in 425 ml. of hexamethylphosphora-
+mide, cooled in a bath of ice and water, is added terephthaloy]
+chloride (49.7 g., 0.245 mole). Almost immediately a-
+precipitate forms as a wet paste. The reaction is permitted to
+stand overnight, after which the polymer is collected and
+agitated with water in a blender. The polymer is dried for
+several days at 78° C. in a vacuum oven. There is obtained
+poly(2-chloro-p-phenylene terephthalamide) 60 g., ninh=1.
+13.
+
+A dope containing 17.2% by weight polymer and 2.7 per-
+cent by weight salt is prepared by combining 5 g. of poly(2-
+chloro-p-phenylene terephthalamide), prepared above, with
+25 ml. of a solution obtained by mixing 100 ml. of N,N-
+dimethylacetamide and 3.1 g. of lithium chloride. The dope is
+allowed to stand at room temperature for a week or longer,
+during which time it separates into an isotropic upper layer
+and an anisotropic lower layer (i.e., for the lower layer, T>
+70, as determined by the method described herein); volume
+ratio is about 2.6/1 (upper/lower). The layers are isolated and
+the anisotropic lower layer is extruded at room temperature
+through a 5 hole spinneret, each hole 0.003 inch (0.076 mm.)
+in diameter, into a water bath maintained at 21° C. The fila-
+ments produced are wound up at 57 ft./min. (17.4 m./min.).
+After the filaments are soaked in water and dried, they exhibit
+the following properties: T/E/Mi (boiled-off sample):
+3.5/1.8/234; orientation angle is 39.2° (Method Three). When
+this yarn is passed over a 425° C. pin, filament T/E/Mi (boiled-
+off sample) become: 2.4/0.7/318; orientation angle is 28°
+(Method Three).
+
+Physical properties and composition data for each of the
+above-described layers are tabulated below in Table V. Unless
+specified otherwise, determinations are made at 25°-26°C.
+
+TABLE V
+. Upper Layer Lower Layer
+
+Density, g./ml. 0.97 1.01
+
+Ref. Index, np) 1.4725 1.4676
+Polymer content, g./ml. 0.112 0.179
+Polymer yinh 0.43 + 1.44
+
+LiCl content, g./ml. 0.0260 0.0238
+
+EXAMPLE 55 ' ‘ '
+
+This example illustrates the preparation of an optically
+anisotropic spin dope comprising about 10 percent by weight
+poly(2-chloro-p-phenylene terephthalamide) and the prepara-
+tion of high modulus fibers therefrom.
+
+A dope containing 9.5 percent by weight polymer and 1.5
+percent by weight salt is prepared by combining 5 g. of poly(2-
+chloro-p-phenylene terephthalamide), prepared in Example
+54 with 50 ml. of a solution obtained by mixing 100 ml. of
+N,N-dimethylacetamide and 1.6 g. of lithium chloride. The
+dope is allowed to stand at room temperature for a week or
+longer, during which time it separates into 2 fluid layers or
+phases of approximately equal volume, the upper of which is
+isotropic and the lower anisotropic (i.e., for the lower layer,
+T>70, as determined by the method described herein). The
+layers are isolated and the anisotropic lower. layer is extruded
+at room temperature through a 1-hole spinneret, the hole
+being 0.005 inch (0.127 mm.) in diameter, into a water bath
+maintained at 21° C. The resultant filament is wound up at 72
+ft./min. (22 m./min.) After the filament is soaked in water and
+dried, it exhibits the following properties: T/E/Mi (boiled-off
+sample) 4.6/4.8/198; orientation angle is 43.9° (Method
+Three). When this filament is passed over a 425° C. pin,
+T/E/Mi (boiled-off sample) become: 3.1/1.3/274; orientation
+angle is 28° (Method Three).
+
+Physical properties and composition data for each of the
+above-described layers are tabulated below in Table VI. Un-
+less specified, otherwise, determinations are made at 25°-26°
+Cc.
+
+10
+
+15
+
+20
+
+30
+
+35
+
+40
+
+45
+
+50
+
+55
+
+60
+
+65
+
+70
+
+7S
+
+3,671,542
+
+64
+TABLE VI
+Upper Layer Lower Layer
+
+Density, g./ml. Not taken 0.99
+
+Ref. Index, np** 1.4584 . 1.4544
+Polymer content, g./ml. 0.080 0.098
+Polymer, ninh 0.74 1.61
+
+LiCl content, g./ml. 0.0120 0.0146
+
+In a manner similar to that described above, another
+spinning dope is prepared, i.e., 5 g. of the polymer in 50 ml. of
+the amide-salt mixture. The dope is permitted to stand for
+about a week after which it is shaken to combine the layers
+into a turbid dope which is not optically clear; T> 50 as deter-
+mined by the method described herein. This dope is im-
+mediately extruded at room temperature through 2 holes of a
+spinneret, each hole 0.005 inch (0.0127 cm.) in diameter, into
+a water bath kept at 23° C. The filaments are wound up
+between 32-44 ft./min. (9.8-13.5 m./min.). After the fila-
+ments are soaked in water and dried, they exhibit the follow-
+ing properties: T/E/Mi (boiled-off sample); 4.1/2.7/223;
+orientation angle is 38.9° (Method Three).
+
+EXAMPLE 56
+
+This example illustrates the preparation of a birefringent
+spinning dope of poly(p-phenylene terephthalamide ) compris-
+ing a mixture of anisotropic and isotropic phases.
+
+To a solution of p-phenylenediamine (31.08 g., 0.287 mole)
+in a mixture of 360 ml. of hexamethylphosphoramide and 180
+ml. of N-methylpyrrolidone-2 is added 3.36 g. of p-
+aminobenzoic acid, using water bath cooling. To this cooled
+solution is added terephthaloyl chloride (60.90 g., 0.300
+mole). The reaction mixture is stirred overnight, then com-
+bined with water in a blender to precipitate polymer. The
+product is washed with water and dried in a vacuum oven at
+65° C. The product is then combined with acetone in a
+blender, the mixture filtered, and the product collected and
+dried at 65° C. in a vacuum oven. There is obtained a quantita-
+tive yield of poly(p-phenylene terephthalamide) (jinh=1.32).
+
+A dope containing 7.96 percent by weight polymer and 1.24
+percent by weight salt is prepared by first combining poly(p-
+phenylene terephthalamide) (18 g., prepared as above); hex-
+amethylphosphoramide (160 ml.), N-methylpyrrolidone-2
+(40 ml.), and lithium chloride (2.8 g.). The ingredients are
+mixed with a shear-disc stirrer and are cooled in a bath of ice
+and water. After the ingredients stand overnight, with cooling,
+there is produced a smooth, free-flowing, homogeneous paste.
+The latter is heated to 60° C. to produce a fluid dope (slightly
+turbid when allowed to stand unheated) which exhibits
+opalescence when stirred.
+
+This dope, when heated to about 35° C. to become fluid,
+depolarizes plane-polarized light when viewed with a polariz-
+ing microscope, i.e., a bright field is observed with the
+microscope.
+
+The apparatus by which filaments are prepared from this
+dope comprises a solution cell to which is connected an s-
+shaped tube containing a 20-hole spinneret in its lower end
+(each spinneret hole is 0.004 inch, 0.01 cm., in diameter).
+After the hot (60° C.) dope is poured into the solution cell, the
+cell and the s-shaped tube are warmed with a heat gun until
+the dope begins to flow from the spinneret orifices. The ap-
+paratus is then positioned such that the spinneret discharges in
+a horizontal direction into a water bath kept at 60° C. The s-
+shaped tube is partially immersed in the bath to assist in keep-
+ing the dope warm prior to extrusion. The dope is extruded at
+a pressure of 20 Ib./in.2 (0.14 Kg./cm.”) and the resultant fila-
+ments are wound up on bobbins at 72 ft./min. (22 m./min.),
+care being taken to keep the filaments taut at the spinneret
+face. The bobbins are washed in cold water for several hours
+before being dried in air at room temperature. Filaments from
+one of the bobbins exhibit the following properties:
+T/E/Mi/Den (boiled off sample): 3.7/4.0/194/3.7; orientation
+angle is 39° (Method Three).
+
+tninat ied
 
 --- REVIEWED TRANSCRIPTION PAGE 43 OF 58 ---
 
-Sheet 43 of 58
+3,671,542
+
+65
+
+When the above-cited procedure is repeated, with the
+change that the spinneret holes are each 0.003 in. (0.076
+mm.) in diameter, there are obtained poly(p-phen-
+yleneterephthalamide) filaments having the following proper-
+ties: T/E/Mi/Den. (boiled-off sample): 3.2/3.2/219/2.54;
+orientation angle is 37.3° (Method Three).
+
+EXAMPLE 57
+
+This example illustrates the wet-spinning of an optically
+anisotropic dope to form poly(p-phenylene terephthalamide)
+filaments whose properties are significantly enhanced by a
+subsequent heat treatment.
+
+Poly(p-phenylene terephthalamide) (18 g., ninh = 1.32,
+prepared in Example 56), hexamethylphosphoramide (134
+ml.), N-methylpyrrolidone-2 (66 ml.), and lithium chloride
+(2.8 g.) are combined and stirred at —10° C. for 2-3 hrs. to
+produce a thick mobile paste which is allowed to warm slowly
+to room temperature. A fluid dope is produced by continu-
+ously stirring the material for 3 days; the dope exhibits
+opalesence when stirred; T= 46 as measured herein.
+
+The dope, containing 7.95% by weight polymer and 1.24
+percent by weight salt, is extruded at 20 Ib/in.2 (0.14
+kg./cm.?) through a 20-hole spinneret, each hole being 0.003
+inch (0.076 mm.) in diameter, into a water bath kept at 26°C.
+The resultant filaments are wound up at 36 ft/min. (11
+m./min.) on bobbins which are washed in cool water for 3 hrs.
+before being dried in air at room temperature. Yarn from one
+bobbin exhibits the following properties: T/E/Mi/Den.
+(boiled-off sample): 1.93/2.3/140/45.7; tation angle is
+42.5° (Method Three). A sample of this yarn which has been
+passed at 20 ft/min. (6.1 m./min.) through a nitrogen-filled
+tube | ft. (0.3 m.) in length and which is heated at the center
+to 560° C. exhibits the following properties: T/E/Mi/Den.
+(boiled-off sample): 3.94/1/414/38.4; orientation angle is 24°
+(Method Three).
+
+EXAMPLE 58
+
+This example illustrates the in situ preparation of an
+anisotropic dope of poly(p-benzamide) in N,N.N’.N’-
+tetramethylurea.
+
+p-Aminobenzoyl chloride hydrochloride (400 g.) is added
+to 2 I. of N,N,N’,N’-tetramethylurea containing 2 g. of p-
+aminobenzoic acid, maintained at 5° C. The reaction mixture
+is stirred with external cooling for about 15 min., then stirred
+for about 1.75 hr. at autogenous temperature, after which
+lithium hydroxide (90 g.) is added. The reaction mixture is
+heated at 125° C. for 3 min., then stirred at autogenous tem-
+perature for 2 hrs. to produce a dope containing 10.8 percent
+polymer (a-sample of polymer isolated from the dope exhibits
+inherent viscosity of 1.40). This dope, now containing about 6
+percent lithium chloride, exhibits a transmittance value (T) of
+57, as measured herein.
+
+Poly(p-benzamide) isolated from a similarly prepared dope,
+but one obtained using only 0.35 g. of p-aminobenzoic acid,
+exhibits an inherent viscosity of 1.65. This dope exhibits a
+transmittance value (T) of 58, as measured herein.
+
+EXAMPLE 59
+
+This example illustrates the in situ preparation of an un-
+neutralized anisotropic spin dope comprising poly(p-benza-
+mide). In the final dope there are present 2 moles of hydrogen
+chloride for each mole of p-aminobenzoyl chloride
+hydrochloride used as a monomer.
+
+To 2 |. of N,N,N’,N’-tetramethylurea to which has been
+added 0.92 g. of p-aminobenzoic acid, cooled at ice tempera-
+ture, are added 256 g. of p-aminobenzoyl chloride
+hydrochloride. The reaction mixture is stirred at bath tem-
+perature for about 55 min. to produce a viscous dope. Stirring
+is halted and the dope, containing about 11% by weight
+polymer, is permitted to stand overnight at room temperature
+in a nitrogen atmosphere prior to being extruded into fibers. A
+sample of poly(p-benzamide) isolated from the dope exhibits
+inherent viscosity of 1.1. The dope exhibits a transmittance
+value (T) of 55, as measured herein.
+
+5
+
+3
+
+20
+
+e
+c)
+
+w&
+a
+
+40
+
+60
+
+65
+
+70
+
+75
+
+66
+EXAMPLE 60
+
+This example illustrates the preparation of an anisotropic
+dope comprising a random copolymer of poly(p-benza-
+mide/m-benzamide) (95/5) in a mixture of N,N-
+dimethylacetamide/lithium chloride (95/5).
+
+To NN,N’.N’-tetramethylurea (150 ml.), stirred and
+cooled in an ice bath, is added a mixture of p-aminobenzoyl
+chloride hydrochloride (28.5 g.) and m-aminobenzoyl
+chloride hydrochloride (1.5 g.) over 15 min, The reaction
+mixture is cooled on ice and stirred for | hr., then is stirred for
+1.5 hr. at room temperature to produce a stirrable dope. After
+20 hrs. at room temperature a clear gel is present. The gel is
+combined with water in a blender to precipitate the
+copolymer. The product is isolated, washed, and dried to give
+15.5 g, of poly(p-benzamide/m-benzamide) (95/5), minh=1.
+12.
+
+‘A dope containing about 10 percent by weight copolymer is
+prepared by adding a sufficient amount of the above-prepared
+copolyamide to a mixture of N,N-dimethylacetamide/lithium
+chloride (95/5 by weight). The ingredients are stirred and
+heated to 100° C. for 10-15 min., then are stirred at room
+temperature until a dope free of undissolved polymer is
+formed. The dope exhibits a transmittance value (T) of 11,
+measured at room temperature as described herein.
+
+EXAMPLE 61
+
+This example illustrates the in situ preparation of anisotrop-
+ic spin dopes of poly(p-benzamide), using lithium carbonate
+to neutralize the dope.
+
+To 200 g. of p-aminobenzoyl chloride hydrochloride are
+added 1,310 g. of N,N,N’,N‘-tetramethylurea at about 7° C.
+This reaction mixture is stirred for about 15 min. at room tem-
+perature. After a total of about 80 min. (with stirring) the tem-
+perature of the reaction mixture reaches 40°C. The mixture is
+stirred an additional 28 min. at 40° C., then is stirred rapidly
+during which time the clarity decreases and lithium carbonate
+is added in 2 portions (50 g., 28 g.) and the mixture is stored at
+85°C. Following this, 2 g. of p-aminobenzoic acid in 30 ml. of
+N,N,N',N’-tetramethylurea are added, followed by 140 g.
+more of N,N,N’,N’-tetramethylurea. The reaction mixture is
+heated to about 80°-90° by an oil bath at 130° C. and about
+225 g. of liquid is removed by subjecting the heated mixture to
+vacuum. An additional 72 g. of N,N,N’ ,N’-tetramethylurea
+are added and the reaction mixture heated at 120° C. for 4
+days and centrifuged to remove unreacted Li,CO,. The reac-
+tion mixture is concentrated to produce a dope containing
+about 9.5 percent by weight poly(p-benzamide) which ex-
+hibits an inherent viscosity of 1.74. This dope exhibits a trans-
+mittance value (T) of 21, measured at room temperature as
+described herein.
+
+EXAMPLE 62
+
+This example further illustrates methods of (1) preparing
+poly(p-benzamide) useful in forming the dopes of this inven-
+tion and (2) preparing related dopes.
+
+PARTA
+
+p-Aminobenzoyl chloride hydrochloride (450 g.) is added
+all at once to 2,200 ml. of dry N,N,N’,N’-tetramethylurea,
+precooled on ice, to instantly form a solution. This solutio
+stirred at ice bath temperature for 2 hrs. The cooling bath
+then removed and the solution stirred for 2 additional hrs.,
+during which time it becomes warm and slowly forms a solid
+gel. The gel is permitted to stand overnight after which it is
+washed twice with tap water and once with 2B alcohol in a
+blender (the gel is divided into 3 portions for these washing
+operations). The isolated polyamide is dried at 80° in a
+vacuum oven under a nitrogen atmosphere; ninh is 1.83. The
+sample is comminuted by being ball milled for 3 days.
+
+When this synthesis is repeated, except that the gel is per-
+mitted to stand for only 2 hrs. after formation, the isolated
+polyamide exhibits an inherent viscosity of 1.74, A similar
+synthesis produces a polymer exhibiting an inherent viscosity
+of 1.53 and a peak height ratio of 0.75.
 
 --- REVIEWED TRANSCRIPTION PAGE 44 OF 58 ---
 
-Sheet 44 of 58
+3,671,542
+
+67
+PARTB
+
+Into a mixture of 250 ml. of N,N-dimethylacetamide and 15
+g. of lithium chloride are added 30 g. of poly(p-benzamide)
+(ninh = 1.5; prepared in Part A; about one half the polymer
+comminuted by ball milling). The mixture contains 10.8
+weight percent of the polyamide and 5.4 weight percent of the
+salt. Swelling occurs instantaneously. The swelled mass is
+heated to 100°C. to produce a dope suitable for spinning.
+
+PARTC
+
+Into a mixture of 200 ml. of N,N-dimethylisobutyramide
+and 13 g. of lithium chloride are added, at room temperature,
+20 g. of poly(p-benzamide) (minh = 1.39, prepared by the
+general method of Part A). The combined ingredients, con-
+taining 9.4 weight percent of the polyamide and 6.1 weight
+percent of the salt are stirred at autogeneous temperature
+until a marked viscosity increase is noted, after which they are
+frozen in a bath of solid carbon dioxide and acetone and sub-
+sequently allowed to warm up to room temperature during
+overnight standing. The ingredients are then heated to 110°C.
+and maintained thereat for about 2 hours to form a very
+viscous composition. The composition is frozen as before and
+permitted to warm up and stand over the weekend. The in-
+gredients are subsequently heated with stirring in a bath main-
+tained at 100° C. to produce a thick viscous dope.
+
+PARTD
+
+A spinning dope is prepared by adding 15 g. of poly(p-
+benzamide) (inh = 1.20, comminuted by ball milling,
+prepared by the general procedure of Part A) to a mixture of
+148 ml. of N-methylcaprolactam and 7 g. of lithium chloride
+at room temperature. This combination, containing 8.8 weight
+percent of the polyamide and 4.1 weight percent of the salt, is
+stirred at room temperature until swelling occurs. The swollen
+mass is first cooled on a mixture of solid carbon dioxide and
+acetone and is then heated to 110°C. to produce a dope.
+
+PARTE
+
+Lithium chloride (10 g.) is dissolved at 55° C. in 200 ml. of
+dry N-methylpyrrolidone-2. Poly(p-benzamide) (20 g., ninh=
+1.6; prepared by the general procedure of Part A) is added
+thereto at 100° C., with vigorous stirring. The mixture con-
+tains 8.9 weight percent of the polyamide and 4.4 weight per-
+cent of the salt, In about 1 hour a viscous composition results.
+This is stirred overnight at 100° C. to produce a free flowing
+dope.
+
+PARTE
+
+p-Aminobenzoyl chloride hydrochloride (40 g.) is added to
+200 ml. of N,N’-dimethylethyleneurea at ice temperature to
+form a clear solution. The cooling bath is removed after 20
+minutes whereupon a thick mass forms. After one hour, litl
+um hydroxide (10 g.) is added and the mixture heated to 110°
+C. to again produce a clear, easily stirrable composition. A
+sample of the polymer, precipitated by addition of water, has
+an inherent viscosity of 1.36. This composition contains about
+9.7 weight percent of the polyamide and about 6.9 weight per-
+cent of lithium chloride.
+
+Each of the homopolymeric poly(p-benzamide) samples of
+Parts A to F, inclusive, exemplify the preferred composition
+for use in the dopes and/or fibers of this invention, i.e., each
+polymer has a PHR less than about 0.86 and satisfies the Sedi-
+mentation Test.
+
+EXAMPLE 63
+
+Shown in the following Table VII are data determined by
+the previously-described procedures on various anisotropic
+dopes of this invention comprising poly(p-benzamide). The
+column labeled “Source” indicates either the specific Part of
+Example 62 in which the dope is prepared or else a Part of Ex-
+
+15
+
+40
+
+50
+
+2
+&
+
+1
+
+3
+
+a
+
+68
+
+ample 62 whose general procedure is employed to prepare the
+dope. The symbol “T” is used for the value obtained from the
+expression 2(14°//I_*’—I,'/I-*") X100
+
+TABLE VII—ANISOTROPY OF THE DOPES
+Poly(p-benzamide)
+
+“We. percent
+in com-
+position
+
+Wt. per-
+cent LiCl
+in com-
+position
+
+Bx. 62
+souree
+
+Amide
+
+Item ainh or urea
+
+4.9)
+
+BSB epexepe
+eaoowme ate
+
+Be enoopee
+
+8=N,N’-dimethylethyleneurea,
+
+b=N‘methyleaprolactam.
+
+e=N,N-dimethylisobutyramide.
+
+4=NiN-dimethylacetamide.
+N-methylpyrrolidone-2.
+
+Polymer dissolved at room temperature.
+
+**All measurements made at room temperature.
+
+EXAMPLE 64
+
+This example illustrates a phase diagram for a N,N-
+dimethylacetamide lithium chloride dope.
+
+Isolated poly(p-benzamide) having an inherent viscosity of
+1.18 is prepared by the general procedure outlined in Example
+62-A. Dopes are prepared, according to the general
+procedures previously outlined, by combining the polyamide,
+N,N-dimethylacetamide (containing about 0.2 to 2 percent of
+water) and lithium chloride in various concentrations, at room
+temperature, by high speéd (3,000 to 4,000 r.p.m.) stirring
+with a serrated spiral blade 0.25 in. (0.635 cm.) in diameter in
+a2 ml. tube, 0.375 in. (0.952 cm.) in diameter, without exter-
+nal heating. Small quantities of particles which resist solution
+are crushed manually, if necessary. Dope samples at various
+concentrations are examined by pressing each sample into a
+thin layer between a microscope slide and coverslip. These
+slides are viewed between crossed polarizers with or without
+magnification to determine whether the dopes contain a single
+isotropic phase, a single anisotropic phase, or an emulsion of
+these phases. The presence of any solid particulate polyamide
+in the dope sample is also determined in this manner.
+
+The results of such an evaluation are shown in the phase
+diagram of Figure I. Five regions are shown. Region (1) is
+completely isotropic with the polymer being completely dis-
+solved therein. Region (2) is partially anisotropic; microscop-
+ic regions depolarize plane-polarized light. Region (3) is
+completely anisotropic. Region (4) is also completely
+anisotropic but contains solid particulate polyamide therein.
+‘The line between Regions (3) and (4) represents the max-
+imum polyamide content, i.e., as the polyamide content in-
+creases above this point, dope becomes supersaturated, hav-
+ing solid polyamide therein. Region (5) is completely isotropic
+but contains solid particulate polyamide therein.
+
+The phase diagram is determined based upon the ap-
+pearance of the dope samples, as follows:
+
+The dopes referred to as isotropic (Region 1) are clear and
+transparent, and appear as a structureless, dark field when
+viewed between crossed-polarizers (as described above) with
+or without magnification.
+
+‘The dopes referred to as partially anisotropic (Region 2)
+are emulsions of isotropic and anisotropic phases. At lower
+polyamide concentrations, the continuous phase is isotropic;
+at higher polyamide concentrations, the continuous phase is
+anisotropic. These dopes appear cloudy, often exhibit
+opalescence on stirring, and can be separated by centrifuga-
+tion (or in some cases, by gravity). When the continuous
+phase is isotropic, the microscopic birefringent portions of
+these dopes appear as a multiplicity of bright areas of varying
+
+toina aren
 
 --- REVIEWED TRANSCRIPTION PAGE 45 OF 58 ---
 
-Sheet 45 of 58
+3,671,542
+
+69
+
+size and shape against a dark field when viewed under magnifi-
+cation (e.g., 400X) between crossed polarizers (as described
+above). When the continuous phase is anisotropic, the
+isotropic portions of these dopes appear as a multiplicity of
+small dark areas against a bright background when viewed
+under magnification (e.g., 400X) between crossed-polarizers
+(as described above).
+
+The dopes referred to as completely anisotropic (Region 3)
+when viewed between crossed-polarizers (as described
+above), under magnification, (e.g., 400X) appear as a bright
+field with varying direction of birefringence. Threadlike lines,
+characteristic of nematic mesophases, are frequently seen.
+The field is depolarized at low or no magnification. On stand-
+ing undisturbed, the bulk dope frequently becomes trans-
+parent and turns transluscent only on flow.
+
+The dopes within Regions (4) and (5) are similar to dopes
+within Regions (3) and (1), respectively, but further contain
+solid particulate polyamide therein. Without magnification,
+these dopes may be undistinguishable from the emulsions in
+Region (2). However, at high magnification, (e.g., 790X) the
+particulate material in these dopes appears angular in shape
+and is not fluid. The non-fluid nature thereof may be seen by
+the fact that this material does not flow when pressure is
+placed upon the covers!
+
+Regions (2) and (3) are highly preferred dopes. The as-ex-
+truded properties of fibers produced from these anisotropic
+dopes are generally superior to those produced from other-
+wise similar dopes which are isotropic or less anisotropic as
+the following example illustrates.
+
+EXAMPLE 65
+
+This example compares the as-extruded fiber properties of a
+fiber prepared from a highly anisotropic dope to those of a
+fiber prepared from a dope which is slightly anisotropic.
+
+5
+
+25
+
+30
+
+we
+a
+
+A poly(p-benzamide) dope is prepared in N,N-
+dimethylacetamide from —_p-aminobenzoyl _ chloride
+hydrochloride, using lithium carbonate, by general
+
+procedures, above. The resulting dope (ninh = 2.36) is cen-
+trifuged in a Beckman “L” ultracentrifuge at 50,000 r.p.m.
+using a Ti 50 rotor for 21.5 hours. The two liquid layers are
+separated and extruded separately through a I-hole, 0.004-
+inch (0.01-cm.) spinneret into a coagulating bath of water
+maintained at 60°-75° C. to produce filaments which, after
+being dried, exhibit the following tensile properties:
+From the upper, slightly anisotropic layer, T/E/Mi/Den.
+1.2/9.0/64/22.5.
+From the lower, highly anisotropic layer, T/E/Mi/Den.
+7.2/8.1/283/4.8.
+
+50
+
+EXAMPLE 66
+
+This examples (Table VIII) illustrates (1) the effect of the
+particular amide or urea media and (2) contrasts the effective-
+ness of lithium and calcium chlorides in preparing anisotropic
+poly(p-benzamide) dopes of this invention, each of which
+have the maximum polymer. content found possible for the
+specific systems evaluated. The table also indicates the rela-
+tive solvent power of calcium chloride systems contrasted to
+lithium chloride systems. As the table indicates, lithium
+chloride is generally better.
+
+Isolated poly(p-benzamide) having an inherent viscosity of
+about 0.7 is prepared by the general procedures outlined in
+Example 62. Dopes of each of the amide or urea media con-
+taining about 4-9 percent by weight of lithium chloride or cal-
+cium chloride are prepared with polyamide being added until
+the maximum polyamide content is obtained. The salt is added
+in the amount which optimizes the polyamide content for that
+particular amide or urea medium. These date are presented in
+Table VII.
+
+TABLE VIII, Part 1
+
+lithium
+
+Maximum
+chloride 75
+
+Polymer
+
+70
+Amide or Urea
+Medium Concentration Concentration
+(weight %) (weight %)
+Acyclic Amides
+N,N-dimethylacetamide 20 $3
+N,N-dimethylpropionamide 28 5.
+N-dimethylbutyramide 30 65
+N,N-dimethylisobutyramide 21 9.2
+NiN-dimethylmethoxyacetamide 11 5.1
+N,N-diethylacetamide 2 5.0
+Cyclic Amides
+N-methylpyrrolidone-2 14 5.2
+N-methylpiperidone-2 a 5.4
+N-methylcaprolactam 13 5.2
+N-ethylpyrrolidone-2 25 53
+Acetylated Cyclic Amines
+N-acetylpyrrolidone 17 5.4
+N-acetylpiperidine 14 3.8
+Cyclic Ureas
+N,N'-dimethylethyleneurea 19 5.0
+N,N'-dimethylpropyleneurea 18 3.
+TABLE VIII, Part 2*
+Maximum Calcium Calcium Chloride
+Polymer Chloride System Relative
+Amide or Concen- —Concen- To Lithium
+Urea Medium tration ation Chloride System*
+(wt. %) (wt. %)
+Acyclic Amides
+N,N-dimethyl 14 8.0 A
+acetamide
+Cyclic Amides
+N-methylpyrroli- 19 16
+done-2
+N-methylpiperi- 14 8.7
+done-2
+N-ethylpyrroli- 17 64
+done-2
+Acetylated
+Cyclic Amines
+Neacetylpyrrolidine 17 S.A B
+N-acetylpiperidine 15 17 B
+
+* Legend
+A- Less effective — Difference < 10%, >5%
+
+B Equally effective — Within 3% of each other
+
+C Slightly more effective — Difference <5%, >3%
+D More effective — Difference <10%, >5%
+
+EXAMPLE 67
+
+This example illustrates the preparation of copolymers of
+poly(p-phenylene teraphthalamide) and poly(p-phenylene
+isophthalamide), dopes thereof, and fibers thereof. Fiber pro-
+perty contrasts between products from anisotropic and
+isotropic dopes are shown.
+
+Copolymer Preparation
+
+Isophthaloy! chloride (sublimed) is added at once to a solu-
+tion of p-phenylenediamine (5.40 g., 0.050 mole) in a mixture
+of hexamethylphosphoramide (65 ml.) and N-methyl-2-pyr-
+rolidone (35 ml.) contained in a 500 ml. resin-making kettle
+equipped with an air-driven stirrer and a calcium chloride dry-
+ing tube. The mixture is stirred for 2 min. and powdered
+terephthaloyl chloride (sublimed) is added at once with
+vigorous stirring. The temperature of the reaction mixture is
+moderated with a cool (i.¢., 20°C.) water bath. Stirring is con-
+tinued until an unstirrable mass is obtained. The mixture is al-
+lowed to stand overnight at room temperature, and is then
+combined with water and stirred at high speeds in a gallon-size
+(3.875 liter) blender. The polymer is washed three times with
+water by being stirred in a blender and isolated by being fil-
+tered on a sintered-glass coarse-pore Buchner funnel. The
+polymer is dried overnight in a vacuum oven at about 70° C.
+‘The yields of polymer are tabulated in Table IX, as well as the
+inherent viscosities as measured from a solution of 125 mg.
 
 --- REVIEWED TRANSCRIPTION PAGE 46 OF 58 ---
 
-Sheet 46 of 58
+3,671,542
+
+71
+
+polymer in 25.0 ml. of 95-98 percent (by weight) sulfuric
+acid.
+
+TABLE IX
+Asephthaloyl —‘Terephthaloy!
+
+Copolymer chloride (1) chloride (T)” Yield, g. nin T/L
+0.51 g.' 0.0025 9.08 g., 0.0476 U5 4.48 95/5
+mole, mole,
+
+12 3.84 90/10
+U4 3.22 86/15
+mole.
+8.12 g., 0.0400 U7 1.69 80/20
+mole.
+
+Preparation of Anisotropic Dope from Polymer [A]
+
+A mixture of 5.0 g. of Polymer A (from Table IX) and 45.0
+g. of fuming (0.8 percent free SO,) sulfuric acid is mixed an-
+hydrously with a mechanically driven, paddle-type stirrer in a
+200 ml. round bottom flask while cooling with an ice/water
+bath. The mixture is allowed to stir overnight during which
+time the cooling bath is allowed to warm to room temperature.
+The resulting very viscous dope exhibits stir-opalescence and
+depolarizes plane-polarized light.
+
+Fiber Preparation from Polymer [A] by Wet Spinning
+
+The spin dope prepared above is centrifuged to remove en-
+trapped gases. It is then extruded by means of mechanically
+driven syringe through a 0.010 in, (0.025 cm.) thick precious
+metal spinneret having 20 holes of 0.003 in. (0.0076 cm.)
+diameter into an aqueous bath at 25° C. The water bath is
+about 2 in. (5.1 cm.) wide and about 1 in. (2.54 cm.) deep.
+After passing through the bath for about 2.5 ft. (0.75 m.), the
+yarn is snubbed out of the water at about a 45° angle to an
+electrically driven wind-up device. The yarn is collected on a
+perforated bobbin at 22 ft./min, (7.22 m./min.). It is then
+washed in cool running water for several (i.¢., 3 hr) hours and
+dried in air at room temperature. The filaments exhibit low
+crystallinity and an orientation angle of 35° as measured from
+a wide angle X-ray pattern, Filaments exhibit the following
+T/E/Mi/Den. values: 7.7/11.3/195/4.22.
+
+Preparation of Isotropic Dope from Polymer [D]
+
+A mixture of 5.0 g. of polymer D (see Table IX) and 45.0 g.
+of fuming (0.8 percent free SO,) sulfuric acid is mixed an-
+hydrously with a mechanically driven, paddle-type stirrer in a
+200 ml. round-bottom flask while cooling with an ice/water
+bath. The mixture is allowed to stir overnight during which
+time the cooling bath is allowed to warm to room temperature.
+The resulting dope is viscous, clear and isotropi
+Fiber Preparation from Polymer [D] by Wet Spinning
+
+The spin dope prepared above is centrifuged to rémove en-
+trapped gases. It is then extruded by means of a mechanically
+driven syringe through a 0.010 in. (0.025 cm.) thick precious
+metal spinneret having 20 holes of 0.03 in. (0.0076 cm.)
+diameter into an aqueous bath at 25° C. The water bath is
+about 2 in, (5.1 em.) wide and about | in. (2.54 cm.) deep.
+After passing through the bath for about 2.5 ft. (0.76 m.), the
+yarn is snubbed out of the water at about a 45° angle to an
+electrically driven wind-up device. The yarn is collected on a
+perforated bobbin at 18 ft/min. (5.9 m./min.), It is then
+washed in cool running water for several (i.e., 3 hr.) hours and
+dried in air at room temperature. The filaments exhibit low
+crystallinity and an orientation angle of 55° as measured from
+a wide angle X-ray pattern. Filaments exhibit the following
+T/E/Mi/Den, values: 2.4/25.1/82/5.68.
+
+EXAMPLE 68
+
+This example illustrates the preparation of fibers from an
+anisotropic dope comprising poly(p,p’-phenylene-benzamide)
+and fluorosulfonic acid.
+
+A total of 28 g. of poly(p,p'-phenylenebenzamide) of ninh
+of about 2.0 (in sulfuric acid, 99.8 percent by wt., C=0.5%) is
+dissolved in 102 ml. of commercial fluorosulfonic acid to form
+a dark gray, opaque, anisotropic dope exhibiting marked stir
+opalescence. All but about 5 ml. of this dope is poured into an
+“Inconel” spinning cell 1,870 in. (4.75 cm.) inner diameter
+
+3
+
+5
+
+20
+
+25
+
+40
+
+65
+
+72
+
+and 4.625 in. (11.7 cm.) deep. The dope is spun through a
+100-hole Pt. spinneret, each hole having a diameter of 0.0025
+in. (0.0635 mm.) by exerting mechanical pressure of 190 to
+330 Ib,/in? (13.4 to 23.2 kg./cm.%) on a piston above the
+spinning dope. The fiber is extruded into water at 5°- 10°C.
+and after a travel of about 140 cm. in this bath is wound at a
+rate of 45-70 ft/min. (14.7-22.6 m/min.). The fiber is
+washed in running water on the bobbin during windup and for
+16 hours afterwards. The fiber is then dried in air on the bob-
+bin for 1.5 hours and processed by drawing 1.14X at the rate
+of 25 ft/min. (8.2 m./min.) in a tube (Device C) heated to
+635°C, The yarn properties are T/E/Mi= 3.70/1.2/402; orien-
+tation angle is 21°.
+
+: EXAMPLE 69
+This example illustrates the preparation of fibers from an
+
+anisotropic dope comprising poly(p-phenylene p,p’-biphenyl-
+
+dicarboxamide), fluorosulfonic acid, and HF.
+
+An isotropic dope is prepared by dissolving 13 g. of poly(p-
+phenylene p,p-diphenyldicarboxamide) (inh = 2.2) in 40 ml.
+of anhydrous HF at 0° C. This dope is cooled overnight at -80°
+C. It is rewarmed to 0° and 20 ml. of commercial fluorosul-
+fonic acid are added. The dope is warmed to room tempera-
+ture under nitrogen to allow most of the HF to evaporate. The
+next day an additional 5 ml. of fluorosulfonic acid are added.
+A viscous stir opalescent, anisotropic dope results; the latter
+consists of about 25 ml. of fluorosulfonic acid, 5 ml, of HF and
+13 g. of polymer. The 25 ml. of viscous opaque dope exhibits
+stir opalescence. The dope is extruded into filaments by using
+the apparatus described in the previous example by applying
+430 to 500 Ib./in.? (30.5 to 35.2 kg./cm.?) mechanical pressure
+to a piston over the dope. The filaments are wet spun into
+water at 9°-11° C. and after a travel of 140 cm. in water and
+about 5 cm. in ice water (in which the filaments are snubbed
+by use of a pigtail guide turned at 90° to the threadline
+direction) are wound at a rate of 60 ft/min. (19.7 m./min.).
+The filaments are washed with running water on the bobbin
+and for four days afterwards. The filaments are drawn 1.12X
+at the rate of 25 ft./min. (8.2 m./min.) by passing the wet fila-
+ments through a tube (Device C) heated to 550° C. The fila-
+ments have average tensile properties of T/E/Mi/Den.
+3.2/7.2/141/2 before drawing and 5.4/1.2/508 after drawing.
+
+EXAMPLE 70
+
+This example illustrates the preparation of poly(3,3’-
+dimethyl-4,4'-biphenylene _terephthalamide), _poly(3,3’-
+dimethoxy-4,4’-biphenylene terephthalamide) and poly(3,3’-
+dimethoxy-4,4’-biphenylene-4,4’-biphenyldicarboxamide)
+and anisotropic oleum dopes thereof.
+
+PART A
+Polymer Preparation
+
+‘The procedure of Example 49 is used except that 2.12 g. of
+3,3"-dimethylbenzidine is used as the diamine. The solid car-
+bon dioxide cooling is removed at 15 min. and at 30 min. a
+precipitate forms. Stirring is stopped at 2 hrs. and the mixture
+is allowed to stand for 16 hrs, more. The washed and dried
+polymer weighs 3.39 g. and has an inherent viscosity of 2.11.
+Dope Preparation
+
+The polymer (2.0 g.) is dissolved anhydrously in 8.0 ml. of
+100.95 percent sulfuric acid by stirring slowly for 48 hr. to
+form an isotropic dope which shows stir opalescence.
+
+PARTB
+Polymer Preparation
+
+The procedure of Part A, above, is used except that 2.44 g.
+of 3,3'-dimethoxybenzidine is used as the diamine. Stirring is
+continued for 2 hrs. during which time the system becomes
+very viscous and then a precipitate forms. The mixture is al-
+lowed to stand 16 hrs. at room temperature. The washed and
+dried polymer weighs 3.9 g. and has an inherent viscosity of
+0.99.
+Dope Preparation
 
 --- REVIEWED TRANSCRIPTION PAGE 47 OF 58 ---
 
-Sheet 47 of 58
+3,671,542
+
+73
+
+The polymer (2.0 g.) is dissolved anhydrously in 8.0 ml. of
+100.95 percent sulfuric acid by stirring slowly for 24 hrs. A
+clear isotropic solution forms. The addition of 0.2 g. of
+polymer and its dissolution produces a smooth, viscous,
+anisotropic dope, exhibiting a high degree of stir opalescence. 5
+
+PARTC
+
+Polymer Preparation
+
+The procedure of Part A is used with the following excep-
+tions: 3,3'-dimethoxybenzidine (2.44 g.) is used as the
+diamine and 4,4'-bibenzoyl chloride (2.79 g.) is added as a
+finely ground solid. The solid carbon dioxide cooling is
+removed at 15 min. and at 20 min. the mixture is viscous, but
+milky. Stirring is stopped at 2 hrs. and the mixture is allowed
+to stand for 48 hours more. The washed and dried polymer
+weighs 4.4 g. and has an inherent viscosity of 1.43.
+Dope Preparation
+
+The polymer (2.0 g.) is dissolved anhydrously in 8.0 ml. of
+100.95 percent sulfuric acid by stirring slowly for 24 hrs. A
+clear isotropic solution forms. The addition of 0.2 g. of
+polymer and its dissolution produces a smooth, viscous,
+anisotropic dope, exhibiting'a high degree of stir opalescense
+
+In another dope preparation, a similarly prepared polymer
+sample (2.0 g., ninh = 1.67) is stirred anhydrously for 24
+hours at room temperature with 18 mi. of technical grade,
+methane-sulfonic acid (water content 0.30 percent, refractive
+index 1.4293;#°). The resulting viscous dope is anisotropic; it
+is stir opalescent and depolarizes plane polarized light when
+viewed through crossed polarizers.
+
+EXAMPLE 71
+
+This example illustrates the preparation of poly (3-methyl-
+p-benzamide) and anisotropic oleum dopes thereof. DDA
+values are shown for the dopes.
+
+Polymer Preparation
+
+‘A 500 ml. resin-making kettle equipped with an egg-beater-
+type stirrer, calcium chloride drying tube, and nitrogen inlet
+tube is flamed with a Bunsen burner and simultaneously
+flushed with nitrogen. The kettle is sealed and placed in a dry-
+box. 3-Methyl-4-aminobenzoyl chloride hydrochloride
+(24.728 g., 0.12 mole) is weighed out in the dry-box and trans-
+ferred to the kettle. The latter is removed from the dry-box,
+reconnected with the stirring motor nitrogen line and cooled
+in an ice-bath.
+
+Cold tetramethylurea (140 ml.) is poured rapidly into the 3-
+methyl-4-aminobenzoyl chloride hydrochloride which is being
+stirred at high speed. The resulting solution followed shortly
+by precipitation is stirred for 1 hr. at about 5° C. and for 4 hr.
+at about 25° C. The mixture is now cooled in solid carbon
+dioxide and lithium carbonate (8.868 g., 0.12 mole) is added.
+The latter is stirred for one-half hr. while cooling in solid car-
+bon dioxide and for 1 hr. at about 25° C. The mixture is al-
+lowed to stand for 63 hr. at about 25°C. The mixture is com-
+bined with water, stirred in a blender and filtered. The
+precipitate is washed three times with water and once each
+with acetone and alcohol by stirring in a blender and filtering
+after each wash. The polymer is dried 16 hr. at 80°C. ina
+vacuum oven with a nitrogen bleed. The yield is 100 percent
+and the » inh =0.88.
+
+Dope Preparation
+
+The above polymer (1.0 g.) is combined with 5.66 g. of
+100.81 percent sulfuric acid (3.6 percent free SO,) in a test
+tube and stirred with cooling until solution results, This
+anisotropic dope contains 15 percent polymer by weight;
+DDA=80.6.
+
+The above polymer (1.0 g.) is combined with 5.66 g. of
+100.14 percent sulfuric acid (0.65 percent free SOs) in a test
+tube and stirred with cooling until solution results, This
+anisotropic dope contains 15 percent polymer by weight;
+DDA=92.2.
+
+The above polymer (10.0 g.) is combined with 48.82 g. of
+100.95 percent sulfuric acid (4.25 percent free SO,) in a test 75
+
+30
+
+40
+
+65
+
+2
+3
+
+74
+
+tube and stirred with cooling until solution results. This
+anisotropic dope contains 17 percent polymer by weight.
+
+EXAMPLE 72
+
+This example illustrates the preparation of poly(p-phen-
+ylene terephthalamide), together with anisotropic oleum
+dopes and fibers thereof. The DDA value is shown for the
+dope.
+
+To a solution of 43.2 g. (0.4 mole) of p-phenylenediamine
+dissolved in 480 ml. of dry hexamethylphosphoramide and
+240 ml. of dry N-methylpyrrolidone-2 contained in a blender
+are added, with stirring, 81.2 g. (0.4 mole) of finely ground
+terephthaloyl chloride. A gel forms in about 20 seconds. After
+20 minutes the gel is broken up and washed three times with
+water, twice with alcohol and twice with acetone to give 93 g.
+of air-dried polymer of ninh = 3.13. Several batches of
+somewhat higher and lower inherent viscosity polymer are
+prepared similarly as above and combined to give a polymer of
+njinh=3.16.
+
+‘Thirty grams of the blended polymer are dissolved at room
+temperature in 270 g. of 100.4 percent sulfuric acid to give a
+fluid composition containing 10 percent polymer by weight. It
+is anisotropic as determined by its degree of depolarization
+anisotropy (DDA) value of 93.6.
+
+The room temperature dope is extruded at 865 Ib./in.? (60.7
+kg./cm2) pressure through a 60 hole spinneret, each hole of
+0.0025 in. (0.0635 mm.) diameter, into a water bath main-
+tained at 4° C. The filaments are wound up at 21 ft./min. (6.8
+m./min.). They exhibit the following filament tensile proper-
+ties after being dried: T/E/Mi/Den. = 7.0/10.7/197/4.9.
+
+EXAMPLE 73
+
+This example illustrates determinations of anisotropic and
+isotropic phase relationships for HF, FSOsH, and CISO,H
+dopes prepared from various polymers and copolymers useful
+in this invention. A specific determination is shown for one
+system and summarized results (obtained in like manner but
+without viscosity determinations) are tabulated for the other
+systems.
+
+PARTA
+
+From the data presented below and by reference to FIG. Hl,
+it is seen that discontinuity exists in the slope of a dope viscosi-
+ty versus polymer concentration curve for exemplary dopes of
+this invention comprising poly(p-benzamide) in HF. The slope
+of the curve changes when the polymer concentration in the
+dopes becomes about 14 percent by weight (i.e., at the critical
+concentration). At lesser polymer concentrations the dope is
+clear and isotropic. However, when more polymer is added
+beyond the critical point, there is produced a second phase
+which becomes visible at 15 + 0.5 percent and which is of
+lower viscosity and which is stir opalescent and opaque. This
+anisotropic phase separates from the original high viscosity
+clear phase.
+
+The data pertinent to the above observations are collected
+as follows. Two poly(p-benzamide) dopes in HF are prepared
+by combining samples of the polymer with HF in either a
+polyallomer test tube [1.5 in, (3.82 cm.) in diameter x 4 in.
+(10.2 cm.) deep; nearly transparent] equipped with a Teflon
+‘TFE-fluorocarbon cap through which a viscometer spindle ex-
+tends into the dope or a polyethylene bottle about 1.75 in.
+(4.45 cm.) in diameter X 4.25 in. (10.8 cm.) deep, equipped
+with a cap, through which a viscometer spindle extends. A
+constant temperature of 0° C. is maintained by use of an exter-
+nal ice-water bath. The viscosity of the stirred dope is mea-
+sured with a Brookfield Synchro-Lectric Viscometer (Model
+RV, product of the Brookfield Engineering Laboratories, Inc.,
+Staughton, Mass.), using the No. 4 and No. 6 spindles ob-
+tained from the above-cited manufacturer. Viscosity calcula-
+tions are made at different concentrations by correlating the
+viscometer dial réadings (obtained with various spindle
+settings which establish spindle speeds and, therefore, shear
 
 --- REVIEWED TRANSCRIPTION PAGE 48 OF 58 ---
 
-Sheet 48 of 58
+3,671,542
+
+75
+
+rates) with the tabulated figures provided in the “Brookfield
+Factor Finder.” As more polymer is added, the viscosity of the
+solution increases until a maximum value of about 3,600
+poises is measured when 13.4 percent (by weight) polymer is
+present in the tube. When 20 * 1.0 percent (by weight)
+polymer is present at the tube, the original clear phase
+completely disappears and only the anisotropic phase is visi-
+ble. The anisotropic phase (1) depolarizes the plane of plane
+polarized light when viewed through crossed polarizers in a
+microscope, (2) is highly stir opalescent when stirred, and (3)
+is thixotropic.
+
+Specific data from these determinations are tabulated below
+in Table X-A:
+
+TABLE X-A
+Dope No. 1 (uses 58 ml. of anhydrous HF; inh = 3.9)
+Grams
+
+of polymer/
+wt. % polymer
+
+Spindle Setting/
+Spindle Dial Reading
+
+76
+
+TABLE X-B
+Anisotropic and isotropic dopes, phase relationships
+
+Pereent
+
+Polymer of—
+
+Example 1 (q inh=3.4)
+Exomple 28 9 inh~2.6)
+Example 23 (y inh=3.2)¢-1
+Example 23 ( inh=3.5)¢-2.
+Example 28 (7 inh=3.2)c-1.
+Example 23 (y inh=3.5)¢-2
+
+CISOsIL
+
+* A=Polymer concentration in dope at which visible opalesceneo or a
+socond phase (anisotropic) appears. = Polymer concentration at which
+only a single phase (anisotropic) is visible.
+
+‘Appears to form 2 anisotropic phases, one at about 15% and one at
+19-20% by weight.
+
+(c-1)=Mole ratio of:
+
+3/ 4.9% SO*/I1.S 46 —.
+5/7.9% 10*/55.5 110 Co. =m \. ~
+7N0.8% 0.5*/21.5 860 CO--CO COM Is 50/80
+9/13.4% 197/36 3,600 25
+14/19.4% 1**/2.0, 200 (c-2)=Mole ratio of:
+—co. -CO-/-CO- CO- is 90/10.
+Dope No. 2 (uses 90 ml. of anhydrous HF, same — — —
+polymer as in Dope No. 1) 30
+4/ 4.2% 100*/10.5 24
+6] 6.2% 50*/48, 19 EXAMPLE 74
+8/B.1E 20*/90 ot
+1o/too Tels 1,020 This example illustrates the effects of the parameters of (1)
+12/11.8% 0.5*/44 1,760 acid strength and polymer concentration, (2) polymer in-
+14/13.5% 2.5**/80 3,200 35 herent viscosity, and (3) added salts on the anisotropic sul-
+16/15.1% 1**/28 2,800, A ‘ a . . ,
+19/17 54 ay 7700 furic acid and oleum dopes of this invention which comprise
+21/18.9% 1**/8 "300 poly(p-benzamide) and poly(p-phenylene terephthalamide ).
+22/19,6% 14 400 Acid Strength and Polymer Concentration
+24/21.0% 1*#/3, 300
+
+* RV No. 4 spindle used
+** RV No. 6 spindle used
+
+When viscosity is plotted versus polymer concentration in
+
+FIG. II (plotting both sets of results on one curve with Dope
+No. 1 data represented by X’s and Dope No. 2 data
+represented by dots), the critical point is seen to occur at
+about 14 percent (by weight) polymer. The final viscosity of
+200-400 poises is about 4-6 percent of the highest bulk
+viscosity measured or determined from Figure II from the
+viscosity at the discontinuity in the curve.
+(Note: The above viscosity determinations are made with an
+uncalibrated viscometer-spindle system in vessels which are
+not of optimum dimensions; while relative viscosity deter-
+minations for the dopes are accurate, absolute values are not
+necessarily correct).
+
+PARTB
+
+By application of the above-described procedures, the data
+presented below in Table X-B are obtained for the systems in-
+dicated. For the systems of the Table X-B viscosity decreases
+(similar to that shown above) are qualitatively observed when
+each given dope changes from isotropic to anisotropic as the
+polymer concentration of the dope is increased. The
+anisotropic dopes, as before, are visually stir opalescent and
+depolarize the plane of plane polarized light when viewed
+through cross-polaroids with a microscope. In Table X-B the
+column entitled “Polymer Of” indicates an example herein
+whose general procedure may be employed to prepare the
+given polymer or copolymer whose dope is evaluated by the
+procedures of this example. Inherent viscosities are
+parenthetically shown for each polymer or copolymer.
+
+40
+
+60
+
+65
+
+ay
+
+0
+
+75
+
+The results of solubility investigations of poly(p-benzamide )
+in sulfuric acid and oleum are tabulated in Tables XI and XII.
+The solubi data are obtained as follows: an excess of
+polymer is added to the acid or oleum in a round-bottom flask
+equipped with a ground glass bearing and stirring rod at the
+end of which is attached a Teflon* TFE-fluorocarbon paddle-
+stirrer. The temperature of the contents of the flask is
+moderated with a room temperature water bath. Increments.
+of acid or oleum are added after long (e.g., 2-16 hr.) periods
+of stirring and the maximum concentrations determined
+visually as the point at which no solid could be observed.
+Further increments of acid or oleum are added to the stir-
+opalescent, liquid anisotropic dopes until the dope becomes
+visually clear; the polymer concentration present when the
+dope becomes visually clear is taken as the critical concentra-
+tion point, The data shown concerns poly(p-benzamide) sam-
+
+ples with inherent viscosity of 2.72 and 1.53.
+TABLE XI
+Solubility of Poly(p-Benzamide) (ninh = 2.72)* in Sulfuric
+Acid
+H,SO, Maximum Critical
+% Solubility ° Point ©
+96.3 45 none
+97.3 TA none
+99.2 10.3 8.67
+100.5 12.7 8.67
+102.3 14.4, 8.55
+104.5 14.5 8.76
+
+a Prepared in N,N-dimethylacetamide and neutralized with Li,CO,
+4 Determined visually as concentration (wt.% polymer) at which no
+solid particles are observed.
+
+¢ Weight percent polymer in dope.
 
 --- REVIEWED TRANSCRIPTION PAGE 49 OF 58 ---
 
@@ -4961,15 +7826,527 @@ Sheet 49 of 58
 
 --- REVIEWED TRANSCRIPTION PAGE 50 OF 58 ---
 
-Sheet 50 of 58
+3,671,542
+
+79
+
+The points where each of the above samples convert to an
+essentially isotropic dope is the critical volume concentration
+point for each. As the example indicates, this point for a par-
+ticular polymer/liquid medium is dependent on the tempera-
+ture of the dope and the weight percent of polymer therein.
+
+EXAMPLE 76
+
+‘This example illustrates the preparation of poly(2-chloro-
+1,4-phenylene terephthalamide), an anisotropic spin dope in
+N,N-dimethylacetamide/lithium chloride and high modulus
+fibers therefrom.
+Polymer Preparation
+
+Powdered terephthaloyl chloride (95.0 g., 0.468 mole) is
+added at once to a cooled (ca. 3° C) solution of 2-chloro-1,4-
+phenylene diamine (71.4 g., 0.502 mole) in 2,000 ml of N,N-
+dimethylacetamide; the mixture is stirred at high speeds while
+being cooled with an ice/water bath. The mixture becomes
+stir-opalescent after about one to two minutes. Ten minutes
+after the addition of terephthaloyl chloride, 37.0 g. (0.501
+mole) of powdered lithium carbonate is added at once with
+sufficient cooling to maintain the temperature at less than
+about 10°C. After stirring is continued for about 5 min., pow-
+dered terephthaloyl chloride is added in small amounts until
+the mixture is quite thick. The cooling bath is removed and the
+dope is allowed to warm to room temperature at which time
+more powdered terephthaloyl chloride is added over a period
+of a few minutes (i.e., 5 min.) in small increments until a max-
+imum of 0.500 mole total terephthaloyl chloride has been
+added, or until the dope no longer flows. Usually a smaller
+quantity (i.e., 0.490 mole) is used in order to maintain at all
+times a fluid dope. The dope is then allowed to stand at room
+temperature for a few hours (i.e,, 12 hr.) during which time it
+becomes somewhat more fluid. A small portion of the dope is
+combined with water and agitated in a high speed blender.
+The polymer is collected by filtering through a glass-funnel of
+coarse porosity. The wet polymer is dried in a vacuum oven at
+about 70° C. The inherent viscosity measured as a 0.5%
+(W/V) solution in 95-98% (by weight) sulfuric acid is 2.79.
+The dope is combined with another similarly prepared dope
+and used directly for yarn production. The dope exhibits stir-
+‘opalescence and depolarizes polarized light.
+Fiber Preparation by Wet Spinning
+
+The spin dope prepared above is extruded at the rate of
+about 41 ml./min. through a precious metal spinneret having
+580 holes of 0.003 in. (0.0076 cm.) diameter into an aqueous
+coagulating bath maintained at about 15° C. The bath is about
+12 in. (30.48 cm.) wide, 4.5 in. (10.8 cm.) deep and 5.5 ft.
+(1.676 m.) long. The filament bundle is drawn through the
+bath and snubbed out of the bath at about a 45° angle to an
+electrically driven wind-up device. The yarn is collected at
+144 ft./min. (43.89 m./min.), washed in cool running water for
+a few hours (i.e., 3 hrs.) and then dried in air at room tempera-
+ture. The dry filaments exhibit low crystallinity and an orienta-
+tion angle of 30° as measured from a wide angle X-ray pattern.
+A yarn twisted at three turns per inch exhibits the following
+T/E/Mi/Den. values: 1 1.4/5.6/379/555.
+Heat Treatment
+
+The yarn prepared above is passed at 15 ft/min. (4.572
+m./min.) through a nitrogen filled tube [Device B] assembly
+heated to 450° C. and collected at 15.75 ft/min. (4.801
+m./min.). The resulting filaments exhibit high crystallinity and
+an orientation angle of 12° as measured from a wide angle X-
+ray pattern. A ten-inch length of yarn twisted at three turns
+per inch exhibits the following T/E/Mi/Den. values:
+11.9/1.4/875/93 and the yarn exhibits a sonic velocity of
+7.84 km./sec,
+
+EXAMPLE 77
+
+This example illustrates the preparation of poly(2-methyl-1,4-
+phenylene terephthalamide), an anisotropic spin dope in
+
+4
+
+a
+
+60
+
+70
+
+75
+
+80
+
+hexamethylphosphoramide/N-methyl-2-pyrrolidone/lithium
+chloride, and high modulus fibers therefrom.
+
+Polymer Preparation
+
+Powdered terephthaloyl chloride (10.15 g.; 0.05 mole) is
+added at once to an ice/water-cooled slurry of 2-methyl-1,4-
+phenylene diamine dihydrochloride 9.75 g. (0.05 mole) in 56
+ml. of hexamethylphosphoramide and 112 ml. of N-methyl-2-
+pyrrolidone and the mixtur red at high speeds. The mix-
+ture becomes clear within one minute and slowly becomes
+more viscous. After about 2.5 hr., 74. g. of Li,Cos is added to
+give, after vigorous mixing, an anisotropic dope having the
+consistency of a heavy grease. The dope depolarizes polarized
+light. A small portion of the dope is removed and worked-up
+with water and dried in a vacuum oven at 70° C. The inherent
+viscosity is 4.46 in 95-98 percent (by weight) sulfuric acid.
+The dope is allowed to stand at room temperature for four
+days and is then used for spinning.
+
+Fiber Preparation by Wet Spinning
+
+The spin dope is extruded at the rate of about 2.0 ml./min.
+through a metal spinneret having 100 holes of 0.0025 in.
+(0.0064 cm.) diameter into an aqueous coagulating bath
+maintained at 17° C. The bath is about 16 in. (40 cm.) wide,
+5.5 in. (14 cm.) deep, and 37 in. (94 cm.) long. The filament
+bundle is drawn through the coagulant and is then snubbed
+out of the bath at about a 45° angle to an electrically driven
+wind-up device. The filaments are collected at 23 ft./min.
+(7.015 m./min.), washed in cool water for several days, and
+dried in air at room temperature. The dry filaments exhibit
+low crystallinity and an orientation angle of ca, 50° as mea-
+sured from a wide angle X-ray pattern. Filaments exhibit the
+following T/E/Mi/Den. values: 9.74/10.2/287/1.64.
+
+Another portion of the dope is extruded at the rate of about
+0.9 ml/min. through a precious metal spinneret having 20
+holes of 0.002 in. (0.0051 cm.) diameter into a bath of
+isopropanol maintained at 24°C. The bath is about 2 in. (5.1
+cm.) wide, about | in. (2.54 cm.) deep, and about 2.0 ft. (0.61
+m.) long. The yarn is drawn through the coagulant and is then
+snubbed out of the bath at about a 45° angle to an electrically
+driven wind-up device. The yarn is collected at 35 ft./min.
+(10.68 m./min.) washed in cool running water for several
+days, and dried in air at room temperature. The dry filaments
+exhibit low crystallinity and an orientation angle of ca. 40° as
+measured from a wide angle X-ray pattern. Filaments exhibit
+the following T/E/Mi/Den. values: 9.0/8.6/265/1.82.
+
+Heat Treatment
+
+The yarn prepared above (from isopropanol coagulant) is
+passed at 25 ft./min. (7.62 m./min.) through a nitrogen filled
+tube (Device B) assembly heated to 450° C. and collected at
+26.3 ft./min. (8.02 m./min.); draw ratio is 1.05X. The result-
+ing filaments exhibit medium crystallinity and an orientation
+angle of 20° as measured from a wide angle X-ray pattern. The
+filaments exhibit the following T/E/Mi/Den. values:
+8.53/2.1/448/.809; sonic velocity is 7.27 km./sec.
+
+EXAMPLE 78
+
+This example illustrates the preparation of an anisotropic
+dope of poly(2-nitro-1,4-phenylene terephthalamide) in a
+mixture of hexamethylphosphoramide, N-methyl-2-pyr-
+rolidone, and lithium chloride.
+
+Dope Preparation
+
+Powdered terephthaloyl chloride (6.09 g., 0.030 mole) is
+added at once to a solution of 2-nitro-1,4-phenylene diamine
+(4.59 g,, 0.030 mole) in 45 ml. of N-methyl-2-pyrrolidone and
+25 ml. of hexamethylphosphoramide and stirred rapidly while
+cooling with an ice/water bath. The dope becomes stir-
+opalescent within a few minutes (i.e., 2 min.) and after about
+3 hrs., 2.22 g. (0.030 mole) of Li,CO, is added to give a stir-
+opalescent dope which depolarizes light under crossed polars.
+
+A sample of isolated polymer had an inherent viscosity of
+0.86.
 
 --- REVIEWED TRANSCRIPTION PAGE 51 OF 58 ---
 
-Sheet 51 of 58
+3,671,542
+
+. 81
+EXAMPLE 79
+
+This example illustrates the preparation of poly(3,3’-
+dichloro-4,4'-biphenylene terephthalamide) from 3 3'-
+dichlorobenzic and terephthaloyl chloride, and fibers
+therefrom.
+
+Polymer Preparation
+
+In a 500-ml. resin kettle equipped with a disc stirrer, a
+nitrogen bleed, and an outlet capped with a drying tube, are
+placed 250 ml. of hexamethylphosphoramide, 250 ml. of N-
+methylpyrrolidone-2, and 25.3 g. of 3,3’-dichlorobenzidine.
+After a solution is formed, the vessel is cooled with a bed of
+solid carbon dioxide and 20.3 g. of terephthaloyl chloride are
+added with stirring. Initially a clear solution forms, but this
+soon changes to a slurry which remains stirrable. The cooling
+bath is removed after 15 minutes; after 1 hour, 14.8 g. of lithi-
+um carbonate powder are added. Stirring is continued for
+about an hour at which time the mixture is no longer stirrable
+with this equipment. The closed vessel and contents are al-
+lowed to stand at room temperature for about 16 hours. The
+polymer is isolated by precipitation in water, washed
+thoroughly with water, and dried in a vacuum oven. The yield
+is 38.92 g. and the inherent viscosity of the polymer is 1.69.
+Dope and Fiber Preparation
+
+The above polymer (10 g.) is dissolved in 100 g. of concen- ”
+
+trated (95-98 percent) sulfuric acid to form a clear, viscous
+dope at about 45° C. At 26° C. the dope becomes stiff and
+opaque. The dope is extruded from a warmed cell through a
+spinneret having 20 holes of 0.003 inch (0.076 mm.) diameter
+into a water bath maintained at 45° C. The filaments are
+wound up at 72 ft/min. (22 m./min). The yarn is soaked on
+perforated bobbins in two changes of distilled water for a total
+of 24 hours and is then air-dried. The as-extruded filaments
+then exhibit the following tensile properties: T/E/Mi/Den.:
+1,8/32.3/68.8/8.3; sonic velocity is 2.71 km./sec. After being
+
+extended 1.75X while being slowly hand drawn over a 300°C.
+hot bar [0.5 inch (1.27 cm.) contact surface], the filaments
+exhibit the following properties: T/E/Mi/Den.: 2.07/0.6/326/6
+.3;0.A.= 12°; and medium crystallinity. After the as-extruded
+yarn is drawn as just described except that the bar is at 400°
+
+C., the following filament properties are observed:
+T/E/Mi/Den.: 3.35/0.9/372/5.9; O.A. = 12°; and high crystal-
+linity.
+
+EXAMPLE 80
+
+‘This example illustrates the preparation of high modulus
+fiber of ordered poly(chloro-p-phenylene terephthalamide).
+Preparation of N,N’-bis(4-nitro-2-chlorophenyl)terephthala-
+mide
+
+In a 1 1. three-neck round bottom flask provided with a
+stirrer, nitrogen inlet and drying tube, a solution of 52.56 g.
+(0.3 mole) 4-nitro-2-chloroaniline (recrystallized from water)
+in 250 ml. of distilled hexamethylphosphoramide is prepared.
+The solution is cooled with an ice bath, and 30.45 g. (0.15
+mole) terephthaloyl chloride is added in small portions over a
+period of 1 % hours. After the addition is completed, the ice-
+bath is removed, A precipitate forms in four hours and the
+resulting suspension is stirred for 20 hours. After this period 1
+1, of water is added to precipitate the product. The pale yellow
+powder is filtered, and washed two times with hot water in a
+blender. After being dried at 80° C. in a vacuum oven, 68.2 g.
+(95 percent of theoretical) of product is obtained; m.p. 339°
+C. (determined by Differential Thermal Analysis).
+
+‘The IR spectrum shows carbonyl absorption at 5.87, NO,
+and @-Cl absorption
+Preparation of
+yl)terephthalamide
+
+Forty grams of the above dinitro-compound is reduced in
+320 ml. N,N-dimethylacetamide using Raney Ni catalyst at
+100° C. and 900 psi (63.2 kg./cm*) hydrogen over a period of
+three hours. The resulting solution is heated to 100°, filtered
+free of suspended catalyst, and is treated with water at 90°-95°
+
+N,N’-bis(4-amino-2-chlorophen-
+
+5
+
+40
+
+45
+
+70
+
+~
+a
+
+82
+
+to the cloud point. A fine precipitate separates out on cooling.
+This is collected, washed two times with warm water, and
+dried in a vacuum oven at less than 100° C. The yield of
+diamine is 26.4 g. m.p. 261° C. The infrared spectrum shows
+carbonyl absorption at 6.05, amine absorption, and is con-
+sistent with the expected structure.
+
+Anal, Caled. for CogHigNsO2Cly:
+
+Calcd.: C, 57.84; H, 3.88; N, 13.49
+
+Found: C, 58.92; H, 3.83; N, 13.37
+Preparation of high modulus fibers of an ordered poly(chloro-
+p-phenylene terephthalamide)
+
+In a 500-ml. resin kettle equipped with an air-driven basket
+type stirrer, a nitrogen inlet, and a drying tube is placed N,N’-
+bis(4-amino-2-chlorophenyl)terephthalamide (6.23 g., 0.015
+mole), lithium chloride (1.25 g.) and N,N-dimethylacetamide
+(120 ml.). The solution is cooled with a wet ice bath for fifteen
+minutes, then terephthaloyl chloride (2.74 g., 0.0135 mole) is
+added. The resulting mixture is stirred rapidly. After 5
+minutes, lithium carbonate (1.11 g.) is added. After an addi-
+tional five minutes, the reaction mixture appears as a slightly
+viscous solution. Additional terephthaloy! chloride (0.25 g.) is
+added in small quantities and allowed to react until the reac-
+tion mixture appears as a soft gel. The solution is stirred over-
+night, and after standing for several days forms a solution
+which has the property of depolarizing light when observed
+between crossed polars. A small portion of the solution is
+precipitated in water, and the solid polymer which results is
+washed several times with water and acetone, then dried in a
+vacuum oven. The polymer has an inherent viscosity of 3.25.
+
+The above-prepared dope is centrifuged to remove air bub-
+bles and is then extruded through a 60-hole spinneret, each
+hole of 0.002 inch (0.05 mm.) diameter, into a water bath at
+10° C. The filaments are wound up at the rate of 50 ft./min.
+(15.2 m./min.) and washed in distilled water overnight. After
+the yarn is dried in air at room temperature, the following fila-
+ment properties are observed: T/E/Mi/Den = 10.6/6.6/343/
+1.49; orientation angle = 32°. The sonic velocity observed is
+5.91 km./sec., measured at 0.1 gm./den. tension.
+
+‘The yarn is heat treated by being passed at an input speed of
+25 ft./min.(7.6 m./min.) through a tube (Device A) heated to
+437° C; the yarn is drawn 1.06 X while passing through the
+tube, Filaments then exhibit the following properties:
+T/E/Mi/Den. = 13.3/1.9/763/1.36; orientation angle = 13°,
+
+EXAMPLE 81
+
+This example illustrates the preparation of high modulus
+fibers of poly(2,6-dichloro-p-phenylene terephthalamide).
+
+Ina } liter resin kettle equipped with an air-driven basket-
+type stirrer, a nitrogen inlet, and a drying tube are placed 2,6-
+dichloro-p-phenylenediamine (17.70 g. 0.10 mole) and N,N-
+dimethylacetamide (410 ml.). The solution is cooled with a
+wet ice bath for 15 minutes, after which powdered
+terephthaloyl chloride (20.30 g., 0.10 mole) is added while
+the solution is stirred rapidly. The ice bath is removed after 20
+minutes and replaced by a water bath maintained at room
+temperature. The solution gradually increases in viscosity.
+After being allowed to stand for 3 days, the reaction mixture
+forms a clear, very viscous solution. A sample of the polymer
+is precipitated from the reaction mixture by combining a por-
+tion of it with water. The solid polymer is washed several times
+with water and once with acetone, after which it is dried in a
+vacuum oven; ninh = 3.77. Lithium carbonate (7.39 g., 0.10
+mole) is added to the remainder of the clear reaction mixture,
+with stirring. An unstirrable gel is formed. The polymer is
+precipitated by combining the reaction mixture with water.
+‘The polymer is washed repeatedly with water and finally with
+acetone. The polymer is dried in a vacuum oven; ninh= 3.84.
+
+A spin dope is prepared by combining 23.9 grams of the
+above-prepared polyamide and 75 ml. of concentrated (100.2
+percent) sulfuric acid in a jacketed resin kettle and stirring the
+mixture with a shear disc-type stirrer untila smooth, pinkish,
+stir opalescent dope is formed. This dope depolarizes plane-
 
 --- REVIEWED TRANSCRIPTION PAGE 52 OF 58 ---
 
-Sheet 52 of 58
+3,671,542
+
+83
+
+polarized light when observed between crossed polars. The
+dope is centrifuged and is then extruded by means of an oil-
+driven piston through a 20-hole spinneret, each hole of 0.003
+inch (0.076 mm.) diameter into a water bath maintained at 4°
+C. The filaments are wound up at the rate of 6.5 ft./min. (1.98
+m./min.), and are washed in running distilled water overnight.
+After being dried in air at room temperature, the filaments ex-
+hibit the following properties: T/E/Mi/Den. = 8.73/5.6/241/
+3.16; orientation angle = 31°; sonic velocity is 5.31 km./sec.
+
+A sample of the yarn is heat treated by being passed at an
+input speed of 25 ft/min. (7.7 m/min.) through a tube
+(Device A) heated to 454° C.; the yarn is drawn 1.05X while
+passing through the tube. Filaments exhibit the following ten-
+sile properties: T/E/Mi/Den.: 14.6/3.5/490/2.65; orientation
+angle is 15°, the filaments have high crystallinity, sonic
+velocity is 7.27 km./sec.
+
+EXAMPLE 82
+
+This example illustrates the preparation of high modulus
+fibers of poly(p-phenylene 2.5-dichloroterephthalamide).
+
+A solution of p-phenylenediamine (17.28 g., 0.162 mole) in
+hexamethylphosphoramide (120 ml.) and N-methylpyr-
+rolidone-2 (240 ml.) is prepared in a 1 liter resin kettle, using
+mechanical stirring. To this is added 2,5-
+dichloroterephthaloy! chloride (43.52 g., 0.162 mole), using
+water bath cooling. The contents of the kettle quickly become
+extremely viscous and the polymer precipitates in about a
+minute. The reaction mixture is stirred with a spatula to give a
+wet powder which is permitted to stand overnight. After the
+powder is agitated with water in a blender and the resultant
+product isolated, washed, and dried in a vacuum oven at 70°
+C., there is obtained —_poly(p-phenylene —_2,5-
+dichloroterephthalamide), 49.5 g. inh = 1.59.
+
+A spin dope is prepared by combining 3.5 g. of the above-
+prepared polyamide with 46.5 g. of concentrated (99.5 per-
+cent) sulfuric acid, using a paddle stirrer for mixing. This dope
+is extruded through a 60-hole spinneret, each hole of 0.002
+inch (0.05 mm.) diameter, into a water bath maintained at 8°
+C. The resultant filaments are wound up at the rate of 25
+ft./min. (7.6 m./min.) and washed in cold running water on the
+bobbin overnight. After the yarn is dried in air at room tem-
+perature, a filament sample removed from the bobbin exhibits
+the following properties: T/E/Mi/Den.: 2.40/24.4/85.3/1.6.
+The filaments have Jow crystallinity and trace orientation. The
+yarn is heat-treated by being passed at an input speed of 25
+ft/min. (7.6 m./min.) through a tube {Device A] heated to
+305° C.; the yarn is drawn 1.3X while passing through the
+tube. The yarn is then again passed at the same speed through
+the same tube (now heated to 502° C.) without being drawn.
+Filaments exhibit the following properties: T/E/Mi/Den.:
+7.36/2.4/3860.93, orientation angle is 24° and the filaments
+have high crystallinity.
+
+EXAMPLE 83
+
+This example illustrates the percentage of crystallites
+aligned within an angle equal to one half the orientation angle
+of the fiber axis for particular as-extruded polymer samples
+from some of the foregoing examples. The intensity trace of
+the fiber’s diffraction pattern of each of these samples is not
+
+35,
+
+50
+
+55
+
+60
+
+65
+
+70
+
+75
+
+84
+
+necessarily Gaussian-like curve.
+
+The orientation angle of each of the following as-extruded
+samples is determined using Method One, previously
+described, and the percentage of crystallites is determined
+also as previously described. The difference, if any, in the
+stated orientation angle value, is due to the greater degree of
+precision in Method One, as compared to Method Two values
+stated in the preceding examples, The orientation angle and
+crystallite percentage values are stated in the following-table
+(Table XVI). As the table indicates in each instance, greater
+than about 50 percent of the crystallites are aligned within one
+half the orientation angle.
+
+TABLE XVII
+% of Aligned
+Example O.A, Crystallites
+
+2 29° 65%
+
+6 30° 10%
+14 33° 68%
+16 24° 64%
+18 24° 65%
+20 25° 66%
+23B 28° Tk
+40 20° 56%
+46 24° 66%
+76 24° 68%
+81 25° 16%
+What is claimed is:
+
+1. Optically anisotropic dope consisting essentially of:
+
+1. at least about 5 percent by weight of a polymer having an
+inherent viscosity of at least 0.7 and consisting essentially
+of at least one type of carbocyclic aromatic homo- or
+copolyamide having chain extending bonds from each
+aromatic nucleus which are coaxial or parallel and op-
+positely directed, and
+
+IL. at least one liquid medium selected from the group con-
+
+sisting of:
+
+A. amides and ureas selected from the group consisting
+of: N,N-dimethylacetamide, N,N-dimethylpropiona-
+mide, N,N-dimethylbutyramide, N,N-dimethylisobu-
+tyramide, N,N-dimethylmethoxyacetamide, N,N-
+diethylacetamide, N-methylpyrrolidone-2, N-methyl-
+piperidone-2,  N-methylcaprolactam, _N-eth’
+rolidone-2, N-acetylpyrrolidone, N-acetylpiperi
+N,N'-dimethylethyleneurea, N,N’-dimethyl-
+propyleneurea — hexamethylphosphoramide, and
+N,N,N‘,N’-tetramethylurea and containing a salt from
+the group consisting of lithium chloride and calcium
+chloride
+
+B. concentrated sulfuric acid,
+
+C. hydrofluoric acid, and
+
+D. chloro-, fluoro- or methane-sulfonic acids, said
+polymer being present in the dope in a concentration
+above the level at which there is a decrease in viscosity
+with increasing concentration represented by a sharp
+discontinuity in the slope of the plot of the dope
+viscosity vs. polymer concentration curve without the
+formation of a solid phase.
+
+2. Dope of claim 1 wherein said liquid medium is concen-
+trated (greater than about 98 percent by weight) sulfuric acid
+which may contain free SO.
+
+ee RR
 
 --- REVIEWED TRANSCRIPTION PAGE 53 OF 58 ---
 
