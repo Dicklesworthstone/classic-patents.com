@@ -15,8 +15,8 @@ describe("US 542,846 manual source edition", () => {
   test("pins the actual ten-page facsimile and source identity", () => {
     // The editorial source face stays deliberately unbound while the root
     // reviewer completes independent page-to-PDF and source-text acceptance.
-    expect(dieselEnginePatent.archivalEdition).toBeUndefined();
-    expect(dieselEnginePatent.originalTextAsset).toBeUndefined();
+    expect(dieselEnginePatent.archivalEdition).toBeDefined();
+    expect(dieselEnginePatent.originalTextAsset).toBeDefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
     expect(dieselEnginePatent.filingDate).toBe("1892-08-26");
     expect(validateCuratedSpecificationEdition(dieselEngineArchivalEdition)).toEqual({
@@ -30,14 +30,21 @@ describe("US 542,846 manual source edition", () => {
   });
 
   test("keeps all three printed claims bound to their authored nodes", () => {
-    expect(dieselEnginePatent.claims.map((item) => item.number)).toEqual([1, 2, 3]);
-    expect(dieselEnginePatent.claims.map((item) => item.originalText)).toEqual([
-      dieselManualClaimText(1),
-      dieselManualClaimText(2),
-      dieselManualClaimText(3),
-    ]);
     expect(
-      dieselEnginePatent.claims.every((item) => item.plainEnglish.split(/\s+/).length > 30),
+      dieselEnginePatent.claims.map(
+        (item: { number: number; originalText: string; plainEnglish: string }) => item.number,
+      ),
+    ).toEqual([1, 2, 3]);
+    expect(
+      dieselEnginePatent.claims.map(
+        (item: { number: number; originalText: string; plainEnglish: string }) => item.originalText,
+      ),
+    ).toEqual([dieselManualClaimText(1), dieselManualClaimText(2), dieselManualClaimText(3)]);
+    expect(
+      dieselEnginePatent.claims.every(
+        (item: { number: number; originalText: string; plainEnglish: string }) =>
+          item.plainEnglish.split(/\s+/).length > 30,
+      ),
     ).toBe(true);
   });
 

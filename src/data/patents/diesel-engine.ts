@@ -214,37 +214,45 @@ export const dieselEnginePatent: Patent = {
   ],
   claims: [
     {
-        "number": 1,
-        "isIndependent": true,
-        "originalText": "1. The herein described process for converting the heat energy of fuel into work, consisting in first compressing air, or a mixture of air and neutral gas or vapor, to a degree producing a temperature above the igniting point of the fuel to be consumed, then gradually introducing the fuel for combustion into the compressed air while expanding against a resistance sufficiently to prevent an essential increase of temperature and pressure, then discontinuing the supply of fuel and further expanding without transfer of heat.",
-        "plainEnglish": "The process for converting heat energy into mechanical work by compressing air past the ignition point and gradually injecting fuel.",
-        "keyInnovations": [
-            "Compression ignition process",
-            "High-pressure adiabatic compression",
-            "Controlled isobaric combustion"
-        ]
+      number: 1,
+      isIndependent: true,
+      originalText: dieselManualClaimText(1),
+      plainEnglish:
+        "A thermodynamic process for converting fuel energy directly into mechanical work by first compressing pure atmospheric air past the spontaneous ignition temperature of the fuel, gradually injecting the fuel during the power stroke to maintain controlled isobaric expansion without excessive pressure spikes, and then expanding the burning gases to ambient exhaust.",
+      keyInnovations: [
+        "Compression ignition process",
+        "High-pressure adiabatic compression",
+        "Controlled isobaric combustion",
+      ],
     },
     {
-        "number": 2,
-        "isIndependent": true,
-        "originalText": "2. In an internal combustion engine, the combination with the cylinder and piston, of a valved suction inlet for air or a mixture of air and neutral gas, a valved fuel feed constructed to gradually discharge the fuel into the cylinder, and means in operative connection with the feed valve for opening the same at the commencement of the working stroke of the piston and for closing the same at a predetermined part of the stroke, substantially as described.",
-        "plainEnglish": "Internal combustion engine with cylinder, air compression piston, fuel nozzle, and cut-off valve.",
-        "keyInnovations": [
-            "Compression ignition apparatus",
-            "High-pressure injector nozzle",
-            "Regulated cut-off valve"
-        ]
+      number: 2,
+      isIndependent: true,
+      originalText: dieselManualClaimText(2),
+      plainEnglish:
+        "An internal combustion engine apparatus comprising a working cylinder and piston, a valved air intake, and a variable-timed fuel feed mechanism operatively linked to the engine drive shaft to open at top dead center and cut off fuel delivery at a predetermined fraction of the stroke.",
+      keyInnovations: [
+        "Compression ignition apparatus",
+        "High-pressure injector nozzle",
+        "Regulated cut-off valve",
+      ],
     },
     {
-        "number": 3,
-        "isIndependent": true,
-        "originalText": "3. In an internal combustion engine of the character specified, the combination of a combustion cylinder provided with means for gradually introducing fuel therein up to the point of cut-off, a compressor for air, a reservoir connected with the latter and with the cylinder, and an expansion chamber for the exhaust gases, substantially as described.",
-        "plainEnglish": "Internal combustion engine with combustion cylinder, separate air pump, and expansion cylinder.",
-        "keyInnovations": [
-            "Multi-stage compound expansion",
-            "Independent air charging pump",
-            "Exhaust expansion recovery"
-        ]
-    }
-],
+      number: 3,
+      isIndependent: true,
+      originalText: dieselManualClaimText(3),
+      plainEnglish:
+        "A compound internal combustion engine system combining a main combustion cylinder with cut-off control, an independent auxiliary air compressor, an intermediate high-pressure storage reservoir, and an expansion cylinder to extract residual enthalpy from the exhaust gases.",
+      keyInnovations: [
+        "Multi-stage compound expansion",
+        "Independent air charging pump",
+        "Exhaust expansion recovery",
+      ],
+    },
+  ],
+  tags: ["Internal Combustion", "Thermodynamics", "Compression Ignition", "Heavy Machinery"],
+  stats: {
+    totalClaims: 3,
+    independentClaims: 3,
+  },
 };
