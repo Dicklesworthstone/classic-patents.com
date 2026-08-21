@@ -2,11 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildDieselEngineModel,
   type DieselEngineMaterials,
@@ -314,62 +317,54 @@ export function DieselEngine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {engineRpm} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="60"
-              max="300"
-              step="10"
-              value={engineRpm}
-              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="dieselEngineRpm"
+            patentId="us-542846-diesel-engine"
+            paramKey="engineRpm"
+            label="Engine Speed"
+            value={engineRpm}
+            min={60}
+            max={300}
+            step={10}
+            unit="RPM"
+            onChange={(val) => updateParam("engineRpm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Compression Ratio</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {compressionRatio}:1
-              </span>
-            </div>
-            <input
-              type="range"
-              min="12"
-              max="24"
-              step="1"
-              value={compressionRatio}
-              onChange={(e) => updateParam("compressionRatio", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="dieselCompressionRatio"
+            patentId="us-542846-diesel-engine"
+            paramKey="compressionRatio"
+            label="Compression Ratio"
+            value={compressionRatio}
+            min={12}
+            max={24}
+            step={1}
+            unit=":1"
+            onChange={(val) => updateParam("compressionRatio", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Air Blast Injection
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {blastAirPressure} bar
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="90"
-              step="5"
-              value={blastAirPressure}
-              onChange={(e) => updateParam("blastAirPressure", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="dieselBlastAirPressure"
+            patentId="us-542846-diesel-engine"
+            paramKey="blastAirPressure"
+            label="Air Blast Injection"
+            value={blastAirPressure}
+            min={40}
+            max={90}
+            step={5}
+            unit="bar"
+            onChange={(val) => updateParam("blastAirPressure", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-542846-diesel-engine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

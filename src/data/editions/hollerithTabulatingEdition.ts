@@ -305,10 +305,10 @@ export const hollerithTabulatingSourceBlocksDraft: readonly CuratedSpecification
       },
       {
         kind: "reference",
-        text: "Figs. 15, 16, and 17",
+        text: "Figs. 15, 16 and 17",
         href: "#",
         referenceType: "figure",
-        label: "Open the source-facsimile crops for Figs. 15, 16, and 17 in US 395,781",
+        label: "Open the source-facsimile crops for Figs. 15, 16 and 17 in US 395,781",
         figurePreviews: [
           ...hollerithTabulatingFigureCrops["Fig. 15"],
           ...hollerithTabulatingFigureCrops["Fig. 16"],

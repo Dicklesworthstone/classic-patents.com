@@ -13,7 +13,7 @@ import {
   type OttoEngineModelResult,
   updateOttoEngineKinematics,
 } from "./ottoEngineModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -47,7 +47,7 @@ export function OttoEngine3D() {
 
   // Four-Stroke Thermodynamic Parameters from Physics Bus
   const { params, updateParam } = usePatentPhysics("us-194047-otto-engine");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 180;
   const compressionRatio = params.compressionRatio ?? 4.5;
