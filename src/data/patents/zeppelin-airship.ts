@@ -1,5 +1,4 @@
 import type { Patent } from "@/types/patent";
-import { zeppelinArchivalEdition } from "../editions/zeppelinEdition";
 
 export const zeppelinAirshipPatent: Patent = {
   id: "us-621195-zeppelin-airship",
@@ -22,15 +21,6 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
-  archivalEdition: zeppelinArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
-    pageCount: 7,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
-    sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
-  },
   originalText: `UNITED STATES PATENT OFFICE.
 FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
 

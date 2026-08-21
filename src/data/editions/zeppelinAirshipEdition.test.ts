@@ -8,9 +8,9 @@ import {
   zeppelinAirshipParallelReadings,
 } from "./zeppelinAirshipEdition";
 
-test("US 621,195 publishes complete manual edition and originalTextAsset", () => {
-  expect(zeppelinAirshipPatent.archivalEdition).toBe(zeppelinArchivalEdition);
-  expect(zeppelinAirshipPatent.originalTextAsset).toBeDefined();
+test("US 621,195 keeps its incomplete source face withheld until the missing cited figures are sourced", () => {
+  expect(zeppelinAirshipPatent.archivalEdition).toBeUndefined();
+  expect(zeppelinAirshipPatent.originalTextAsset).toBeUndefined();
   expect(validateCuratedSpecificationEdition(zeppelinAirshipArchivalEdition)).toEqual({
     valid: true,
     errors: [],
