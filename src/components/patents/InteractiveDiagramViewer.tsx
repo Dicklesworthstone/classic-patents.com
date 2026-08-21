@@ -6218,147 +6218,149 @@ export function InteractiveDiagramViewer({
       {/* Schematic Container with Interactive Pins & Pin Inspector */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Drawing Artboard */}
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#fbf7ee] dark:bg-[#061121] p-4 sm:p-6 border border-parchment-300 dark:border-ink-800 relative min-h-[380px] shadow-inner overflow-hidden transition-colors duration-300">
-          {/* Blueprint / parchment background grid */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e7dec8_1px,transparent_1px),linear-gradient(to_bottom,#e7dec8_1px,transparent_1px)] opacity-70 dark:bg-[linear-gradient(to_right,#0c2340_1px,transparent_1px),linear-gradient(to_bottom,#0c2340_1px,transparent_1px)] dark:opacity-60 bg-[size:24px_24px] rounded-2xl pointer-events-none" />
-
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#fbf7ee] dark:bg-[#061121] bg-[linear-gradient(to_right,rgba(231,222,200,0.7)_1px,transparent_1px),linear-gradient(to_bottom,rgba(231,222,200,0.7)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(12,35,64,0.6)_1px,transparent_1px),linear-gradient(to_bottom,rgba(12,35,64,0.6)_1px,transparent_1px)] bg-[size:24px_24px] p-4 sm:p-6 border border-parchment-300 dark:border-ink-800 relative min-h-[380px] shadow-inner overflow-auto transition-colors duration-300">
           {/* Schematic SVG Vector Frame */}
           <div
-            className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center transition-transform duration-300"
-            style={{ transform: `scale(${zoomLevel})` }}
+            className="min-w-full w-max flex justify-center"
+            style={zoomLevel === 1 ? undefined : { width: `${zoomLevel * 100}%` }}
           >
-            <svg
-              viewBox={`0 0 ${SCHEMATIC_VIEW_W} ${SCHEMATIC_VIEW_H}`}
-              className="w-full h-full select-none"
-              onPointerDown={(e) => {
-                if (!patentId?.includes("wright-flyer") && !patentId?.includes("821393")) return;
-                const rect = e.currentTarget.getBoundingClientRect();
-                const nx = (e.clientX - rect.left) / rect.width;
-                updateParam("wingWarp", wrightWarpFromPointerNx(nx));
-              }}
+            <div
+              className="relative w-full max-w-2xl aspect-[4/3] flex items-center justify-center transition-[width] duration-300"
+              style={zoomLevel === 1 ? undefined : { maxWidth: "none" }}
             >
-              {/* Outer drawing border */}
-              <rect
-                x="10"
-                y="10"
-                width="380"
-                height="280"
-                fill="none"
-                stroke="#78350f"
-                className="dark:stroke-[#0ea5e9]"
-                strokeWidth="1.5"
-                strokeDasharray="4 2"
-                strokeOpacity="0.4"
-                rx="4"
-              />
-              <text
-                x="200"
-                y="32"
-                textAnchor="middle"
-                fontSize="11"
-                fill="#451a03"
-                className="dark:fill-[#7dd3fc]"
-                fontFamily="serif"
-                fontWeight="bold"
-                letterSpacing="1"
+              <svg
+                viewBox={`0 0 ${SCHEMATIC_VIEW_W} ${SCHEMATIC_VIEW_H}`}
+                className="w-full h-full select-none"
+                onPointerDown={(e) => {
+                  if (!patentId?.includes("wright-flyer") && !patentId?.includes("821393")) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const nx = (e.clientX - rect.left) / rect.width;
+                  updateParam("wingWarp", wrightWarpFromPointerNx(nx));
+                }}
               >
-                {patentNumber} · {activeDrawing.figureNumber.toUpperCase()}
-              </text>
-
-              {/* Central authentic mechanical blueprint vectors */}
-              {_renderHistoricalSchematic(
-                activeDrawing.svgType,
-                activeDrawing.figureNumber,
-                patentNumber,
-                patentId,
-                isTeslaMotorSchematic
-                  ? { ...livePhysicsParams, omegaT: teslaOmegaDeg }
-                  : livePhysicsParams,
-              )}
-
-              {/* Animated Radar Target Reticle on selected pin */}
-              {activePin && (
-                <g className="pointer-events-none transition-opacity duration-300">
-                  {(() => {
-                    const pin = schematicCalloutSvg(activePin.x, activePin.y);
-                    return (
-                      <>
-                        <circle
-                          cx={pin.x}
-                          cy={pin.y}
-                          r={SCHEMATIC_RETICLE_INNER_R}
-                          fill="none"
-                          stroke="#f59e0b"
-                          strokeWidth="1.5"
-                          strokeDasharray="3 3"
-                          className="animate-spin"
-                          style={{
-                            transformOrigin: `${pin.x}px ${pin.y}px`,
-                            animationDuration: "10s",
-                          }}
-                        />
-                        <circle
-                          cx={pin.x}
-                          cy={pin.y}
-                          r={SCHEMATIC_RETICLE_OUTER_R}
-                          fill="none"
-                          stroke="#f59e0b"
-                          strokeWidth="1"
-                          opacity="0.35"
-                        />
-                        {/* Crosshairs */}
-                        <line
-                          x1={pin.x - SCHEMATIC_RETICLE_HAIR}
-                          y1={pin.y}
-                          x2={pin.x + SCHEMATIC_RETICLE_HAIR}
-                          y2={pin.y}
-                          stroke="#f59e0b"
-                          strokeWidth="1"
-                          strokeOpacity="0.6"
-                        />
-                        <line
-                          x1={pin.x}
-                          y1={pin.y - SCHEMATIC_RETICLE_HAIR}
-                          x2={pin.x}
-                          y2={pin.y + SCHEMATIC_RETICLE_HAIR}
-                          stroke="#f59e0b"
-                          strokeWidth="1"
-                          strokeOpacity="0.6"
-                        />
-                      </>
-                    );
-                  })()}
-                </g>
-              )}
-            </svg>
-
-            {/* Interactive Numbered Callout Pins */}
-            {callouts.map((callout, pinIdx) => {
-              const isSelected = callout.id === activeCalloutId;
-              const isHovered = callout.id === hoveredCalloutId;
-              const pinText = callout.element.length <= 5 ? callout.element : String(pinIdx + 1);
-              return (
-                <button
-                  key={callout.id}
-                  type="button"
-                  aria-label={`${callout.label}: ${callout.description}`}
-                  onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
-                  onMouseEnter={() => setHoveredCalloutId(callout.id)}
-                  onMouseLeave={() => setHoveredCalloutId(null)}
-                  style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[36px] max-w-[4rem] h-9 px-2 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
-                    isSelected
-                      ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/50 scale-125 z-20 shadow-amber-500/30"
-                      : isHovered
-                        ? "bg-amber-600 text-white scale-110 ring-2 ring-amber-400 z-15"
-                        : "bg-ink-900/90 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
-                  }`}
-                  title={`${callout.label}: ${callout.description}`}
+                {/* Outer drawing border */}
+                <rect
+                  x="10"
+                  y="10"
+                  width="380"
+                  height="280"
+                  fill="none"
+                  stroke="#78350f"
+                  className="dark:stroke-[#0ea5e9]"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 2"
+                  strokeOpacity="0.4"
+                  rx="4"
+                />
+                <text
+                  x="200"
+                  y="32"
+                  textAnchor="middle"
+                  fontSize="11"
+                  fill="#451a03"
+                  className="dark:fill-[#7dd3fc]"
+                  fontFamily="serif"
+                  fontWeight="bold"
+                  letterSpacing="1"
                 >
-                  {pinText}
-                </button>
-              );
-            })}
+                  {patentNumber} · {activeDrawing.figureNumber.toUpperCase()}
+                </text>
+
+                {/* Central authentic mechanical blueprint vectors */}
+                {_renderHistoricalSchematic(
+                  activeDrawing.svgType,
+                  activeDrawing.figureNumber,
+                  patentNumber,
+                  patentId,
+                  isTeslaMotorSchematic
+                    ? { ...livePhysicsParams, omegaT: teslaOmegaDeg }
+                    : livePhysicsParams,
+                )}
+
+                {/* Animated Radar Target Reticle on selected pin */}
+                {activePin && (
+                  <g className="pointer-events-none transition-opacity duration-300">
+                    {(() => {
+                      const pin = schematicCalloutSvg(activePin.x, activePin.y);
+                      return (
+                        <>
+                          <circle
+                            cx={pin.x}
+                            cy={pin.y}
+                            r={SCHEMATIC_RETICLE_INNER_R}
+                            fill="none"
+                            stroke="#f59e0b"
+                            strokeWidth="1.5"
+                            strokeDasharray="3 3"
+                            className="animate-spin"
+                            style={{
+                              transformOrigin: `${pin.x}px ${pin.y}px`,
+                              animationDuration: "10s",
+                            }}
+                          />
+                          <circle
+                            cx={pin.x}
+                            cy={pin.y}
+                            r={SCHEMATIC_RETICLE_OUTER_R}
+                            fill="none"
+                            stroke="#f59e0b"
+                            strokeWidth="1"
+                            opacity="0.35"
+                          />
+                          {/* Crosshairs */}
+                          <line
+                            x1={pin.x - SCHEMATIC_RETICLE_HAIR}
+                            y1={pin.y}
+                            x2={pin.x + SCHEMATIC_RETICLE_HAIR}
+                            y2={pin.y}
+                            stroke="#f59e0b"
+                            strokeWidth="1"
+                            strokeOpacity="0.6"
+                          />
+                          <line
+                            x1={pin.x}
+                            y1={pin.y - SCHEMATIC_RETICLE_HAIR}
+                            x2={pin.x}
+                            y2={pin.y + SCHEMATIC_RETICLE_HAIR}
+                            stroke="#f59e0b"
+                            strokeWidth="1"
+                            strokeOpacity="0.6"
+                          />
+                        </>
+                      );
+                    })()}
+                  </g>
+                )}
+              </svg>
+
+              {/* Interactive Numbered Callout Pins */}
+              {callouts.map((callout, pinIdx) => {
+                const isSelected = callout.id === activeCalloutId;
+                const isHovered = callout.id === hoveredCalloutId;
+                const pinText = callout.element.length <= 5 ? callout.element : String(pinIdx + 1);
+                return (
+                  <button
+                    key={callout.id}
+                    type="button"
+                    aria-label={`${callout.label}: ${callout.description}`}
+                    onClick={() => setActiveCalloutId(isSelected ? null : callout.id)}
+                    onMouseEnter={() => setHoveredCalloutId(callout.id)}
+                    onMouseLeave={() => setHoveredCalloutId(null)}
+                    style={{ left: `${callout.x}%`, top: `${callout.y}%` }}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 min-w-[36px] max-w-[4rem] h-9 px-2 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all duration-200 shadow-md truncate ${
+                      isSelected
+                        ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/50 scale-125 z-20 shadow-amber-500/30"
+                        : isHovered
+                          ? "bg-amber-600 text-white scale-110 ring-2 ring-amber-400 z-15"
+                          : "bg-ink-900/90 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
+                    }`}
+                    title={`${callout.label}: ${callout.description}`}
+                  >
+                    {pinText}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="w-full flex items-center justify-between text-[11px] font-sans text-ink-400 mt-4 pt-3 border-t border-ink-800/80">
