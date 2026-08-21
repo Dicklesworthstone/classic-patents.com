@@ -1,10 +1,11 @@
 "use client";
 
-import { Radio, Volume2 } from "lucide-react";
+import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 const MORSE_TABLE: Record<string, string> = {
   A: "·-",
@@ -36,7 +37,8 @@ const MORSE_TABLE: Record<string, string> = {
 };
 
 export function MorseTelegraphSim() {
-  const { params, updateParam } = usePatentPhysics("us-1647-morse-telegraph");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-1647-morse-telegraph");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [inputMessage, setInputMessage] = useState<string>("WHAT HATH GOD WROUGHT");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [activeSymbolIndex, setActiveSymbolIndex] = useState<number>(-1);
@@ -71,7 +73,9 @@ export function MorseTelegraphSim() {
   // Handle live manual Morse key
   const handleKeyDown = () => {
     setIsKeyDepressed(true);
-    soundEngine.playContinuousTone(700, "sine", 0.1);
+    if (!isAudioMuted) {
+      soundEngine.playContinuousTone(700, "sine", 0.1);
+    }
   };
 
   const handleKeyUp = () => {
@@ -90,13 +94,17 @@ export function MorseTelegraphSim() {
       setActiveSymbolIndex(i);
       const sym = chars[i];
       if (sym === "·") {
-        soundEngine.playContinuousTone(700, "sine", 0.1);
+        if (!isAudioMuted) {
+          soundEngine.playContinuousTone(700, "sine", 0.1);
+        }
         await new Promise((r) => setTimeout(r, morse.ditMs));
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
         await new Promise((r) => setTimeout(r, morse.intraGapMs));
       } else if (sym === "-") {
-        soundEngine.playContinuousTone(700, "sine", 0.1);
+        if (!isAudioMuted) {
+          soundEngine.playContinuousTone(700, "sine", 0.1);
+        }
         await new Promise((r) => setTimeout(r, morse.dahMs));
         soundEngine.stopContinuousTone();
         if (!isMountedRef.current) break;
@@ -117,35 +125,66 @@ export function MorseTelegraphSim() {
   const isSignalReceived = isRelayEnabled || morse.magneticForceN >= 0.25;
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-amber-500" />
-            <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Morse Electromagnetic Telegraph &amp; Relay Simulator (US 1,647)
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Samuel Morse Electromagnetic Telegraph &amp; Relay (US 1,647)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Experience the birth of digital telecommunications: variable-length binary encoding and
-            regenerative relay amplifiers.
+            Variable-length binary encoding, spring-loaded keying sounder, and regenerative relay
+            amplifiers.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={playMorseSequence}
-          disabled={isPlaying}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold transition-colors shadow-md ${
-            isPlaying
-              ? "bg-emerald-600 text-white animate-pulse"
-              : "bg-amber-600 hover:bg-amber-700 text-white active:scale-95"
-          }`}
-        >
-          <Volume2 className="w-4 h-4" />
-          <span>{isPlaying ? "Transmitting Message..." : "Transmit Morse Stream"}</span>
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={playMorseSequence}
+            disabled={isPlaying}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors shadow-md ${
+              isPlaying
+                ? "bg-emerald-600 text-white animate-pulse"
+                : "bg-amber-600 hover:bg-amber-700 text-white active:scale-95"
+            }`}
+          >
+            <Volume2 className="w-4 h-4" />
+            <span>{isPlaying ? "Transmitting..." : "Transmit"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setInputMessage("WHAT HATH GOD WROUGHT");
+              setIsRelayEnabled(true);
+              setIsPlaying(false);
+              setActiveSymbolIndex(-1);
+              soundEngine.stopContinuousTone();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Visual Canvas & Telegraph Instruments */}

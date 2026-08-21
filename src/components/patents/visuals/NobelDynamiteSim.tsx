@@ -1,9 +1,10 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Flame, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useState } from "react";
 import { nobelKieselguhrSvg, stepNobelDynamite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function NobelDynamiteSim() {
@@ -26,6 +27,7 @@ export function NobelDynamiteSim() {
   const handleDetonate = () => {
     if (isCapStrongEnough) {
       setIsDetonated(true);
+      soundEngine.playSwitchClick();
       setTimeout(() => setIsDetonated(false), nobel.flashDisplayMs);
     }
   };
@@ -34,12 +36,14 @@ export function NobelDynamiteSim() {
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Nobel Dynamite & Fulminate Detonation (US 78,317)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Energetic Physics — Porous Kieselguhr Matrix, Nitroglycerin Adsorption,
-            and Shock-Wave Initiation
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-red-600 dark:text-red-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Alfred Nobel Dynamite &amp; Fulminate Detonation (US 78,317)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Porous kieselguhr matrix, nitroglycerin adsorption, and shock-wave initiation.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -47,22 +51,17 @@ export function NobelDynamiteSim() {
             type="button"
             onClick={handleDetonate}
             aria-label="Fire Blasting Cap"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-sans text-xs font-bold shadow transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-sans text-xs font-bold shadow transition-colors active:scale-95"
           >
             <Zap className="w-4 h-4" />
             <span>Fire Cap</span>
           </button>
           <button
             type="button"
-            onClick={resetParams}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
             aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -71,6 +70,18 @@ export function NobelDynamiteSim() {
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsDetonated(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
