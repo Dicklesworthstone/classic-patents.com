@@ -432,8 +432,9 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     p(
+      ref("FIG. 10", "#figure-10", "Figure 10"),
       text(
-        "FIG. 10 illustrates a segment of laser material surrounded by a low-index material such as air. An axial ray can travel without reflecting from the side, while nonparallel rays reflect at the boundary, increasing the effective resonating length and spreading the output. In ",
+        " illustrates a segment of laser material surrounded by a low-index material such as air. An axial ray can travel without reflecting from the side, while nonparallel rays reflect at the boundary, increasing the effective resonating length and spreading the output. In ",
       ),
       ref(
         "FIG. 11",
