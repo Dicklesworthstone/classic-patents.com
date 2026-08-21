@@ -96,7 +96,9 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
       <PatentHeader patent={patent} />
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
-      <DualProjectionViewer patent={patent} />
+      <div data-archival-edition={patent.archivalEdition?.kind ?? "withheld"}>
+        <DualProjectionViewer patent={patent} />
+      </div>
 
       {/* Adjacent Patent Chronological Navigation */}
       <nav
