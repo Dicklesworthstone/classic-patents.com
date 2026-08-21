@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLindeLiquefactionModel,
   type LindeLiquefactionModelResult,
@@ -43,6 +46,7 @@ export function LindeAirLiquefaction3D() {
   const [showFlowTracer, setShowFlowTracer] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
@@ -160,8 +164,16 @@ export function LindeAirLiquefaction3D() {
           </div>
         )}
 
-        {/* Top-Right Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-727650-linde-air-liquefaction"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("highPressureAtm", active ? 200 : 20);
+            }}
+          />
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
@@ -253,66 +265,54 @@ export function LindeAirLiquefaction3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Inlet High Pressure (p²)
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {highPressureAtm} atm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="200"
-              step="5"
-              value={highPressureAtm}
-              onChange={(e) => updateParam("highPressureAtm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lindeHighPressure"
+            patentId="us-727650-linde-air-liquefaction"
+            paramKey="throttlePressureBar"
+            label="Inlet High Pressure (p²)"
+            value={highPressureAtm}
+            min={40}
+            max={200}
+            step={5}
+            unit="atm"
+            onChange={(val) => updateParam("highPressureAtm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Return Low Pressure (p′)
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {lowPressureAtm} atm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              step="1"
-              value={lowPressureAtm}
-              onChange={(e) => updateParam("lowPressureAtm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lindeLowPressure"
+            patentId="us-727650-linde-air-liquefaction"
+            paramKey="pressure"
+            label="Return Low Pressure (p′)"
+            value={lowPressureAtm}
+            min={1}
+            max={50}
+            step={1}
+            unit="atm"
+            onChange={(val) => updateParam("lowPressureAtm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Pre-Cooler Temperature (t³)
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {coolerOutletC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="-20"
-              max="30"
-              step="1"
-              value={coolerOutletC}
-              onChange={(e) => updateParam("coolerOutletC", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lindeCoolerOutlet"
+            patentId="us-727650-linde-air-liquefaction"
+            paramKey="temperature"
+            label="Pre-Cooler Temperature (t³)"
+            value={coolerOutletC}
+            min={-20}
+            max={30}
+            step={1}
+            unit="°C"
+            onChange={(val) => updateParam("coolerOutletC", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-727650-linde-air-liquefaction"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

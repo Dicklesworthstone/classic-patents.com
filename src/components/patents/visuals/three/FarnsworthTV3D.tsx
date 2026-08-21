@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
@@ -14,6 +15,8 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -54,6 +57,7 @@ export function FarnsworthTV3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Electron Optics Physics (FrankenSim Relativistic Electron Beam)
   const beamState = FrankenSimEngine.stepFarnsworthTv(
@@ -331,66 +335,63 @@ export function FarnsworthTV3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Anode Potential</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {anodeVoltageVolts} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="500"
-              max="3000"
-              step="50"
-              value={anodeVoltageVolts}
-              onChange={(e) => updateParam("anodeVoltage", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="farnsworthAnodeVoltage"
+            patentId="us-1773980-farnsworth-tv"
+            paramKey="anodeVoltage"
+            label="Anode Potential"
+            value={anodeVoltageVolts}
+            min={500}
+            max={3000}
+            step={50}
+            unit=" V"
+            onChange={(val) => updateParam("anodeVoltage", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Deflection Coil Current
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {coilCurrentA.toFixed(2)} A
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.02"
-              value={coilCurrentA}
-              onChange={(e) => updateParam("coilCurrent", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="farnsworthCoilCurrent"
+            patentId="us-1773980-farnsworth-tv"
+            paramKey="coilCurrent"
+            label="Deflection Coil Current"
+            value={coilCurrentA}
+            min={0.1}
+            max={1.0}
+            step={0.02}
+            unit=" A"
+            onChange={(val) => updateParam("coilCurrent", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Target Illumination
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {lightIntensityLux} lux
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="2000"
-              step="50"
-              value={lightIntensityLux}
-              onChange={(e) =>
-                updateParam("lightIntensityLux", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="farnsworthLightIntensity"
+            patentId="us-1773980-farnsworth-tv"
+            paramKey="lightIntensityLux"
+            label="Target Illumination"
+            value={lightIntensityLux}
+            min={50}
+            max={2000}
+            step={50}
+            unit=" lux"
+            onChange={(val) => updateParam("lightIntensityLux", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-1773980-farnsworth-tv"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-1773980-farnsworth-tv"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

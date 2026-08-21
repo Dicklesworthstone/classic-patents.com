@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildEinsteinRefrigeratorModel,
   updateEinsteinRefrigeratorKinematics,
@@ -43,6 +46,7 @@ export function EinsteinRefrigerator3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const frige = stepEinsteinRefrigerator({
     heatInput: heatInputWatts,
@@ -277,66 +281,63 @@ export function EinsteinRefrigerator3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Heat Source Input</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {heatInputWatts} W
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="500"
-              step="10"
-              value={heatInputWatts}
-              onChange={(e) => updateParam("heatInput", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="einsteinHeatInput"
+            patentId="us-1781541-einstein-refrigerator"
+            paramKey="heatInput"
+            label="Heat Source Input"
+            value={heatInputWatts}
+            min={50}
+            max={500}
+            step={10}
+            unit=" W"
+            onChange={(val) => updateParam("heatInput", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Total System Pressure
-              </span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {systemPressureAtm} atm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              step="1"
-              value={systemPressureAtm}
-              onChange={(e) => updateParam("totalPressure", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="einsteinTotalPressure"
+            patentId="us-1781541-einstein-refrigerator"
+            paramKey="totalPressure"
+            label="Total System Pressure"
+            value={systemPressureAtm}
+            min={5}
+            max={30}
+            step={1}
+            unit=" atm"
+            onChange={(val) => updateParam("totalPressure", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Ammonia Auxiliary Fraction
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {Math.round(auxiliaryGasRatio * 100)}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="20"
-              max="90"
-              step="5"
-              value={Math.round(auxiliaryGasRatio * 100)}
-              onChange={(e) =>
-                updateParam("ammoniaRatio", Number.parseInt(e.target.value, 10) / 100)
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="einsteinAmmoniaRatio"
+            patentId="us-1781541-einstein-refrigerator"
+            paramKey="ammoniaRatio"
+            label="Ammonia Auxiliary Fraction"
+            value={Math.round(auxiliaryGasRatio * 100)}
+            min={20}
+            max={90}
+            step={5}
+            unit="%"
+            onChange={(val) => updateParam("ammoniaRatio", val / 100)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-1781541-einstein-refrigerator"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-1781541-einstein-refrigerator"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
