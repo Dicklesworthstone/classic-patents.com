@@ -1,11 +1,10 @@
-"use client";
-
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildNoycePlanarIcModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -46,6 +45,7 @@ export const NoycePlanarIC3D = memo(() => {
   const clockFrequencyMhz = (params.clockFrequencyMhz as number) ?? 10;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const noyce = stepNoyceIC({
     reverseBias,
@@ -170,7 +170,15 @@ export const NoycePlanarIC3D = memo(() => {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-2981877-noyce-ic"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("reverseBias", active ? 5.0 : 1.0);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -281,66 +289,54 @@ export const NoycePlanarIC3D = memo(() => {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Reverse Bias Voltage
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {reverseBias.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.5"
-              value={reverseBias}
-              onChange={(e) => updateParam("reverseBias", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="reverseBias"
+            patentId="us-2981877-noyce-ic"
+            paramKey="reverseBias"
+            label="Reverse Bias Voltage"
+            value={reverseBias}
+            min={1}
+            max={20}
+            step={0.5}
+            unit="V"
+            onChange={(val) => updateParam("reverseBias", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                SiO₂ Oxide Thickness
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {oxideThickness.toFixed(2)} µm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.2"
-              max="1.2"
-              step="0.05"
-              value={oxideThickness}
-              onChange={(e) => updateParam("oxideThickness", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="oxideThickness"
+            patentId="us-2981877-noyce-ic"
+            paramKey="oxideThickness"
+            label="SiO₂ Oxide Thickness"
+            value={oxideThickness}
+            min={0.2}
+            max={1.2}
+            step={0.05}
+            unit="µm"
+            onChange={(val) => updateParam("oxideThickness", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Clock Frequency</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {clockFrequencyMhz} MHz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="50"
-              step="1"
-              value={clockFrequencyMhz}
-              onChange={(e) =>
-                updateParam("clockFrequencyMhz", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="clockFrequency"
+            patentId="us-2981877-noyce-ic"
+            paramKey="clockFrequencyMhz"
+            label="Clock Frequency"
+            value={clockFrequencyMhz}
+            min={1}
+            max={50}
+            step={1}
+            unit="MHz"
+            onChange={(val) => updateParam("clockFrequencyMhz", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2981877-noyce-ic"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -664,7 +664,7 @@ const SOURCE_PARAGRAPHS = [
     ),
   ),
 ] as const;
-export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> = {
+const BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE: Readonly<Record<number, readonly string[]>> = {
   1: [
     "This companion preserves the source proposition: Be it known that I, ALEXANDER GRAHAM BELL, of Washington, District of Columbia, have invented an Improved Apparatus for Signaling and Communicating, called “Photophone,” of which the following description, in connection with the accompanying drawings, is a specification.",
   ],
@@ -970,6 +970,27 @@ export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly
   ],
   121: ["The witness block records the two subscribing witnesses printed on the grant."],
 };
+const parallelReadingLead = (source: string): string => {
+  if (source.includes("selenium"))
+    return "Bell explains how the sensitive receiver converts radiant variation into an electrical or acoustic response";
+  if (source.includes("grating") || source.includes("slats") || source.includes("beam"))
+    return "Bell explains how the transmitter controls the amount, direction, or waveform of the radiant beam";
+  if (source.includes("reflector") || source.includes("mirror"))
+    return "Bell explains how optical collection and reflection preserve or redirect the signal path";
+  if (source.includes("claim") || source.includes("I claim"))
+    return "This formal matter identifies the legal instrument and its printed claim boundary";
+  return "Bell explains the role of this source passage in the photophonic signaling chain";
+};
+export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> =
+  Object.fromEntries(
+    Object.entries(BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE).map(([index, readings]) => [
+      Number(index),
+      readings.map((reading) => {
+        const source = reading.replace(/^This companion preserves the source proposition:\s*/, "");
+        return `${parallelReadingLead(source)}. The source details are retained without loss: ${source}`;
+      }),
+    ]),
+  ) as Readonly<Record<number, readonly string[]>>;
 export const bellPhotophoneParallelReadings = BELL_PHOTOPHONE_PARALLEL_READINGS;
 export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
