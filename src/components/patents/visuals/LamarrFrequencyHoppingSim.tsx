@@ -15,7 +15,9 @@ export function LamarrFrequencyHoppingSim() {
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
-  const [recordPosition, setRecordPosition] = useState(() => Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))));
+  const [recordPosition, setRecordPosition] = useState(() =>
+    Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))),
+  );
   const [rudderStep, setRudderStep] = useState(0);
   const [commandTone, setCommandTone] = useState<100 | 500>(100);
 
@@ -49,7 +51,8 @@ export function LamarrFrequencyHoppingSim() {
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Step matched perforated records through the seven illustrated transmitter channels and four receiver channels.
+            Step matched perforated records through the seven illustrated transmitter channels and
+            four receiver channels.
           </p>
         </div>
 
@@ -102,17 +105,109 @@ export function LamarrFrequencyHoppingSim() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 rounded-2xl bg-ink-950 p-6 border border-ink-800 space-y-5">
           <div className="grid grid-cols-2 gap-3 text-xs font-mono">
-            <div className="rounded-xl border border-purple-700/50 bg-purple-950/40 p-4"><span className="text-purple-300 block mb-2">TRANSMITTER RECORD 37</span><div className="flex gap-1.5">{TRANSMITTER_ROWS.map((row) => <span key={row} className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow ? "bg-purple-500 text-white border-purple-300" : "border-ink-600 text-ink-400"}`}>{row}</span>)}</div><span className="text-ink-400 block mt-3">7 tuning condensers · 24a–24g</span></div>
-            <div className="rounded-xl border border-cyan-700/50 bg-cyan-950/30 p-4"><span className="text-cyan-300 block mb-2">RECEIVER RECORD 37′</span><div className="flex gap-1.5">{TRANSMITTER_ROWS.map((row) => <span key={row} className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow && receiverTuned ? "bg-cyan-500 text-white border-cyan-300" : "border-ink-600 text-ink-400"}`}>{row}</span>)}</div><span className="text-ink-400 block mt-3">4 effective channels · 24′d–24′g</span></div>
+            <div className="rounded-xl border border-purple-700/50 bg-purple-950/40 p-4">
+              <span className="text-purple-300 block mb-2">TRANSMITTER RECORD 37</span>
+              <div className="flex gap-1.5">
+                {TRANSMITTER_ROWS.map((row) => (
+                  <span
+                    key={row}
+                    className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow ? "bg-purple-500 text-white border-purple-300" : "border-ink-600 text-ink-400"}`}
+                  >
+                    {row}
+                  </span>
+                ))}
+              </div>
+              <span className="text-ink-400 block mt-3">7 tuning condensers · 24a–24g</span>
+            </div>
+            <div className="rounded-xl border border-cyan-700/50 bg-cyan-950/30 p-4">
+              <span className="text-cyan-300 block mb-2">RECEIVER RECORD 37′</span>
+              <div className="flex gap-1.5">
+                {TRANSMITTER_ROWS.map((row) => (
+                  <span
+                    key={row}
+                    className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow && receiverTuned ? "bg-cyan-500 text-white border-cyan-300" : "border-ink-600 text-ink-400"}`}
+                  >
+                    {row}
+                  </span>
+                ))}
+              </div>
+              <span className="text-ink-400 block mt-3">4 effective channels · 24′d–24′g</span>
+            </div>
           </div>
-          <div className={`rounded-xl border p-4 flex items-center justify-between ${lampOn ? "border-amber-500 bg-amber-950/50" : "border-emerald-700 bg-emerald-950/30"}`}><div><span className="text-xs font-mono text-ink-400 block">ROW H / LAMP 43</span><span className="text-sm text-parchment-100">{lampOn ? "LAMP ON — transmitter-only false channel" : "LAMP OFF — transmitter and receiver tuned alike"}</span></div><span className={`w-5 h-5 rounded-full ${lampOn ? "bg-amber-300 shadow-[0_0_18px_#fcd34d]" : "bg-ink-700"}`} /></div>
-          <div className="rounded-xl border border-ink-700 p-4 text-sm text-parchment-100 flex items-center justify-between"><span>Discrete rudder position</span><span className="font-mono text-cyan-300">{rudderStep > 0 ? `+${rudderStep}` : rudderStep} steps</span></div>
+          <div
+            className={`rounded-xl border p-4 flex items-center justify-between ${lampOn ? "border-amber-500 bg-amber-950/50" : "border-emerald-700 bg-emerald-950/30"}`}
+          >
+            <div>
+              <span className="text-xs font-mono text-ink-400 block">ROW H / LAMP 43</span>
+              <span className="text-sm text-parchment-100">
+                {lampOn
+                  ? "LAMP ON — transmitter-only false channel"
+                  : "LAMP OFF — transmitter and receiver tuned alike"}
+              </span>
+            </div>
+            <span
+              className={`w-5 h-5 rounded-full ${lampOn ? "bg-amber-300 shadow-[0_0_18px_#fcd34d]" : "bg-ink-700"}`}
+            />
+          </div>
+          <div className="rounded-xl border border-ink-700 p-4 text-sm text-parchment-100 flex items-center justify-between">
+            <span>Discrete rudder position</span>
+            <span className="font-mono text-cyan-300">
+              {rudderStep > 0 ? `+${rudderStep}` : rudderStep} steps
+            </span>
+          </div>
         </div>
         <div className="lg:col-span-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-5">
-          <label className="space-y-2 block text-xs font-mono"><span className="font-semibold text-ink-800 dark:text-parchment-200">Record position (matched strips)</span><input type="range" min="0" max="6" step="1" value={recordPosition} onChange={(event) => { const next = Number(event.target.value); setRecordPosition(next); updateParam("recordPosition", next); }} className="w-full accent-purple-600" /><span className="text-ink-500">Row {txRow} · transmitter {receiverTuned ? "and receiver" : "only"}</span></label>
-          <div className="space-y-2"><span className="text-xs font-mono font-semibold text-ink-800 dark:text-parchment-200">Command tone</span><div className="grid grid-cols-2 gap-2">{([100, 500] as const).map((tone) => <button key={tone} type="button" onClick={() => setCommandTone(tone)} className={`rounded-lg border px-3 py-2 text-xs font-mono ${commandTone === tone ? "bg-purple-700 text-white border-purple-800" : "bg-white/60 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"}`}>{tone}-cycle → {tone === 100 ? "left" : "right"} rudder</button>)}</div></div>
-          <button type="button" onClick={transmitCommand} disabled={!receiverTuned} className="w-full rounded-lg border border-cyan-700 bg-cyan-700 px-3 py-2 text-xs font-mono font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Transmit one discrete command</button>
-          <p className="text-xs leading-relaxed text-ink-700 dark:text-ink-300">A brief 100-cycle or 500-cycle modulation is detected at the receiver and advances the rudder by one ratchet increment. A, B, and C are deliberately unreceivable transmitter channels; the lamp warns the operator.</p>
+          <label className="space-y-2 block text-xs font-mono">
+            <span className="font-semibold text-ink-800 dark:text-parchment-200">
+              Record position (matched strips)
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="6"
+              step="1"
+              value={recordPosition}
+              onChange={(event) => {
+                const next = Number(event.target.value);
+                setRecordPosition(next);
+                updateParam("recordPosition", next);
+              }}
+              className="w-full accent-purple-600"
+            />
+            <span className="text-ink-500">
+              Row {txRow} · transmitter {receiverTuned ? "and receiver" : "only"}
+            </span>
+          </label>
+          <div className="space-y-2">
+            <span className="text-xs font-mono font-semibold text-ink-800 dark:text-parchment-200">
+              Command tone
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {([100, 500] as const).map((tone) => (
+                <button
+                  key={tone}
+                  type="button"
+                  onClick={() => setCommandTone(tone)}
+                  className={`rounded-lg border px-3 py-2 text-xs font-mono ${commandTone === tone ? "bg-purple-700 text-white border-purple-800" : "bg-white/60 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"}`}
+                >
+                  {tone}-cycle → {tone === 100 ? "left" : "right"} rudder
+                </button>
+              ))}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={transmitCommand}
+            disabled={!receiverTuned}
+            className="w-full rounded-lg border border-cyan-700 bg-cyan-700 px-3 py-2 text-xs font-mono font-bold text-white disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Transmit one discrete command
+          </button>
+          <p className="text-xs leading-relaxed text-ink-700 dark:text-ink-300">
+            A brief 100-cycle or 500-cycle modulation is detected at the receiver and advances the
+            rudder by one ratchet increment. A, B, and C are deliberately unreceivable transmitter
+            channels; the lamp warns the operator.
+          </p>
         </div>
       </div>
     </div>

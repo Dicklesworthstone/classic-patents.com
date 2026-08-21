@@ -41,14 +41,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
   test("exposes authentic camera presets and UI overlay for impulse turbine observation", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "PeltonWheel3D.tsx"), "utf8");
 
-    for (const preset of [
-      "iso",
-      "split_bucket",
-      "nozzle",
-      "runner_wheel",
-      "tailrace",
-      "top",
-    ]) {
+    for (const preset of ["iso", "split_bucket", "nozzle", "runner_wheel", "tailrace", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
@@ -75,15 +68,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(model.materials.bronzeBucket).toBeDefined();
     expect(model.materials.waterJet).toBeDefined();
 
-    updatePeltonWheelKinematics(
-      model,
-      0.016,
-      0,
-      0.1,
-      0.1,
-      true,
-      true,
-    );
+    updatePeltonWheelKinematics(model, 0.016, 0, 0.1, 0.1, true, true);
     expect(model.materials.castIron.opacity).toBe(0.35);
     expect(model.jetPoints.visible).toBe(true);
 

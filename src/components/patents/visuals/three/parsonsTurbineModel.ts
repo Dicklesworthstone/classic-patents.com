@@ -12,8 +12,8 @@
  */
 
 import * as THREE from "three";
-import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
+import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { createLcg } from "@/utils/lcg";
 
 const lcg = createLcg(1471);
@@ -164,7 +164,18 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
     const center = new THREE.Vector3(-4.2 + column * 2.7, 0.8 - row * 1.5, 0);
     positions.set(name, center);
     const casing = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(name === "X" || name === "Y" ? 0.6 : 0.72, name === "X" || name === "Y" ? 0.6 : 0.72, 1.45, 24, 1, false, 0, Math.PI * 1.35)),
+      trackGeo(
+        new THREE.CylinderGeometry(
+          name === "X" || name === "Y" ? 0.6 : 0.72,
+          name === "X" || name === "Y" ? 0.6 : 0.72,
+          1.45,
+          24,
+          1,
+          false,
+          0,
+          Math.PI * 1.35,
+        ),
+      ),
       name === "X" || name === "Y" ? materials.reversingHousing : materials.castIronCasing,
     );
     casing.rotation.z = Math.PI / 2;
@@ -196,14 +207,34 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
   const reversingPipes: THREE.Mesh[] = [];
   for (const route of ["series", "compound-parallel", "simple-parallel"] as const) {
     for (const [from, to] of stepParsonsMarine({ routing: route }).routeEdges) {
-      const fromPos = from === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : from.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(from);
-      const toPos = to === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : to.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(to);
+      const fromPos =
+        from === "boiler"
+          ? new THREE.Vector3(-6.0, 0, 0)
+          : from.startsWith("condenser")
+            ? new THREE.Vector3(6.0, 0, 0)
+            : positions.get(from);
+      const toPos =
+        to === "boiler"
+          ? new THREE.Vector3(-6.0, 0, 0)
+          : to.startsWith("condenser")
+            ? new THREE.Vector3(6.0, 0, 0)
+            : positions.get(to);
       if (fromPos && toPos) routePipeGroups[route].push(pipeBetween(fromPos, toPos));
     }
   }
   for (const [from, to] of stepParsonsMarine({ reversing: true }).routeEdges) {
-    const fromPos = from === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : from.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(from);
-    const toPos = to === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : to.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(to);
+    const fromPos =
+      from === "boiler"
+        ? new THREE.Vector3(-6.0, 0, 0)
+        : from.startsWith("condenser")
+          ? new THREE.Vector3(6.0, 0, 0)
+          : positions.get(from);
+    const toPos =
+      to === "boiler"
+        ? new THREE.Vector3(-6.0, 0, 0)
+        : to.startsWith("condenser")
+          ? new THREE.Vector3(6.0, 0, 0)
+          : positions.get(to);
     if (fromPos && toPos) reversingPipes.push(pipeBetween(fromPos, toPos));
   }
 
@@ -279,7 +310,10 @@ export function updateParsonsTurbineKinematics(
 
   // 2. Steam particles traverse the selected source route.
   const marine = stepParsonsMarine({ routing, reversing });
-  for (const [mode, pipes] of Object.entries(nodes.routePipeGroups) as [ParsonsRoutingMode, THREE.Mesh[]][]) {
+  for (const [mode, pipes] of Object.entries(nodes.routePipeGroups) as [
+    ParsonsRoutingMode,
+    THREE.Mesh[],
+  ][]) {
     for (const pipe of pipes) pipe.visible = !reversing && mode === routing;
   }
   for (const pipe of nodes.reversingPipes) pipe.visible = reversing;

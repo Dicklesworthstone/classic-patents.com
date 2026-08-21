@@ -333,7 +333,6 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     casingGroup.add(cup);
   }
 
-
   // --- 5. WATER JET & SPRAY PARTICLE SYSTEMS ---
   // High-Speed Concentrated Water Jet (Nozzle -> Bucket Splitter)
   const jetCount = 200;

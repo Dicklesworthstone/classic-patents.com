@@ -6,6 +6,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
@@ -13,7 +14,6 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset = "isometric" | "gridControl" | "filament" | "plateAnode";
 

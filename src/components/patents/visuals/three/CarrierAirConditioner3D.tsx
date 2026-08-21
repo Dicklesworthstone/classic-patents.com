@@ -9,14 +9,20 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { buildCarrierAirConditionerModel, updateCarrierAirConditionerKinematics } from "./carrierAirConditionerModel";
+import {
+  buildCarrierAirConditionerModel,
+  updateCarrierAirConditionerKinematics,
+} from "./carrierAirConditionerModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "spray" | "plates" | "fan";
-const CAMERA_PRESETS: Record<CameraPreset, { pos: [number, number, number]; target: [number, number, number] }> = {
+const CAMERA_PRESETS: Record<
+  CameraPreset,
+  { pos: [number, number, number]; target: [number, number, number] }
+> = {
   iso: { pos: [8, 5.5, 8], target: [0, 0, 0] },
   spray: { pos: [-3.4, 2.1, 4.1], target: [-2.3, 0.2, 0] },
   plates: { pos: [0.2, 2.6, 4.5], target: [-0.5, 0.2, 0] },
@@ -36,8 +42,18 @@ export function CarrierAirConditioner3D() {
   const airflowCfm = params.airflowCfm ?? 15000;
   const sprayRatePct = params.sprayRatePct ?? 60;
   const separatorFaces = params.separatorFaces ?? 6;
-  const carrier = FrankenSimEngine.stepCarrierAirConditioner({ airflowCfm, sprayRatePct, separatorFaces });
-  const live = useLiveSimParams({ airflowCfm, sprayRatePct, separatorFaces, cutawayMode, showSpray });
+  const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+    airflowCfm,
+    sprayRatePct,
+    separatorFaces,
+  });
+  const live = useLiveSimParams({
+    airflowCfm,
+    sprayRatePct,
+    separatorFaces,
+    cutawayMode,
+    showSpray,
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -48,7 +64,11 @@ export function CarrierAirConditioner3D() {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const studio = createThreeStudioScene({ container, cameraPos: CAMERA_PRESETS.iso.pos, targetPos: CAMERA_PRESETS.iso.target });
+    const studio = createThreeStudioScene({
+      container,
+      cameraPos: CAMERA_PRESETS.iso.pos,
+      targetPos: CAMERA_PRESETS.iso.target,
+    });
     studioRef.current = studio;
     const { scene, camera, renderer, controls } = studio;
     const { root, nodes, materials, dispose } = buildCarrierAirConditionerModel();
@@ -59,7 +79,16 @@ export function CarrierAirConditioner3D() {
       requestId = requestAnimationFrame(animate);
       const { dt } = clock.pump(now);
       const p = live.current;
-      updateCarrierAirConditionerKinematics(nodes, materials, dt, p.airflowCfm, p.sprayRatePct, p.separatorFaces, p.cutawayMode, p.showSpray);
+      updateCarrierAirConditionerKinematics(
+        nodes,
+        materials,
+        dt,
+        p.airflowCfm,
+        p.sprayRatePct,
+        p.separatorFaces,
+        p.cutawayMode,
+        p.showSpray,
+      );
       controls.update();
       renderer.render(scene, camera);
     };
@@ -77,28 +106,153 @@ export function CarrierAirConditioner3D() {
       <div className="sr-only">Carrier wet air washer and sinuous separator model</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-        {showUiOverlay && <div className="absolute top-3 left-3 z-10 flex flex-nowrap overflow-x-auto gap-1 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 text-xs">
-          <span className="px-1.5 py-1 text-ink-500 flex items-center gap-1"><Camera className="w-3.5 h-3.5" /> View:</span>
-          {(["iso", "spray", "plates", "fan"] as CameraPreset[]).map((preset) => <button key={preset} type="button" onClick={() => applyCameraPreset(preset)} className={`px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}>{preset}</button>)}
-        </div>}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 z-10 flex flex-nowrap overflow-x-auto gap-1 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 text-xs">
+            <span className="px-1.5 py-1 text-ink-500 flex items-center gap-1">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(["iso", "spray", "plates", "fan"] as CameraPreset[]).map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}
+              >
+                {preset}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="absolute top-3 right-3 z-10 flex flex-wrap justify-end gap-1.5">
-          <ClaimConstraintToggle patentId="us-808897-carrier-air-conditioner" claimStates={claimStates} onToggleClaim={(claim, active) => { setClaimStates((previous) => ({ ...previous, [claim]: active })); updateParam("sprayRatePct", active ? 60 : 0); }} />
-          <button type="button" onClick={() => setCutawayMode((value) => !value)} title={cutawayMode ? "Show casing" : "Show cutaway"} aria-label={cutawayMode ? "Show casing" : "Show cutaway"} className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700">{cutawayMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}</button>
-          <button type="button" onClick={() => setShowSpray((value) => !value)} title={showSpray ? "Hide spray" : "Show spray"} aria-label={showSpray ? "Hide spray" : "Show spray"} className="p-2 rounded-xl bg-cyan-600 text-white"><Waves className="w-4 h-4" /></button>
-          <button type="button" onClick={() => { toggleSound(); soundEngine.playSwitchClick(); }} title={isAudioMuted ? "Unmute sound" : "Mute sound"} aria-label={isAudioMuted ? "Unmute sound" : "Mute sound"} className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700">{isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}</button>
-          <button type="button" onClick={() => applyCameraPreset("iso")} title="Reset camera" aria-label="Reset camera" className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700"><RotateCcw className="w-4 h-4" /></button>
-          <button type="button" onClick={() => setShowUiOverlay((value) => !value)} title="Toggle overlay" aria-label="Toggle overlay" className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700">{showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}</button>
+          <ClaimConstraintToggle
+            patentId="us-808897-carrier-air-conditioner"
+            claimStates={claimStates}
+            onToggleClaim={(claim, active) => {
+              setClaimStates((previous) => ({ ...previous, [claim]: active }));
+              updateParam("sprayRatePct", active ? 60 : 0);
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setCutawayMode((value) => !value)}
+            title={cutawayMode ? "Show casing" : "Show cutaway"}
+            aria-label={cutawayMode ? "Show casing" : "Show cutaway"}
+            className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700"
+          >
+            {cutawayMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowSpray((value) => !value)}
+            title={showSpray ? "Hide spray" : "Show spray"}
+            aria-label={showSpray ? "Hide spray" : "Show spray"}
+            className="p-2 rounded-xl bg-cyan-600 text-white"
+          >
+            <Waves className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            title={isAudioMuted ? "Unmute sound" : "Mute sound"}
+            aria-label={isAudioMuted ? "Unmute sound" : "Mute sound"}
+            className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700"
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            title="Reset camera"
+            aria-label="Reset camera"
+            className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay((value) => !value)}
+            title="Toggle overlay"
+            aria-label="Toggle overlay"
+            className="p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-700"
+          >
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
         </div>
-        {showUiOverlay && <div className="absolute bottom-3 left-3 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono grid grid-cols-2 gap-x-4 gap-y-1">
-          <span className="text-ink-500">Wet film</span><strong>{carrier.wetFilmCoveragePct}%</strong><span className="text-ink-500">Dust capture</span><strong>{carrier.particleCapturePct}%</strong><span className="text-ink-500">Droplet separation</span><strong>{carrier.dropletSeparationPct}%</strong><span className="text-ink-500">Flow resistance</span><strong>{carrier.pressureDropPa} Pa</strong>
-        </div>}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono grid grid-cols-2 gap-x-4 gap-y-1">
+            <span className="text-ink-500">Wet film</span>
+            <strong>{carrier.wetFilmCoveragePct}%</strong>
+            <span className="text-ink-500">Dust capture</span>
+            <strong>{carrier.particleCapturePct}%</strong>
+            <span className="text-ink-500">Droplet separation</span>
+            <strong>{carrier.dropletSeparationPct}%</strong>
+            <span className="text-ink-500">Flow resistance</span>
+            <strong>{carrier.pressureDropPa} Pa</strong>
+          </div>
+        )}
       </div>
-      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800"><div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <SensitivitySlider id="carrierAirflow" patentId="us-808897-carrier-air-conditioner" paramKey="airflowCfm" label="Air current through casing" value={airflowCfm} min={2000} max={30000} step={500} unit="cfm" onChange={(value) => updateParam("airflowCfm", value)} allParams={params} />
-        <SensitivitySlider id="carrierSprayRate" patentId="us-808897-carrier-air-conditioner" paramKey="sprayRatePct" label="Fine liquid spray" value={sprayRatePct} min={10} max={100} step={5} unit="%" onChange={(value) => updateParam("sprayRatePct", value)} allParams={params} />
-        <SensitivitySlider id="carrierSeparatorFaces" patentId="us-808897-carrier-air-conditioner" paramKey="separatorFaces" label="Sinuous faces and flanges" value={separatorFaces} min={2} max={12} step={1} unit="faces" onChange={(value) => updateParam("separatorFaces", value)} allParams={params} />
-      </div><PortHamiltonianEnergyStrip patentId="us-808897-carrier-air-conditioner" params={params} className="mt-3" /></div>
-      <StudioKernelChips visible={showUiOverlay} title="Carrier wet air washer" chips={[{ label: "Air current", value: `${carrier.airCurrentMps} m/s` }, { label: "Wet film", value: `${carrier.wetFilmCoveragePct}%` }, { label: "Dust capture", value: `${carrier.particleCapturePct}%` }, { label: "Droplet separation", value: `${carrier.dropletSeparationPct}%` }, { label: "Kernel", value: "host SI" }]} />
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <SensitivitySlider
+            id="carrierAirflow"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="airflowCfm"
+            label="Air current through casing"
+            value={airflowCfm}
+            min={2000}
+            max={30000}
+            step={500}
+            unit="cfm"
+            onChange={(value) => updateParam("airflowCfm", value)}
+            allParams={params}
+          />
+          <SensitivitySlider
+            id="carrierSprayRate"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="sprayRatePct"
+            label="Fine liquid spray"
+            value={sprayRatePct}
+            min={10}
+            max={100}
+            step={5}
+            unit="%"
+            onChange={(value) => updateParam("sprayRatePct", value)}
+            allParams={params}
+          />
+          <SensitivitySlider
+            id="carrierSeparatorFaces"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="separatorFaces"
+            label="Sinuous faces and flanges"
+            value={separatorFaces}
+            min={2}
+            max={12}
+            step={1}
+            unit="faces"
+            onChange={(value) => updateParam("separatorFaces", value)}
+            allParams={params}
+          />
+        </div>
+        <PortHamiltonianEnergyStrip
+          patentId="us-808897-carrier-air-conditioner"
+          params={params}
+          className="mt-3"
+        />
+      </div>
+      <StudioKernelChips
+        visible={showUiOverlay}
+        title="Carrier wet air washer"
+        chips={[
+          { label: "Air current", value: `${carrier.airCurrentMps} m/s` },
+          { label: "Wet film", value: `${carrier.wetFilmCoveragePct}%` },
+          { label: "Dust capture", value: `${carrier.particleCapturePct}%` },
+          { label: "Droplet separation", value: `${carrier.dropletSeparationPct}%` },
+          { label: "Kernel", value: "host SI" },
+        ]}
+      />
     </div>
   );
 }

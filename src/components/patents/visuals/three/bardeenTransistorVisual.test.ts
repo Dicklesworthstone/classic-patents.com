@@ -161,7 +161,9 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
       readFileSync(join(VISUALS_DIRECTORY, "BardeenTransistorSim.tsx"), "utf8"),
       readFileSync(join(VISUALS_DIRECTORY, "three", "BardeenTransistor3D.tsx"), "utf8"),
       readFileSync(join(VISUALS_DIRECTORY, "three", "bardeenTransistorModel.ts"), "utf8"),
-    ].join("\n").toLowerCase();
+    ]
+      .join("\n")
+      .toLowerCase();
 
     for (const unsupported of [
       "polystyrene",

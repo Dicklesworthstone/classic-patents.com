@@ -58,7 +58,10 @@ export function buildDieselEngineModel(): {
 
   const plungerP = new THREE.Group();
   plungerP.name = "PlungerP";
-  const plunger = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.25, 20), materials.accent);
+  const plunger = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.82, 0.82, 0.25, 20),
+    materials.accent,
+  );
   plunger.rotation.z = Math.PI / 2;
   plunger.position.x = -1.1;
   plungerP.add(plunger);
@@ -76,7 +79,9 @@ export function buildDieselEngineModel(): {
   const admissionPlugD = new THREE.Group();
   admissionPlugD.name = "AdmissionPlugD";
   admissionPlugD.position.set(0, 0.55, 0);
-  admissionPlugD.add(new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.35, 12), materials.accent));
+  admissionPlugD.add(
+    new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.35, 12), materials.accent),
+  );
 
   const airReservoirL = new THREE.Group();
   airReservoirL.name = "AirReservoirL";
@@ -95,7 +100,16 @@ export function buildDieselEngineModel(): {
 
   return {
     root,
-    nodes: { rootGroup: root, cylinderC, plungerP, crank, hopperB, admissionPlugD, airReservoirL, annularSpaceS },
+    nodes: {
+      rootGroup: root,
+      cylinderC,
+      plungerP,
+      crank,
+      hopperB,
+      admissionPlugD,
+      airReservoirL,
+      annularSpaceS,
+    },
     materials,
   };
 }

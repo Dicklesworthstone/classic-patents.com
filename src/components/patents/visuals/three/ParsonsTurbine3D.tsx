@@ -2,7 +2,7 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
+import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";

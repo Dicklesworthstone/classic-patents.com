@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
@@ -38,7 +40,10 @@ export function LamarrFrequencyHopping3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [recordPosition, setRecordPosition] = useState(() => Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))));
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
+  const [recordPosition, setRecordPosition] = useState(() =>
+    Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))),
+  );
   const txRow = "ABCDEFG"[recordPosition] ?? "A";
   const receiverTuned = recordPosition >= 3;
   const lampOn = !receiverTuned;
@@ -216,20 +221,69 @@ export function LamarrFrequencyHopping3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Matched record row:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{txRow} ({receiverTuned ? "D–G receiver channel" : "A–C false channel"})</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Matched record row:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {txRow} ({receiverTuned ? "D–G receiver channel" : "A–C false channel"})
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Lamp 43:</span>
-              <span className="text-amber-800 dark:text-amber-400 font-bold">{lampOn ? "ON (false channel)" : "OFF (matched)"}</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {lampOn ? "ON (false channel)" : "OFF (matched)"}
+              </span>
             </div>
           </div>
         )}
       </div>
 
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
-        <label className="space-y-2">Matched record position<input type="range" min="0" max="6" value={recordPosition} onChange={(event) => { const next = Number(event.target.value); setRecordPosition(next); updateParam("recordPosition", next); }} className="w-full accent-purple-600" /><span>Row {txRow} · transmitter 7 positions · receiver 4 effective positions</span></label>
-        <div className="space-y-2"><span>Command labels</span><div className="flex gap-2"><span className="rounded border border-cyan-700 px-2 py-1">100-cycle → left step</span><span className="rounded border border-cyan-700 px-2 py-1">500-cycle → right step</span></div><span>{lampOn ? "Lamp 43 warns: do not send a control impulse." : "Lamp 43 off: records select the same channel."}</span></div>
+        <label className="space-y-2">
+          Matched record position
+          <input
+            type="range"
+            min="0"
+            max="6"
+            value={recordPosition}
+            onChange={(event) => {
+              const next = Number(event.target.value);
+              setRecordPosition(next);
+              updateParam("recordPosition", next);
+            }}
+            className="w-full accent-purple-600"
+          />
+          <span>Row {txRow} · transmitter 7 positions · receiver 4 effective positions</span>
+        </label>
+        <div className="space-y-2">
+          <span>Command labels</span>
+          <div className="flex gap-2">
+            <span className="rounded border border-cyan-700 px-2 py-1">100-cycle → left step</span>
+            <span className="rounded border border-cyan-700 px-2 py-1">500-cycle → right step</span>
+          </div>
+          <span>
+            {lampOn
+              ? "Lamp 43 warns: do not send a control impulse."
+              : "Lamp 43 off: records select the same channel."}
+          </span>
+        </div>
+      </div>
+
+      <div className="px-4 pb-4 bg-parchment-100/90 dark:bg-ink-900/90">
+        <ClaimConstraintToggle
+          patentId="us-2292387-lamarr-frequency-hopping"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2292387-lamarr-frequency-hopping"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

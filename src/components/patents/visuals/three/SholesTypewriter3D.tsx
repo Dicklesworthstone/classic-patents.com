@@ -6,6 +6,7 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -16,7 +17,6 @@ import {
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset =
   | "iso"

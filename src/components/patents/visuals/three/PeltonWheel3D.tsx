@@ -251,9 +251,7 @@ export function PeltonWheel3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Source jet control:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {headMeters}
-              </span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">{headMeters}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Bucket path:</span>
@@ -263,9 +261,7 @@ export function PeltonWheel3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Source claim:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">
-                1
-              </span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">1</span>
             </div>
           </div>
         )}

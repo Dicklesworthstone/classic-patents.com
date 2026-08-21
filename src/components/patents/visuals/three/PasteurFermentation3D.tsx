@@ -184,19 +184,49 @@ export const PasteurFermentation3D = memo(() => {
         <p className="mb-3 text-xs text-ink-600 dark:text-ink-300">
           Percentages control the reader animation only; the patent states no gas flow, spray rate,
           cooling time, pressure, or fixed vessel material beyond galvanized iron, wood, or another
-          suitable material. This studio isolates one representative vessel A; the 2D face shows
-          all three vessels printed in Fig. 1.
+          suitable material. This studio isolates one representative vessel A; the 2D face shows all
+          three vessels printed in Fig. 1.
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { id: "co2SweepPct", label: "CO₂ sweep progress", value: co2SweepPct, min: 0, max: 100, step: 5, unit: "%" },
-            { id: "sprayCoveragePct", label: "Exterior spray coverage", value: sprayCoveragePct, min: 0, max: 100, step: 5, unit: "%" },
-            { id: "wortTempC", label: "Yeast-addition temperature", value: wortTempC, min: 20, max: 22.5, step: 0.25, unit: "°C" },
+            {
+              id: "co2SweepPct",
+              label: "CO₂ sweep progress",
+              value: co2SweepPct,
+              min: 0,
+              max: 100,
+              step: 5,
+              unit: "%",
+            },
+            {
+              id: "sprayCoveragePct",
+              label: "Exterior spray coverage",
+              value: sprayCoveragePct,
+              min: 0,
+              max: 100,
+              step: 5,
+              unit: "%",
+            },
+            {
+              id: "wortTempC",
+              label: "Yeast-addition temperature",
+              value: wortTempC,
+              min: 20,
+              max: 22.5,
+              step: 0.25,
+              unit: "°C",
+            },
           ].map((control) => (
-            <label key={control.id} className="flex flex-col gap-1.5 text-xs font-medium text-ink-700 dark:text-ink-300">
+            <label
+              key={control.id}
+              className="flex flex-col gap-1.5 text-xs font-medium text-ink-700 dark:text-ink-300"
+            >
               <span className="flex justify-between">
                 <span>{control.label}</span>
-                <span className="font-mono font-bold">{control.value}{control.unit}</span>
+                <span className="font-mono font-bold">
+                  {control.value}
+                  {control.unit}
+                </span>
               </span>
               <input
                 type="range"

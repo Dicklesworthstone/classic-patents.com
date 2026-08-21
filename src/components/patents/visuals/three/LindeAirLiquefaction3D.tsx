@@ -262,7 +262,9 @@ export function LindeAirLiquefaction3D() {
           </div>
           <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
             <div className="text-ink-500">Cooler outlet t³</div>
-            <div className="mt-1 font-bold text-amber-700 dark:text-amber-400">about 10 °C or less</div>
+            <div className="mt-1 font-bold text-amber-700 dark:text-amber-400">
+              about 10 °C or less
+            </div>
           </div>
           <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
             <div className="text-ink-500">G′ length</div>

@@ -28,7 +28,16 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(threeSource).toContain("p.showFlowTracer");
     expect(threeSource).toContain("p.cutawayMode");
     expect(modelSource).toContain("computeJouleThomsonThermalField(75");
-    for (const forbidden of ["77 K", "Dewar", "tripod", "brass", "copper", "glass", "frost", "condensedGasVolume"]) {
+    for (const forbidden of [
+      "77 K",
+      "Dewar",
+      "tripod",
+      "brass",
+      "copper",
+      "glass",
+      "frost",
+      "condensedGasVolume",
+    ]) {
       expect(modelSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
     }
     const simSource = readFileSync(join(VISUALS_DIRECTORY, "LindeAirLiquefactionSim.tsx"), "utf8");

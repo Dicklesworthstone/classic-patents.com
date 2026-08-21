@@ -16,12 +16,12 @@ export function DieselEngineSim() {
           </h3>
           <p className="mt-2 text-sm leading-6 text-ink-700 dark:text-parchment-200">
             US 542,846 describes theoretical cycle diagrams, gradual fuel admission, and
-            cut-off-controlled expansion. The source does not establish a measured cycle,
-            engine dimensions, operating range, injector pressure, or efficiency readout.
+            cut-off-controlled expansion. The source does not establish a measured cycle, engine
+            dimensions, operating range, injector pressure, or efficiency readout.
           </p>
           <p className="mt-2 text-xs leading-5 text-ink-600 dark:text-parchment-300">
-            The interactive instrument is withheld until the Swiss foreign-patent line and
-            Figures 1–10 are independently checked against the pinned facsimile.
+            The interactive instrument is withheld until the Swiss foreign-patent line and Figures
+            1–10 are independently checked against the pinned facsimile.
           </p>
         </div>
       </div>

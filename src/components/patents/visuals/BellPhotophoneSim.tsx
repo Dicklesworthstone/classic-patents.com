@@ -434,9 +434,9 @@ export function BellPhotophoneSim() {
         <p className="mt-2 leading-6">
           This is a qualitative reading aid for the arrangement Bell describes: a transmitter varies
           radiant energy; optics direct it; a sensitive body produces direct sound or changes a
-          telephone circuit. The patent does not supply measured irradiance, range, optical efficiency,
-          resistance, current, sound pressure, or a validated numerical transfer function. Those values
-          are therefore intentionally withheld here.
+          telephone circuit. The patent does not supply measured irradiance, range, optical
+          efficiency, resistance, current, sound pressure, or a validated numerical transfer
+          function. Those values are therefore intentionally withheld here.
         </p>
       </aside>
     </div>

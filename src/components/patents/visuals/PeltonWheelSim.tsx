@@ -2,8 +2,8 @@
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepPeltonWheelVisual } from "@/physics/peltonWheelKernel";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
@@ -16,7 +16,10 @@ export function PeltonWheelSim() {
   const [wheelAngleDeg, setWheelAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const visualState = stepPeltonWheelVisual({ runnerRpm: wheelRpm, jetEnabled: waterHeadMeters > 0 });
+  const visualState = stepPeltonWheelVisual({
+    runnerRpm: wheelRpm,
+    jetEnabled: waterHeadMeters > 0,
+  });
   const runnerOmegaDegPerS = (visualState.runnerOmegaRadPerS * 180) / Math.PI;
 
   useEffect(() => {
@@ -49,7 +52,8 @@ export function PeltonWheelSim() {
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Source-bounded view of the wheel, nozzle, split apex, curved bottoms, and side discharge.
+            Source-bounded view of the wheel, nozzle, split apex, curved bottoms, and side
+            discharge.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -138,27 +142,20 @@ export function PeltonWheelSim() {
           {/* Pelton Turbine Runner Disk (Center) */}
           <g transform={`translate(360, 150) rotate(${wheelAngleDeg})`}>
             {/* Center Hub */}
-            <circle
-              cx="0"
-              cy="0"
-              r={75}
-              fill="#2D3748"
-              stroke="#1A202C"
-              strokeWidth="4"
-            />
+            <circle cx="0" cy="0" r={75} fill="#2D3748" stroke="#1A202C" strokeWidth="4" />
             <circle cx="0" cy="0" r={18} fill="#1A1A1A" />
 
             {/* One enlarged source-faithful bucket; the grant gives no bucket count. */}
             <g transform="rotate(0) translate(0, -110)">
-                  {/* Double-cup bucket profile */}
-                <path
-                    d="M -14 0 Q -18 22, -8 30 Q 0 15, 0 5 Q 0 15, 8 30 Q 18 22, 14 0 Z"
-                    fill="#D4AF37"
-                    stroke="#744210"
-                    strokeWidth="1.5"
-                />
-                  {/* Knife edge splitter line */}
-                <line x1="0" y1="5" x2="0" y2="28" stroke="#FFFFFF" strokeWidth="1.5" />
+              {/* Double-cup bucket profile */}
+              <path
+                d="M -14 0 Q -18 22, -8 30 Q 0 15, 0 5 Q 0 15, 8 30 Q 18 22, 14 0 Z"
+                fill="#D4AF37"
+                stroke="#744210"
+                strokeWidth="1.5"
+              />
+              {/* Knife edge splitter line */}
+              <line x1="0" y1="5" x2="0" y2="28" stroke="#FFFFFF" strokeWidth="1.5" />
             </g>
           </g>
 
@@ -191,7 +188,9 @@ export function PeltonWheelSim() {
       </div>
 
       <div className="my-4 rounded-xl border border-parchment-200 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 p-3 text-sm text-ink-700 dark:text-parchment-300">
-        The grant supplies no operating head, speed, bucket count, efficiency, or dimensions. Controls are visitor-set parameters; the drawing and source text establish the bucket geometry and nozzle arrangement only.
+        The grant supplies no operating head, speed, bucket count, efficiency, or dimensions.
+        Controls are visitor-set parameters; the drawing and source text establish the bucket
+        geometry and nozzle arrangement only.
       </div>
 
       {/* Sliders */}

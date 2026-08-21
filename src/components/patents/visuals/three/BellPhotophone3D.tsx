@@ -176,14 +176,16 @@ export function BellPhotophone3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Beam state:</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Beam state:
+              </span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
                 {photoState.beamVariationActive ? "varying" : "static"}
               </span>
             </div>
             <div className="pt-1 text-[11px] leading-4 text-ink-600 dark:text-ink-400">
-              Qualitative source schematic. US 235,199 does not provide a measured optical link budget,
-              selenium resistance curve, or acoustic-output calibration.
+              Qualitative source schematic. US 235,199 does not provide a measured optical link
+              budget, selenium resistance curve, or acoustic-output calibration.
             </div>
           </div>
         )}
@@ -192,9 +194,9 @@ export function BellPhotophone3D() {
       {/* Source-bounded control */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <p className="text-sm leading-6 text-ink-700 dark:text-ink-300">
-          This 3D view is an explanatory arrangement, not a numerical reconstruction. It shows only the
-          source-described chain: transmitter motion changes a beam, optics direct it, and a sensitive
-          receiver can produce a corresponding acoustic or electrical effect.
+          This 3D view is an explanatory arrangement, not a numerical reconstruction. It shows only
+          the source-described chain: transmitter motion changes a beam, optics direct it, and a
+          sensitive receiver can produce a corresponding acoustic or electrical effect.
         </p>
 
         <ClaimConstraintToggle
@@ -222,7 +224,8 @@ export function BellPhotophone3D() {
           { label: "Optical path", value: "Directed radiant beam" },
           { label: "Detector", value: "Crystalline Selenium (Se) Cell" },
           {
-            label: "Output", value: "Direct sound or telephone circuit",
+            label: "Output",
+            value: "Direct sound or telephone circuit",
           },
         ]}
       />

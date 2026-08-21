@@ -2,7 +2,7 @@
 
 import { GitBranch, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
+import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -99,7 +99,15 @@ export function ParsonsTurbineSim() {
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
           <defs>
-            <marker id="parsons-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <marker
+              id="parsons-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="5"
+              markerHeight="5"
+              orient="auto-start-reverse"
+            >
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
             </marker>
           </defs>
@@ -107,31 +115,82 @@ export function ParsonsTurbineSim() {
           <text x="300" y="40" textAnchor="middle" fill="#fbbf24" fontSize="12">
             {marine.routeLabel}
           </text>
-          <text x="38" y="72" fill="#f87171" fontSize="10">boiler</text>
+          <text x="38" y="72" fill="#f87171" fontSize="10">
+            boiler
+          </text>
           <rect x="34" y="82" width="52" height="184" rx="6" fill="#7f1d1d" opacity="0.7" />
-          <text x="560" y="72" textAnchor="end" fill="#67e8f9" fontSize="10">condenser</text>
+          <text x="560" y="72" textAnchor="end" fill="#67e8f9" fontSize="10">
+            condenser
+          </text>
           <rect x="510" y="82" width="54" height="184" rx="6" fill="#164e63" opacity="0.8" />
           {marine.activeTurbines.map((name, index) => {
             const x = 120 + (index % 4) * 94;
             const y = 96 + Math.floor(index / 4) * 92;
             return (
               <g key={name}>
-                <rect x={x} y={y} width="64" height="42" rx="6" fill={name === "X" || name === "Y" ? "#581c87" : "#334155"} stroke="#cbd5e1" />
-                <text x={x + 32} y={y + 25} textAnchor="middle" fill="#f8fafc" fontSize="13">{name}</text>
+                <rect
+                  x={x}
+                  y={y}
+                  width="64"
+                  height="42"
+                  rx="6"
+                  fill={name === "X" || name === "Y" ? "#581c87" : "#334155"}
+                  stroke="#cbd5e1"
+                />
+                <text x={x + 32} y={y + 25} textAnchor="middle" fill="#f8fafc" fontSize="13">
+                  {name}
+                </text>
               </g>
             );
           })}
           {marine.routeEdges.map(([from, to], index) => {
             const fromIndex = marine.activeTurbines.indexOf(from);
             const toIndex = marine.activeTurbines.indexOf(to);
-            const fromX = from === "boiler" ? 86 : from === "condenser E" || from === "condenser G" || from === "condenser H" ? 510 : 120 + (fromIndex % 4) * 94 + 64;
-            const fromY = from === "boiler" ? 174 : from.startsWith("condenser") ? 174 : 117 + Math.floor(fromIndex / 4) * 92;
-            const toX = to === "condenser E" || to === "condenser G" || to === "condenser H" ? 510 : to === "boiler" ? 86 : 120 + (toIndex % 4) * 94;
-            const toY = to.startsWith("condenser") ? 174 : to === "boiler" ? 174 : 117 + Math.floor(toIndex / 4) * 92;
+            const fromX =
+              from === "boiler"
+                ? 86
+                : from === "condenser E" || from === "condenser G" || from === "condenser H"
+                  ? 510
+                  : 120 + (fromIndex % 4) * 94 + 64;
+            const fromY =
+              from === "boiler"
+                ? 174
+                : from.startsWith("condenser")
+                  ? 174
+                  : 117 + Math.floor(fromIndex / 4) * 92;
+            const toX =
+              to === "condenser E" || to === "condenser G" || to === "condenser H"
+                ? 510
+                : to === "boiler"
+                  ? 86
+                  : 120 + (toIndex % 4) * 94;
+            const toY = to.startsWith("condenser")
+              ? 174
+              : to === "boiler"
+                ? 174
+                : 117 + Math.floor(toIndex / 4) * 92;
             const pulse = (flowPhase + index / Math.max(1, marine.routeEdges.length)) % 1;
-            return <line key={`${from}-${to}`} x1={fromX} y1={fromY} x2={toX} y2={toY} stroke={pulse > 0.2 ? "#38bdf8" : "#fbbf24"} strokeWidth="2.5" markerEnd="url(#parsons-arrow)" opacity={0.8 + marine.throttle * 0.2} />;
+            return (
+              <line
+                key={`${from}-${to}`}
+                x1={fromX}
+                y1={fromY}
+                x2={toX}
+                y2={toY}
+                stroke={pulse > 0.2 ? "#38bdf8" : "#fbbf24"}
+                strokeWidth="2.5"
+                markerEnd="url(#parsons-arrow)"
+                opacity={0.8 + marine.throttle * 0.2}
+              />
+            );
           })}
-          <text x="300" y="294" textAnchor="middle" fill={marine.reversing ? "#e879f9" : "#4ade80"} fontSize="11">
+          <text
+            x="300"
+            y="294"
+            textAnchor="middle"
+            fill={marine.reversing ? "#e879f9" : "#4ade80"}
+            fontSize="11"
+          >
             {marine.directionLabel.toUpperCase()} · valve topology is live
           </text>
         </svg>
@@ -205,7 +264,11 @@ export function ParsonsTurbineSim() {
             className="w-full accent-amber-600 cursor-pointer"
           />
           <label className="mt-2 flex items-center gap-2 text-xs text-ink-700 dark:text-parchment-300">
-            <input type="checkbox" checked={reversing} onChange={(e) => setReversing(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={reversing}
+              onChange={(e) => setReversing(e.target.checked)}
+            />
             Figure 2 reversing turbines X / Y (astern)
           </label>
         </div>

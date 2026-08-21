@@ -112,9 +112,7 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
 
   test("keeps Pasteur US 135,245 on its printed gas-sweep and spray-cooling sequence", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-135245-pasteur-fermentation"];
-    expect(cards.map((card) => card.id)).toEqual([
-      "pasteur-source-gas-sweep-and-spray-cooling",
-    ]);
+    expect(cards.map((card) => card.id)).toEqual(["pasteur-source-gas-sweep-and-spray-cooling"]);
     expect(cards[0]?.rawLatex).toContain("external spray cooling");
     expect(cards[0]?.claimRef).toBe(1);
 

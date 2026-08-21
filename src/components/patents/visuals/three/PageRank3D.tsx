@@ -10,6 +10,8 @@ import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimP
 import { stepPageRank } from "@/physics/pageRankKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildPageRankModel } from "./PageRankModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";

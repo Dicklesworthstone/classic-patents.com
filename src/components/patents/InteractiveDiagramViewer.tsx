@@ -82,7 +82,6 @@ import {
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
-import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
@@ -98,6 +97,7 @@ import {
   stepRenoEscalator,
   stepSholesTypewriter,
 } from "@/physics/machineKernels";
+import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import {
   stepTeslaMotorFig9,
   teslaBAt,
@@ -263,7 +263,15 @@ function _renderHistoricalSchematic(
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <defs>
-            <marker id="parsons-schematic-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+            <marker
+              id="parsons-schematic-arrow"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="4"
+              markerHeight="4"
+              orient="auto"
+            >
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
             </marker>
           </defs>
@@ -3141,7 +3149,11 @@ function _renderHistoricalSchematic(
             />
           ))}
           {[190, 205, 220].map((x) => (
-            <path key={`gutter-${x}`} d={`M ${x + 8} 100 l 14 6 M ${x + 8} 160 l 14 6`} stroke="#fbbf24" />
+            <path
+              key={`gutter-${x}`}
+              d={`M ${x + 8} 100 l 14 6 M ${x + 8} 160 l 14 6`}
+              stroke="#fbbf24"
+            />
           ))}
           <rect x="300" y="175" width="28" height="22" rx="2" fill="#164e63" stroke="#38bdf8" />
           <text x="120" y="50" fill="#38bdf8" fontSize="8" textAnchor="middle">
@@ -4513,25 +4525,48 @@ function _renderHistoricalSchematic(
           <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
             <path d="M190 45 V78" stroke="#94a3b8" strokeWidth="3" />
             <path d="M168 92 H212 L198 111 H182Z" fill="#94a3b8" fillOpacity="0.28" />
-            <path d="M120 116 Q190 94 260 116 V226 H120Z" fill="#b58a57" fillOpacity="0.22" stroke="#d6b98c" strokeWidth="2" />
+            <path
+              d="M120 116 Q190 94 260 116 V226 H120Z"
+              fill="#b58a57"
+              fillOpacity="0.22"
+              stroke="#d6b98c"
+              strokeWidth="2"
+            />
             <path d="M111 128 H269 M111 226 H269" stroke="#cbd5e1" strokeWidth="7" />
-            <text x="96" y="132" fill="#cbd5e1" fontSize="9">g</text>
-            <text x="275" y="132" fill="#cbd5e1" fontSize="9">g′</text>
-            <text x="96" y="232" fill="#cbd5e1" fontSize="9">g</text>
-            <text x="275" y="232" fill="#cbd5e1" fontSize="9">g′</text>
-            <text x="190" y="177" fill="#fde68a" fontSize="14" textAnchor="middle">B</text>
+            <text x="96" y="132" fill="#cbd5e1" fontSize="9">
+              g
+            </text>
+            <text x="275" y="132" fill="#cbd5e1" fontSize="9">
+              g′
+            </text>
+            <text x="96" y="232" fill="#cbd5e1" fontSize="9">
+              g
+            </text>
+            <text x="275" y="232" fill="#cbd5e1" fontSize="9">
+              g′
+            </text>
+            <text x="190" y="177" fill="#fde68a" fontSize="14" textAnchor="middle">
+              B
+            </text>
             <path d="M190 204 V224" stroke="#94a3b8" strokeWidth="4" />
             <circle cx="190" cy="207" r="7" fill="#64748b" fillOpacity="0.35" />
-            <text x="204" y="211" fill="#cbd5e1" fontSize="9">R</text>
+            <text x="204" y="211" fill="#cbd5e1" fontSize="9">
+              R
+            </text>
             <path d="M132 226 V270 M248 226 V270 M100 270 H286" stroke="#94a3b8" strokeWidth="5" />
-            <path d="M190 96 V121 M174 118 L190 110 L206 118" stroke="#38bdf8" strokeDasharray="3 3" />
-            <text x="190" y="30" fill="#cbd5e1" fontSize="10" textAnchor="middle">Fig. 2 · modified removable-top vessel</text>
+            <path
+              d="M190 96 V121 M174 118 L190 110 L206 118"
+              stroke="#38bdf8"
+              strokeDasharray="3 3"
+            />
+            <text x="190" y="30" fill="#cbd5e1" fontSize="10" textAnchor="middle">
+              Fig. 2 · modified removable-top vessel
+            </text>
           </g>
         );
       }
       const co2SweepOpacity = 0.12 + Math.min(100, Math.max(0, params?.co2SweepPct ?? 100)) / 130;
-      const sprayOpacity =
-        0.12 + Math.min(100, Math.max(0, params?.sprayCoveragePct ?? 100)) / 130;
+      const sprayOpacity = 0.12 + Math.min(100, Math.max(0, params?.sprayCoveragePct ?? 100)) / 130;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
           <path d="M65 46 H340" stroke="#94a3b8" strokeWidth="5" />
@@ -6001,15 +6036,35 @@ function _renderHistoricalSchematic(
           {marine.routeEdges.map(([from, to]) => {
             const [x1, y1] = nodePositions[from] ?? [0, 0];
             const [x2, y2] = nodePositions[to] ?? [0, 0];
-            return <path key={`${from}-${to}`} d={`M ${x1} ${y1} L ${x2} ${y2}`} markerEnd="url(#parsons-schematic-arrow)" />;
+            return (
+              <path
+                key={`${from}-${to}`}
+                d={`M ${x1} ${y1} L ${x2} ${y2}`}
+                markerEnd="url(#parsons-schematic-arrow)"
+              />
+            );
           })}
           {Object.entries(nodePositions).map(([name, [x, y]]) => (
             <g key={name}>
-              <circle cx={x} cy={y} r={name === "boiler" || name.startsWith("condenser") ? 15 : 11} fill={name === "X" || name === "Y" ? "#581c87" : "#1e293b"} stroke={name === "boiler" ? "#fbbf24" : "#94a3b8"} />
-              <text x={x} y={y + 3} fill="#f8fafc" fontSize="7" textAnchor="middle">{name}</text>
+              <circle
+                cx={x}
+                cy={y}
+                r={name === "boiler" || name.startsWith("condenser") ? 15 : 11}
+                fill={name === "X" || name === "Y" ? "#581c87" : "#1e293b"}
+                stroke={name === "boiler" ? "#fbbf24" : "#94a3b8"}
+              />
+              <text x={x} y={y + 3} fill="#f8fafc" fontSize="7" textAnchor="middle">
+                {name}
+              </text>
             </g>
           ))}
-          <text x="200" y="292" fill={marine.directionLabel === "astern" ? "#e879f9" : "#4ade80"} fontSize="9" textAnchor="middle">
+          <text
+            x="200"
+            y="292"
+            fill={marine.directionLabel === "astern" ? "#e879f9" : "#4ade80"}
+            fontSize="9"
+            textAnchor="middle"
+          >
             {marine.directionLabel.toUpperCase()} · valves select the topology
           </text>
         </g>

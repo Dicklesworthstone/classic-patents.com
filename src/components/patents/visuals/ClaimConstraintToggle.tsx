@@ -52,8 +52,7 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
               <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0 animate-pulse" />
             )}
             <span>
-              Claim {c.claimNumber}:{" "}
-              {isActive ? "Active (Patent Mode)" : "Constraint Inverted"}
+              Claim {c.claimNumber}: {isActive ? "Active (Patent Mode)" : "Constraint Inverted"}
             </span>
           </button>
         );

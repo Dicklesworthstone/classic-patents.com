@@ -315,26 +315,24 @@ export function TeslaMotor3D() {
               US 381,968 Fig. 9 motor-generator
             </div>
             <div className="space-y-1">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">
-                    Generator:
-                  </span>
-                  <span className="font-bold text-blue-700 dark:text-blue-400">
-                    {generatorRpm} rpm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Disk D:" />
-                  </span>
-                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                    {apparatus.diskRpm} rpm (source relation)
-                  </span>
-                </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Generator:</span>
+                <span className="font-bold text-blue-700 dark:text-blue-400">
+                  {generatorRpm} rpm
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">
+                  <HudText text="Disk D:" />
+                </span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                  {apparatus.diskRpm} rpm (source relation)
+                </span>
+              </div>
             </div>
             <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/80">
-              Fig. 9 uses the generator's four collector rings and brushes; Fig. 15–16 is a
-              distinct source variant that dispenses with sliding contacts.
+              Fig. 9 uses the generator's four collector rings and brushes; Fig. 15–16 is a distinct
+              source variant that dispenses with sliding contacts.
             </div>
           </div>
         )}
@@ -371,7 +369,6 @@ export function TeslaMotor3D() {
             onChange={(val) => updateParam("frequency", val)}
             allParams={params}
           />
-
         </div>
       </div>
     </div>

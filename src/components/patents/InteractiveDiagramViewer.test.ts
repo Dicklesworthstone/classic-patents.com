@@ -129,9 +129,7 @@ describe("InteractiveDiagramViewer React rendering", () => {
       source.indexOf('case "glidden-barbed-wire"'),
     );
     expect(source).toContain('case "pasteur-fermentation-fig-2"');
-    expect(source).toContain(
-      '[/pasteur-fermentation-fig-2/, "pasteur-fermentation-fig-2"]',
-    );
+    expect(source).toContain('[/pasteur-fermentation-fig-2/, "pasteur-fermentation-fig-2"]');
     for (const printedLabel of ["water pipe E", "M M", "gas generator", "Boil closed"])
       expect(pasteurCase).toContain(printedLabel);
     for (const unsupported of ["Swan-Neck", "Anaerobic Fermenter", "Pure Yeast Strain Bed"])

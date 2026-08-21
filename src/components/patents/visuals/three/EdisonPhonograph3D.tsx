@@ -237,7 +237,9 @@ export function EdisonPhonograph3D() {
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
                 Illustrative turn setting:
               </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{mandrelRpm} model rpm</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {mandrelRpm} model rpm
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Lead Screw Pitch:</span>
@@ -252,7 +254,8 @@ export function EdisonPhonograph3D() {
               </span>
             </div>
             <p className="pt-1 border-t border-parchment-200 dark:border-ink-800/80 text-[10px] leading-relaxed text-ink-500 dark:text-ink-400">
-              Reader aid only: the grant gives no rate, indentation depth, surface speed, or audio response.
+              Reader aid only: the grant gives no rate, indentation depth, surface speed, or audio
+              response.
             </p>
           </div>
         )}
@@ -278,7 +281,11 @@ export function EdisonPhonograph3D() {
               value: phono.axialTravelMmPerS.toFixed(2),
               unit: "mm/s",
             },
-            { label: "Illustrative angular rate", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
+            {
+              label: "Illustrative angular rate",
+              value: phono.mandrelOmegaRadPerS.toFixed(1),
+              unit: "rad/s",
+            },
             {
               label: "Illustrative stylus motion",
               value: phono.stylusAmp.toFixed(4),

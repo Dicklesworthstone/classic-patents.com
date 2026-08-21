@@ -119,7 +119,9 @@ describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
       readFileSync(join(VISUALS_DIRECTORY, "PasteurFermentationSim.tsx"), "utf8"),
       readFileSync(join(VISUALS_DIRECTORY, "three", "PasteurFermentation3D.tsx"), "utf8"),
       readFileSync(join(VISUALS_DIRECTORY, "three", "pasteurFermentationModel.ts"), "utf8"),
-    ].join("\n").toLowerCase();
+    ]
+      .join("\n")
+      .toLowerCase();
     for (const unsupported of [
       "microbial kill",
       "log reduction",

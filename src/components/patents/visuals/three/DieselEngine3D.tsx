@@ -14,14 +14,14 @@ export function DieselEngine3D() {
           Diesel 3D model held for source acceptance
         </h3>
         <p className="mt-3 text-sm leading-6 text-ink-700 dark:text-parchment-200">
-          A procedural machine model would imply dimensions, fabrication details, valve architecture,
-          and operating telemetry that this 1895 grant does not print. The 3D face therefore
-          stays unavailable while the facsimile figure boundaries and source wording are
+          A procedural machine model would imply dimensions, fabrication details, valve
+          architecture, and operating telemetry that this 1895 grant does not print. The 3D face
+          therefore stays unavailable while the facsimile figure boundaries and source wording are
           independently reviewed.
         </p>
         <p className="mt-3 text-xs leading-5 text-ink-600 dark:text-parchment-300">
-          Source claims remain readable in the archival candidate; no later engine prototype
-          is presented as evidence from US 542,846.
+          Source claims remain readable in the archival candidate; no later engine prototype is
+          presented as evidence from US 542,846.
         </p>
       </div>
     </section>

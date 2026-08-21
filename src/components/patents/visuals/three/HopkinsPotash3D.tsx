@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { animateHopkinsPotashModel, buildHopkinsPotashModel } from "./hopkinsPotashModel";
@@ -11,7 +12,6 @@ import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./St
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
-import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset = "iso" | "furnace" | "leaching" | "crystallizer" | "ingot" | "top";
 

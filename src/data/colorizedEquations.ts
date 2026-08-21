@@ -5785,7 +5785,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       colorizedLatex:
         "\\textcolor{#2563eb}{\\text{compressed air}} \\rightarrow \\textcolor{#d97706}{\\text{gradual fuel admission}} \\rightarrow \\textcolor{#dc2626}{\\text{cut-off}} \\rightarrow \\textcolor{#059669}{\\text{further expansion}}",
       plainEnglishSentence: [
-        { text: "The held source face records compression before fuel admission, gradual admission during expansion, cut-off, and further expansion without heat transfer. No numerical state is asserted." },
+        {
+          text: "The held source face records compression before fuel admission, gradual admission during expansion, cut-off, and further expansion without heat transfer. No numerical state is asserted.",
+        },
       ],
       variables: [
         {
@@ -17170,12 +17172,14 @@ function _convertScientificPrincipleToColorizedEquation(
         name = "Figure 9 Generator Rotation Rate";
         unit = "Revolutions per minute (RPM)";
         dimension = "[T^-1]";
-        role = "Source-bound generator rate used to show the once-around progressive pole shift in Figure 9";
+        role =
+          "Source-bound generator rate used to show the once-around progressive pole shift in Figure 9";
       } else if (sym === "f^2" || sym === "f") {
         name = "Generator Phase-Cycle Rate";
         unit = "Hertz (Hz)";
         dimension = "[T^-1]";
-        role = "Teaching-model rate for Tesla's alternating generator currents; the grant does not specify a utility-grid frequency";
+        role =
+          "Teaching-model rate for Tesla's alternating generator currents; the grant does not specify a utility-grid frequency";
       }
     }
 

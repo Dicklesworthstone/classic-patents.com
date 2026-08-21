@@ -5,16 +5,18 @@ import { memo, useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import {
   BARDEEN_REPORTED_SAMPLES,
-  stepBardeenPointContact,
   type BardeenOperatingSampleNumber,
+  stepBardeenPointContact,
 } from "@/physics/bardeenPointContactKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildBardeenTransistorModel,
   updateBardeenTransistorKinematics,
 } from "./bardeenTransistorModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 

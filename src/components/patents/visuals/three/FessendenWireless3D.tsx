@@ -173,22 +173,22 @@ export function FessendenWireless3D() {
               <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
                 <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
               </span>
-              {(["isometric", "alternator", "cageAntenna", "liquidBarretter"] as CameraPreset[]).map(
-                (preset) => (
-                  <button
-                    type="button"
-                    key={preset}
-                    onClick={() => handlePresetChange(preset)}
-                    className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
-                      cameraPreset === preset
-                        ? "bg-amber-600 text-white shadow-xs font-semibold"
-                        : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                    }`}
-                  >
-                    {preset.replace(/([A-Z])/g, " $1")}
-                  </button>
-                ),
-              )}
+              {(
+                ["isometric", "alternator", "cageAntenna", "liquidBarretter"] as CameraPreset[]
+              ).map((preset) => (
+                <button
+                  type="button"
+                  key={preset}
+                  onClick={() => handlePresetChange(preset)}
+                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
+                    cameraPreset === preset
+                      ? "bg-amber-600 text-white shadow-xs font-semibold"
+                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                  }`}
+                >
+                  {preset.replace(/([A-Z])/g, " $1")}
+                </button>
+              ))}
             </div>
           </div>
         )}

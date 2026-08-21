@@ -3,9 +3,9 @@
 import { Cpu, RotateCcw } from "lucide-react";
 import {
   BARDEEN_REPORTED_SAMPLES,
+  type BardeenOperatingSampleNumber,
   bardeenCarrierPath,
   stepBardeenPointContact,
-  type BardeenOperatingSampleNumber,
 } from "@/physics/bardeenPointContactKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 

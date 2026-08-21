@@ -3,11 +3,14 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -50,8 +53,9 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const modelRef = useRef<LandPolaroidModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-2543181-land-polaroid");
@@ -226,27 +230,22 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Development Time</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {developmentTimeSec} s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="60"
-              step="1"
-              value={developmentTimeSec}
-              onChange={(e) => updateParam("developmentTimeSec", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="developmentTime"
+            patentId="us-2543181-land-polaroid"
+            paramKey="devTimeSec"
+            label="Development Time"
+            value={developmentTimeSec}
+            min={10}
+            max={60}
+            step={1}
+            onChange={(val) => updateParam("developmentTimeSec", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Exposure Exposure</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Exposure Level</span>
               <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
                 {(exposureFraction * 100).toFixed(0)}%
               </span>
@@ -262,24 +261,34 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Roller Gap</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {rollerGapUm} µm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="60"
-              step="1"
-              value={rollerGapUm}
-              onChange={(e) => updateParam("rollerGapUm", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="rollerGap"
+            patentId="us-2543181-land-polaroid"
+            paramKey="rollerGapUm"
+            label="Roller Gap"
+            value={rollerGapUm}
+            min={10}
+            max={60}
+            step={1}
+            onChange={(val) => updateParam("rollerGapUm", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-2543181-land-polaroid"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2543181-land-polaroid"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
