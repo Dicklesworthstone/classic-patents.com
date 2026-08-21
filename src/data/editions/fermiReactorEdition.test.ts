@@ -17,6 +17,7 @@ import {
 } from "./fermiReactorEdition";
 
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
+const editionBlocks: readonly CuratedSpecificationBlock[] = fermiReactorArchivalEdition.blocks;
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   test("publishes valid manual archival edition and originalTextAsset", () => {
@@ -74,7 +75,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(ledger).toContain("One side of the reactor side wall 11");
     expect(ledger).toContain("The uranium-bearing rows are spaced by rows of dead graphite");
     expect(ledger).toContain("At least from the halfway point of construction");
-    const sourceFaceText = fermiReactorArchivalEdition.blocks
+    const sourceFaceText = editionBlocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .map((inline) => inline.text)
@@ -95,7 +96,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "saturation values",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some(
+        editionBlocks.some(
           (block) =>
             "inlines" in block &&
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
@@ -117,7 +118,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     );
     expect(ledger).toContain("The neutron-density distribution in a spherical reactor");
     expect(ledger).toContain("BERYLLIUM METAL, DENSITY 1.85 GM./CM.3");
-    const sourceFaceText = fermiReactorArchivalEdition.blocks
+    const sourceFaceText = editionBlocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .map((inline) => inline.text)
@@ -142,7 +143,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "unit-cell ratios",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some(
+        editionBlocks.some(
           (block) =>
             "inlines" in block &&
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
@@ -164,7 +165,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(ledger).toContain(
       "The resulting danger sum is expressed as an equivalent boron absorption",
     );
-    const sourceFaceText = fermiReactorArchivalEdition.blocks
+    const sourceFaceText = editionBlocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .map((inline) => inline.text)
@@ -184,7 +185,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "shotgun test",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some(
+        editionBlocks.some(
           (block) =>
             "inlines" in block &&
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
@@ -209,7 +210,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(ledger).toContain(
       "After loading, the fan is started and the control rod withdrawn until the desired power",
     );
-    const sourceFaceText = fermiReactorArchivalEdition.blocks
+    const sourceFaceText = editionBlocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .map((inline) => inline.text)
@@ -218,7 +219,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(sourceFaceText).toContain("aluminum-jacketed uranium slugs");
     expect(sourceFaceText).toContain("Loading apertures");
     expect(sourceFaceText).toContain("delayed neutron emission");
-    const figureLabels = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+    const figureLabels = editionBlocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
             inline.kind === "reference" && inline.referenceType === "figure" ? [inline.text] : [],
@@ -253,7 +254,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "delayed neutron emission",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some(
+        editionBlocks.some(
           (block) =>
             "inlines" in block &&
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
@@ -278,7 +279,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "When reactors are constructed of concentric layers, the average K can be calculated",
     );
     expect(ledger).toContain("The curves in Fig. 40 permit calculation of the overall K");
-    const sourceFaceText = fermiReactorArchivalEdition.blocks
+    const sourceFaceText = editionBlocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
       .map((inline) => inline.text)
@@ -300,7 +301,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     ]) {
       expect(sourceFaceText).toContain(expectedSourceText);
     }
-    const figureLabels = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+    const figureLabels = editionBlocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
             inline.kind === "reference" && inline.referenceType === "figure" ? [inline.text] : [],
@@ -331,7 +332,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "critical size",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some(
+        editionBlocks.some(
           (block) =>
             "inlines" in block &&
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
@@ -344,7 +345,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {
-    const explainableBlocks = fermiReactorArchivalEdition.blocks.flatMap((block, index) =>
+    const explainableBlocks = editionBlocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
     expect(
@@ -358,7 +359,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   });
 
   test("makes source drawing sheets available as local crops", () => {
-    const references = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+    const references = editionBlocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
             (inline) => inline.kind === "reference" && inline.referenceType === "figure",
