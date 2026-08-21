@@ -44,10 +44,12 @@ export function LindeAirLiquefaction3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const linde = FrankenSimEngine.stepLindeAirLiquefaction();
   const highPressureAtm =
     params.inletPressureAtm ?? params.highPressureAtm ?? linde.highPressureAtm;
+  const lowPressureAtm = params.lowPressureAtm ?? linde.lowPressureAtm;
+  const coolerOutletC = params.coolerOutletC ?? linde.coolerOutletC;
 
   const live = useLiveSimParams({
     highPressureAtm,
@@ -82,12 +84,9 @@ export function LindeAirLiquefaction3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    // Diagrammatic model of the named apparatus. It does not recreate a
-    // measured installation or infer unprinted construction details.
     const liquefierModel: LindeLiquefactionModelResult = buildLindeLiquefactionModel();
     scene.add(liquefierModel.root);
 
-    // Animation Loop
     let reqId: number;
     let timeSec = 0;
 
@@ -100,18 +99,18 @@ export function LindeAirLiquefaction3D() {
       updateLindeLiquefactionKinematics(
         liquefierModel.nodes,
         liquefierModel.materials,
-        delta,
         timeSec,
+        delta,
         p.highPressureAtm,
-        Boolean(p.showFlowTracer),
-        Boolean(p.cutawayMode),
+        p.cutawayMode,
+        p.showFlowTracer,
       );
 
       controls.update();
       renderer.render(scene, camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -122,62 +121,57 @@ export function LindeAirLiquefaction3D() {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Linde apparatus diagram, source-bounded 3D</div>
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto text-parchment-100">
-          <Wind className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Linde apparatus diagram, source-bounded 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-            US Patent 727,650 (1903)
-          </span>
-        </div>
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Overview"],
+                ["counter_current_apparatus", "G′ Exchanger"],
+                ["regulating_valve", "N / R′ Valve"],
+                ["vessel_v_prime", "V′ Vessel"],
+                ["regulator", "Regulator"],
+                ["top", "Top"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-cyan-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Overview"],
-              ["counter_current_apparatus", "G′ exchanger"],
-              ["regulating_valve", "N / R′"],
-              ["vessel_v_prime", "V′ vessel"],
-              ["regulator", "Regulator"],
-              ["top", "Top"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-cyan-600 text-white font-semibold shadow-sm"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
+        {/* Top-Right Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
             title={cutawayMode ? "Switch to Solid Shell" : "Switch to Cutaway Shell"}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               cutawayMode
-                ? "bg-cyan-600 text-white font-semibold shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
             {cutawayMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <span className="hidden sm:inline">{cutawayMode ? "Cutaway" : "Solid"}</span>
           </button>
           <button
             type="button"
@@ -185,10 +179,10 @@ export function LindeAirLiquefaction3D() {
             title={
               showFlowTracer ? "Hide illustrative flow tracer" : "Show illustrative flow tracer"
             }
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showFlowTracer
-                ? "bg-cyan-600 text-white font-semibold shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
             <Wind className="w-4 h-4" />
@@ -197,17 +191,115 @@ export function LindeAirLiquefaction3D() {
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4 text-cyan-400" />
+            <Zap className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                High Pressure p²:
+              </span>
+              <span className="font-bold text-cyan-700 dark:text-cyan-400">
+                {highPressureAtm} atm
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Return Pressure p′:</span>
+              <span className="text-emerald-800 dark:text-emerald-400 font-bold">
+                {lowPressureAtm} atm
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Pre-Cooler Temp t³:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {coolerOutletC} °C
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Inlet High Pressure (p²)
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {highPressureAtm} atm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="200"
+              step="5"
+              value={highPressureAtm}
+              onChange={(e) => updateParam("highPressureAtm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Return Low Pressure (p′)
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {lowPressureAtm} atm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="50"
+              step="1"
+              value={lowPressureAtm}
+              onChange={(e) => updateParam("lowPressureAtm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Pre-Cooler Temperature (t³)
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {coolerOutletC} °C
+              </span>
+            </div>
+            <input
+              type="range"
+              min="-20"
+              max="30"
+              step="1"
+              value={coolerOutletC}
+              onChange={(e) => updateParam("coolerOutletC", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
         </div>
       </div>
 
@@ -215,9 +307,9 @@ export function LindeAirLiquefaction3D() {
         visible={showUiOverlay}
         title="US 727,650 source conditions"
         chips={[
-          { label: "p² high", value: `${linde.highPressureAtm} atmospheres` },
-          { label: "p′ low", value: `${linde.lowPressureAtm} atmospheres` },
-          { label: "t³ after K", value: `about ${linde.coolerOutletC} °C or less` },
+          { label: "p² high", value: `${highPressureAtm} atmospheres` },
+          { label: "p′ low", value: `${lowPressureAtm} atmospheres` },
+          { label: "t³ after K", value: `about ${coolerOutletC} °C or less` },
           {
             label: "G′ construction",
             value: `${linde.counterCurrentLengthM} m suggested`,

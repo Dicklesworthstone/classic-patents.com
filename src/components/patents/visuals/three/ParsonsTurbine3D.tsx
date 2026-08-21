@@ -1,7 +1,7 @@
 "use client";
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind, Zap } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -32,17 +32,18 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 14.5, 0.1], target: [0, 0, 0] },
 };
 
-export function ParsonsTurbine3D() {
+export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Steam Turbomachinery Parameters
-  const { params } = usePatentPhysics("us-608969-parsons-turbine");
+  const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
   const turbineRpm = params.rotorRpm ?? 3000;
+  const inletPressurePsi = params.inletPressurePsi ?? 180;
   const parsons = stepParsonsTurbine({
     rotorRpm: turbineRpm,
-    inletPressurePsi: params.inletPressurePsi ?? 180,
+    inletPressurePsi,
   });
   const steamPressureBar = params.steamPressureBar ?? parsons.inletBar;
   const powerKw = parsons.shaftPowerKw;
@@ -100,15 +101,14 @@ export function ParsonsTurbine3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
+    const { scene, renderer, controls } = studio;
 
+    // Build procedural 3D model
     const { rootGroup, nodes, materials, dispose } = buildParsonsTurbineModel();
     scene.add(rootGroup);
 
-    // Animation Loop
     let reqId: number;
     let timeSec = 0;
-
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = 1 / 60;
@@ -120,7 +120,7 @@ export function ParsonsTurbine3D() {
         materials,
         dt,
         timeSec,
-        p.displayOmegaRadPerS ?? 0,
+        p.displayOmegaRadPerS,
         p.steamAdvancePerS,
         p.steamOpacity,
         p.steamSwirlOmegaRadPerS,
@@ -131,10 +131,10 @@ export function ParsonsTurbine3D() {
       );
 
       controls.update();
-      renderer.render(scene, camera);
+      renderer.render(scene, studio.camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -146,22 +146,43 @@ export function ParsonsTurbine3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Parsons Steam Turbine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Parsons Steam Turbine 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 608,969 • Multistage Reaction Steam Turbine
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["turbine_stages", "Stages"],
+                ["rotor_blades", "Blades"],
+                ["governor", "Governor"],
+                ["bearing_pedestal", "Bearings"],
+                ["top", "Plan View"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Top Controls */}
+        {/* Top-Right Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
@@ -194,6 +215,7 @@ export function ParsonsTurbine3D() {
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -224,58 +246,93 @@ export function ParsonsTurbine3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["turbine_stages", "Stages"],
-                ["rotor_blades", "Blades"],
-                ["governor", "Governor"],
-                ["bearing_pedestal", "Bearings"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Shaft Power:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">{powerKw} kW</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Rotor Speed:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {Math.round(turbineRpm)} RPM
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Inlet Pressure:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {parsons.inletMpa.toFixed(2)} MPa ({inletPressurePsi} psi)
+              </span>
+            </div>
           </div>
         )}
-
-        <StudioKernelChips
-          visible={showUiOverlay}
-          side="right"
-          title="Parsons reaction stages"
-          chips={[
-            { label: "Rotor", value: String(Math.round(turbineRpm)), unit: "rpm" },
-            { label: "Inlet", value: parsons.inletMpa.toFixed(2), unit: "MPa" },
-            { label: "h", value: String(parsons.enthalpyKjKg), unit: "kJ/kg" },
-            { label: "Shaft", value: String(powerKw), unit: "kW" },
-            { label: "Stages", value: String(stageCount) },
-            { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
-            { label: "u", value: String(parsons.bladeSpeedMps), unit: "m/s" },
-            { label: "ω×0.08", value: parsons.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
-            {
-              label: "Steam crate",
-              value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
-            },
-          ]}
-        />
       </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Rotor Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {Math.round(turbineRpm)} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1000"
+              max="6000"
+              step="100"
+              value={turbineRpm}
+              onChange={(e) => updateParam("rotorRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Inlet Steam Pressure
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {inletPressurePsi} psi
+              </span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="300"
+              step="10"
+              value={inletPressurePsi}
+              onChange={(e) => updateParam("inletPressurePsi", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        side="right"
+        title="Parsons reaction stages"
+        chips={[
+          { label: "Rotor", value: String(Math.round(turbineRpm)), unit: "rpm" },
+          { label: "Inlet", value: parsons.inletMpa.toFixed(2), unit: "MPa" },
+          { label: "h", value: String(parsons.enthalpyKjKg), unit: "kJ/kg" },
+          { label: "Shaft", value: String(powerKw), unit: "kW" },
+          { label: "Stages", value: String(stageCount) },
+          { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
+          { label: "u", value: String(parsons.bladeSpeedMps), unit: "m/s" },
+          { label: "ω×0.08", value: parsons.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          {
+            label: "Steam crate",
+            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
+          },
+        ]}
+      />
     </div>
   );
-}
+});

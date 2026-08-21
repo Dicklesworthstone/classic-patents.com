@@ -61,6 +61,8 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     expect(res.luminousEfficacyLmPerWatt).toBeGreaterThan(60);
     expect(res.luminousFluxLumens).toBeGreaterThan(10000);
     expect(res.equivalentCarbonBulbs).toBeGreaterThan(50);
+    expect(res.plasmaFlickerOmegaRadPerS).toBe(30);
+    expect(res.cathodeSpotOmegaXRadPerS).toBeCloseTo((res.arcCurrentAmperes / 3.5) * 8, 2);
   });
 
   test("builds and articulates procedural discharge tube, cathode pool, cathode spot, and condensing globe", () => {
@@ -74,18 +76,31 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     expect(nodes.condensingGlobe).toBeDefined();
     expect(nodes.materials.length).toBeGreaterThan(4);
 
+    const sim = stepHewittMercuryLamp({
+      mainsVoltageV: 110,
+      tubeLengthCm: 100,
+      tubeDiameterMm: 25,
+      condenserCoolingLevel: 1.0,
+      ballastResistanceOhms: 12,
+    });
     articulateHewittMercuryLampModel(
       nodes,
       {
-        arcCurrentAmperes: 3.5,
-        luminousEfficacyLmPerWatt: 75,
-        mercuryVaporPressureMmHg: 0.01,
-        arcOperatingVoltageV: 68,
+        arcCurrentAmperes: sim.arcCurrentAmperes,
+        luminousEfficacyLmPerWatt: sim.luminousEfficacyLmPerWatt,
+        mercuryVaporPressureMmHg: sim.mercuryVaporPressureMmHg,
+        arcOperatingVoltageV: sim.arcOperatingVoltageV,
+        plasmaFlickerOmegaRadPerS: sim.plasmaFlickerOmegaRadPerS,
+        cathodeSpotOmegaXRadPerS: sim.cathodeSpotOmegaXRadPerS,
+        cathodeSpotOmegaYRadPerS: sim.cathodeSpotOmegaYRadPerS,
       },
       1.0,
     );
 
     expect(nodes.plasmaLight.intensity).toBeGreaterThan(2.0);
     expect(nodes.cathodeSpotMesh.position.x).toBeGreaterThan(0.05);
+    const modelSource = readFileSync(modelPath, "utf-8");
+    expect(modelSource).not.toContain("timeSec * 30");
+    expect(modelSource).not.toContain("timeSec * 8");
   });
 });

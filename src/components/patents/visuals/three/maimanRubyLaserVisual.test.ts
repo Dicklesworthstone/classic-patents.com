@@ -37,6 +37,8 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Visual Boundary", () => {
     expect(modelCode).not.toContain("Math.random()");
     expect(modelCode).not.toContain("Date.now()");
     expect(modelCode).not.toContain("performance.now()");
+    expect(modelCode).not.toContain("timeSec * 80");
+    expect(modelCode).toContain("beamShimmerOmegaRadPerS");
   });
 
   test("computes genuine three-level population inversion, laser threshold, and peak power in SI units", () => {
@@ -45,6 +47,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Visual Boundary", () => {
     expect(below.isLasing).toBe(false);
     expect(below.laserPulseEnergyJoules).toBe(0);
     expect(below.laserPeakPowerKw).toBe(0);
+    expect(below.beamShimmerOmegaRadPerS).toBe(0);
 
     // Above threshold (pump = 200 J)
     const above = stepMaimanRubyLaser({ pumpEnergyJoules: 200 });
@@ -53,6 +56,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Visual Boundary", () => {
     expect(above.laserPulseEnergyJoules).toBeGreaterThan(0);
     expect(above.laserPeakPowerKw).toBeGreaterThan(0);
     expect(above.emissionWavelengthNm).toBeCloseTo(694.3, 1);
+    expect(above.beamShimmerOmegaRadPerS).toBe(80);
   });
 
   test("builds and articulates procedural ruby rod, helical flashlamp, cavity mirrors, and laser beam", () => {

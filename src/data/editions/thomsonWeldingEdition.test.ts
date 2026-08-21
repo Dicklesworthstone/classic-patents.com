@@ -65,7 +65,7 @@ describe("thomsonWeldingArchivalEdition", () => {
         expectedFigures.map(
           (figureNumber) =>
             `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v${
-              figureNumber === 10 ? 2 : 1
+              [4, 8, 10].includes(figureNumber) ? 2 : 1
             }.png`,
         ),
       );
@@ -85,7 +85,7 @@ describe("thomsonWeldingArchivalEdition", () => {
         { length: 18 },
         (_, index) =>
           `/patents/figures/us-347140-thomson-welding/figure-${index + 1}-source-crop-v${
-            index + 1 === 10 ? 2 : 1
+            [4, 8, 10].includes(index + 1) ? 2 : 1
           }.png`,
       ),
     );

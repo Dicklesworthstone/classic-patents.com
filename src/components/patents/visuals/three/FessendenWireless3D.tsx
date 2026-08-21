@@ -54,6 +54,9 @@ export function FessendenWireless3D() {
     isRotating,
     radiatedPowerWatts: sim.radiatedPowerWatts,
     isResonant: sim.isResonant,
+    waveRingDisplayRate: sim.waveRingDisplayRate,
+    headsetDisplayOmegaRadPerS: sim.headsetDisplayOmegaRadPerS,
+    audioEnvelopeOmegaRadPerS: sim.audioEnvelopeOmegaRadPerS,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -100,6 +103,9 @@ export function FessendenWireless3D() {
         radiatedPowerWatts: p.radiatedPowerWatts,
         audioModulationPct: p.audioModPct,
         isResonant: p.isResonant,
+        waveRingDisplayRate: p.waveRingDisplayRate,
+        headsetDisplayOmegaRadPerS: p.headsetDisplayOmegaRadPerS,
+        audioEnvelopeOmegaRadPerS: p.audioEnvelopeOmegaRadPerS,
       });
 
       pointGlow.color.setHex(p.isResonant ? 0x10b981 : 0xf59e0b);

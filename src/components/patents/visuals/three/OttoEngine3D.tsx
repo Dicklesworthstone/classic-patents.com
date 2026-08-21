@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
@@ -135,14 +135,14 @@ export function OttoEngine3D() {
 
         const currentStroke = Math.floor((crankAngle / (Math.PI * 4)) * 4);
         if (currentStroke === 2 && lastSoundStroke !== 2 && !p.isAudioMuted) {
-          soundEngine.playExplosionThud(0.8);
+          soundEngine.playImpactThud(0.8);
         }
         lastSoundStroke = currentStroke;
 
         const isPowerStroke = currentStroke === 2;
         flameMesh.visible = isPowerStroke && p.cutawayMode;
         if (isPowerStroke) {
-          const strokePhase = (crankAngle % (Math.PI * 4) - Math.PI * 2) / Math.PI;
+          const strokePhase = ((crankAngle % (Math.PI * 4)) - Math.PI * 2) / Math.PI;
           flameMat.opacity = Math.sin(strokePhase * Math.PI) * 0.8;
           flameMesh.scale.setScalar(1 + Math.sin(strokePhase * Math.PI) * 0.5);
         }
@@ -228,8 +228,14 @@ export function OttoEngine3D() {
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {cutawayMode ? <Eye className="w-3.5 h-3.5 inline sm:mr-1" /> : <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />}
-            <span className="hidden md:inline">{cutawayMode ? "Cutaway Active" : "Full Exterior"}</span>
+            {cutawayMode ? (
+              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
+            ) : (
+              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
+            )}
+            <span className="hidden md:inline">
+              {cutawayMode ? "Cutaway Active" : "Full Exterior"}
+            </span>
           </button>
           <button
             type="button"
@@ -238,7 +244,11 @@ export function OttoEngine3D() {
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
           >
-            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 inline" /> : <Volume2 className="w-3.5 h-3.5 inline text-emerald-600 dark:text-emerald-400" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 inline" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 inline text-emerald-600 dark:text-emerald-400" />
+            )}
           </button>
           <button
             type="button"
@@ -263,7 +273,9 @@ export function OttoEngine3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{engineRpm} RPM</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {engineRpm} RPM
+              </span>
             </div>
             <input
               type="range"
@@ -279,7 +291,9 @@ export function OttoEngine3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Compression Ratio</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{compressionRatio.toFixed(1)}:1</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {compressionRatio.toFixed(1)}:1
+              </span>
             </div>
             <input
               type="range"

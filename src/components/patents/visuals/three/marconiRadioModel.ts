@@ -403,8 +403,8 @@ export function updateMarconiRadioKinematics(
     }
     nodes.sparkParticleGeo.attributes.position.needsUpdate = true;
 
-    // Morse lever key tap
-    nodes.morseLever.rotation.z = Math.sin(timeSec * 8) * 0.08;
+    // Morse lever key tap follows spark-train phase rate (leftover 8 at default ~0.85 MHz)
+    nodes.morseLever.rotation.z = Math.sin(timeSec * wavePhaseRate * 8) * 0.08;
   } else {
     nodes.sparkPoints.visible = false;
     nodes.sparkArc.visible = false;

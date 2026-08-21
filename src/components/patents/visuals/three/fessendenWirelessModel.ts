@@ -354,15 +354,24 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
 export function articulateFessendenWireless(
   nodes: FessendenWirelessModelNodes,
   params: {
-    timeSec: number;
-    carrierFrequencyKhz: number;
-    radiatedPowerWatts: number;
-    audioModulationPct: number;
-    isResonant: boolean;
+    timeSec?: number;
+    carrierFrequencyKhz?: number;
+    radiatedPowerWatts?: number;
+    audioModulationPct?: number;
+    isResonant?: boolean;
+    waveRingDisplayRate?: number;
+    headsetDisplayOmegaRadPerS?: number;
+    audioEnvelopeOmegaRadPerS?: number;
   },
 ) {
-  const { timeSec, carrierFrequencyKhz, radiatedPowerWatts, audioModulationPct, isResonant } =
-    params;
+  const timeSec = params.timeSec ?? 1.0;
+  const carrierFrequencyKhz = params.carrierFrequencyKhz ?? 50;
+  const radiatedPowerWatts = params.radiatedPowerWatts ?? 500;
+  const audioModulationPct = params.audioModulationPct ?? 70;
+  const isResonant = params.isResonant ?? true;
+  const waveRingDisplayRate = params.waveRingDisplayRate ?? 0.8;
+  const headsetDisplayOmegaRadPerS = params.headsetDisplayOmegaRadPerS ?? 1256.64;
+  const audioEnvelopeOmegaRadPerS = params.audioEnvelopeOmegaRadPerS ?? 2513.27;
 
   // 1. Rotate alternator rotor in synchronization with carrier frequency
   nodes.alternatorRotor.rotation.x = (timeSec * carrierFrequencyKhz * 0.3) % (Math.PI * 2);
@@ -389,7 +398,7 @@ export function articulateFessendenWireless(
   // 3. Expand concentric Poynting wave rings outward
   for (let r = 0; r < nodes.waveRings.length; r++) {
     const ring = nodes.waveRings[r];
-    const ringPhase = (timeSec * 1.5 + r / nodes.waveRings.length) % 1;
+    const ringPhase = (timeSec * waveRingDisplayRate + r / nodes.waveRings.length) % 1;
     const ringScale = 0.5 + ringPhase * 2.5;
     ring.scale.set(ringScale, ringScale, ringScale);
 
@@ -401,8 +410,8 @@ export function articulateFessendenWireless(
   }
 
   // 4. Modulate thermal barretter point glow
-  const audioFreq = 6;
-  const audioEnvelope = 1 + (audioModulationPct / 100) * Math.sin(timeSec * audioFreq);
+  const audioEnvelope =
+    1 + (audioModulationPct / 100) * Math.sin(timeSec * audioEnvelopeOmegaRadPerS);
   const glowScale = Math.max(0.2, powerFactor * audioEnvelope * 1.5);
   nodes.thermalSparkGlow.scale.set(glowScale, glowScale, glowScale);
 
@@ -414,6 +423,6 @@ export function articulateFessendenWireless(
   // 5. Telephone headset acoustic micro-vibration
   if (radiatedPowerWatts > 50) {
     nodes.telephoneHeadset.position.y =
-      0.15 + Math.sin(timeSec * 30) * 0.003 * (audioModulationPct / 100);
+      0.15 + Math.sin(timeSec * headsetDisplayOmegaRadPerS) * 0.003 * (audioModulationPct / 100);
   }
 }

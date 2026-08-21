@@ -31,6 +31,9 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(modelSource).not.toContain("Math.random()");
     expect(modelSource).not.toContain("Date.now()");
     expect(studioSource).not.toContain("Math.random()");
+    expect(modelSource).not.toContain("timeSec * 1.5");
+    expect(modelSource).not.toContain("timeSec * 30");
+    expect(modelSource).not.toContain("const audioFreq = 6");
   });
 
   test("exposes authentic camera presets for continuous-wave radio inspection", () => {
@@ -57,6 +60,12 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(simTuned.receivedPowerMicrowatts).toBeGreaterThan(0.01);
     expect(simTuned.audioSnrDb).toBeGreaterThan(10);
     expect(simTuned.audioSoundLevelDbSpl).toBeGreaterThan(30);
+    expect(simTuned.waveRingDisplayRate).toBeCloseTo(1.5, 3);
+    expect(simTuned.headsetDisplayOmegaRadPerS).toBeCloseTo(30, 3);
+    expect(simTuned.audioEnvelopeOmegaRadPerS).toBeCloseTo(6, 3);
+    const doubled = stepFessendenWireless({ carrierFrequencyKhz: 150, audioFrequencyHz: 2000 });
+    expect(doubled.waveRingDisplayRate).toBeCloseTo(3.0, 3);
+    expect(doubled.headsetDisplayOmegaRadPerS).toBeCloseTo(60, 3);
 
     const simDetuned = stepFessendenWireless({
       carrierFrequencyKhz: 130,
@@ -71,12 +80,16 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(nodes.cageWires.length).toBe(12);
     expect(nodes.waveRings.length).toBe(5);
 
+    const tuned = stepFessendenWireless({ carrierFrequencyKhz: 75, audioFrequencyHz: 1000 });
     articulateFessendenWireless(nodes, {
       timeSec: 1.0,
       carrierFrequencyKhz: 75,
       radiatedPowerWatts: 650,
       audioModulationPct: 65,
       isResonant: true,
+      waveRingDisplayRate: tuned.waveRingDisplayRate,
+      headsetDisplayOmegaRadPerS: tuned.headsetDisplayOmegaRadPerS,
+      audioEnvelopeOmegaRadPerS: tuned.audioEnvelopeOmegaRadPerS,
     });
 
     expect(nodes.alternatorRotor.rotation.x).toBeDefined();

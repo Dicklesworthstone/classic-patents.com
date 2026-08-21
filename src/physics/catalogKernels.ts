@@ -3852,6 +3852,9 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
       Math.min(95, 35 + 20 * Math.log10(Math.max(0.1, audioSignalCurrentMicroamps))),
     ).toFixed(1),
   );
+  const waveRingDisplayRate = Number((fCarrierKhz * 0.02).toFixed(4));
+  const headsetDisplayOmegaRadPerS = Number((fAudioHz * 0.03).toFixed(3));
+  const audioEnvelopeOmegaRadPerS = Number((fAudioHz * 0.006).toFixed(3));
 
   return {
     carrierFrequencyKhz: fCarrierKhz,
@@ -3875,6 +3878,9 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
     activeDetectorResistanceOhms,
     dcPolarizingCurrentMicroamps,
     audioSignalCurrentMicroamps,
+    waveRingDisplayRate,
+    headsetDisplayOmegaRadPerS,
+    audioEnvelopeOmegaRadPerS,
     audioSnrDb,
     audioSoundLevelDbSpl,
   };
@@ -4029,7 +4035,7 @@ export function stepHewittMercuryLamp(params: {
   const dynamicArcResistanceOhms = Number(
     (-0.35 * (positiveColumnVoltageV / arcCurrentAmperes)).toFixed(2),
   );
-  const isStable = rBallast + dynamicArcResistanceOhms > 0;
+  const isStable = rBallast >= 2.0 && rBallast + dynamicArcResistanceOhms > 0;
 
   // Power metrics (W)
   const arcPowerWatts = Number((arcOperatingVoltageV * arcCurrentAmperes).toFixed(1));
@@ -4046,6 +4052,10 @@ export function stepHewittMercuryLamp(params: {
   // Cathode spot current density (A/cm²)
   const cathodeSpotAreaMm2 = Number((arcCurrentAmperes / 500).toFixed(4));
   const cathodeCurrentDensityAperCm2 = 50000;
+  const currentRatio = arcCurrentAmperes / 3.5;
+  const plasmaFlickerOmegaRadPerS = isStable ? 30 : 90;
+  const cathodeSpotOmegaXRadPerS = Number((currentRatio * 8).toFixed(3));
+  const cathodeSpotOmegaYRadPerS = Number((currentRatio * 11).toFixed(3));
 
   return {
     mainsVoltageV: vMains,
@@ -4068,6 +4078,9 @@ export function stepHewittMercuryLamp(params: {
     equivalentCarbonBulbs,
     cathodeSpotAreaMm2,
     cathodeCurrentDensityAperCm2,
+    plasmaFlickerOmegaRadPerS,
+    cathodeSpotOmegaXRadPerS,
+    cathodeSpotOmegaYRadPerS,
   };
 }
 
@@ -4404,6 +4417,7 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
   const laserPeakPowerKw = isLasing
     ? Number((laserPulseEnergyJoules / (pulseDurationUs * 1e-6) / 1000).toFixed(2))
     : 0;
+  const beamShimmerOmegaRadPerS = isLasing ? 80 : 0;
 
   // Wavelength at temperature: 694.3 nm at 300K, shifts to 693.4 nm at 77K
   const emissionWavelengthNm = Number((694.3 - 0.005 * (300 - tempK)).toFixed(2));
@@ -4430,6 +4444,7 @@ export function stepMaimanRubyLaser(controls: MaimanRubyLaserControls = {}) {
     colidarDistanceResolutionCm,
     metastableLifetimeMs: Number(tauMetastableMs.toFixed(2)),
     pumpRatePerCm3: Number(pumpRatePerCm3.toExponential(3)),
+    beamShimmerOmegaRadPerS,
   };
 }
 

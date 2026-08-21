@@ -246,17 +246,25 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
 export function articulateHewittMercuryLampModel(
   nodes: HewittMercuryLampModelNodes,
   telemetry: {
-    arcCurrentAmperes: number;
-    luminousEfficacyLmPerWatt: number;
-    mercuryVaporPressureMmHg: number;
-    arcOperatingVoltageV: number;
+    arcCurrentAmperes?: number;
+    luminousEfficacyLmPerWatt?: number;
+    mercuryVaporPressureMmHg?: number;
+    arcOperatingVoltageV?: number;
+    plasmaFlickerOmegaRadPerS?: number;
+    cathodeSpotOmegaXRadPerS?: number;
+    cathodeSpotOmegaYRadPerS?: number;
   },
   timeSec: number,
 ) {
+  const arcCurrentAmperes = telemetry.arcCurrentAmperes ?? 3.5;
+  const plasmaFlickerOmegaRadPerS = telemetry.plasmaFlickerOmegaRadPerS ?? 377;
+  const cathodeSpotOmegaXRadPerS = telemetry.cathodeSpotOmegaXRadPerS ?? 4.0;
+  const cathodeSpotOmegaYRadPerS = telemetry.cathodeSpotOmegaYRadPerS ?? 3.5;
+
   // 1. Plasma Column Emissive Glow & Pulse
   const pMat = nodes.plasmaColumn.material as THREE.MeshStandardMaterial;
-  const currentRatio = Math.max(0.2, Math.min(2.0, telemetry.arcCurrentAmperes / 3.5));
-  const flicker = 1.0 + Math.sin(timeSec * 30) * 0.04;
+  const currentRatio = Math.max(0.2, Math.min(2.0, arcCurrentAmperes / 3.5));
+  const flicker = 1.0 + Math.sin(timeSec * plasmaFlickerOmegaRadPerS) * 0.04;
 
   if (pMat) {
     pMat.emissiveIntensity = 1.8 * currentRatio * flicker;
@@ -264,8 +272,8 @@ export function articulateHewittMercuryLampModel(
   nodes.plasmaLight.intensity = 3.5 * currentRatio * flicker;
 
   // 2. Mobile Cathode Spot Motion
-  const spotX = 0.12 + Math.sin(timeSec * 8) * 0.06;
-  const spotY = 0.1 + Math.cos(timeSec * 11) * 0.04;
+  const spotX = 0.12 + Math.sin(timeSec * cathodeSpotOmegaXRadPerS) * 0.06;
+  const spotY = 0.1 + Math.cos(timeSec * cathodeSpotOmegaYRadPerS) * 0.04;
   nodes.cathodeSpotMesh.position.set(spotX, spotY, 0);
 
   // 3. Trickling Mercury Droplets along bottom wall toward cathode

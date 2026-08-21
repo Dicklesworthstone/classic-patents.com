@@ -31,7 +31,7 @@ export function CorlissSteamEngine3D() {
   const studioRef = useRef<StudioContext | null>(null);
 
   // Thermodynamic Simulation Parameters
-  const { params } = usePatentPhysics("us-6162-corliss-steam-engine");
+  const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const engineRpm = params.engineRpm ?? 65;
@@ -103,10 +103,11 @@ export function CorlissSteamEngine3D() {
       const dt = 1 / 60;
       timeSec += dt;
       const p = live.current;
-      const crankAngle = timeSec * p.crankOmegaRadPerS;
+
+      const crankAngleRad = (timeSec * p.crankOmegaRadPerS) % p.crankWrapRad;
 
       updateCorlissEngineKinematics(model, {
-        crankAngleRad: crankAngle,
+        crankAngleRad,
         governorOmegaRadPerS: p.governorOmegaRadPerS,
         cutoffFraction: p.cutoffPct / 100,
         isCutaway: p.isCutaway,
@@ -115,6 +116,11 @@ export function CorlissSteamEngine3D() {
         wristAmp: p.wristAmp,
         wristLeadRad: p.wristLeadRad,
       });
+
+      // Periodic audio tick on valve disengagement trip
+      if (!p.isAudioMuted && Math.sin(crankAngleRad) > 0.98) {
+        soundEngine.playSwitchClick();
+      }
 
       controls.update();
       renderer.render(scene, camera);
@@ -132,22 +138,43 @@ export function CorlissSteamEngine3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Corliss Steam Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Corliss Steam Engine 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 6,162 • Wrist-Plate Rotary Valve Gear &amp; Dashpots
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["wrist_plate", "Wrist Plate"],
+                ["dashpots", "Dashpots"],
+                ["flywheel", "Flywheel"],
+                ["governor", "Governor"],
+                ["top", "Plan View"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Top Controls */}
+        {/* Top-Right Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
@@ -167,6 +194,7 @@ export function CorlissSteamEngine3D() {
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -197,57 +225,120 @@ export function CorlissSteamEngine3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["wrist_plate", "Wrist Plate"],
-                ["dashpots", "Dashpots"],
-                ["flywheel", "Flywheel"],
-                ["governor", "Governor"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Indicated Power:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {indicatedHp} IHP
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Steam Pressure:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {steamPressurePsi} psi
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Cutoff Point:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {cutoffPct}% stroke
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Engine Speed:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {engineRpm} RPM
+              </span>
+            </div>
           </div>
         )}
-
-        <StudioKernelChips
-          visible={showUiOverlay}
-          side="right"
-          title="Corliss dashpot trip"
-          chips={[
-            { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
-            { label: "Cutoff", value: String(cutoffPct), unit: "%" },
-            { label: "IHP", value: String(indicatedHp), unit: "hp" },
-            { label: "η", value: thermalEfficiencyPct, unit: "%" },
-            { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
-            { label: "r_exp", value: String(corliss.expansionRatio) },
-            { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
-            {
-              label: "Valve crate",
-              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-            },
-          ]}
-        />
       </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Boiler Steam Pressure
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {steamPressurePsi} psi
+              </span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="180"
+              step="5"
+              value={steamPressurePsi}
+              onChange={(e) => updateParam("steamPressurePsi", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {engineRpm} RPM
+              </span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="120"
+              step="5"
+              value={engineRpm}
+              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Governor Cutoff Fraction
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {cutoffPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="60"
+              step="5"
+              value={cutoffPct}
+              onChange={(e) => updateParam("cutoffPct", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
+
+      <StudioKernelChips
+        visible={showUiOverlay}
+        side="right"
+        title="Corliss dashpot trip"
+        chips={[
+          { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
+          { label: "Cutoff", value: String(cutoffPct), unit: "%" },
+          { label: "IHP", value: String(indicatedHp), unit: "hp" },
+          { label: "η", value: thermalEfficiencyPct, unit: "%" },
+          { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
+          { label: "r_exp", value: String(corliss.expansionRatio) },
+          { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+          {
+            label: "Valve crate",
+            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+          },
+        ]}
+      />
     </div>
   );
 }

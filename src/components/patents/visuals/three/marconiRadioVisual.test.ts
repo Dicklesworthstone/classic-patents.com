@@ -22,6 +22,8 @@ describe("US 586,193 Guglielmo Marconi Wireless Radio Telegraphy visual & electr
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildMarconiRadioModel");
     expect(modelSource).toContain("updateMarconiRadioKinematics");
+    expect(modelSource).not.toContain("timeSec * 8");
+    expect(modelSource).toContain("wavePhaseRate * 8");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

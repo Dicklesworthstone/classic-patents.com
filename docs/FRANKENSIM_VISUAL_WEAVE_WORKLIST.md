@@ -521,6 +521,10 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.428 Land Polaroid nip rollers drain `rollerDisplayOmegaRadPerS` (3 rad/s while developing, 0 at `developmentTimeSec = 0`). Model already steps the kernel; leftover `timeSec * 3` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.429 Carlson drum / fuser drain `drumDisplayOmegaRadPerS` / `fuserDisplayOmegaRadPerS` from `copiesPerMin` (selenium 45 cpm → 0.8 / 1.6 rad/s; sulfur 12 cpm is slower). Leftover `timeSec * 0.8` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.430 Baekeland methylene-network spin drains `networkDisplayOmegaRadPerS` (0.2 rad/s in A/B-stage, 0 once C-stage locks). Leftover `timeSec * 0.2` kept spinning a thermoset. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.431 Marconi Morse lever drains `wavePhaseRate * 8` instead of leftover `timeSec * 8`. Wave rings already used `wavePhaseRate`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.432 Maiman ruby beam shimmer drains `beamShimmerOmegaRadPerS` (80 rad/s while lasing, 0 below threshold). Leftover `timeSec * 80` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.433 Fessenden Poynting rings / headset / audio envelope drain `waveRingDisplayRate` (`f_carrier × 0.02`), `headsetDisplayOmegaRadPerS` (`f_audio × 0.03`), and `audioEnvelopeOmegaRadPerS` (`f_audio × 0.006`). Leftover `1.5` / `30` / `6` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.434 Hewitt plasma flicker and cathode-spot wander drain `plasmaFlickerOmegaRadPerS` (30 when the ballast holds, 90 when the kernel reports unstable) and current-scaled spot ω. Leftover `timeSec * 30` / `8` / `11` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

@@ -42,10 +42,10 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 340,
   },
   4: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v2.png",
     alt: "US 347,140, Fig. 4: a newly formed welded joint with its burr.",
-    width: 720,
-    height: 370,
+    width: 660,
+    height: 300,
   },
   5: {
     src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v1.png",
@@ -66,9 +66,9 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 400,
   },
   8: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v2.png",
     alt: "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
-    width: 1050,
+    width: 750,
     height: 285,
   },
   9: {

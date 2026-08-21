@@ -186,8 +186,7 @@ export function createMaimanRubyLaserModel(): {
     // Laser beam visibility and pulsing
     if (isFiring && metrics.isLasing) {
       beamMat.opacity = 0.85;
-      // High frequency relaxation oscillation shimmer
-      const shimmer = 0.9 + 0.1 * Math.sin(timeSec * 80);
+      const shimmer = 0.9 + 0.1 * Math.sin(timeSec * metrics.beamShimmerOmegaRadPerS);
       laserBeam.scale.set(shimmer, 1, shimmer);
     } else {
       beamMat.opacity = 0.0;

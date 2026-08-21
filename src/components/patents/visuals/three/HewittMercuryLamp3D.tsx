@@ -69,6 +69,9 @@ export function HewittMercuryLamp3D({
     luminousEfficacyLmPerWatt: sim.luminousEfficacyLmPerWatt,
     mercuryVaporPressureMmHg: sim.mercuryVaporPressureMmHg,
     arcOperatingVoltageV: sim.arcOperatingVoltageV,
+    plasmaFlickerOmegaRadPerS: sim.plasmaFlickerOmegaRadPerS,
+    cathodeSpotOmegaXRadPerS: sim.cathodeSpotOmegaXRadPerS,
+    cathodeSpotOmegaYRadPerS: sim.cathodeSpotOmegaYRadPerS,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -112,6 +115,9 @@ export function HewittMercuryLamp3D({
           luminousEfficacyLmPerWatt: p.luminousEfficacyLmPerWatt,
           mercuryVaporPressureMmHg: p.mercuryVaporPressureMmHg,
           arcOperatingVoltageV: p.arcOperatingVoltageV,
+          plasmaFlickerOmegaRadPerS: p.plasmaFlickerOmegaRadPerS,
+          cathodeSpotOmegaXRadPerS: p.cathodeSpotOmegaXRadPerS,
+          cathodeSpotOmegaYRadPerS: p.cathodeSpotOmegaYRadPerS,
         },
         timeRef.current,
       );
