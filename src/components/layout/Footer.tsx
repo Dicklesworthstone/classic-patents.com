@@ -21,7 +21,7 @@ export function Footer() {
               patents through verified archival transcripts, dual-projection engineering
               deconstructions, and interactive 3D physical simulations.
             </p>
-            <div className="pt-2 text-[11px] font-sans text-ink-500">
+            <div className="pt-2 text-[11px] font-sans text-ink-700 dark:text-ink-400">
               An open-source digital museum and research archive.
             </div>
           </div>
@@ -108,13 +108,13 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <span className="text-ink-500">MIT Open Source License</span>
+                <span className="text-ink-700 dark:text-ink-400">MIT Open Source License</span>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-parchment-200 dark:border-ink-800 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-500 font-sans gap-3">
+        <div className="mt-8 pt-6 border-t border-parchment-200 dark:border-ink-800 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-700 dark:text-ink-400 font-sans gap-3">
           <div>
             © {new Date().getFullYear()} Classic Patents · Curated by Jeffrey Emanuel. Open Source.
           </div>
