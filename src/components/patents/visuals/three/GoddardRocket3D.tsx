@@ -9,7 +9,7 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGoddardRocketModel, updateGoddardRocketKinematics } from "./goddardRocketModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -43,7 +43,7 @@ export function GoddardRocket3D() {
 
   // Propulsion & Staging State Controls
   const { params, updateParam } = usePatentPhysics("us-1102653-goddard-rocket");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const chamberPressurePsi = params.chamberPressure ?? 350;
   const expansionRatio = params.expansionRatio ?? 3.5;

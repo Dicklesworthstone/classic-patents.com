@@ -207,7 +207,16 @@ export function DieselEngine3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-542846-diesel-engine"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("compressionRatio", active ? 18 : 6);
+              updateParam("blastAirPressure", active ? 65 : 15);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
