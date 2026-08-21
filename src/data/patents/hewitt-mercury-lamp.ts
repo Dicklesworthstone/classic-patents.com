@@ -8,10 +8,7 @@
  * at public/patents/pdfs/us-682690-hewitt-mercury-lamp.pdf (SHA-256: bd849330e1ed6e530d0654413016c7e77eda792d0519628ca1bae5747065c74d).
  */
 
-import {
-  hewittMercuryLampArchivalEdition,
-  manualHewittClaimText,
-} from "@/data/editions/hewittMercuryLampEdition";
+import { manualHewittClaimText } from "@/data/editions/hewittMercuryLampEdition";
 import type { Patent } from "@/types/patent";
 
 export const hewittMercuryLampPatent: Patent = {

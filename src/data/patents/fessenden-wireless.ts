@@ -1,7 +1,4 @@
-import {
-  fessendenWirelessArchivalEdition,
-  manualFessendenClaimText,
-} from "@/data/editions/fessendenWirelessEdition";
+import { manualFessendenClaimText } from "@/data/editions/fessendenWirelessEdition";
 import type { Patent } from "@/types/patent";
 
 export const fessendenWirelessPatent: Patent = {
