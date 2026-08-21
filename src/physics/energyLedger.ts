@@ -227,20 +227,76 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "us-194047-otto-engine":
-    case "us-542846-diesel-engine": {
+    case "us-194047-otto-engine": {
       const rpm = params.rpm ?? 180;
       const compRatio = params.compressionRatio ?? 8.0;
       const omega = (rpm * 2 * Math.PI) / 60;
       const flywheelInertia = 2.4; // kg*m^2
 
       kinetic = 0.5 * flywheelInertia * omega * omega;
-      // Air-standard thermal cycle
+      // Air-standard Otto cycle
       const fuelFlowGps = 0.15 * (rpm / 180);
       powerIn = fuelFlowGps * 44000.0; // Fuel heating value input (Watts)
       const efficiency = 1.0 - 1.0 / compRatio ** 0.4;
       dissipated = powerIn * (1.0 - efficiency);
       thermal = 25000.0; // Engine block thermal capacity
+      break;
+    }
+
+    case "us-542846-diesel-engine": {
+      const rpm = params.engineRpm ?? params.rpm ?? 150;
+      const compRatio = params.compRatio ?? params.compressionRatio ?? 18.0;
+      const cutoff = params.cutoffRatio ?? 1.6;
+      const omega = (rpm * 2 * Math.PI) / 60;
+      const flywheelInertia = 4.8; // kg*m^2 for heavy industrial single-cylinder engine
+
+      kinetic = 0.5 * flywheelInertia * omega * omega;
+      const fuelFlowGps = 0.22 * (rpm / 150);
+      powerIn = fuelFlowGps * 42500.0; // Heavy fuel oil enthalpy (Watts)
+      // True Diesel cycle thermal efficiency: 1 - (1 / r^(gamma-1)) * (rc^gamma - 1)/(gamma*(rc-1))
+      const gamma = 1.4;
+      const effFactor = (cutoff ** gamma - 1.0) / (gamma * (cutoff - 1.0));
+      const efficiency = Math.max(0.1, 1.0 - (1.0 / compRatio ** (gamma - 1.0)) * effFactor);
+      dissipated = powerIn * (1.0 - efficiency);
+      thermal = 38000.0; // Cylinder jacket & piston thermal storage
+      break;
+    }
+
+    case "us-1647-morse-telegraph": {
+      const volt = params.lineVoltage ?? 24.0;
+      const rLine = params.lineResistance ?? 120.0;
+      const rRelay = 80.0;
+      const rTotal = rLine + rRelay;
+      const current = volt / rTotal; // Amperes
+
+      powerIn = volt * current; // Primary chemical battery input power (Watts)
+      const inductanceH = 0.45; // Relay coil inductance
+      em = 0.5 * inductanceH * current * current; // Stored magnetic field energy
+      potential = 0.05 * 9.80665 * 0.003; // Brass key return spring potential
+      dissipated = current * current * rTotal; // Joule heat across copper wire & relay coil
+      thermal = 15.0; // Coil thermal capacity
+      break;
+    }
+
+    case "us-124404-westinghouse-air-brake": {
+      const resPsi = params.reservoirPressure ?? 70.0;
+      const brakePsi = params.brakePipePressure ?? 50.0;
+      const compWork = resPsi * 6894.76 * 0.028; // Reservoir pneumatic pressure work (Joules)
+      potential = compWork; // Stored compressed air energy
+      powerIn = 3500.0; // Locomotive steam air-compressor pump power (Watts)
+      kinetic = 0.5 * 18000.0 * 15.0 ** 2; // Moving train car kinetic energy (Joules)
+      dissipated = (brakePsi / 70.0) * 12000.0 + 80.0; // Cast iron brake shoe frictional dissipation
+      thermal = 8500.0; // Brake shoe thermal capacity
+      break;
+    }
+
+    case "us-682690-hewitt-mercury-lamp": {
+      const arcVolt = params.arcVoltage ?? 110.0;
+      const arcCurr = params.arcCurrent ?? 3.5;
+      powerIn = arcVolt * arcCurr; // DC arc discharge electrical power (Watts)
+      em = 0.08 * arcCurr * arcCurr; // Ballast choke electromagnetic storage
+      thermal = 450.0; // Mercury vapor pool & tube quartz heat capacity
+      dissipated = powerIn * 0.82; // Thermal conduction + non-visible IR emission (18% luminous efficacy)
       break;
     }
 

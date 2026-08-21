@@ -33,52 +33,55 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
 
   return (
     <div
-      className={`flex flex-wrap items-center justify-between gap-2 px-3 py-1.5 bg-parchment-100/90 dark:bg-ink-950/90 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-[11px] font-mono text-ink-800 dark:text-parchment-200 shadow-xs ${className}`}
+      className={`grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 bg-parchment-100/90 dark:bg-ink-950/90 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 text-[10px] sm:text-[11px] font-mono text-ink-800 dark:text-parchment-200 shadow-xs ${className}`}
     >
       {/* Total Stored Energy */}
       <div
-        className="flex items-center gap-1.5"
+        className="flex items-center gap-1 sm:gap-1.5 min-w-0"
         title="Total Port-Hamiltonian Stored Energy H(x) = T + V + W_em + Q"
       >
         <Gauge className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans">Stored Energy:</span>
-        <span className="font-bold text-ink-900 dark:text-parchment-100">
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Stored:</span>
+        <span className="font-bold text-ink-900 dark:text-parchment-100 shrink-0">
           {formatJoules(ledger.energy.totalHamiltonianJoules)}
         </span>
       </div>
 
       {/* Input Power */}
-      <div className="flex items-center gap-1.5" title="External Port Power Inflow u^T * y">
+      <div
+        className="flex items-center gap-1 sm:gap-1.5 min-w-0"
+        title="External Port Power Inflow u^T * y"
+      >
         <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans">Port Inflow:</span>
-        <span className="font-bold text-cyan-800 dark:text-cyan-300">
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Inflow:</span>
+        <span className="font-bold text-cyan-800 dark:text-cyan-300 shrink-0">
           {formatWatts(ledger.inputPowerWatts)}
         </span>
       </div>
 
       {/* Dissipated Power */}
       <div
-        className="flex items-center gap-1.5"
+        className="flex items-center gap-1 sm:gap-1.5 min-w-0"
         title="Positive Semi-Definite Dissipation D(x) >= 0"
       >
         <Flame className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans">Dissipated:</span>
-        <span className="font-bold text-rose-800 dark:text-rose-300">
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Loss:</span>
+        <span className="font-bold text-rose-800 dark:text-rose-300 shrink-0">
           {formatWatts(ledger.dissipatedPowerWatts)}
         </span>
       </div>
 
       {/* Dirac Conservation Integrity */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
         <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans">Energy Balance:</span>
-        <span className="font-semibold text-emerald-700 dark:text-emerald-400">
-          ΔH ≈ 0 (<span className="text-[10px]">{ledger.supplyDefectWatts} W</span>)
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Balance:</span>
+        <span className="font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">
+          ΔH≈0 <span className="text-[9px] sm:text-[10px]">({ledger.supplyDefectWatts}W)</span>
         </span>
       </div>
 
       <div
-        className="text-[10px] text-ink-400 dark:text-ink-500 truncate max-w-[120px] sm:max-w-none"
+        className="col-span-2 sm:col-span-1 text-[9px] sm:text-[10px] text-ink-400 dark:text-ink-500 truncate text-right sm:text-left pt-0.5 sm:pt-0 border-t sm:border-t-0 border-parchment-200 dark:border-ink-800/60 sm:max-w-none"
         title={
           ledger.digestKind === "blake3"
             ? "Blake3 replay digest from a stepped WASM module"

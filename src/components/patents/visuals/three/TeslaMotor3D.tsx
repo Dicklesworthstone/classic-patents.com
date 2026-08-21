@@ -16,7 +16,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -41,7 +41,7 @@ export function TeslaMotor3D() {
 
   // Electrical & Mechanical Simulation State
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const acFrequencyHz = teslaMotorPhaseHz(params);
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const fig13Unavailable = phaseCount === 3;

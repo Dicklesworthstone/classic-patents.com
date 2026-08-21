@@ -358,8 +358,7 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-194047-otto-engine":
-    case "us-542846-diesel-engine": {
+    case "us-194047-otto-engine": {
       if (controlKey === "compressionRatio" || controlKey === "cr") {
         const r = params.compressionRatio ?? params.cr ?? 8.0;
         const gamma = 1.4;
@@ -371,6 +370,111 @@ export function computeParameterSensitivity(
           derivativeValue: Number((dEta_dr * 100).toFixed(2)),
           derivativeUnit: "% / ratio",
           interpretation: "Thermodynamic Carnot limit expansion from peak cycle compression.",
+        };
+      }
+      break;
+    }
+
+    case "us-542846-diesel-engine": {
+      if (controlKey === "compressionRatio" || controlKey === "cr" || controlKey === "compRatio") {
+        const r = params.compRatio ?? params.compressionRatio ?? 18.0;
+        const cutoff = params.cutoffRatio ?? 1.6;
+        const gamma = 1.4;
+        const effFactor = (cutoff ** gamma - 1.0) / (gamma * (cutoff - 1.0));
+        const dEta_dr = ((gamma - 1.0) / r ** gamma) * effFactor;
+        return {
+          metricName: "Diesel Thermal Efficiency",
+          derivativeSymbol: "∂η / ∂r",
+          derivativeValue: Number((dEta_dr * 100).toFixed(2)),
+          derivativeUnit: "% / ratio",
+          interpretation:
+            "High compression ratio increases expansion work without premature detonation.",
+        };
+      }
+      if (controlKey === "engineRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Indicated Shaft Power",
+          derivativeSymbol: "∂P / ∂N",
+          derivativeValue: 0.28,
+          derivativeUnit: "kW / RPM",
+          interpretation: "Linear power scaling with crankshaft rotational frequency.",
+        };
+      }
+      if (controlKey === "blastAirPressure") {
+        return {
+          metricName: "Fuel Atomization Quality",
+          derivativeSymbol: "∂Atom / ∂P_blast",
+          derivativeValue: 0.35,
+          derivativeUnit: "% / bar",
+          interpretation:
+            "Compressed air blast kinetic energy atomizes heavy oil droplets into micro-mist.",
+        };
+      }
+      break;
+    }
+
+    case "us-1647-morse-telegraph": {
+      if (controlKey === "lineVoltage" || controlKey === "voltage") {
+        const rLine = params.lineResistance ?? 120.0;
+        const rTotal = rLine + 80.0;
+        const dI_dV = (1.0 / rTotal) * 1000.0; // mA / V
+        return {
+          metricName: "Loop Signal Current",
+          derivativeSymbol: "∂I / ∂V",
+          derivativeValue: Number(dI_dV.toFixed(2)),
+          derivativeUnit: "mA / V",
+          interpretation:
+            "Ohm's law current sensitivity driving the electromagnetic relay armature.",
+        };
+      }
+      if (controlKey === "lineResistance" || controlKey === "resistance") {
+        const v = params.lineVoltage ?? 24.0;
+        const rLine = params.lineResistance ?? 120.0;
+        const rTotal = rLine + 80.0;
+        const dI_dR = -(v / (rTotal * rTotal)) * 1000.0; // mA / Ohm
+        return {
+          metricName: "Signal Current Attenuation",
+          derivativeSymbol: "∂I / ∂R",
+          derivativeValue: Number(dI_dR.toFixed(3)),
+          derivativeUnit: "mA / Ω",
+          interpretation: "Line attenuation rate as wire distance increases.",
+        };
+      }
+      break;
+    }
+
+    case "us-124404-westinghouse-air-brake": {
+      if (controlKey === "brakePipePressure" || controlKey === "pipePressure") {
+        return {
+          metricName: "Brake Clamping Force",
+          derivativeSymbol: "∂F_clamp / ∂P",
+          derivativeValue: 142.0,
+          derivativeUnit: "N / psi",
+          interpretation:
+            "Piston thrust translation to cast iron shoe normal force on wheel treads.",
+        };
+      }
+      if (controlKey === "reservoirPressure") {
+        return {
+          metricName: "Stored Pneumatic Work",
+          derivativeSymbol: "∂E / ∂P",
+          derivativeValue: 193.0,
+          derivativeUnit: "J / psi",
+          interpretation:
+            "Auxiliary reservoir pressure energy available for emergency brake application.",
+        };
+      }
+      break;
+    }
+
+    case "us-682690-hewitt-mercury-lamp": {
+      if (controlKey === "arcCurrent" || controlKey === "current") {
+        return {
+          metricName: "Luminous Lobe Flux",
+          derivativeSymbol: "∂Φ / ∂I",
+          derivativeValue: 420.0,
+          derivativeUnit: "lm / A",
+          interpretation: "Plasma Townsend avalanche ionization photon generation per ampere.",
         };
       }
       break;

@@ -2,6 +2,7 @@
 
 import { Activity } from "lucide-react";
 import type React from "react";
+import { useState } from "react";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 
 interface SensitivitySliderProps {
@@ -33,6 +34,8 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
   onChange,
   allParams = {},
 }) => {
+  const [showDetail, setShowDetail] = useState(false);
+
   const sensitivity = patentId
     ? computeParameterSensitivity(patentId, paramKey, {
         ...allParams,
@@ -43,13 +46,24 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
   return (
     <div className="flex flex-col gap-1.5 group relative">
       <div className="flex justify-between items-center text-xs font-sans">
-        <span className="text-ink-700 dark:text-ink-300 font-medium flex items-center gap-1">
-          {label}
+        <button
+          type="button"
+          onClick={() => sensitivity && setShowDetail(!showDetail)}
+          className="text-ink-700 dark:text-ink-300 font-medium flex items-center gap-1 text-left cursor-pointer hover:text-ink-900 dark:hover:text-parchment-100"
+          title={sensitivity ? "Tap to toggle derivative details" : undefined}
+        >
+          <span>{label}</span>
           {sensitivity && (
-            <Activity className="w-3 h-3 text-amber-600 dark:text-amber-400 opacity-60 group-hover:opacity-100 transition-opacity" />
+            <Activity
+              className={`w-3.5 h-3.5 transition-opacity ${
+                showDetail
+                  ? "text-amber-600 dark:text-amber-400 opacity-100"
+                  : "text-amber-600 dark:text-amber-400 opacity-60 group-hover:opacity-100"
+              }`}
+            />
           )}
-        </span>
-        <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+        </button>
+        <span className="text-amber-700 dark:text-amber-400 font-mono font-bold shrink-0 ml-2">
           {value} {unit}
         </span>
       </div>
@@ -62,13 +76,17 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className={`w-full ${colorClass} bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer transition-all`}
+        className={`w-full ${colorClass} bg-parchment-300 dark:bg-ink-700 rounded-lg h-2.5 sm:h-2 cursor-pointer transition-all touch-none`}
       />
 
-      {/* Live Automatic Differentiation Sensitivity Pill */}
+      {/* Live Automatic Differentiation Sensitivity Pill (Hover or Mobile Tap) */}
       {sensitivity && (
         <div
-          className="flex items-center justify-between px-2 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-[10px] font-mono text-amber-800 dark:text-amber-300 transition-all opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto"
+          className={`flex items-center justify-between px-2 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-[10px] font-mono text-amber-800 dark:text-amber-300 transition-all ${
+            showDetail
+              ? "opacity-100 scale-100"
+              : "opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 pointer-events-none group-hover:pointer-events-auto"
+          }`}
           title={sensitivity.interpretation}
         >
           <span className="font-semibold">{sensitivity.derivativeSymbol}:</span>

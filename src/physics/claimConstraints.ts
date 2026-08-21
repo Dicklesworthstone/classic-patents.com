@@ -157,6 +157,62 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Deville's chemical sodium reduction of aluminum chloride cost $12/pound before Hall's electrolytic bath.",
     },
   ],
+  "us-542846-diesel-engine": [
+    {
+      claimNumber: 1,
+      patentId: "us-542846-diesel-engine",
+      claimTitle: "Pure-Air Compression Auto-Ignition & Gradual Injection",
+      activeDescription:
+        "Claim 1 compresses pure atmospheric air above fuel ignition temperature before injecting fuel gradually without explosive pressure rise.",
+      invertedDescription:
+        "Premature fuel premixing: fuel vapor in compression chamber detonates before Top Dead Center, causing destructive engine knock.",
+      failureModeName: "Premature Detonation Knock & Piston Seizure",
+      historicalPriorArt:
+        "Otto and Lenoir cycles required premixed air-fuel charge and external spark/flame ignition, limiting compression ratio to ~6:1.",
+    },
+  ],
+  "us-608969-parsons-turbine": [
+    {
+      claimNumber: 1,
+      patentId: "us-608969-parsons-turbine",
+      claimTitle: "Multi-Stage Compound Pressure & Velocity Expansion",
+      activeDescription:
+        "Claim 1 drops steam pressure across successive fixed and rotating blade rings, keeping blade peripheral speed near optimal velocity ratio.",
+      invertedDescription:
+        "Single-stage de Laval nozzle: full boiler pressure drops in one expansion, producing Mach 3 steam jet requiring destructive wheel RPM.",
+      failureModeName: "Supersonic Shock Choking & Centrifugal Rotor Rupture",
+      historicalPriorArt:
+        "De Laval single-wheel impulse turbines ran at destructive 30,000 RPM, requiring complex reducing gears.",
+    },
+  ],
+  "us-1647-morse-telegraph": [
+    {
+      claimNumber: 1,
+      patentId: "us-1647-morse-telegraph",
+      claimTitle: "Local Electromagnetic Relay & Recording Circuit",
+      activeDescription:
+        "Claim 1 uses line current to trip sensitive local relays that switch high-current local batteries to drive the recording stylus.",
+      invertedDescription:
+        "Direct line drive without relays: Ohmic line resistance over long distance starves sounder electromagnet below mechanical trip threshold.",
+      failureModeName: "Long-Distance Line Attenuation & Signal Erasure",
+      historicalPriorArt:
+        "Previous electrostatic and magnetic needle telegraphs failed beyond a few miles due to Ohmic voltage drop.",
+    },
+  ],
+  "us-124404-westinghouse-air-brake": [
+    {
+      claimNumber: 1,
+      patentId: "us-124404-westinghouse-air-brake",
+      claimTitle: "Automatic Double-Pipe Signal Line & Reservoir Supply",
+      activeDescription:
+        "Claim 1 maintains continuous reservoir line pressure while using a secondary signal line to automatically apply brakes if train parts.",
+      invertedDescription:
+        "Straight direct-air single pipe: parting of train hose vents air to atmosphere, completely disabling all brakes when needed most.",
+      failureModeName: "Train Parting Catastrophic Brake Failure",
+      historicalPriorArt:
+        "Straight-air brakes required continuous line pressure to apply shoes; any hose rupture left train runaway.",
+    },
+  ],
 };
 
 /**
@@ -290,6 +346,64 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "ELECTROCHEMICAL REFUSAL: Insoluble Al₂O₃ lacks ionic conductivity without molten fluoride bath.";
+      }
+      break;
+    }
+
+    case "us-542846-diesel-engine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.compressionRatio = 6.0;
+        modified.compRatio = 6.0;
+        modified.blastAirPressure = 15.0;
+        modified.isAutoIgnition = 0;
+        activeFailures.push(
+          "Detonation Knock: Premature fuel premixing ignites at 45° BTDC, opposing piston stroke",
+        );
+        refusalWarning =
+          "THERMODYNAMIC KNOCK: Compression ratio insufficient for auto-ignition; premix charge causes catastrophic cylinder detonation.";
+      }
+      break;
+    }
+
+    case "us-608969-parsons-turbine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.stages = 1;
+        modified.steamRpm = 28000.0;
+        activeFailures.push(
+          "Centrifugal Over-Stress: Uncompounded single stage creates transonic shock choking and 850 MPa rim tension",
+        );
+        refusalWarning =
+          "AERODYNAMIC CHOKE: Supersonic expansion exceeds blade strength threshold without staged velocity compounding.";
+      }
+      break;
+    }
+
+    case "us-1647-morse-telegraph": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.lineResistance = 4500.0;
+        modified.loopCurrentMa = 1.2;
+        activeFailures.push(
+          "Line Attenuation: Loop current drops below 5 mA mechanical sounder trip threshold",
+        );
+        refusalWarning =
+          "ELECTRICAL REFUSAL: Long-distance line resistance attenuates signal below mechanical relay sensitivity.";
+      }
+      break;
+    }
+
+    case "us-124404-westinghouse-air-brake": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.brakePipePressure = 0.0;
+        modified.reservoirPressure = 0.0;
+        activeFailures.push(
+          "Train Parting Depressurization: Direct-air line vents to atmosphere, disabling all brake cylinders",
+        );
+        refusalWarning =
+          "PNEUMATIC FAILURE: Direct-air system lacks emergency reservoir storage, preventing fail-safe train arrest.";
       }
       break;
     }

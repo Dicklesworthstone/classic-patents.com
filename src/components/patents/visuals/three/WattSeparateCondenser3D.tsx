@@ -7,7 +7,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
+import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -31,7 +31,7 @@ const CAMERA_PRESETS: Record<
 export function WattSeparateCondenser3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
