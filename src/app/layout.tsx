@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AudioCleanupProvider } from "@/components/layout/AudioCleanupProvider";
@@ -83,6 +83,18 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fbf9f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f17" },
+  ],
+};
+
+// Runs synchronously before first paint so dark-mode users never flash the
+// light parchment theme. Falls back to the OS preference when no explicit
+// choice is stored. ThemeToggle reads back the resulting DOM state on mount.
+const themeInitScript = `(function(){try{var s=localStorage.getItem("classic-patents-theme");var d=s?s==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;var c=document.documentElement.classList;if(d){c.add("dark")}else{c.remove("dark")}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -95,6 +107,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <AudioCleanupProvider />
         <div className="flex flex-col min-h-screen">
           <Header />
