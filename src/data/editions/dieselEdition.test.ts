@@ -3,10 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import {
-  dieselEngineArchivalEdition,
-  dieselEngineParallelReadings,
-} from "@/data/editions/dieselEngineEdition";
+import { dieselEngineArchivalEdition } from "@/data/editions/dieselEngineEdition";
 import { dieselEnginePatent } from "@/data/patents/diesel-engine";
 
 const PINNED_SHA256 = "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866";

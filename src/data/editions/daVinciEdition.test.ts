@@ -3,11 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import {
-  DAVINCI_FIGURE_DIMS,
-  davinciArchivalEdition,
-  davinciParallelReadings,
-} from "@/data/editions/daVinciEdition";
+import { davinciArchivalEdition } from "@/data/editions/daVinciEdition";
 import { daVinciPatent } from "@/data/patents/davinci";
 
 const PINNED_SHA256 = "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91";
@@ -25,13 +21,7 @@ describe("US 6,331,181 Intuitive Surgical Da Vinci Archival Edition Contract", (
 
   test("pinned PDF SHA-256 matches archival edition", () => {
     expect(davinciArchivalEdition.sourcePdfSha256).toBe(PINNED_SHA256);
-    const pdfPath = path.join(
-      process.cwd(),
-      "public",
-      "patents",
-      "pdfs",
-      "us-6331181-davinci.pdf",
-    );
+    const pdfPath = path.join(process.cwd(), "public", "patents", "pdfs", "us-6331181-davinci.pdf");
     expect(fs.existsSync(pdfPath)).toBe(true);
     const diskSha = createHash("sha256").update(fs.readFileSync(pdfPath)).digest("hex");
     expect(diskSha).toBe(PINNED_SHA256);

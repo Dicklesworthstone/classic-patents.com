@@ -38,6 +38,9 @@ bun.lockb
 *.swp
 *.swo
 
+# Internal Claim Extractors
+*_claims.json
+
 # Beads & Sessions
 .beads/*.db-journal
 .ntm/

@@ -4,7 +4,6 @@ import {
 } from "@/data/editions/dieselEngineEdition";
 import type { Patent } from "@/types/patent";
 
-
 // Retained research material for a later-engine interpretation. It is
 // deliberately non-exported: US 542,846 must not present later Diesel-cycle
 // dimensions, rates, materials, efficiency, or history as statements of the
@@ -154,7 +153,8 @@ export const dieselEnginePatent: Patent = {
     {
       figureNumber: "Fig. 1",
       title: "Pressure-Volume Thermodynamic Indicator Diagram",
-      caption: "Theoretical P-V indicator diagram showing adiabatic compression and constant-pressure expansion.",
+      caption:
+        "Theoretical P-V indicator diagram showing adiabatic compression and constant-pressure expansion.",
       svgType: "diesel",
       callouts: [
         {
@@ -197,7 +197,8 @@ export const dieselEnginePatent: Patent = {
     {
       figureNumber: "Fig. 3",
       title: "Fuel Injection Nozzle & Atomizer",
-      caption: "Sectional detail of fuel nozzle with needle valve and compressed-air atomizing port.",
+      caption:
+        "Sectional detail of fuel nozzle with needle valve and compressed-air atomizing port.",
       svgType: "diesel",
       callouts: [
         {
