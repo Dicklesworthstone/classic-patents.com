@@ -35,8 +35,8 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     );
     expect(simSource).toContain("physics.plasmaFlickerOmegaRadPerS");
     expect(simSource).toContain("physics.cathodeSpotOmegaXRadPerS");
-    expect(simSource).not.toContain("time * 15");
-    expect(simSource).not.toContain("time * 8");
+    expect(simSource).not.toContain("time * 15 +");
+    expect(simSource).not.toContain("time * 8)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

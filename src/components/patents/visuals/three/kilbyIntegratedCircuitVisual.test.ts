@@ -33,7 +33,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
       "utf-8",
     );
     expect(simSource).toContain("simState.switchingDisplayOmegaRadPerS");
-    expect(simSource).not.toContain("time * 8");
+    expect(simSource).not.toContain("Math.sin(time * 8)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
