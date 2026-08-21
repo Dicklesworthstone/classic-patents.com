@@ -430,7 +430,7 @@ export function WrightFlyerSim() {
         </svg>
 
         {/* Telemetry Footer */}
-        <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300 mt-2">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300 mt-2">
           <div>
             <span className="text-ink-500 block text-[10px]">ROLL CONTROL</span>
             <span className="text-amber-400 font-bold">

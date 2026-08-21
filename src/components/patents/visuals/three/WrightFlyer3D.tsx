@@ -527,6 +527,34 @@ export function WrightFlyer3D() {
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
+      {/* Bottom-Right SI Telemetry Chip Strip (inside canvas viewport so the
+          absolute anchoring resolves against the sim, not the page) */}
+      <StudioKernelChips
+        visible={true}
+        side="right"
+        title="WRIGHT 1903 3-AXIS AERODYNAMICS"
+        chips={[
+          {
+            label: "Lift Force",
+            value: `${si.liftNewtons.toFixed(0)}`,
+            unit: "N",
+            tone: "hot",
+          },
+          { label: "Drag Force", value: `${si.totalDragNewtons.toFixed(0)}`, unit: "N" },
+          {
+            label: "L/D Ratio",
+            value: `${si.liftToDrag.toFixed(2)}`,
+          },
+          { label: "Lift Coeff (C_L)", value: `${si.cl.toFixed(3)}` },
+          { label: "Airspeed", value: `${airspeedMph}`, unit: "mph" },
+          { label: "Net Yaw", value: `${si.netYawNm.toFixed(1)}`, unit: "N·m" },
+          {
+            label: "Coupling",
+            value: isCoupled ? "Warp + Rudder Interlock" : "Independent",
+          },
+          { label: "Flight Kernel", value: `${kernelLabel} / ${aeroLabel}` },
+        ]}
+      />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -601,32 +629,6 @@ export function WrightFlyer3D() {
         <PortHamiltonianEnergyStrip patentId={WRIGHT_PATENT_ID} params={params} className="mt-3" />
       </div>
 
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="WRIGHT 1903 3-AXIS AERODYNAMICS"
-        chips={[
-          {
-            label: "Lift Force",
-            value: `${si.liftNewtons.toFixed(0)}`,
-            unit: "N",
-            tone: "hot",
-          },
-          { label: "Drag Force", value: `${si.totalDragNewtons.toFixed(0)}`, unit: "N" },
-          {
-            label: "L/D Ratio",
-            value: `${si.liftToDrag.toFixed(2)}`,
-          },
-          { label: "Lift Coeff (C_L)", value: `${si.cl.toFixed(3)}` },
-          { label: "Airspeed", value: `${airspeedMph}`, unit: "mph" },
-          { label: "Net Yaw", value: `${si.netYawNm.toFixed(1)}`, unit: "N·m" },
-          {
-            label: "Coupling",
-            value: isCoupled ? "Warp + Rudder Interlock" : "Independent",
-          },
-          { label: "Flight Kernel", value: `${kernelLabel} / ${aeroLabel}` },
-        ]}
-      />
     </div>
   );
 }
