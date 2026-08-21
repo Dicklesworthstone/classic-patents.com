@@ -23,9 +23,12 @@ export function useResponsiveStudioHud(initialDesktop: boolean = true) {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(initialDesktop);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
-      setShowUiOverlay(false);
-    }
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => setShowUiOverlay(!mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
   }, []);
 
   return [showUiOverlay, setShowUiOverlay] as const;
