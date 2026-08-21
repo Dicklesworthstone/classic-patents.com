@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -39,6 +39,7 @@ const CAMERA_PRESETS: Record<
 export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Pneumatic Simulation Parameters from Shared Hook
   const { params, updateParam } = usePatentPhysics("us-124404-westinghouse-air-brake");
@@ -76,6 +77,7 @@ export function WestinghouseAirBrake3D() {
     isAudioMuted,
     clampingForceKn,
     rollingOmegaRadPerS: westinghouse.rollingOmegaRadPerS,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -148,6 +150,8 @@ export function WestinghouseAirBrake3D() {
         ws.rotation.z = wheelAngle;
       });
 
+      brakeModel.setCutaway?.(p.isCutaway ?? false);
+
       // Audio puff on brake application trigger
       if (p.isBrakeClamped && !wasClamped && !p.isAudioMuted) {
         soundEngine.playPneumaticPuff();
@@ -215,6 +219,20 @@ export function WestinghouseAirBrake3D() {
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Castings" : "Transparent Valve & Cylinder Cutaway"}
+            aria-label={isCutaway ? "Solid Castings" : "Transparent Valve & Cylinder Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button

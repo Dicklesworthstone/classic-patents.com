@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -32,6 +32,7 @@ const CAMERA_PRESETS: Record<
 export function DaVinci3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
     scale: 3,
@@ -50,6 +51,7 @@ export function DaVinci3D() {
     tremorFilterEnabled,
     masterInputSpeedMps,
     gripAngleDeg,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);

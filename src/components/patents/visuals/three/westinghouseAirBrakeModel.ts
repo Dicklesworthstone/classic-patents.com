@@ -48,6 +48,7 @@ export interface WestinghouseAirBrakeModelResult {
   root: THREE.Group;
   nodes: WestinghouseAirBrakeModelNodes;
   materials: WestinghouseAirBrakeMaterials;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -532,7 +533,16 @@ export function buildWestinghouseAirBrakeModel(): WestinghouseAirBrakeModelResul
     }
   };
 
-  return { root, nodes, materials, dispose };
+  const setCutaway = (cutaway: boolean) => {
+    materials.castIron.transparent = cutaway;
+    materials.castIron.opacity = cutaway ? 0.35 : 1.0;
+    materials.castIron.needsUpdate = true;
+    materials.paintedBlackIron.transparent = cutaway;
+    materials.paintedBlackIron.opacity = cutaway ? 0.35 : 1.0;
+    materials.paintedBlackIron.needsUpdate = true;
+  };
+
+  return { root, nodes, materials, setCutaway, dispose };
 }
 
 export function updateWestinghouseAirBrakeKinematics(

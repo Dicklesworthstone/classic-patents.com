@@ -37,6 +37,7 @@ export interface TeslaMotorModel {
     collector: THREE.MeshStandardMaterial;
     fluxMat: THREE.PointsMaterial;
   };
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -475,6 +476,11 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
       terminalWood,
       collector,
       fluxMat,
+    },
+    setCutaway: (cutaway: boolean) => {
+      statorIron.transparent = cutaway;
+      statorIron.opacity = cutaway ? 0.35 : 1.0;
+      statorIron.needsUpdate = true;
     },
     dispose: () => {
       for (const geometry of geometriesToDispose) geometry.dispose();

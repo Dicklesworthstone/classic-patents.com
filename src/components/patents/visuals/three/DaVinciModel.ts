@@ -18,6 +18,7 @@ export interface DaVinciModel {
     gripRad: number,
     masterPos: [number, number, number],
   ) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -218,6 +219,15 @@ export function buildDaVinciModel(): DaVinciModel {
     masterHandle.position.set(...masterPos);
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    shaftSteelMat.transparent = cutaway;
+    shaftSteelMat.opacity = cutaway ? 0.35 : 1.0;
+    shaftSteelMat.needsUpdate = true;
+    darkTitaniumMat.transparent = cutaway;
+    darkTitaniumMat.opacity = cutaway ? 0.45 : 1.0;
+    darkTitaniumMat.needsUpdate = true;
+  };
+
   return {
     root,
     mainGroup,
@@ -230,6 +240,7 @@ export function buildDaVinciModel(): DaVinciModel {
     rightJawGroup,
     cableLines,
     updateKinematics,
+    setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();
       for (const m of materialsToDispose) m.dispose();
