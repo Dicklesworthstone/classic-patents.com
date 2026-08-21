@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Flame,
-  Layers,
-  Play,
-  RotateCcw,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
