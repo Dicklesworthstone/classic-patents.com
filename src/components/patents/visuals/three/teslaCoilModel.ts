@@ -35,6 +35,7 @@ export interface TeslaCoilModel {
     streamerStudioLength: number,
     secondaryVoltageMv: number,
   ) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
