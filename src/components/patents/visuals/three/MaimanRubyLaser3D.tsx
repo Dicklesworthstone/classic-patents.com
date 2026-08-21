@@ -107,6 +107,8 @@ export function MaimanRubyLaser3D() {
         isFiringRef.current,
       );
 
+      laserModel.setCutaway?.(live.current.isCutaway ?? false);
+
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
@@ -145,10 +147,10 @@ export function MaimanRubyLaser3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["ruby_rod", "Ruby Rod"],
-                ["flashlamp", "Flashlamp"],
-                ["resonator", "Resonator"],
-                ["top", "Top"],
+                ["ruby_rod", "Ruby Crystal Rod"],
+                ["flashlamp", "Helical Xenon Lamp"],
+                ["resonator", "Fabry-Pérot Cavity"],
+                ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
               <button
@@ -167,16 +169,16 @@ export function MaimanRubyLaser3D() {
           </div>
         )}
 
-        {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={triggerLaserPulse}
             disabled={isFiring}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-3 sm:py-2 rounded-xl backdrop-blur-md border font-sans text-xs font-bold transition-all shadow-sm ${
               isFiring
-                ? "bg-rose-700 text-white border-rose-800 animate-pulse"
-                : "bg-rose-600 text-white border-rose-700 hover:bg-rose-500 active:scale-95"
+                ? "bg-rose-600 text-white border-rose-500 shadow-rose-500/50 animate-pulse"
+                : "bg-rose-700 text-white border-rose-800 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-500"
             }`}
           >
             {isFiring ? "⚡ Discharging..." : "⚡ Trigger Flashlamp"}
@@ -188,15 +190,25 @@ export function MaimanRubyLaser3D() {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Cavity Housing" : "Transparent Resonator Cutaway"}
+            aria-label={isCutaway ? "Solid Cavity Housing" : "Transparent Resonator Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button
