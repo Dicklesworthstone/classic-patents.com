@@ -499,20 +499,27 @@ function legacyManualKilbyClaimText(claimNumber: number): string {
 // research history; only this source-faithful export is eligible for a future
 // independent reattachment to the catalogue record.
 const sourceText = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
-const sourceReference = (label: string, src?: string): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: label,
-  href: `#figure-${label.toLowerCase().replace(/[^0-9a-z]+/g, "-")}`,
-  referenceType: "figure",
-  label: `Primary-facsimile ${label}`,
-  ...(src
-    ? {
-        figurePreviews: [
-          { src, alt: `Primary-facsimile crop of ${label}`, width: 760, height: 560 },
-        ],
-      }
-    : {}),
+const sourceTerm = (termText: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text: termText,
+  definition,
 });
+const sourceReference = (label: string, src?: string): CuratedSpecificationInline => {
+  return {
+    kind: "reference",
+    text: label,
+    href: `#figure-${label.toLowerCase().replace(/[^0-9a-z]+/g, "-")}`,
+    referenceType: "figure",
+    label: `Primary-facsimile ${label}`,
+    ...(src
+      ? {
+          figurePreviews: [
+            { src, alt: `Primary-facsimile crop of ${label}`, width: 760, height: 560 },
+          ],
+        }
+      : {}),
+  };
+};
 const sourceParagraph = (...inlines: CuratedSpecificationInline[]) => ({
   kind: "paragraph" as const,
   inlines,
@@ -709,7 +716,14 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
         "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
       ),
       sourceText(
-        ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in FIGURE 1, the design contemplates utilizing the bulk resistance of a body 10 of semiconductor material of any conductivity type. Contacts 11 and 12 are made ohmically to one surface of the body 10, spaced apart a sufficient distance to achieve a desired resistance. As will be apparent to one skilled in the art, ohmic connections are those which exhibit symmetry and linearity in resistance to flow of current therethrough in any available direction. If two resistors are to be connected together, it is not necessary to provide separate terminations for the common point. The resistance may be calculated from R = ρL/A, where L is the active length in centimeters, A is the cross sectional area, and ρ is the resistivity in ohm-cm. of the semiconductor material.",
+        ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in FIGURE 1, the design contemplates utilizing the ",
+      ),
+      sourceTerm(
+        "bulk resistance",
+        "Resistance arising through the semiconductor body itself, set by resistivity, active length, and cross-sectional area rather than by a separately mounted resistor element.",
+      ),
+      sourceText(
+        " of a body 10 of semiconductor material of any conductivity type. Contacts 11 and 12 are made ohmically to one surface of the body 10, spaced apart a sufficient distance to achieve a desired resistance. As will be apparent to one skilled in the art, ohmic connections are those which exhibit symmetry and linearity in resistance to flow of current therethrough in any available direction. If two resistors are to be connected together, it is not necessary to provide separate terminations for the common point. The resistance may be calculated from R = ρL/A, where L is the active length in centimeters, A is the cross sectional area, and ρ is the resistivity in ohm-cm. of the semiconductor material.",
       ),
     ),
     sourceParagraph(
@@ -723,7 +737,14 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     ),
     sourceParagraph(
       sourceText(
-        "Capacitor designs may be obtained by utilizing the capacitance of a p-n junction, as shown in ",
+        "Capacitor designs may be obtained by utilizing the capacitance of a ",
+      ),
+      sourceTerm(
+        "p-n junction",
+        "The interface between regions of opposite semiconductor conductivity; under reverse bias its depleted charge region stores electric energy and supplies transition capacitance.",
+      ),
+      sourceText(
+        ", as shown in ",
       ),
       sourceReference(
         "FIGURE 2",
@@ -762,7 +783,14 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
       sourceReference("FIGURE 4"),
       sourceText(
-        ", which has a collector region 25, a diffused p-n junction 26, a base layer 27, an emitter contact 28 for a rectifying connection with base layer 27 and base and collector contacts 29 and 30, respectively. The base layer 27 is formed as a mesa of small cross section.",
+        ", which has a collector region 25, a diffused p-n junction 26, a base layer 27, an emitter contact 28 for a rectifying connection with base layer 27 and base and collector contacts 29 and 30, respectively. The base layer 27 is formed as a ",
+      ),
+      sourceTerm(
+        "mesa",
+        "A raised, etched semiconductor plateau whose small cross-section confines the active junction layers and exposes contacts at the wafer surface.",
+      ),
+      sourceText(
+        " of small cross section.",
       ),
     ),
     sourceParagraph(

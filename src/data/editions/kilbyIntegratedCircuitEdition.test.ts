@@ -60,11 +60,11 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     for (let page = 1; page <= 9; page++) {
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 9 ---`);
     }
-    expect(
-      transcript.match(
-        /STATUS: WITHHELD WIP — editorial drawing-label inventory only; not a public facsimile transcription\./g,
-      ),
-    ).toHaveLength(4);
+    expect(transcript).not.toContain("STATUS: WITHHELD WIP");
+    expect(transcript).toContain("Visible labels: 10, 10a, 10b");
+    expect(transcript).toContain("Visible labels: T1, T2, R1–R8");
+    expect(transcript).toContain("Visible labels: T1, T2, R1–R8, C1, C2");
+    expect(transcript).toContain("Fig. 8a. Fig. 8b. Fig. 8c.");
   });
 
   test("verifies all referenced source figure crops exist on disk", () => {
