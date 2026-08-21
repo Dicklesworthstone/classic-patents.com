@@ -6,6 +6,7 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type {
   CuratedSpecificationBlock,
+  CuratedSpecificationEdition,
   CuratedSpecificationInline,
 } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
@@ -20,10 +21,12 @@ const editionBlocks: readonly CuratedSpecificationBlock[] = fermiReactorArchival
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   test("holds the candidate edition and leaves the canonical record unbound", () => {
-    expect(fermiReactorArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(Boolean(fermiReactorArchivalEdition.completeFacsimileReviewed)).toBe(false);
     expect(fermiReactorPatent.archivalEdition).toBeUndefined();
     expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
-    const validation = validateCuratedSpecificationEdition(fermiReactorArchivalEdition);
+    const validation = validateCuratedSpecificationEdition(
+      fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+    );
     expect(validation.valid).toBe(false);
     expect(validation.errors).toContain(
       "The archival edition lacks an explicit full-facsimile review attestation.",

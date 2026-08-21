@@ -160,7 +160,7 @@ export interface CuratedSpecificationEdition {
   /** ISO calendar date on which preparation finished. */
   preparedAt: string;
   /** An explicit attestation that the full facsimile, not OCR alone, was checked. */
-  completeFacsimileReviewed: true;
+  completeFacsimileReviewed: boolean;
   /**
    * Present only when the reviewed historical facsimile genuinely contains no
    * separately enumerated legal claims. It prevents the catalogue from
