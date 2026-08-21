@@ -21,6 +21,7 @@ export interface FessendenWirelessModelNodes {
   thermalSparkGlow: THREE.Mesh;
   telephoneHeadset: THREE.Group;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
@@ -336,6 +337,15 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
 
   root.add(telephoneHeadset);
 
+  const setCutaway = (cutaway: boolean) => {
+    castIronMat.transparent = cutaway;
+    castIronMat.opacity = cutaway ? 0.35 : 1.0;
+    castIronMat.needsUpdate = true;
+    woodMat.transparent = cutaway;
+    woodMat.opacity = cutaway ? 0.45 : 1.0;
+    woodMat.needsUpdate = true;
+  };
+
   return {
     root,
     alternatorRotor,
@@ -348,6 +358,7 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
     thermalSparkGlow,
     telephoneHeadset,
     materials,
+    setCutaway,
   };
 }
 

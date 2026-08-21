@@ -39,7 +39,7 @@ export function HoweSewingMachine3D() {
   const isCranking = params.isCranking !== 0;
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   // Lockstitch Kinematics Calculations (FrankenSim 4-Bar Mechanism)
   const stitchState = FrankenSimEngine.stepHoweSewingMachine(
@@ -88,12 +88,6 @@ export function HoweSewingMachine3D() {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
-  };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
   };
 
   useEffect(() => {

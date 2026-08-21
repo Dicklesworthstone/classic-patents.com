@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -53,6 +53,7 @@ export function CarlsonElectrophotography3D({
   const timeRef = useRef<number>(0);
 
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics("us-2297691-carlson-electrophotography");
   const coronaVoltageKv = (params.coronaVoltageKv as number) ?? initialCoronaVoltageKv;
@@ -78,6 +79,7 @@ export function CarlsonElectrophotography3D({
     drumDisplayOmegaRadPerS: sim.drumDisplayOmegaRadPerS,
     fuserDisplayOmegaRadPerS: sim.fuserDisplayOmegaRadPerS,
     isRotating,
+    isCutaway,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {

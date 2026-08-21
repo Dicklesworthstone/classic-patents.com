@@ -28,6 +28,7 @@ export interface CarlsonElectrophotographyModelNodes {
   fuserLowerRoll: THREE.Mesh;
   fuserHeatLight: THREE.PointLight;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function buildCarlsonElectrophotographyModel(): CarlsonElectrophotographyModelNodes {
@@ -323,6 +324,15 @@ export function buildCarlsonElectrophotographyModel(): CarlsonElectrophotography
   fuserHeatLight.position.set(1.7, -0.63, 0);
   root.add(fuserHeatLight);
 
+  const setCutaway = (cutaway: boolean) => {
+    chassisMat.transparent = cutaway;
+    chassisMat.opacity = cutaway ? 0.35 : 1.0;
+    chassisMat.needsUpdate = true;
+    seleniumMat.transparent = cutaway;
+    seleniumMat.opacity = cutaway ? 0.5 : 1.0;
+    seleniumMat.needsUpdate = true;
+  };
+
   return {
     root,
     drumGroup,
@@ -339,6 +349,7 @@ export function buildCarlsonElectrophotographyModel(): CarlsonElectrophotography
     fuserLowerRoll,
     fuserHeatLight,
     materials,
+    setCutaway,
   };
 }
 

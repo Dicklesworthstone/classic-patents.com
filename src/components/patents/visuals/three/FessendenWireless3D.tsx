@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
@@ -38,6 +38,7 @@ export function FessendenWireless3D() {
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -56,6 +57,7 @@ export function FessendenWireless3D() {
     carrierFreqKhz,
     audioModPct,
     isRotating,
+    isCutaway,
     radiatedPowerWatts: sim.radiatedPowerWatts,
     isResonant: sim.isResonant,
     waveRingDisplayRate: sim.waveRingDisplayRate,
@@ -112,6 +114,8 @@ export function FessendenWireless3D() {
         audioEnvelopeOmegaRadPerS: p.audioEnvelopeOmegaRadPerS,
       });
 
+      nodes.setCutaway?.(p.isCutaway ?? false);
+
       pointGlow.color.setHex(p.isResonant ? 0x10b981 : 0xf59e0b);
       pointGlow.intensity = (p.radiatedPowerWatts / 1000) * 2.0;
 
@@ -164,7 +168,7 @@ export function FessendenWireless3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => {
@@ -193,6 +197,21 @@ export function FessendenWireless3D() {
           >
             {isRotating ? "Stop Orbit" : "Auto Orbit"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Apparatus" : "Transparent Apparatus Housing Cutaway"}
+            aria-label={isCutaway ? "Solid Apparatus" : "Transparent Apparatus Housing Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -207,6 +226,7 @@ export function FessendenWireless3D() {
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
+
           <button
             aria-label="Reset camera view"
             type="button"
