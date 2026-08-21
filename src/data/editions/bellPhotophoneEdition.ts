@@ -31,15 +31,27 @@ const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   13: { width: 1000, height: 950 },
   14: { width: 900, height: 1100 },
   15: { width: 700, height: 900 },
-  16: { width: 1000, height: 920 },
-  17: { width: 1000, height: 920 },
-  18: { width: 1000, height: 800 },
-  19: { width: 1000, height: 800 },
-  20: { width: 670, height: 500 },
-  21: { width: 500, height: 650 },
-  22: { width: 680, height: 500 },
-  23: { width: 2000, height: 500 },
+  16: { width: 360, height: 560 },
+  17: { width: 360, height: 560 },
+  18: { width: 500, height: 510 },
+  19: { width: 310, height: 480 },
+  20: { width: 280, height: 480 },
+  21: { width: 320, height: 480 },
+  22: { width: 260, height: 340 },
+  23: { width: 200, height: 340 },
+  24: { width: 230, height: 470 },
 };
+
+function figureAssetPath(number: number): string {
+  if (number === 16 || number === 17) {
+    return "/patents/figures/us-235199-bell-photophone/figs-16-and-17-source-crop-v5.png";
+  }
+  if (number >= 18 && number <= 24) {
+    return `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`;
+  }
+  const revision = number === 14 || number === 15 ? "-v4" : number === 21 ? "-v2" : "-v1";
+  return `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop${revision}.png`;
+}
 
 function makePreview(
   surfaceText: string,
@@ -52,14 +64,17 @@ function makePreview(
     href: `#figure-${figureNumbers[0]}`,
     referenceType: "figure",
     label: altText,
-    figurePreviews: figureNumbers.map((num) => ({
-      src: `/patents/figures/us-235199-bell-photophone/fig-${num}-source-crop${
-        num === 14 || num === 15 ? "-v4" : num === 21 ? "-v2" : "-v1"
-      }.png`,
-      alt: `Figure ${num}: ${altText}`,
-      width: FIGURE_DIMS[num]?.width ?? 300,
-      height: FIGURE_DIMS[num]?.height ?? 300,
-    })),
+    figurePreviews: figureNumbers
+      .map((num) => ({
+        src: figureAssetPath(num),
+        alt: `Figure ${num}: ${altText}`,
+        width: FIGURE_DIMS[num]?.width ?? 300,
+        height: FIGURE_DIMS[num]?.height ?? 300,
+      }))
+      .filter(
+        (preview, index, previews) =>
+          previews.findIndex((candidate) => candidate.src === preview.src) === index,
+      ),
   };
 }
 
@@ -84,7 +99,7 @@ export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly
     "Physical definition of the radiant carrier: the invention utilizes radiant energy (light, infrared rays, or heat) whose intensity, divergence, or polarization is modulated at the transmitting station to correspond with acoustic sound vibrations.",
   ],
   4: [
-    "Overview of the twenty-three patent figures: Fig. 1 full transmitting and receiving photophone system; Fig. 2 ray modulation optical path; Fig. 3 tone-generating siren disk; Figs. 4-7 variable-slat and grid shutters; Figs. 8-9 voice-diaphragm transmitters; Fig. 10 parabolic collector and receiver circuit; Figs. 11-15 cylindrical and flat selenium cells; Figs. 16-23 radial type-metal selenium cells and axial parabolic mounting.",
+    "Overview of the twenty-four patent figures: Fig. 1 full transmitting and receiving photophone system; Fig. 2 ray modulation optical path; Fig. 3 tone-generating siren disk; Figs. 4-7 variable-slat and grid shutters; Figs. 8-9 voice-diaphragm transmitters; Fig. 10 parabolic collector and receiver circuit; Figs. 11-15 cylindrical and flat selenium cells; Figs. 16-24 alternate selenium-cell constructions and their details.",
   ],
   5: [
     "Transmitter optical architecture: condensing lens collects sunlight or artificial light and focuses it upon a voice-actuated flexible mirror or shutter diaphragm, while a second lens collimates the undulatory beam toward the distant receiver.",
@@ -203,9 +218,9 @@ export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
       ),
       ", plan and cross-section of a flat selenium cell; ",
       makePreview(
-        "Figs. 16, 17, 18, 19, 20, 21, 22, and 23",
-        [16, 17, 18, 19, 20, 21, 22, 23],
-        "Radial fin type-metal cell construction and axial parabolic mounting",
+        "Figs. 16, 17, 18, 19, 20, 21, 22, 23, and 24",
+        [16, 17, 18, 19, 20, 21, 22, 23, 24],
+        "Alternate selenium-cell constructions and their details",
       ),
       ", details of a multi-disc radial-fin selenium cell and its axial mounting in a parabolic reflector.",
     ),
@@ -271,9 +286,9 @@ export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
     p(
       "Alternate brass disks are connected to opposite terminals of the circuit, forming an interdigital grid where hundreds of thin selenium conducting bridges are connected in parallel. In ",
       makePreview(
-        "Figs. 16, 17, 18, 19, 20, 21, 22, and 23",
-        [16, 17, 18, 19, 20, 21, 22, 23],
-        "Multi-disc radial-fin selenium cell with cast type-metal cores",
+        "Figs. 16, 17, 18, 19, 20, 21, 22, 23, and 24",
+        [16, 17, 18, 19, 20, 21, 22, 23, 24],
+        "Alternate multi-disc selenium-cell constructions and their details",
       ),
       ", type-metal is cast through longitudinal passages to rigidly join and connect the alternating disks, producing a robust, highly sensitive cylindrical cell that is mounted along the central focal axis of the parabolic reflector.",
     ),

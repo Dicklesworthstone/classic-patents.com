@@ -21,9 +21,9 @@
 
 | PDF Page | Physical Content | Verification Notes |
 | :--- | :--- | :--- |
-| **Page 1** | Drawing Sheet 1 (Figs. 1–9) | Full system schematic (Fig. 1), transmitter beam path (Fig. 2), tone siren wheel (Fig. 3), grid shutter gratings (Figs. 4–7), voice-modulated diaphragm transmitter (Fig. 8), aperture plate (Fig. 9). |
-| **Page 2** | Drawing Sheet 2 (Figs. 10–15) | Parabolic reflector collector and receiver circuit (Fig. 10), cylindrical stacked brass/mica selenium cell (Figs. 11–13), interdigital flat spiral selenium cell (Figs. 14–15). |
-| **Page 3** | Drawing Sheet 3 (Figs. 16–23) | Radial-fin cast type-metal selenium cell assembly and sections (Figs. 16–22), axial receiver mounting in parabolic focus (Fig. 23). |
+| **Page 1** | Drawing Sheet 1 (Figs. 1–6) | Full system schematic (Fig. 1), transmitter beam path (Fig. 2), tone siren wheel (Fig. 3), and screen-grating details (Figs. 4–6). |
+| **Page 2** | Drawing Sheet 2 (Figs. 3–17) | Additional transmitter and grating views (Figs. 3–9), parabolic receiver (Fig. 10), and selenium-cell constructions (Figs. 11–17). |
+| **Page 3** | Drawing Sheet 3 (Figs. 10 and 18–24) | Repeated system view (Fig. 10), alternate selenium-cell assemblies (Figs. 18–19), and construction details (Figs. 20–24). |
 | **Page 4** | Specification Masthead & Column 1–2 | Preamble, statement of invention, discovery of photo-acoustic effect across substances, transmitter principles, and description of Figures 1–3. |
 | **Page 5** | Specification Page 2 (Cols 1–2) | Beam modulation physics, mirror diaphragms of mica/glass/metal, acoustic beam focus, and slotted grating shutter mechanics. |
 | **Page 6** | Specification Page 3 (Cols 1–2) | Slotted grid shutters, Venetian blind slats, optical ray interference, and voice diaphragm coupling. |
@@ -41,10 +41,10 @@
 
 ### Root figure-QA hold (2026-08-20)
 
-The public source face is withheld pending a source-drawing repair. Direct review of PDF page 3 shows Figures 16 through 24, not Figures 16 through 23. The current edition and drawing-sheet ledger omit Figure 24, and the current Figure 18 through 23 preview set includes sideways, clipped, or misnumbered crops from that rotated sheet. The old assets remain preserved as evidence; no crop may be rebound until each printed figure number has an upright, isolated, source-derived preview and every occurrence in the specification is linked to the correct figure.
+The public source face remains withheld pending a complete literal source-text repair. Direct review corrected the drawing inventory: page 1 prints Figs. 1–6; page 2 prints Figs. 3–17; page 3 repeats Fig. 10 and prints Figs. 18–24. The edition now points Figs. 16–17 to one clean, upright source crop because those two views touch on the sheet, and Figs. 18–24 to individually reviewed upright crops. Earlier clipped, sideways, and misnumbered assets remain preserved as evidence and are no longer used by the edition. The reviewed ledger still contains extensive OCR corruption in the specification body, so neither it nor the archival edition is publication-ready.
 
 - **Visitor Source Face**: `src/data/editions/bellPhotophoneEdition.ts`
 - **Reviewed Ledger**: `public/patents/transcripts/us-235199-bell-photophone-reviewed.txt`
-- **Crop Directory**: `public/patents/figures/us-235199-bell-photophone/` (23 cropped PNGs, Figs. 1–23)
+- **Crop Directory**: `public/patents/figures/us-235199-bell-photophone/` (source-derived previews covering Figs. 1–24; superseded revisions are preserved)
 - **Printed Claims**: Exactly 18 claims printed in the Letters Patent.
 - **Physics Kernel**: `src/physics/bellPhotophoneKernel.ts` (Optical irradiance $I_0$, voice diaphragm beam divergence modulation $\Omega(t)$, inverse-square beam transmission, parabolic collector flux concentration, selenium photoconductive resistance $R_{\text{se}}(E)$, and telephonic acoustic diaphragm velocity).
