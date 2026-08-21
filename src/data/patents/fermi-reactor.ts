@@ -1,6 +1,7 @@
 import {
   FERMI_REACTOR_FIGURE_CAPTIONS,
-  fermiReactorManualClaimText,
+  fermiReactorArchivalEdition,
+  fermiReactorClaims,
 } from "@/data/editions/fermiReactorEdition";
 import type { Patent } from "@/types/patent";
 
@@ -625,10 +626,13 @@ export const fermiReactorPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2708656-fermi-reactor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
+  archivalEdition: fermiReactorArchivalEdition,
   originalTextAsset: {
-    url: "/patents/source-text/us-2708656-fermi-reactor.txt",
+    url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
     pageCount: 58,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-20",
     sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   },
   originalText: `UNITED STATES PATENT OFFICE
@@ -727,7 +731,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 1,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(1),
+      originalText: fermiReactorClaims[0].text,
       plainEnglish:
         "This claim is limited to graphite moderator and natural-uranium rods. Their size and graphite-to-uranium volume ratio must fall within the Fig. 3 region marked k=1.00, and the materials and total mass must be sufficient for a self-sustaining chain reaction.",
       keyInnovations: ["Graphite moderator", "Natural-uranium rods", "Fig. 3 criticality contour"],
@@ -737,7 +741,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 2,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(2),
+      originalText: fermiReactorClaims[1].text,
       plainEnglish:
         "This broader independent claim permits graphite or heavy water, natural uranium or natural uranium oxide, and several fuel-body shapes. The geometry must fall within the k=1.00 contour regions in Figs. 2–6, with continuous surrounding moderator and enough pure material and mass for a chain reaction.",
       keyInnovations: [
@@ -751,7 +755,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 3,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(3),
+      originalText: fermiReactorClaims[2].text,
       plainEnglish:
         "Claim 3 narrows the construction to natural-uranium spheres in continuous graphite, using the Fig. 2 k=1.00 contour to define the allowed sphere radius and moderator-to-uranium ratio.",
       keyInnovations: [
@@ -765,7 +769,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 4,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(4),
+      originalText: fermiReactorClaims[3].text,
       plainEnglish:
         "Claim 4 is the uranium-oxide-sphere counterpart of claim 3. It requires continuous graphite around each sphere and uses Fig. 4, not Fig. 2, for the k=1.00 geometry range.",
       keyInnovations: [
@@ -777,7 +781,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 5,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(5),
+      originalText: fermiReactorClaims[4].text,
       plainEnglish:
         "Claim 5 changes the uranium-oxide bodies from spheres to rods and points to Fig. 5 for the k=1.00 radius and volume-ratio range; the graphite must remain a continuous phase around each body.",
       keyInnovations: [
@@ -789,7 +793,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 6,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(6),
+      originalText: fermiReactorClaims[5].text,
       plainEnglish:
         "Claim 6 covers natural-uranium rods in heavy water. It requires a continuous heavy-water phase and locates the working rod size and moderator-to-uranium ratio on the Fig. 6 k=1.00 contour.",
       keyInnovations: [
@@ -801,7 +805,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 7,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(7),
+      originalText: fermiReactorClaims[6].text,
       plainEnglish:
         "Claim 7 states the broader graphite-lattice construction in terms of uranium containing U-235 and U-238. It requires fuel bodies at least 0.5 cm in every dimension, substantially free of moderator and other absorbers, geometrically spaced and surrounded by a continuous graphite phase, with sufficient purity, size, spacing, and mass for a chain reaction.",
       keyInnovations: [
@@ -813,7 +817,7 @@ The present invention relates to the general subject of nuclear fission and part
     {
       number: 8,
       isIndependent: true,
-      originalText: fermiReactorManualClaimText(8),
+      originalText: fermiReactorClaims[7].text,
       plainEnglish:
         "Claim 8 generalizes the 0.5 cm discrete-body lattice to graphite or heavy water and to a fuel that contains both a thermally fissionable isotope and a resonance-absorbing isotope. It preserves the same continuous moderator phase, geometric spacing, purity, and total-mass conditions.",
       keyInnovations: [
@@ -900,5 +904,7 @@ The present invention relates to the general subject of nuclear fission and part
   stats: {
     totalClaims: 8,
     independentClaims: 8,
+    patentWarYears: "1944–1955",
+    impactScore: 100,
   },
 };
