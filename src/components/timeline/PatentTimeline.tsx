@@ -65,7 +65,17 @@ export function PatentTimeline() {
   // Keyboard navigation: Left/Right arrows
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const target = e.target;
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return;
+      }
+      // Never steal arrows while a modal dialog owns the interaction.
+      if (typeof document !== "undefined" && document.querySelector("dialog[open]")) return;
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         selectPrevious();
@@ -90,7 +100,8 @@ export function PatentTimeline() {
                 key={tab.id}
                 type="button"
                 onClick={() => setSelectedEra(tab.id)}
-                className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs flex items-center gap-1.5 ${
+                aria-pressed={isSelected}
+                className={`px-3.5 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs flex items-center gap-1.5 ${
                   isSelected
                     ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
                     : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -113,8 +124,10 @@ export function PatentTimeline() {
 
         <div className="text-xs font-mono text-ink-600 dark:text-ink-400 px-2 font-medium">
           Milestone{" "}
-          <span className="font-bold text-amber-700 dark:text-amber-400">{currentIndex + 1}</span>{" "}
-          of {sortedPatents.length}
+          <span className="font-bold text-amber-700 dark:text-amber-400">
+            {currentFilteredIndex + 1}
+          </span>{" "}
+          of {filteredPatents.length}
         </div>
       </div>
 
@@ -149,7 +162,7 @@ export function PatentTimeline() {
                   </div>
                 </div>
                 <div
-                  className={`text-[10px] font-mono mt-2 truncate ${
+                  className={`text-[11px] font-mono mt-2 truncate ${
                     isSelected ? "text-amber-100" : "text-ink-500"
                   }`}
                 >
@@ -176,7 +189,7 @@ export function PatentTimeline() {
                 · {selectedPatent.categoryLabel}
               </span>
               <span className="font-mono text-[11px] text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                #{currentIndex + 1} of {sortedPatents.length}
+                #{currentFilteredIndex + 1} of {filteredPatents.length}
               </span>
             </div>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink-900 dark:text-parchment-100">
@@ -194,7 +207,7 @@ export function PatentTimeline() {
                 type="button"
                 onClick={selectPrevious}
                 disabled={currentFilteredIndex <= 0}
-                className="p-1.5 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                 title="Previous Milestone (← Arrow Key)"
                 aria-label="Previous Milestone"
               >
@@ -204,7 +217,7 @@ export function PatentTimeline() {
                 type="button"
                 onClick={selectNext}
                 disabled={currentFilteredIndex >= filteredPatents.length - 1}
-                className="p-1.5 rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+                className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-700 dark:text-parchment-300 hover:bg-parchment-300 dark:hover:bg-ink-800 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
                 title="Next Milestone (→ Arrow Key)"
                 aria-label="Next Milestone"
               >
