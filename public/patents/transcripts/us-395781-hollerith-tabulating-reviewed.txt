@@ -283,6 +283,12 @@ What I claim as my invention is—
 
 14. In a system such as described, the combination, with separate record-cards, of circuit-controlling devices co-operating with index-points on the cards, a system of circuits, one or more receptacles for cards, a movable lid or section controlling the entrance to each box or receptacle, and actuating devices for the movable lid or section, said devices being controlled by the index-points on the record-cards to designate the proper receptacle for each card, substantially as described.
 
+15. The combination, to form a system such as described, of a series of record-cards having index-points, circuit-controlling devices operated by said index-points, a series of circuits connected to said circuit-controlling devices and including operating electro-magnets, a series of boxes or receptacles corresponding to the groups into which the cards are to be divided, and indicating and directing devices actuated by said operating-magnets, substantially as described.
+
+16. In a system such as described, and in combination with a record card or strip provided with index-points representing items, a circuit-controlling apparatus provided with a separate contact for each index-point of the series, and a series of operating electro-magnets for actuating independent counting and indicating devices, a system of circuits intermediate the circuit-controlling devices and operating-magnets, said system embracing a series of relay-circuits controlled by one or more of the contacts in the circuit-controlling apparatus, and a series of direct circuits, including the contacts of the relays and governed by one or more contacts of the circuit-controlling apparatus, substantially as described.
+
+17. The combination, to form a system such as described, of the record-cards bearing index-points, a circuit-controlling contact for each index-point in the series, operating-magnets, and a system of circuits, substantially such as described, embracing a series of circuits including the coils of relays and certain designated circuit-controlling contacts, and another series of circuits, embracing one or more designated circuit-controlling contacts and the contacts of one or more relays, said operating-magnet being controlled by at least two pairs of contacts, substantially as described.
+
 --- REVIEWED TRANSCRIPTION PAGE 17 OF 17 ---
 
 What I claim as new, and desire to secure by Letters Patent, is:—
