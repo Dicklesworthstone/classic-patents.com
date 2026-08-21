@@ -114,19 +114,19 @@ The full manual transcription, including both figures, complete specification, o
     scientificPrinciples: [
       {
         principle: "Gas displacement",
-        formula: "y_{air,after} < y_{air,before}",
+        formula: "y_{\\mathrm{air,after}} < y_{\\mathrm{air,before}}",
         explanation:
           "Introducing carbon dioxide into a vented vessel lowers the fraction of air in the vessel atmosphere. The patent's claim is to expulsion and cooling, not to a specified residual oxygen concentration.",
       },
       {
         principle: "External convective cooling",
-        formula: "\u1e8a = U A (T_{wort} - T_{water})",
+        formula: "\\dot{Q} = U A (T_{\\mathrm{wort}} - T_{\\mathrm{water}})",
         explanation:
           "A water film over the tank carries heat away from the hot wort through the vessel wall. The drawing shows the water path and collection trough, while the specification supplies no numerical heat-transfer coefficient.",
       },
       {
         principle: "Réaumur temperature conversion",
-        formula: "T_{°C}=1.25T_{°Ré}",
+        formula: "T_{\\mathrm{C}} = 1.25 T_{\\mathrm{Ré}}",
         explanation:
           "The stated 16°–18° Réaumur interval corresponds to 20°–22.5 °C, the point at which the patent says to add yeast or pure ferment.",
       },
@@ -202,7 +202,7 @@ The full manual transcription, including both figures, complete specification, o
       title: "Modified removable-top vessel",
       caption:
         "A modified vessel B with removable top, water gages, thermometers, man-holes, and the spray arrangement.",
-      svgType: "pasteur-fermentation",
+      svgType: "pasteur-fermentation-fig-2",
       callouts: [
         {
           id: "pf-b",

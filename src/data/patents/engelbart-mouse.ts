@@ -30,15 +30,6 @@ export const engelbartMousePatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
-    pageCount: 7,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (gpt-5.6)",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
-  },
-  archivalEdition: engelbartMouseArchivalEdition,
   originalText: `UNITED STATES PATENT OFFICE
 3,541,541
 Patented Nov. 17, 1970

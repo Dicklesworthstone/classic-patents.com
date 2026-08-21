@@ -4,6 +4,20 @@ const SOURCE_PAGE_MARKER = /^--- SOURCE PDF PAGE (\d+) OF (\d+) ---$/gm;
 const REVIEWED_PAGE_MARKER = /^--- REVIEWED TRANSCRIPTION PAGE (\d+) OF (\d+) ---$/gm;
 const REVIEWED_BLANK_FACSIMILE_PAGE = "[BLANK FACSIMILE PAGE: no printed content]";
 
+const REVIEWED_EDITORIAL_SUMMARY_PATTERNS: readonly RegExp[] = [
+  /^--- SOURCE PDF PAGE \d+ OF \d+ ---$/gim,
+  /^\s*\[(?:drawing(?:\s+(?:sheet|plate))?|facsimile drawing|figures?|figure plate|enrolled drawing|original drawing|restored drawing|sole source drawing|editorial facsimile note|editorial drawing|(?:end\s+)?online-text reconciliation)\b[^\]]*\]\s*$/gim,
+  /^\s*drawing sheet\s+\d+(?:\s+of\s+\d+)?(?:\s+contains|\s*[.:])/gim,
+  /^\s*(?:visible labels|printed figures)\s*:/gim,
+  /^\s*specification page\s+\d+\s*:/gim,
+  /^\s*manual cloud reconciliation\b.*$/gim,
+  /^\s*status:\s*withheld wip\b.*$/gim,
+  /^\s*unpublished working ledger\b.*$/gim,
+  /^\s*unresolved glyphs\s*:.*$/gim,
+  /^\s*(?:inherited|unreconciled)\b.*\bdraft\b.*$/gim,
+  /\bspecification\s+columns?\s+\d+(?:\s*(?:and|-)\s*\d+)?\s*:\s*(?:detailed descriptions?|comprehensive technical disclosure)\b/gim,
+];
+
 export interface SourceTextValidationResult {
   valid: boolean;
   error?: string;
@@ -13,6 +27,13 @@ const reviewedMarkerPattern = new RegExp(REVIEWED_PAGE_MARKER.source, REVIEWED_P
 
 function normalizedLength(value: string): number {
   return value.replace(/[^\p{L}\p{N}]+/gu, "").length;
+}
+
+function normalizeLiteralSourceText(value: string): string {
+  return value
+    .normalize("NFKC")
+    .toLocaleLowerCase("en-US")
+    .replace(/[^\p{L}\p{N}]+/gu, "");
 }
 
 function normalizeAnchorText(value: string): string {
@@ -97,6 +118,38 @@ export function validateReviewedTranscription(
     "reviewed transcription",
     true,
   );
+}
+
+/**
+ * Rejects editorial descriptions and unresolved-glyph notices that stand in
+ * for words or drawing matter printed on the facsimile. A reviewed ledger may
+ * contain an explicit receipt for a visually confirmed blank page, but it may
+ * not replace a nonblank page with prose such as "[Drawing Sheet: Figures
+ * 1-6]", "Specification page 18: Claims 1-15", or "UNRESOLVED GLYPHS".
+ * Those placeholders describe the source instead of transcribing it and
+ * previously allowed two matching abridgements to certify one another as
+ * complete.
+ */
+export function validateReviewedTranscriptionEditorialIntegrity(
+  text: string,
+  expectedPageCount: number,
+): SourceTextValidationResult {
+  const ledger = validateReviewedTranscription(text, expectedPageCount);
+  if (!ledger.valid) return ledger;
+
+  for (const pattern of REVIEWED_EDITORIAL_SUMMARY_PATTERNS) {
+    pattern.lastIndex = 0;
+    const match = pattern.exec(text);
+    if (match) {
+      const summary = normalizeAnchorText(match[0]);
+      return {
+        valid: false,
+        error: `The reviewed transcription substitutes editorial or unresolved material for facsimile content: ${summary}`,
+      };
+    }
+  }
+
+  return { valid: true };
 }
 
 /**
@@ -204,6 +257,41 @@ export function validateReviewedTranscriptionCoverage(
       error:
         "The reviewed transcription is materially shorter than the authored source reading; page notes or a partial ledger cannot be published as a complete transcription.",
     };
+  }
+
+  return { valid: true };
+}
+
+/**
+ * Proves that the visitor-facing literal blocks are present in the reviewed
+ * ledger, rather than merely comparing the sizes of two unrelated texts.
+ * Whitespace, line wrapping, and punctuation are ignored because historical
+ * facsimiles routinely split words and clauses across columns or PDF pages;
+ * the ordered letters and numbers must still agree.
+ */
+export function validateReviewedTranscriptionLiteralCoverage(
+  text: string,
+  expectedPageCount: number,
+  authoredSections: readonly string[],
+): SourceTextValidationResult {
+  const ledger = validateReviewedTranscription(text, expectedPageCount);
+  if (!ledger.valid) return ledger;
+
+  const normalizedLedger = normalizeLiteralSourceText(text.replace(reviewedMarkerPattern, ""));
+  for (const [index, section] of authoredSections.entries()) {
+    const normalizedSection = normalizeLiteralSourceText(section);
+    if (!normalizedSection) {
+      return {
+        valid: false,
+        error: `The authored source section ${index + 1} is empty.`,
+      };
+    }
+    if (!normalizedLedger.includes(normalizedSection)) {
+      return {
+        valid: false,
+        error: `The reviewed transcription does not contain authored source section ${index + 1}.`,
+      };
+    }
   }
 
   return { valid: true };

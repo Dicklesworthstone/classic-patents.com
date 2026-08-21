@@ -101,6 +101,14 @@ describe("Patents Index & Search Helper Methods", () => {
     expect(numberSearch.length).toBe(1);
     expect(numberSearch[0].id).toBe("us-821393-wright-flyer");
 
+    const unpunctuatedNumberSearch = searchPatents("821393");
+    expect(unpunctuatedNumberSearch.length).toBe(1);
+    expect(unpunctuatedNumberSearch[0].id).toBe("us-821393-wright-flyer");
+
+    const slugSearch = searchPatents("wright-flyer");
+    expect(slugSearch.length).toBe(1);
+    expect(slugSearch[0].id).toBe("us-821393-wright-flyer");
+
     const keywordSearch = searchPatents("aerodynamic");
     expect(keywordSearch.length).toBeGreaterThan(0);
 

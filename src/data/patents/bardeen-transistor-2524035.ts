@@ -90,7 +90,7 @@ export const bardeenTransistor2524035Patent: Patent = {
     overview:
       "The patent turns a surface-layer carrier current into a controllable high-impedance collector current. Its legal core is not simply any modern transistor: it specifies a body, opposite-type surface region, close emitter and collector contacts, and their stated bias and collection relationships.",
     coreMechanism:
-      "Forward emitter bias injects carriers into the surface layer; a nearby reverse-biased collector shapes an electric field and captures part of the spreading carrier current. A small emitter signal changes collector current through a high load impedance, enabling voltage and power gain.",
+      "Forward emitter bias injects carriers into the surface layer; a nearby reverse-biased collector shapes an electric field and captures part of the spreading carrier current. In the three reported operating samples, a small emitter signal changed collector current through a high load impedance and produced the tabled voltage and power gains. Those sample measurements are not universal device constants.",
     mechanicalBreakdown: [
       {
         title: "Supporting semiconductor body",
@@ -104,7 +104,7 @@ export const bardeenTransistor2524035Patent: Patent = {
         title: "Emitter and collector contacts",
         summary: "Close rectifying contacts create injection and collection regions.",
         technicalDetails:
-          "The emitter is forward-biased and the collector reverse-biased. Their short separation lets current spread in the layer and enter the collector field before it crosses to the base.",
+          "The emitter is forward-biased and the collector reverse-biased. The specification reports best results at a surface separation of 1 to 10 mils; the close contacts let current spread in the layer and enter the collector field before it crosses to the base.",
         archaicTerm: "point contact",
         modernEquivalent: "localized metal-semiconductor contact",
       },
@@ -121,7 +121,7 @@ export const bardeenTransistor2524035Patent: Patent = {
         principle: "Carrier injection and collection",
         formula: "I_E = f(V_E + R_f I_C); I_C = I_C^0(V_C) + a I_E",
         explanation:
-          "The source presents emitter current as a function of emitter voltage plus the RfIc feedback term, and collector current as its disconnected-emitter value plus a times emitter current.",
+          "The source presents emitter current as a function of emitter voltage plus the RfIc feedback term, and collector current as its disconnected-emitter value plus a times emitter current. It says a depends on the bias voltages, so this relation does not establish one universal current-gain value.",
       },
       {
         principle: "Electric field across a barrier",

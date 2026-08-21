@@ -9,7 +9,6 @@
  */
 
 import {
-  carlsonElectrophotographyArchivalEdition,
   manualCarlsonClaimText,
 } from "@/data/editions/carlsonElectrophotographyEdition";
 import type { Patent } from "@/types/patent";
@@ -35,34 +34,33 @@ export const carlsonElectrophotographyPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2297691-carlson-electrophotography.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2297691A/en",
   usptoClassification: "399/1",
-  archivalEdition: carlsonElectrophotographyArchivalEdition,
+  // WIP hold: do not bind a non-reviewed candidate to the served record.
+  archivalEdition: undefined,
   originalTextAsset: {
     url: "/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
     pageCount: 10,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
+    kind: "source-pdf-text-layer",
     sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
     pageAnchors: [
       {
         page: 1,
         sourceRelationship:
-          "Drawing Sheet 1: Figures 1–8 (Fundamental steps of charging, exposure, dusting, transfer, and heat fixing)",
+          "The sole drawing sheet: Figures 1, 2, 2a, 2b, and 3–10; signature and drawing-sheet formal matter require Luna visual reconciliation.",
         exactSourceText: "Oct. 6, 1942. C. F. CARLSON 2,297,691 ELECTROPHOTOGRAPHY",
       },
       {
-        page: 5,
+        page: 2,
         sourceRelationship:
-          "Specification Column 1 & 2: Patent-office masthead, Serial No. 265,925, Preamble, and general theory of photoconductive insulating layers",
+          "Printed specification page 1: masthead, application data, objects, figure list, and opening photoconductive-layer description; literal candidate pending Luna review.",
         exactSourceText:
-          "To all whom it may concern: Be it known that I, CHESTER F. CARLSON, a citizen of the United States...",
+          "Patented Oct. 6, 1942. UNITED STATES PATENT OFFICE. 2,297,691. ELECTROPHOTOGRAPHY.",
       },
       {
-        page: 8,
+        page: 7,
         sourceRelationship:
-          "Specification Conclusion and Claims 1–7 (Method and apparatus master claims for electrophotography)",
+          "Printed specification page 6: conclusion and opening claims; exact claim boundaries pending Luna review.",
         exactSourceText:
-          "I claim: 1. The method of photography which comprises producing an electric charge...",
+          "What is claimed is:",
       },
       {
         page: 10,
@@ -125,61 +123,36 @@ export const carlsonElectrophotographyPatent: Patent = {
       ],
     },
     {
-      figureNumber: "Figure 9",
-      title: "Continuous Rotary Drum Electrophotographic Machine",
+      figureNumber: "Figure 2a",
+      title: "Contact Exposure Through a Transparency",
       caption:
-        "Schematic diagram of the automatic continuous rotary electrophotographic copying machine showing the rotating photoconductive drum (25), charging station (26), optical exposure slit (27), powder developer chamber (28), paper transfer roll (29), and cleaning brush (30).",
-      svgType: "carlson-electrophotography-rotary",
-      callouts: [
-        {
-          id: "callout-rotary-drum",
-          figureRef: "Fig. 9",
-          label: "25",
-          element: "25",
-          description:
-            "Endless rotating photoconductive drum carrying the recyclable semiconductor surface.",
-          x: 50,
-          y: 50,
-        },
-        {
-          id: "callout-charging-station",
-          figureRef: "Fig. 9",
-          label: "26",
-          element: "26",
-          description:
-            "High-voltage corona charging unit depositing uniform electrostatic potential.",
-          x: 30,
-          y: 30,
-        },
-        {
-          id: "callout-exposure-slit",
-          figureRef: "Fig. 9",
-          label: "27",
-          element: "27",
-          description: "Optical slit projection station discharging illuminated background areas.",
-          x: 50,
-          y: 20,
-        },
-        {
-          id: "callout-developer-box",
-          figureRef: "Fig. 9",
-          label: "28",
-          element: "28",
-          description:
-            "Powder dusting developer unit cascading electroscopic toner particles over latent image.",
-          x: 75,
-          y: 45,
-        },
-        {
-          id: "callout-transfer-roll",
-          figureRef: "Fig. 9",
-          label: "29",
-          element: "29",
-          description: "Electrostatic transfer roller transferring toner to continuous paper web.",
-          x: 50,
-          y: 80,
-        },
-      ],
+        "Alternative exposure arrangement in which a transparency or translucent original is placed against the photoconductive layer and illuminated.",
+      svgType: "carlson-electrophotography-exposure-contact",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 2b",
+      title: "Projected Microfilm Exposure",
+      caption:
+        "Alternative exposure arrangement in which a projector projects a microfilm or motion-picture image onto the photoconductive layer.",
+      svgType: "carlson-electrophotography-exposure-projection",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 9",
+      title: "Development Through an Insulating Sheet",
+      caption:
+        "A thin insulating sheet is placed over the latent electrostatic image before powder is deposited; the charge acts through the sheet to develop the image on its exposed surface.",
+      svgType: "carlson-electrophotography-through-sheet",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 10",
+      title: "Magnified Half-Tone Powder Image",
+      caption:
+        "Enlargement showing powder particles clustered in dark areas, spaced in lighter areas, and absent from white areas.",
+      svgType: "carlson-electrophotography-halftone",
+      callouts: [],
     },
   ],
   plainEnglishExplanation: {

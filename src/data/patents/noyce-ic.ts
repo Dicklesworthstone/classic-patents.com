@@ -1,4 +1,8 @@
-import { noyceIcArchivalEdition, noyceIcRecordCorrections } from "@/data/editions/noyceIcEdition";
+import {
+  noyceIcArchivalEdition,
+  noyceIcOriginalTextExcerpt,
+  noyceIcRecordCorrections,
+} from "@/data/editions/noyceIcEdition";
 import type { Patent } from "@/types/patent";
 
 const baseNoyceIcPatent: Patent = {
@@ -31,45 +35,7 @@ const baseNoyceIcPatent: Patent = {
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "c6efa2efedcfdec092a8f5aff7354fc067f3b287bbfad6749e1235cee77a2d59",
   },
-  originalText: `UNITED STATES PATENT OFFICE.
-ROBERT N. NOYCE, OF LOS ALTOS, CALIFORNIA, ASSIGNOR TO FAIRCHILD SEMICONDUCTOR CORPORATION, OF MOUNTAIN VIEW, CALIFORNIA.
-
-SEMICONDUCTOR DEVICE-AND-LEAD STRUCTURE.
-
-Application July 30, 1959, Serial No. 830,507. Patent No. 2,981,877. Patented Apr. 25, 1961.
-
-To all whom it may concern:
-Be it known that I, ROBERT N. NOYCE, a citizen of the United States, residing at Los Altos, in the county of Santa Clara and State of California, have invented certain new and useful Improvements in Semiconductor Device-and-Lead Structure, of which the following is a specification.
-
-In the manufacture of semiconductor devices it is frequently desirable to provide a unitary body of semiconductor material within which are formed a plurality of individual circuit components, such as transistors, diodes, and resistors, and to interconnect these components to form a complete functional electronic circuit.
-
-Heretofore, the electrical interconnection of separate regions on the surface of a semiconductor crystal has required the attachment of individual metal flying wires (such as gold or aluminum wire leads) bonded by thermo-compression to microscopic contact areas on the crystal. This process is exceedingly delicate, difficult to automate, prone to mechanical failure, and imposes severe limits upon the complexity, density, and reliability of the resulting electronic circuit (the 'Tyranny of Numbers').
-
-According to my invention, I provide an electrical lead structure which is an integral part of the semiconductor device itself and which adheres securely to the surface of the device without requiring delicate wire bonding.
-
-In carrying out my invention, a monocrystalline semiconductor substrate (such as silicon) has formed therein a plurality of PN junctions creating individual transistors, diodes, and resistive regions.
-
-A protective insulating layer of silicon dioxide (SiO2) is thermally grown or deposited over the entire planar surface of the silicon wafer.
-
-Apertures or contact holes are etched through selected portions of the silicon dioxide layer by photo-lithographic techniques to expose the underlying active semiconductor regions (emitters, bases, collectors, etc.).
-
-A layer of electrically conductive metal (such as aluminum) is then vacuum-deposited over the entire oxidized surface, adhering securely to the silicon dioxide insulating layer and making low-resistance ohmic contact with the exposed silicon through the etched apertures.
-
-The metal layer is then selectively etched away by photo-engraving, leaving a predetermined pattern of thin flat metallic strips or leads adherent to the oxide surface, which interconnect the individual semiconductor components to form a complete, monolithic integrated circuit in a single physical unit.
-
-Referring to the drawings:
-Figure 1 is a top plan view of a unitary semiconductor device embodying my invention.
-Figure 2 is a cross-sectional view taken along line 2-2 of Figure 1.
-Figure 3 is a perspective cross-sectional view showing a transistor with vapor-deposited aluminum leads crossing over PN junction boundaries.
-Figure 4 is a diagrammatic cross-section showing multiple diffused components and interconnecting metallization on a common silicon substrate.
-
-I claim as my invention:
-
-1. A semiconductor device comprising a body of semiconductor material having a surface, a junction within said body extending to said surface, an insulating layer on said surface covering said junction, and an electrical lead adherent to said insulating layer and extending across said junction without making electrical contact therewith, said lead making electrical connection with said body on at least one side of said junction.
-
-2. A semiconductor structure comprising a monocrystalline body of semiconductor material containing a plurality of diffused PN junctions, an adherent layer of silicon dioxide covering said surface and said junctions, apertures through said silicon dioxide layer exposing portions of said semiconductor material, and a plurality of metallic conductor strips adherent to said silicon dioxide layer extending through said apertures to make electrical contact with said exposed semiconductor portions, thereby interconnecting said junctions.
-
-3. The method of fabricating an electrical connection to a semiconductor body having a PN junction extending to a surface thereof, comprising the steps of forming an insulating oxide layer on said surface over said junction, removing a portion of said oxide layer to expose a surface region of said body on one side of said junction, depositing a layer of metal over said oxide layer and said exposed surface region, and selectively removing portions of said metal layer to leave a conductor strip adhering to said oxide layer and extending across said junction in electrical contact with said exposed surface region.`,
+  originalText: noyceIcOriginalTextExcerpt,
   plainEnglishExplanation: {
     overview:
       "In the late 1950s, the computing revolution faced an insurmountable physical barrier known as the 'Tyranny of Numbers': computers required hundreds of thousands of discrete transistors, diodes, and resistors hand-soldered together with delicate copper wires. If a single solder joint broke or shorted, the entire room-sized computer failed. In 1958, Jack Kilby at Texas Instruments proved that all components could be carved from the same semiconductor crystal, but he still connected them with tiny hand-glued gold flying wires. Robert Noyce at Fairchild Semiconductor made the definitive breakthrough that created the modern world: he realized that by thermally growing a microscopically thin glass insulator ($SiO_2$) on silicon and etching contact windows, aluminum metal could be vapor-deposited directly onto the chip, printing millions of microscopic wires simultaneously in one solid crystal block.",
@@ -153,51 +119,6 @@ I claim as my invention:
     whyItMattersToday:
       "Every microprocessor, memory chip, graphics GPU, and smartphone processor produced on Earth is a direct implementation of Robert Noyce's 1959 planar integrated circuit patent. Modern silicon chips pack over 100 billion transistors onto a fingernail-sized die, interconnected by up to 15 layers of photolithographically etched metal wiring running over insulating dielectric glass—the exact architecture Noyce patented.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText:
-        "A semiconductor device comprising a body of semiconductor material having a surface, a PN junction extending to said surface, an insulating layer on said surface covering said junction, and an electrical conductor adhering to said insulating layer and extending over said junction, said conductor making electrical contact with said body through an aperture in said insulating layer, substantially as described.",
-      plainEnglish:
-        "The historic master claim of the planar integrated circuit: a semiconductor body with a p-n junction, an insulating oxide layer covering the junction, and a metal conductor adhering to the insulator, crossing over the junction, and contacting the semiconductor only through an etched aperture.",
-      keyInnovations: [
-        "Vapor-deposited metal interconnects",
-        "Insulating layer covering PN junctions",
-        "Conductors crossing junction boundaries without shorting",
-        "Monolithic planar circuit integration",
-      ],
-      legalSignificance:
-        "The definitive claim of modern microelectronics. Upheld by the Court of Customs and Patent Appeals in 1969 (*Noyce v. Kilby*), establishing Noyce as the legal inventor of the planar interconnect.",
-    },
-    {
-      number: 2,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "A semiconductor device as defined in claim 1, wherein said insulating layer comprises silicon dioxide thermally grown upon the surface of a silicon semiconductor body.",
-      plainEnglish:
-        "Specifies the combination of a silicon crystal substrate with a thermally grown silicon dioxide ($SiO_2$) insulating glass layer.",
-      keyInnovations: [
-        "Silicon-silicon dioxide material system",
-        "Thermally grown passivating dielectric",
-      ],
-      legalSignificance:
-        "Secured the silicon/silicon dioxide material foundation of the global semiconductor industry.",
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText:
-        "A semiconductor device as defined in claim 1, wherein said electrical conductor comprises a thin layer of vapor-deposited aluminum adhering to said silicon dioxide layer.",
-      plainEnglish:
-        "Specifies vapor-deposited aluminum thin-film metallization adhering to the silicon dioxide insulator.",
-      keyInnovations: ["Aluminum thin-film metallization", "Vacuum evaporation deposition"],
-      legalSignificance:
-        "Protected aluminum interconnects, which remained the universal microchip wiring standard for 40 years.",
-    },
-  ],
   drawings: [
     {
       figureNumber: "Fig. 1",

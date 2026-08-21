@@ -1,11 +1,21 @@
 import { teslaMotorArchivalEdition } from "@/data/editions/teslaMotorEdition";
 import type { Patent } from "@/types/patent";
 
+function manualClaimText(number: number): string {
+  const block = teslaMotorArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Tesla manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const teslaMotorPatent: Patent = {
   id: "us-381968-tesla-motor",
   patentNumber: "US 381,968",
   title: "Electro-Magnetic Motor",
-  shortTitle: "Tesla Polyphase AC Motor",
+  shortTitle: "Tesla Progressive Alternating-Current Motor",
   subtitle: "Progressive magnetic fields from independently timed alternating currents",
   inventors: ["Nikola Tesla"],
   inventorLocation: "New York, New York",
@@ -71,15 +81,6 @@ My present invention is directed to the production and improvement of apparatus 
         modernEquivalent:
           "generator windings that develop the alternating currents sent to the motor",
       },
-      {
-        title: "Alternative arrangements",
-        summary:
-          "The source moves from a two-circuit ring to three-circuit, stationary-induced-element, and doubly wound forms.",
-        technicalDetails:
-          "Figures 13 and 14 use three independent circuits and six motor poles. Figures 15 and 16 have two stationary coils at right angles and a generator with a stationary induced element. Figures 17 through 19 wind both motor elements; advancing the armature's and field's high-attraction regions in opposite directions increases their relative speed. These are concrete variants of the same progressive-field principle.",
-        archaicTerm: "multiple arc",
-        modernEquivalent: "parallel circuit connection",
-      },
     ],
     scientificPrinciples: [
       {
@@ -102,13 +103,6 @@ My present invention is directed to the production and improvement of apparatus 
         explanation:
           "For Figures 17 and 19, the wiring shifts the field-magnet's high-attraction regions opposite to those on the armature. Tesla states that this arrangement increases the speed of rotation. The grant does not provide a modern torque characteristic.",
       },
-      {
-        principle: "Core subdivision",
-        formula:
-          "P_{\\mathrm{circulating}} \\propto d^2 \\quad \\text{(modern explanatory shorthand)}",
-        explanation:
-          "The drum-armature core is to be split up as far as practicable to prevent circulating currents of induction. The grant gives that constructional reason but does not assign a modern material, thickness, frequency, or numerical efficiency to the laminations.",
-      },
     ],
     whyItMattersToday:
       "The patent makes a visitor inspect the engineering move that matters across later polyphase machinery: use multiple timed electrical paths to move a magnetic condition through space, then arrange a rotor or armature to follow it. The source also preserves an important boundary: this particular grant claims motor-generator combinations and expressly says that the method of operating motors was the subject of a separate application.",
@@ -117,8 +111,7 @@ My present invention is directed to the production and improvement of apparatus 
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The combination, with a motor containing separate or independent circuits on the armature or field-magnet, or both, of an alternating-current generator containing induced circuits connected independently to corresponding circuits in the motor, whereby a rotation of the generator produces a progressive shifting of the poles of the motor, as herein described.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "This claim covers the combination of a motor with separate or independent circuits on its armature, field-magnet, or both, and an alternating-current generator whose induced circuits connect independently to matching motor circuits. The legal result required is that generator rotation progressively shifts the motor poles.",
       keyInnovations: [
@@ -132,13 +125,12 @@ My present invention is directed to the production and improvement of apparatus 
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "In a system for the electrical transmission of power, the combination of a motor provided with two or more independent magnetizing-coils and an alternating-current generator containing induced coils corresponding to the motor-coils, and circuits connecting directly the motor and generator coils in such order that the currents developed by the generator will be passed through the corresponding motor-coils, and thereby produce a progressive shifting of the poles of the motor, as herein set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "This system claim narrows the first combination to a motor with two or more independent magnetizing coils, a generator with corresponding induced coils, and direct circuit connections in the order that passes the generator currents through their corresponding motor coils to move the motor poles progressively.",
       keyInnovations: [
-        "Polyphase electrical power transmission system",
-        "Ordered direct multi-phase wiring",
+        "Independent alternating-current transmission system",
+        "Ordered direct multi-circuit wiring",
         "Ordered correspondence between generator and motor coils",
       ],
       legalSignificance:
@@ -147,8 +139,7 @@ My present invention is directed to the production and improvement of apparatus 
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The combination, with a motor having an annular or ring-shaped field-magnet and a cylindrical or equivalent armature, and independent coils on the field-magnet or armature, or both, of an alternating-current generator having correspondingly independent coils, and circuits including the generator-coils and corresponding motor-coils in such manner that the rotation of the generator causes a progressive shifting of the poles of the motor in the manner set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "This claim selects a particular motor geometry: an annular field magnet and a cylindrical or equivalent armature, with independent coils on the field, armature, or both. It pairs that motor with a generator having corresponding independent coils and requires the circuit arrangement to shift the motor poles progressively.",
       keyInnovations: [
@@ -162,8 +153,7 @@ My present invention is directed to the production and improvement of apparatus 
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "In a system for the electrical transmission of power, the combination of the following instrumentalities, to wit: a motor composed of a disk or its equivalent mounted within a ring or annular field-magnet, which is provided with magnetizing-coils connected in diametrically-opposite pairs or groups to independent terminals, a generator having induced coils or groups of coils equal in number to the pairs or groups of motor-coils, and circuits connecting the terminals of said coils to the terminals of the motor, respectively, and in such order that the rotation of the generator and the consequent production of alternating currents in the respective circuits produces a progressive shifting of the poles of the motor, as hereinbefore described.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "This claim lists the concrete parts of a system: a disk inside an annular field magnet, diametrically opposite motor-coil pairs or groups connected to independent terminals, an equal number of generator-coil groups, and circuits that connect the two in the order needed to shift the motor poles progressively.",
       keyInnovations: [
@@ -247,11 +237,11 @@ My present invention is directed to the production and improvement of apparatus 
       "The patent's stated move is to send alternating currents through two or more independent circuits at proper intervals so that the motor's magnetism, or “lines of force,” shifts progressively. The movable disk or armature follows the resulting moving points of greatest attraction.",
     patentWars: [],
     civilizationalImpact:
-      "This grant gives a carefully illustrated historical account of a core polyphase-machine idea: coordinated current paths can move a magnetic condition through space. It records two-, three-, stationary-induced-element, and doubly wound variants rather than collapsing them into one generic modern motor.",
+      "This grant gives a carefully illustrated historical account of coordinated independent current paths moving a magnetic condition through space. It records two-circuit, three-circuit, stationary-induced-element, and doubly wound variants rather than collapsing them into one generic later motor.",
     funFact:
       "The grant has four drawing sheets and nineteen numbered figures, including paired diagrams 1 through 8 and 1a through 8a that trace successive magnetic positions.",
     aftermath:
-      "The document itself limits this application to apparatus and system combinations and says that the method of operating motors was the subject of a separate application. That distinction matters when relating this 1888 source to later polyphase and induction-motor practice.",
+      "The document itself limits this application to apparatus and system combinations and says that the method of operating motors was the subject of a separate application. That distinction matters when relating this 1888 source to later alternating-current motor practice.",
     sideNotes: [
       "The filing notice printed on the grant is October 12, 1887, Serial No. 252,132, and carries the parenthetical “No model.”",
       "The patent explicitly defines “independent” as not necessarily electrically isolated, because connections may regulate or modify motor action without producing a new or different action.",
@@ -261,7 +251,7 @@ My present invention is directed to the production and improvement of apparatus 
     "Nikola Tesla",
     "Electro-Magnetic Motor",
     "Alternating Current",
-    "Polyphase",
+    "Independent Alternating-Current Circuits",
     "Rotating Magnetic Field",
     "Electromagnetism",
     "Motor-Generator Combination",

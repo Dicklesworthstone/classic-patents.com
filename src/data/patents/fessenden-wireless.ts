@@ -1,7 +1,4 @@
-import {
-  fessendenWirelessArchivalEdition,
-  manualFessendenClaimText,
-} from "@/data/editions/fessendenWirelessEdition";
+import { manualFessendenClaimText } from "@/data/editions/fessendenWirelessEdition";
 import type { Patent } from "@/types/patent";
 
 const fessendenClaimDecoders: Record<
@@ -180,7 +177,7 @@ export const fessendenWirelessPatent: Patent = {
         page: 5,
         sourceRelationship: "specification-body",
         exactSourceText:
-          "The receiving instrument consists of a vessel containing a liquid—such as a solution of nitric acid, caustic soda, &c.—in which are immersed two terminals",
+          "A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13",
       },
       {
         page: 6,
@@ -196,7 +193,6 @@ export const fessendenWirelessPatent: Patent = {
       },
     ],
   },
-  archivalEdition: fessendenWirelessArchivalEdition,
   originalText:
     "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in Wireless Telegraphy, of which the following is a specification.\n\nThe invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.\n\nIt is a further object of the invention to provide for the production of mechanical movements by the direct interaction of currents induced in the receiving-conductor by electromagnetic waves and constant or varying magnetic fields.",
   drawings: [
@@ -262,7 +258,7 @@ export const fessendenWirelessPatent: Patent = {
       figureNumber: "Fig. 2",
       title: "Modified Receiving Apparatus",
       caption:
-        "Modified receiving apparatus with fine wire 12 between magnet poles 13, and an alternative liquid receiver with vessel 13, terminals 14, local battery 15, and telephone 16.",
+        "Modified receiving apparatus with fine wire 12 between magnet poles 13, a normally open microphonic contact 14, local battery 15, and relay or other translating device 16.",
       svgType: "fessenden-wireless",
       callouts: [
         {
@@ -279,9 +275,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-13",
           figureRef: "Fig. 2",
           label: "13",
-          element: "Magnet Poles / Liquid Vessel",
+          element: "Magnet Poles",
           description:
-            "The drawing uses this number for the magnet in the fine-wire form and for the vessel in the liquid-receiver form.",
+            "Magnet poles between which the fine wire 12 is held in tension and moved by the induced current.",
           x: 75,
           y: 75,
         },
@@ -289,9 +285,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-14",
           figureRef: "Fig. 2",
           label: "14",
-          element: "Fine Terminal",
+          element: "Microphonic Contact Point",
           description:
-            "Extremely small terminal, including a Wollaston platinum wire in the liquid-receiver form.",
+            "Normally open contact point that the vibrating fine wire makes and breaks to complete the secondary circuit.",
           x: 75,
           y: 50,
         },
@@ -300,7 +296,8 @@ export const fessendenWirelessPatent: Patent = {
           figureRef: "Fig. 2",
           label: "15",
           element: "Local Battery",
-          description: "Local battery included with the liquid receiver and telephone circuit.",
+          description:
+            "Local battery included in the secondary circuit completed by vibration of the fine wire and microphonic contact.",
           x: 60,
           y: 70,
         },
@@ -410,9 +407,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-17-sleeve",
           figureRef: "Fig. 5",
           label: "17",
-          element: "Adjusting Means",
+          element: "Enlarged Radiating Surface",
           description:
-            "Detail illustrating an adjusting means for the antenna or generating-conductor.",
+            "Enlargement 17 changes the local superficial area and therefore introduces an additional periodicity.",
           x: 50,
           y: 30,
         },
@@ -423,7 +420,7 @@ export const fessendenWirelessPatent: Patent = {
     overview:
       "The specification contrasts high-potential, high-frequency spark-gap oscillations, which rapidly diminish and vary in frequency and form, with a continuous train of waves of substantially uniform strength and predetermined frequency. Its stated engineering move is to enlarge and distribute the sending-conductor's capacity or self-induction so the radiating portion is a large fraction of the conductor and low-frequency currents can be used.",
     coreMechanism:
-      "The source is an alternating-current dynamo or similar alternating-voltage source in series with the sending-conductor and ground. The conductor's capacity and self-induction are proportioned so its natural period is equal or approximately equal to the source frequency. In the receiving apparatus, low-frequency induced currents act directly on a telephone diaphragm, a fine wire in a magnetic field, or a tiny terminal in a liquid-and-battery circuit. The specification's resonance relationship is $f_{source} \\approx f_{natural}$; it does not claim a carbon microphone, amplitude modulation, or a later audio-broadcast system.",
+      "The source is an alternating-current dynamo or similar alternating-voltage source in series with the sending-conductor and ground. The conductor's capacity and self-induction are proportioned so its natural period is equal or approximately equal to the source frequency. In the receiving apparatus, low-frequency induced currents act directly on a telephone diaphragm or on a fine wire in a magnetic field; the vibrating wire makes and breaks a normally open contact in a battery-and-relay circuit. The specification's resonance relationship is $f_{source} \\approx f_{natural}$; it does not claim a carbon microphone, amplitude modulation, or a later audio-broadcast system.",
     mechanicalBreakdown: [
       {
         title: "Alternating-Current Source",
@@ -446,11 +443,11 @@ export const fessendenWirelessPatent: Patent = {
       {
         title: "Direct-Action Receiving Instruments",
         summary:
-          "The receiving alternatives use the low-frequency induced current directly: a telephone, a fine wire between magnet poles, or a liquid receiver with a very small terminal and local battery.",
+          "The receiving alternatives use the low-frequency induced current directly: a telephone diaphragm or a fine wire between magnet poles that operates a microphonic contact and relay.",
         technicalDetails:
-          "The liquid form uses a vessel containing nitric acid, caustic soda, or similar liquid, with a Wollaston platinum terminal from one-thousandth to one ten-thousandth of an inch in diameter. Heat at the small terminal changes circuit resistance and varies the telephone current.",
+          "The fine wire 12 is held in tension between magnet poles 13. Current-induced vibration makes and breaks the normally open contact 14, completing a local battery 15 circuit and energizing relay 16 or another translating device.",
         archaicTerm: "translating device",
-        modernEquivalent: "Direct-current receiving transducer",
+        modernEquivalent: "Direct-action receiving relay",
       },
       {
         title: "Source-to-Radiator Resonance",
@@ -476,10 +473,11 @@ export const fessendenWirelessPatent: Patent = {
           "The specification states that increasing capacity, self-induction, or both decreases the frequency of the radiated waves and correspondingly increases their wavelength, while distributed capacity allows a shorter conductor with a larger radiating fraction.",
       },
       {
-        principle: "Direct Thermal Receiving Action",
-        formula: "\\Delta R \\propto I^2 R_{small-terminal}",
+        principle: "Direct Magnetic Receiving Action",
+        formula:
+          "I_{secondary} \\rightarrow F_{magnetic} \\rightarrow x_{wire} \\rightarrow contact",
         explanation:
-          "In the liquid receiver described in Fig. 2, current-induced heat at the extremely small terminal changes the circuit resistance and therefore varies current through the local telephone.",
+          "In the Fig. 2 receiver, the induced current through fine wire 12 interacts with the magnetic field of poles 13. The wire vibrates and makes and breaks normally open contact 14, completing the battery 15 circuit and energizing relay 16.",
       },
     ],
     whyItMattersToday:
@@ -492,7 +490,7 @@ export const fessendenWirelessPatent: Patent = {
     priorArtLimitations: [
       "Spark-gap waves rapidly diminished in amplitude or power",
       "Spark-gap waves were irregular and varied in frequency and form",
-      "Receiving instruments such as coherers required mechanical tapping to restore them to an operative condition",
+      "High-frequency waves were too rapid to produce usable direct mechanical movement in a telephone diaphragm or similar receiving element",
     ],
     breakthroughInsight:
       "Increasing and distributing the sending-conductor's capacity or self-induction lowers the frequency, increases wavelength, and allows a large radiating portion; a dynamo or similar alternating-voltage source can then replace the induction-coil and spark-gap.",

@@ -105,12 +105,6 @@ The liquefaction of gases, such as atmospheric air, has hitherto been carried ou
         explanation:
           "The two streams in G′ travel in opposite directions on opposite sides of a conducting inner coil. The returning low-pressure stream absorbs heat from the incoming high-pressure stream. That regenerative exchange is what lets successive pressure drops lower the cold-end temperature from $t³$ to $t⁴$ and then $t⁵$.",
       },
-      {
-        principle: "Fractional Separation of Liquid Air",
-        formula: "Q = mL",
-        explanation:
-          "The specification describes liquid air becoming richer in oxygen as nitrogen first evaporates. In V², the incoming-air coil supplies the heat that evaporates nitrogen, while the oxygen-bearing liquid follows a separate path. $Q=mL$ is the modern heat-balance shorthand for the phase-change duty; the patent does not state numerical latent heats or product purity.",
-      },
     ],
     whyItMattersToday:
       "The grant makes the engineering chain visible: a pressure-drop cooling effect becomes useful only when a counter-current return stream recovers heat, and the resulting liquid can be separated by using phase change as another heat-exchange stage. Its claims cover both the basic regenerative refrigeration arrangement and more specific routes for separating air or another mixed gas into constituents. The facsimile itself does not establish later production volumes, market position, or modern application claims.",
@@ -248,58 +242,10 @@ The liquefaction of gases, such as atmospheric air, has hitherto been carried ou
       caption:
         "The sole source drawing is an apparatus diagram bearing the lettered components used in the specification: compressors C and P, refrigerator K, counter-current apparatus G′, closed vessel V′, nozzle N, regulating valves, separating vessel V², coil S, and counter-current apparatus G² and G³.",
       svgType: "linde-air-liquefaction",
-      callouts: [
-        {
-          id: "ll-1",
-          figureRef: "Sole diagrammatic drawing",
-          label: "C",
-          element: "Compressor",
-          description:
-            "C receives air at p′ and compresses it to p² before the stream enters cooler K.",
-          x: 25,
-          y: 32,
-        },
-        {
-          id: "ll-2",
-          figureRef: "Sole diagrammatic drawing",
-          label: "K",
-          element: "Refrigerator",
-          description:
-            "K cools the compressed air with a coil cooled by cold brine or liquid ammonia.",
-          x: 31,
-          y: 69,
-        },
-        {
-          id: "ll-3",
-          figureRef: "Sole diagrammatic drawing",
-          label: "G′",
-          element: "Counter-current apparatus",
-          description:
-            "Two coiled pipes, one within the other, carry high- and low-pressure streams in opposite directions.",
-          x: 56,
-          y: 62,
-        },
-        {
-          id: "ll-4",
-          figureRef: "Sole diagrammatic drawing",
-          label: "V′",
-          element: "Closed vessel",
-          description:
-            "V′ receives the regulated discharge from nozzle N and collects liquid air once the cold end reaches the required condition.",
-          x: 72,
-          y: 51,
-        },
-        {
-          id: "ll-5",
-          figureRef: "Sole diagrammatic drawing",
-          label: "V²",
-          element: "Evaporating vessel",
-          description:
-            "V², with coil S and apparatus G² and G³, provides the optional nitrogen and oxygen separation path described in the specification.",
-          x: 58,
-          y: 22,
-        },
-      ],
+      // The crop has not yet been independently re-audited for pin geometry.
+      // Keep the source labels in the schematic, but publish no unverified
+      // 0–100 callout coordinates.
+      callouts: [],
     },
   ],
   historicalContext: {

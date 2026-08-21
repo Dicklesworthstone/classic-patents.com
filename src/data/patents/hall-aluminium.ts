@@ -5,11 +5,8 @@ import {
 } from "../editions/hallAluminiumEdition";
 
 const _hallSourceDrawingCrops = [
-  [
-    "Fig. 1",
-    "Sectional Elevation of Hall Electrolytic Reduction Crucible with Carbon Anodes and Sunk Metal Pool",
-  ],
-  ["Fig. 2", "Top Plan View of Rectangular Smelting Cell and Carbon Anode Bus Array"],
+  ["Fig. 1", "Sectional elevation of a form of apparatus"],
+  ["Fig. 2", "View partly in elevation and partly in section of a modified apparatus"],
 ] as const;
 
 const hallFigureCallouts: Record<
@@ -28,74 +25,74 @@ const hallFigureCallouts: Record<
     {
       id: "hall-crucible-a",
       figureRef: "Fig. 1",
-      label: "Iron Crucible Pot A",
+      label: "Metal Crucible or Melting-Pot A",
       element: "A",
       description:
-        "Heavy wrought-iron or steel outer pot containing the molten bath and thermal insulation.",
-      x: 18,
-      y: 65,
+        "The iron or steel crucible or melting-pot that holds the fused materials.",
+      x: 52,
+      y: 58,
     },
     {
-      id: "hall-carbon-lining-b",
+      id: "hall-furnace-b",
       figureRef: "Fig. 1",
-      label: "Carbon Cathode Lining B",
+      label: "Furnace B",
       element: "B",
       description:
-        "Compressed baked carbon lining forming the chemical barrier and negative cathodic current collector.",
-      x: 25,
-      y: 75,
+        "The suitable furnace surrounding the crucible and supplying heat to fuse the charge.",
+      x: 19,
+      y: 69,
     },
     {
-      id: "hall-carbon-anodes-c",
+      id: "hall-positive-electrode-c",
       figureRef: "Fig. 1",
-      label: "Carbon Anodes C C",
+      label: "Positive Electrode C",
       element: "C",
       description:
-        "Suspended consumable carbon rods connected to the positive generator bus, dipping into the molten bath.",
-      x: 50,
-      y: 28,
+        "The positive electrode immersed in the fused solution, which may be carbon, copper, or platinum.",
+      x: 48,
+      y: 32,
     },
     {
-      id: "hall-molten-bath-d",
+      id: "hall-negative-electrode-d",
       figureRef: "Fig. 1",
-      label: "Molten Cryolite Bath D",
+      label: "Negative Electrode D",
       element: "D",
       description:
-        "Fused sodium aluminium fluoride (Na₃AlF₆) electrolyte solvent containing dissolved alumina (Al₂O₃) at 950°C.",
-      x: 65,
-      y: 52,
+        "The negative electrode at which aluminium is reduced; Hall specifies carbon when pure aluminium is desired.",
+      x: 57,
+      y: 33,
     },
     {
-      id: "hall-aluminium-pool-e",
+      id: "hall-carbon-lining-aprime",
       figureRef: "Fig. 1",
-      label: "Molten Aluminium Pool E",
-      element: "E",
+      label: "Carbon Lining A-prime",
+      element: "A′",
       description:
-        "Dense liquid aluminium (density 2.3 g/cm³) collecting safely beneath the lighter cryolite bath (density 2.1 g/cm³).",
-      x: 50,
-      y: 84,
+        "The carbon lining protecting the metal pot from aluminium and available as the negative electrode in Fig. 2.",
+      x: 28,
+      y: 59,
     },
   ],
   "Fig. 2": [
     {
       id: "hall-plan-pot",
       figureRef: "Fig. 2",
-      label: "Crucible Shell (Plan View)",
+      label: "Carbon-Lined Pot A and A-prime",
       element: "A",
       description:
-        "Rectangular smelting cell showing heavy busbar clamping lugs and side refractory wall thickness.",
-      x: 20,
-      y: 50,
+        "The modified apparatus uses the carbon lining A-prime as the negative electrode in the metal pot A.",
+      x: 40,
+      y: 48,
     },
     {
-      id: "hall-plan-anodes",
+      id: "hall-plan-negative-connection",
       figureRef: "Fig. 2",
-      label: "Anode Rod Array",
-      element: "C",
+      label: "Negative Generator Conductor N-prime",
+      element: "N′",
       description:
-        "Symmetrical row of suspended carbon rods providing uniform current density across the electrolyte surface.",
-      x: 50,
-      y: 50,
+        "The conductor from the negative pole of the electric generator connected to the carbon lining.",
+      x: 16,
+      y: 34,
     },
   ],
 };
@@ -117,7 +114,7 @@ export const hallAluminiumPatent: Patent = {
   summary:
     "The landmark foundational patent that transformed aluminium from a rare precious metal costlier than silver into the universal structural material of the modern world. Charles Martin Hall discovered that refractory alumina (Al₂O₃, native melting point 2072°C) dissolves readily in molten cryolite (Na₃AlF₆) at ~950°C. Passing a direct electric current through this fused solution electrolytically decomposes the alumina, causing dense liquid aluminium to collect at the cathode bottom while oxygen oxidizes the carbon anodes into CO₂. Hall's continuous solvent process reduced the price of aluminium by 99%, created ALCOA, and laid the metallurgical foundation for 20th-century aviation, high-voltage electrical grids, and modern architecture.",
   heroQuote:
-    "This invention has for its object to reduce aluminium from its oxides by dissolving such oxides in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by the aid of an electric current by the operation of which the fluorides are not decomposed, the bath being thus continuously maintained.",
+    "The invention described herein relates to the reduction of aluminium from its oxide by dissolving such oxide in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by passing an electric current through the bath.",
   originalPdfUrl: "/patents/pdfs/us-400766-hall-aluminium.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US400766A/en",
   usptoClassification: "C25C 3/06 (Electrolytic production of aluminium)",
@@ -125,13 +122,16 @@ export const hallAluminiumPatent: Patent = {
     url: "/patents/transcripts/us-400766-hall-aluminium-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents Editorial Team",
-    reviewedAt: "2026-08-19",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6 Luna)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "8a9cda34caaa0426bc62d75ca3910cab636c9f0329cb2f6193019c95c5d94791",
   },
-  archivalEdition: hallAluminiumArchivalEdition,
+  // Withheld from the served source face until the versioned Fig. 1 and Fig. 2
+  // crops are generated and independently viewed. The claim text remains
+  // dynamically sourced from the candidate edition below.
+  archivalEdition: undefined,
   originalText:
-    "Be it known that I, CHARLES M. HALL, a citizen of the United States, residing at Oberlin, in the county of Lorain and State of Ohio, have invented a new and useful Improvement in the Process of Reducing Aluminium by Electrolysis, of which the following is a specification.\n\nThis invention has for its object to reduce aluminium from its oxides by dissolving such oxides in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by the aid of an electric current by the operation of which the fluorides are not decomposed, the bath being thus continuously maintained.\n\nHeretofore the reduction of aluminium has been accomplished by chemical processes with sodium or by electrolysis of molten anhydrous double chloride of aluminium and sodium; but these methods are expensive and commercially unsatisfactory.\n\nIn the practice of my invention I prepare a bath of a fluoride of aluminium and a fluoride of a metal more electro-positive than aluminium, as sodium, potassium, calcium, or lithium. A fluoride of aluminium and sodium—that is, the mineral cryolite, having the formula Al₂F₆·6NaF—is preferred on account of its low melting point, high solvent power for alumina, and non-decomposition under the electromotive force required to decompose alumina...",
+    "To all whom it may concern:\nBe it known that I, CHARLES M. HALL, a citizen of the United States, residing at Oberlin, in the county of Lorain and State of Ohio, have invented certain new and useful Improvements in the Process of Reducing Aluminium by Electrolysis; and I do hereby declare the following to be a full, clear, and exact description of the invention, such as will enable others skilled in the art to which it appertains to make and use the same.\n\nThe invention described herein relates to the reduction of aluminium from its oxide by dissolving such oxide in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by passing an electric current through the bath; and in general terms the invention consists in the electrolysis of a solution of alumina in a fused fluoride salt of aluminium, substantially as hereinafter more fully described and claimed.",
   plainEnglishExplanation: {
     overview:
       "Throughout the 19th century, aluminium was an exotic laboratory curiosity and luxury metal priced higher than silver ($18 per pound). While aluminium is the most abundant metallic element in the Earth's crust (comprising ~8% of the crust), it was locked in extraordinarily stable oxide chemical bonds in bauxite ($Al_2O_3$). Direct thermal smelting with carbon was impossible because aluminium reduces at temperatures above the boiling point of the metal, and direct electrical melting required an unachievable 2072°C. The only known method—the Deville chemical process—consumed expensive metallic sodium to displace aluminium from molten double chloride salts. In February 1886, 22-year-old Oberlin College graduate Charles Martin Hall discovered the master electrochemical solution in his family woodshed: molten cryolite ($Na_3AlF_6$) at 950°C acts as a non-reactive liquid solvent that readily dissolves solid alumina powder. Passing direct current through this molten bath selectively decomposes the dissolved alumina into liquid aluminium metal and oxygen without consuming the cryolite solvent.",
@@ -244,7 +244,21 @@ export const hallAluminiumPatent: Patent = {
         "Optimal electrical conductivity and density separation",
       ],
       legalSignificance:
-        "The commercial embodiment claim that protected the Pittsburgh Reduction Company's (ALCOA's) specific industrial cryolite reduction pots against infringing competitors.",
+        "The sodium-fluoride species claim narrows the bath composition used in Hall's preferred embodiment while retaining the carbonaceous-anode operating step.",
+    },
+    {
+      number: 3,
+      isIndependent: true,
+      originalText: manualHallClaimText(3),
+      plainEnglish:
+        "Claim 3 covers the lithium-modified embodiment: alumina is dissolved in a fused bath containing aluminium, sodium, and lithium fluorides, and current is passed through that fused mass by a carbonaceous anode. It claims the specific three-fluoride composition and electrode form described in the specification.",
+      keyInnovations: [
+        "Lithium-fluoride bath modification",
+        "Three-fluoride electrolyte composition",
+        "Carbonaceous anode in fused-mass electrolysis",
+      ],
+      legalSignificance:
+        "The lithium composition claim captures Hall's lower-fusion-point variant and keeps the explicitly described lithium substitution within the issued claim set.",
     },
   ],
   drawings: [
@@ -253,7 +267,7 @@ export const hallAluminiumPatent: Patent = {
       title:
         "Sectional Elevation of Hall Electrolytic Reduction Crucible with Carbon Anodes and Sunk Metal Pool",
       caption:
-        "Cross-sectional view showing wrought-iron pot A, conductive carbon lining B, molten cryolite bath D, suspended carbon anodes C C, and liquid aluminium pool E collecting at the bottom cathode.",
+        "Cross-sectional view showing metal crucible A, furnace B, positive electrode C, negative electrode D, and carbon lining A-prime as identified in the specification.",
       svgType: "hall-aluminium",
       callouts: hallFigureCallouts["Fig. 1"],
     },
@@ -261,7 +275,7 @@ export const hallAluminiumPatent: Patent = {
       figureNumber: "Fig. 2",
       title: "Top Plan View of Rectangular Smelting Cell and Carbon Anode Bus Array",
       caption:
-        "Top view showing rectangular pot shell, heavy electrical busbar lugs, molten electrolyte surface, and symmetrical carbon anode rod distribution.",
+        "Modified apparatus view showing carbon lining A-prime used as the negative electrode and conductor N-prime connected to the lining.",
       svgType: "hall-aluminium",
       callouts: hallFigureCallouts["Fig. 2"],
     },
@@ -293,8 +307,8 @@ export const hallAluminiumPatent: Patent = {
       "Hall's patent reduced the price of aluminium by 99%—from $18/lb in 1886 to $0.18/lb by 1914. This catastrophic cost reduction transformed aluminium into the foundational structural metal of the 20th century, enabling the Wright Flyer's lightweight engine crankcase in 1903, modern long-distance electrical power grids, commercial aviation, and skyscraper architecture.",
   },
   stats: {
-    totalClaims: 2,
-    independentClaims: 2,
+    totalClaims: 3,
+    independentClaims: 3,
   },
   tags: [
     "aluminium",

@@ -239,11 +239,20 @@ export function getAdjacentPatents(currentId: string): {
 export function searchPatents(query: string): Patent[] {
   const q = query.toLowerCase().trim();
   if (!q) return allPatents;
+  const qAlphaNum = q.replace(/[^0-9a-zA-Z]/g, "");
+
   return allPatents.filter((p) => {
+    const pNumberAlphaNum = p.patentNumber.replace(/[^0-9a-zA-Z]/g, "").toLowerCase();
+    const matchesNumber =
+      p.patentNumber.toLowerCase().includes(q) ||
+      (qAlphaNum.length >= 3 && pNumberAlphaNum.includes(qAlphaNum));
+
     return (
+      p.id.toLowerCase().includes(q) ||
       p.title.toLowerCase().includes(q) ||
       p.shortTitle.toLowerCase().includes(q) ||
-      p.patentNumber.toLowerCase().includes(q) ||
+      (p.subtitle ? p.subtitle.toLowerCase().includes(q) : false) ||
+      matchesNumber ||
       p.inventors.some((inv) => inv.toLowerCase().includes(q)) ||
       p.inventorLocation.toLowerCase().includes(q) ||
       p.summary.toLowerCase().includes(q) ||

@@ -80,7 +80,7 @@ export const lamarrPatent: Patent = {
   category: "telecom",
   categoryLabel: "Radio Control & Secret Communication",
   summary:
-    "Markey and Antheil's grant describes a radio-control system for a torpedo in which matched moving records change the transmitter and receiver tuning together. The illustrated arrangement uses seven selectable transmitting channels, four receiver channels, a warning lamp, and decoy transmissions; it also explains that player-piano records could provide as many as 88 rows.",
+    "Markey and Antheil's grant describes a radio-control system for a torpedo in which matched moving records change the transmitter and receiver tuning together. The illustrated arrangement uses seven selectable transmitting channels, four receiver channels, a warning lamp, and decoy transmissions.",
   heroQuote:
     "This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.",
   originalPdfUrl: "/patents/pdfs/us-2292387-lamarr-frequency-hopping.pdf",
@@ -139,7 +139,7 @@ export const lamarrPatent: Patent = {
     "Reviewed excerpt only. The complete, hand-prepared source reading is available in the Original Patent Text view. This invention relates broadly to secret communication systems involving the use of carrier waves of different frequencies, and is especially useful in the remote control of dirigible craft, such as torpedoes.",
   plainEnglishExplanation: {
     overview:
-      "The grant addresses a radio-controlled torpedo whose control frequency could be discovered and imitated. Its illustrated solution is not a single fixed channel: a transmitting station and a receiver use matched moving records to change their tuning in step. The drawings show seven selectable transmitter frequencies, four receiver frequencies, and additional transmitter channels used for false impulses. The specification notes that player-piano records can have as many as 88 rows, but does not say that the illustrated apparatus uses 88 channels.",
+      "The grant addresses a radio-controlled torpedo whose control frequency could be discovered and imitated. Its illustrated solution is not a single fixed channel: a transmitting station and a receiver use matched moving records to change their tuning in step. The drawings show seven selectable transmitter frequencies, four receiver frequencies, and additional transmitter channels used for false impulses. A contemporary player-piano roll is discussed as a possible physical record, but the illustrated apparatus remains the seven-channel transmitter/four-channel receiver arrangement.",
     coreMechanism:
       "The two records are held at their starting holes, then released together when the torpedo is fired. As a perforation reaches a control-head passage, the pneumatic mechanism lets a spring close a selected tuning switch. At the transmitter, that connects one of capacitors 24a through 24g to oscillator 20; at the receiver, a matching record controls selector 61. A 100-cycle modulation tone produces a one-step left-rudder command, while a 500-cycle tone produces a one-step right-rudder command. The lamp on row H tells the operator when a transmission is a false signal or falls between usable channels.",
     mechanicalBreakdown: [
@@ -157,7 +157,7 @@ export const lamarrPatent: Patent = {
         summary:
           "Oscillator 20, modulator 21, amplifier 22, and antenna 23 form the illustrated transmitting station.",
         technicalDetails:
-          "Seven tuning condensers, 24a through 24g, have different capacities and are independently connected to oscillator 20 by switches 31. The illustrated apparatus therefore selects seven transmitter frequencies; the specification's 88-row player-piano passage describes a separate possible record.",
+          "Seven tuning condensers, 24a through 24g, have different capacities and are independently connected to oscillator 20 by switches 31. The illustrated apparatus therefore selects seven transmitter frequencies; the possible record formats discussed elsewhere do not change that illustrated count.",
         archaicTerm: "tuning condensers",
         modernEquivalent: "selectable capacitors that change an oscillator's tuned frequency",
       },
@@ -211,37 +211,7 @@ export const lamarrPatent: Patent = {
       caption:
         "Schematic diagram of oscillator 20, modulator 21, amplifier 22, antenna 23, tuning condensers 24a through 24g, and record strip 37 at the transmitting station.",
       svgType: "lamarr-frequency-hopping",
-      callouts: [
-        {
-          id: "lf-1",
-          figureRef: "Fig. 1",
-          label: "37",
-          element: "Record strip",
-          description:
-            "The strip whose perforations actuate the tuning switches as it moves over control head 39.",
-          x: 40,
-          y: 40,
-        },
-        {
-          id: "lf-2",
-          figureRef: "Fig. 1",
-          label: "20",
-          element: "Variable-frequency carrier oscillator",
-          description:
-            "The oscillator whose tuning condensers are selectively connected by switches 31.",
-          x: 65,
-          y: 35,
-        },
-        {
-          id: "lf-3",
-          figureRef: "Fig. 1",
-          label: "23",
-          element: "Antenna",
-          description: "The printed antenna at the output of amplifier 22.",
-          x: 85,
-          y: 25,
-        },
-      ],
+      callouts: [],
     },
     {
       figureNumber: "Fig. 2",
@@ -249,18 +219,47 @@ export const lamarrPatent: Patent = {
       caption:
         "Schematic diagram of the receiving antenna 60, selector 61, amplifier 64, detector 65, filters, record strip 37', and incremental rudder mechanism.",
       svgType: "lamarr-frequency-hopping",
-      callouts: [
-        {
-          id: "lf-4",
-          figureRef: "Fig. 2",
-          label: "61",
-          element: "Signal selector",
-          description:
-            "The receiver tuning element controlled by condensers 24'd through 24'g and by record strip 37'.",
-          x: 45,
-          y: 55,
-        },
-      ],
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 3",
+      title: "Simultaneous record-strip release circuit",
+      caption:
+        "Schematic of the series circuit that holds the transmitter and receiver record strips at their starting holes until firing breaks the conductors and releases both strips together.",
+      svgType: "lamarr-frequency-hopping",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 4",
+      title: "Perforated record strip",
+      caption:
+        "Plan view of a record strip with longitudinal rows A through H; rows A–G select the seven transmitter tuning switches and row H controls the warning lamp.",
+      svgType: "lamarr-frequency-hopping",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Record-responsive switching head",
+      caption:
+        "Detail cross section of the pneumatic record-responsive switching mechanism, including passages, suction manifold, pistons, springs, and tuning-switch contacts.",
+      svgType: "lamarr-frequency-hopping",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 6",
+      title: "Starting-pin section",
+      caption:
+        "Section at right angles to Fig. 5 showing the starting pin engaging the special hole in the record strip.",
+      svgType: "lamarr-frequency-hopping",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Torpedo course correction",
+      caption:
+        "Plan diagram of the mother ship, torpedo, enemy ship, observer aircraft, water-current arrows, and successive paths used to illustrate remote course correction.",
+      svgType: "lamarr-frequency-hopping",
+      callouts: [],
     },
   ],
   historicalContext: {

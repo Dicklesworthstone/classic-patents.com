@@ -1,27 +1,19 @@
-import {
-  dieselEngineArchivalEdition,
-  dieselManualClaimText,
-} from "@/data/editions/dieselEngineEdition";
+import { dieselManualClaimText } from "@/data/editions/dieselEngineEdition";
 import type { Patent } from "@/types/patent";
 
-// Retained research material for a later-engine interpretation. It is
-// deliberately non-exported: US 542,846 must not present later Diesel-cycle
-// dimensions, rates, materials, efficiency, or history as statements of the
-// 1895 grant while its full source edition is under independent repair.
 export const dieselEnginePatent: Patent = {
   id: "us-542846-diesel-engine",
   patentNumber: "US 542,846",
   title: "Method of and Apparatus for Converting Heat into Work",
   shortTitle: "Diesel Controlled-Combustion Heat Motor",
-  subtitle:
-    "Adiabatic Compression Self-Ignition, Constant-Pressure Expansion, and Extreme Thermal Efficiency",
+  subtitle: "Pre-combustion Air Compression, Gradual Fuel Admission, and Cut-off Expansion",
   inventors: ["Rudolf Diesel"],
   inventorLocation: "Berlin, Germany",
   grantDate: "1895-07-16",
   filingDate: "1892-08-26",
   era: "Gilded Age & Grid (1870–1900)",
   category: "materials",
-  categoryLabel: "High-Pressure Thermodynamics",
+  categoryLabel: "Heat Engines & Combustion",
   summary:
     "US 542,846 claims a process and machines for converting fuel heat into work: mechanically compress air before combustion, then admit fuel gradually while the working gases expand. Diesel describes solid, liquid, and gaseous fuels, single- and double-acting engines, air reservoirs, and a governed cut-off rather than a spark-ignition engine.",
   heroQuote:
@@ -29,16 +21,7 @@ export const dieselEnginePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-542846-diesel-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
   usptoClassification: "F02B 1/12 (internal-combustion engines using compression ignition)",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-542846-diesel-engine-reviewed.txt",
-    pageCount: 10,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    sourcePdfSha256: dieselEngineArchivalEdition.sourcePdfSha256,
-  },
-  archivalEdition: dieselEngineArchivalEdition,
-  originalText: `UNITED STATES PATENT OFFICE.\nRUDOLF DIESEL, OF BERLIN, GERMANY.\n\nMETHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.\n\nSPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246.\n\nMy invention has reference to improvements in the methods of and apparatus for converting heat into work. The method forming my present invention differs from all those previously described: pure atmospheric air is compressed before ignition or combustion, then finely-divided fuel is gradually introduced while the gases expand.`,
+  originalText: `UNITED STATES PATENT OFFICE.\nRUDOLF DIESEL, OF BERLIN, GERMANY.\n\nMETHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.\n\nSPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246.\n\n[Curated source excerpt only. The archival edition and reviewed ledger remain withheld while the foreign-patent line, figure semantics, and source wording receive independent facsimile review.]`,
   plainEnglishExplanation: {
     overview:
       "The patent's stated departure is a controlled-combustion process: compress air before fuel is admitted, introduce the fuel gradually during expansion, and stop admission at cut-off before further expansion. This source face does not treat the 1895 specification as a description of a later production diesel engine.",
@@ -46,123 +29,84 @@ export const dieselEnginePatent: Patent = {
       "Diesel describes air compressed before combustion to the required subsequent-combustion temperature, then fuel introduced gradually while the gases expand. His Figure 2 gives illustrative initial pressures for stated temperatures; the patent's legal process is controlled admission and expansion, not a fixed pressure, ratio, injector geometry, or efficiency figure.",
     mechanicalBreakdown: [
       {
-        title: "Extreme High-Pressure Compression Cylinder",
-        summary: "A single-acting cylinder and plunger for the coal-fuel example.",
+        title: "Single-acting cylinder and plunger",
+        summary: "The coal-fuel example names a cylinder C and plunger P for the compression and working strokes.",
         technicalDetails:
-          "The source names cylinder C, high-pressure plunger P, connecting-rod b, crank c, shaft d, and plunger guides a. It does not give a bore, stroke, alloy, wall thickness, or stress rating for this construction.",
-        archaicTerm: "Working-cylinder with high-compression piston",
-        modernEquivalent: "High-compression heavy-duty cylinder block",
+          "The source names cylinder C, plunger P, connecting-rod b, crank c, shaft d, and plunger guides a. It does not give a bore, stroke, fabrication specification, wall thickness, or stress rating for this construction.",
+        archaicTerm: "Working-cylinder with plunger",
+        modernEquivalent: "Reciprocating working cylinder",
       },
       {
-        title: "Air-Blast High-Pressure Fuel Injection Nozzle",
-        summary: "A nozzle and needle that gradually admit liquid fuel in the liquid-fuel form.",
+        title: "Gradual fuel-admission device",
+        summary: "The liquid-fuel form uses a nozzle and needle to admit fuel gradually during the prescribed part of the stroke.",
         technicalDetails:
-          "The source says a feed-pump maintains liquid fuel in the nozzle above cylinder-compression pressure and that the distributing gear opens needle n near the highest compression. It supplies no blast-air pressure, droplet diameter, or time value.",
-        archaicTerm: "Compressed-air fuel-injecting valve and nozzle",
-        modernEquivalent: "High-pressure fuel injection valve / Common-rail injector",
+          "The source says that a feed-pump keeps liquid fuel in the nozzle and that distributing gear opens needle n near the highest compression. It does not establish an auxiliary atomization system, fuel-dispersion measurement, pressure value, or timing measurement.",
+        archaicTerm: "Fuel-admission valve and nozzle",
+        modernEquivalent: "Metered fuel-admission valve",
       },
       {
-        title: "Progressive Cam-Governed Injection Cutoff",
-        summary: "Mechanical governor regulating fuel cutoff ratio under varying load.",
+        title: "Governor-controlled fuel cut-off",
+        summary: "Mechanical governor regulating the duration of fuel admission.",
         technicalDetails:
           "The source attributes fuel regulation to governor E and describes an adjustable piece moved by rod St that changes the period of fuel admission. It specifies neither a modern cut-off ratio nor a fixed pressure-control target.",
         archaicTerm: "Regulating valve-gear and centrifugal governor",
         modernEquivalent: "Variable fuel injection metering governor",
       },
       {
-        title: "Scavenging & Exhaust Valve Train",
-        summary: "Overhead poppet valves expelling combustion gases with full expansion.",
+        title: "Admission and exhaust valve train",
+        summary: "The described valves admit air, admit fuel, and exhaust gases in the several constructions.",
         technicalDetails:
-          "Dual overhead poppet valves with heavy valve springs and rocker arms driven by a half-speed camshaft, providing complete cylinder scavenging and clean air intake without residual exhaust mixing.",
-        archaicTerm: "Air-admission and exhaust puppet-valves",
-        modernEquivalent: "Overhead camshaft poppet valvetrain",
+          "The source describes valve A, hopper valve k, fuel plug D, and later valve W, operated by cams, levers, rods, and springs. It does not specify a later valve-train architecture or a scavenging performance.",
+        archaicTerm: "Air-admission and exhaust valves",
+        modernEquivalent: "Cam-operated admission and exhaust valves",
       },
       {
-        title: "Multi-Stage Auxiliary Blast Air Compressor",
+        title: "Central air-pump and reservoir",
         summary: "Preparatory air compression and a reservoir in the two-cylinder arrangement.",
         technicalDetails:
-          "The two-cylinder form uses the lower part of central cylinder B as an air pump and reservoir L for preparatory compression and starting. The source gives no pump diameter, receiver volume, construction material, or pressure rating.",
+          "The two-cylinder form uses the lower part of central cylinder B as an air pump and reservoir L for preparatory compression and starting. The source gives no pump diameter, receiver volume, fabrication specification, or pressure rating.",
         archaicTerm: "Air-compressing pump driven by the engine",
-        modernEquivalent: "Auxiliary multi-stage blast injection compressor / Common rail pump",
+        modernEquivalent: "Preparatory compressor and receiver",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Adiabatic Compression Heating Law",
-        formula:
-          "T_2 = T_1 \\cdot \\left(\\frac{V_1}{V_2}\\right)^{\\gamma - 1} = T_1 \\cdot r^{\\gamma - 1}",
+        principle: "Compression and expansion described in the specification",
+        formula: "pV = nRT",
         explanation:
-          "The specification's operative point is qualitative and conditional: compress air to the temperature at which the subsequently admitted fuel will ignite ($T_2 > T_{\\text{autoignition}}$). Compressing air ($\\gamma \\approx 1.4$) at $r = 14\\text{ to }22$ raises ambient intake air ($300\\text{ K}$) to over $850\\text{ K}$ ($580^\\circ\\text{C}$), well exceeding the self-ignition threshold without spark plugs.",
-      },
-      {
-        principle: "Diesel Cycle Ideal Thermal Efficiency",
-        formula:
-          "\\eta_{\\text{th}} = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[ \\frac{r_c^\\gamma - 1}{\\gamma(r_c - 1)} \\right]",
-        explanation:
-          "The patent contrasts a controlled heat-and-expansion path with an uncontrolled explosive rise. The air-standard efficiency depends on the compression ratio $r$ and cut-off ratio $r_c = V_3 / V_2$, showing that earlier fuel shut-off maximizes thermodynamic work recovery.",
-      },
-      {
-        principle: "Fuel Droplet Atomization & Sauter Mean Diameter",
-        formula:
-          "D_{32} = \\frac{\\sum d_i^3}{\\sum d_i^2} \\propto \\frac{\\sigma_{\\text{fuel}}^{0.5} \\mu_{\\text{fuel}}^{0.2}}{\\rho_{\\text{air}}^{0.2} \\Delta P_{\\text{inj}}^{0.4}}",
-        explanation:
-          "The source describes a liquid jet and nozzle with a needle valve opened by distributing gear for gradual admission. High-pressure blast air injection shears the fuel stream into fine micro-droplets ($D_{32} \\approx 10 - 50\\text{ }\\mu\\text{m}$), maximizing reactive surface area.",
-      },
-      {
-        principle: "Carnot Thermodynamic Theoretical Upper Bound",
-        formula: "\\eta_{\\text{Carnot}} = 1 - \\frac{T_{\\text{cold}}}{T_{\\text{hot}}}",
-        explanation:
-          "Rudolf Diesel originally sought to realize the isothermal combustion of the Carnot cycle by extreme pre-compression ($T_{\\text{hot}} > 1000\\text{ K}$), establishing the theoretical upper bound for all heat engines.",
-      },
-      {
-        principle: "Droplet Evaporation & D-Squared Combustion Law",
-        formula: "d^2(t) = d_0^2 - K t, \\quad K = \\frac{8 k_g}{\\rho_l c_{p,g}} \\ln(1 + B)",
-        explanation:
-          "The patent requires gradual fuel admission into compressed air while the gases expand. Under Spalding's $d^2$-law of droplet combustion, the surface area decreases linearly over time, ensuring progressive isobaric heat release.",
+          "The document describes air compression before fuel admission, expansion during gradual combustion, a cut-off, and further expansion without transfer of heat. It supplies no dimensional or measured state data from which to calculate a numerical cycle.",
       },
     ],
     whyItMattersToday:
-      "The patent is an early source for compression-before-admission and cut-off-controlled combustion. Its connection to later engines should be described with separately cited historical and technical evidence rather than unsupported global market or efficiency figures.",
+      "The patent is an early source for compression-before-admission and cut-off-controlled combustion. Connections to later engines require separately cited historical and technical evidence rather than unprinted performance claims.",
   },
   historicalContext: {
     problemStatement:
-      "19th-century steam and spark-ignition gas engines operated with thermal efficiencies under 15%, wasting over 85% of fuel heat to ambient cooling jackets and exhaust.",
+      "The specification criticizes combustion left uncontrolled after ignition: it says the resulting temperature complicates lubrication and maintenance, while hot exhaust carries away heat.",
     priorArtLimitations: [
-      "Steam engines required massive boilers and had low thermal efficiency (5-10%)",
-      "Otto gas engines suffered pre-ignition knock limiting compression ratio to ~4:1",
-      "High fuel consumption and reliance on volatile gasoline fuels",
+      "Ordinary gas-engine cycles compressed an air-and-gas mixture before a rapid pressure and temperature rise.",
+      "The specification says combustion was left to itself after ignition rather than regulated against the existing volume.",
+      "The document discusses solid, liquid, and gaseous fuels rather than a single later fuel system.",
     ],
     breakthroughInsight:
-      "Rudolf Diesel recognized that compressing pure atmospheric air past the auto-ignition threshold allowed the use of heavy crude oils without spark plugs, achieving unprecedented thermodynamic efficiency.",
-    patentWars: [
-      {
-        rivalName: "Herbert Akroyd Stuart / Hornsby-Akroyd Oil Engine",
-        rivalClaim: "Hot-bulb vaporizing compression oil engine (British Patent 7,146 / 1890)",
-        conflictDetails:
-          "Akroyd Stuart developed a low-compression engine with an uncooled vaporizer bulb; Diesel developed a high-pressure pure compression-ignition cycle.",
-        resolution:
-          "Diesel was recognized globally for establishing high-pressure compression ignition and variable cut-off combustion.",
-        legalOutcome:
-          "Diesel secured worldwide patent rights, licensing manufacturing to MAN, Sulzer, and American industrialists.",
-      },
-    ],
+      "The key insight stated here is to obtain the highest pressure and temperature by mechanical compression before combustion, then regulate fuel admission during expansion and stop it at cut-off.",
+    patentWars: [],
     civilizationalImpact:
-      "The Diesel engine revolutionized global shipping, railway transport, heavy industry, and electric power generation, becoming the dominant prime mover of modern commerce.",
+      "The patent records a controlled-combustion process and several example constructions. Later industrial history is outside this held source face and is not asserted here.",
   },
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Pressure-Volume Thermodynamic Indicator Diagram",
-      caption:
-        "Theoretical P-V indicator diagram showing adiabatic compression and constant-pressure expansion.",
+      title: "Ordinary gas-engine theoretical diagram",
+      caption: "The source identifies Fig. 1 as the ordinary gas-engine cycle diagram.",
       svgType: "diesel",
       callouts: [
         {
           id: "de-diagram",
           figureRef: "Fig. 1",
           label: "1",
-          element: "Thermodynamic Indicator Loop",
-          description: "Theoretical indicator curve showing high-pressure compression ignition.",
+          element: "Ordinary cycle",
+          description: "The printed figure is the ordinary gas-engine theoretical cycle.",
           x: 50,
           y: 50,
         },
@@ -170,25 +114,25 @@ export const dieselEnginePatent: Patent = {
     },
     {
       figureNumber: "Fig. 2",
-      title: "Vertical Section of Diesel Engine Cylinder",
-      caption: "Vertical sectional view through cylinder, piston, and valved cylinder head.",
+      title: "Diesel theoretical cycle diagram",
+      caption: "The source identifies Fig. 2 as a theoretical diagram of the cycle according to the invention.",
       svgType: "diesel",
       callouts: [
         {
           id: "de-cylinder",
           figureRef: "Fig. 2",
-          label: "C",
-          element: "Combustion Cylinder",
-          description: "Heavy cast working cylinder withstanding peak compression pressures.",
+          label: "2–3",
+          element: "Gradual combustion path",
+          description: "The printed cycle shows fuel admission during expansion to cut-off.",
           x: 50,
           y: 40,
         },
         {
           id: "de-piston",
           figureRef: "Fig. 2",
-          label: "P",
-          element: "Compression Piston",
-          description: "Long trunk piston compressing atmospheric air into clearance space.",
+          label: "3–4",
+          element: "Post-cut-off expansion",
+          description: "The printed cycle continues expansion after fuel admission ceases.",
           x: 50,
           y: 70,
         },
@@ -196,17 +140,16 @@ export const dieselEnginePatent: Patent = {
     },
     {
       figureNumber: "Fig. 3",
-      title: "Fuel Injection Nozzle & Atomizer",
-      caption:
-        "Sectional detail of fuel nozzle with needle valve and compressed-air atomizing port.",
+      title: "Cooled-compression theoretical cycle diagram",
+      caption: "The source identifies Fig. 3 as the variant with cooling during the first part of compression.",
       svgType: "diesel",
       callouts: [
         {
-          id: "de-nozzle",
+          id: "de-cooled-path",
           figureRef: "Fig. 3",
-          label: "D",
-          element: "Fuel Injection Nozzle",
-          description: "High-pressure nozzle atomizing fuel into incandescent compressed air.",
+          label: "2′",
+          element: "Cooled compression path",
+          description: "The printed cycle includes the water-cooled first compression portion.",
           x: 50,
           y: 50,
         },
@@ -219,11 +162,11 @@ export const dieselEnginePatent: Patent = {
       isIndependent: true,
       originalText: dieselManualClaimText(1),
       plainEnglish:
-        "A thermodynamic process for converting fuel energy directly into mechanical work by first compressing pure atmospheric air past the spontaneous ignition temperature of the fuel, gradually injecting the fuel during the power stroke to maintain controlled isobaric expansion without excessive pressure spikes, and then expanding the burning gases to ambient exhaust.",
+        "A process for converting fuel heat into work by first compressing air or air with neutral gas or vapor until the required combustion temperature is reached, then gradually admitting fuel while the gases expand against resistance, stopping admission at a prescribed cut-off, and continuing expansion without heat transfer.",
       keyInnovations: [
-        "Compression ignition process",
-        "High-pressure adiabatic compression",
-        "Controlled isobaric combustion",
+        "Pre-combustion air compression",
+        "Gradual fuel admission",
+        "Cut-off followed by expansion",
       ],
     },
     {
@@ -231,10 +174,10 @@ export const dieselEnginePatent: Patent = {
       isIndependent: true,
       originalText: dieselManualClaimText(2),
       plainEnglish:
-        "An internal combustion engine apparatus comprising a working cylinder and piston, a valved air intake, and a variable-timed fuel feed mechanism operatively linked to the engine drive shaft to open at top dead center and cut off fuel delivery at a predetermined fraction of the stroke.",
+        "An internal combustion engine with a cylinder and piston, a valved suction inlet for air or neutral gas, a valved fuel feed that discharges gradually, and operating means that opens the feed at the working stroke and closes it at a predetermined part of that stroke.",
       keyInnovations: [
-        "Compression ignition apparatus",
-        "High-pressure injector nozzle",
+        "Valved suction inlet",
+        "Gradual fuel feed",
         "Regulated cut-off valve",
       ],
     },
@@ -243,11 +186,11 @@ export const dieselEnginePatent: Patent = {
       isIndependent: true,
       originalText: dieselManualClaimText(3),
       plainEnglish:
-        "A compound internal combustion engine system combining a main combustion cylinder with cut-off control, an independent auxiliary air compressor, an intermediate high-pressure storage reservoir, and an expansion cylinder to extract residual enthalpy from the exhaust gases.",
+        "An internal combustion engine combining a combustion cylinder with gradual fuel admission to cut-off, an air compressor, a connected reservoir, and an expansion chamber for the exhaust gases.",
       keyInnovations: [
-        "Multi-stage compound expansion",
-        "Independent air charging pump",
-        "Exhaust expansion recovery",
+        "Combustion-cylinder cut-off",
+        "Air compressor and reservoir",
+        "Exhaust expansion chamber",
       ],
     },
   ],

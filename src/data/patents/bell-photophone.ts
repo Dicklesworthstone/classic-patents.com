@@ -25,9 +25,9 @@ export const bellPhotophonePatent: Patent = {
   category: "telecom",
   categoryLabel: "Optical Communications & Telecommunications",
   summary:
-    "Alexander Graham Bell and Charles Sumner Tainter's 1880 Photophone patent established the foundation of wireless optical communications and semiconductor optoelectronics. By utilizing vocal acoustic pressure to flex a thin silvered mirror diaphragm, the transmitter modulated the divergence of a concentrated beam of sunlight or artificial light. At a distant receiving station up to 213 meters away, a parabolic mirror focused the modulated beam onto an innovative multi-disc cylindrical selenium photoconductive cell, converting light fluctuations into electrical current variations that faithfully reproduced articulate human speech in a telephone receiver without metallic wires.",
+    "Alexander Graham Bell's 1880 Photophone patent claims methods and apparatus for signaling by varying radiant energy and applying the resulting beam to sensitive bodies. The specification describes sound-driven shutters and reflectors, direct acoustic receivers, and selenium cells whose resistance changes with the received rays, allowing a telephone circuit to reproduce the imposed variations.",
   heroQuote:
-    "I have heard articulate speech by sunlight! I have heard a ray of the sun laugh and cough and sing! ... The photophone is the greatest invention I have ever made; greater than the telephone.",
+    "My invention consists in a method of utilizing radiant energy and of applying it by suitable apparatus to produce audible signals and to produce electric signals.",
   originalPdfUrl: "/patents/pdfs/us-235199-bell-photophone.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US235199A/en",
   usptoClassification: "398/118",
@@ -36,25 +36,25 @@ export const bellPhotophonePatent: Patent = {
     url: "/patents/transcripts/us-235199-bell-photophone-reviewed.txt",
     pageCount: 13,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
+    reviewedBy: "Classic Patents editorial agent (manual facsimile review)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85",
   },
   originalText:
-    "Be it known that I, ALEXANDER GRAHAM BELL, of Washington, District of Columbia, have invented certain new and useful Improvements in Apparatus for Signaling and Communicating, called Photophone, of which the following is a specification... In an application for Letters Patent filed by me and Charles Sumner Tainter, of even date herewith, is described an invention based on the discovery that certain substances—such, for example, as selenium, gold, silver, platinum, German silver, steel, hard rubber, &c.—when placed in the path of a beam of rays, are affected by variations in the rays falling on them in such a way that if they form part of an electric circuit the resistance of the circuit is varied in accordance with the variations in the rays, and if they are in the form of a plate or diaphragm they emit sound under the influence of an intermittent or undulatory beam of rays.",
+    "Be it known that I, ALEXANDER GRAHAM BELL, of Washington, District of Columbia, have invented an Improved Apparatus for Signaling and Communicating, called “Photophone,” of which the following description, in connection with the accompanying drawings, is a specification. My invention consists in a method of utilizing radiant energy and of applying it by suitable apparatus to produce audible signals and to produce electric signals.",
 
   plainEnglishExplanation: {
     overview:
-      "Following his 1876 invention of the electromagnetic telephone, Alexander Graham Bell sought a method to transmit articulate human speech across open air and water without stringing expensive metallic telegraph wires. Collaborating with instrument maker Charles Sumner Tainter at his Volta Laboratory in Washington, D.C., Bell conceived the Photophone: an instrument that utilized beams of light as an information carrier. By modulating the intensity and divergence of sunlight with vocal acoustic vibrations and receiving the rays with a custom-engineered crystalline selenium photoconductive cell, Bell and Tainter successfully conducted the world's first wireless voice transmission on June 3, 1880, transmitting clear speech 213 meters across the rooftops of Washington, D.C.—sixteen years before Marconi demonstrated wireless radio telegraphy.",
+      "The specification addresses signaling without treating the beam as a binary telegraph pulse. Bell varies radiant energy in accordance with a sound or other signal, sends that changing beam through an optical path, and uses either a directly responding diaphragm or a sensitive electrical body such as selenium at the receiver.",
     coreMechanism:
-      "The Photophone operates through six coordinated physical and optical stages: (1) Parallel sunlight is gathered by a heliostat mirror and condensed by a convex lens onto the transmitter diaphragm. (2) When the speaker talks into the mouthpiece, sound pressure waves ($p_{\\text{acoustic}} \\approx 0.5\\text{ to }5.0\\text{ Pa}$) physically flex a thin silvered glass mirror (a microscopist's cover-slip) between convex and concave curvature, dynamically altering the reflected beam's divergence solid angle ($\\Omega(t) = \\Omega_0 [1 + m \\sin(2\\pi f t)]$). (3) A secondary projection lens collimates the modulated rays into a beam directed through free space toward the receiving station. (4) At the receiver, a large silvered parabolic mirror ($D = 0.50\\text{ m}$) gathers the spreading wavefront and concentrates the optical power onto its focal point. (5) Positioned at this focus is a cylindrical multi-disc selenium cell comprising alternating brass conductor disks separated by thin mica insulating washers and coated with crystalline annealed selenium; incoming optical flux generates electron-hole pairs that instantaneously reduce the cell's electrical resistance ($R_{\\text{se}} \\propto P_{\\text{cell}}^{-1/2}$). (6) A local battery drives electrical current through the selenium cell and an electromagnetic telephone receiver, where fluctuating current reproduces the original speech waveforms as acoustic sound.",
+      "The source gives two linked paths. In the optical path, a heliostat, lenses, screens, gratings, or a voice-moved reflector vary the amount or direction of the rays. At the receiver, hard rubber or another body can emit sound directly, while selenium forms part of a battery circuit whose resistance changes with illumination and thereby varies a telephonic receiver. The patent does not specify modern carrier equations or numerical component dimensions.",
     mechanicalBreakdown: [
       {
         title: "Voice-Actuated Flexible Mirror Diaphragm Transmitter",
         summary:
           "A microscopic thin silvered glass or mica diaphragm mounted over a speaking tube that modulates beam divergence via acoustic pressure.",
         technicalDetails:
-          "The transmitter utilizes a round cover-glass ($0.1\\text{ mm}$ thickness, $D = 50\\text{ mm}$) silvered on its front face. Vocal acoustic waves striking the rear surface induce mechanical deflections of $\\Delta z = 1.0\\text{ to }25.0\\;\\mu\\text{m}$, varying the mirror's focal radius from $+\\infty$ to finite convex/concave values and modulating optical divergence by up to $85\\%$.",
+          "The specification describes a thin silvered glass or metal reflector that takes up the voice's vibrational motion. As each part departs from its normal plane, reflected rays are diverted toward or away from the receiver, so the delivered radiant energy follows the sound without requiring a numerical deflection or divergence claim.",
         archaicTerm: "thin flexible mirror diaphragm c",
         modernEquivalent: "Acousto-Optic Reflective Membrane Modulator",
       },
@@ -63,7 +63,7 @@ export const bellPhotophonePatent: Patent = {
         summary:
           "An optical train consisting of a movable plane mirror and twin convex lenses that capture, condense, and project a parallel light beam.",
         technicalDetails:
-          "The primary condensing lens ($f = 150\\text{ mm}$, $D = 120\\text{ mm}$) focuses approximately $10\\text{ W}$ of solar radiant flux onto the mirror diaphragm, while the secondary projection lens recollimates the reflected rays into a narrow pencil with beam divergence $\\theta_{\\text{div}} \\approx 9.3\\text{ mrad}$.",
+          "The drawings and specification use a heliostat or plane mirror, a condensing lens, optional heat screen, and further lenses or reflectors to focus, redirect, and restore the beam's useful parallelism. Their job is optical routing and concentration, not a claimed numerical aperture or power rating.",
         archaicTerm: "mirror a and condensing-lens b",
         modernEquivalent: "Free-Space Optical Collimator & Transmitter Telescope",
       },
@@ -72,7 +72,7 @@ export const bellPhotophonePatent: Patent = {
         summary:
           "A large silvered parabolic reflector that collects the spreading optical beam and focuses it onto the central detector axis.",
         technicalDetails:
-          "The parabolic mirror ($D = 500\\text{ mm}$, focal length $f = 200\\text{ mm}$, aperture area $A = 0.196\\text{ m}^2$) exhibits $88\\%$ specular reflectivity, collecting up to $50\\text{ mW}$ of radiant power at a distance of $213\\text{ m}$ and concentrating it onto the cylindrical detector with a geometric flux gain of over $200\\times$.",
+          "The receiver's parabolic mirror collects the incoming beam and concentrates it at its focus, where Bell places the selenium cell. A finder or sight through the supporting tube aligns the axis; the source supplies no numerical aperture, reflectivity, range, or gain limit for this description.",
         archaicTerm: "parabolic reflector C",
         modernEquivalent: "Parabolic Optical Receiver Concentrator",
       },
@@ -81,7 +81,7 @@ export const bellPhotophonePatent: Patent = {
         summary:
           "An innovative cylindrical photodetector comprising interleaved brass conductor disks, mica washers, and crystalline selenium.",
         technicalDetails:
-          "To overcome the high electrical resistivity of selenium, Bell stacked 50 circular brass disks separated by $0.08\\text{ mm}$ mica insulating washers, melted amorphous selenium into the annular grooves, and annealed it at $210^\\circ\\text{C}$ into gray hexagonal crystalline selenium. Connecting alternate disks in parallel reduced cell dark resistance from megaohms to $180\\text{ k}\\Omega$, dropping to $35\\text{ k}\\Omega$ under illumination.",
+          "Bell reduces selenium's high-resistance path by arranging conducting plates or disks with thin insulation and filling the short exposed channels between them with selenium. The described spiral, strip, box-and-disk, and cylindrical cells expose useful selenium area while preserving separate electrical terminals; modern material constants are not stated.",
         archaicTerm: "cylindrical multi-disc selenium cell S",
         modernEquivalent: "Interdigital Semiconductor Photodetector Array",
       },
@@ -90,7 +90,7 @@ export const bellPhotophonePatent: Patent = {
         summary:
           "A non-electric optical receiver that converts modulated radiant heat directly into sound waves via cyclic thermal expansion of an absorbing medium.",
         technicalDetails:
-          "Focusing the modulated light beam onto a thin disc of lampblack, hard rubber, or soot enclosed in a brass hearing cup connected to rubber ear-tubes creates periodic thermal expansion ($\\Delta T \\approx 10^{-3}\\text{ K}$), generating audible sound waves ($\\text{SPL} \\approx 55\\text{ dB}$) without an electric battery or telephone receiver.",
+          "Bell reports direct sound from hard rubber and other absorbing bodies when a concentrated beam is rapidly interrupted or varied. The receiver can be a plate, diaphragm, or resonant tube listened to directly; the patent does not quantify temperature rise, sound pressure, or a modern photoacoustic model.",
         archaicTerm: "spectrophone / hearing chamber",
         modernEquivalent: "Photoacoustic Cell & Gas-Microphone Detector",
       },
@@ -154,10 +154,10 @@ export const bellPhotophonePatent: Patent = {
       isIndependent: true,
       originalText: manualPhotophoneClaimText(3),
       plainEnglish:
-        "Covers the waveform-preserving method in which radiant energy traveling from a photophonic transmitter to its receiver is varied in an undulatory form similar to the accompanying articulate or other sound waves; the claim does not limit the transmitter to mirror divergence or the receiver to selenium.",
-      keyInnovations: ["Beam divergence modulation via flexible mirror"],
+        "Covers the method of transmitting articulate or other sound by making the radiant energy between a photophonic transmitter and receiver vary undulatorily in a form similar to the accompanying sound-waves. The claim does not require Bell's flexible reflector, a particular shutter, or a selenium receiver.",
+      keyInnovations: ["Sound-shaped undulatory radiant-energy variation"],
       legalSignificance:
-        "Covers the specific mechanism of acoustic mirror flexing for beam divergence modulation.",
+        "Claims the waveform-similar radiant-energy variation itself, leaving the transmitter and receiver implementations open rather than requiring the reflector embodiment.",
     },
     {
       number: 4,
@@ -359,21 +359,9 @@ export const bellPhotophonePatent: Patent = {
     ],
     breakthroughInsight:
       "A microscopic thin mirror flexing under acoustic sound pressure dynamically modulates the divergence and intensity of a reflected light beam, which can be gathered at a distance by a parabolic reflector and converted directly into electrical sound waves by a photoconductive selenium crystal.",
-    patentWars: [
-      {
-        rivalName: "Willoughby Smith & Charles Fritts",
-        rivalClaim: "Priority in selenium photoconductivity applications",
-        conflictDetails:
-          "Willoughby Smith discovered selenium photoconductivity in 1873. Bell and Tainter engineered the first high-surface-area multi-disc cylindrical geometry and applied it to dynamic voice transmission.",
-        resolution:
-          "Bell acknowledged Smith fundamental discovery of selenium sensitivity but defended his own patents on the basis of interdigital stacked geometry and voice modulation.",
-        legalOutcome: "US Patent 235,199 issued unconditionally to Bell on December 7, 1880.",
-      },
-    ],
+    patentWars: [],
     civilizationalImpact:
       "The Photophone demonstrated the principle of transmitting voice via light beams, establishing the scientific foundation for modern fiber-optic telecommunications and free-space laser links.",
-    funFact:
-      "Alexander Graham Bell was so proud of the Photophone that he wanted to name his newborn daughter 'Photophone'. His wife Mabel successfully persuaded him otherwise.",
   },
 
   stats: {

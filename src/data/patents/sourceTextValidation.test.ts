@@ -2,6 +2,8 @@ import { describe, expect, it } from "bun:test";
 import {
   validateReviewedTranscription,
   validateReviewedTranscriptionCoverage,
+  validateReviewedTranscriptionEditorialIntegrity,
+  validateReviewedTranscriptionLiteralCoverage,
   validateReviewedTranscriptionPageAnchors,
   validateSourcePdfTextLayer,
 } from "./sourceTextValidation";
@@ -81,6 +83,86 @@ describe("source-PDF text layer validation", () => {
         `--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n${source}`,
         1,
         source,
+      ),
+    ).toEqual({ valid: true });
+  });
+
+  it("rejects a same-sized ledger that does not contain the authored source blocks", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",
+      "Completely different words with approximately the same total length.",
+    ].join("\n");
+
+    expect(
+      validateReviewedTranscriptionLiteralCoverage(ledger, 1, [
+        "The patented mechanism moves the armature through the magnetic field.",
+      ]),
+    ).toEqual({
+      valid: false,
+      error: "The reviewed transcription does not contain authored source section 1.",
+    });
+  });
+
+  it("accepts literal source blocks across facsimile line and punctuation differences", () => {
+    const ledger = [
+      "--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---",
+      "The patented mechanism moves the arma-",
+      "ture through the magnetic field.",
+    ].join("\n");
+
+    expect(
+      validateReviewedTranscriptionLiteralCoverage(ledger, 1, [
+        "The patented mechanism moves the armature through the magnetic field",
+      ]),
+    ).toEqual({ valid: true });
+  });
+
+  it("rejects editorial drawing and specification summaries in a reviewed ledger", () => {
+    for (const summary of [
+      "--- SOURCE PDF PAGE 1 OF 1 ---",
+      "[Drawing Sheet 1: Figures 1-6]",
+      "[Facsimile drawing; visible printed labels include A, B, and C.]",
+      "[EDITORIAL FACSIMILE NOTE (not source text): visible labels include A and B.]",
+      "[EDITORIAL DRAWING-SHEET SUMMARY—NOT SOURCE TRANSCRIPTION: Figures 1-4.]",
+      "[ONLINE-TEXT RECONCILIATION - NOT VISUAL FACSIMILE ACCEPTANCE]",
+      "[Sole source drawing sheet showing diagrammatic apparatus.]",
+      "Drawing sheet 2 of 3. Figures 7-10.",
+      "Visible labels: 10, 10a, 10b, N, P, and N OR P.",
+      "Printed figures: Fig. 1, Fig. 2, and Fig. 3.",
+      "Specification page 18: Claims 1 through 15.",
+      "MANUAL CLOUD RECONCILIATION (supersedes the inherited two-column draft below)",
+      "STATUS: WITHHELD WIP — editorial drawing-label inventory only.",
+      "UNPUBLISHED WORKING LEDGER — facsimile reconciliation is incomplete.",
+      "UNRESOLVED GLYPHS: the small drawing numerals are not legible in the cloud source.",
+      "UNRECONCILED SOURCE DRAFT - DO NOT PUBLISH",
+      "Specification columns 3 and 4: Comprehensive technical disclosure",
+    ]) {
+      expect(
+        validateReviewedTranscriptionEditorialIntegrity(
+          `--- REVIEWED TRANSCRIPTION PAGE 1 OF 1 ---\n\n${summary}`,
+          1,
+        ),
+      ).toEqual({
+        valid: false,
+        error: expect.stringContaining("substitutes editorial or unresolved material"),
+      });
+    }
+  });
+
+  it("accepts literal drawing-sheet text and the explicit blank-page receipt", () => {
+    expect(
+      validateReviewedTranscriptionEditorialIntegrity(
+        [
+          "--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---",
+          "",
+          "C. M. HALL. PROCESS OF REDUCING ALUMINIUM BY ELECTROLYSIS.",
+          "Fig. 1. A A' B C D P N.",
+          "",
+          "--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---",
+          "",
+          "[BLANK FACSIMILE PAGE: no printed content]",
+        ].join("\n"),
+        2,
       ),
     ).toEqual({ valid: true });
   });
