@@ -65,7 +65,7 @@ export function SpencerMicrowave3D() {
 
   useFrankenSimPhysics("us-2495429-spencer-microwave", {
     domain: "electromagnetics_flux",
-    timestampMs: Date.now(),
+    timestampMs: 0,
     timeStepDt: 0.016,
     refusal: { isRefused: false },
     em: {
