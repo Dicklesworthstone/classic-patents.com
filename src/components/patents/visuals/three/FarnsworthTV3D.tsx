@@ -2,13 +2,20 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import {
+  computeFarnsworthRasterField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -34,7 +41,7 @@ export function FarnsworthTV3D() {
 
   // Dissector Tube State Controls
   const { params, updateParam } = usePatentPhysics("us-1773980-farnsworth-tv");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const anodeVoltageVolts = params.anodeVoltage ?? 1500;
   const acceleratingVoltageKv = voltsToKv(anodeVoltageVolts);
@@ -118,20 +125,37 @@ export function FarnsworthTV3D() {
     const model = buildFarnsworthTvModel();
     scene.add(model.root);
 
-    // Animation Loop
-    let reqId: number;
-    let renderedSteps = 0;
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeFarnsworthRasterField(0.4, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.8, 2.8),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
+      }),
+    );
+    fieldPlane.position.set(0, 0.9, 0.02);
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
 
-    const animate = () => {
+    let reqId: number;
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      renderedSteps++;
+      const { dt, simTimeSec } = clock.pump(now);
       const p = live.current;
 
       updateFarnsworthTvKinematics(
         model,
         dt,
-        renderedSteps,
+        simTimeSec,
         p.electronDisplaySpeed,
         p.horizontalFreqKhz,
         p.verticalFreqHz,
@@ -139,14 +163,26 @@ export function FarnsworthTV3D() {
         p.isCutaway,
       );
 
+      const beamFrac = (Math.sin(simTimeSec * Math.max(0.2, p.horizontalFreqKhz) * 0.08) + 1) / 2;
+      writeColormappedField(
+        fieldRgba,
+        computeFarnsworthRasterField(beamFrac, fieldGrid),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
+
       controls.update();
       renderer.render(scene, studio.camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       model.dispose();
       studio.cleanup();
       studioRef.current = null;

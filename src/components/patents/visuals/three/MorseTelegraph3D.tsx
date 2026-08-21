@@ -362,13 +362,6 @@ export function MorseTelegraph3D() {
           />
         </div>
 
-        <ClaimConstraintToggle
-          patentId="us-1647-morse-telegraph"
-          params={params}
-          onUpdateParam={updateParam}
-          className="mt-2"
-        />
-
         <PortHamiltonianEnergyStrip
           patentId="us-1647-morse-telegraph"
           params={params}

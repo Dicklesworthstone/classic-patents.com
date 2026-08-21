@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createKilbyIntegratedCircuitModel, type KilbyModel } from "./kilbyIntegratedCircuitModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -49,7 +49,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
   const modelRef = useRef<KilbyModel | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 

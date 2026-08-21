@@ -11,7 +11,7 @@ import {
   type RenoEscalatorModelResult,
   updateRenoEscalatorKinematics,
 } from "./renoEscalatorModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -32,7 +32,7 @@ const CAMERA_PRESETS: Record<
 
 export function RenoEscalator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
 
   // Transit Dynamics Parameters

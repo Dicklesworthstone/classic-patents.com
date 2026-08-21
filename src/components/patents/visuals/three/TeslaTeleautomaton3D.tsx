@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import {
   buildTeslaTeleautomatonModel,
@@ -37,7 +37,7 @@ const CAMERA_PRESETS: Record<
 
 export function TeslaTeleautomaton3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
 
   const { params, updateParam } = usePatentPhysics("us-613809-tesla-teleautomaton");

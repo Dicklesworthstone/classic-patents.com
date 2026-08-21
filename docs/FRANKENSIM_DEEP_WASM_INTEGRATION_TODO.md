@@ -216,7 +216,8 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
 
 ## 3. Verification & Compliance Gates
 
-- [x] Full test suite (1,366/1,366 tests pass across 259 files).
-- [x] Strict typecheck (`bun run typecheck` passes with zero errors).
-- [x] Comprehensive lint and code formatting (`bun run lint` passes across all 816 files with zero errors).
+- [x] Full test suite (1,387/1,387 tests pass across 260 files).
+- [x] Strict typecheck (`bun x tsc --noEmit` passes with zero errors).
+- [x] Comprehensive lint and code formatting (`bun x biome check src/` passes across all 783 files with zero errors).
+- [x] All 3D visual studios equipped with Port-Hamiltonian energy tracking strips (`PortHamiltonianEnergyStrip`), live automatic differentiation sensitivity derivatives (`SensitivitySlider`), and interactive Claim 1 failure boundary toggles (`ClaimConstraintToggle`).
 - [x] Verified production deployment pipeline executed and live on `https://classic-patents.com` with 100% HTTP 200 health check confirmations.

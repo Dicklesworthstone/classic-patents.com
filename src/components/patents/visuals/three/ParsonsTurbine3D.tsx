@@ -39,6 +39,7 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Steam Turbomachinery Parameters
   const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
@@ -186,7 +187,15 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
         )}
 
         {/* Top-Right Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-608969-parsons-turbine"
+            claimStates={claimStates}
+            onToggleClaim={(claimNo, active) => {
+              setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+              updateParam("rotorRpm", active ? 3000 : 28000);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -305,13 +314,6 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             allParams={params}
           />
         </div>
-
-        <ClaimConstraintToggle
-          patentId="us-608969-parsons-turbine"
-          params={params}
-          onUpdateParam={updateParam}
-          className="mt-2"
-        />
 
         <PortHamiltonianEnergyStrip
           patentId="us-608969-parsons-turbine"

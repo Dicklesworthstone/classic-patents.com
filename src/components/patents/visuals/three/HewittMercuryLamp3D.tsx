@@ -2,15 +2,17 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   articulateHewittMercuryLampModel,
   buildHewittMercuryLampModel,
   type HewittMercuryLampModelNodes,
 } from "./hewittMercuryLampModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -47,7 +49,7 @@ export function HewittMercuryLamp3D({
   const nodesRef = useRef<HewittMercuryLampModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
@@ -290,65 +292,54 @@ export function HewittMercuryLamp3D({
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Mains Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {mainsVoltageV} V
-              </span>
-            </div>
-            <input
-              id="mainsVoltage3d"
-              type="range"
-              min="80"
-              max="240"
-              step="5"
-              value={mainsVoltageV}
-              onChange={(e) => updateParam("mainsVoltageV", Number(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="hewittMainsVoltage"
+            patentId="us-682690-hewitt-mercury-lamp"
+            paramKey="arcVoltage"
+            label="Mains Voltage"
+            value={mainsVoltageV}
+            min={80}
+            max={240}
+            step={5}
+            unit="V"
+            onChange={(val) => updateParam("mainsVoltageV", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Discharge Tube Length
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {tubeLengthCm} cm
-              </span>
-            </div>
-            <input
-              id="tubeLength3d"
-              type="range"
-              min="50"
-              max="200"
-              step="5"
-              value={tubeLengthCm}
-              onChange={(e) => updateParam("tubeLengthCm", Number(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="hewittTubeLength"
+            patentId="us-682690-hewitt-mercury-lamp"
+            paramKey="tubeLengthCm"
+            label="Discharge Tube Length"
+            value={tubeLengthCm}
+            min={50}
+            max={200}
+            step={5}
+            unit="cm"
+            onChange={(val) => updateParam("tubeLengthCm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Ballast Resistance</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {ballastResistanceOhms} Ω
-              </span>
-            </div>
-            <input
-              id="ballastRes3d"
-              type="range"
-              min="4"
-              max="40"
-              step="1"
-              value={ballastResistanceOhms}
-              onChange={(e) => updateParam("ballastResistanceOhms", Number(e.target.value))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="hewittBallastResistance"
+            patentId="us-682690-hewitt-mercury-lamp"
+            paramKey="arcCurrent"
+            label="Ballast Resistance"
+            value={ballastResistanceOhms}
+            min={4}
+            max={40}
+            step={1}
+            unit="Ω"
+            onChange={(val) => updateParam("ballastResistanceOhms", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-682690-hewitt-mercury-lamp"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

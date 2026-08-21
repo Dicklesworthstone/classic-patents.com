@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -104,10 +105,11 @@ export function PeltonWheel3D() {
 
     // Animation Loop
     let reqId: number;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       updatePeltonWheelKinematics(

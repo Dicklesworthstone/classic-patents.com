@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { memo, useEffect, useRef, useState } from "react";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildBellTelephoneModel, updateBellTelephoneKinematics } from "./bellTelephoneModel";
@@ -103,12 +104,11 @@ export const BellTelephone3D = memo(() => {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateBellTelephoneKinematics(

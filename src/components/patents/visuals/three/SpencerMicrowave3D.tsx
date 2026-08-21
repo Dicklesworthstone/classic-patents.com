@@ -1,9 +1,16 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import {
+  computeSpencerCavityField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -129,13 +136,33 @@ export function SpencerMicrowave3D() {
     const model = buildSpencerMicrowaveModel();
     scene.add(model.root);
 
-    // Audio synthesizer for the 120Hz magnetron hum
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeSpencerCavityField(800, true, 0, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.2, 3.2),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.45,
+        depthWrite: false,
+      }),
+    );
+    fieldPlane.rotation.x = -Math.PI / 2;
+    fieldPlane.position.y = 0.04;
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
+
     let audioTick = 0;
     let reqId: number;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt, simTimeSec } = clock.pump(now);
       const p = live.current;
 
       updateSpencerMicrowaveKinematics(
@@ -162,14 +189,30 @@ export function SpencerMicrowave3D() {
         soundEngine.stopContinuousTone();
       }
 
+      writeColormappedField(
+        fieldRgba,
+        computeSpencerCavityField(
+          p.rfPowerWatts ?? 800,
+          Boolean(p.isOscillating),
+          simTimeSec,
+          fieldGrid,
+        ),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
+
       controls.update();
       renderer.render(scene, studio.camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       model.dispose();
       studio.cleanup();
       studioRef.current = null;

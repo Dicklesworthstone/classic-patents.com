@@ -115,7 +115,7 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
       },
     ];
   }
-  if (patentId === "us-233692-pelton-wheel") {
+  if (patentId === "us-233692-pelton-water-wheel") {
     const pelton = stepPeltonWheel({
       headMeters: params.headMeters ?? 450,
       runnerRpm: params.runnerRpm ?? 600,

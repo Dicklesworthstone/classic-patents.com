@@ -20,7 +20,7 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildKwolekKevlarModel, updateKwolekKevlarKinematics } from "./kwolekKevlarModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -45,7 +45,7 @@ export function KwolekKevlar3D() {
 
   // Polymer Chemistry State Controls
   const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const drawRatio = params.drawRatio ?? 6.5;
   const polymerConcentrationPct = params.polymerConcentrationPct ?? 18.5;

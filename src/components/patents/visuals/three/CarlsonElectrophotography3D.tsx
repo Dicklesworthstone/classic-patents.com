@@ -10,7 +10,7 @@ import {
   buildCarlsonElectrophotographyModel,
   type CarlsonElectrophotographyModelNodes,
 } from "./carlsonElectrophotographyModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -24,8 +24,9 @@ interface CarlsonElectrophotography3DProps {
 
 type CameraPreset =
   | "isometric"
-  | "photoreceptorDrum"
   | "coronaCharger"
+  | "photoconductiveDrum"
+  | "opticalSlit"
   | "tonerDeveloper"
   | "thermalFuser";
 
@@ -33,10 +34,11 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.0, 4.5], target: [0, 0, 0] },
-  photoreceptorDrum: { pos: [-0.2, 0.8, 2.5], target: [-0.2, 0.1, 0] },
-  coronaCharger: { pos: [-1.4, 1.2, 1.8], target: [-0.95, 0.85, 0] },
-  tonerDeveloper: { pos: [1.4, 0.8, 1.8], target: [0.95, 0.3, 0] },
+  isometric: { pos: [0, 2.5, 5.0], target: [0, 0, 0] },
+  coronaCharger: { pos: [0, 2.4, 2.0], target: [0, 1.2, 0] },
+  photoconductiveDrum: { pos: [0, 0.4, 3.2], target: [0, 0, 0] },
+  opticalSlit: { pos: [2.0, 1.6, 2.2], target: [1.2, 0.85, 0] },
+  tonerDeveloper: { pos: [-2.2, 0.2, 2.0], target: [-1.4, -0.2, 0] },
   thermalFuser: { pos: [2.2, -0.2, 1.8], target: [1.7, -0.85, 0] },
 };
 
@@ -52,7 +54,7 @@ export function CarlsonElectrophotography3D({
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
 
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics("us-2297691-carlson-electrophotography");

@@ -38,6 +38,7 @@ const CAMERA_PRESETS: Record<
 export function DieselEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { params, updateParam } = usePatentPhysics("us-542846-diesel-engine");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const engineRpm = params.engineRpm ?? 150;
   const compressionRatio = params.compRatio ?? params.compressionRatio ?? 18;
@@ -55,7 +56,6 @@ export function DieselEngine3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isMuted, toggleMute } = usePatentAudio();
 
   const peakPressureBar = diesel.pCompBar;
@@ -372,8 +372,10 @@ export function DieselEngine3D() {
 
         <ClaimConstraintToggle
           patentId="us-542846-diesel-engine"
-          params={params}
-          onUpdateParam={updateParam}
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
           className="mt-2"
         />
 

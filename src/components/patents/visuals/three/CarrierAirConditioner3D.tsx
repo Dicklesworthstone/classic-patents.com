@@ -2,7 +2,14 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { FrankenSimEngine } from "@/physics/engine";
+import {
+  computeCarrierSprayField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -98,12 +105,32 @@ export function CarrierAirConditioner3D() {
     const { root, nodes, materials, dispose } = buildCarrierAirConditionerModel();
     scene.add(root);
 
-    // Animation Loop
-    let reqId: number;
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeCarrierSprayField(15000, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(4.2, 2.4),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.4,
+        depthWrite: false,
+      }),
+    );
+    fieldPlane.rotation.x = -Math.PI / 2;
+    fieldPlane.position.set(-1.6, -0.2, 0);
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
 
-    const animate = () => {
+    let reqId: number;
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const { dt: delta } = clock.pump(now);
       const p = live.current;
 
       updateCarrierAirConditionerKinematics(
@@ -116,14 +143,25 @@ export function CarrierAirConditioner3D() {
         p.showSprayMist,
       );
 
+      writeColormappedField(
+        fieldRgba,
+        computeCarrierSprayField(p.airflowCfm ?? 15000, fieldGrid),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
+
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       dispose();
       studio.cleanup();
       studioRef.current = null;

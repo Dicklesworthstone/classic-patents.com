@@ -384,6 +384,15 @@ export function WestinghouseAirBrake3D() {
           </div>
         </div>
 
+        <ClaimConstraintToggle
+          patentId="us-124404-westinghouse-air-brake"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
         <PortHamiltonianEnergyStrip
           patentId="us-124404-westinghouse-air-brake"
           params={params}

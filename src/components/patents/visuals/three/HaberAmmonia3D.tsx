@@ -10,7 +10,7 @@ import {
   buildHaberAmmoniaModel,
   type HaberAmmoniaModelNodes,
 } from "./haberAmmoniaModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -45,7 +45,7 @@ export default function HaberAmmonia3D({
   const nodesRef = useRef<HaberAmmoniaModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
