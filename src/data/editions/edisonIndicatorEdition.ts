@@ -16,10 +16,10 @@ const term = (
 });
 
 const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 1474, height: 1765 },
-  2: { width: 1126, height: 914 },
-  3: { width: 900, height: 590 },
-  4: { width: 662, height: 1424 },
+  1: { width: 1740, height: 1120 },
+  2: { width: 1750, height: 360 },
+  3: { width: 1080, height: 480 },
+  4: { width: 340, height: 500 },
 };
 
 const preview = (
@@ -150,28 +150,28 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       preview(
         "Figure 1",
         1,
-        "/patents/figures/us-307031-edison-indicator/fig-1-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-1-source-crop-v2.png",
         "Figure 1: Diagram of distribution mains, indicator lamp, and galvanometer.",
       ),
       " is a diagram of the system and connections, with a view in perspective of the galvanometer; ",
       preview(
         "Fig. 2",
         2,
-        "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v2.png",
         "Figure 2: Shunt testing circuit with standard calibration lamp.",
       ),
       ", a diagram of a modified arrangement; ",
       preview(
         "Fig. 3",
         3,
-        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
+        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v3.png",
         "Figure 3: Galvanometer needle carrying circuit-closing contact arm.",
       ),
       ", a view showing the use of the galvanometer to close regulating or other circuits; and ",
       preview(
         "Fig. 4",
         4,
-        "/patents/figures/us-307031-edison-indicator/fig-4-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-4-source-crop-v2.png",
         "Figure 4: Detail perspective view of vacuum indicator lamp with platinum plate.",
       ),
       " a view of the indicating lamp.",
@@ -190,7 +190,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       preview(
         "Fig. 3",
         3,
-        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
+        "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v3.png",
         "Figure 3: Circuit-controlling contact arm carried by the galvanometer needle.",
       ),
       ", may be carried by the needle, which may close circuit at contacts p, or in any other suitable manner, to electrical devices for automatically regulating the electro-motive force of the system, to electrically-operated indicating devices, or to any electrically-operated apparatus.",
@@ -203,7 +203,7 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
       preview(
         "Fig. 2",
         2,
-        "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v1.png",
+        "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v2.png",
         "Figure 2: Shunt testing circuit with standard calibration lamp A'.",
       ),
       " a lamp, A', is shown placed in a shunt around the lamp A. The lamp A being constantly in use, lamp A' is occasionally placed in circuit instead, so by observing its candle-power it may be determined whether or not the resistance of the lamp A has changed.",

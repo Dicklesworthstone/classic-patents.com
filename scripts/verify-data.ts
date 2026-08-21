@@ -37,7 +37,6 @@ const BARE_DRAWING_REFERENCE =
 const REQUIRED_ROOT_QA_WITHHOLDS = [
   "us-x72-whitney-cotton-gin",
   "us-395781-hollerith-tabulating",
-  "us-706737-fessenden-wireless",
   "us-2929922-townes-laser",
   "us-3671542-kwolek-kevlar",
 ] as const;
@@ -75,7 +74,7 @@ function isValidIsoDate(value: string): boolean {
  */
 function normalizeReviewedLedgerText(value: string): string {
   return value
-    .replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, "")
+    .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }

@@ -533,6 +533,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.440 Haber 2D piston and catalyst swirl drain `compressorDisplayOmegaRadPerS` (same seat as 3D). Leftover `time * 6` / `time * 3` are gone. Linde 2D steps the engine with `inletPressureAtm` instead of leftover `stepLindeAirLiquefaction()`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.441 Hopkins flame / boil drain `flameDisplayOmegaRadPerS` / `flameHarmonicOmegaRadPerS` / `boilDisplayOmegaRadPerS` from roast and liquor temperature (750 °C / 100 °C → leftover 12 / 24 / 8). Model already steps the kernel; leftover `timeS * 12` / `24` / `8` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.442 Hewitt 2D plasma flicker and cathode spot drain `plasmaFlickerOmegaRadPerS` / `cathodeSpotOmegaXRadPerS` (same seats as 3D). Leftover `time * 15` / `time * 8` are gone. Kilby 2D oscillator pulse drains `switchingDisplayOmegaRadPerS`. Leftover `time * 8` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.443 De Forest thermionic stream and scope sweep drain `electronDisplayAdvance` / `electronStreamAdvancePerFrame` / `scopeSweepOmegaRadPerS`. Cutoff stops the stream. Leftover `time * 1.8` / `time * 6` / `speed = 0.02 * …` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.444 Hopkins 2D cycle advance scales with `roastTimeHours` (2.5 h → leftover 0.2). Goodyear 3D kinematics step `stepGoodyearRubber` with live cure temp / sulfur / stretch instead of leftover `stepGoodyearRubber()`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

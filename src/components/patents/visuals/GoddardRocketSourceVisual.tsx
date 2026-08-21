@@ -75,10 +75,10 @@ export function GoddardRocketSourceVisual() {
             <Image
               alt="US 1,102,653 Figure 1: longitudinal partial section of Goddard's primary rocket, firing tube, auxiliary rocket, and tapered discharge tube."
               className="h-auto w-full object-contain"
-              height={1280}
+              height={2020}
               priority={false}
-              src="/patents/figures/us-1102653-goddard-rocket-fig-1.png"
-              width={640}
+              src="/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v4.png"
+              width={540}
             />
           </div>
           <figcaption className="mt-3 text-sm leading-6 text-ink-700 dark:text-ink-300">

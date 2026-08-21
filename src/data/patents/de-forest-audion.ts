@@ -46,7 +46,7 @@ export const deForestAudionPatent: Patent = {
       {
         page: 1,
         sourceRelationship:
-          "Drawing Sheet 1: Figures 1–6 (Triode Audion circuit diagram, modified detectors, and electrode arrangements)",
+          "Drawing Sheet 1: Figures 1–2 (Audion receiving circuits with alternate detector connections)",
         exactSourceText: "No. 879,532. PATENTED FEB. 18, 1908. L. DE FOREST.",
       },
       {

@@ -27,8 +27,8 @@ The pinned three-page PDF was visually reviewed at 300 DPI. The public source fa
 
 ## Editorial and preservation boundaries
 
-- `src/data/editions/edisonIndicatorEdition.ts` is the complete visitor-facing archival edition. It presents the specification and claims as continuous prose with inline term definitions, figure crops, and companion plain-English readings.
-- `public/patents/transcripts/us-307031-edison-indicator-reviewed.txt` is the page-marked transcription ledger used to pin every block back to the facsimile.
-- `public/patents/figures/us-307031-edison-indicator/` holds the editor-chosen figure crops (`fig-1-source-crop-v1.png`, `fig-2-source-crop-v1.png`, `fig-3-source-crop-v1.png`, `fig-4-source-crop-v1.png`, `drawing-sheet-1-v1.png`).
+- `src/data/editions/edisonIndicatorEdition.ts` is the repair candidate archival edition. Its canonical-record binding is intentionally detached pending independent acceptance of the source-face repair.
+- `public/patents/transcripts/us-307031-edison-indicator-reviewed.txt` remains the page-marked comparison ledger; its canonical-record binding is likewise intentionally detached pending independent acceptance.
+- `public/patents/figures/us-307031-edison-indicator/` holds the retained prior crops and the corrected visitor-reference crops: `fig-1-source-crop-v2.png` (1740×1120), `fig-2-source-crop-v2.png` (1750×360), `fig-3-source-crop-v3.png` (1080×480), and `fig-4-source-crop-v2.png` (340×500). Each corrected crop is upright, cut directly from PDF p. 1 at 300 DPI, and excludes the drawing-sheet header, signatures, and material from another numbered figure.
 - 8 printed claims exist; all 8 are presented in the edition and decoded in the canonical record.
 - Unedited machine drafts, OCR output, and raw PDF text layers are internal research artifacts only and are never published as authentic historical source text.

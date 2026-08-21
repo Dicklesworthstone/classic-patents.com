@@ -106,10 +106,11 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
   preparedBy: "Classic Patents editorial agent (Antigravity)",
   preparedAt: "2026-08-19",
-  // This draft remains intentionally unpublished. Its existing specification
-  // paragraphs are not yet a literal transcription of the seven-page source.
-  // The claim block below has been corrected against the facsimile, but that
-  // does not make the edition publication-ready.
+  // Deliberately fail closed while independent editorial QC compares every
+  // continuous source block and ledger page against the pinned facsimile.
+  // Claim completeness alone is not a publication attestation.
+  // The shared schema currently types this field as the literal `true`; keep
+  // the runtime state honestly false until an independent reviewer signs off.
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -286,7 +287,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 4,
       inlines: [
         text(
-          "4. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted to radiate electromagnetic waves and having its radiating portion of a length which is a large fraction of the quarter-wave length produced by the alternating source of the radiating portion in the medium surrounding the radiating portion, substantially as set forth.",
+          "4. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor said sending-conductor being adapted to radiate electromagnetic waves and having its radiating portion of a length which is a large fraction of the quarter-wave length produced by the alternating source of the radiating portion in the medium surrounding the radiating portion, substantially as set forth.",
         ),
       ],
     },
@@ -295,7 +296,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 5,
       inlines: [
         text(
-          "5. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted to radiate electromagnetic waves having its radiating portion of a length which is a large fraction of the length of the sending-conductor, substantially as set forth.",
+          "5. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor said sending-conductor being adapted to radiate electromagnetic waves having its radiating portion of a length which is a large fraction of the length of the sending-conductor, substantially as set forth.",
         ),
       ],
     },
@@ -304,7 +305,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 6,
       inlines: [
         text(
-          "6. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage generating groups of impulses of low frequency and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted and proportioned to radiate electromagnetic waves, and being tuned to the source of alternating voltage, substantially as set forth.",
+          "6. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage generating groups of impulses of low frequency and a conductor in series therewith forming a sending-conductor said sending-conductor being adapted and proportioned to radiate electromagnetic waves, and being tuned to the source of alternating voltage, substantially as set forth.",
         ),
       ],
     },
@@ -313,7 +314,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 7,
       inlines: [
         text(
-          "7. In a system for the transmission of energy by electromagnetic waves, the combination of an alternating-current dynamo and a conductor in series therewith forming a sending-conductor, said sending-conductor being tuned to the dynamo and adapted to radiate electromagnetic waves and tuned to the dynamo, substantially as set forth.",
+          "7. In a system for the transmission of energy by electromagnetic waves, the combination of an alternating-current dynamo and a conductor in series therewith forming a sending-conductor said sending-conductor being tuned to the dynamo and adapted to radiate electromagnetic waves and tuned to the dynamo, substantially as set forth.",
         ),
       ],
     },
@@ -340,7 +341,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 10,
       inlines: [
         text(
-          "10. A sending-conductor for electromagnetic waves so proportioned as to radiate waves of low frequency in combination with a source of alternating voltage having its terminals connected respectively to the radiating portion of the sending-conductor and to ground, the voltage-generator being so adjusted that its periodicity is the same or approximately the same as the natural period of the system when so connected, substantially as set forth.",
+          "10. A sending-conductor for electromagnetic waves so proportioned as to radiate waves of low frequency in combination with a source of alternating voltage having its terminals connected respectively to the radiating portion of the sending-conductor and to ground, the voltage-generator being so adjusted that its periodicity is the same or approximately the same as the period of the system when so connected, substantially as set forth.",
         ),
       ],
     },

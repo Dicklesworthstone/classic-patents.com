@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { kilbyIntegratedCircuitPatent } from "../patents/kilby-integrated-circuit";
 import {
   kilbyIntegratedCircuitArchivalEdition,
   kilbyIntegratedCircuitParallelReadings,
@@ -16,6 +17,11 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     rootDir,
     "public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
   );
+
+  test("attaches the reviewed archival edition and source asset to the public record", () => {
+    expect(kilbyIntegratedCircuitPatent.archivalEdition).toBeDefined();
+    expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeDefined();
+  });
 
   test("passes full curated specification validation suite with zero errors", () => {
     const result = validateCuratedSpecificationEdition(kilbyIntegratedCircuitArchivalEdition);

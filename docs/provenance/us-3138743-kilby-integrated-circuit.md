@@ -29,8 +29,8 @@
 | **Page 5** | Specification Column 1 & 2: Patent-office masthead, Serial No. 791,602, Preamble, the 'Tyranny of Numbers' problem, and the monolithic circuit concept | Reviewed verbatim against facsimile |
 | **Page 6** | Specification Column 3 & 4: Detailed description of passive components formed from semiconductor material (bulk resistance, p-n junction reverse-bias capacitance) | Reviewed verbatim against facsimile |
 | **Page 7** | Specification Column 5 & 6: Detailed fabrication of active transistors, mesa etching, and multivibrator circuit integration | Reviewed verbatim against facsimile |
-| **Page 8** | Specification Column 7 & 8: Phase-shift oscillator operation, flying wire bonding, and Claims 1–18 | Reviewed verbatim against facsimile |
-| **Page 9** | Claims 19–34, Formal execution, and Signatures of Jack S. Kilby and Attorneys | Reviewed verbatim against facsimile |
+| **Page 8** | Specification continuation and Claims 1–13 | Direct visual review; current staged text is not accepted |
+| **Page 9** | Continuation of Claim 13, Claims 14–25, and cited references | Direct visual review; current staged text is not accepted |
 
 ---
 
@@ -39,4 +39,17 @@
 1. **Source Face**: Hand-annotated React source face in `src/data/editions/kilbyIntegratedCircuitEdition.ts`.
 2. **Reviewed Ledger**: Page-marked complete human-reviewed transcription in `public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt`.
 3. **Figure Crops**: Stored under `public/patents/figures/us-3138743-kilby-integrated-circuit/`.
-4. **Claim Count**: Exactly 34 claims printed on pages 8–9 of the original grant, all dynamically linked via `manualKilbyClaimText`.
+4. **Claim Count**: Exactly 25 claims are printed on pages 8–9 of the original grant.
+
+## Root publication hold — 2026-08-20
+
+The canonical record is visitor-withheld. Direct inspection of PDF page 9
+confirms that the grant ends at Claim 25, while the current ledger rewrites the
+claims into shorter, materially different language. For example, its Claim 25
+describes hermetic packaging, whereas the printed Claim 25 limits Claim 24 to a
+P-N junction capacitor. The four drawing-sheet entries are editorial figure
+summaries, and specification pages 5–8 are compressed reconstructions rather
+than complete literal columns. The staged edition, ledger, claims, and figure
+assets remain preserved as research material, but they cannot be bound as the
+complete Original Patent Text until a full manual transcription and independent
+facsimile audit pass.

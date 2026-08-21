@@ -48,6 +48,7 @@ export function DeForestAudion3D() {
     plateCurrentMa: sim.plateCurrentMa,
     voltageGain: sim.voltageGain,
     isConducting: sim.isConducting,
+    electronStreamAdvancePerFrame: sim.electronStreamAdvancePerFrame,
     isRotating,
   });
 
@@ -95,6 +96,7 @@ export function DeForestAudion3D() {
           plateCurrentMa: p.plateCurrentMa,
           voltageGain: p.voltageGain,
           isConducting: p.isConducting,
+          electronStreamAdvancePerFrame: p.electronStreamAdvancePerFrame,
         },
         time,
       );

@@ -35,6 +35,7 @@ export const kilbyIntegratedCircuitPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3138743-kilby-integrated-circuit.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3138743A/en",
   usptoClassification: "257/500",
+  archivalEdition: kilbyIntegratedCircuitArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
     pageCount: 9,
@@ -42,42 +43,7 @@ export const kilbyIntegratedCircuitPatent: Patent = {
     reviewedBy: "Classic Patents editorial agent (Antigravity)",
     reviewedAt: "2026-08-19",
     sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
-    pageAnchors: [
-      {
-        page: 1,
-        sourceRelationship:
-          "Drawing Sheet 1: Figures 1–6 (Fundamental semiconductor components: bulk resistors, p-n junction capacitors, mesa transistors, and distributed RC networks)",
-        exactSourceText: "June 23, 1964 J. S. KILBY 3,138,743 MINIATURIZED ELECTRONIC CIRCUITS",
-      },
-      {
-        page: 2,
-        sourceRelationship:
-          "Drawing Sheet 2: Figures 7–10 (Bistable multivibrator flip-flop solid circuit layout, cross-sections, and gold wire bonded flying leads)",
-        exactSourceText: "Filed Feb. 6, 1959 4 Sheets-Sheet 2",
-      },
-      {
-        page: 5,
-        sourceRelationship:
-          "Specification Column 1 & 2: Patent-office masthead, Serial No. 791,602, the 'Tyranny of Numbers' problem, and monolithic semiconductor principles",
-        exactSourceText:
-          "This invention relates to miniature electronic circuits, and more particularly to unique integrated electronic circuits fabricated from semiconductor material.",
-      },
-      {
-        page: 8,
-        sourceRelationship:
-          "Claims 1–12 (Master claims for single-crystal integrated circuits containing active and passive components)",
-        exactSourceText:
-          "What is claimed is: 1. In an integrated circuit having a plurality of electrical circuit components: a wafer of single-crystal semiconductor material...",
-      },
-      {
-        page: 9,
-        sourceRelationship:
-          "Claims 13–25, Formal execution, and Signatures of Jack S. Kilby and Attorneys",
-        exactSourceText: "INVENTOR: JACK S. KILBY, By STEVENS, DAVIS, MILLER & MOSHER, Attorneys.",
-      },
-    ],
   },
-  archivalEdition: kilbyIntegratedCircuitArchivalEdition,
   originalText:
     "This invention relates to miniature electronic circuits, and more particularly to unique integrated electronic circuits fabricated from semiconductor material.\n\nMany methods and techniques for miniaturizing electronic circuits have been proposed in the past. At first, most of the effort was spent upon reducing the size of individual components and packing them more closely together. Work directed toward reducing component size is still continuing, but has reached a point where component handling and interconnecting problems limit further miniaturization. The vast number of individual soldered connections required in complex systems creates a major reliability hazard known in the electronics industry as the 'tyranny of numbers'...\n\nIn accordance with the principles of the present invention, the ultimate in circuit miniaturization is attained by fabricating all active and passive components of an entire electronic circuit within a single monolithic body of semiconductor material, utilizing only one material for all circuit elements and a limited number of compatible process steps...\n\nThis is accomplished by utilizing a body of semiconductor material exhibiting one conductivity type (either n-type or p-type) and having formed therein diffused regions forming p-n junctions. Resistors are provided by the bulk resistivity of shaped semiconductor paths, capacitors are provided by reverse-biased p-n junctions or dielectric surface coatings, and transistors and diodes are formed by mesa diffused and alloyed regions.",
   drawings: [

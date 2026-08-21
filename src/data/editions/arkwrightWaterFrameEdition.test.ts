@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { arkwrightWaterFramePatent } from "../patents/arkwright-water-frame";
 import {
   ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
   arkwrightWaterFrameArchivalEdition,
@@ -13,7 +14,7 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
   const pdfPath = resolve(root, "public/patents/pdfs/gb-931-arkwright-water-frame.pdf");
   const cropPath = resolve(
     root,
-    "public/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v1.png",
+    "public/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v2.png",
   );
   const ledgerPath = resolve(
     root,
@@ -28,10 +29,61 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     expect(digest).toBe("3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd");
   });
 
-  test("confirms figure crop file exists on disk and is non-empty", () => {
+  test("keeps the catalogue source face withheld pending independent acceptance", () => {
+    expect(arkwrightWaterFramePatent.archivalEdition).toBeUndefined();
+    expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
+  });
+
+  test("maps Fig. 1 to the upright pinned-PDF-page-3 crop at exact path and pixels", () => {
+    const figureReference = arkwrightWaterFrameArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => block.inlines)
+      .find(
+        (inline) =>
+          inline.kind === "reference" &&
+          inline.referenceType === "figure" &&
+          inline.text === "Drawing hereunto annexed",
+      );
+
+    expect(figureReference?.kind).toBe("reference");
+    if (figureReference?.kind !== "reference") {
+      throw new Error("GB 931 must retain its authored Figure 1 reference.");
+    }
+    expect(figureReference.label).toContain("PDF page 3");
+    expect(figureReference.figurePreviews).toHaveLength(1);
+    expect(figureReference.figurePreviews?.[0]).toEqual(
+      expect.objectContaining({
+        src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v2.png",
+        alt: "Upright Figure 1 water-frame drawing sheet from pinned PDF page 3, lettered A through G.",
+        width: 1760,
+        height: 2300,
+      }),
+    );
+
     expect(existsSync(cropPath)).toBe(true);
-    const stat = readFileSync(cropPath);
-    expect(stat.length).toBeGreaterThan(10000);
+    const png = readFileSync(cropPath);
+    expect(png.length).toBeGreaterThan(10000);
+    expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(1760);
+    expect(png.readUInt32BE(20)).toBe(2300);
+  });
+
+  test("maps each drawing callout to the lettered marker in the page-3 crop", () => {
+    expect(arkwrightWaterFramePatent.drawings).toContainEqual(
+      expect.objectContaining({
+        figureNumber: "1",
+        title: "Water Frame Drawing Sheet (PDF Page 3)",
+        callouts: [
+          expect.objectContaining({ element: "A", x: 50, y: 76 }),
+          expect.objectContaining({ element: "B", x: 26, y: 68 }),
+          expect.objectContaining({ element: "C", x: 38, y: 28 }),
+          expect.objectContaining({ element: "D", x: 32, y: 37 }),
+          expect.objectContaining({ element: "E", x: 25, y: 46 }),
+          expect.objectContaining({ element: "F", x: 33, y: 53 }),
+          expect.objectContaining({ element: "G", x: 84, y: 60 }),
+        ],
+      }),
+    );
   });
 
   test("confirms reviewed transcript ledger exists and contains page markers", () => {

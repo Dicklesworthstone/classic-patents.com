@@ -42,13 +42,14 @@ export function HopkinsPotashSim() {
     const loop = (now: number) => {
       const dt = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
-      setCycleProgress((prev) => (prev + dt * 0.2) % 1.0);
+      const cycleRate = 0.2 * (2.5 / Math.max(0.2, roastTimeHours));
+      setCycleProgress((prev) => (prev + dt * cycleRate) % 1.0);
       animId = requestAnimationFrame(loop);
     };
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPlaying]);
+  }, [isPlaying, roastTimeHours]);
 
   // Dynamic colors based on temperature
   const flameHue = Math.min(50, Math.max(10, (roastTempC - 500) * 0.08));

@@ -13,8 +13,13 @@ import {
 
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
-describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
-  test("pins the reviewed 35-page facsimile and publishes a valid manual archival edition", () => {
+describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
+  test("attaches the reviewed archival edition and source asset to the public record", () => {
+    expect(mergenthalerLinotypePatent.archivalEdition).toBeDefined();
+    expect(mergenthalerLinotypePatent.originalTextAsset).toBeDefined();
+  });
+
+  test("pins the 35-page facsimile and retains a structurally valid staged edition", () => {
     if (mergenthalerLinotypePatent.archivalEdition)
       expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
     expect(validateCuratedSpecificationEdition(mergenthalerLinotypeArchivalEdition)).toEqual({
@@ -79,7 +84,7 @@ describe("US 313,224 Mergenthaler Linotype published archival edition", () => {
     }
   });
 
-  test("publishes a reviewed ledger and validates source text", () => {
+  test("keeps any reviewed-ledger binding conditional on future source acceptance", () => {
     if (mergenthalerLinotypePatent.archivalEdition)
       expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
     if (mergenthalerLinotypePatent.originalTextAsset?.kind === "reviewed-transcription") {

@@ -34,105 +34,15 @@ export const hewittMercuryLampPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-682690-hewitt-mercury-lamp.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US682690A/en",
   usptoClassification: "313/573",
+  archivalEdition: hewittMercuryLampArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-682690-hewitt-mercury-lamp-reviewed.txt",
     pageCount: 13,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
+    reviewedAt: "2026-08-20",
     sourcePdfSha256: "bd849330e1ed6e530d0654413016c7e77eda792d0519628ca1bae5747065c74d",
-    pageAnchors: [
-      {
-        page: 1,
-        sourceRelationship:
-          "Drawing Sheet 1: Figures 1, 2, 3 (Tubular lamp, condensing chamber 8, mercury cathode 1, iron anode 2)",
-        exactSourceText: "P. C. HEWITT. ELECTRIC LAMP.",
-      },
-      {
-        page: 2,
-        sourceRelationship:
-          "Drawing Sheet 2: Figures 4, 4a (Converter transformer, interrupter, and automatic series cutout)",
-        exactSourceText: "P. C. HEWITT. ELECTRIC LAMP.",
-      },
-      {
-        page: 3,
-        sourceRelationship:
-          "Drawing Sheet 3: Figures 5, 6 (Double-electrode lamp and multi-tube ballast system)",
-        exactSourceText: "P. C. HEWITT. ELECTRIC LAMP.",
-      },
-      {
-        page: 4,
-        sourceRelationship:
-          "Specification Column 1: USPTO Masthead, Serial No. 11,605, Preamble, Prior Art Failures",
-        exactSourceText:
-          "To all whom it may concern: Be it known that I, PETER COOPER HEWITT, a citizen of the United States...",
-      },
-      {
-        page: 5,
-        sourceRelationship:
-          "Specification Column 2: Physical principles of mercury vapor conduction and cold cathode barrier",
-        exactSourceText:
-          "I have discovered that when an exhausted tube containing a vaporizable conducting substance, such as mercury...",
-      },
-      {
-        page: 6,
-        sourceRelationship:
-          "Specification Page 6: Inductive high-voltage starting and steady operating potential",
-        exactSourceText:
-          "The moment this cathode resistance is broken down, the electrical resistance of the vapor column collapses...",
-      },
-      {
-        page: 7,
-        sourceRelationship:
-          "Specification Page 7: Automatic starting system with transformer and series cutout switch",
-        exactSourceText:
-          "In the automatic starting system shown in Fig. 4, the transformer primary 20 is connected across the supply mains...",
-      },
-      {
-        page: 8,
-        sourceRelationship:
-          "Specification Page 8: Iron electrode construction and non-degrading liquid mercury cathode pool",
-        exactSourceText:
-          "The electrode 3 at the upper end of the tube is preferably made of iron, steel, or graphite...",
-      },
-      {
-        page: 9,
-        sourceRelationship:
-          "Specification Page 9: Multi-tube circuits, alternating current operation, and claims transition",
-        exactSourceText:
-          "Where alternating currents are employed to operate the lamp, both electrodes may consist of mercury pools...",
-      },
-      {
-        page: 10,
-        sourceRelationship:
-          "Claims 1–5: Foundational vapor conduction, starting material, and self-regulating resistance",
-        exactSourceText:
-          "1. A lamp for producing light by electric energy consisting of an inclosing chamber...",
-      },
-      {
-        page: 11,
-        sourceRelationship:
-          "Claims 6–17: Conducting band igniter, iron/mercury electrode pairing, and transformer starting systems",
-        exactSourceText:
-          "6. In an electric lamp, the combination of an inclosing chamber, two electrodes, a conducting medium...",
-      },
-      {
-        page: 12,
-        sourceRelationship:
-          "Claims 18–29: Rapid variation transformer circuits, secondary shunts, and automatic primary cutouts",
-        exactSourceText:
-          "18. The combination with an electric lamp in which light is produced by electric energy acting on a vapor...",
-      },
-      {
-        page: 13,
-        sourceRelationship:
-          "Claims 30–31 and Signatures: Supply interrupters, translating device combinations, and witnesses",
-        exactSourceText:
-          "30. The combination with an electric lamp, of a main supply-circuit, connections therefrom through the secondary...",
-      },
-    ],
   },
-  archivalEdition: hewittMercuryLampArchivalEdition,
   originalText:
     "To all whom it may concern: Be it known that I, PETER COOPER HEWITT, a citizen of the United States, residing at New York, in the county of New York and State of New York, have invented certain new and useful Improvements in Electric Lamps, of which the following is a specification.\n\nMy invention relates to that class of electric lamps in which light is produced by the passage of an electric current through a vapor or gas, and the object of the invention is to provide a method of and apparatus for producing light in this manner with high efficiency and under conditions which will permit of commercial application.\n\nHeretofore in devices of this character—such as Geissler tubes and vacuum spark discharges—the currents employed have been of very high potential (thousands of volts) and of small quantity (fractions of a milliampere), produced by induction-coils, static machines, or high-potential transformers. Such devices have not been capable of commercial use for general illumination, owing to the dangerous potentials required, the small amount of light produced, and the great cost and inefficiency of the apparatus.\n\nI have discovered that when an exhausted tube containing a vaporizable conducting substance, such as mercury, is connected in circuit with a source of electric current of moderate electromotive force—such as is ordinary used in commercial incandescent or arc lighting systems (say, fifty to one hundred and twenty volts)—the tube offers a very high initial resistance to the passage of the current, which resistance resides largely at the surface of the negative electrode or cathode. To start the lamp I apply a momentary higher potential of several thousand volts to break down this initial cathode resistance. The moment this cathode resistance is broken down, the electrical resistance of the vapor column collapses and the tube continues to operate smoothly from the source of moderate potential, emitting a brilliant and highly efficient light.",
   drawings: [

@@ -163,7 +163,7 @@ export function DeForestAudionSim({
         const streamCount = Math.round(physics.plateCurrentMa * 15);
         ctx.fillStyle = "#38bdf8";
         for (let i = 0; i < streamCount; i++) {
-          const tProgress = (time * 1.8 + i * 0.12) % 1.0;
+          const tProgress = (time * physics.electronDisplayAdvance + i * 0.12) % 1.0;
           const px = filX + tProgress * (plateX - filX);
           const py = bulbY - 40 + ((i * 17) % 80);
 
@@ -290,7 +290,7 @@ export function DeForestAudionSim({
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       for (let ox = 0; ox < oscW; ox += 2) {
-        const rad = ox * 0.08 - time * 6;
+        const rad = ox * 0.08 - time * physics.scopeSweepOmegaRadPerS;
         const oy = oscMidY + Math.sin(rad) * 8;
         if (ox === 0) ctx.moveTo(oscX + ox, oy);
         else ctx.lineTo(oscX + ox, oy);
@@ -302,7 +302,7 @@ export function DeForestAudionSim({
       ctx.lineWidth = 2;
       ctx.beginPath();
       for (let ox = 0; ox < oscW; ox += 2) {
-        const rad = ox * 0.08 - time * 6;
+        const rad = ox * 0.08 - time * physics.scopeSweepOmegaRadPerS;
         const oy = oscMidY - Math.sin(rad) * Math.min(32, 8 * (physics.voltageGain / 2.5));
         if (ox === 0) ctx.moveTo(oscX + ox, oy);
         else ctx.lineTo(oscX + ox, oy);

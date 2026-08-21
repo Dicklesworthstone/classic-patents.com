@@ -400,6 +400,9 @@ export function updateGoodyearRubberKinematics(
   showSulfurCrosslinks: boolean,
   showStressVectors: boolean,
   isCutaway: boolean,
+  vulcanizationTempC?: number,
+  sulfurPct?: number,
+  specimenTempC?: number,
 ) {
   const stretch = appliedTensileStretch;
   nodes.rightClampGroup.position.x = clampStudioX;
@@ -411,7 +414,13 @@ export function updateGoodyearRubberKinematics(
   nodes.leftArrow.scale.set(stressScale, stressScale, stressScale);
   nodes.rightArrow.scale.set(stressScale, stressScale, stressScale);
 
-  const rubber = stepGoodyearRubber();
+  const rubber = stepGoodyearRubber(
+    vulcanizationTempC,
+    sulfurPct,
+    30,
+    appliedTensileStretch,
+    specimenTempC,
+  );
   if (nodes.gaugeNeedle) {
     nodes.gaugeNeedle.rotation.x = -(stretch - 1.0) * rubber.gaugeNeedleRadPerStretch;
   }

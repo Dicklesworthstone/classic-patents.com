@@ -3352,6 +3352,9 @@ export interface DeForestAudionKernelOutput {
   audioOutputMilliWatts: number;
   detectedRfAmplitudeMv: number;
   isConducting: boolean;
+  electronDisplayAdvance: number;
+  electronStreamAdvancePerFrame: number;
+  scopeSweepOmegaRadPerS: number;
 }
 
 export function stepDeForestAudion(
@@ -3396,6 +3399,12 @@ export function stepDeForestAudion(
 
   const platePowerMw = Number((plateVoltageV * plateCurrentMa).toFixed(1));
   const powerGainDb = Number((20 * Math.log10(Math.max(1, voltageGain * 3.5))).toFixed(1));
+  const isConducting = plateCurrentMa > 0.05;
+  const electronDisplayAdvance = isConducting ? Number((plateCurrentMa * 1.525).toFixed(3)) : 0;
+  const electronStreamAdvancePerFrame = isConducting
+    ? Number((0.02 * (1 + plateCurrentMa / 3)).toFixed(4))
+    : 0;
+  const scopeSweepOmegaRadPerS = 6;
 
   return {
     filamentCurrentA,
@@ -3420,7 +3429,10 @@ export function stepDeForestAudion(
     powerGainDb,
     audioOutputMilliWatts,
     detectedRfAmplitudeMv: Number((rfInputMv * (voltageGain / 5.0)).toFixed(0)),
-    isConducting: plateCurrentMa > 0.05,
+    isConducting,
+    electronDisplayAdvance,
+    electronStreamAdvancePerFrame,
+    scopeSweepOmegaRadPerS,
   };
 }
 

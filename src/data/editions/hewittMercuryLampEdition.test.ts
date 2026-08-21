@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { hewittMercuryLampPatent } from "../patents/hewitt-mercury-lamp";
 import {
   hewittMercuryLampArchivalEdition,
   hewittMercuryLampParallelReadings,
@@ -23,6 +24,11 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
     rootDir,
     "public/patents/figures/us-682690-hewitt-mercury-lamp/fig-4-source-crop-v1.png",
   );
+
+  test("publishes the verified archival edition in the catalog record", () => {
+    expect(hewittMercuryLampPatent.archivalEdition).toBe(hewittMercuryLampArchivalEdition);
+    expect(hewittMercuryLampPatent.originalTextAsset).toBeDefined();
+  });
 
   test("pins the immutable source PDF and matches SHA-256 digest", () => {
     expect(existsSync(pdfPath)).toBe(true);

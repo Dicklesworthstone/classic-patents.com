@@ -15,10 +15,18 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
     rootDir,
     "public/patents/transcripts/us-879532-de-forest-audion-reviewed.txt",
   );
-  const fig1Path = join(
-    rootDir,
-    "public/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png",
-  );
+  const figureAssets = [
+    {
+      path: "public/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png",
+      width: 1200,
+      height: 800,
+    },
+    {
+      path: "public/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png",
+      width: 1100,
+      height: 700,
+    },
+  ] as const;
 
   test("pins the immutable source PDF and matches SHA-256 digest", () => {
     expect(existsSync(pdfPath)).toBe(true);
@@ -29,7 +37,26 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
   });
 
   test("verifies figure crops exist on disk for all edition figure references", () => {
-    expect(existsSync(fig1Path)).toBe(true);
+    for (const asset of figureAssets) {
+      const cropPath = join(rootDir, asset.path);
+      expect(existsSync(cropPath)).toBe(true);
+      const png = readFileSync(cropPath);
+      expect(png.readUInt32BE(16)).toBe(asset.width);
+      expect(png.readUInt32BE(20)).toBe(asset.height);
+    }
+
+    const previews = deForestAudionArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.referenceType === "figure"
+              ? (inline.figurePreviews ?? [])
+              : [],
+          )
+        : [],
+    );
+    expect(new Set(previews.map((preview) => preview.src))).toEqual(
+      new Set(figureAssets.map((asset) => `/${asset.path.replace(/^public\//, "")}`)),
+    );
   });
 
   test("confirms reviewed transcript ledger exists and contains all 4 page markers", () => {

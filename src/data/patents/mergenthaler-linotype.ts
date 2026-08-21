@@ -284,8 +284,8 @@ export const mergenthalerLinotypePatent: Patent = {
     url: "/patents/transcripts/us-313224-mergenthaler-linotype-reviewed.txt",
     pageCount: 35,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents Editorial Team",
-    reviewedAt: "2026-08-20",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
     sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
   },
   originalText: `UNITED STATES PATENT OFFICE.

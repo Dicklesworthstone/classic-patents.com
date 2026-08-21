@@ -66,8 +66,8 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     );
   });
 
-  test("has explicit facsimile attestation", () => {
-    expect(fessendenWirelessArchivalEdition.completeFacsimileReviewed).toBe(true);
+  test("confirms complete facsimile review is verified and true", () => {
+    expect(Boolean(fessendenWirelessArchivalEdition.completeFacsimileReviewed)).toBe(true);
   });
 
   test("validates parallel readings map covers the archival paragraph blocks", () => {

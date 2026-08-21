@@ -25,6 +25,16 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(studioSource).not.toContain(".glb");
     expect(studioSource).not.toContain("[cameraPreset, live]");
     expect(studioSource).toContain("controls.setView");
+    const simSource = readFileSync(
+      join(rootDir, "src/components/patents/visuals/DeForestAudionSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("physics.electronDisplayAdvance");
+    expect(simSource).toContain("physics.scopeSweepOmegaRadPerS");
+    expect(simSource).not.toContain("time * 1.8");
+    expect(simSource).not.toContain("- time * 6");
+    expect(modelSource).not.toContain("const speed = 0.02");
+    expect(studioSource).toContain("electronStreamAdvancePerFrame");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -77,6 +87,7 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
     expect(nodes.plateMesh).toBeDefined();
     expect(nodes.materials.length).toBeGreaterThan(4);
 
+    const sim = stepDeForestAudion({ plateVoltageV: 45, filamentCurrentA: 1.0 });
     articulateDeForestAudionModel(
       nodes,
       {
@@ -84,6 +95,7 @@ describe("US 879,532 Lee de Forest Audion Triode Visual & Electronics Boundary",
         plateCurrentMa: 2.0,
         voltageGain: 8.5,
         isConducting: true,
+        electronStreamAdvancePerFrame: sim.electronStreamAdvancePerFrame,
       },
       1.0,
     );

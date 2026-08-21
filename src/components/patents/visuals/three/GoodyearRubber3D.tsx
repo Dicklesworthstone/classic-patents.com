@@ -82,6 +82,9 @@ export function GoodyearRubber3D() {
     showStressVectors: true,
     isCutaway,
     isAudioMuted,
+    vulcanizationTempC: cureTemperatureCelsius,
+    sulfurPct: sulfurWeightPct,
+    specimenTempC: params.specimenTempC ?? 35,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -140,6 +143,9 @@ export function GoodyearRubber3D() {
         p.showSulfurCrosslinks,
         p.showStressVectors,
         p.isCutaway,
+        p.vulcanizationTempC,
+        p.sulfurPct,
+        p.specimenTempC,
       );
 
       controls.update();

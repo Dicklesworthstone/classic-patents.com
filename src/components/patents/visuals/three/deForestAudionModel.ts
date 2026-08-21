@@ -244,6 +244,7 @@ export function articulateDeForestAudionModel(
     plateCurrentMa: number;
     voltageGain: number;
     isConducting: boolean;
+    electronStreamAdvancePerFrame: number;
   },
   _timeSec: number,
 ) {
@@ -263,8 +264,7 @@ export function articulateDeForestAudionModel(
   const posArr = posAttr.array as Float32Array;
   const count = posArr.length / 3;
 
-  const currentScale = telemetry.isConducting ? Math.max(0.1, telemetry.plateCurrentMa / 3.0) : 0;
-  const speed = 0.02 * (1.0 + currentScale);
+  const speed = telemetry.electronStreamAdvancePerFrame;
 
   for (let i = 0; i < count; i++) {
     posArr[i * 3] += speed;
@@ -274,6 +274,7 @@ export function articulateDeForestAudionModel(
   }
   posAttr.needsUpdate = true;
 
+  const currentScale = Math.min(1.0, Math.max(0.0, telemetry.plateCurrentMa / 10.0));
   const pMat = nodes.electronParticles.material as THREE.PointsMaterial;
   if (pMat) {
     pMat.opacity = telemetry.isConducting ? Math.min(0.9, 0.2 + currentScale * 0.7) : 0.05;

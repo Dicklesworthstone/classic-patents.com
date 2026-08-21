@@ -30,15 +30,8 @@ export const goddardRocketPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-1102653-goddard-rocket.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1102653A/en",
   usptoClassification: "F02K 9/00 (Rocket-engine plants)",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-1102653-goddard-rocket.txt",
-    pageCount: 4,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (codex-foxtrot)",
-    reviewedAt: "2026-08-17",
-    sourcePdfSha256: "8503f52914f4201850d7d6f067ac48886dda77c2cdb5e8fce831e13232f7c42b",
-  },
-  archivalEdition: goddardRocketArchivalEdition,
+  // The local ledger and manual edition remain research evidence while the
+  // repaired figure-crop closure awaits independent source review.
   originalText: `UNITED STATES PATENT OFFICE.
 ROBERT H. GODDARD, OF WORCESTER, MASSACHUSETTS.
 
@@ -52,7 +45,7 @@ Be it known that I, ROBERT H. GODDARD, a citizen of the United States, residing 
 
 This invention relates to a rocket apparatus and particularly to a form of such apparatus adapted to transport photographic or other recording instruments to extreme heights. Certain features of the invention are also applicable to the display of signals or to the projection of explosives.
 
-The full reviewed transcription and the continuous manually authored source edition are available from the archival reading face.`,
+The full reviewed transcription and manually authored source edition are withheld from the visitor-facing archival reading face pending independent source review.`,
   plainEnglishExplanation: {
     overview:
       "The source solves four linked problems for a high-altitude recording rocket: turn explosive heat into useful exhaust motion, rotate the rocket before launch, restore spin in its smaller follow-on rocket, and keep the camera from spinning with the outer body. It uses solid explosive disks, not liquid oxygen or gasoline; it fires the smaller rocket from a tube rather than dropping an exhausted lower stage.",

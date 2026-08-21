@@ -60,3 +60,14 @@ explicit non-lossy plain-English companion for each source paragraph and
 claim; locally cropped figure previews connected to every authored figure
 reference; and a 58-marker reviewed-transcription ledger with a second
 page-by-page facsimile check.
+
+### Root re-hold (2026-08-20)
+
+A later concurrent change attached `fermiReactorArchivalEdition` and relabeled
+`us-2708656-fermi-reactor-reviewed.txt` as a reviewed transcription. Direct
+inspection rejects that state: drawing-sheet entries repeat one generic summary
+for all 27 sheets, specification pages 28–56 are one-line topic summaries, and
+the edition compresses the printed specification into a small editorial
+overview. The canonical record is therefore unbound again. The WIP edition,
+claims, source-sheet inventory, and summary ledger remain preserved for future
+manual authoring, but none is publication evidence.

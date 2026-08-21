@@ -19,34 +19,34 @@ const claim = (number: number, value: string) => ({
 
 const FIGURE_PREVIEWS = {
   "Fig. 1": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-1.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v4.png",
     alt: "US 1,102,653, Fig. 1: longitudinal partial section of the primary rocket, firing tube, auxiliary rocket, and tapered exhaust tube.",
-    width: 640,
-    height: 1280,
+    width: 540,
+    height: 2020,
   },
   "Fig. 2": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-2.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v3.png",
     alt: "US 1,102,653, Fig. 2: enlarged longitudinal section through the auxiliary-rocket head, camera support, and gyroscope.",
-    width: 650,
-    height: 600,
+    width: 890,
+    height: 930,
   },
   "Fig. 3": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-3.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v3.png",
     alt: "US 1,102,653, Fig. 3: transverse section of the primary rocket's backward-curved spin tubes and their electrical ignition circuit.",
-    width: 820,
-    height: 720,
+    width: 540,
+    height: 570,
   },
   "Fig. 4": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-4.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v3.png",
     alt: "US 1,102,653, Fig. 4: transverse section of the auxiliary rocket's backward-curved spin-restoration tubes.",
     width: 500,
-    height: 420,
+    height: 560,
   },
   "Fig. 5": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v2.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v3.png",
     alt: "US 1,102,653, Fig. 5: vertical launching framework with ball bearings supporting the rocket before fuse ignition.",
-    width: 1300,
-    height: 1100,
+    width: 500,
+    height: 760,
   },
 } as const;
 

@@ -1,5 +1,129 @@
-import { manualFessendenClaimText } from "@/data/editions/fessendenWirelessEdition";
+import {
+  fessendenWirelessArchivalEdition,
+  manualFessendenClaimText,
+} from "@/data/editions/fessendenWirelessEdition";
 import type { Patent } from "@/types/patent";
+
+const fessendenClaimDecoders: Record<
+  number,
+  { plainEnglish: string; keyInnovations: string[]; legalSignificance?: string }
+> = {
+  1: {
+    plainEnglish:
+      "Claims a transmitting conductor whose capacitance is large and substantially uniform across its radiating portion. The legal work is the distributed-capacity aerial geometry, not an asserted continuous-wave receiver or a later detector.",
+    keyInnovations: ["Distributed aerial capacity", "Radiating portion"],
+  },
+  2: {
+    plainEnglish:
+      "Claims a sending conductor whose capacitance is adjusted to make its radiated electromagnetic waves low in frequency. It protects the specified electrical adjustment, rather than a generic claim to all wireless signaling.",
+    keyInnovations: ["Low-frequency radiation", "Adjusted capacitance"],
+  },
+  3: {
+    plainEnglish:
+      "Claims a sending conductor with both capacitance and inductance adjusted so that its waves have low frequency. The protected relationship is the jointly tuned electrical constants of the conductor.",
+    keyInnovations: ["Capacitance-inductance tuning", "Low-frequency waves"],
+  },
+  4: {
+    plainEnglish:
+      "Claims a transmission system using an alternating-voltage source and series sending conductor whose radiating portion is a large fraction of the quarter-wave length in its surrounding medium. It ties physical radiator length to the source-driven wave.",
+    keyInnovations: ["Quarter-wave proportion", "Series sending conductor"],
+  },
+  5: {
+    plainEnglish:
+      "Claims a source-and-conductor transmission system in which the radiating portion forms a large fraction of the whole sending conductor. It distinguishes the radiating element from the entire series circuit.",
+    keyInnovations: ["Radiating-length fraction", "Whole sending conductor"],
+  },
+  6: {
+    plainEnglish:
+      "Claims a system with a low-frequency impulse source and a series conductor proportioned to radiate electromagnetic waves and tuned to that source. The legal combination is source, tuned conductor, and radiation function.",
+    keyInnovations: ["Low-frequency impulses", "Source tuning"],
+  },
+  7: {
+    plainEnglish:
+      "Claims the combination of an alternating-current dynamo and series conductor that forms a sending conductor tuned to the dynamo and adapted to radiate electromagnetic waves. The dynamo is an explicit claimed component.",
+    keyInnovations: ["Alternating-current dynamo", "Dynamo-tuned conductor"],
+  },
+  8: {
+    plainEnglish:
+      "Claims a low-frequency sending conductor with an alternating-current dynamo connected between its radiating portion and ground, adjusted to approximately the conductor's natural period. The source and ground connection are both limiting elements.",
+    keyInnovations: ["Grounded dynamo connection", "Natural-period adjustment"],
+  },
+  9: {
+    plainEnglish:
+      "Claims a sending conductor formed by a grounded-pole alternating-current dynamo and a series conductor, proportioned for low-frequency radiation. It treats the dynamo and conductor together as the sending conductor.",
+    keyInnovations: ["Grounded dynamo pole", "Composite sending conductor"],
+  },
+  10: {
+    plainEnglish:
+      "Claims a low-frequency sending conductor combined with an alternating-voltage source connected to the radiating portion and ground, with source periodicity matching the connected system's natural period.",
+    keyInnovations: ["Voltage-generator periodicity", "System natural period"],
+  },
+  11: {
+    plainEnglish:
+      "Claims a sending conductor formed from a continuously alternating-voltage source and series conductor, with one source pole grounded and the combination proportioned for low-frequency radiation.",
+    keyInnovations: ["Continuous alternating voltage", "Grounded source pole"],
+  },
+  12: {
+    plainEnglish:
+      "Claims a signaling system combining a low-frequency radiating conductor with a receiver that uses a constant or independently varying magnetic field and responds to currents produced by the waves.",
+    keyInnovations: ["Magnetic-field receiver", "Wave-produced currents"],
+  },
+  13: {
+    plainEnglish:
+      "Claims a short sending conductor whose operating frequency equals its natural period and whose radiating portion is a large fraction of its total length. It makes the electrical length constraint explicit.",
+    keyInnovations: ["Short electrical conductor", "Natural-period frequency"],
+  },
+  14: {
+    plainEnglish:
+      "Claims a sending conductor with a natural vibration period much lower than that of an ether-wave four times its length, allowing a relatively large radiating portion of the total conductor.",
+    keyInnovations: ["Low natural period", "Large radiating fraction"],
+  },
+  15: {
+    plainEnglish:
+      "Claims a sending conductor tuned to a selected low frequency through large capacitance and small inductance. It is a concise claim to that particular tuning choice.",
+    keyInnovations: ["Large capacity", "Small inductance"],
+  },
+  16: {
+    plainEnglish:
+      "Claims a sending conductor having small inductance and tuned to a desired low frequency by a suitably proportioned large capacitance. The claim specifies the capacitance proportion as well as the tuning objective.",
+    keyInnovations: ["Proportioned capacitance", "Small inductance"],
+  },
+  17: {
+    plainEnglish:
+      "Claims a low-resistance sending conductor with small self-induction and great capacity for the stated purpose. The three electrical properties are jointly required.",
+    keyInnovations: ["Low resistance", "Great capacity", "Small self-induction"],
+  },
+  18: {
+    plainEnglish:
+      "Claims the same low-resistance, low-self-induction, high-capacity conductor when correlated to sustain persistent low-frequency oscillation relative to an ether-wave four times its conductor length.",
+    keyInnovations: ["Persistent oscillation", "Correlated electrical constants"],
+  },
+  19: {
+    plainEnglish:
+      "Claims a transmission system whose radiating conductor and alternating-energy source are coordinated and relatively adjusted to radiate a substantially continuous electromagnetic stream.",
+    keyInnovations: ["Coordinated source and radiator", "Continuous stream"],
+  },
+  20: {
+    plainEnglish:
+      "Claims a similar source-and-radiator system specifically adjusted to generate and radiate a substantially continuous electromagnetic stream. The verb generate adds a stated function to the coordinated apparatus.",
+    keyInnovations: ["Generation of continuous waves", "Radiating conductor"],
+  },
+  21: {
+    plainEnglish:
+      "Claims a source-and-radiating-conductor system coordinated to radiate a substantially continuous electromagnetic stream of substantially uniform strength. The uniform-strength limitation is printed in the claim itself.",
+    keyInnovations: ["Uniform-strength waves", "Coordinated apparatus"],
+  },
+};
+
+const fessendenClaims = Array.from({ length: 21 }, (_, index) => {
+  const number = index + 1;
+  return {
+    number,
+    isIndependent: true,
+    originalText: manualFessendenClaimText(number),
+    ...fessendenClaimDecoders[number],
+  };
+});
 
 export const fessendenWirelessPatent: Patent = {
   id: "us-706737-fessenden-wireless",
@@ -16,9 +140,9 @@ export const fessendenWirelessPatent: Patent = {
   category: "telecom",
   categoryLabel: "Telecommunications & Radio Frequency Engineering",
   summary:
-    "Reginald Fessenden's foundational continuous-wave patent that overthrew Marconi's damped spark-gap technology. By generating unbroken sinusoidal radio-frequency oscillations and introducing the ultra-sensitive liquid electrolytic barretter detector, Fessenden enabled sharp resonant multi-channel tuning and laid the direct technical foundation for voice and audio broadcasting.",
+    "Reginald A. Fessenden's 1902 grant concerns lower-frequency electromagnetic-wave transmission: increasing a sending conductor's capacity and self-induction, its radiating portion, and the relation of an alternating-voltage source to the conductor's natural period. The printed claims run from distributed capacity through coordinated source-and-radiator systems.",
   heroQuote:
-    "My invention has for its primary object the continuous radiation of electromagnetic waves of substantially uniform strength and predetermined frequency, whereby sharp resonance is obtained and the energy is transmitted with vastly greater efficiency and selectivity.",
+    "The invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.",
   originalPdfUrl: "/patents/pdfs/us-706737-fessenden-wireless.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US706737A/en",
   usptoClassification: "375/295",
@@ -63,7 +187,7 @@ export const fessendenWirelessPatent: Patent = {
         page: 6,
         sourceRelationship: "specification-claims",
         exactSourceText:
-          "1. In a system for the transmission of energy by electromagnetic waves, a source of continuous alternating current, an aerial radiating conductor, and means for continuously radiating electromagnetic waves of substantially uniform strength and predetermined frequency",
+          "1. A sending-conductor for electromagnetic waves, having a large capacity distributed with substantial uniformity over its radiating portion, substantially as set forth.",
       },
       {
         page: 7,
@@ -73,8 +197,9 @@ export const fessendenWirelessPatent: Patent = {
       },
     ],
   },
+  archivalEdition: fessendenWirelessArchivalEdition,
   originalText:
-    "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in Wireless Telegraphy, of which the following is a specification.\n\nIn the systems of wireless telegraphy heretofore used—as, for example, the systems described by Marconi and Lodge—the electromagnetic waves are produced by the discharge of a condenser across a spark-gap. In such systems the waves are emitted in short, highly-damped bursts or wave-trains separated by relatively long intervals of rest, resulting in severe broadband interference and making sharp resonant tuning impossible.\n\nMy invention has for its primary object the continuous radiation of electromagnetic waves of substantially uniform strength and predetermined frequency, whereby sharp resonance is obtained and the energy is transmitted with vastly greater efficiency and selectivity.",
+    "Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in Wireless Telegraphy, of which the following is a specification.\n\nThe invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.\n\nIt is a further object of the invention to provide for the production of mechanical movements by the direct interaction of currents induced in the receiving-conductor by electromagnetic waves and constant or varying magnetic fields.",
   drawings: [
     {
       figureNumber: "Fig. 1",
@@ -226,6 +351,69 @@ export const fessendenWirelessPatent: Patent = {
         },
       ],
     },
+    {
+      figureNumber: "Fig. 4",
+      title: "Cylindrical Cage Antenna Transverse Cross-Section",
+      caption:
+        "Horizontal transverse section of cylindrical cage antenna showing circumferential radiating wires (4), support ring (5), and insulated hub collar (6).",
+      svgType: "fessenden-wireless",
+      callouts: [
+        {
+          id: "fw-4-sec",
+          figureRef: "Fig. 4",
+          label: "4",
+          element: "Perimeter Radiating Wires",
+          description: "Conductors uniformly spaced along outer circular boundary.",
+          x: 50,
+          y: 15,
+        },
+        {
+          id: "fw-5-ring",
+          figureRef: "Fig. 4",
+          label: "5",
+          element: "Circular Spreader Ring",
+          description: "Metallic ring preserving geometry.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "fw-6-hub",
+          figureRef: "Fig. 4",
+          label: "6",
+          element: "Insulated Hub Collar",
+          description: "Central collar mounted on supporting mast.",
+          x: 50,
+          y: 50,
+        },
+      ],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Continuous Sheet Cylinder Radiator Detail",
+      caption:
+        "Detail view illustrating tubular radiating cylinder (9) with sliding adjustment sleeve collar (17) for tuning conductor length.",
+      svgType: "fessenden-wireless",
+      callouts: [
+        {
+          id: "fw-9-cyl",
+          figureRef: "Fig. 5",
+          label: "9",
+          element: "Continuous Sheet Metal Cylinder",
+          description: "Alternative solid-wall tubular radiating conductor.",
+          x: 50,
+          y: 50,
+        },
+        {
+          id: "fw-17-sleeve",
+          figureRef: "Fig. 5",
+          label: "17",
+          element: "Sliding Adjusting Collar",
+          description: "Movable sleeve for mechanical length tuning.",
+          x: 50,
+          y: 30,
+        },
+      ],
+    },
   ],
   plainEnglishExplanation: {
     overview:
@@ -297,7 +485,8 @@ export const fessendenWirelessPatent: Patent = {
     whyItMattersToday:
       "Every modern radio receiver, mobile phone, and satellite transceiver is a direct descendant of Fessenden's continuous-wave paradigm, high-Q resonant selectivity, and continuous demodulation architecture.",
   },
-  claims: [
+  claims: fessendenClaims,
+  /*
     {
       number: 1,
       isIndependent: true,
@@ -365,7 +554,7 @@ export const fessendenWirelessPatent: Patent = {
       legalSignificance:
         "Protected the low-loss cage antenna design essential for high-power continuous-wave transmission.",
     },
-  ],
+  ], */
   historicalContext: {
     problemStatement:
       "At the turn of the 20th century, all early wireless systems relied entirely on high-voltage spark discharges that created brief, decaying wave-trains separated by long silent intervals, resulting in severe broadband interference and making voice transmission impossible.",
@@ -403,7 +592,7 @@ export const fessendenWirelessPatent: Patent = {
       "On Christmas Eve 1906, ship radio operators across the Atlantic expecting Morse clicks were stunned to hear Fessenden speaking, playing 'O Holy Night' on his violin, and reading Luke Chapter 2.",
   },
   stats: {
-    totalClaims: 5,
-    independentClaims: 4,
+    totalClaims: 21,
+    independentClaims: 21,
   },
 };

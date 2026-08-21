@@ -9,6 +9,38 @@ import {
   edisonIndicatorParallelReadings,
 } from "./edisonIndicatorEdition";
 
+const EXPECTED_FIGURE_PREVIEWS = {
+  "Figure 1": {
+    src: "/patents/figures/us-307031-edison-indicator/fig-1-source-crop-v2.png",
+    width: 1740,
+    height: 1120,
+  },
+  "Fig. 2": {
+    src: "/patents/figures/us-307031-edison-indicator/fig-2-source-crop-v2.png",
+    width: 1750,
+    height: 360,
+  },
+  "Fig. 3": {
+    src: "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v3.png",
+    width: 1080,
+    height: 480,
+  },
+  "Fig. 4": {
+    src: "/patents/figures/us-307031-edison-indicator/fig-4-source-crop-v2.png",
+    width: 340,
+    height: 500,
+  },
+} as const;
+
+function pngDimensions(path: string): { width: number; height: number } {
+  const bytes = readFileSync(path);
+  expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+  return {
+    width: bytes.readUInt32BE(16),
+    height: bytes.readUInt32BE(20),
+  };
+}
+
 describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () => {
   const root = process.cwd();
   const ledgerPath = join(
@@ -57,41 +89,28 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
     });
   });
 
-  it("verifies all referenced figure preview image files exist on disk", () => {
-    for (const block of edisonIndicatorArchivalEdition.blocks) {
-      if (block.kind === "paragraph") {
-        for (const inline of block.inlines) {
-          if (inline.kind === "reference" && inline.figurePreviews) {
-            for (const preview of inline.figurePreviews) {
-              const fullPath = join(root, "public", preview.src.replace(/^\//, ""));
-              expect(existsSync(fullPath)).toBe(true);
-            }
-          }
-        }
-      }
-    }
-  });
-
-  it("uses the complete source drawing rather than the signature margin for Figure 3", () => {
-    const figureThreePreviews = edisonIndicatorArchivalEdition.blocks
+  it("maps every Figure occurrence to its exact clean source crop", () => {
+    const figureReferences = edisonIndicatorArchivalEdition.blocks
       .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
-      .filter(
-        (inline) =>
-          inline.kind === "reference" &&
-          inline.referenceType === "figure" &&
-          inline.text === "Fig. 3",
-      )
-      .flatMap((inline) => (inline.kind === "reference" ? (inline.figurePreviews ?? []) : []));
+      .filter((inline) => inline.kind === "reference" && inline.referenceType === "figure");
 
-    expect(figureThreePreviews.length).toBeGreaterThan(0);
-    for (const preview of figureThreePreviews) {
-      expect(preview).toEqual(
-        expect.objectContaining({
-          src: "/patents/figures/us-307031-edison-indicator/fig-3-source-crop-v2.png",
-          width: 900,
-          height: 590,
-        }),
-      );
+    expect(figureReferences).toHaveLength(6);
+    for (const reference of figureReferences) {
+      if (reference.kind !== "reference") continue;
+      const expected =
+        EXPECTED_FIGURE_PREVIEWS[reference.text as keyof typeof EXPECTED_FIGURE_PREVIEWS];
+      expect(expected).toBeDefined();
+      expect(reference.figurePreviews).toHaveLength(1);
+
+      const [preview] = reference.figurePreviews ?? [];
+      expect(preview).toEqual(expect.objectContaining(expected));
+
+      const fullPath = join(root, "public", preview.src.replace(/^\//, ""));
+      expect(existsSync(fullPath)).toBe(true);
+      expect(pngDimensions(fullPath)).toEqual({
+        width: expected.width,
+        height: expected.height,
+      });
     }
   });
 });

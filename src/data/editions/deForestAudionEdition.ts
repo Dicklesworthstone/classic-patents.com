@@ -19,29 +19,13 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 });
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png": {
-    width: 523,
-    height: 617,
+  "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png": {
+    width: 1200,
+    height: 800,
   },
-  "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v1.png": {
-    width: 500,
-    height: 617,
-  },
-  "/patents/figures/us-879532-de-forest-audion/fig-3-source-crop-v1.png": {
-    width: 523,
-    height: 443,
-  },
-  "/patents/figures/us-879532-de-forest-audion/fig-4-source-crop-v1.png": {
-    width: 500,
-    height: 443,
-  },
-  "/patents/figures/us-879532-de-forest-audion/fig-5-source-crop-v1.png": {
-    width: 523,
-    height: 412,
-  },
-  "/patents/figures/us-879532-de-forest-audion/fig-6-source-crop-v1.png": {
-    width: 500,
-    height: 412,
+  "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png": {
+    width: 1100,
+    height: 700,
   },
 };
 
@@ -175,7 +159,7 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         "Figure 1",
         "#figure-1",
         "Sheet 1, Figure 1 — Triode Audion circuit diagram with tuned input and telephone indicator",
-        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png",
       ),
       text(
         " represents in diagram a wireless telegraph receiving system comprising an oscillation detector constructed and connected in accordance with the present invention and ",
@@ -184,7 +168,7 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         "Figure 2",
         "#figure-2",
         "Sheet 1, Figure 2 — Modified form of Audion oscillation detector",
-        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png",
       ),
       text(
         " represents a space telegraph receiving system having a modified form of oscillation detector connected therein in a manner which constitutes one of the subjects matter of said invention.",
@@ -208,14 +192,14 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         "Fig. 1",
         "#figure-1",
         "Sheet 1, Figure 1 — Triode Audion circuit diagram with tuned input and telephone indicator",
-        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png",
       ),
       text(" and F, a' and b in "),
       ref(
         "Fig. 2",
         "#figure-2",
         "Sheet 1, Figure 2 — Modified form of Audion oscillation detector",
-        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png",
       ),
       text(". The conducting member or electrode F is shown as consisting of a "),
       term(
@@ -258,7 +242,7 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         "Fig. 2",
         "#figure-2",
         "Sheet 1, Figure 2 — Modified form of Audion oscillation detector",
-        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-2-source-crop-v2.png",
       ),
       text(
         ", that the secondary I2 closes a circuit containing a battery shown at B through the electrode b, conducting member a' and the conducting gaseous medium intervening between said electrode and member. Also by reference to ",
@@ -267,7 +251,7 @@ export const deForestAudionArchivalEdition: CuratedSpecificationEdition = {
         "Fig. 1",
         "#figure-1",
         "Sheet 1, Figure 1 — Triode Audion circuit diagram with tuned input and telephone indicator",
-        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v1.png",
+        "/patents/figures/us-879532-de-forest-audion/fig-1-source-crop-v2.png",
       ),
       text(
         ", it will be seen that a similar closed circuit exists between said battery, and the electrode b and conducting member a. In order to close each of said circuits to the passage of direct current from the aforesaid battery therethrough, or to prevent the development of a difference of potential between the members a and b, or between a' and b, or to prevent the members a and a' from becoming electrically charged from said battery, I insert a ",

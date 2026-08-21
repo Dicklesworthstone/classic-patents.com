@@ -62,3 +62,14 @@ both the PDF digest and the exact 1-70 sequence.
 
 That boundary prevents an in-progress draft from presenting partial source
 coverage as a complete historical edition.
+
+### Root re-hold (2026-08-20)
+
+A later concurrent change attached the WIP edition and a 35-marker ledger to
+the public record. Marker count did not establish completeness: drawing pages
+repeat one generic inventory, and specification pages 14–30 repeat the same
+short mechanism summary instead of transcribing their printed columns. The
+canonical record is unbound again. The 70 checked claims and other WIP source
+artifacts remain preserved, but publication requires literal page content,
+continuous source blocks, complete figure-reference previews, and independent
+facsimile acceptance.

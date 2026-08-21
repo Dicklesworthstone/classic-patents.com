@@ -1,8 +1,5 @@
 import type { Patent } from "@/types/patent";
-import {
-  arkwrightWaterFrameArchivalEdition,
-  manualArkwrightClaimText,
-} from "../editions/arkwrightWaterFrameEdition";
+import { manualArkwrightClaimText } from "../editions/arkwrightWaterFrameEdition";
 
 const arkwrightFigureCallouts = {
   "1": [
@@ -12,8 +9,8 @@ const arkwrightFigureCallouts = {
       label: "Great Wheel / Drum (A)",
       element: "A",
       description: "Great wooden driving drum transmitting mechanical water power to the frame.",
-      x: 40,
-      y: 65,
+      x: 50,
+      y: 76,
     },
     {
       id: "aw-shaft-b",
@@ -22,8 +19,8 @@ const arkwrightFigureCallouts = {
       element: "B",
       description:
         "Horizontal iron driving shaft with individual spindle whorl bands and disengaging levers.",
-      x: 20,
-      y: 58,
+      x: 26,
+      y: 68,
     },
     {
       id: "aw-rollers-c",
@@ -32,8 +29,8 @@ const arkwrightFigureCallouts = {
       element: "C",
       description:
         "Accelerating pairs of leather-covered top rollers and fluted brass/iron lower cylinders.",
-      x: 35,
-      y: 22,
+      x: 38,
+      y: 28,
     },
     {
       id: "aw-weights-d",
@@ -42,8 +39,8 @@ const arkwrightFigureCallouts = {
       element: "D",
       description:
         "Suspended lead weights pressing upper leather rollers for slip-free fiber traction.",
-      x: 25,
-      y: 30,
+      x: 32,
+      y: 37,
     },
     {
       id: "aw-flyers-e",
@@ -52,8 +49,8 @@ const arkwrightFigureCallouts = {
       element: "E",
       description:
         "U-shaped steel flyers with guide eyes rotating at 3500+ RPM to impart true helical twist.",
-      x: 20,
-      y: 40,
+      x: 25,
+      y: 46,
     },
     {
       id: "aw-bobbins-f",
@@ -62,8 +59,8 @@ const arkwrightFigureCallouts = {
       element: "F",
       description:
         "Friction-retarded bobbins collecting spun yarn under steady differential winding tension.",
-      x: 30,
-      y: 48,
+      x: 33,
+      y: 53,
     },
     {
       id: "aw-cam-g",
@@ -72,12 +69,18 @@ const arkwrightFigureCallouts = {
       element: "G",
       description:
         "Cardioid builder cam oscillating the bobbin rail for uniform cylindrical yarn distribution.",
-      x: 75,
-      y: 52,
+      x: 84,
+      y: 60,
     },
   ],
 };
 
+/**
+ * The PDF's source face is deliberately withheld from the catalogue while a
+ * fresh reviewer reconciles the three-page pinned document, ledger, and
+ * authored edition. The claim lookup remains dynamic so this record does not
+ * introduce a second copy of legal-text strings.
+ */
 export const arkwrightWaterFramePatent: Patent = {
   id: "gb-931-arkwright-water-frame",
   patentNumber: "GB 931",
@@ -105,17 +108,8 @@ export const arkwrightWaterFramePatent: Patent = {
     patentWarYears: "1781–1785",
     impactScore: 99,
   },
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents Editorial Team",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
-  },
-  archivalEdition: arkwrightWaterFrameArchivalEdition,
   originalText:
-    "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, RICHARD ARKWRIGHT, of Nottingham, in the County of Nottingham, send greeting: WHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Fifteenth day of July, in the ninth year of His reign, did give and grant unto me... my new Invented Apparatus or Engine for the Making of Weft or Yarn from Cotton, Flax, and Wool...",
+    "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, RICHARD ARKWRIGHT, of Nottingham, in the County of Nottingham, send greeting: WHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Fifteenth day of July, in the ninth year of His reign, did give and grant unto me... my new Invented Apparatus or Engine for the Making of Weft or Yarn from Cotton, Flax, and Wool...\n\n[Curated source excerpt only. The archival edition and reviewed ledger are withheld while an independent review reconciles the three-page pinned PDF, including the Figure 1 drawing on PDF page 3.]",
   plainEnglishExplanation: {
     overview:
       "Before 1769, textile production was constrained by a critical technological bottleneck: hand spinners on traditional spinning wheels could not produce strong cotton yarn. All European 'cotton' cloth was actually fustian—a hybrid fabric with a strong linen warp (lengthwise threads under high loom tension) and weak cotton weft (crosswise filling). James Hargreaves' 1764 Spinning Jenny multiplied human output but still relied on manual drafting, producing soft, low-twist yarn that snapped under loom tension. Richard Arkwright solved this by inventing continuous mechanical drafting using differential rollers combined with high-speed flyer twisting, creating 'Water Twist'—the world's first industrial cotton yarn strong enough for loom warp.",
@@ -265,9 +259,9 @@ export const arkwrightWaterFramePatent: Patent = {
   drawings: [
     {
       figureNumber: "1",
-      title: "Technical Elevation & Cross-Section of the 4-Spindle Water Frame",
+      title: "Water Frame Drawing Sheet (PDF Page 3)",
       caption:
-        "Engraved plate annexed to the Chancery enrollment, illustrating the great driving drum (A), horizontal shaft and clutches (B), differential drafting rollers (C), pressing weights (D), steel flyers (E), drag bobbins (F), and heart-cam traverse (G).",
+        "The pinned PDF's third page carries the water-frame drawing sheet, with the great driving drum (A), horizontal shaft and clutches (B), differential drafting rollers (C), pressing weights (D), flyers (E), bobbins (F), and heart-cam traverse (G).",
       svgType: "arkwright-water-frame",
       callouts: arkwrightFigureCallouts["1"],
     },

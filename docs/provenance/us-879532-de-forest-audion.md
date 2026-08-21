@@ -19,7 +19,7 @@ text layers were comparison aids only and are not the basis of the published rea
 
 | PDF pages | Source matter checked |
 | --- | --- |
-| 1 | Drawing sheet: Figs. 1–6 showing the evacuated vessel $D$, heated filament $F$, anode plate $b$, and interposed grid member $a$ with associated RF oscillation input and local indicator circuits. |
+| 1 | Drawing sheet: Figs. 1–2 showing the evacuated vessel $D$, heated filament $F$, anode plate $b$, and interposed grid member $a$ with associated RF oscillation input and local indicator circuits. |
 | 2 | Patent-office masthead, inventor Lee de Forest of New York, N.Y., assignor to De Forest Radio Telephone Company, title "Space Telegraphy", Serial No. 354,662, filing date January 29, 1907, grant date February 18, 1908. Full specification description of heated gaseous media, electrostatic control grid, and electrical connections. |
 | 3 | Specification conclusion and printed Claims 1 through 13. |
 | 4 | Printed Claims 14 through 21, Lee de Forest signature, and witnesses Thomas I. Gallagher and Hans W. Goetze. |
@@ -30,17 +30,20 @@ text layers were comparison aids only and are not the basis of the published rea
   `src/data/editions/deForestAudionEdition.ts`; it deliberately has no source-page pagination.
 - The page ledger is a reviewed supporting asset at
   `public/patents/transcripts/us-879532-de-forest-audion-reviewed.txt`.
-- Figure previews are local crops from the pinned source: Sheet 1 supplies Figs. 1–6.
+- Figure previews are local crops from the pinned source: Sheet 1 supplies Figs. 1–2.
 - The printed grant contains 21 distinct claims, each rigorously transcribed and decoded.
 
 ## Exact figure locators
 
 | Printed figures | PDF page | Local preview asset |
 | --- | --- | --- |
-| 1 | 1 | `fig-1-source-crop-v1.png` |
-| 2 | 1 | `fig-2-source-crop-v1.png` |
-| 3 | 1 | `fig-3-source-crop-v1.png` |
-| 4 | 1 | `fig-4-source-crop-v1.png` |
-| 5 | 1 | `fig-5-source-crop-v1.png` |
-| 6 | 1 | `fig-6-source-crop-v1.png` |
+| 1 | 1 | `fig-1-source-crop-v2.png` |
+| 2 | 1 | `fig-2-source-crop-v2.png` |
 | Complete Sheet 1 | 1 | `sheet-1.png` |
+
+The earlier files named `fig-3` through `fig-6` were subdivisions of the two
+printed circuit diagrams, not printed patent figures. They remain preserved as
+superseded research assets and are not referenced by the edition. The v2 Fig. 1
+and Fig. 2 crops were visually checked against the full drawing sheet on
+2026-08-20 and include each complete circuit without the patent header,
+witnesses, inventor signature, or the other printed figure.

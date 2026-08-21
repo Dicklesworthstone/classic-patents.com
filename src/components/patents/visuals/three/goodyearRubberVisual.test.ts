@@ -22,6 +22,8 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildGoodyearRubberModel");
     expect(modelSource).toContain("updateGoodyearRubberKinematics");
+    expect(modelSource).not.toContain("stepGoodyearRubber()");
+    expect(threeSource).toContain("p.vulcanizationTempC");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -89,6 +91,9 @@ describe("US 3,633 Charles Goodyear Vulcanized Rubber visual & polymer mechanics
       true,
       true,
       true,
+      145,
+      8,
+      35,
     );
     expect(materials.polyisoprene.transparent).toBe(true);
 
