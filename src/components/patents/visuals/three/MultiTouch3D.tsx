@@ -212,7 +212,9 @@ export function MultiTouch3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Gesture Mode:</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Gesture Mode:
+              </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">{hud.mode}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -221,11 +223,15 @@ export function MultiTouch3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Capacitance Shunt:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">-{hud.deltaC} pF</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                -{hud.deltaC} pF
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Active Contacts:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{hud.touchCount} pts</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {hud.touchCount} pts
+              </span>
             </div>
           </div>
         )}
@@ -248,8 +254,12 @@ export function MultiTouch3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Contact Separation Distance</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{fingerSeparationMm} mm</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Contact Separation Distance
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {fingerSeparationMm} mm
+              </span>
             </div>
             <input
               type="range"
@@ -257,15 +267,21 @@ export function MultiTouch3D() {
               max="120"
               step="5"
               value={fingerSeparationMm}
-              onChange={(e) => updateParam("fingerSeparationMm", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("fingerSeparationMm", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Active Touch Contacts</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{fingerCount} pts</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Active Touch Contacts
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {fingerCount} pts
+              </span>
             </div>
             <input
               type="range"

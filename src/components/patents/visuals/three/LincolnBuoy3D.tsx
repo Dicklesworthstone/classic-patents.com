@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Anchor,
-  Camera,
-  Eye,
-  EyeOff,
-  Layers,
-  RotateCcw,
-  Volume2,
-  VolumeX,
-  Waves,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -50,7 +39,6 @@ export function LincolnBuoy3D() {
     (params.shoalDepth as number) ?? (params.riverShoalDepthFt as number) ?? 4.5;
   const steamboatWeightTons =
     (params.weightTons as number) ?? (params.steamboatWeightTons as number) ?? 380;
-  const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [_crateSource, setCrateSource] = useState(genericKernelSource());
@@ -240,22 +228,32 @@ export function LincolnBuoy3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Lift Force:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{lincoln.liftKn.toFixed(0)} kN</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Lift Force:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {lincoln.liftKn.toFixed(0)} kN
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Effective Draft:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{effectiveDraftFt.toFixed(2)} ft</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {effectiveDraftFt.toFixed(2)} ft
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Shoal Clearance:</span>
-              <span className={`font-bold ${lincoln.shoalClearanceFt > 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
+              <span
+                className={`font-bold ${lincoln.shoalClearanceFt > 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
+              >
                 {lincoln.shoalClearanceFt.toFixed(2)} ft
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Bellows State:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{bellowsInflationPct}% inflated</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {bellowsInflationPct}% inflated
+              </span>
             </div>
           </div>
         )}
@@ -267,7 +265,9 @@ export function LincolnBuoy3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Bellows Inflation</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{bellowsInflationPct}%</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {bellowsInflationPct}%
+              </span>
             </div>
             <input
               type="range"
@@ -283,7 +283,9 @@ export function LincolnBuoy3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Steamboat Weight</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{steamboatWeightTons} T</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {steamboatWeightTons} T
+              </span>
             </div>
             <input
               type="range"
@@ -299,7 +301,9 @@ export function LincolnBuoy3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Shoal Water Depth</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{riverShoalDepthFt.toFixed(1)} ft</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {riverShoalDepthFt.toFixed(1)} ft
+              </span>
             </div>
             <input
               type="range"

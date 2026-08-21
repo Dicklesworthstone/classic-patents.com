@@ -49,12 +49,25 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(content).toContain("WIRELESS TELEGRAPHY");
   });
 
-  test("exposes all printed claims via dynamic single-source lookup", () => {
-    for (let c = 1; c <= 5; c++) {
+  test("exposes the 21 claims actually printed by the pinned facsimile", () => {
+    const claimBlocks = fessendenWirelessArchivalEdition.blocks.filter(
+      (block) => block.kind === "claim",
+    );
+    expect(claimBlocks).toHaveLength(21);
+
+    for (let c = 1; c <= 21; c++) {
       const claimText = manualFessendenClaimText(c);
       expect(claimText).toBeDefined();
       expect(claimText.length).toBeGreaterThan(30);
     }
+
+    expect(() => manualFessendenClaimText(22)).toThrow(
+      "Claim 22 not found in fessendenWirelessArchivalEdition",
+    );
+  });
+
+  test("remains fail-closed while the literal specification and ledger are being repaired", () => {
+    expect(fessendenWirelessArchivalEdition.completeFacsimileReviewed).toBe(false);
   });
 
   test("validates parallel readings map covers the archival paragraph blocks", () => {

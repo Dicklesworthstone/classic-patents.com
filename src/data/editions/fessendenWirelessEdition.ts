@@ -96,7 +96,7 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
   10: [
     "Formal introduction to the enrolled patent drawings, illustrating the continuous-wave sending system, receiving circuit, electrolytic detector, and cage antenna construction.",
   ],
-  18: [
+  34: [
     "Execution of the specification signed by Reginald Aubrey Fessenden on May 29, 1901 in the presence of witnesses W. B. Fearing and S. C. Gray.",
   ],
 };
@@ -106,7 +106,11 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
   preparedBy: "Classic Patents editorial agent (Antigravity)",
   preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  // This draft remains intentionally unpublished. Its existing specification
+  // paragraphs are not yet a literal transcription of the seven-page source.
+  // The claim block below has been corrected against the facsimile, but that
+  // does not make the edition publication-ready.
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -255,7 +259,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 1,
       inlines: [
         text(
-          "1. In a system for the transmission of energy by electromagnetic waves, a source of continuous alternating current, an aerial radiating conductor, and means for continuously radiating electromagnetic waves of substantially uniform strength and predetermined frequency, substantially as set forth.",
+          "1. A sending-conductor for electromagnetic waves, having a large capacity distributed with substantial uniformity over its radiating portion, substantially as set forth.",
         ),
       ],
     },
@@ -264,7 +268,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 2,
       inlines: [
         text(
-          "2. In a system for the transmission of energy by electromagnetic waves, a sending-conductor, and means for generating in said conductor continuous alternating currents of substantially sinusoidal waveform, substantially as set forth.",
+          "2. A sending-conductor for electromagnetic waves, having its capacity so adjusted that the waves radiated therefrom have a low frequency, substantially as set forth.",
         ),
       ],
     },
@@ -273,7 +277,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 3,
       inlines: [
         text(
-          "3. In a system for wireless signaling, a transmitting station comprising a high-frequency alternator dynamo and a low-loss radiating conductor, and a receiving station comprising a resonant tuned circuit and a continuous-response thermal detector, substantially as set forth.",
+          "3. A sending-conductor for electromagnetic waves, having its capacity and inductance so adjusted that the waves radiated therefrom have a low frequency, substantially as set forth.",
         ),
       ],
     },
@@ -282,7 +286,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 4,
       inlines: [
         text(
-          "4. A wireless receiving system comprising an aerial conductor, a local circuit containing a source of electric energy and a telephone receiver, and an electrolytic detector responsive to continuous wave oscillations connected in said circuit, substantially as set forth.",
+          "4. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted to radiate electromagnetic waves and having its radiating portion of a length which is a large fraction of the quarter-wave length produced by the alternating source of the radiating portion in the medium surrounding the radiating portion, substantially as set forth.",
         ),
       ],
     },
@@ -291,7 +295,151 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       number: 5,
       inlines: [
         text(
-          "5. A transmitting aerial conductor comprising a plurality of substantially vertical parallel wires arranged in cylindrical form and supported upon metallic rings to provide high capacity and low ohmic resistance, substantially as set forth.",
+          "5. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted to radiate electromagnetic waves having its radiating portion of a length which is a large fraction of the length of the sending-conductor, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 6,
+      inlines: [
+        text(
+          "6. In a system for transmission of energy by electromagnetic waves, the combination of a source of alternating voltage generating groups of impulses of low frequency and a conductor in series therewith forming a sending-conductor, said sending-conductor being adapted and proportioned to radiate electromagnetic waves, and being tuned to the source of alternating voltage, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 7,
+      inlines: [
+        text(
+          "7. In a system for the transmission of energy by electromagnetic waves, the combination of an alternating-current dynamo and a conductor in series therewith forming a sending-conductor, said sending-conductor being tuned to the dynamo and adapted to radiate electromagnetic waves and tuned to the dynamo, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 8,
+      inlines: [
+        text(
+          "8. In a system for the transmission of energy by electromagnetic waves, the combination of a sending-conductor so proportioned as to radiate waves of low frequency and an alternating-current dynamo having its terminals connected respectively to the radiating portion of the sending-conductor and to ground, the dynamo being so adjusted that its periodicity is the same or approximately the same as the natural period of the sending-conductor, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 9,
+      inlines: [
+        text(
+          "9. A sending-conductor for electromagnetic waves, formed by an alternating-current dynamo and a conductor in series therewith, one pole of the dynamo being grounded, the sending-conductor thus formed being so proportioned as to radiate waves of low frequency, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 10,
+      inlines: [
+        text(
+          "10. A sending-conductor for electromagnetic waves so proportioned as to radiate waves of low frequency in combination with a source of alternating voltage having its terminals connected respectively to the radiating portion of the sending-conductor and to ground, the voltage-generator being so adjusted that its periodicity is the same or approximately the same as the natural period of the system when so connected, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 11,
+      inlines: [
+        text(
+          "11. A sending-conductor for electromagnetic waves, formed by a source for continuously generating alternating voltage and a conductor in series therewith, one pole of the source of alternating voltage being grounded, the sending-conductor thus formed being so proportioned as to radiate waves of low frequency, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 12,
+      inlines: [
+        text(
+          "12. A system for signaling by electromagnetic waves having in combination a conductor adapted to radiate waves of low frequency, and a receiver dependent for its action upon a constant or independently-varying magnetic field and adapted to respond to currents produced by said waves, substantially as set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 13,
+      inlines: [
+        text(
+          "13. A sending-conductor for electromagnetic waves of a length much less than a quarter of the length of an ether wave, having a frequency equal to the natural period of said sending-conductor, and having a radiating portion which is a large fraction of its total length.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 14,
+      inlines: [
+        text(
+          "14. A sending-conductor for electromagnetic waves having a natural period of vibration much lower than the period of an ether-wave four times its length, whereby its radiating portion may be a relatively large fraction of the total length of said sending-conductor.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 15,
+      inlines: [
+        text(
+          "15. A sending-conductor for electromagnetic waves tuned to a desired low frequency by large capacity and small inductance.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 16,
+      inlines: [
+        text(
+          "16. A sending-conductor for electromagnetic waves having small inductance and tuned to a desired low frequency by a suitably-proportioned large capacity.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 17,
+      inlines: [
+        text(
+          "17. A sending-conductor for electromagnetic waves having low resistance, small self-induction and great capacity, substantially as and for the purpose set forth.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 18,
+      inlines: [
+        text(
+          "18. A sending-conductor for electromagnetic waves having low resistance, small self-induction and great capacity so correlated as to support persistent oscillation of a frequency much less than that of an ether-wave of a length four times that of said sending-conductor.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 19,
+      inlines: [
+        text(
+          "19. A system for transmission of energy by electromagnetic waves in combination with a radiating-conductor and a source of alternating electrical energy or potential, said radiating-conductor and source being coordinated and relatively adjusted to radiate a substantially continuous stream of electromagnetic waves.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 20,
+      inlines: [
+        text(
+          "20. A system for transmission of energy by electromagnetic waves including in combination a radiating-conductor and a source of alternating electrical energy or potential, said radiating-conductor and source being coordinated and relatively adjusted to generate and radiate a substantially continuous stream of electromagnetic waves.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 21,
+      inlines: [
+        text(
+          "21. A system for transmission of energy by electromagnetic waves, including in combination a radiating-conductor and a source of alternating electrical energy or potential, said radiating-conductor and source being coordinated and relatively adjusted to radiate a substantially continuous stream of electromagnetic waves of substantially uniform strength.",
         ),
       ],
     },

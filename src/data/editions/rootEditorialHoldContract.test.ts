@@ -16,6 +16,11 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
+  "us-395781-hollerith-tabulating",
+  "us-682690-hewitt-mercury-lamp",
+  "us-706737-fessenden-wireless",
+  "us-2297691-carlson-electrophotography",
+  "us-2929922-townes-laser",
   "us-3671542-kwolek-kevlar",
 ] as const;
 

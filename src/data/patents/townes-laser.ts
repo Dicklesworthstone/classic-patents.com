@@ -34,51 +34,6 @@ export const townesLaserPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2929922-townes-laser.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2929922A/en",
   usptoClassification: "372/43",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-2929922-townes-laser-reviewed.txt",
-    pageCount: 5,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "0c67f2d45609a1d465f75530c733c7c2feffb87994fa62392cf79f7e737d9270",
-    pageAnchors: [
-      {
-        page: 1,
-        sourceRelationship:
-          "Drawing Sheet 1: Figures 1–6 (Optical maser communications link, Fabry-Pérot cavity resonator, energy level diagram, and generator assembly)",
-        exactSourceText:
-          "March 22, 1960 A. L. SCHAWLOW ET AL 2,929,922 MASERS AND MASER COMMUNICATIONS SYSTEM",
-      },
-      {
-        page: 2,
-        sourceRelationship:
-          "Specification Column 1 & 2: Patent-office masthead, Serial No. 752,021, and theoretical foundations of optical masers",
-        exactSourceText:
-          "This invention relates to the generation and amplification of coherent electromagnetic waves...",
-      },
-      {
-        page: 3,
-        sourceRelationship:
-          "Specification Column 3 & 4: Descriptions of Figures 1–5, potassium vapor optical pumping transitions, and laser oscillation threshold",
-        exactSourceText:
-          "When the single-pass optical gain through the inverted medium exceeds the round-trip reflection and diffraction losses of the cavity...",
-      },
-      {
-        page: 4,
-        sourceRelationship:
-          "Claims 1–6 (Master method and apparatus claims for open optical cavity masers)",
-        exactSourceText:
-          "What is claimed is: 1. An optical maser comprising an active medium characterized by a plurality of energy states...",
-      },
-      {
-        page: 5,
-        sourceRelationship:
-          "Claims 7–13, Formal execution, and Signatures of Arthur L. Schawlow and Charles H. Townes",
-        exactSourceText:
-          "INVENTORS: ARTHUR L. SCHAWLOW, CHARLES H. TOWNES, By R. J. GUENTHER, ATTORNEY.",
-      },
-    ],
-  },
   archivalEdition: townesLaserArchivalEdition,
   originalText:
     "This invention relates to the generation and amplification of coherent electromagnetic waves and more particularly to masers and maser communication systems operating in the infrared and optical frequency ranges.\n\nAn object of the present invention is to provide apparatus for generating and amplifying coherent electromagnetic radiation of frequencies higher than those obtainable by conventional microwave masers, and in particular radiation in the infrared, visible, and ultraviolet regions of the spectrum...\n\nIn conventional microwave masers, such as the ammonia beam maser or solid-state paramagnetic maser, an active medium is situated in a closed resonant cavity whose dimensions are comparable to the wavelength of the radiation. When attempting to extend maser techniques to the optical range... a large closed cavity with dimensions of several centimeters would support billions of degenerate cavity modes, resulting in uncontrolled multi-mode oscillation and spatial incoherence...\n\nAccording to the present invention, this fundamental difficulty is overcome by utilizing an open resonator structure comprising a pair of opposed parallel planar reflective plates (21, 22) bounding an active medium, with the side boundaries between the plates being non-reflective or substantially open to ambient space. This Fabry-Pérot open resonator selectively provides high cavity Q exclusively for waves traveling normal to the reflective end plates, while all off-axis wave modes experience heavy diffraction losses out through the open sides and are completely suppressed below the threshold for self-sustained oscillation.",

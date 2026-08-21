@@ -38,12 +38,10 @@ export function MaximMachineGun3D() {
 
   // Automatic Recoil Ballistics Parameters
   const { params, updateParam } = usePatentPhysics("us-319596-maxim-machine-gun");
-  const fireRateRpm =
-    (params.firingRate as number) ?? (params.fireRateRpm as number) ?? 600;
+  const fireRateRpm = (params.firingRate as number) ?? (params.fireRateRpm as number) ?? 600;
   const waterLevelLiters =
     (params.waterLevel as number) ?? (params.waterLevelLiters as number) ?? 4;
-  const recoilStrokeMm =
-    (params.recoilStroke as number) ?? (params.recoilStrokeMm as number) ?? 19;
+  const recoilStrokeMm = (params.recoilStroke as number) ?? (params.recoilStrokeMm as number) ?? 19;
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
     firingRateRpm: fireRateRpm,
@@ -257,20 +255,30 @@ export function MaximMachineGun3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Cyclic Rate:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(fireRateRpm)} rds/min</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Cyclic Rate:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(fireRateRpm)} rds/min
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Recoil Stroke:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{maxim.recoilStrokeMm} mm</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {maxim.recoilStrokeMm} mm
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Toggle Unlock Force:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{maxim.toggleUnlockForceN} N</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {maxim.toggleUnlockForceN} N
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Barrel Temp:</span>
-              <span className={`font-bold ${maxim.barrelTempC > 200 ? "text-rose-700 dark:text-rose-400" : "text-purple-800 dark:text-purple-400"}`}>
+              <span
+                className={`font-bold ${maxim.barrelTempC > 200 ? "text-rose-700 dark:text-rose-400" : "text-purple-800 dark:text-purple-400"}`}
+              >
                 {maxim.barrelTempC} °C
               </span>
             </div>
@@ -309,7 +317,9 @@ export function MaximMachineGun3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Cyclic Firing Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{Math.round(fireRateRpm)} RPM</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {Math.round(fireRateRpm)} RPM
+              </span>
             </div>
             <input
               type="range"
@@ -325,7 +335,9 @@ export function MaximMachineGun3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Water Jacket Fill</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{waterLevelLiters.toFixed(1)} L</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {waterLevelLiters.toFixed(1)} L
+              </span>
             </div>
             <input
               type="range"
@@ -340,8 +352,12 @@ export function MaximMachineGun3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Short-Recoil Stroke</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{recoilStrokeMm} mm</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Short-Recoil Stroke
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {recoilStrokeMm} mm
+              </span>
             </div>
             <input
               type="range"
