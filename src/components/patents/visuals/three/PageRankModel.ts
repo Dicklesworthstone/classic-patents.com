@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepPageRank } from "@/physics/pageRankKernel";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 export interface PageRankModel {
@@ -8,7 +9,7 @@ export interface PageRankModel {
   edges: THREE.Group[];
   surferParticles: THREE.Points;
   surferPositions: Float32Array;
-  updateSurfers: (timeSec: number) => void;
+  updateSurfers: (timeSec: number, omegaRadPerSec?: number) => void;
   dispose: () => void;
 }
 
@@ -186,13 +187,13 @@ export function buildPageRankModel(): PageRankModel {
   const surferParticles = new THREE.Points(surferGeo, surferMat);
   mainGroup.add(surferParticles);
 
-  const updateSurfers = (timeSec: number) => {
+  const updateSurfers = (timeSec: number, omegaRadPerSec = stepPageRank({}).omegaRadPerSec) => {
     links.forEach(([srcIdx, dstIdx], linkIdx) => {
       const src = positions[srcIdx];
       const dst = positions[dstIdx];
       for (let p = 0; p < 4; p++) {
         const particleIdx = linkIdx * 4 + p;
-        const progress = (timeSec * 0.8 + p * 0.25) % 1.0;
+        const progress = (timeSec * omegaRadPerSec + p * 0.25) % 1.0;
         const pos = src.clone().lerp(dst, progress);
         surferPositions[particleIdx * 3] = pos.x;
         surferPositions[particleIdx * 3 + 1] = pos.y;

@@ -3875,6 +3875,12 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
   const waveRingDisplayRate = Number((fCarrierKhz * 0.02).toFixed(4));
   const headsetDisplayOmegaRadPerS = Number((fAudioHz * 0.03).toFixed(3));
   const audioEnvelopeOmegaRadPerS = Number((fAudioHz * 0.006).toFixed(3));
+  // 2D trace / barretter / telephone rings. Leftover 50 / 20 / 40 at 75 kHz / 1 kHz audio.
+  const rfTraceDisplayOmegaRadPerS = Number(((fCarrierKhz * 50) / 75).toFixed(3));
+  const barretterGlowOmegaRadPerS = Number((headsetDisplayOmegaRadPerS * (20 / 30)).toFixed(3));
+  const telephoneRingDisplayOmegaRadPerS = Number(
+    (headsetDisplayOmegaRadPerS * (40 / 30)).toFixed(3),
+  );
 
   return {
     carrierFrequencyKhz: fCarrierKhz,
@@ -3901,6 +3907,9 @@ export function stepFessendenWireless(params: FessendenWirelessControlParams = {
     waveRingDisplayRate,
     headsetDisplayOmegaRadPerS,
     audioEnvelopeOmegaRadPerS,
+    rfTraceDisplayOmegaRadPerS,
+    barretterGlowOmegaRadPerS,
+    telephoneRingDisplayOmegaRadPerS,
     audioSnrDb,
     audioSoundLevelDbSpl,
   };

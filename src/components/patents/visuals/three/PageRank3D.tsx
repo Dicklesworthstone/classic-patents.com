@@ -80,15 +80,17 @@ export function PageRank3D() {
       renderedSteps += 1;
       const p = live.current;
 
+      let surferOmega = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }).omegaRadPerSec;
       sched.pump(renderedSteps / 60, () => {
         const out = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }, currentRanks);
         currentRanks = out.ranks;
+        surferOmega = out.omegaRadPerSec;
         iteration += 1;
       });
 
-      displayAngle += 0.15 * delta;
+      displayAngle += surferOmega * delta * (0.15 / 0.8);
       model.mainGroup.rotation.y = displayAngle;
-      model.updateSurfers(timeSec);
+      model.updateSurfers(timeSec, surferOmega);
 
       currentRanks.forEach((rank, i) => {
         const targetScale = 0.25 + rank * 3.2;

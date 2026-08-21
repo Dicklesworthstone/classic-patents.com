@@ -276,8 +276,9 @@ export function buildRoombaModel(): RoombaModel {
     currentX: number,
     currentZ: number,
   ) => {
-    // Spin side brush
-    sideBrushGroup.rotation.y += delta * 18.0;
+    // Side-brush ω drains wheel speed (0.3 m/s → leftover 18). Parked chassis freezes the brush.
+    const sideBrushOmegaRadPerS = 18.0 * (speedMPerS / 0.3);
+    sideBrushGroup.rotation.y += delta * sideBrushOmegaRadPerS;
 
     // Rotate drive wheels
     const wheelRotDelta = (speedMPerS / 0.035) * delta;

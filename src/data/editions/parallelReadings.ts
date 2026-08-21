@@ -78,7 +78,7 @@ import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-eng
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 import { yaleLockParallelReadings } from "./yaleLockEdition";
-import { zeppelinParallelReadings } from "./zeppelinEdition";
+import { zeppelinAirshipParallelReadings } from "./zeppelinAirshipEdition";
 
 export type ArchivalParallelReading = readonly string[];
 

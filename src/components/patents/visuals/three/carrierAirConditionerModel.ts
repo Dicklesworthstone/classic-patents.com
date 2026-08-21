@@ -502,9 +502,10 @@ export function updateCarrierAirConditionerKinematics(
       pos[idx] += speed * dt;
 
       if (pos[idx] > 0.4) {
-        const hashX = Math.sin((i + dt * 100) * 13.123);
-        const hashY = Math.cos((i + dt * 100) * 37.456);
-        const hashZ = Math.sin((i + dt * 100) * 59.789);
+        const hashPhase = i + airflowCfm / 150;
+        const hashX = Math.sin(hashPhase * 13.123);
+        const hashY = Math.cos(hashPhase * 37.456);
+        const hashZ = Math.sin(hashPhase * 59.789);
         pos[idx] = -3.2 + (hashX + 1) * 0.4;
         pos[idx + 1] = -0.6 + (hashY + 1) * 1.0;
         pos[idx + 2] = hashZ * 1.3;

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { stepEInk } from "@/physics/eInkKernel";
 
 export interface EInkModel {
   root: THREE.Group;
@@ -190,21 +191,24 @@ export function buildEInkModel(): EInkModel {
     const normV = Math.max(-1, Math.min(1, voltage / 15));
     const targetYWhite = normV >= 0 ? 0.8 : -0.8;
     const targetYBlack = normV >= 0 ? -0.8 : 0.8;
+    const eink = stepEInk({ electrodeVoltageVolts: voltage, fluidViscosityCp: 2.0 }, 0);
+    const jitterOmega =
+      (eink.brownianJitterOmegaYRadPerS + eink.brownianJitterOmegaXRadPerS) / 2;
 
     whiteParticleMeshes.forEach((wp, idx) => {
       const init = whiteInitialOffsets[idx];
       const targetY = targetYWhite + init.jitter;
       wp.position.y += (targetY - wp.position.y) * 0.08;
-      wp.position.x = init.x + Math.sin(timeSec * 2 + idx) * 0.02;
-      wp.position.z = init.z + Math.cos(timeSec * 2 + idx) * 0.02;
+      wp.position.x = init.x + Math.sin(timeSec * jitterOmega + idx) * 0.02;
+      wp.position.z = init.z + Math.cos(timeSec * jitterOmega + idx) * 0.02;
     });
 
     blackParticleMeshes.forEach((bp, idx) => {
       const init = blackInitialOffsets[idx];
       const targetY = targetYBlack + init.jitter;
       bp.position.y += (targetY - bp.position.y) * 0.08;
-      bp.position.x = init.x + Math.cos(timeSec * 2 + idx) * 0.02;
-      bp.position.z = init.z + Math.sin(timeSec * 2 + idx) * 0.02;
+      bp.position.x = init.x + Math.cos(timeSec * jitterOmega + idx) * 0.02;
+      bp.position.z = init.z + Math.sin(timeSec * jitterOmega + idx) * 0.02;
     });
 
     // Update E-field arrow direction and intensity

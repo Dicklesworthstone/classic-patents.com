@@ -178,7 +178,7 @@ export function FessendenWirelessSim() {
 
       const numWaves = 7;
       for (let i = 0; i < numWaves; i++) {
-        const waveProgress = (t * 1.8 + i / numWaves) % 1;
+        const waveProgress = (t * sim.waveRingDisplayRate + i / numWaves) % 1;
         const _waveX = waveStartX + waveProgress * waveDist;
         const waveAlpha = Math.sin(waveProgress * Math.PI) * (sim.radiatedPowerWatts / 1000);
         const waveRadius = 40 + waveProgress * 120;
@@ -208,8 +208,9 @@ export function FessendenWirelessSim() {
       ctx.beginPath();
       for (let x = 0; x <= traceW; x++) {
         const xNorm = x / traceW;
-        const audioEnv = 1 + (audioModPct / 100) * Math.sin(t * 8 + xNorm * Math.PI * 4);
-        const rfOsc = Math.sin(t * 50 + xNorm * Math.PI * 30);
+        const audioEnv =
+          1 + (audioModPct / 100) * Math.sin(t * sim.audioEnvelopeOmegaRadPerS + xNorm * Math.PI * 4);
+        const rfOsc = Math.sin(t * sim.rfTraceDisplayOmegaRadPerS + xNorm * Math.PI * 30);
         const yVal = traceY + rfOsc * audioEnv * 20 * (sim.radiatedPowerWatts / 1000);
         if (x === 0) ctx.moveTo(traceX + x, yVal);
         else ctx.lineTo(traceX + x, yVal);
@@ -264,7 +265,7 @@ export function FessendenWirelessSim() {
       if (sim.receivedPowerMicrowatts > 0.05) {
         ctx.fillStyle = "rgba(251, 191, 36, 0.8)";
         ctx.beginPath();
-        ctx.arc(cupX, cupY + 14, 3 + Math.sin(t * 20) * 1.5, 0, Math.PI * 2);
+        ctx.arc(cupX, cupY + 14, 3 + Math.sin(t * sim.barretterGlowOmegaRadPerS) * 1.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -286,7 +287,7 @@ export function FessendenWirelessSim() {
       if (sim.audioSignalCurrentMicroamps > 0.5) {
         ctx.strokeStyle = "rgba(245, 158, 11, 0.7)";
         ctx.lineWidth = 1.5;
-        const soundR = (t * 40) % 30;
+        const soundR = (t * sim.telephoneRingDisplayOmegaRadPerS) % 30;
         ctx.beginPath();
         ctx.arc(phoneX + 16, phoneY, soundR, -Math.PI / 4, Math.PI / 4);
         ctx.stroke();

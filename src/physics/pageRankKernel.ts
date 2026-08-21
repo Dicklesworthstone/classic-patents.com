@@ -36,9 +36,10 @@ export function stepPageRank(params: PageRankParams, currentState?: number[]): P
     }
   }
 
+  const omegaRadPerSec = Number((0.8 * (d / 0.85)).toFixed(4));
   return {
     ranks: nextRanks,
-    displayOmega: 0.5,
-    omegaRadPerSec: 0.5,
+    displayOmega: omegaRadPerSec,
+    omegaRadPerSec,
   };
 }
