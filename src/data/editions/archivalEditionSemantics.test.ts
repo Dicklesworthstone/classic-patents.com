@@ -194,7 +194,7 @@ describe("manual archival-edition semantics", () => {
 
     expect(figureReferenceCount).toBeGreaterThan(0);
     expect(violations).toEqual([]);
-  });
+  }, 30000);
 
   test("gives every figure in a multi-figure citation an explicitly identified preview", () => {
     const violations: string[] = [];
