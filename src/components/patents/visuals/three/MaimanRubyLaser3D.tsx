@@ -8,7 +8,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -35,7 +35,7 @@ export function MaimanRubyLaser3D() {
   const flashDurationMs = params.flashDurationMs ?? 1.0;
   const rodLengthCm = params.rodLengthCm ?? 5.0;
 
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isFiring, setIsFiring] = useState(false);

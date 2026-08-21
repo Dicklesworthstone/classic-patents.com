@@ -238,9 +238,12 @@ const fermiPages30To40Blocks: readonly CuratedSpecificationBlock[] = [
       "The patent's period term for the reactor assembled by stacking successive graphite and uranium-bearing layers; reactor is the preferred generic term.",
     ),
     text(
-      ". Blocks 50 drilled with cylindrical holes are termed live graphite; blocks 51 containing no uranium, shown in Fig. 15, are termed dead graphite. Uranium-metal cylinders 52 and uranium-oxide pseudospheres 54 are placed in the live blocks.",
+      ". Blocks 50 drilled with cylindrical holes are termed live graphite; blocks 51 containing no uranium, shown in ",
     ),
     figure(15, "Fig. 15"),
+    text(
+      ", are termed dead graphite. Uranium-metal cylinders 52 and uranium-oxide pseudospheres 54 are placed in the live blocks.",
+    ),
   ]),
   paragraph([
     text(
@@ -250,46 +253,50 @@ const fermiPages30To40Blocks: readonly CuratedSpecificationBlock[] = [
       "reflector",
       "A surrounding scattering layer that reduces neutron leakage from the active lattice.",
     ),
+    text(". Rows are spaced and aligned through vault space 14; removable stringers 36a in "),
+    figure(9, "Figs. 9", [10]),
+    text(" and "),
+    figure(10, "10"),
     text(
-      ". Rows are spaced and aligned through vault space 14; removable stringers 36a in Figs. 9 and 10 and removable section 56 permit central uranium rows to be withdrawn for tests. Ionization chamber 60 in channel 43 uses boron-fluoride ionization, a 450-volt battery, and galvanometer 70 to monitor neutron density through the Fig. 16 circuit.",
+      " and removable test unit 56 permit central uranium rows to be withdrawn for tests. Ionization chamber 60 in channel 43 uses boron-fluoride ionization, a 450-volt battery, and galvanometer 70 to monitor neutron density through the ",
     ),
-    figure(9, "Fig. 9"),
-    text(", "),
-    figure(10, "Fig. 10"),
-    text(", and "),
     figure(16, "Fig. 16"),
+    text(" circuit."),
   ]),
   paragraph([
     text(
-      "From at least the halfway point of construction, natural neutron density is monitored as layers are added. Indium foils are exposed near the approximate center, allowed to stand exactly three minutes, and counted with a standardized Geiger counter; the results are converted to saturation activity A0. Fig. 17 plots these values against layers and predicts the approach to critical size. Additional dead-graphite layers provide operating margin beyond the slightly-above-fiftieth critical layer, while concrete and water shield against gamma rays and escaping neutrons.",
+      "From at least the halfway point of construction, natural neutron density is monitored as layers are added. Indium foils are exposed near the approximate center, allowed to stand exactly three minutes, and counted with a standardized Geiger counter; the results are converted to saturation activity A0. ",
     ),
     figure(17, "Fig. 17"),
+    text(
+      " plots these values against layers and predicts the approach to critical size. Additional dead-graphite layers provide operating margin beyond the slightly-above-fiftieth critical layer, while concrete and water shield against gamma rays and escaping neutrons.",
+    ),
   ]),
   paragraph([
-    text(
-      "The control rod 32 of Fig. 20 uses boron steel, rack 82, pinion 83, motors 85 and 86, limit switches, and a selsyn indicator. The shim or limiting rod 30 of Fig. 19 is a cadmium sheet on fiber backing. Safety rods 41 of Fig. 18 are cadmium sheets held out by a solenoid latch; interruption of current releases the latch and gravity inserts the rods. The reactor is useful for isotope manufacture, intense neutron and gamma sources, and material tests; indium-foil activity supplies the printed power calibration.",
-    ),
-    figure(18, "Fig. 18"),
-    text(", "),
-    figure(19, "Fig. 19"),
-    text(", and "),
+    text("The control rod 32 of "),
     figure(20, "Fig. 20"),
+    text(
+      " uses boron steel, rack 82, pinion 83, motors 85 and 86, limit switches, and a selsyn indicator. The shim or limiting rod 30 of ",
+    ),
+    figure(19, "Fig. 19"),
+    text(" is a cadmium sheet on fiber backing. Safety rods 41 of "),
+    figure(18, "Fig. 18"),
+    text(
+      " are cadmium sheets held out by a solenoid latch; interruption of current releases the latch and gravity inserts the rods. The reactor is useful for isotope manufacture, intense neutron and gamma sources, and material tests; indium-foil activity supplies the printed power calibration.",
+    ),
   ]),
   paragraph([
-    text(
-      "The ellipsoidal prototype used an effective radius to predict the critical layer in Fig. 21 and became chain reacting after the fifty-seventh layer. Figs. 22–24 relate neutron density to rod lattices and spherical geometry. A D2O reactor uses cylindrical tank 101 with 136 aluminum-sheathed uranium rods 102; raising the heavy-water level predicted criticality at 122.4 centimeters, with doubling times of 37.6 seconds at 123.1 centimeters and 6.52 seconds at 124.7 centimeters. Graphite reflector 104, concrete and lead-cadmium shields, helium circulation, and the sealed, evacuable rod assembly of Figs. 25–29 complete this chunk. The described D2O reactor operated continuously at 250 kilowatts when properly shimmed.",
-    ),
+    text("The ellipsoidal prototype used an effective radius to predict the critical layer in "),
     figure(21, "Fig. 21"),
-    text(", "),
-    figure(22, "Fig. 22"),
-    text(", "),
-    figure(23, "Fig. 23"),
-    text(", "),
-    figure(24, "Fig. 24"),
-    text(", "),
-    figure(25, "Fig. 25"),
-    text(" through "),
-    figure(29, "Fig. 29", [26, 27, 28]),
+    text(" and became chain reacting after the fifty-seventh layer. "),
+    figure(22, "Figs. 22–24", [23, 24]),
+    text(
+      " relate neutron density to rod lattices and spherical geometry. A D2O reactor uses cylindrical tank 101 with 136 aluminum-sheathed uranium rods 102; raising the heavy-water level predicted criticality at 122.4 centimeters, with doubling times of 37.6 seconds at 123.1 centimeters and 6.52 seconds at 124.7 centimeters. Graphite reflector 104, concrete and lead-cadmium shields, helium circulation, and the sealed, evacuable rod assembly of ",
+    ),
+    figure(25, "Figs. 25–29", [26, 27, 28, 29]),
+    text(
+      " complete this chunk. The described D2O reactor operated continuously at 250 kilowatts when properly shimmed.",
+    ),
   ]),
 ];
 
