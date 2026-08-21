@@ -12,6 +12,7 @@
  */
 
 import * as THREE from "three";
+import { computeFermiNeutronFluxField } from "@/physics/fieldTextures";
 import {
   heatFrames,
   laplacianModeShape,
@@ -332,14 +333,19 @@ export function updateFermiReactorKinematics(
     const heat = heatFrames(12, 16, 2);
     const modes = laplacianModes(17, 3);
     const heatFrame = Math.max(0, Math.min(15, Math.floor((kEff - 0.9) * 80)));
+    const rodInsertion = Math.max(0, Math.min(1, 1 - (rodStudioY + 0.5) / 3.2));
+    const fluxField = computeFermiNeutronFluxField(kEff, rodInsertion, 16);
     const speed = neutronDisplaySpeed * delta;
     const pos = model.neutronPos;
     const vel = model.neutronVel;
     for (let i = 0; i < model.neutronCount; i++) {
       const idx = i * 3;
-      const u = 0.5 + ((pos[idx] ?? 0) + 3.6) / 7.2;
-      const v = 0.5 + ((pos[idx + 2] ?? 0) + 3.6) / 7.2;
-      const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v));
+      const u = Math.max(0, Math.min(1, 0.5 + ((pos[idx] ?? 0) + 3.6) / 7.2));
+      const v = Math.max(0, Math.min(1, 0.5 + ((pos[idx + 2] ?? 0) + 3.6) / 7.2));
+      const gx = Math.floor(u * 15);
+      const gy = Math.floor(v * 15);
+      const fluxSample = fluxField[gy * 16 + gx] ?? 0.5;
+      const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, v)) * (0.5 + 0.5 * fluxSample);
       const lattice = 1 + 0.35 * laplacianModeShape(modes, 17, 3, 0, i);
       pos[idx] += (vel[idx] ?? 0) * speed * 2.0 * local;
       pos[idx + 1] += (vel[idx + 1] ?? 0) * speed * 2.0 * lattice;

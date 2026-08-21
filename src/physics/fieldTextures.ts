@@ -362,3 +362,155 @@ export function writeColormappedField(
     rgba[idx + 3] = 255;
   }
 }
+
+/** Fermi CP-1 2D spatial neutron flux field from diffusion with cadmium rod absorption. */
+export function computeFermiNeutronFluxField(
+  keff: number,
+  rodInsertion: number,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const fluxScale = Math.max(0.1, Math.min(1.0, keff > 1.0 ? 0.6 + (keff - 1.0) * 8 : 0.6 * keff));
+  const rodSuppression = Math.max(0, Math.min(1, rodInsertion));
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = (x / (gridSize - 1)) * 2 - 1; // [-1..1]
+      const v = (y / (gridSize - 1)) * 2 - 1; // [-1..1]
+      const r2 = u * u + v * v;
+      if (r2 > 1.0) {
+        grid[y * gridSize + x] = 0;
+        continue;
+      }
+      // Fundamental Bessel/cosine diffusion mode
+      const fundamental = Math.cos((Math.PI * u) / 2) * Math.cos((Math.PI * v) / 2);
+      // Local absorber rod depression near center-top
+      const rodDist2 = u * u + (v - 0.25) * (v - 0.25);
+      const rodDip = rodSuppression * 0.75 * Math.exp(-rodDist2 / 0.12);
+      const val = Math.max(0, fundamental - rodDip) * fluxScale;
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, val));
+    }
+  }
+  return grid;
+}
+
+/** Goddard supersonic rocket de Laval expansion plume with periodic Mach diamonds. */
+export function computeGoddardPlumeField(
+  chamberPressurePsi: number,
+  expansionRatio: number,
+  timeSec: number,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const pressureFactor = Math.max(0.1, Math.min(1.0, chamberPressurePsi / 300));
+  const machWavelength = Math.max(0.15, Math.min(0.35, 0.2 * Math.sqrt(expansionRatio / 4)));
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1); // [0..1] axial distance downstream
+      const v = (y / (gridSize - 1)) * 2 - 1; // [-1..1] radial distance from centerline
+
+      // Plume spread increases downstream
+      const plumeRadius = 0.15 + 0.45 * u;
+      const radialProfile = Math.exp(-(v * v) / (2 * plumeRadius * plumeRadius));
+
+      // Periodic Mach diamonds along core
+      const diamondFreq = (2 * Math.PI) / machWavelength;
+      const machOscillation = 0.35 * Math.cos(diamondFreq * u - timeSec * 12) * Math.exp(-u * 2.5);
+
+      const intensity =
+        (0.65 * radialProfile + machOscillation * radialProfile) *
+        pressureFactor *
+        Math.exp(-u * 1.2);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, intensity));
+    }
+  }
+  return grid;
+}
+
+/** Maiman Ruby Laser optical resonator TEM00 Gaussian photon flux intensity. */
+export function computeLaserCavityField(
+  pumpEnergyJoules: number,
+  inversionFraction: number,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const gain = Math.max(0, Math.min(1.0, (pumpEnergyJoules / 2000) * inversionFraction));
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = (x / (gridSize - 1)) * 2 - 1; // [-1..1]
+      const v = (y / (gridSize - 1)) * 2 - 1; // [-1..1]
+      const r2 = u * u + v * v;
+
+      // TEM00 Gaussian beam waist profile
+      const waist = 0.38;
+      const tem00 = Math.exp(-r2 / (waist * waist));
+
+      // Radial dielectric rod index wave
+      const rodBoundary = r2 <= 0.85 ? 1.0 : Math.exp(-(r2 - 0.85) / 0.05);
+      const intensity = gain * tem00 * rodBoundary;
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, intensity));
+    }
+  }
+  return grid;
+}
+
+/** Linde Joule-Thomson countercurrent liquefaction thermal gradient field. */
+export function computeJouleThomsonThermalField(
+  inletPressureBar: number,
+  throttleTempK: number,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const jtDeltaT = Math.max(5, Math.min(80, inletPressureBar * 0.28));
+  const coldRatio = Math.max(0, Math.min(1.0, (300 - throttleTempK + jtDeltaT) / 250));
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1); // [0..1] along heat exchanger
+      const v = y / (gridSize - 1); // [0..1] high-P tube vs return sheath
+
+      // High-pressure inner stream cools toward throttle at u=1
+      const highPStream = (1.0 - 0.7 * u) * (1.0 - 0.3 * coldRatio);
+      // Low-pressure return cold stream warms from throttle back toward u=0
+      const lowPReturn = (0.2 + 0.5 * (1.0 - u)) * coldRatio;
+
+      const streamMix = v > 0.5 ? highPStream : lowPReturn;
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, streamMix));
+    }
+  }
+  return grid;
+}
+
+/** Parsons steam turbine multistage enthalpy drop field across cascade blading. */
+export function computeSteamEnthalpyField(
+  inletPressurePsi: number,
+  stages = 48,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const pr = Math.max(2, Math.min(25, inletPressurePsi / 14.7));
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1); // [0..1] axial progression through blading
+      const v = (y / (gridSize - 1)) * 2 - 1; // [-1..1] radial annular height
+
+      // Annular casing flare: diameter expands to accommodate low-pressure steam volume
+      const casingRadius = 0.3 + 0.6 * (u * u);
+      if (Math.abs(v) > casingRadius) {
+        grid[y * gridSize + x] = 0;
+        continue;
+      }
+
+      // Isentropic enthalpy drop curve h(x)
+      const enthalpyFrac = Math.pow(1 - 0.75 * u, 0.28);
+      // Blading tier ripple
+      const bladeRipple = 0.08 * Math.sin(u * stages * Math.PI);
+      const intensity = Math.max(0, enthalpyFrac + bladeRipple) * Math.min(1, pr / 10);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, intensity));
+    }
+  }
+  return grid;
+}

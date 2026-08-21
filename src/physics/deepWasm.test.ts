@@ -215,7 +215,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     }
   });
 
-  test("field textures write finite grids for Tesla, Noyce, Farnsworth, Spencer", () => {
+  test("field textures write finite grids for Tesla, Noyce, Farnsworth, Spencer, Fermi, Goddard, Laser, Linde, Parsons", () => {
     const tesla = computeTeslaRotatingBField(0.4, 2, 16);
     expect(tesla.length).toBe(256);
     let max = 0;
@@ -225,6 +225,21 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(computeFarnsworthRasterField(0.4, 16).length).toBe(256);
     expect(computeSpencerCavityField(800, true, 0.2, 16).length).toBe(256);
     expect(computeCarrierSprayField(15000, 16).length).toBe(256);
+
+    const {
+      computeFermiNeutronFluxField,
+      computeGoddardPlumeField,
+      computeLaserCavityField,
+      computeJouleThomsonThermalField,
+      computeSteamEnthalpyField,
+    } = require("./fieldTextures");
+
+    expect(computeFermiNeutronFluxField(1.02, 0.2, 16).length).toBe(256);
+    expect(computeGoddardPlumeField(250, 4.0, 0.1, 16).length).toBe(256);
+    expect(computeLaserCavityField(1500, 0.8, 16).length).toBe(256);
+    expect(computeJouleThomsonThermalField(180, 110, 16).length).toBe(256);
+    expect(computeSteamEnthalpyField(180, 48, 16).length).toBe(256);
+
     const rgba = new Uint8Array(16 * 16 * 4);
     writeColormappedField(rgba, tesla, 16, 16);
     expect(rgba[3]).toBe(255);

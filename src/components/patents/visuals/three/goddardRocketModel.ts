@@ -14,6 +14,7 @@
 
 import * as THREE from "three";
 import { goddardSchematicStack } from "@/physics/catalogKernels";
+import { computeGoddardPlumeField } from "@/physics/fieldTextures";
 import { deLavalMeridian } from "@/physics/thermochem";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
@@ -385,10 +386,17 @@ export function updateGoddardRocketKinematics(
   if (showExhaustPlume && plumeOk) {
     const velocitySpeed = plumeAdvancePerS * delta;
     const exitSpread = goddard.plumeExitSpread0 * Math.sqrt(Math.max(goddard.plumeMinAr, ar));
+    const plumeField = computeGoddardPlumeField(250, ar, (model.plumePos[1] ?? 0) * 0.1, 16);
 
     for (let i = 0; i < model.plumePos.length / 3; i++) {
       const idx = i * 3;
-      model.plumePos[idx + 1] -= velocitySpeed;
+      const u = Math.max(0, Math.min(1, Math.abs((model.plumePos[idx + 1] ?? 0) - goddard.plumeResetY) / Math.abs(goddard.plumeWrapY - goddard.plumeResetY)));
+      const v = Math.max(0, Math.min(1, 0.5 + (model.plumePos[idx] ?? 0) / 4.0));
+      const gx = Math.floor(u * 15);
+      const gy = Math.floor(v * 15);
+      const shockFactor = 0.8 + 0.4 * (plumeField[gy * 16 + gx] ?? 0.5);
+
+      model.plumePos[idx + 1] -= velocitySpeed * shockFactor;
       model.plumePos[idx] += Math.sin(gimbalRad) * velocitySpeed * goddard.plumeGimbalCoupling;
 
       if (model.plumePos[idx + 1] < goddard.plumeWrapY) {
