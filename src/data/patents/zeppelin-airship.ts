@@ -22,9 +22,6 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
-  // The immutable supplied grant cites Figs. 11 and 12 but contains only
-  // Figs. 1–10. Preserve the source materials for remediation, but do not
-  // bind a partial source face or label its ledger as publishable.
   originalText: `UNITED STATES PATENT OFFICE.
 FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
 
