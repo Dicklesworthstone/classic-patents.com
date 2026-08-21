@@ -413,7 +413,7 @@ export function computePortHamiltonianEnergy(
 
     case "us-3138743-kilby-integrated-circuit": {
       const vcc = params.supplyVoltageV ?? 5.0;
-      const fClock = params.mesaFrequencyMhz ?? 1.0;
+      const _fClock = params.mesaFrequencyMhz ?? 1.0;
       const rMesa = 350.0; // Mesa diffused resistor
       powerIn = (vcc * vcc) / rMesa + 12.0e-3; // Resistor chain + phase-shift oscillator power
       const cMesaPf = 80.0e-12; // PN junction mesa capacitor
@@ -440,7 +440,7 @@ export function computePortHamiltonianEnergy(
       const dramBytes = 49152; // 48 KB RAM
       powerIn = 38.0; // 38 Watts switching power supply input
       em = 0.5 * 100e-6 * 5.0 * 5.0; // 100 uF main board decoupling capacitor energy
-      const dramDynPower = dramBytes * 1.5e-13 * 5.0 * 5.0 * (clockMhz * 1e6);
+      const _dramDynPower = dramBytes * 1.5e-13 * 5.0 * 5.0 * (clockMhz * 1e6);
       dissipated = powerIn; // Motherboard and logic TTL chip Joule heat
       thermal = 0.85 * 840.0 * 25.0; // FR-4 PCB and ceramic IC heat capacity
       break;
@@ -493,7 +493,7 @@ export function computePortHamiltonianEnergy(
 
     case "us-7479949-multitouch": {
       const touchPoints = params.touchPointCount ?? 2;
-      const scanHz = params.scanRateHz ?? 120.0;
+      const _scanHz = params.scanRateHz ?? 120.0;
       const touchGridCapFarads = 45.0e-12; // 45 pF mutual capacitance ITO matrix
       em = 0.5 * 15 * 20 * touchGridCapFarads * 3.3 * 3.3; // Stored electrostatic touch sensing matrix energy
       powerIn = 1.2 + touchPoints * 0.15; // Display controller + multi-touch ASIC power (Watts)

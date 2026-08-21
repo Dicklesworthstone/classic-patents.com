@@ -219,7 +219,11 @@ export function computeParameterSensitivity(
     }
 
     case "us-3858232-boyle-smith-ccd": {
-      if (controlKey === "gateVoltageV" || controlKey === "gateVoltage") {
+      if (
+        controlKey === "gateVoltageV" ||
+        controlKey === "gateVoltage" ||
+        controlKey === "voltage"
+      ) {
         const _vg = params.gateVoltageV ?? params.gateVoltage ?? 10.0;
         // Full well charge sensitivity: d(N_well)/d(Vg) = C_ox / q_e ~ 1.5e-13 / 1.602e-19 ~ 936,000 e/V
         const dN_dvg = 93630.0; // e- / V
@@ -230,6 +234,16 @@ export function computeParameterSensitivity(
           derivativeUnit: "e⁻ / V",
           interpretation:
             "Linear growth of MOS potential well electron storage capacity per gate volt.",
+        };
+      }
+      if (controlKey === "clockFrequencyMhz" || controlKey === "frequency") {
+        return {
+          metricName: "Charge Transfer Efficiency",
+          derivativeSymbol: "∂CTE / ∂f_clk",
+          derivativeValue: -0.004,
+          derivativeUnit: "% / MHz",
+          interpretation:
+            "Transfer inefficiency roll-off at elevated multi-phase clock frequencies.",
         };
       }
       break;

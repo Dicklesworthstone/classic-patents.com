@@ -466,6 +466,34 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Masers operated strictly at microwave frequencies; optical stimulated emission was widely deemed theoretically unachievable in solids.",
     },
   ],
+  "us-3858232-boyle-smith-ccd": [
+    {
+      claimNumber: 1,
+      patentId: "us-3858232-boyle-smith-ccd",
+      claimTitle: "Sequential Multi-Phase Potential Well Charge Transfer",
+      activeDescription:
+        "Claim 1 applies sequential multi-phase clock voltages across dielectric-isolated electrodes to shift potential energy wells and transport discrete minority carrier packets.",
+      invertedDescription:
+        "Static unclocked gate array: without sequential three-phase potential well progression, photogenerated charge packets smear across pixel boundaries.",
+      failureModeName: "Charge Smear & Bulk Interface Recombination",
+      historicalPriorArt:
+        "Early image sensors used destructive X-Y matrix diode addressing with high readout noise and low fill factor.",
+    },
+  ],
+  "us-2495429-spencer-microwave": [
+    {
+      claimNumber: 1,
+      patentId: "us-2495429-spencer-microwave",
+      claimTitle: "Volumetric Dielectric Microwave Cooking",
+      activeDescription:
+        "Claim 1 exposes foodstuff directly to enclosed 2.45 GHz microwave radiation to excite dipole water molecules and cook from within.",
+      invertedDescription:
+        "Conductive surface heating: heat penetrates slowly via surface conduction, scorching outer layers while the core remains frozen/raw.",
+      failureModeName: "Conductive Thermal Surface Scorching",
+      historicalPriorArt:
+        "Conventional ovens relied exclusively on external hot air convection and radiative conduction from vessel walls.",
+    },
+  ],
 };
 
 /**
@@ -743,6 +771,35 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "THRESHOLD DEFICIT: Optical pump energy density insufficient to overcome ruby ground-state absorption.";
+      }
+      break;
+    }
+
+    case "us-3858232-boyle-smith-ccd": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.clockFrequencyMhz = 0.0; // Clock frozen
+        modified.gateVoltageV = 0.5; // Collapsed potential wells
+        modified.chargeTransferEfficiency = 0.82; // Massive CTE degradation
+        activeFailures.push(
+          "Charge Smear: Static gate potential traps minority carriers at SiO₂ interface defects",
+        );
+        refusalWarning =
+          "CHARGE COLLAPSE: Without sequential 3-phase potential stepping, discrete charge packets diffuse and recombine.";
+      }
+      break;
+    }
+
+    case "us-2495429-spencer-microwave": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.rfPowerSetting = 0.0; // Zero microwave emission
+        modified.anodeVoltage = 200.0; // Sub-cutoff magnetron voltage
+        activeFailures.push(
+          "Conductive Heat Stagnation: Loss of 2.45 GHz dielectric rotation slows core heating by 40x",
+        );
+        refusalWarning =
+          "THERMAL PENETRATION FAILURE: Without volumetric microwave dielectric heating, thermal conduction rate caps cooking speed.";
       }
       break;
     }
