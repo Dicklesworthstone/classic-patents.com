@@ -1,12 +1,14 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser } from "@/physics/wattCondenserKernel";
+import { soundEngine } from "@/utils/soundEngine";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 import { buildWattSeparateCondenserModel } from "./wattSeparateCondenserModel";
 
 const EXHIBIT_ID = "gb-913-watt-separate-condenser";
@@ -31,6 +33,7 @@ export function WattSeparateCondenser3D() {
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const handlePresetChange = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -146,6 +149,9 @@ export function WattSeparateCondenser3D() {
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
             {(
               [
                 ["iso", "Overview"],
@@ -175,29 +181,51 @@ export function WattSeparateCondenser3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setCutaway((v) => !v)}
+            onClick={() => {
+              setCutaway((v) => !v);
+              soundEngine.playSwitchClick();
+            }}
             title={cutaway ? "Switch to Solid Engine" : "Switch to Cylinder Cutaway"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               cutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
-            <span className="md:hidden">{cutaway ? "Sol" : "Cut"}</span>
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{cutaway ? "Cutaway" : "Solid"}</span>
           </button>
           <button
             type="button"
-            onClick={() => setShowCallouts((v) => !v)}
+            onClick={() => {
+              setShowCallouts((v) => !v);
+              soundEngine.playSwitchClick();
+            }}
             title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               showCallouts
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
-            <span className="md:hidden">Pins</span>
+            <Zap className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{showCallouts ? "Pins" : "Pins Off"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
           <button
             type="button"
@@ -217,10 +245,10 @@ export function WattSeparateCondenser3D() {
             aria-label="Reset camera view"
             type="button"
             onClick={() => handlePresetChange("iso")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

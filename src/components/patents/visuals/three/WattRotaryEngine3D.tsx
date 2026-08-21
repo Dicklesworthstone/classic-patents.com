@@ -1,12 +1,24 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCw, Sparkles } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  RotateCw,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 import { buildWattRotaryEngineModel, type WattRotaryModelNodes } from "./wattRotaryEngineModel";
 
 type CameraPreset = "overview" | "gear-mesh" | "beam" | "cylinder";
@@ -39,6 +51,7 @@ export function WattRotaryEngine3D() {
   const [showCallouts, setShowCallouts] = useState(true);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;
@@ -171,7 +184,10 @@ export function WattRotaryEngine3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isPlaying
                 ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
@@ -183,33 +199,51 @@ export function WattRotaryEngine3D() {
           </button>
           <button
             type="button"
-            onClick={() => setCutaway(!cutaway)}
+            onClick={() => {
+              setCutaway(!cutaway);
+              soundEngine.playSwitchClick();
+            }}
             title={cutaway ? "Switch to Solid Shell" : "Switch to Cutaway Cylinder"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               cutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
             <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
-            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
+            <span className="hidden md:inline">{cutaway ? "Cutaway" : "Solid"}</span>
           </button>
           <button
             type="button"
-            onClick={() => setShowCallouts(!showCallouts)}
+            onClick={() => {
+              setShowCallouts(!showCallouts);
+              soundEngine.playSwitchClick();
+            }}
             title={showCallouts ? "Hide Callouts" : "Show Callouts"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               showCallouts
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {showCallouts ? (
-              <Eye className="w-3.5 h-3.5 inline sm:mr-1" />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showCallouts ? "Pins" : "Pins Off"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
-            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
           </button>
           <button
             type="button"
@@ -222,17 +256,17 @@ export function WattRotaryEngine3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Sparkles className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
           <button
             aria-label="Reset camera view"
             type="button"
             onClick={() => handleCameraPreset("overview")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

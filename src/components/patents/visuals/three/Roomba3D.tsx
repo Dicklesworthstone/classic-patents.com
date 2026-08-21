@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -10,8 +10,10 @@ import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimP
 import { ROOMBA_ROOM, type RoombaState, stepRoomba } from "@/physics/roombaKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { buildRoombaModel } from "./RoombaModel";
 import { StudioKernelChips } from "./StudioKernelChips";
+import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6594844-roomba";
 
@@ -32,6 +34,7 @@ export function Roomba3D() {
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({ mode: "spiral", speed: 0.3 });
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const wheelSpeedMps = (params.wheelSpeedMps as number) ?? 0.3;
   const turnRateRadSec = (params.turnRateRadSec as number) ?? 1.5;
@@ -165,6 +168,23 @@ export function Roomba3D() {
 
         {/* Top Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
