@@ -32,6 +32,7 @@ import { FessendenWirelessSim } from "./FessendenWirelessSim";
 import { GatlingGunSim } from "./GatlingGunSim";
 import { GliddenBarbedWireSim } from "./GliddenBarbedWireSim";
 import { GoddardRocketSim } from "./GoddardRocketSim";
+import { GoddardRocketSourceVisual } from "./GoddardRocketSourceVisual";
 import { GoodyearRubberSim } from "./GoodyearRubberSim";
 import { GrammeDynamoSim } from "./GrammeDynamoSim";
 import { HaberAmmoniaSim } from "./HaberAmmoniaSim";
@@ -56,6 +57,7 @@ import { MorseTelegraphSim } from "./MorseTelegraphSim";
 import { MultiTouchSim } from "./MultiTouchSim";
 import { NobelDynamiteSim } from "./NobelDynamiteSim";
 import { NoycePlanarICSim } from "./NoycePlanarICSim";
+import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
 import { OtisElevatorSim } from "./OtisElevatorSim";
 import { OttoEngineSim } from "./OttoEngineSim";
 import { PageRankSim } from "./PageRankSim";
@@ -66,6 +68,7 @@ import { RenoEscalatorSim } from "./RenoEscalatorSim";
 import { RillieuxEvaporatorSim } from "./RillieuxEvaporatorSim";
 import { RoombaSim } from "./RoombaSim";
 import { SholesTypewriterSim } from "./SholesTypewriterSim";
+import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
 import { SpencerMicrowaveSim } from "./SpencerMicrowaveSim";
 import { TeslaCoilSim } from "./TeslaCoilSim";
 import { TeslaMotorSim } from "./TeslaMotorSim";
@@ -80,9 +83,6 @@ import { WozniakAppleSim } from "./WozniakAppleSim";
 import { WrightFlyerSim } from "./WrightFlyerSim";
 import { YaleLockSim } from "./YaleLockSim";
 import { ZeppelinAirshipSim } from "./ZeppelinAirshipSim";
-import { GoddardRocketSourceVisual } from "./GoddardRocketSourceVisual";
-import { NoycePlanarSourceVisual } from "./NoycePlanarSourceVisual";
-import { SourceVisualUnavailable } from "./SourceVisualUnavailable";
 
 describe("2D Dynamic Vector Simulators & Source Visuals", () => {
   const activeSims = [
