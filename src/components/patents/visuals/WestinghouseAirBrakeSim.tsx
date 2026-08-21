@@ -182,7 +182,7 @@ export function WestinghouseAirBrakeSim() {
           {/* Status Overlay HUD */}
           <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-2 text-[11px] font-mono">
             <div className="px-2.5 py-1 bg-ink-900/90 border border-ink-700 rounded-lg text-ink-300 flex items-center gap-1.5">
-              <span>Cock $d^1$:</span>
+              <span>Cock d¹:</span>
               <span className="text-amber-400 font-bold">
                 {wh.isSelectingCockReversed ? "Position 2 (Swapped)" : "Position 1 (Normal)"}
               </span>
