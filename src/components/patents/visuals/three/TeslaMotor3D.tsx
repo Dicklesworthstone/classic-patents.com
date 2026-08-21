@@ -62,7 +62,6 @@ export function TeslaMotor3D() {
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
     isAudioMuted,
     rotorSpeedRpm,
-    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -157,7 +156,6 @@ export function TeslaMotor3D() {
       );
 
       bFieldArrow.visible = p.showMagneticFlux && fig9Available;
-      fig9Model.setCutaway?.(p.isCutaway ?? false);
 
       controls.update();
       renderer.render(scene, camera);

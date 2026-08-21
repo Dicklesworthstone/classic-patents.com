@@ -19,6 +19,7 @@ export interface MaimanRubyLaserModelNodes {
 export function createMaimanRubyLaserModel(): {
   nodes: MaimanRubyLaserModelNodes;
   update: (controls: MaimanRubyLaserControls, timeSec: number, isFiring: boolean) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 } {
   const group = new THREE.Group();
@@ -318,6 +319,11 @@ export function createMaimanRubyLaserModel(): {
     ablationGeo.dispose();
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    housingMat.opacity = cutaway ? 0.08 : 0.65;
+    housingMat.needsUpdate = true;
+  };
+
   return {
     nodes: {
       group,
@@ -334,6 +340,7 @@ export function createMaimanRubyLaserModel(): {
       highVoltageLeads,
     },
     update,
+    setCutaway,
     dispose,
   };
 }

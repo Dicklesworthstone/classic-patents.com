@@ -1,6 +1,16 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
@@ -95,6 +105,7 @@ export function TeslaCoil3D() {
     streamerStudioLength: coilPhysics.streamerStudioLength,
     sparkRateHz: params.sparkRateHz ?? 120,
     isAudioMuted,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -137,6 +148,8 @@ export function TeslaCoil3D() {
         p.streamerStudioLength,
         Number.parseFloat(p.secondaryVoltageMv),
       );
+
+      model.setCutaway?.(p.isCutaway ?? false);
 
       if (!p.isAudioMuted) {
         audioTick += 1;
@@ -230,6 +243,19 @@ export function TeslaCoil3D() {
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Secondary Coil" : "Wireframe Coil & Base Cutaway"}
+            aria-label={isCutaway ? "Solid Secondary Coil" : "Wireframe Coil & Base Cutaway"}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
