@@ -246,20 +246,30 @@ export function GatlingGun3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Rate of Fire:</span>
-              <span className="font-bold text-rose-700 dark:text-rose-400">{roundsPerMinute} rds/min</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Rate of Fire:
+              </span>
+              <span className="font-bold text-rose-700 dark:text-rose-400">
+                {roundsPerMinute} rds/min
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Crank Speed:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(crankRpm)} RPM</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(crankRpm)} RPM
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Cooling Interval:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{gatling.barrelCoolingIntervalS.toFixed(2)} s/bbl</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {gatling.barrelCoolingIntervalS.toFixed(2)} s/bbl
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Muzzle Energy:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{gatling.muzzleEnergyJoules} J</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {gatling.muzzleEnergyJoules} J
+              </span>
             </div>
           </div>
         )}
@@ -290,7 +300,9 @@ export function GatlingGun3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Hand Crank Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{Math.round(crankRpm)} RPM</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {Math.round(crankRpm)} RPM
+              </span>
             </div>
             <input
               type="range"
@@ -305,8 +317,12 @@ export function GatlingGun3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Revolving Barrel Count</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{barrelCount} barrels</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Revolving Barrel Count
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {barrelCount} barrels
+              </span>
             </div>
             <input
               type="range"

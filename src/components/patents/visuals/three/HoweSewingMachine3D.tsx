@@ -1,23 +1,13 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  RotateCcw,
-  Scissors,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { buildHoweSewingMachineModel, howeCyclicFlex } from "./howeSewingMachineModel";
+import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -140,14 +130,15 @@ export function HoweSewingMachine3D() {
         const theta = (mainCrankAngleDeg * Math.PI) / 180;
         model.flywheelGroup.rotation.x = -theta;
 
-        // Needle Rocking Lever Arc
+        // Needle Rocking Lever Arc & Kinematic Needle Rotation
+        const stitchState = stepHoweLockstitch(mainCrankAngleDeg);
         const needleAngle = Math.sin(theta) * 0.35;
         model.needleArmGroup.rotation.z = needleAngle;
 
         // Curved Eye-Pointed Needle Kinematic Position
         model.curvedNeedle.position.y = -0.15 + Math.sin(theta) * 0.45;
         model.curvedNeedle.position.z = Math.cos(theta) * 0.12;
-        model.curvedNeedle.rotation.z = Math.PI + Math.sin(theta) * 0.15;
+        model.curvedNeedle.rotation.z = Math.PI + stitchState.needleStudioRotZ;
 
         // Shuttle Box Linear Reciprocation
         model.shuttleMesh.position.x = -0.3 + Math.cos(theta - Math.PI / 4) * 0.65;
@@ -317,7 +308,9 @@ export function HoweSewingMachine3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Drive Crank Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{stitchingSpeedRpm} RPM</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {stitchingSpeedRpm} RPM
+              </span>
             </div>
             <input
               type="range"
@@ -333,7 +326,9 @@ export function HoweSewingMachine3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Stitch Pitch</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{stitchPitchMm.toFixed(1)} mm</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {stitchPitchMm.toFixed(1)} mm
+              </span>
             </div>
             <input
               type="range"
@@ -349,7 +344,9 @@ export function HoweSewingMachine3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Thread Tension</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{threadTensionGrams} g</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {threadTensionGrams} g
+              </span>
             </div>
             <input
               type="range"
@@ -357,7 +354,9 @@ export function HoweSewingMachine3D() {
               max="90"
               step="1"
               value={threadTensionGrams}
-              onChange={(e) => updateParam("threadTensionGrams", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("threadTensionGrams", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>

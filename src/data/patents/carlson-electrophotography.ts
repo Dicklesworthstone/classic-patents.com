@@ -522,8 +522,7 @@ export const carlsonElectrophotographyPatent: Patent = {
         "Simultaneous electric field projection and powder visualization",
         "Direct visible image creation from photo-conduction current",
       ],
-      legalSignificance:
-        "Protects single-stage simultaneous exposure-development apparatus.",
+      legalSignificance: "Protects single-stage simultaneous exposure-development apparatus.",
     },
     {
       number: 21,
@@ -618,7 +617,7 @@ export const carlsonElectrophotographyPatent: Patent = {
         "The foundational claim connecting electrostatic surface potential modulation to discrete micro-dot printing, the operating principle of all modern digital laser and xerographic presses.",
     },
   ],
-    historicalContext: {
+  historicalContext: {
     problemStatement:
       "In the 1930s, copying documents required either manual carbon paper typing, chemical photostat cameras using liquid photographic developer and fixer baths that took hours to wash and dry, or foul-smelling diazo/ammonia blueprint processes. There was no clean, dry, fast method for reproducing office documents.",
     priorArtLimitations: [

@@ -36,7 +36,8 @@ export const EngelbartMouse3D = memo(() => {
 
   // Mechanical Coordinates & Pulse Resolver Parameters
   const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
-  const mouseSpeedMmPerS = (params.mouseSpeed as number) ?? (params.mouseSpeedMmPerS as number) ?? 350;
+  const mouseSpeedMmPerS =
+    (params.mouseSpeed as number) ?? (params.mouseSpeedMmPerS as number) ?? 350;
   const surfaceFrictionCoeff = (params.surfaceFrictionCoeff as number) ?? 0.35;
   const wheelRadiusMm = (params.wheelRadius as number) ?? (params.wheelRadiusMm as number) ?? 9.5;
   const pulsesPerRev = (params.pulsesPerRev as number) ?? 200;
@@ -257,20 +258,30 @@ export const EngelbartMouse3D = memo(() => {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Tracking Speed:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{mouseSpeedMmPerS} mm/s</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Tracking Speed:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {mouseSpeedMmPerS} mm/s
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Resolution:</span>
-              <span className="font-bold text-emerald-800 dark:text-emerald-400">{mouse.dpi} CPI</span>
+              <span className="font-bold text-emerald-800 dark:text-emerald-400">
+                {mouse.dpi} CPI
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Pulse Rate:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{mouse.pulseRateHz.toFixed(0)} pulses/s</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {mouse.pulseRateHz.toFixed(0)} pulses/s
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Wheel Angular Vel:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{mouse.omegaRadPerS.toFixed(1)} rad/s</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {mouse.omegaRadPerS.toFixed(1)} rad/s
+              </span>
             </div>
           </div>
         )}
@@ -308,7 +319,9 @@ export const EngelbartMouse3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Tracking Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{mouseSpeedMmPerS} mm/s</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {mouseSpeedMmPerS} mm/s
+              </span>
             </div>
             <input
               type="range"
@@ -324,7 +337,9 @@ export const EngelbartMouse3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Wheel Radius</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{wheelRadiusMm} mm</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {wheelRadiusMm} mm
+              </span>
             </div>
             <input
               type="range"
@@ -339,8 +354,12 @@ export const EngelbartMouse3D = memo(() => {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Resolver Pulses / Rev</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{pulsesPerRev} PPR</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Resolver Pulses / Rev
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {pulsesPerRev} PPR
+              </span>
             </div>
             <input
               type="range"

@@ -244,7 +244,9 @@ export function HewittMercuryLamp3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Mains Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{mainsVoltageV} V</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {mainsVoltageV} V
+              </span>
             </div>
             <input
               id="mainsVoltage3d"
@@ -260,8 +262,12 @@ export function HewittMercuryLamp3D({
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Discharge Tube Length</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{tubeLengthCm} cm</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Discharge Tube Length
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {tubeLengthCm} cm
+              </span>
             </div>
             <input
               id="tubeLength3d"
@@ -278,7 +284,9 @@ export function HewittMercuryLamp3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Ballast Resistance</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{ballastResistanceOhms} Ω</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {ballastResistanceOhms} Ω
+              </span>
             </div>
             <input
               id="ballastRes3d"

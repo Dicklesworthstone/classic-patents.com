@@ -13,6 +13,7 @@ import { bellPhotophoneParallelReadings } from "./bellPhotophoneEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
+import { carlsonElectrophotographyParallelReadings } from "./carlsonElectrophotographyEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { CORT_PUDDLING_ROLLING_PARALLEL_READINGS } from "./cortPuddlingRollingEdition";
@@ -133,6 +134,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
   "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
+  "us-2297691-carlson-electrophotography": carlsonElectrophotographyParallelReadings,
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,

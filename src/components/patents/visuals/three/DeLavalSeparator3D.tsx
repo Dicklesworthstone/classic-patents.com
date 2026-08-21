@@ -101,12 +101,12 @@ export function DeLavalSeparator3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    let _timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = 1 / 60;
-      timeSec += dt;
+      _timeSec += dt;
       const p = live.current;
 
       // Rotate Spindle & Bowl
@@ -242,20 +242,30 @@ export function DeLavalSeparator3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Bowl Speed:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(bowlRpm).toLocaleString()} RPM</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Bowl Speed:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(bowlRpm).toLocaleString()} RPM
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Centrifugal G-Force:</span>
-              <span className="font-bold text-rose-700 dark:text-rose-400">{centrifugalGs.toLocaleString()} ×g</span>
+              <span className="font-bold text-rose-700 dark:text-rose-400">
+                {centrifugalGs.toLocaleString()} ×g
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Fat Separation:</span>
-              <span className="font-bold text-emerald-800 dark:text-emerald-400">{sep.fatYieldPct.toFixed(1)}%</span>
+              <span className="font-bold text-emerald-800 dark:text-emerald-400">
+                {sep.fatYieldPct.toFixed(1)}%
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Cream Yield:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">{throughputLitersPerHr.toFixed(1)} L/h</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {throughputLitersPerHr.toFixed(1)} L/h
+              </span>
             </div>
           </div>
         )}
@@ -290,8 +300,12 @@ export function DeLavalSeparator3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Centrifuge Bowl Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{Math.round(bowlRpm).toLocaleString()} RPM</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Centrifuge Bowl Speed
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {Math.round(bowlRpm).toLocaleString()} RPM
+              </span>
             </div>
             <input
               type="range"
@@ -307,7 +321,9 @@ export function DeLavalSeparator3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Raw Milk Feed Rate</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{rawMilkFlowLph} L/h</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {rawMilkFlowLph} L/h
+              </span>
             </div>
             <input
               type="range"

@@ -110,6 +110,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     <div
       className={`flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent ${className}`}
     >
+      <div className="sr-only">Edwin Land Polaroid Instant Film 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -123,7 +124,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
                 onClick={() => handlePresetChange(key)}
                 className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   cameraPreset === key
-                    ? "bg-amber-600 text-white shadow-xs"
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >

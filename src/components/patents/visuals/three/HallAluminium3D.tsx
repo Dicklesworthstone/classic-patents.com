@@ -191,7 +191,9 @@ export function HallAluminium3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Cell DC Current</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{(currentAmperes / 1000).toFixed(0)} kA</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {(currentAmperes / 1000).toFixed(0)} kA
+              </span>
             </div>
             <input
               type="range"
@@ -207,7 +209,9 @@ export function HallAluminium3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Cryolite Bath Temp</span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">{bathTemperatureCelsius} °C</span>
+              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
+                {bathTemperatureCelsius} °C
+              </span>
             </div>
             <input
               type="range"
@@ -215,15 +219,21 @@ export function HallAluminium3D() {
               max="1020"
               step="5"
               value={bathTemperatureCelsius}
-              onChange={(e) => updateParam("bathTemperatureCelsius", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("bathTemperatureCelsius", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-rose-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Alumina (Al₂O₃) Conc</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{aluminaConcentrationPct}%</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Alumina (Al₂O₃) Conc
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {aluminaConcentrationPct}%
+              </span>
             </div>
             <input
               type="range"
@@ -231,7 +241,9 @@ export function HallAluminium3D() {
               max="8"
               step="0.5"
               value={aluminaConcentrationPct}
-              onChange={(e) => updateParam("aluminaConcentrationPct", Number.parseFloat(e.target.value))}
+              onChange={(e) =>
+                updateParam("aluminaConcentrationPct", Number.parseFloat(e.target.value))
+              }
               className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>

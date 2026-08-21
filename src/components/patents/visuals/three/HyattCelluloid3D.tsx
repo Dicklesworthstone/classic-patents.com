@@ -230,22 +230,30 @@ export const HyattCelluloid3D = memo(() => {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Steam Temp:</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Steam Temp:
+              </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">{steamTempC} °C</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Ram Pressure:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{hydraulicPressureMpa.toFixed(1)} MPa</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {hydraulicPressureMpa.toFixed(1)} MPa
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Melt State:</span>
-              <span className={`font-bold ${hyatt.isMelted ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
+              <span
+                className={`font-bold ${hyatt.isMelted ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
+              >
                 {hyatt.isMelted ? "PLASTIC MELT" : "RIGID SOLID"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Extrusion Rate:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{hyatt.extrusionRateCmPerMin.toFixed(1)} cm/min</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {hyatt.extrusionRateCmPerMin.toFixed(1)} cm/min
+              </span>
             </div>
           </div>
         )}
@@ -289,8 +297,12 @@ export const HyattCelluloid3D = memo(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Steam Jacket Temperature</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{steamTempC} °C</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Steam Jacket Temperature
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {steamTempC} °C
+              </span>
             </div>
             <input
               type="range"
@@ -305,8 +317,12 @@ export const HyattCelluloid3D = memo(() => {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Hydraulic Ram Pressure</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{hydraulicPressureMpa.toFixed(0)} MPa</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Hydraulic Ram Pressure
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {hydraulicPressureMpa.toFixed(0)} MPa
+              </span>
             </div>
             <input
               type="range"
@@ -314,7 +330,9 @@ export const HyattCelluloid3D = memo(() => {
               max="25"
               step="1"
               value={hydraulicPressureMpa}
-              onChange={(e) => updateParam("hydraulicPressureMpa", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("hydraulicPressureMpa", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>

@@ -224,22 +224,30 @@ export const GliddenBarbedWire3D = memo(() => {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Wire Tension:</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Wire Tension:
+              </span>
               <span className="font-bold text-amber-700 dark:text-amber-400">{wireTensionN} N</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Twist Pitch:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{twistsPerFoot} twists/ft</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {twistsPerFoot} twists/ft
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Lock Integrity:</span>
-              <span className={`font-bold ${glidden.isLocked ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
+              <span
+                className={`font-bold ${glidden.isLocked ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}
+              >
                 {glidden.isLocked ? "LOCKED (No Slip)" : "SLIPPAGE"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Catenary Sag:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{glidden.sagCm.toFixed(1)} cm</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {glidden.sagCm.toFixed(1)} cm
+              </span>
             </div>
           </div>
         )}
@@ -279,7 +287,9 @@ export const GliddenBarbedWire3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Line Wire Tension</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{wireTensionN} N</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {wireTensionN} N
+              </span>
             </div>
             <input
               type="range"
@@ -295,7 +305,9 @@ export const GliddenBarbedWire3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Helical Twist Rate</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{twistsPerFoot} twists/ft</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {twistsPerFoot} twists/ft
+              </span>
             </div>
             <input
               type="range"
@@ -310,8 +322,12 @@ export const GliddenBarbedWire3D = memo(() => {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Livestock Push Force</span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">{animalPushForceN} N</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Livestock Push Force
+              </span>
+              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
+                {animalPushForceN} N
+              </span>
             </div>
             <input
               type="range"
