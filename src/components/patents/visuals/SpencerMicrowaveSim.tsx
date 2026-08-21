@@ -1,313 +1,179 @@
 "use client";
 
-import { Radio } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
-import { spencerPopcornSvg, voltsToKv } from "@/physics/catalogKernels";
-import { FrankenSimEngine } from "@/physics/engine";
+import { RotateCcw, Waves } from "lucide-react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+
+const PATENT_ID = "us-2495429-spencer-microwave";
 
 export function SpencerMicrowaveSim() {
-  const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
-  const powerWatts = params.rfPowerSetting ?? 800;
-  const rf = FrankenSimEngine.stepSpencerMicrowave(
-    voltsToKv(params.anodeVoltage ?? 2200),
-    params.magneticFieldGauss ?? 1450,
-    powerWatts,
-  );
-  const [foodType, setFoodType] = useState<"water-popcorn" | "dry-ice">("water-popcorn");
-  const [isEmitting, setIsEmitting] = useState<boolean>(true);
-  const [tempCelsius, setTempCelsius] = useState<number>(20);
-  const [poppedCount, setPoppedCount] = useState<number>(0);
-  const tempRef = useRef(tempCelsius);
-  const poppedRef = useRef(poppedCount);
-  useLayoutEffect(() => {
-    tempRef.current = tempCelsius;
-    poppedRef.current = poppedCount;
-  });
-
-  useEffect(() => {
-    if (!isEmitting) return;
-    const interval = setInterval(() => {
-      if (foodType === "water-popcorn") {
-        const heatStep = rf.popcornHeatStepC;
-        const nextTemp = Math.min(180, tempRef.current + heatStep);
-        tempRef.current = nextTemp;
-        setTempCelsius(nextTemp);
-        if (nextTemp > rf.popcornThresholdC && poppedRef.current < rf.popcornKernelCount) {
-          poppedRef.current += 1;
-          setPoppedCount(poppedRef.current);
-          soundEngine.playPopcornPop();
-        }
-      } else {
-        const nextTemp = Math.min(25, tempRef.current + rf.dryIceHeatStepC);
-        tempRef.current = nextTemp;
-        setTempCelsius(nextTemp);
-      }
-    }, rf.heatTickMs);
-    return () => clearInterval(interval);
-  }, [
-    isEmitting,
-    foodType,
-    rf.popcornHeatStepC,
-    rf.dryIceHeatStepC,
-    rf.popcornKernelCount,
-    rf.popcornThresholdC,
-    rf.heatTickMs,
-  ]);
-
-  const resetHeating = () => {
-    setTempCelsius(rf.initialTempC);
-    setPoppedCount(0);
-    soundEngine.playSwitchClick();
-  };
+  const { params, updateParam, resetParams } = usePatentPhysics(PATENT_ID);
+  const isEnergized = (params.rfPowerSetting ?? 0) > 0;
+  const toggleEnergy = () => updateParam("rfPowerSetting", isEnergized ? 0 : 1);
 
   return (
     <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Radio
-              className={`w-4 h-4 text-purple-500 ${isEmitting ? "animate-pulse" : "opacity-40"}`}
+            <Waves
+              className={`w-4 h-4 text-cyan-500 ${isEnergized ? "animate-pulse" : "opacity-40"}`}
             />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Spencer Cavity Magnetron &amp; Dielectric Microwave Simulator
+              Source drawing reader — US 2,495,429
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Watch polar water molecules oscillate 2.45 billion times/second to generate rapid
-            volumetric heat.
+            Two magnetron oscillators feed a common wave guide and a conveyor treatment region.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
-            aria-label={isEmitting ? "Stand by magnetron" : "Emit microwaves"}
+            aria-label={
+              isEnergized ? "Stop illustrative energy path" : "Start illustrative energy path"
+            }
             type="button"
-            onClick={() => {
-              setIsEmitting((e) => !e);
-              soundEngine.playSwitchClick();
-            }}
+            onClick={toggleEnergy}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium border transition-colors ${
-              isEmitting
-                ? "bg-purple-700 text-white border-purple-800 font-bold"
+              isEnergized
+                ? "bg-cyan-700 text-white border-cyan-800 font-bold"
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            {isEmitting ? "Magnetron: EMITTING" : "Magnetron: STANDBY"}
+            {isEnergized ? "ENERGY PATH ON" : "ENERGY PATH OFF"}
           </button>
           <button
             type="button"
-            onClick={resetHeating}
+            onClick={resetParams}
             className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300 hover:bg-parchment-200"
           >
-            Cool Down Food &amp; Reset
+            <RotateCcw className="inline-block w-3.5 h-3.5 mr-1" /> Reset source reader
           </button>
         </div>
       </div>
 
       <div className="my-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Microwave Cavity Chamber */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center rounded-xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[300px]">
-          <svg viewBox="0 0 360 220" className="w-full max-w-md h-auto select-none">
-            {/* Metallic Faraday Enclosure */}
+        <div className="lg:col-span-8 rounded-xl bg-ink-950 p-4 sm:p-6 border border-parchment-200 dark:border-ink-800">
+          <svg
+            viewBox="0 0 760 300"
+            className="w-full h-auto select-none"
+            role="img"
+            aria-label="Source-bounded schematic of the Spencer patent apparatus"
+          >
             <rect
-              x="20"
-              y="20"
-              width="320"
-              height="180"
-              rx="8"
-              fill="#1e293b"
-              stroke="#64748b"
-              strokeWidth="4"
-            />
-            <rect
-              x="30"
-              y="30"
-              width="300"
-              height="160"
+              x="18"
+              y="18"
+              width="724"
+              height="264"
+              rx="10"
               fill="#0f172a"
-              stroke="#334155"
-              strokeWidth="1"
+              stroke="#64748b"
+              strokeWidth="3"
             />
-
-            {/* Cavity Magnetron Waveguide Horn (Top Left) */}
-            <path
-              d="M 50,30 L 70,30 L 90,60 L 30,60 Z"
-              fill="#94a3b8"
-              stroke="#cbd5e1"
-              strokeWidth="1.5"
-            />
-            <text
-              x="60"
-              y="22"
-              textAnchor="middle"
-              fontSize="9"
-              fill="#94a3b8"
+            <g fill="#334155" stroke="#cbd5e1" strokeWidth="2">
+              <rect x="42" y="72" width="110" height="58" rx="6" />
+              <rect x="42" y="170" width="110" height="58" rx="6" />
+              <rect x="210" y="72" width="110" height="156" rx="6" />
+              <rect x="382" y="112" width="160" height="76" rx="5" />
+              <rect x="594" y="88" width="112" height="124" rx="6" />
+            </g>
+            <g fill="none" stroke={isEnergized ? "#67e8f9" : "#94a3b8"} strokeWidth="3">
+              <path d="M152 101 H210" />
+              <path d="M152 199 H210" />
+              <path d="M320 101 H382" />
+              <path d="M320 199 H382" />
+              <path d="M542 150 H594" />
+              <path d="M190 101 H178 V50 H112" strokeDasharray="5 4" />
+              <path d="M190 199 H178 V250 H112" strokeDasharray="5 4" />
+            </g>
+            <g
+              fill={isEnergized ? "#67e8f9" : "#cbd5e1"}
               fontFamily="monospace"
-              fontWeight="bold"
+              fontSize="13"
+              textAnchor="middle"
             >
-              Magnetron (2.45 GHz)
-            </text>
-
-            {/* Standing Microwave Radiation Lines */}
-            {isEmitting && (
-              <g stroke="#a855f7" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.7">
-                <path d="M 60,60 Q 180,120 300,60" fill="none" />
-                <path d="M 60,80 Q 180,150 300,100" fill="none" />
-                <path d="M 80,100 Q 180,50 280,140" fill="none" />
-              </g>
-            )}
-
-            {/* Turntable / Food Plate */}
-            <ellipse
-              cx="180"
-              cy="170"
-              rx="80"
-              ry="14"
-              fill="#334155"
-              stroke="#475569"
-              strokeWidth="2"
-            />
-
-            {/* Foodstuff (Popcorn Kernels or Water Vessel) */}
-            <g transform="translate(180, 150)">
-              {/* Thermal glow aura around food */}
-              <circle
-                cx="0"
-                cy="-10"
-                r="35"
-                fill={tempCelsius > 80 ? "rgba(239, 68, 68, 0.4)" : "rgba(168, 85, 247, 0.2)"}
-              />
-
-              {/* Popcorn bowl */}
-              <path
-                d="M -30,0 Q 0,20 30,0 L 25,-20 L -25,-20 Z"
-                fill="#e2e8f0"
-                stroke="#94a3b8"
-                strokeWidth="1.5"
-              />
-
-              {/* Kernels popping into fluffy popcorn */}
-              {Array.from({ length: rf.popcornKernelCount }).map((_, i) => {
-                const isPopped = i < poppedCount;
-                const { px, py } = spencerPopcornSvg(
-                  i,
-                  isPopped,
-                  rf.popcornKernelCount,
-                  rf.popcornEllipseY,
-                  rf.popcornUnpoppedR,
-                  rf.popcornPoppedBaseR,
-                  rf.popcornPoppedStepR,
-                  rf.popcornOffsetY,
-                );
-                return (
-                  <circle
-                    key={i}
-                    cx={px}
-                    cy={py}
-                    r={isPopped ? 5 : 2.5}
-                    fill={isPopped ? "#fef08a" : "#ca8a04"}
-                    stroke={isPopped ? "#eab308" : "#854d0e"}
-                    strokeWidth="1"
-                  />
-                );
-              })}
+              <text x="97" y="97">
+                MAGNETRON
+              </text>
+              <text x="97" y="114">
+                OSCILLATOR 10
+              </text>
+              <text x="97" y="195">
+                MAGNETRON
+              </text>
+              <text x="97" y="212">
+                OSCILLATOR 11
+              </text>
+              <text x="265" y="141">
+                TRANSFORMER 18
+              </text>
+              <text x="265" y="159">
+                POWER LINES 19
+              </text>
+              <text x="265" y="177">
+                COMMON INPUT
+              </text>
+              <text x="462" y="145">
+                COMMON WAVE GUIDE 23
+              </text>
+              <text x="462" y="163">
+                COAXIAL LINES 24 / 25
+              </text>
+              <text x="650" y="143">
+                TREATMENT
+              </text>
+              <text x="650" y="161">
+                REGION
+              </text>
+              <text x="650" y="179">
+                CONVEYOR 28
+              </text>
+            </g>
+            <g fill="none" stroke="#fbbf24" strokeWidth="3">
+              <circle cx="382" cy="101" r="8" />
+              <circle cx="382" cy="199" r="8" />
+            </g>
+            <g fill="#fbbf24" fontFamily="monospace" fontSize="12">
+              <text x="365" y="86">
+                LOOP 26
+              </text>
+              <text x="365" y="222">
+                LOOP 27
+              </text>
+            </g>
+            <g fill="#94a3b8" fontFamily="monospace" fontSize="11">
+              <text x="35" y="42">
+                PATENT FIGURE READING · NUMERALS PRESERVED
+              </text>
+              <text x="584" y="252">
+                ARROW = ENERGY PATH ONLY
+              </text>
             </g>
           </svg>
-
-          <div className="text-xs font-mono text-ink-300 mt-2">
-            Internal Food Temp:{" "}
-            <span className="text-amber-400 font-bold">{Math.round(tempCelsius)}°C</span> · Popcorn
-            Popped:{" "}
-            <span className="text-purple-400 font-bold">
-              {poppedCount} / {rf.popcornKernelCount}
-            </span>
-            {rf.timeToPopS > 0 ? (
-              <span className="text-ink-500"> · {rf.timeToPopS}s to 100 °C (250 g)</span>
-            ) : null}
-          </div>
+          <p className="mt-3 text-xs font-mono text-ink-300">
+            Source-bounded labels: 10, 11, 18, 19, 23, 24, 25, 26, 27, 28. The treatment region is
+            intentionally not assigned an unstated enclosure, frequency, or rating.
+          </p>
         </div>
 
-        {/* Controls */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800 space-y-3">
-            <div>
-              <span className="text-xs font-mono block text-ink-700 dark:text-ink-300 font-semibold mb-1">
-                Target Substance
-              </span>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFoodType("water-popcorn");
-                    resetHeating();
-                  }}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    foodType === "water-popcorn"
-                      ? "bg-purple-700 text-white border-purple-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Popcorn (Water Polar)</div>
-                  <div className="text-[10px] opacity-80">High dielectric loss (Heats fast)</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFoodType("dry-ice");
-                    resetHeating();
-                  }}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    foodType === "dry-ice"
-                      ? "bg-purple-700 text-white border-purple-800 font-bold"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-                  }`}
-                >
-                  <div>Dry Non-Polar Substrate</div>
-                  <div className="text-[10px] opacity-80">Zero dipole oscillation (No heat)</div>
-                </button>
-              </div>
-            </div>
-
-            <TwoClocksStrip
-              title="magnetron cycle vs water heat"
-              fast={{
-                name: "RF cycle",
-                period: String(rf.rfCyclePs),
-                scale: "ps",
-                detail: "2.45 GHz: one oscillation of the cavity field, far too fast to feel.",
-              }}
-              slow={{
-                name: "Thermal rise",
-                period: rf.waterHeatSecondsPerK.toFixed(1),
-                scale: "s / °C",
-                detail: `Time for ${powerWatts} W to lift 250 g of water one kelvin. Dipoles follow the field; heat does not.`,
-              }}
-            />
-
-            <div>
-              <div className="flex justify-between text-xs font-mono mb-1">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Magnetron RF Power
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {powerWatts} Watts
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Magnetron RF Power"
-                min="200"
-                max="1200"
-                step="50"
-                value={powerWatts}
-                onChange={(e) => updateParam("rfPowerSetting", Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-          </div>
-        </div>
+        <aside className="lg:col-span-4 bg-parchment-100/60 dark:bg-ink-900/60 p-4 rounded-xl border border-parchment-200 dark:border-ink-800 space-y-3 text-sm">
+          <h4 className="font-semibold text-ink-900 dark:text-parchment-100">Reader controls</h4>
+          <p className="text-ink-700 dark:text-ink-300">
+            The shared patent state controls only whether the illustrated path is energized. This is
+            a visual reader control, not a claimed electrical rating.
+          </p>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-xs font-mono">
+            <dt className="text-ink-500">State</dt>
+            <dd className="text-cyan-700 dark:text-cyan-300">
+              {isEnergized ? "illustrative path active" : "standby"}
+            </dd>
+            <dt className="text-ink-500">Sources</dt>
+            <dd className="text-ink-700 dark:text-ink-300">10 and 11</dd>
+            <dt className="text-ink-500">Coupling</dt>
+            <dd className="text-ink-700 dark:text-ink-300">loops 26 and 27</dd>
+            <dt className="text-ink-500">Load motion</dt>
+            <dd className="text-ink-700 dark:text-ink-300">conveyor 28</dd>
+          </dl>
+        </aside>
       </div>
     </div>
   );
