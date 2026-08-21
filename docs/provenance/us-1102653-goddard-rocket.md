@@ -36,15 +36,15 @@ Figure captions are transcribed in the source edition's drawing-description para
 
 ## 2026-08-20 figure-crop repair and publication hold
 
-All five visitor-reachable preview assets were visually re-cut upright from a 300 dpi render of the pinned PDF's page 1. The new rectangles omit the drawing-sheet header, witnesses, inventor/signature material, and adjacent figure content present in the retained legacy previews. Coordinates below are pixel coordinates in the 2320 × 3408 page-1 render; the PNG dimensions and SHA-256 values are pinned by `goddardRocketEdition.test.ts`.
+Independent visual QC rejected the retained v3/v4 individual crops: Fig. 1 v4 clipped the drawing at the left, top, and bottom; Figs. 3–5 v3 clipped labels, leaders, or apparatus. The first v5 grouped crop also clipped Fig. 5's support struts and bottom context; v6 preserved that context but was too broad for a visitor preview. Those files remain preserved but are no longer referenced. A 300 dpi render of pinned PDF page 1 supplies the v5 Fig. 2 crop and the target-specific v7 assets. Figs. 1, 2, 4, and 5 use their narrowest complete unaltered rectangles. Fig. 3 uses the narrowest honest adjacency group because its leaders physically interleave with the surrounding section views; the group retains those neighboring source edges rather than clipping or redrawing them. The Fig. 5 crop is centered to keep witnesses and inventor-signature material outside its frame. Coordinates below are pixel coordinates in the 2320 × 3408 page-1 render; dimensions and SHA-256 values are pinned by `goddardRocketEdition.test.ts`.
 
-| Figure | Versioned source crop | Render rectangle (x, y, width, height) | PNG dimensions | SHA-256 |
+| Figure reference | Versioned source crop | Render rectangle (x, y, width, height) | PNG dimensions | SHA-256 |
 | --- | --- | --- | --- | --- |
-| Fig. 1 | `public/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v4.png` | `(1340, 680, 540, 2020)` | 540 × 2020 | `b697774d64c1c0c44e43af33424b868e3d843cec33385dc75ac9045d77e6abfb` |
-| Fig. 2 | `public/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v3.png` | `(230, 650, 890, 930)` | 890 × 930 | `39196ea98e3bf23b81cb95a7adff6e07d9c395146f8fc65f6e075e863d0c0e3b` |
-| Fig. 3 | `public/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v3.png` | `(700, 1700, 540, 570)` | 540 × 570 | `8f4494f58ab08f58993c93c852c49b07ca1547615f1fffae6b206db0ce7f4b2e` |
-| Fig. 4 | `public/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v3.png` | `(160, 1660, 500, 560)` | 500 × 560 | `e4b43c29563b106ca890e2a2128226613a383888ee826485fc6567530d49d247` |
-| Fig. 5 | `public/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v3.png` | `(700, 2350, 500, 760)` | 500 × 760 | `e2b7bcbd930e78afec81073044c11156ab4987d8d81b8fdc03a9f8717996a021` |
+| Fig. 1 | `public/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png` | `(1180, 650, 720, 2160)` | 720 × 2160 | `77d43e7f37d6f89037510a44fbbd7c9b449ad999c3f7a1bb739177bda3b491ee` |
+| Fig. 2 | `public/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png` | `(150, 670, 1050, 920)` | 1050 × 920 | `18292325c5c392c25b0afd75cbad453b63b352ce2dffc6e32f20a7383d2ebbf6` |
+| Fig. 3 | `public/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png` | `(650, 1640, 650, 640)` | 650 × 640 | `e759f032d871373a9f9d24baf268ed41a50802e5e93a8b4f3e1f560f163e2e06` |
+| Fig. 4 | `public/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png` | `(100, 1640, 620, 620)` | 620 × 620 | `918e9bf70957b76b2e774b5e1c7582987c7938c582a117adf2abe2e51ecd5b95` |
+| Fig. 5 | `public/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png` | `(560, 2250, 740, 850)` | 740 × 850 | `1c83557e8cedfe583fb5c7cdaa43721f4fd1e03adcc83454fec9669b866e08a9` |
 
 The retained ledger and manual edition are local comparison evidence only during this repair. The canonical record deliberately does not bind `originalTextAsset` or `archivalEdition`; publication remains withheld for an independent reviewer to inspect the facsimile, crops, mappings, and evidence closure.
 

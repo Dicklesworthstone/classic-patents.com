@@ -9,9 +9,9 @@
 - **Grant Date**: 1781-10-25 (Enrolled 1782-02-23)
 - **Filing Date**: 1781-10-25
 - **Primary Public-Record URL**: `https://patents.google.com/patent/GB178101306A/en`
-- **Local Facsimile PDF**: `public/patents/pdfs/gb-1306-watt-rotary-engine.pdf`
-- **Facsimile SHA-256**: `339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1`
-- **Facsimile Page Count**: 2
+- **Local reconstruction PDF**: `public/patents/pdfs/gb-1306-watt-rotary-engine.pdf`
+- **Reconstruction SHA-256**: `339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1`
+- **Reconstruction Page Count**: 2
 - **Rights Basis**: Historical British Crown Letters Patent granted under King George III, published in Great Britain prior to 1929, public domain worldwide.
 
 ---
@@ -31,3 +31,7 @@
 - **Figure Crops**: Master 2000x2000 px PNG crop at `public/patents/figures/gb-1306-watt-rotary-engine/fig-1-source-crop-v1.png`.
 - **Total Printed Claims**: 4 distinct claims, covering Sun & Planet conversion, 2:1 epicyclic speed multiplication, radius link constraint, and alternative rotative mechanisms.
 - **Physics Kernel**: SI epicyclic kinematics kernel at `src/physics/wattRotaryKernel.ts` computing planet orbit radius, 2:1 gear ratio multiplication, tangential tooth force, beam oscillation angle, torque smoothing, and line shaft RPM.
+
+## 4. Root Source-Identity Hold (2026-08-20)
+
+The pinned PDF is not a historical Chancery facsimile. `pdfinfo` identifies `Typst 0.14.2` as its creator and gives creation and modification time `2026-08-19 21:59:49`; both A4 pages are visibly modern typesetting, and page 2 embeds a modern color reconstruction. The page table above inventories only what this reconstruction asserts and is not primary-source proof. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The PDF, ledger, edition, and crop remain preserved as research evidence until a genuine primary facsimile is pinned and reviewed.

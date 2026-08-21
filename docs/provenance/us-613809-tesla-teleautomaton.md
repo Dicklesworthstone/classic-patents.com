@@ -39,3 +39,7 @@
 - Local figure previews are source crops under `public/patents/figures/us-613809-tesla-teleautomaton/`; each crop derives from the indicated pinned drawing sheet.
 - The grant prints thirteen numbered claims. It prints ten figures, numbered 1 through 10, on five drawing sheets.
 - The older `public/patents/source-text/us-613809-tesla-teleautomaton.txt` is a machine-extracted research aid only. Its errors and layout artifacts are not publication evidence and it is not a reviewed transcription.
+
+## Root figure-QC hold (2026-08-20)
+
+Independent review of every visitor-reachable preview rejected the current crop set. Several files retain drawing-sheet headers, signatures, or neighboring figures; several are framed as broad sheet regions rather than the single numbered figure named by the authored reference. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The edition, ledger, PDF, and all existing crop versions remain preserved as comparison evidence while new source-pixel crops and occurrence mappings are prepared and independently reviewed.

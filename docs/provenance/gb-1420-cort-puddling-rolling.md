@@ -9,10 +9,10 @@
 - **Grant Date**: February 13, 1784 (A.D. 1784, 24 George III, No. 1420)
 - **Filing Date**: February 13, 1784
 - **Primary Public Record URL**: [Google Patents GB178401420A](https://patents.google.com/patent/GB178401420A/en) / Great Seal Patent Office Chancery Enrollment Records
-- **Local PDF Path**: `public/patents/pdfs/gb-1420-cort-puddling-rolling.pdf`
-- **Retrieval & Full Facsimile Review Date**: 2026-08-19
+- **Local reconstruction path**: `public/patents/pdfs/gb-1420-cort-puddling-rolling.pdf`
+- **Reconstruction review date**: 2026-08-20
 - **Rights Basis**: Historical British Crown Letters Patent granted prior to 1900; public domain worldwide.
-- **Pinned Facsimile SHA-256 Digest**: `b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f`
+- **Pinned reconstruction SHA-256 Digest**: `b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f`
 - **PDF Page Count**: 2
 
 ## 2. Facsimile Map
@@ -31,3 +31,7 @@
 - **Physics Kernel**: `src/physics/cortKernel.ts` (`stepCortPuddlingRolling`)
 - **3D WebGL Simulation Model**: `src/components/patents/visuals/three/cortPuddlingRollingModel.ts` and `CortPuddlingRolling3D.tsx`
 - **2D Simulation Instrument**: `src/components/patents/visuals/CortPuddlingRollingSim.tsx`
+
+## 4. Root Source-Identity Hold (2026-08-20)
+
+The pinned PDF is not a historical Great Seal or Chancery facsimile. `pdfinfo` identifies `Typst 0.14.2` as its creator and gives creation and modification time `2026-08-19 21:47:26`; both A4 pages are visibly modern typesetting, and page 2 embeds modern color reconstructions. The page table above inventories only what this reconstruction asserts and is not primary-source proof. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The PDF, ledger, edition, and crop remain preserved as research evidence until a genuine primary facsimile is pinned and reviewed.

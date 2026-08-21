@@ -16,7 +16,7 @@
 
 | PDF page | Checked material | Editorial treatment |
 | --- | --- | --- |
-| 1 | Patent notice, full sole apparatus drawing, inventor/attorney signatures, drawing-sheet witnesses | One tight direct crop, rendered as the source-drawing preview. |
+| 1 | Patent notice, full sole apparatus drawing, inventor/attorney signatures, drawing-sheet witnesses | The visitor preview uses an upright, signature-free main apparatus crop plus a separate source-pixel crop for the left pipe and flow arrow; the full sheet remains in the pinned facsimile. |
 | 2 | Office masthead, title, inventor/assignee, July 9 1895 filing and serial 595,371, opening specification and printed formula | Typed masthead, prose, equation, and source-drawing reference. |
 | 3 | Apparatus C, K, G′, P, V′, V², G², G³, operating pressures and separation paths | Continuous typed prose and patent-local companions. |
 | 4 | Specification close, definition of condensation, claims 1–10 | Typed claim blocks 1–10 and exact decoders. |
@@ -33,7 +33,7 @@ not carried by the source-correct canonical record.
 edition in `src/data/editions/lindeAirLiquefactionEdition.ts`. It is not
 derived at render time from OCR, a PDF text layer, HTML, Markdown, or automatic
 paragraph reflow. The sole preview under
-`public/patents/figures/us-727650-linde-air-liquefaction/` is a direct crop of
+`public/patents/figures/us-727650-linde-air-liquefaction/` contains direct crops of
 PDF page 1; it introduces no new linework or labels.
 
 `public/patents/transcripts/us-727650-linde-air-liquefaction-reviewed.txt` is

@@ -11,20 +11,21 @@ mock.module("next/navigation", () => ({
   },
 }));
 
+import { allPatents } from "@/data/patents";
 import { PatentSearchPalette } from "./PatentSearchPalette";
 
 describe("PatentSearchPalette component", () => {
   test("renders closed dialog state cleanly", () => {
     const html = renderToStaticMarkup(<PatentSearchPalette isOpen={false} onClose={() => {}} />);
     expect(html).toContain("Patent Search Palette");
-    expect(html).toContain("Search all 55 inventions");
+    expect(html).toContain(`Search all ${allPatents.length} inventions`);
     expect(html).toContain("Wright");
   });
 
   test("renders search dialog with default curated patents", () => {
     const html = renderToStaticMarkup(<PatentSearchPalette isOpen={true} onClose={() => {}} />);
     expect(html).toContain("dialog");
-    expect(html).toContain("Search all 55 inventions");
+    expect(html).toContain(`Search all ${allPatents.length} inventions`);
     expect(html).toContain("ESC");
   });
 });
