@@ -211,7 +211,10 @@ export function SpencerMicrowave3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
+            onClick={() => {
+              setIsCutaway(!isCutaway);
+              soundEngine.playSwitchClick();
+            }}
             title={isCutaway ? "Switch to Solid Magnetron" : "Switch to Magnetron Cutaway"}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               isCutaway
@@ -220,6 +223,22 @@ export function SpencerMicrowave3D() {
             }`}
           >
             <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          </button>
+          <button
+            aria-label="Toggle audio hum"
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
+            )}
           </button>
           <button
             type="button"
@@ -239,22 +258,12 @@ export function SpencerMicrowave3D() {
             )}
           </button>
           <button
-            aria-label="Toggle test tone"
-            type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isPlayingAudio ? "Mute Magnetron Hum" : "Enable 120Hz Magnetron Hum"}
-          >
-            {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            ) : (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
-          </button>
-          <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
             type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            onClick={() => {
+              setShowCalloutPins(!showCalloutPins);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
