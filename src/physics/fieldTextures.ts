@@ -329,6 +329,21 @@ export function computeSpencerCavityField(
   return grid;
 }
 
+/** Carrier spray-chamber droplet density from live airflow. */
+export function computeCarrierSprayField(airflowCfm: number, gridSize = 32): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const jet = Math.max(0.15, Math.min(1, airflowCfm / 15000));
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1);
+      const v = y / (gridSize - 1);
+      const plume = Math.exp(-((u - 0.25) ** 2) / 0.04) * Math.exp(-((v - 0.6) ** 2) / 0.12);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, jet * plume));
+    }
+  }
+  return grid;
+}
+
 /** Rewrite a colormapped RGBA buffer in place for a live DataTexture drain. */
 export function writeColormappedField(
   rgba: Uint8Array,

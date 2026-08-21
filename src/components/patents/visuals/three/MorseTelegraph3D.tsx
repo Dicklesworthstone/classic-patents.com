@@ -38,6 +38,7 @@ export function MorseTelegraph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Telegraph Circuit State Controls
   const { params, updateParam } = usePatentPhysics("us-1647-morse-telegraph");
@@ -194,7 +195,15 @@ export function MorseTelegraph3D() {
         )}
 
         {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-1647-morse-telegraph"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("lineLengthMiles", active ? 44 : 250);
+            }}
+          />
           <button
             type="button"
             onPointerDown={() => setKeyIsDown(true)}

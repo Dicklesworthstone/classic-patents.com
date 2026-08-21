@@ -448,7 +448,7 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
 export function updateFarnsworthTvKinematics(
   model: FarnsworthTvModel,
   delta: number,
-  renderedSteps: number,
+  timeSec: number,
   electronDisplaySpeed: number,
   horizontalFreqKhz: number,
   verticalFreqHz: number,
@@ -460,7 +460,7 @@ export function updateFarnsworthTvKinematics(
     const speed = electronDisplaySpeed * delta;
 
     const tv = FrankenSimEngine.stepFarnsworthTv(1.5, 120);
-    const simTimeSec = renderedSteps * (1 / 60);
+    const simTimeSec = timeSec;
     const hScan = Math.sin(simTimeSec * horizontalFreqKhz * tv.scanHCoupling) * tv.scanAmp;
     const vScan = Math.sin(simTimeSec * verticalFreqHz * tv.scanVCoupling) * tv.scanAmp;
     const modes = laplacianModes(16, 3);
