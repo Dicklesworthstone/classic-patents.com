@@ -207,6 +207,18 @@ prediction, shielding, and the Fig. 18–20 rod mechanisms. Pages 39–58 were n
 advanced in this pass. No new drawing crop was generated; the Fig. 1 middle
 visual blocker remains unchanged.
 
+The next bounded continuation pass re-audited only PDF pages 39–41. Page 39
+carries the short-period power description, indium-foil power calibration,
+prototype ellipsoid dimensions, effective-radius construction, and Fig. 21
+reference. Page 40 covers spherical neutron-density falloff, rod geometries,
+the heavy-water reactor, critical level, reflector and irradiation-well details,
+and Fig. 22–29 references. Page 41 preserves the beryllium-metal and
+beryllium-oxide table values, moderator alternatives, reflector/seed discussion,
+and the resonance-capture contour references in Figs. 2–6. Pages 42–58 were
+not advanced in this pass. The p39 printed power formula remains explicitly
+unresolved; no glyphs were fabricated, and the Fig. 1 middle visual blocker is
+unchanged.
+
 The ledger carries page-marked WIP text for pages 28–58, including claims,
 references, signatures, and the certificate. The bounded edition packet adds
 source-ordered authored blocks for pages 30–35, including the printed Figure
