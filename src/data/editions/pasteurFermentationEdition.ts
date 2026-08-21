@@ -57,7 +57,7 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "Previous to my invention in the process of making beer it has been customary to permit the exposure of the ",
+          text: "Previous to my invention in the process of making beer it has been customary to permit the exposure of the “",
         },
         {
           kind: "term",
@@ -68,7 +68,7 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
         },
         {
           kind: "text",
-          text: "—that is, the boiled extract of malt or other material seasoned with hop or other qualifying ingredient—to the action of atmospheric air. I have discovered that by contact in the usual way with air during the process not only is the quality of the beer produced much impaired, but also that a less quantity is made from a given amount of wort than can be otherwise produced.",
+          text: "”—that is, the boiled extract of malt or other material seasoned with hop or other qualifying ingredient—to the action of atmospheric air. I have discovered that by contact in the usual way with air during the process not only is the quality of the beer produced much impaired, but also that a less quantity is made from a given amount of wort than can be otherwise produced.",
         },
       ],
     },
