@@ -10,7 +10,10 @@ export interface MaimanRubyLaserModelNodes {
   outputMirror: THREE.Mesh;
   laserBeam: THREE.Mesh;
   targetDisc: THREE.Mesh;
+  targetAblationSpot: THREE.Mesh;
   basePlate: THREE.Mesh;
+  excitationPhotons: THREE.Points;
+  highVoltageLeads: THREE.Group;
 }
 
 export function createMaimanRubyLaserModel(): {
@@ -88,6 +91,26 @@ export function createMaimanRubyLaserModel(): {
     metalness: 0.3,
   });
 
+  const ablationMat = new THREE.MeshStandardMaterial({
+    color: 0xfbbf24,
+    emissive: 0xf97316,
+    emissiveIntensity: 0.0,
+    roughness: 0.2,
+    metalness: 0.1,
+  });
+
+  const copperLeadMat = new THREE.MeshStandardMaterial({
+    color: 0xd97706,
+    metalness: 0.9,
+    roughness: 0.25,
+  });
+
+  const ceramicInsulatorMat = new THREE.MeshStandardMaterial({
+    color: 0xf8fafc,
+    roughness: 0.3,
+    metalness: 0.1,
+  });
+
   // 1. Base Plate
   const basePlate = new THREE.Mesh(new THREE.BoxGeometry(18, 0.6, 8), baseMat);
   basePlate.position.set(0, -1.8, 0);
@@ -103,7 +126,7 @@ export function createMaimanRubyLaserModel(): {
   mountFront.position.set(4.5, -0.4, 0);
   group.add(mountFront);
 
-  // 3. Cylindrical Reflector Housing
+  // 3. Cylindrical Polished Aluminum Reflector Housing (Cutaway Cavity)
   const housingCylinder = new THREE.Mesh(
     new THREE.CylinderGeometry(1.6, 1.6, 7.5, 32, 1, true),
     housingMat,
@@ -112,13 +135,25 @@ export function createMaimanRubyLaserModel(): {
   housingCylinder.position.set(0, 0.4, 0);
   group.add(housingCylinder);
 
-  // 4. Synthetic Pink Ruby Rod (along X axis)
+  // End Flanges on Cavity Housing
+  const flangeGeo = new THREE.TorusGeometry(1.6, 0.1, 16, 32);
+  const flangeL = new THREE.Mesh(flangeGeo, baseMat);
+  flangeL.rotation.y = Math.PI / 2;
+  flangeL.position.set(-3.75, 0.4, 0);
+  group.add(flangeL);
+
+  const flangeR = new THREE.Mesh(flangeGeo, baseMat);
+  flangeR.rotation.y = Math.PI / 2;
+  flangeR.position.set(3.75, 0.4, 0);
+  group.add(flangeR);
+
+  // 4. Synthetic Pink Ruby Rod (Cr3+:Al2O3 along X axis)
   const rubyRod = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 6.0, 32), rubyMat);
   rubyRod.rotation.z = Math.PI / 2;
   rubyRod.position.set(0, 0.4, 0);
   group.add(rubyRod);
 
-  // 5. Silvered Mirrors at ends of ruby rod
+  // 5. Silvered Fabry-Pérot Resonator Mirrors at ends of ruby rod
   const mirrorGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.08, 32);
   const rearMirror = new THREE.Mesh(mirrorGeo, silverMat);
   rearMirror.rotation.z = Math.PI / 2;
@@ -130,7 +165,7 @@ export function createMaimanRubyLaserModel(): {
   outputMirror.position.set(3.04, 0.4, 0);
   group.add(outputMirror);
 
-  // 6. Helical Xenon Flash Tube (Procedural Coils)
+  // 6. Helical Xenon Flash Tube (FT-506 spiral geometry surrounding ruby rod)
   const helicalFlashTube = new THREE.Group();
   const coilTurns = 7;
   const coilRadius = 1.0;
@@ -153,18 +188,67 @@ export function createMaimanRubyLaserModel(): {
   helicalFlashTube.add(flashMesh);
   group.add(helicalFlashTube);
 
-  // 7. Collimated Laser Beam (Red 694.3 nm)
+  // 7. High-Voltage Pulse Leads & Ceramic Feedthroughs
+  const highVoltageLeads = new THREE.Group();
+  const feedGeo = new THREE.CylinderGeometry(0.18, 0.22, 0.6, 16);
+  const leadWireGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.8, 8);
+
+  // Anode feedthrough
+  const feedA = new THREE.Mesh(feedGeo, ceramicInsulatorMat);
+  feedA.position.set(-2.8, 1.6, 1.0);
+  highVoltageLeads.add(feedA);
+  const wireA = new THREE.Mesh(leadWireGeo, copperLeadMat);
+  wireA.position.set(-2.8, 1.0, 1.0);
+  highVoltageLeads.add(wireA);
+
+  // Cathode feedthrough
+  const feedC = new THREE.Mesh(feedGeo, ceramicInsulatorMat);
+  feedC.position.set(2.8, 1.6, 1.0);
+  highVoltageLeads.add(feedC);
+  const wireC = new THREE.Mesh(leadWireGeo, copperLeadMat);
+  wireC.position.set(2.8, 1.0, 1.0);
+  highVoltageLeads.add(wireC);
+
+  group.add(highVoltageLeads);
+
+  // 8. Excited Cr3+ Photon Emission Particles inside Resonator
+  const photonCount = 80;
+  const photonGeo = new THREE.BufferGeometry();
+  const photonPositions = new Float32Array(photonCount * 3);
+  for (let i = 0; i < photonCount; i++) {
+    photonPositions[i * 3] = -2.8 + Math.random() * 5.6;
+    photonPositions[i * 3 + 1] = 0.4 + (Math.random() - 0.5) * 0.4;
+    photonPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+  }
+  photonGeo.setAttribute("position", new THREE.BufferAttribute(photonPositions, 3));
+  const photonMat = new THREE.PointsMaterial({
+    color: 0xff1744,
+    size: 0.12,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+  });
+  const excitationPhotons = new THREE.Points(photonGeo, photonMat);
+  group.add(excitationPhotons);
+
+  // 9. Collimated Laser Beam (Red 694.3 nm)
   const beamLength = 12;
   const laserBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, beamLength, 24), beamMat);
   laserBeam.rotation.z = Math.PI / 2;
   laserBeam.position.set(3.0 + beamLength / 2, 0.4, 0);
   group.add(laserBeam);
 
-  // 8. Distant Target Disc
+  // 10. Distant Target Disc with Ablation Focal Spot
   const targetDisc = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.2, 32), targetMat);
   targetDisc.rotation.z = Math.PI / 2;
   targetDisc.position.set(3.0 + beamLength, 0.4, 0);
   group.add(targetDisc);
+
+  const ablationGeo = new THREE.CircleGeometry(0.32, 24);
+  const targetAblationSpot = new THREE.Mesh(ablationGeo, ablationMat);
+  targetAblationSpot.rotation.y = -Math.PI / 2;
+  targetAblationSpot.position.set(3.0 + beamLength - 0.11, 0.4, 0);
+  group.add(targetAblationSpot);
 
   // Update loop
   const update = (controls: MaimanRubyLaserControls, timeSec: number, isFiring: boolean) => {
@@ -173,24 +257,38 @@ export function createMaimanRubyLaserModel(): {
     // Flash tube activation
     if (isFiring) {
       flashMat.emissive.setHex(0xfef08a);
-      flashMat.emissiveIntensity = 2.5;
+      flashMat.emissiveIntensity = 3.0;
       rubyMat.emissive.setHex(metrics.isLasing ? 0xff4d6d : 0xe11d48);
-      rubyMat.emissiveIntensity = metrics.isLasing ? 1.8 : 0.6;
+      rubyMat.emissiveIntensity = metrics.isLasing ? 2.2 : 0.8;
+      photonMat.opacity = metrics.isLasing ? 0.9 : 0.4;
+
+      // Animate internal photon oscillation along optical cavity axis
+      const pAttr = photonGeo.attributes.position;
+      for (let i = 0; i < photonCount; i++) {
+        let px = pAttr.getX(i) + (i % 2 === 0 ? 0.4 : -0.4);
+        if (px > 2.9) px = -2.9;
+        if (px < -2.9) px = 2.9;
+        pAttr.setX(i, px);
+      }
+      pAttr.needsUpdate = true;
     } else {
       flashMat.emissive.setHex(0x000000);
       flashMat.emissiveIntensity = 0.0;
       rubyMat.emissive.setHex(0x9f1239);
       rubyMat.emissiveIntensity = 0.2;
+      photonMat.opacity = 0.0;
     }
 
     // Laser beam visibility and pulsing
     if (isFiring && metrics.isLasing) {
-      beamMat.opacity = 0.85;
+      beamMat.opacity = 0.9;
       const shimmer = 0.9 + 0.1 * Math.sin(timeSec * metrics.beamShimmerOmegaRadPerS);
       laserBeam.scale.set(shimmer, 1, shimmer);
+      ablationMat.emissiveIntensity = 2.5;
     } else {
       beamMat.opacity = 0.0;
       laserBeam.scale.set(1, 1, 1);
+      ablationMat.emissiveIntensity = 0.0;
     }
   };
 
@@ -203,8 +301,18 @@ export function createMaimanRubyLaserModel(): {
     flashMat.dispose();
     beamMat.dispose();
     targetMat.dispose();
+    ablationMat.dispose();
+    copperLeadMat.dispose();
+    ceramicInsulatorMat.dispose();
+    photonMat.dispose();
     tubeGeo.dispose();
     mountGeo.dispose();
+    mirrorGeo.dispose();
+    flangeGeo.dispose();
+    feedGeo.dispose();
+    leadWireGeo.dispose();
+    photonGeo.dispose();
+    ablationGeo.dispose();
   };
 
   return {
@@ -217,7 +325,10 @@ export function createMaimanRubyLaserModel(): {
       outputMirror,
       laserBeam,
       targetDisc,
+      targetAblationSpot,
       basePlate,
+      excitationPhotons,
+      highVoltageLeads,
     },
     update,
     dispose,
