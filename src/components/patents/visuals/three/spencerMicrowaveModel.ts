@@ -25,7 +25,6 @@ export interface SpencerMicrowaveModel {
   spokePoints: THREE.Points;
   spokeGeo: THREE.BufferGeometry;
   spokePos: Float32Array;
-  modeStirrer?: THREE.Group;
   materials: {
     copperAnodeMat: THREE.MeshStandardMaterial;
     cathodeMat: THREE.MeshStandardMaterial;
@@ -36,7 +35,7 @@ export interface SpencerMicrowaveModel {
     spokeMat: THREE.PointsMaterial;
     ceramicInsulator?: THREE.MeshStandardMaterial;
     radiatorFin?: THREE.MeshStandardMaterial;
-    pyrexGlass?: THREE.MeshPhysicalMaterial;
+    transparentEnvelope?: THREE.MeshPhysicalMaterial;
   };
   updateKinematics: (
     delta: number,
@@ -197,7 +196,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   });
   disposables.push(radiatorFin);
 
-  const pyrexGlass = new THREE.MeshPhysicalMaterial({
+  const transparentEnvelopeMat = new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     transmission: 0.92,
     roughness: 0.05,
@@ -205,7 +204,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     transparent: true,
     opacity: 0.85,
   });
-  disposables.push(pyrexGlass);
+  disposables.push(transparentEnvelopeMat);
 
   // ==========================================
   // SOURCE-NUMBERED OSCILLATOR ABSTRACTION (10 / 11)
@@ -324,18 +323,33 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   waveguideGroup.add(loopMesh);
   magnetronGroup.add(waveguideGroup);
 
-  // Motorized Mode Stirrer Fan (Inside Launch Section)
-  const modeStirrer = new THREE.Group();
-  modeStirrer.position.set(5.2, 0, 0);
-  for (let b = 0; b < 4; b++) {
-    const bladeGeo = new THREE.BoxGeometry(0.04, 0.8, 0.4);
-    disposables.push(bladeGeo);
-    const blade = new THREE.Mesh(bladeGeo, radiatorFin);
-    blade.rotation.x = (b * Math.PI) / 2;
-    blade.position.set(0, Math.cos((b * Math.PI) / 2) * 0.4, Math.sin((b * Math.PI) / 2) * 0.4);
-    modeStirrer.add(blade);
-  }
-  magnetronGroup.add(modeStirrer);
+  // The drawing shows two oscillator sources joined to one transformer and
+  // one treatment path. Clone the same neutral oscillator abstraction for 11;
+  // the two groups are intentionally not presented as a modern tube design.
+  magnetronGroup.position.x = -5.4;
+  const secondOscillator = magnetronGroup.clone(true);
+  secondOscillator.position.x = 5.4;
+  root.add(secondOscillator);
+
+  const transformerGeo = new THREE.BoxGeometry(2.6, 2.4, 2.2);
+  disposables.push(transformerGeo);
+  const transformer = new THREE.Mesh(transformerGeo, steelMat);
+  transformer.position.set(0, 0, -2.6);
+  root.add(transformer);
+
+  const commonGuideGeo = new THREE.BoxGeometry(7.2, 1.4, 1.4);
+  disposables.push(commonGuideGeo);
+  const commonGuide = new THREE.Mesh(commonGuideGeo, steelMat);
+  commonGuide.position.set(0, 0, 1.3);
+  root.add(commonGuide);
+
+  const conveyorGeo = new THREE.BoxGeometry(11.5, 0.16, 3.2);
+  disposables.push(conveyorGeo);
+  const conveyor = new THREE.Mesh(conveyorGeo, steelMat);
+  conveyor.position.set(0, -2.4, 1.3);
+  root.add(conveyor);
+
+  // The source names a conveyor (28), not a turntable or mode-stirrer.
 
   // Permanent Magnet Pole Shoes & Outer Magnetic Return Yoke
   [-2.8, 2.8].forEach((yMag) => {
@@ -424,7 +438,6 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     spokePoints,
     spokeGeo,
     spokePos,
-    modeStirrer,
     materials: {
       copperAnodeMat,
       cathodeMat,
@@ -435,7 +448,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
       spokeMat,
       ceramicInsulator,
       radiatorFin,
-      pyrexGlass,
+      transparentEnvelope: transparentEnvelopeMat,
     },
     updateKinematics,
     dispose,
@@ -462,10 +475,6 @@ export function updateSpencerMicrowaveKinematics(
     const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, 8, 0.3, 0.3));
     model.spokePoints.rotation.y += delta * spokeDisplayOmegaRadPerS * local;
     model.materials.spokeMat.opacity = Math.min(1, spokeOpacity * local);
-
-    if (model.modeStirrer) {
-      model.modeStirrer.rotation.x += delta * spokeDisplayOmegaRadPerS * local;
-    }
   } else {
     model.spokePoints.visible = false;
   }
