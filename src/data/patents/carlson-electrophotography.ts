@@ -126,8 +126,7 @@ export const carlsonElectrophotographyPatent: Patent = {
           figureRef: "Fig. 1",
           label: "21",
           element: "21",
-          description:
-            "Thin photoconductive insulating layer on the metal backing.",
+          description: "Thin photoconductive insulating layer on the metal backing.",
           x: 50,
           y: 35,
         },
@@ -210,8 +209,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     {
       figureNumber: "Figure 7",
       title: "Lacquer Fixing",
-      caption:
-        "Atomizer 40 sprays a fixative lacquer over the dust image on sheet 36.",
+      caption: "Atomizer 40 sprays a fixative lacquer over the dust image on sheet 36.",
       svgType: "carlson-electrophotography-fixing-lacquer",
       callouts: [],
     },

@@ -71,11 +71,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
   test("verifies all referenced source figure crops exist on disk", () => {
     for (const block of kilbyIntegratedCircuitArchivalEdition.blocks) {
       const inlines =
-        block.kind === "figure-sheet"
-          ? block.description
-          : "inlines" in block
-            ? block.inlines
-            : [];
+        block.kind === "figure-sheet" ? block.description : "inlines" in block ? block.inlines : [];
       for (const inline of inlines) {
         if (inline.kind === "reference" && inline.figurePreviews) {
           for (const prev of inline.figurePreviews) {
@@ -90,11 +86,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
   test("requires every printed figure occurrence to be an authored reference", () => {
     for (const block of kilbyIntegratedCircuitArchivalEdition.blocks) {
       const inlines =
-        block.kind === "figure-sheet"
-          ? block.description
-          : "inlines" in block
-            ? block.inlines
-            : [];
+        block.kind === "figure-sheet" ? block.description : "inlines" in block ? block.inlines : [];
       for (const inline of inlines) {
         if (/\bFIGURES?\s+\d|\bFig\.\s+\d/i.test(inline.text)) {
           expect(inline.kind).toBe("reference");

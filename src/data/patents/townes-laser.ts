@@ -123,7 +123,8 @@ export const townesLaserPatent: Patent = {
           figureRef: "Fig. 2",
           label: "16, 17",
           element: "16, 17",
-          description: "Reflective parallel end assemblies that couple and select the maser radiation.",
+          description:
+            "Reflective parallel end assemblies that couple and select the maser radiation.",
           x: 76,
           y: 50,
         },
@@ -159,7 +160,8 @@ export const townesLaserPatent: Patent = {
           figureRef: "Fig. 3",
           label: "32",
           element: "32",
-          description: "Coil establishing a longitudinal magnetic field for source-controlled modulation.",
+          description:
+            "Coil establishing a longitudinal magnetic field for source-controlled modulation.",
           x: 62,
           y: 69,
         },
@@ -168,7 +170,8 @@ export const townesLaserPatent: Patent = {
           figureRef: "Fig. 3",
           label: "13",
           element: "13",
-          description: "Detector receiving the amplified radiation after lens and aperture coupling.",
+          description:
+            "Detector receiving the amplified radiation after lens and aperture coupling.",
           x: 87,
           y: 54,
         },
@@ -316,11 +319,8 @@ export const townesLaserPatent: Patent = {
       originalText: manualTownesClaimText(6),
       plainEnglish:
         "A maser generator according to claim 5 where the mode selector comprises an aperture in an absorptive mask placed in the focal plane of an end-window focusing lens to filter out off-axis spontaneous emission.",
-      keyInnovations: [
-        "Focal-plane aperture spatial filter for pure transverse mode isolation",
-      ],
-      legalSignificance:
-        "Covers spatial filtering pinholes in laser resonator beamlines.",
+      keyInnovations: ["Focal-plane aperture spatial filter for pure transverse mode isolation"],
+      legalSignificance: "Covers spatial filtering pinholes in laser resonator beamlines.",
     },
     {
       number: 7,
@@ -354,9 +354,7 @@ export const townesLaserPatent: Patent = {
       originalText: manualTownesClaimText(9),
       plainEnglish:
         "An optical maser amplifier with an elongated chamber, partially reflective parallel end members, nonreflective sides, a three-level inverted medium, and mode abstracting optics directing amplified energy to a detector.",
-      keyInnovations: [
-        "Three-level optical maser amplifier with spatial mode selection",
-      ],
+      keyInnovations: ["Three-level optical maser amplifier with spatial mode selection"],
       legalSignificance:
         "Establishes patent protection for low-noise optical pre-amplifiers in optical receivers.",
     },
@@ -367,9 +365,7 @@ export const townesLaserPatent: Patent = {
       originalText: manualTownesClaimText(10),
       plainEnglish:
         "A maser amplifier according to claim 9 where the negative-temperature medium is potassium vapor pumped by an array of potassium discharge lamps.",
-      keyInnovations: [
-        "Potassium vapor optical amplifier with resonant lamp pumping",
-      ],
+      keyInnovations: ["Potassium vapor optical amplifier with resonant lamp pumping"],
       legalSignificance: "Covers alkali vapor optical amplifier stages.",
     },
     {
@@ -378,11 +374,8 @@ export const townesLaserPatent: Patent = {
       originalText: manualTownesClaimText(11),
       plainEnglish:
         "A modulated maser amplifier comprising an elongated chamber with parallel reflective end members, a negative-temperature medium, optical pumping means, and a modulation coil generating a controlled longitudinal magnetic field for Zeeman signal modulation of the abstracted beam.",
-      keyInnovations: [
-        "Direct Zeeman magneto-optic modulation within an optical amplifier cavity",
-      ],
-      legalSignificance:
-        "Covers active intra-amplifier magneto-optical modulation.",
+      keyInnovations: ["Direct Zeeman magneto-optic modulation within an optical amplifier cavity"],
+      legalSignificance: "Covers active intra-amplifier magneto-optical modulation.",
     },
   ],
   historicalContext: {

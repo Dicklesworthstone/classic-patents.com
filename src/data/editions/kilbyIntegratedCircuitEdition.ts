@@ -881,9 +881,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
         ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in ",
       ),
       sourceReference("FIGURE 1"),
-      sourceText(
-        ", the design contemplates utilizing the ",
-      ),
+      sourceText(", the design contemplates utilizing the "),
       sourceTerm(
         "bulk resistance",
         "Resistance arising through the semiconductor body itself, set by resistivity, active length, and cross-sectional area rather than by a separately mounted resistor element.",
@@ -893,9 +891,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
     ),
     sourceParagraph(
-      sourceText(
-        "In addition to the resistor shown in ",
-      ),
+      sourceText("In addition to the resistor shown in "),
       sourceReference("FIGURE 1"),
       sourceText(", a resistor may be provided as shown in "),
       sourceReference("FIGURE 1a"),
@@ -937,17 +933,13 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
     ),
     sourceParagraph(
-      sourceText(
-        "Instead of the capacitor of ",
-      ),
+      sourceText("Instead of the capacitor of "),
       sourceReference("FIGURE 2"),
       sourceText(
         ", capacitance in a body of single crystal semiconductor material may be provided as shown and described in connection with ",
       ),
       sourceReference("FIGURE 2a"),
-      sourceText(
-        ". ",
-      ),
+      sourceText(". "),
       sourceReference("FIGURE 2a"),
       sourceText(
         " shows a body 15a of semiconductor material, of either n- or p-type conductivity, which constitutes one plate of the capacitor. Evaporated onto the body 15a is a layer 18 providing a dielectric layer for the capacitor. It is necessary that the layer 18 have a suitable dielectric constant and be inert when in contact with the semiconductor body 15a. Silicon oxide has been found to be a suitable material for dielectric layer 18 and may be applied by evaporation or thermal oxidation techniques onto body 15a. Plate 19 forms the other plate of the capacitor and is provided by evaporating a conductive material onto layer 18. Gold and aluminum have been found to be satisfactory materials for the plate 19. Ohmic contact 17a is made to the body of semiconductor material 15a and contact to plate 19 may be made by any suitable electrical contact (not shown). Capacitors formed in the manner described in connection with ",
@@ -958,9 +950,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
     ),
     sourceParagraph(
-      sourceText(
-        "Capacitors produced in the manner of ",
-      ),
+      sourceText("Capacitors produced in the manner of "),
       sourceReference("FIGURE 2"),
       sourceText(
         " are also diodes, and must therefore be properly polarized in the circuit. Non-polar capacitors may be made by connecting two such areas back-to-back. Although junction capacitors have a marked voltage dependence, such dependence is present to a lesser degree for low voltages in the non-polar configuration.",
@@ -1025,9 +1015,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       sourceReference("FIGURE 6a"),
       sourceText(". A more conventionally drawn circuit diagram is shown in "),
       sourceReference("FIGURE 7"),
-      sourceText(
-        " with the circuit values actually used. The multivibrator circuit shown in ",
-      ),
+      sourceText(" with the circuit values actually used. The multivibrator circuit shown in "),
       sourceReference("FIGURES 6a, 6b and 7"),
       sourceText(" will be described as illustrative of the processing techniques employed."),
     ),

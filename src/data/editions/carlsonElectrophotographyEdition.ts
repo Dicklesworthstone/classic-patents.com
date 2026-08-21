@@ -595,9 +595,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ]),
-      text(
-        " show three alternative methods of exposure. According to ",
-      ),
+      text(" show three alternative methods of exposure. According to "),
       ref(
         "Figure 2",
         "#fig-2",
