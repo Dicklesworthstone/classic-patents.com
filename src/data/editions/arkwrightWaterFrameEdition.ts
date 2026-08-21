@@ -16,27 +16,12 @@ const term = (value: string, definition: string, label?: string): CuratedSpecifi
   label,
 });
 
-const FIGURES = {
-  "Fig. 1": {
-    src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
-    caption:
-      "Tight upright crop of the Figure 1 mechanism from pinned PDF page 3, excluding the page heading and explanatory footer.",
-    alt: "Tightly cropped upright Figure 1 water-frame mechanism from pinned PDF page 3, lettered A through G.",
-    width: 1550,
-    height: 1500,
-  },
-} as const;
-
-const figure = (
-  label: keyof typeof FIGURES,
-  sourceText: string = label,
-): CuratedSpecificationInline => ({
+const figure = (label: string, sourceText: string = label): CuratedSpecificationInline => ({
   kind: "reference",
   text: sourceText,
   href: "#",
   referenceType: "figure",
-  label: `Open the tightly bounded pinned-PDF-page-3 crop for ${label} in GB 931`,
-  figurePreviews: [FIGURES[label]],
+  label: `${label} preview unavailable: the pinned PDF is a 2026 Typst reconstruction, not a primary facsimile.`,
 });
 
 const p = (
