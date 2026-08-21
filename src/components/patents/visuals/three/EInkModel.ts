@@ -105,14 +105,14 @@ export function buildEInkModel(): EInkModel {
     }),
   );
 
-  // 1. Top Transparent ITO Electrode
+  // 1. Top clear electrode 100 (source numbering)
   const topPlateGeo = trackGeo(new THREE.BoxGeometry(2.8, 0.06, 2.8));
   const topPlate = new THREE.Mesh(topPlateGeo, itoElectrodeMat);
   topPlate.position.set(0, 1.45, 0);
   topPlate.castShadow = true;
   mainGroup.add(topPlate);
 
-  // 2. Bottom Segmented Drive Electrode
+  // 2. Bottom electrode 110 (source numbering)
   const bottomPlateGeo = trackGeo(new THREE.BoxGeometry(2.8, 0.08, 2.8));
   const bottomPlate = new THREE.Mesh(bottomPlateGeo, bottomElectrodeMat);
   bottomPlate.position.set(0, -1.45, 0);
@@ -129,7 +129,7 @@ export function buildEInkModel(): EInkModel {
   const fluid = new THREE.Mesh(fluidGeo, fluidMat);
   mainGroup.add(fluid);
 
-  // 4. Positively-Charged TiO2 (White) & Negatively-Charged Carbon (Black) Nanoparticles
+  // 4. Oppositely charged particles (one source embodiment; chemistry is not fixed here)
   const NUM_PARTICLES = 48;
   const particleGeo = trackGeo(new THREE.SphereGeometry(0.065, 16, 16));
 

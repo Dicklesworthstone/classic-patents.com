@@ -67,51 +67,54 @@ const p = (
 
 export const einkParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
-    "Abstract: An electronically addressable ink comprising transparent microcapsules containing charged pigment particles suspended in a dielectric fluid that migrate under an applied electric field.",
+    "Abstract: The grant describes electronically active inks and a printing system that patterns contrast media, conductors, insulators, resistors, semiconductors, magnetic, spin, piezoelectric, optoelectronic, thermoelectric, and radio-frequency materials.",
   ],
   4: [
-    "Field of the Invention: Electrophoretic electronic displays, microencapsulation chemistry, and reflective bistable electronic paper displays.",
+    "Field: the source concerns electronically active inks and printing systems that form electronically functional structures.",
   ],
   6: [
-    "Background: Traditional emissive displays (CRTs, back-lit LCDs) cause eye fatigue, suffer poor readability in direct sunlight, and consume continuous electrical power to sustain an image.",
+    "Background: the specification starts from known bichromal particles and microspheres whose electronic behavior is limited when it relies only on naturally occurring zeta potential.",
   ],
   7: [
-    "Shortcomings of prior electrophoretic cells: Particle agglomeration, gravity settling, and non-uniform optical switching across large display areas.",
+    "The source identifies the linked material/electronic-property limitation and introduces particles with implanted dipole moments for electrostatic or dielectrophoretic displays.",
   ],
   9: [
-    "Summary: Encapsulating electrophoretic fluid into microscopic polymer shells (~30 to 100 microns) prevents particle clustering and permits flexible, rollable electronic paper printing.",
+    "Microencapsulation discussion: the source seeks shells with optical clarity, dielectric strength, impermeability, and pressure resistance for electronically active internal phases.",
   ],
   10: [
-    "Dual-particle electrophoresis: Positively charged titanium dioxide white particles and negatively charged carbon black particles migrate in opposite directions within each microcapsule.",
+    "Electrophoretic embodiment: oppositely charged particles of different colors migrate toward the capsule surface according to field polarity, producing a perceived color change.",
   ],
   12: [
-    "Brief Description of Figures: FIG. 1 is a cross-sectional view of a microcapsule; FIG. 2 illustrates white and black optical switching under electric fields; FIG. 3 shows an active-matrix transistor backplane.",
+    "Drawing inventory: the grant has 16 sheets covering particle fabrication, microencapsulation, top/bottom/in-plane contrast media, dielectrophoresis, printed inks and circuits, displays, motors, watches, and a spin computer.",
   ],
   14: [
-    "Detailed Description: Each microcapsule 10 contains a dielectric carrier fluid 12 having a controlled refractive index and viscosity to achieve high electrophoretic mobility.",
+    "The source describes atomizing nozzles, charged droplets, and electrostatic coalescence to make bichromal or monochromal particles with implanted dipole moments.",
   ],
   15: [
-    "Charge control agents: Surfactants and polymer coatings impart stable zeta potentials ($\\\\zeta \\\\approx +50\\\\text{ mV}$ on TiO2 and $-40\\\\text{ mV}$ on carbon) for rapid response times (~100 ms).",
+    "The source describes microencapsulation by interfacial polymer formation, layered liquid films, or a photomask-exposed crosslinkable polymer cellular structure.",
   ],
   16: [
-    "Optical bistability: Van der Waals forces between particles and the capsule wall hold particles in position without sustained voltage, requiring zero standby power.",
+    "The specification gives top-electrode, in-plane, chemical, photoconductive, and dielectrophoretic contrast-media embodiments rather than one commercial pigment recipe.",
   ],
   17: [
-    "Active-matrix addressing: Transparent top Indium Tin Oxide (ITO) electrode and segmented bottom thin-film transistor (TFT) backplane drive individual pixel states.",
+    "Later figures extend the ink concept to printed semiconductor, transistor, solar-cell, capacitor, resistor, inductor, display, motor, watch, and spin-computer structures.",
   ],
   18: [
-    "Coating & printing: Microcapsules are blended with a liquid polymer binder and slot-die coated or screen-printed onto flexible plastic substrate rolls.",
+    "Printing systems include fluid delivery, screen printing, ink jets with reducing agents, electron-beam or light reduction, electroplating, and a movable deposition head.",
   ],
   19: [
-    "Reflective performance: High contrast ratio (>10:1) and high reflectance (>40%) matching the readability and lambertian scattering of printed ink on paper.",
+    "The final specification states that changes in form and detail may be made without departing from the invention as defined by the appended claims.",
   ],
 };
 
 export const einkArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324",
-  preparedBy: "Classic Patents Editorial Team",
-  preparedAt: "2026-08-20",
+  preparedBy: "Classic Patents source-audit draft (withheld pending full cloud reconciliation)",
+  preparedAt: "2026-08-21",
+  // Typed edition drafts require this field, but this draft is not attached to
+  // the served record until the remaining specification and figure coverage
+  // receives independent acceptance.
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -172,25 +175,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "BRIEF DESCRIPTION OF THE DRAWING FIGURES",
     },
     p(
-      "The invention is described in detail with reference to the accompanying drawings:\n",
-      makePreview(
-        "FIG. 1",
-        [1],
-        "Cross-sectional view of a microcapsule containing dual charged particles",
-      ),
-      " is a cross-sectional diagram of a microcapsule containing charged electrophoretic particles;\n",
-      makePreview(
-        "FIG. 2",
-        [2],
-        "Diagram showing white and black optical switching under applied electric fields",
-      ),
-      " is a diagram showing the optical state transition under applied electric fields; and\n",
-      makePreview(
-        "FIG. 3",
-        [3],
-        "Active-matrix thin-film transistor backplane driving electrophoretic pixels",
-      ),
-      " is a schematic diagram of an active-matrix display backplane driving the microencapsulated ink layer.",
+      "FIGS. 1A, 1B, 1C, 1D, 1E, and 1F are schematic representations of means of fabricating particles with a permanent dipole moment. FIGS. 2A, 2B and 2C are schematic representations of means of microencapsulation. FIGS. 3A, 3B, 3C, 3D, and 3E are schematic representations of microencapsulated electronically addressable contrast media systems suitable for top to bottom addressing. FIGS. 4A through 4M are schematic representations of systems suitable for bottom addressing. FIGS. 5A through 6E describe dielectrophoretic and frequency-dependent systems. FIGS. 7 through 10 depict electronic inks, printing systems, and printed structures. FIGS. 11 through 14 depict displays, an electrostatic motor, a watch, and a spin computer.",
     ),
     {
       kind: "heading",
@@ -198,34 +183,22 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS",
     },
     p(
-      "Referring to ",
-      makePreview("FIG. 1", [1], "Microcapsule cross-section"),
-      ", a microcapsule 10 comprises an outer polymeric wall 12 having a diameter of approximately 30 to 100 micrometers. Encapsulated within the microcapsule is a low-viscosity dielectric carrier fluid 14 and a plurality of positively charged white particles 16 (such as rutile titanium dioxide) and negatively charged black particles 18 (such as carbon black).",
+      "Referring to FIG. 1A atomizing nozzles 1 are loaded with materials 12 and 13 which may be differently colored. A first atomizing nozzle may be held at a positive potential 3 and a second nozzle may be held at a negative potential 4. Such potentials aid in atomization and impart a charge to droplets which form from said nozzles producing positively charge droplets 5 and negatively charged droplets 6. Such opposite charged droplets are attracted to each other electrostatically forming an overall neutral pair.",
     ),
     p(
-      "Charge control agents and steric stabilizers are chemically grafted to the particle surfaces to maintain uniform zeta potential and prevent flocculation. The carrier fluid is density-matched to the particles to eliminate gravitational settling, ensuring complete colloidal stability across years of operation.",
+      "A large number of techniques are known in the literature for microencapsulating one material inside another material. With proper modification, these techniques may be made amenable to microencapsulating systems with electronic properties.",
     ),
     p(
-      "Referring to ",
-      makePreview("FIG. 2", [2], "Dual-particle switching dynamics"),
-      ", when an electric field is applied between the top transparent electrode and the bottom drive electrode, the oppositely charged particles translate along field lines in opposing directions. Once positioned adjacent to the top or bottom capsule boundary, the particles remain held by surface adhesion and image-charge forces, providing true ",
-      term(
-        "optical bistability",
-        "Bistable Electronic Memory",
-        "The ability of the display to retain text and images indefinitely without electrical power consumption.",
-      ),
-      " with zero standby energy consumption.",
+      "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
     ),
     p(
-      "Referring to ",
-      makePreview("FIG. 3", [3], "Active-matrix pixel backplane"),
-      ", the microencapsulated ink layer 20 is laminated to an active-matrix thin-film transistor (TFT) substrate 22. Individual pixel electrodes apply localized voltage pulses (+15V / -15V) for approximately 100 to 300 milliseconds to switch pixel states, after which all driving circuitry is powered down.",
+      "Referring to FIGS. 4A and B the chemistry described in reference to FIGS. 3C-D may be employed with in-plane electrodes such that said chemistry undergoes a color switch from one color state to a second color state upon application of an electric field to in-plane electrodes 270 and 280.",
     ),
     p(
-      "The microcapsules are dispersed in a liquid polymer emulsion and coated onto flexible polyester film rolls at speeds exceeding several meters per minute, enabling cost-effective mass production of ultra-thin, lightweight electronic books and smart paper displays.",
+      "In one printing system a semiconductor ink 350 may be fabricated by dispersing a semiconductor powder 355 in a suitable binder 356. The semiconductive ink may be applied by printing techniques to form switch or logic structures.",
     ),
     p(
-      "The resulting display achieves a diffuse reflectivity exceeding 40% and a high contrast ratio exceeding 10:1, providing an authentic paper-like visual appearance that remains sharp and readable in direct sunlight at wide viewing angles approaching 180 degrees.",
+      "Referring to FIG. 14, a spin computer is depicted in which dipoles 912 with dipole moment 914 are situated at the nodes of row 920 and column 930 address lines. Such a computer works by means of initially addressing said dipoles to an initial condition and then allowing dipole interactions to produce a final state of the system as a whole.",
     ),
     {
       kind: "heading",

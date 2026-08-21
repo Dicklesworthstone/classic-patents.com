@@ -3,8 +3,8 @@ import { stepEInk } from "./eInkKernel";
 export const eInkRegistryEntry = {
   domain: "Optoelectronics & Colloidal Physics",
   domainTitle: "Electrophoretic Particle Dynamics",
-  equationName: "Stokes-Einstein Electrophoretic Drift",
-  governingEquation: "v = \\mu_e \\cdot E = \\frac{q}{6 \\pi \\eta r_p} \\cdot \\frac{V}{d}",
+  equationName: "Electrophoretic Drift (Pedagogical Mobility Model)",
+  governingEquation: "E = \\frac{V}{d},\\quad v_d = \\mu_e E",
   engineMethod: "stepEInk",
   controls: [
     {
@@ -48,14 +48,14 @@ export const eInkRegistryEntry = {
 
     return [
       {
-        label: "Surface Reflectance",
+        label: "Illustrative Surface Response",
         value: `${out.surfaceReflectancePercent}`,
         unit: "%",
         badgeColor: out.surfaceReflectancePercent > 40 ? "cyan" : "indigo",
         progressPct: out.surfaceReflectancePercent,
       },
       {
-        label: "Drift Velocity",
+        label: "Modeled Drift Velocity",
         value: `${out.driftVelocityMms.toFixed(2)}`,
         unit: "mm/s",
         badgeColor: "emerald" as const,
@@ -64,5 +64,5 @@ export const eInkRegistryEntry = {
     ];
   },
   pedagogicalInsight:
-    "E-Ink achieves bistable, zero-power electronic paper by suspending positively charged white titanium dioxide particles and negatively charged carbon black particles in microcapsules, electrophoretically translating them toward or away from the transparent viewing electrode under an applied electric field.",
+    "The grant’s electrophoretic embodiment moves oppositely charged particles of different colors toward a capsule surface according to field polarity. This shared kernel is a bounded pedagogical mobility model; it does not assert a measured patent value for reflectance, contrast, switching time, or standby power.",
 };

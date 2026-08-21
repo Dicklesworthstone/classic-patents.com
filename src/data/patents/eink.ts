@@ -28,8 +28,8 @@ export const eInkPatent: Patent = {
     url: "/patents/transcripts/us-6120588-eink-reviewed.txt",
     pageCount: 26,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
+    reviewedBy: "Classic Patents source-audit hold (not publication acceptance)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324",
   },
   originalText: `UNITED STATES PATENT

@@ -60,8 +60,9 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
-            Autoclave pressurized polymerization: resole (A-stage), resitol (B-stage), and infusible
-            resite (C-stage) thermoset crosslinking.
+            Editorial process model of the patent's reaction, water separation, forming, and
+            heat-and-pressure hardening. Resin-stage names and numerical material outputs are modern
+            interpretations, not printed measurements in US 942,699.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
@@ -116,7 +117,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
 
       {/* Main Visual Instrumentation Canvas / SVG */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* SVG Diagram: The Bakelizer Autoclave & Molecular Crosslink Network */}
+        {/* SVG editorial model: closed vessel, mold, and modern molecular interpretation. */}
         <div className="lg:col-span-7 bg-stone-950/80 rounded-lg p-4 border border-stone-800 flex flex-col items-center">
           <svg viewBox="0 0 600 360" className="w-full h-auto max-h-[360px] select-none">
             <defs>
@@ -456,7 +457,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
 
         <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
           <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Autoclave Pressure (psi)</span>
+            <span className="text-stone-300">Closed-Vessel Pressure (psi)</span>
             <span className="text-sky-400 font-bold">{autoclavePressurePsi} psi</span>
           </div>
           <input
@@ -468,7 +469,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             onChange={(e) => setControl("autoclavePressurePsi", Number(e.target.value))}
             className="w-full accent-sky-500 cursor-pointer"
           />
-          <span className="text-[10px] text-stone-500">Super-atmospheric suppression</span>
+          <span className="text-[10px] text-stone-500">Illustrative model control; no source pressure range</span>
         </div>
 
         <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
@@ -507,7 +508,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
 
         <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80 sm:col-span-2 lg:col-span-2">
           <div className="flex justify-between text-xs font-mono">
-            <span className="text-stone-300">Filler Content (Wood Flour / Mica) (%)</span>
+            <span className="text-stone-300">Filler Content (Listed Material) (%)</span>
             <span className="text-yellow-400 font-bold">{fillerPct} %</span>
           </div>
           <input
@@ -520,10 +521,15 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             className="w-full accent-yellow-500 cursor-pointer"
           />
           <span className="text-[10px] text-stone-500">
-            Structural & dielectric composite reinforcement
+            Source lists fillers; performance is an illustrative model output
           </span>
         </div>
       </div>
+      <p className="pt-3 text-[11px] leading-relaxed text-stone-500">
+        Source boundary: US 942,699 gives qualitative pressure containment and a practical
+        110–140 °C molding range. Conversion, porosity, tensile, dielectric, and pressure values
+        shown here are modern illustrative model outputs, not historical measurements.
+      </p>
     </div>
   );
 }

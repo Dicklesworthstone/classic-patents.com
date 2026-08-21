@@ -9,7 +9,8 @@ export interface EInkState {
   blackParticleNormY: number; // Top = 1.0 (viewing face), Bottom = -1.0
   electricFieldVperUm: number; // V/μm across 50μm capsule gap
   driftVelocityMms: number; // Particle drift speed in mm/s
-  surfaceReflectancePercent: number; // Optical contrast [5% to 75%]
+  /** Bounded illustrative response for the exhibit; not a patent-reported measurement. */
+  surfaceReflectancePercent: number; // Pedagogical optical response [5% to 75%]
   contrastRatio: string;
   /** Stokes-Einstein thermal jitter ω. Leftover 2.3 / 1.7 at 2.0 cP; scales as 1/η. */
   brownianJitterOmegaYRadPerS: number;

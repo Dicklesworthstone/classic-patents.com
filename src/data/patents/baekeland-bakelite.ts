@@ -15,9 +15,9 @@ export const baekelandBakelitePatent: Patent = {
   id: "us-942699-baekeland-bakelite",
   patentNumber: "US 942,699",
   title: "Method of Making Insoluble Products of Phenol and Formaldehyde",
-  shortTitle: "Bakelite Synthetic Polymer & Pressure Curing",
+  shortTitle: "Phenol-Formaldehyde Insoluble Condensation Product",
   subtitle:
-    "Controlled Two-Phase Condensation, Dehydration, and Super-Atmospheric Autoclave Curing",
+    "Water Separation, Forming, and Heat-and-Pressure Hardening",
   inventors: ["Leo Hendrik Baekeland"],
   inventorLocation: "Yonkers, New York",
   grantDate: "1909-12-07",
@@ -26,9 +26,9 @@ export const baekelandBakelitePatent: Patent = {
   category: "materials",
   categoryLabel: "Materials Science & Synthetic Chemistry",
   summary:
-    "Leo Hendrik Baekeland's landmark 1909 patent for Bakelite—the world's first fully synthetic, thermosetting plastic. By mastering the condensation reaction between phenol and formaldehyde through a two-stage process and applying super-atmospheric pressure in an autoclave ('Bakelizer') during curing above 100 °C, Baekeland prevented destructive foaming, producing a rigid, insoluble, heat-resistant composite that launched the modern polymer age.",
+    "Leo Hendrik Baekeland's 1909 patent claims methods for reacting a phenolic body with formaldehyde, separating water from the resulting product, forming articles, and hardening the product with heat and pressure into a hard, insoluble, infusible body.",
   heroQuote:
-    "The final heating or baking by which the condensation product, alone or compounded, is converted into an insoluble body should be effected in a closed vessel... without this precaution vapors of formaldehyde and the like escape causing foam and air bubbles.",
+    "The final heating or baking by which the condensation product, alone or compounded, is converted into an insoluble body should be effected in a closed vessel in case the temperature exceed 90°-100° C.",
   originalPdfUrl: "/patents/pdfs/us-942699-baekeland-bakelite.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US942699A/en",
   usptoClassification: "528/129",
@@ -61,46 +61,46 @@ export const baekelandBakelitePatent: Patent = {
   },
   archivalEdition: baekelandBakeliteArchivalEdition,
   originalText:
-    "To all whom it may concern: Be it known that I, LEO H. BAEKELAND, a citizen of the United States, residing at Snug Rock, Harmony Park, Yonkers, in the county of Westchester and State of New York, have invented certain new and useful Improvements in Methods of Making Insoluble Condensation Products of Phenols and Formaldehyde, of which the following is a specification.\n\nAccording to this invention phenols and formaldehyde are caused to react upon each other, the water which is present in the reagents or produced by the reaction is separated from the mass, and the resulting product is thereafter transformed by heat, preferably in presence of suitable condensing agents, into a hard, compact, insoluble and infusible body, which is resistant to oils, water, alcohols and other solvents and chemical reagents.\n\nI have found that by carrying out the operation in two distinct phases, or in other words by eliminating the water from the initial condensation or dehydration product before transforming the same into the final hard and insoluble product, important advantages are attained and improved results are secured... In a closed vessel under pressure the operation proceeds with precision, and a uniform result may be always obtained.",
+    "To all whom it may concern: Be it known that I, LEO H. BAEKELAND, a citizen of the United States, residing at Snug Rock, Harmony Park, Yonkers, in the county of Westchester and State of New York, have invented certain new and useful Improvements in Methods of Making Insoluble Condensation Products of Phenols and Formaldehyde, of which the following is a specification.\n\nIn practicing the invention I react upon a phenolic body with formaldehyde to obtain a reaction product which is capable of transformation by heat into an insoluble and infusible body, and then convert this reaction product, either alone or compounded with a suitable filling material, into such insoluble and infusible body by the combined action of heat and pressure. Preferably the water produced during the reaction or added with the reacting bodies is separated before hardening the reaction product.\n\nThe final heating or baking by which the condensation product, alone or compounded, is converted into an insoluble body should be effected in a closed vessel in case the temperature exceed 90°-100° C.; without this precaution vapors of formaldehyde and the like escape causing foam and air bubbles.",
   plainEnglishExplanation: {
     overview:
-      "For decades prior to 1907, organic chemists (beginning with Adolf von Baeyer in 1872) observed that mixing phenol (carbolic acid) with formaldehyde produced an uncontrollable, insoluble resinous sludge that ruined glassware. Everyone considered this intractable gunk a synthetic failure. Leo Hendrik Baekeland realized that this insoluble 'gunk' was precisely the ultimate goal: a synthetic material that would never melt, never dissolve, and never conduct electricity. Baekeland solved the two great engineering blockers that defeated previous experimenters: water evolution and volatile boiling. By halting the reaction at an intermediate fusible stage (A-stage resole), dehydrating the resin, and curing it inside a pressurized heated vessel (the 'Bakelizer' autoclave at 110–140 °C and 50–100 psi), the external pressure suppressed boiling and bubble formation, creating a dense, flawless 3D crosslinked thermoset polymer.",
+      "The patent addresses a practical processing problem: reacting a phenolic body with formaldehyde produces a condensation product and water, while the finished material must be hard, insoluble, and infusible. Baekeland's claimed sequence separates water before final hardening, permits the intermediate to be formed or compounded, and applies heat and pressure to the formed article. The patent requires a closed vessel above about 90–100 °C because escaping vapors can cause foam and air bubbles. Terms such as thermoset and crosslink are modern chemical interpretations, not words printed in this grant.",
     coreMechanism:
-      "The synthesis operates in two controlled thermochemical stages: (1) Step-growth condensation of phenol (C₆H₅OH) with excess aqueous formaldehyde (HCHO) in the presence of an alkaline or mild acid catalyst at 70–90 °C, forming ortho- and para-hydroxymethylphenol prepolymers. Water separates into a distinct supernatant layer and is decanted, leaving a viscous, moldable A-stage resin. (2) Compounding the resin with reinforcing fibrous fillers (wood flour, asbestos, mica) and curing inside a heated steel mold or pressure autoclave at 110–140 °C under 3.5–7.0 bar (50–100 psi). Super-atmospheric pressure forces residual water vapor and formaldehyde to remain dissolved, while thermal energy drives irreversible methylene bridge (-CH₂-) crosslinking into an infinite 3D covalent network (C-stage Bakelite).",
+      "The source describes two practical stages without assigning modern resin-stage names: first, phenol or another phenolic body reacts with formaldehyde and water is separated; second, the oily or semi-plastic product, alone or compounded with a filling material, is formed and subjected to heat and pressure. The grant gives 110–140 °C as a practical molding temperature and says that above 90–100 °C the heating should occur in a closed vessel to limit vapor escape and foaming. A modern model may represent condensation and irreversible network formation, but it must not present unprinted pressure ranges, apparatus names, conversion values, or material-property measurements as historical observations.",
     mechanicalBreakdown: [
       {
-        title: "A-Stage Intermediate Resole & Phase Separation",
+        title: "Oily or Semi-Plastic Condensation Product",
         summary:
-          "Controlled addition of formaldehyde to phenol under mild heating yields low-molecular-weight mono- and di-methylolphenols. The mixture spontaneously stratifies into two layers: an upper aqueous waste layer and a dense lower liquid resin. This intermediate can be poured, shaped, or dissolved in alcohol and acetone.",
+          "The patent describes an oily or viscous product and, with further reaction, a gelatinous or semi-plastic product. A mixture may stratify into an aqueous layer and a heavier layer containing the first condensation or dehydration products; the layers can be separated before later forming and hardening.",
         technicalDetails:
-          "Equimolar or formaldehyde-rich ratios undergo nucleophilic addition: $\\text{C}_6\\text{H}_5\\text{OH} + \\text{HCHO} \\rightarrow \\text{HOC}_6\\text{H}_4\\text{CH}_2\\text{OH}$. The reaction produces one mole of condensation water per methylene bridge: $n\\,\\text{Phenol} + (n+1)\\,\\text{HCHO} \\rightarrow \\text{Prepolymer} + n\\,\\text{H}_2\\text{O}$.",
-        archaicTerm: "Oily or viscous dehydration product",
-        modernEquivalent: "Fusible A-stage resole prepolymer liquid",
+          "The patent does not give a structural reaction equation. In modern notation, a simplified phenol-formaldehyde condensation can be represented as $\\text{phenol} + \\text{formaldehyde} \\rightarrow \\text{condensation product} + \\text{water}$, while the exact composition depends on the phenolic body, formaldehyde source, catalyst, and conversion.",
+        archaicTerm: "Oily or viscous condensation product",
+        modernEquivalent: "Moldable intermediate phenolic resin",
       },
       {
-        title: "The Bakelizer Super-Atmospheric Curing Autoclave",
+        title: "Closed Vessel Under Pressure",
         summary:
-          "A sealed, steam-jacketed iron pressure vessel capable of maintaining 50–100 psi of compressed air while heating to 110–140 °C. The external pressure suppresses the boiling point of trapped moisture and unreacted formaldehyde, preventing explosive foaming and porosity.",
+          "The patent requires the final heating in a closed vessel when the temperature exceeds about 90–100 °C. It says that this prevents vapors of formaldehyde and the like from escaping and causing foam and air bubbles, but it does not name a Bakelizer or state a pressure range.",
         technicalDetails:
-          "According to the Clausius-Clapeyron relation $\\ln(P_2/P_1) = -\\frac{\\Delta H_{\\text{vap}}}{R}\\left(\\frac{1}{T_2}-\\frac{1}{T_1}\\right)$, water vapor pressure reaches 3.6 bar at 140 °C. Applying $P_{\\text{applied}} > P_{\\text{vapor}}(T)$ prevents steam bubble nucleation, guaranteeing a void-free density of 1.30–1.45 g/cm³.",
+          "The source gives the qualitative boundary that pressure and enclosure limit vapor escape during heating. A modern thermodynamics model can compare applied pressure with a volatile's saturation pressure using $P_{\\text{applied}} > P_{\\text{sat}}(T)$, but the grant supplies neither a pressure value nor a guaranteed density or porosity.",
         archaicTerm: "Closed vessel under pressure",
-        modernEquivalent: "High-pressure thermal curing autoclave (Bakelizer)",
+        modernEquivalent: "Closed pressure vessel for thermal curing",
       },
       {
-        title: "Compounding with Structural & Dielectric Fillers",
+        title: "Compounding with Filling Materials",
         summary:
-          "Blending the intermediate B-stage resin with wood flour, asbestos fiber, mica, or graphite prior to final cure. The resin wets every fiber, transforming brittle phenolic glass into high-impact structural composites with extreme dielectric strength.",
+          "The patent permits the condensation product to be mixed with asbestos fiber, wood fiber, rubber, casein, lampblack, mica, mineral powders, pigments, dyes, and other listed materials before final hardening.",
         technicalDetails:
-          "Compounding with 40–50% wood flour increases tensile strength to 50–70 MPa and prevents thermal shock cracking, while asbestos provides non-arcing insulation up to 200 °C.",
+          "Those modern performance values are not measured in this grant. The source establishes only that a filling material may be compounded with the condensation product for the intended use.",
         archaicTerm: "Admixture with asbestos fiber, wood fiber, or mica",
         modernEquivalent: "Phenolic molding compound (composite masterbatch)",
       },
       {
-        title: "Irreversible 3D Covalent Crosslinking (Thermosetting)",
+        title: "Hard, Insoluble, and Infusible Body",
         summary:
-          "Under sustained heat and pressure, methylol groups condense with active aromatic hydrogen atoms at ortho and para positions, forming robust methylene (-CH₂-) and ether (-CH₂-O-CH₂-) bridges across adjacent benzene rings.",
+          "The grant calls the hardened result hard, compact, insoluble, and infusible, and says that it resists moisture, solvents, and most chemical reagents. Modern polymer chemistry interprets that behavior as an extensively crosslinked phenolic network, but the grant does not specify a molecular structure or crosslink density.",
         technicalDetails:
-          "Crosslink density reaches $\\rho_x > 10^{21}\\text{ bonds/cm}^3$, creating an infinite macromolecular diamond-like covalent lattice with glass transition temperature $T_g > 200^\\circ\\text{C}$ and infinite molecular weight ($M_w \\rightarrow \\infty$).",
+          "A source-bounded modern description is that additional condensation can reduce flow and solubility. The patent provides no numerical crosslink density, glass-transition temperature, or molecular-weight measurement, so those quantities are deliberately withheld here.",
         archaicTerm: "Hard, compact, insoluble and infusible body",
         modernEquivalent: "Fully crosslinked C-stage phenolic thermoset polymer",
       },
@@ -110,25 +110,25 @@ export const baekelandBakelitePatent: Patent = {
         principle: "Step-Growth Polycondensation Kinetics",
         formula: "\\bar{X}_n = \\frac{1}{1 - p}",
         explanation:
-          "Carothers' equation governs the degree of polymerization where $p$ is the fractional conversion of functional groups. Because phenol has a functionality $f=3$ (ortho/ortho/para) and formaldehyde has $f=2$, the critical gel point conversion occurs at $p_c = \\frac{2}{f} = 0.67$. Beyond this threshold, an infinite crosslinked gel network forms irreversibly.",
+          "Carothers' relation is a modern way to discuss how conversion affects step-growth polymer size. It is not a measurement or equation printed in US 942,699, and the grant does not state a gel-point conversion or a functionality value for its phenolic bodies.",
       },
       {
         principle: "Vapor Pressure Suppression via External Pressure",
         formula:
           "P_{\\text{autoclave}} > P_{\\text{sat}}(T) = P_0 \\exp\\left(-\\frac{\\Delta H_{\\text{vap}}}{R T}\\right)",
         explanation:
-          "At curing temperatures of 130–140 °C, the vapor pressure of water is 2.7–3.6 atmospheres. Applying 5–7 atmospheres of pneumatic pressure in the Bakelizer completely suppresses vaporization, forcing moisture to stay dissolved and preventing voids, bubbles, or structural porosity.",
+          "The grant states that above about 90–100 °C heating should occur in a closed vessel because escaping formaldehyde vapors and the like cause foam and air bubbles. The equation is a modern explanatory model; the patent gives no pressure range or numerical vapor-pressure measurement.",
       },
       {
         principle: "Dielectric Breakdown and Thermal Insulation",
         formula:
           "E_{\\text{breakdown}} = \\frac{V_{\\text{arc}}}{d} \\approx 10\\text{--}15\\text{ kV/mm}",
         explanation:
-          "Because the cured phenolic matrix contains no mobile electrons or free ions and cannot soften when hot, it exhibits exceptional dielectric breakdown resistance and zero tracking under electrical arcs, making it the premier insulator for early electrical grids, automotive distributors, and radio housings.",
+          "The grant reports resistance to moisture, alcohol, acetone, and most chemical reagents, but it does not measure dielectric breakdown or claim particular electrical applications. Electrical-insulation behavior is a later materials interpretation and must not be read as a result measured by this patent.",
       },
     ],
     whyItMattersToday:
-      "Every modern thermoset plastic—from epoxy printed circuit boards and aerospace carbon-fiber prepregs to polyurethane structural foams and heat-resistant automotive brake linings—descends directly from Baekeland's discovery of controlled two-phase step condensation and autoclave pressure curing.",
+    "The process is an early documented route to an insoluble phenolic condensation material. Later phenolic molding compounds and other thermosets use related ideas of staged forming, fillers, heat, and pressure, but the patent itself does not establish a direct lineage to every modern thermoset named here.",
   },
   claims: [
     {
@@ -136,96 +136,85 @@ export const baekelandBakelitePatent: Patent = {
       isIndependent: true,
       originalText: baekelandClaimText(1),
       plainEnglish:
-        "The master broad method of producing hard, insoluble, and infusible synthetic plastic by reacting a phenolic compound with formaldehyde and curing the resulting intermediate into a solid thermoset body through the simultaneous application of heat and pressure.",
+        "The broad method of producing a hard, insoluble, and infusible condensation product by reacting a phenolic body with formaldehyde and then applying heat and pressure.",
       keyInnovations: [
         "Two-step reaction converting phenol and formaldehyde into an insoluble solid",
-        "Combined application of heat and super-atmospheric pressure to achieve complete curing",
-        "Synthesis of the first fully synthetic thermosetting resin",
+        "Combined application of heat and pressure to harden the condensation product",
+        "A method for producing a hard, compact, insoluble, and infusible condensation product",
       ],
       legalSignificance:
-        "The foundational broad independent claim that gave Baekeland total patent dominance over synthetic phenolic resins, successfully defended in federal court against all competitors.",
+        "The broadest claim in this grant, covering reaction of a phenolic body with formaldehyde followed by hardening with heat and pressure.",
     },
     {
       number: 2,
       isIndependent: true,
       originalText: baekelandClaimText(2),
       plainEnglish:
-        "The manufacturing method of synthesizing an intermediate prepolymer resin from phenol and formaldehyde capable of being heat-transformed, forming a desired shaped article from the prepolymer, and hardening the article into an infusible finished product under heat and pressure.",
+        "The article-making method forms an article from the reaction product and then renders it hard, insoluble, and infusible by applying heat and pressure.",
       keyInnovations: [
         "Staged molding process from fusible intermediate to finished shape",
-        "Net-shape forming before final irreversible curing",
-        "Direct manufacture of molded structural components",
+        "Forming an article before heat-and-pressure hardening",
+        "Hardening a formed article with heat and pressure",
       ],
       legalSignificance:
-        "Established patent protection for compression molding of phenolic articles, covering industrial parts production.",
+        "Adds the article-forming step before the heat-and-pressure hardening operation.",
     },
     {
       number: 3,
       isIndependent: true,
       originalText: baekelandClaimText(3),
       plainEnglish:
-        "The process of claim 2 with the explicit step of separating and removing the water byproduct from the intermediate reaction mixture before forming the shaped article and applying final heat and pressure.",
+        "The article-making method adds separation of water from the resulting product before forming and hardening the article.",
       keyInnovations: [
         "Explicit phase separation of aqueous byproduct from intermediate resin",
-        "Dehydration prior to molding to eliminate steam blister formation",
-        "Isolation of pure moldable A-stage resole resin",
+        "Separating water before forming and hardening the article",
+        "A source-defined water-removal limitation",
       ],
       legalSignificance:
-        "Protected the critical dehydration step that made flawless, void-free industrial molding technically possible.",
+        "Adds separation of water from the resulting product before forming and hardening the article.",
     },
     {
       number: 4,
       isIndependent: true,
       originalText: baekelandClaimText(4),
       plainEnglish:
-        "The method of compounding the intermediate phenol-formaldehyde resin with particulate or fibrous filling materials (such as wood flour, asbestos, mica, or graphite) to form a composite molding compound, and curing the mixture under heat and pressure.",
+        "The article-making method forms the reaction product compounded with a filling material and then renders the article hard, insoluble, and infusible by heat and pressure.",
       keyInnovations: [
-        "Compounding intermediate phenolic resin with reinforcing filler masterbatches",
-        "Creation of high-strength structural and electrical composite plastics",
-        "Adaptation of rubber compounding principles to synthetic thermosets",
+        "Compounding the reaction product with a filling material",
+        "Forming a filled article before heat-and-pressure hardening",
+        "Applying a compounding step described by the specification",
       ],
       legalSignificance:
-        "Covered all commercial filled Bakelite molding powders (Bakelite Molding Material), the dominant commercial product line of the General Bakelite Company.",
+        "Adds a filling-material limitation to the article-making method.",
     },
     {
       number: 5,
       isIndependent: true,
       originalText: baekelandClaimText(5),
       plainEnglish:
-        "The chemical salting-out process of separating water from the phenol-formaldehyde reaction mixture by adding a water-soluble metallic salt (such as calcium chloride) to force instantaneous phase stratification.",
+        "The water-separation step adds a water-soluble metallic salt to a phenolic-body and aqueous-formaldehyde mixture.",
       keyInnovations: [
-        "Salting-out dehydration of organic phenolic resin",
-        "Use of hygroscopic metallic salts for rapid non-thermal water separation",
-        "Formation of distinct dense electrolyte and dehydrated organic resin layers",
+        "Separating water from a phenol-formaldehyde mixture",
+        "Adding a water-soluble metallic salt to cause separation",
+        "A distinct metallic-salt water-separation step",
       ],
       legalSignificance:
-        "Specific chemical processing claim providing alternative low-energy dehydration methodology.",
+        "A specific claim to causing water to separate by adding a soluble metallic salt.",
     },
   ],
   drawings: [],
   historicalContext: {
     problemStatement:
-      "In the late 19th century, the rapid expansion of electrical grids created a global crisis in electrical insulation.",
+      "The grant focuses on controlling the water and vapor produced or introduced during phenol-formaldehyde condensation so the material can be formed and hardened without foam or air bubbles.",
     priorArtLimitations: [
-      "Natural shellac was scarce, expensive, and softened at moderate temperatures",
-      "Uncontrolled phenol-formaldehyde reactions foamed into porous sludge",
+      "The earlier application cited by Baekeland required drying to expel substantial reaction water",
+      "Heating above about 90–100 °C in an open vessel allowed formaldehyde vapors and the like to escape, causing foam and air bubbles",
     ],
     breakthroughInsight:
-      "Applying super-atmospheric pneumatic pressure during curing suppresses byproduct vaporization and boiling, enabling dense, void-free 3D crosslinked polymers.",
-    patentWars: [
-      {
-        rivalName: "Condensite Company / Redmanol Chemical Products",
-        rivalClaim: "Anhydrous phenolic resin molding formulations",
-        conflictDetails:
-          "Competitors attempted to circumvent Baekeland's heat-and-pressure patents.",
-        resolution:
-          "Federal courts ruled in Baekeland's favor in 1921; the competitors merged into the Bakelite Corporation in 1922.",
-        legalOutcome:
-          "Established the master authority of Baekeland's autoclave curing patents across the polymer industry.",
-      },
-    ],
+      "Separate the water before final hardening, form or compound the intermediate product, and apply heat and pressure in a closed vessel when required so the finished body is hard, insoluble, and infusible.",
+    patentWars: [],
     civilizationalImpact:
-      "Inaugurated the Age of Plastics, enabling radios, telephones, automotive distributors, and modern electronics.",
+      "The claimed sequence became an important historical example of turning a phenolic condensation into a formable, hardened material; later applications and commercial histories require separate sources beyond this three-page grant.",
   },
   stats: {
     totalClaims: 5,

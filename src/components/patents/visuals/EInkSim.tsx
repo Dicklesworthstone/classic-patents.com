@@ -145,7 +145,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
       ctx.font = "11px monospace";
       ctx.fillStyle = "#94a3b8";
       ctx.fillText(
-        `US 6,120,588 • Stokes-Einstein Drift • Voltage: ${voltage > 0 ? "+" : ""}${voltage.toFixed(1)}V • Reflectance: ${state.surfaceReflectancePercent}% • Contrast: ${state.contrastRatio}`,
+        `US 6,120,588 • Modeled Electrophoretic Drift • Field: ${state.electricFieldVperUm.toFixed(2)} V/μm • Illustrative response: ${state.surfaceReflectancePercent}%`,
         20,
         42,
       );
@@ -158,7 +158,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
       const cW = 440;
       const cH = 260;
 
-      // Top Transparent Viewing Electrode (ITO Film)
+      // Top transparent electrode 100 (source Fig. 3 top-to-bottom embodiment)
       ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
       ctx.fillRect(cX + 20, cY + 15, cW - 40, 16);
       ctx.strokeStyle = "#38bdf8";
@@ -167,9 +167,9 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
 
       ctx.fillStyle = "#e0f2fe";
       ctx.font = "bold 10px monospace";
-      ctx.fillText("TOP TRANSPARENT CONDUCTING ITO ELECTRODE (VIEWING SURFACE)", cX + 30, cY + 27);
+      ctx.fillText("TOP CLEAR ELECTRODE 100 (VIEWING SURFACE)", cX + 30, cY + 27);
 
-      // Bottom Addressable Pixel Electrode (Active Matrix TFT)
+      // Bottom electrode 110 (source Fig. 3 top-to-bottom embodiment)
       const bColor =
         voltage > 0
           ? "rgba(239, 68, 68, 0.3)"
@@ -187,12 +187,12 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
       ctx.fillStyle = "#cbd5e1";
       ctx.font = "bold 10px monospace";
       ctx.fillText(
-        `BOTTOM PIXEL ELECTRODE (${voltage > 0 ? `+${voltage.toFixed(1)}V ANODE` : voltage < 0 ? `${voltage.toFixed(1)}V CATHODE` : "0.0V BISTABLE OFF"})`,
+        `BOTTOM ELECTRODE 110 (${voltage > 0 ? `+${voltage.toFixed(1)}V` : voltage < 0 ? `${voltage.toFixed(1)}V` : "0.0V"})`,
         cX + 30,
         cY + cH - 23,
       );
 
-      // Microcapsule Shells (50 micron polymer spheres)
+      // Microcapsule shells 120 (the grant does not prescribe a single size)
       const caps = [
         { cx: cX + 130, cy: cY + cH / 2, r: 85 },
         { cx: cX + 310, cy: cY + cH / 2, r: 85 },
@@ -230,7 +230,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
           ctx.arc(px, py, p.size, 0, Math.PI * 2);
 
           if (p.type === "white") {
-            // Positively charged TiO2 White Particle
+            // Positively charged particle (one source embodiment)
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = "#94a3b8";
             ctx.lineWidth = 1;
@@ -242,7 +242,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             ctx.font = "bold 8px monospace";
             ctx.fillText("+", px - 3, py + 3);
           } else {
-            // Negatively charged Carbon Black Particle
+            // Negatively charged particle (one source embodiment)
             ctx.fillStyle = "#18181b";
             ctx.strokeStyle = "#475569";
             ctx.lineWidth = 1;
@@ -347,8 +347,8 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             Electrophoretic E-Ink Display (US 6,120,588)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Microencapsulated electrophoretic display: dual-pigment particles (TiO₂ and Carbon
-            Black), dielectric fluid suspension, and bistable TFT electrostatic control.
+            Source-bounded electrophoretic embodiment: oppositely charged particles in a
+            microcapsule migrate toward the viewing surface according to field polarity.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -410,7 +410,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
         {/* Driving Electrode Voltage */}
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
-            <label htmlFor={voltageId}>Driving Voltage (TFT Electrode):</label>
+            <label htmlFor={voltageId}>Applied Field (source electrodes 100/110):</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {voltage > 0 ? "+" : ""}
               {voltage.toFixed(1)} V
@@ -427,8 +427,8 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             className="w-full accent-amber-500 cursor-pointer"
           />
           <span className="text-[10px] text-ink-500 dark:text-neutral-500">
-            +15V pulls white particles to top; -15V pulls black particles to top; 0V = bistable
-            memory
+            This exhibit uses a bounded ±15 V control for the modeled field; the grant does not
+            prescribe this drive voltage or a single pigment pair.
           </span>
         </div>
 
@@ -467,7 +467,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             }}
             className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-neutral-900 border border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
-            ⚪ Switch White (+15V)
+            ⚪ Positive field
           </button>
           <button
             type="button"
@@ -477,7 +477,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             }}
             className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-neutral-900 border border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
-            ⚫ Switch Black (-15V)
+            ⚫ Negative field
           </button>
           <button
             type="button"
@@ -487,7 +487,7 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
             }}
             className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-400 dark:border-emerald-500/80 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/80 transition-all"
           >
-            ⚡ Hold Zero Power (0V)
+            ⚡ Field off (0V)
           </button>
         </div>
 

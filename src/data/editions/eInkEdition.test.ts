@@ -3,19 +3,21 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { einkArchivalEdition } from "@/data/editions/eInkEdition";
+import { einkArchivalEdition, manualClaimText } from "@/data/editions/eInkEdition";
 import { eInkPatent } from "@/data/patents/eink";
 
 const PINNED_SHA256 = "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324";
 
 describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
-  test("is a valid, complete manual edition of US 6,120,588", () => {
+  test("draft has valid typed shape but remains withheld from the served record", () => {
     const result = validateCuratedSpecificationEdition(einkArchivalEdition);
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
-    expect(eInkPatent.archivalEdition).toBe(einkArchivalEdition);
+    // The authored draft is intentionally not served until full paragraph and
+    // 16-sheet figure coverage receives independent acceptance.
+    expect(eInkPatent.archivalEdition).toBeUndefined();
     expect(eInkPatent.originalTextAsset).toBeDefined();
   });
 
@@ -27,13 +29,14 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
     expect(diskSha).toBe(PINNED_SHA256);
   });
 
-  test("contains all 18 printed claims exactly matching manual claim text", () => {
+  test("contains all 18 printed claims and keeps the record dynamically sourced", () => {
     const claims = einkArchivalEdition.blocks.filter((b) => b.kind === "claim");
     expect(claims.length).toBe(18);
 
     for (let i = 1; i <= 18; i++) {
       const claim = claims.find((c) => c.number === i);
       expect(claim).toBeDefined();
+      expect(manualClaimText(i)).toBe(claim?.inlines.map((inline) => inline.text).join(""));
     }
   });
 
@@ -49,7 +52,7 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
       return [];
     });
 
-    expect(figurePreviews.length).toBeGreaterThanOrEqual(3);
+    expect(figurePreviews.length).toBe(0);
 
     for (const preview of figurePreviews) {
       const relPath = preview.src.replace(/^\//, "");

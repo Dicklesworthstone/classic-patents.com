@@ -40,7 +40,7 @@ export function EInk3D() {
   const [hud, setHud] = useState({
     voltage: 15,
     reflectance: 72,
-    contrast: "12:1",
+    contrast: "modeled",
     stateLabel: "White State",
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -154,7 +154,7 @@ export function EInk3D() {
               [
                 ["iso", "Isometric"],
                 ["microcapsule", "Microcapsule Core"],
-                ["electrodes", "ITO Electrodes"],
+                ["electrodes", "Source Electrodes 100/110"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -245,13 +245,13 @@ export function EInk3D() {
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Reflectance:</span>
+              <span className="text-ink-600 dark:text-ink-400">Modeled response:</span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
                 {hud.reflectance}%
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Contrast:</span>
+              <span className="text-ink-600 dark:text-ink-400">Response ratio:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">{hud.contrast}</span>
             </div>
           </div>
@@ -268,7 +268,7 @@ export function EInk3D() {
               value: `${hud.voltage > 0 ? `+${hud.voltage}` : hud.voltage}`,
               unit: "V",
             },
-            { label: "Reflectance", value: `${hud.reflectance}`, unit: "%" },
+            { label: "Modeled response", value: `${hud.reflectance}`, unit: "%" },
             { label: "Contrast", value: `${hud.contrast}` },
           ]}
         />
