@@ -935,12 +935,12 @@ and 216. A sample of the lascr output is determined by a
 photoelectric cell 218 which is coupled to the oscillograph
 214 and presented on the face thereof as a “transmitter”
 pulse 220 to indicate the time at which the laser output
-pulse was transmitted. The Jaser beam 210 is reflected off
+pulse was transmitted. The laser beam 210 is reflected off
 a target 212 and a minute portion thereof is received as
 a parallel beam 210’ by the colidar receiver 222. The
-received beam 210 impinges upon a parabolic reficctor
-224 and is focused into a photoelectric ccll 226, The
-electrical cell of the protoelectric cell 226 is coupled to
+received beam 210 impinges upon a parabolic reflector
+224 and is focused into a photoelectric cell 226. The
+electrical cell of the photoelectric cell 226 is coupled to
 the receiver oscillograph 216 where it is presented on the
 face thereof as a “receiver” pulse 228. The time difference
 between the pulses 220 and 228 on the two oscillographs

@@ -143,6 +143,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Nineteenth-century gunpowder black powder rockets carried all structural casings throughout the trajectory.",
     },
   ],
+  "us-400766-hall-aluminium": [
+    {
+      claimNumber: 1,
+      patentId: "us-400766-hall-aluminium",
+      claimTitle: "Cryolite Electrolytic Bath Reduction",
+      activeDescription:
+        "Claim 1 dissolves alumina in molten cryolite at 960°C, passing continuous current through carbon anodes.",
+      invertedDescription:
+        "Direct thermal reduction: unfluxed Al₂O₃ requires 2072°C and carbon yields refractory aluminum carbide.",
+      failureModeName: "Refractory Carbide Solidification",
+      historicalPriorArt:
+        "Deville's chemical sodium reduction of aluminum chloride cost $12/pound before Hall's electrolytic bath.",
+    },
+  ],
 };
 
 /**
@@ -261,6 +275,21 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "PROPULSION REFUSAL: Tsiolkovsky mass ratio insufficient to overcome gravity drag without staging.";
+      }
+      break;
+    }
+
+    case "us-400766-hall-aluminium": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.currentAmperes = 15000.0; // Collapsed cell current
+        modified.bathTemperatureCelsius = 2050.0; // Required unfluxed melting point
+        modified.aluminaConcentrationPct = 0.2; // Frozen solubility
+        activeFailures.push(
+          "Anode Effect & Refractory Freezing: Absence of cryolite flux creates solid alumina crust",
+        );
+        refusalWarning =
+          "ELECTROCHEMICAL REFUSAL: Insoluble Al₂O₃ lacks ionic conductivity without molten fluoride bath.";
       }
       break;
     }

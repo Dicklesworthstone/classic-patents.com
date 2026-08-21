@@ -352,25 +352,19 @@ export function GoddardRocket3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Nozzle Expansion Ratio
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {expansionRatio.toFixed(1)}:1
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2.0"
-              max="10.0"
-              step="0.5"
-              value={expansionRatio}
-              onChange={(e) => updateParam("expansionRatio", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="expansionRatio"
+            patentId="us-1102653-goddard-rocket"
+            paramKey="expansionRatio"
+            label="Nozzle Expansion Ratio"
+            value={expansionRatio}
+            min={2.0}
+            max={10.0}
+            step={0.5}
+            unit=":1"
+            onChange={(val) => updateParam("expansionRatio", val)}
+            allParams={params}
+          />
         </div>
 
         <PortHamiltonianEnergyStrip

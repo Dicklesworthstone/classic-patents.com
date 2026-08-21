@@ -194,6 +194,19 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-400766-hall-aluminium": {
+      const currentA = params.currentAmperes ?? 300000.0;
+      const bathTempC = params.bathTemperatureCelsius ?? 960.0;
+      const cellVoltageV = 4.2; // Typical Hall-Héroult cell operating voltage
+      const eDecompV = 2.14; // Reversible decomposition potential of Al2O3
+
+      powerIn = currentA * cellVoltageV; // Total electrical power input (1.26 MW)
+      dissipated = currentA * (cellVoltageV - eDecompV); // Ohmic Joule heating dissipated in bath (618 kW)
+      potential = currentA * eDecompV * 3600.0; // Stored chemical Gibbs free energy of reduced aluminium metal
+      thermal = 8000.0 * 1800.0 * (bathTempC + 273.15) * 0.001; // Molten electrolyte thermal mass
+      break;
+    }
+
     case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
       const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
