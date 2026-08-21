@@ -68,9 +68,7 @@ function makePreview(
       .map((num) => ({
         src: figureAssetPath(num),
         alt:
-          num === 16 || num === 17
-            ? `Figures 16 and 17: ${altText}`
-            : `Figure ${num}: ${altText}`,
+          num === 16 || num === 17 ? `Figures 16 and 17: ${altText}` : `Figure ${num}: ${altText}`,
         width: FIGURE_DIMS[num]?.width ?? 300,
         height: FIGURE_DIMS[num]?.height ?? 300,
       }))
