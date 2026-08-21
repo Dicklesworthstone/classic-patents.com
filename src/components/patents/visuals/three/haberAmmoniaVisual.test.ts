@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
-import { HABER_3D_SOURCE_BOUNDARY, buildHaberAmmoniaModel } from "./haberAmmoniaModel";
+import { buildHaberAmmoniaModel, HABER_3D_SOURCE_BOUNDARY } from "./haberAmmoniaModel";
 
 describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
   const rootDir = process.cwd();

@@ -207,6 +207,19 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
   container.style.transform = "translateZ(0)";
   container.replaceChildren(canvas);
 
+  // Mobile GPU resets silently kill WebGL contexts. preventDefault on loss
+  // keeps the context restorable; three.js re-uploads programs, geometries,
+  // and textures lazily on restore, so the next rendered frame just works
+  // instead of leaving a frozen black canvas until a manual remount.
+  const onContextLost = (e: Event) => {
+    e.preventDefault();
+  };
+  const onContextRestored = () => {
+    // No explicit action: three.js re-initializes GL state on next render.
+  };
+  canvas.addEventListener("webglcontextlost", onContextLost);
+  canvas.addEventListener("webglcontextrestored", onContextRestored);
+
   // 4. Studio & Sun Lighting Rig
   // A. Sky & Ground Hemisphere Light (Natural atmospheric fill)
   const hemiSkyColor = 0x38bdf8;
@@ -597,6 +610,8 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
 
   const dispose = () => {
     controls.dispose();
+    canvas.removeEventListener("webglcontextlost", onContextLost);
+    canvas.removeEventListener("webglcontextrestored", onContextRestored);
     scene.traverse((obj) => {
       if (obj instanceof THREE.Mesh || obj instanceof THREE.Points || obj instanceof THREE.Line) {
         obj.geometry?.dispose();

@@ -448,9 +448,9 @@ export function HaberAmmoniaSim({
         </div>
 
         <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
-          The controls expose the host SI interpretation of pressure, temperature, feed amount,
-          and catalyst activity. The canvas process-loop sketch remains disabled until a source
-          drawing or separately accepted apparatus record exists.
+          The controls expose the host SI interpretation of pressure, temperature, feed amount, and
+          catalyst activity. The canvas process-loop sketch remains disabled until a source drawing
+          or separately accepted apparatus record exists.
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">

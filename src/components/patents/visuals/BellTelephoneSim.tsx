@@ -6,6 +6,7 @@ import { bellScopeSample, stepBellTelephone } from "@/physics/catalogKernels";
 import { formatSones, sonesFromDbSpl } from "@/physics/psycho";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function BellTelephoneSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-174465-bell-telephone");
@@ -25,6 +26,10 @@ export function BellTelephoneSim() {
     "continuous-undulating",
   );
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  // Museum contract: silent until the visitor asks for sound. The hook remutes
+  // the shared engine on mount, so landing directly on this face can never
+  // inherit an unmuted singleton from a previous patent visit.
+  const { isAudioMuted, setMuted } = usePatentAudio();
   const [time, setTime] = useState<number>(0);
 
   useEffect(() => {
@@ -90,7 +95,11 @@ export function BellTelephoneSim() {
             aria-label="Toggle test tone"
             type="button"
             onClick={() => {
-              setIsPlayingAudio(!isPlayingAudio);
+              const next = !isPlayingAudio;
+              if (next && isAudioMuted) {
+                setMuted(false);
+              }
+              setIsPlayingAudio(next);
               soundEngine.playSwitchClick();
             }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${

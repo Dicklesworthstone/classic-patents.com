@@ -320,7 +320,7 @@ export function WrightFlyer3D() {
 
         {/* Camera Views Bar (Top-Left) */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-12rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-12rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
@@ -412,7 +412,7 @@ export function WrightFlyer3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end items-center gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end items-center gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem]">
           <ClaimConstraintToggle
             patentId="us-821393-wright-flyer"
             claimStates={claimStates}
@@ -527,34 +527,34 @@ export function WrightFlyer3D() {
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
-      {/* Bottom-Right SI Telemetry Chip Strip (inside canvas viewport so the
+        {/* Bottom-Right SI Telemetry Chip Strip (inside canvas viewport so the
           absolute anchoring resolves against the sim, not the page) */}
-      <StudioKernelChips
-        visible={true}
-        side="right"
-        title="WRIGHT 1903 3-AXIS AERODYNAMICS"
-        chips={[
-          {
-            label: "Lift Force",
-            value: `${si.liftNewtons.toFixed(0)}`,
-            unit: "N",
-            tone: "hot",
-          },
-          { label: "Drag Force", value: `${si.totalDragNewtons.toFixed(0)}`, unit: "N" },
-          {
-            label: "L/D Ratio",
-            value: `${si.liftToDrag.toFixed(2)}`,
-          },
-          { label: "Lift Coeff (C_L)", value: `${si.cl.toFixed(3)}` },
-          { label: "Airspeed", value: `${airspeedMph}`, unit: "mph" },
-          { label: "Net Yaw", value: `${si.netYawNm.toFixed(1)}`, unit: "N·m" },
-          {
-            label: "Coupling",
-            value: isCoupled ? "Warp + Rudder Interlock" : "Independent",
-          },
-          { label: "Flight Kernel", value: `${kernelLabel} / ${aeroLabel}` },
-        ]}
-      />
+        <StudioKernelChips
+          visible={true}
+          side="right"
+          title="WRIGHT 1903 3-AXIS AERODYNAMICS"
+          chips={[
+            {
+              label: "Lift Force",
+              value: `${si.liftNewtons.toFixed(0)}`,
+              unit: "N",
+              tone: "hot",
+            },
+            { label: "Drag Force", value: `${si.totalDragNewtons.toFixed(0)}`, unit: "N" },
+            {
+              label: "L/D Ratio",
+              value: `${si.liftToDrag.toFixed(2)}`,
+            },
+            { label: "Lift Coeff (C_L)", value: `${si.cl.toFixed(3)}` },
+            { label: "Airspeed", value: `${airspeedMph}`, unit: "mph" },
+            { label: "Net Yaw", value: `${si.netYawNm.toFixed(1)}`, unit: "N·m" },
+            {
+              label: "Coupling",
+              value: isCoupled ? "Warp + Rudder Interlock" : "Independent",
+            },
+            { label: "Flight Kernel", value: `${kernelLabel} / ${aeroLabel}` },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -628,7 +628,6 @@ export function WrightFlyer3D() {
 
         <PortHamiltonianEnergyStrip patentId={WRIGHT_PATENT_ID} params={params} className="mt-3" />
       </div>
-
     </div>
   );
 }

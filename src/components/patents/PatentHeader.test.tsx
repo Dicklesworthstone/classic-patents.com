@@ -9,7 +9,7 @@ describe("PatentHeader component", () => {
     expect(html).toContain("US 821,393");
     expect(html).toContain("Wright Flyer");
     expect(html).toContain("Orville Wright, Wilbur Wright");
-    expect(html).toContain("1906-05-22");
+    expect(html).toContain("May 22, 1906");
     expect(html).toContain("Dayton, Ohio");
     expect(html).toContain("Archaic Glossary &amp; Cite");
     expect(html).toContain("Aeronautics &amp; Aerodynamics");

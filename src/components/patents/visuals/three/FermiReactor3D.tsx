@@ -195,7 +195,7 @@ export function FermiReactor3D() {
 
         {/* Top-Left Camera View Presets Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-120px)] sm:max-w-none">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-1.5 p-1.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm max-w-[calc(100%-120px)] sm:max-w-[calc(100%-28rem)]">
             {(
               [
                 ["iso", "Overview"],
@@ -223,7 +223,7 @@ export function FermiReactor3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 max-w-[90%] justify-end">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 max-w-[min(90%,26rem)] sm:max-w-[26rem] justify-end">
           <ClaimConstraintToggle
             patentId="us-2708656-fermi-reactor"
             claimStates={claimStates}

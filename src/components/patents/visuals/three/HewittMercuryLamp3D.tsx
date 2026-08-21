@@ -159,7 +159,7 @@ export function HewittMercuryLamp3D({
 
         {/* Top-Left Camera Preset Toolbar & Claim Constraint Toggle */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-14rem)] sm:max-w-none pointer-events-auto">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
             <ClaimConstraintToggle
               patentId="us-682690-hewitt-mercury-lamp"
               claimStates={claimStates}

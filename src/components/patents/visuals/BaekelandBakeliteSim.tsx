@@ -392,7 +392,9 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             <div className="text-xl font-bold text-amber-400 font-mono mt-0.5">
               {(sim.conversionP * 100).toFixed(1)}%
             </div>
-            <div className="text-[10px] text-stone-500 mt-1">Teaching threshold, not a grant value</div>
+            <div className="text-[10px] text-stone-500 mt-1">
+              Teaching threshold, not a grant value
+            </div>
           </div>
 
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800">
@@ -469,7 +471,9 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
             onChange={(e) => setControl("autoclavePressurePsi", Number(e.target.value))}
             className="w-full accent-sky-500 cursor-pointer"
           />
-          <span className="text-[10px] text-stone-500">Illustrative model control; no source pressure range</span>
+          <span className="text-[10px] text-stone-500">
+            Illustrative model control; no source pressure range
+          </span>
         </div>
 
         <div className="flex flex-col gap-1.5 bg-stone-950/40 p-3 rounded-lg border border-stone-800/80">
@@ -526,9 +530,9 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
         </div>
       </div>
       <p className="pt-3 text-[11px] leading-relaxed text-stone-500">
-        Source boundary: US 942,699 gives qualitative pressure containment and a practical
-        110–140 °C molding range. Conversion, porosity, tensile, dielectric, and pressure values
-        shown here are modern illustrative model outputs, not historical measurements.
+        Source boundary: US 942,699 gives qualitative pressure containment and a practical 110–140
+        °C molding range. Conversion, porosity, tensile, dielectric, and pressure values shown here
+        are modern illustrative model outputs, not historical measurements.
       </p>
     </div>
   );

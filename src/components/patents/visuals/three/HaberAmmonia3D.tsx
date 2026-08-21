@@ -160,22 +160,28 @@ export default function HaberAmmonia3D({
         </div>
         <p className="max-w-3xl text-sm leading-6 text-slate-700 dark:text-slate-300">
           This grant contains no apparatus drawing. A compressor, heat exchanger, condenser, or
-          recycle loop would be a later industrial interpretation rather than an archival figure,
-          so the procedural process model is disabled. The accepted visual state is the source text
-          and the live chemistry readout below.
+          recycle loop would be a later industrial interpretation rather than an archival figure, so
+          the procedural process model is disabled. The accepted visual state is the source text and
+          the live chemistry readout below.
         </p>
         <div className="grid gap-3 sm:grid-cols-4">
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <div className="text-xs uppercase tracking-wide text-slate-500">Pressure</div>
-            <div className="font-mono text-lg text-cyan-700 dark:text-cyan-300">{sim.pressureAtm} atm</div>
+            <div className="font-mono text-lg text-cyan-700 dark:text-cyan-300">
+              {sim.pressureAtm} atm
+            </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <div className="text-xs uppercase tracking-wide text-slate-500">Temperature</div>
-            <div className="font-mono text-lg text-amber-700 dark:text-amber-300">{sim.catalystTemperatureCelsius} °C</div>
+            <div className="font-mono text-lg text-amber-700 dark:text-amber-300">
+              {sim.catalystTemperatureCelsius} °C
+            </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <div className="text-xs uppercase tracking-wide text-slate-500">Host model yield</div>
-            <div className="font-mono text-lg text-emerald-700 dark:text-emerald-300">{sim.ammoniaYieldPct}%</div>
+            <div className="font-mono text-lg text-emerald-700 dark:text-emerald-300">
+              {sim.ammoniaYieldPct}%
+            </div>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
             <div className="text-xs uppercase tracking-wide text-slate-500">Catalyst</div>
@@ -197,7 +203,7 @@ export default function HaberAmmonia3D({
 
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)] gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
             </span>
@@ -221,7 +227,7 @@ export default function HaberAmmonia3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[min(90%,26rem)] sm:max-w-[26rem] pointer-events-auto">
           <ClaimConstraintToggle
             patentId="us-971501-haber-ammonia"
             claimStates={claimStates}

@@ -49,12 +49,12 @@
 
   /* Visible keyboard focus everywhere; :focus-visible never fires for pointer input. */
   :focus-visible {
-    outline: 2px solid theme(colors.amber.600);
+    outline: 2px solid #d97706;
     outline-offset: 2px;
   }
 
   .dark :focus-visible {
-    outline-color: theme(colors.amber.400);
+    outline-color: #fbbf24;
   }
 
   /* Obsidian Dark Mode */
@@ -359,7 +359,6 @@ input[type="range"] {
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
-
 
   .text-pretty {
     text-wrap: pretty;

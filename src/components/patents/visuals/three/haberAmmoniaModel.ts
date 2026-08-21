@@ -40,6 +40,7 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
 
   // Unreachable legacy geometry follows. Keeping it in the file avoids
   // deleting peer history while the source-bounded replacement is reviewed.
+  // biome-ignore lint/correctness/noUnreachable: legacy geometry kept below for peer review
   const root = new THREE.Group();
   const materials: THREE.Material[] = [];
 

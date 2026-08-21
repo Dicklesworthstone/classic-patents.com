@@ -18,8 +18,8 @@ export default function ErrorBoundary({
         An error occurred while loading this exhibit
       </h2>
       <p className="font-sans text-sm text-ink-600 dark:text-ink-300 max-w-md">
-        An unexpected rendering error was encountered. You can retry below; if the
-        problem persists, the reference code helps locate it in the logs.
+        An unexpected rendering error was encountered. You can retry below; if the problem persists,
+        the reference code helps locate it in the logs.
       </p>
       {error.digest ? (
         <p className="font-mono text-[11px] text-ink-500 dark:text-ink-400">

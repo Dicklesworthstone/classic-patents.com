@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "nodejs";
+export const dynamic = "force-static";
 export const alt = "Classic Patents — Historical Technical Patent Museum";
 export const size = {
   width: 1200,
@@ -8,7 +9,7 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export default function Image() {
+export default async function Image() {
   return new ImageResponse(
     <div
       style={{

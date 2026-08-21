@@ -93,7 +93,7 @@ export const PasteurFermentation3D = memo(() => {
       <div className="relative min-h-[380px] w-full flex-1 cursor-grab active:cursor-grabbing sm:min-h-[460px]">
         <div ref={containerRef} className="absolute inset-0 h-full w-full" />
         {showUiOverlay && (
-          <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-14rem)] flex-nowrap gap-1 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1 text-[10px] shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/85 sm:left-4 sm:top-4 sm:max-w-none sm:gap-1.5 sm:p-1.5 sm:text-xs">
+          <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-14rem)] flex-nowrap gap-1 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1 text-[10px] shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/85 sm:left-4 sm:top-4 sm:max-w-[calc(100%-28rem)] sm:gap-1.5 sm:p-1.5 sm:text-xs">
             <span className="flex shrink-0 items-center gap-1 px-1.5 py-0.5 font-sans text-ink-500 sm:px-2 sm:py-1">
               <Camera className="h-3.5 w-3.5" /> View:
             </span>
