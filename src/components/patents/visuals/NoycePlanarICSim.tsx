@@ -1,8 +1,11 @@
 "use client";
 
+import { Cpu, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 const STEPS = [
   {
