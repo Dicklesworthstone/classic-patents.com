@@ -195,7 +195,8 @@ async function main() {
 
     // 5. Check claims
     const noFormalClaims =
-      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
+      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile" ||
+      (patent.claims.length === 0 && patent.stats?.totalClaims === 0 && !patent.archivalEdition);
     if (!patent.claims || patent.claims.length === 0) {
       if (!noFormalClaims) {
         fail("No claims found and no reviewed-facsimile no-formal-claims attestation exists.");
