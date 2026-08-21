@@ -1,6 +1,17 @@
 "use client";
 
-import { Camera, Compass, Eye, EyeOff, Layers, Play, RotateCcw, Wind } from "lucide-react";
+import {
+  Camera,
+  Compass,
+  Eye,
+  EyeOff,
+  Layers,
+  Play,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+  Wind,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
@@ -13,6 +24,7 @@ import {
   WRIGHT_PATENT_ID,
   wrightHoverY,
 } from "@/physics/wrightKernel";
+import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
@@ -20,6 +32,7 @@ import {
   type StudioContext,
 } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 import {
   buildWrightFlyerAirframe,
   FLYER_DIM,
@@ -81,6 +94,7 @@ export function WrightFlyer3D() {
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
   const [aeroLabel, setAeroLabel] = useState(flyerAeroSource());
   const live = useLiveSimParams({
@@ -397,16 +411,35 @@ export function WrightFlyer3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
+            onClick={() => {
+              setIsCutaway(!isCutaway);
+              soundEngine.playSwitchClick();
+            }}
             title={isCutaway ? "Switch to Solid Fabric" : "Switch to Wing Truss Cutaway"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
             <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
-            <span className="hidden md:inline">Cutaway</span>
+            <span className="hidden md:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
           <button
             type="button"
@@ -428,8 +461,11 @@ export function WrightFlyer3D() {
           </button>
           <button
             type="button"
-            onClick={() => setShowStreamlines(!showStreamlines)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            onClick={() => {
+              setShowStreamlines(!showStreamlines);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               showStreamlines
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
@@ -440,20 +476,27 @@ export function WrightFlyer3D() {
           </button>
           <button
             type="button"
-            onClick={() => setShowVectors(!showVectors)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            onClick={() => {
+              setShowVectors(!showVectors);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               showVectors
                 ? "bg-sky-700 text-white border-sky-800 dark:bg-sky-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            <span className="hidden sm:inline">Force </span>Vectors
+            <Compass className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden sm:inline">Vectors</span>
           </button>
           <button
             aria-label={isAutoFlying ? "Freeze flight" : "Resume live flight"}
             type="button"
-            onClick={() => setIsAutoFlying(!isAutoFlying)}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            onClick={() => {
+              setIsAutoFlying(!isAutoFlying);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               isAutoFlying
                 ? "bg-emerald-700 text-white border-emerald-800 dark:bg-emerald-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700"
@@ -466,10 +509,10 @@ export function WrightFlyer3D() {
             aria-label="Reset camera view"
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-parchment-50/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-ink-200 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
