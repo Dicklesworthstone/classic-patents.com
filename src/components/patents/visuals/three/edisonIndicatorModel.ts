@@ -8,6 +8,7 @@ export interface EdisonIndicatorModelHandles {
     plateBiasPolarity: string;
     mainsVoltageV: number;
   }) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -352,11 +353,16 @@ export function buildEdisonIndicatorModel(): EdisonIndicatorModelHandles {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    bulbGlassMat.opacity = cutaway ? 0.08 : 0.45;
+    bulbGlassMat.needsUpdate = true;
+  };
+
   const dispose = () => {
     disposables.forEach((d) => {
       d.dispose();
     });
   };
 
-  return { root, update, dispose };
+  return { root, update, setCutaway, dispose };
 }

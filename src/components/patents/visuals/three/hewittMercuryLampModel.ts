@@ -26,6 +26,7 @@ export interface HewittMercuryLampModelNodes {
   startingCoil: THREE.Mesh;
   dropletParticles: THREE.Points;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
@@ -271,6 +272,11 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
   const dropletParticles = new THREE.Points(dropGeo, dropMat);
   lampGroup.add(dropletParticles);
 
+  const setCutaway = (cutaway: boolean) => {
+    glassMat.opacity = cutaway ? 0.08 : 0.45;
+    glassMat.needsUpdate = true;
+  };
+
   return {
     root,
     lampGroup,
@@ -285,6 +291,7 @@ export function buildHewittMercuryLampModel(): HewittMercuryLampModelNodes {
     startingCoil,
     dropletParticles,
     materials,
+    setCutaway,
   };
 }
 
