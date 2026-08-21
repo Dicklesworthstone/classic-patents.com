@@ -257,6 +257,7 @@ export function PhysicsTelemetryBadge({
                     onChange={(e) => updateParam(ctrl.id, Number(e.target.value))}
                     className="w-full accent-amber-600 dark:accent-amber-400 cursor-pointer h-2.5 bg-parchment-300 dark:bg-ink-700 rounded-lg"
                     aria-label={ctrl.label}
+                    aria-valuetext={`${val > 0 && ctrl.min < 0 ? `+${val}` : val} ${ctrl.unit || ""}`.trim()}
                   />
                 </>
               )}

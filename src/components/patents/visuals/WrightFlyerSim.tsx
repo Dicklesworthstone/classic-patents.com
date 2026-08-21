@@ -166,18 +166,18 @@ export function WrightFlyerSim() {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
 
         {/* Status Alert Banner */}
-        <div className="w-full flex items-center justify-between z-10 mb-4 px-2">
+        <div className="w-full flex flex-wrap items-center justify-between gap-2 z-10 mb-4 px-2">
           {isAdverseYawCrash && (
             <div className="px-3 py-1 bg-red-950/90 border border-red-700 text-red-300 text-xs font-mono rounded-lg flex items-center gap-1.5 animate-pulse">
-              <span>
-                ⚠ ADVERSE YAW: The rising wing&apos;s extra induced drag yaws the nose opposite the
-                roll!
+              <span className="text-left">
+                ⚠ ADVERSE YAW: The rising wing&apos;s extra induced drag yaws the nose opposite
+                the roll!
               </span>
             </div>
           )}
           {isCoordinatedTurn && (
             <div className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 text-xs font-mono rounded-lg flex items-center gap-1.5">
-              <span>✓ COORDINATED TURN: Rudder counter-torque neutralizes adverse yaw!</span>
+              <span className="text-left">✓ COORDINATED TURN: Rudder counter-torque neutralizes adverse yaw!</span>
             </div>
           )}
           {!isAdverseYawCrash && !isCoordinatedTurn && (
@@ -192,7 +192,7 @@ export function WrightFlyerSim() {
         </div>
 
         {/* Dynamic Vector Biplane Illustration */}
-        <svg viewBox="0 0 500 240" className="w-full max-w-lg h-auto select-none relative z-10">
+        <svg viewBox="0 0 500 240" role="img" aria-label="Interactive side-view diagram of the 1903 Wright Flyer responding to wing warp, rudder, and canard inputs" className="w-full max-w-lg h-auto select-none relative z-10">
           <defs>
             <linearGradient id="wingCanvasGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#fef3c7" />

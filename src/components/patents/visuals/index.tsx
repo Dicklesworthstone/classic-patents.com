@@ -433,8 +433,21 @@ interface PatentVisualDispatcherProps {
   patentId: string;
 }
 
+// Visitor's last 3D/2D choice per patent. Face switches remount this
+// dispatcher; without the map every switch reset to 3D and tore down +
+// recreated a WebGL context (GPU churn, and a visitor preferring the 2D
+// diagram had to re-select it on every face change).
+const renderModeMemory = new Map<string, "3d-physics" | "vector-diagram">();
+
 export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps) {
-  const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">("3d-physics");
+  const [renderMode, setRenderMode] = useState<"3d-physics" | "vector-diagram">(
+    () => renderModeMemory.get(patentId) ?? "3d-physics",
+  );
+
+  const switchRenderMode = (mode: "3d-physics" | "vector-diagram") => {
+    renderModeMemory.set(patentId, mode);
+    setRenderMode(mode);
+  };
 
   return (
     <div className="space-y-4">
@@ -443,7 +456,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
         <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs sm:text-sm font-sans shadow-sm">
           <button
             type="button"
-            onClick={() => setRenderMode("3d-physics")}
+            onClick={() => switchRenderMode("3d-physics")}
             className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
               renderMode === "3d-physics"
                 ? "bg-amber-600 text-white font-bold shadow-xs"
@@ -455,7 +468,7 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           </button>
           <button
             type="button"
-            onClick={() => setRenderMode("vector-diagram")}
+            onClick={() => switchRenderMode("vector-diagram")}
             className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
               renderMode === "vector-diagram"
                 ? "bg-amber-600 text-white font-bold shadow-xs"
