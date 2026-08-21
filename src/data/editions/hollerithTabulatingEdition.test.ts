@@ -134,6 +134,51 @@ describe("hollerithTabulatingArchivalEdition", () => {
     });
   });
 
+  test("keeps every authored figure occurrence bound to an existing source preview", () => {
+    const figureReferences = hollerithTabulatingArchivalEdition.blocks.flatMap((block) =>
+      "inlines" in block
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    expect(figureReferences.length).toBeGreaterThan(15);
+    for (const reference of figureReferences) {
+      expect(reference.figurePreviews?.length ?? 0).toBeGreaterThan(0);
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
+      }
+    }
+  });
+
+  test("keeps the repaired claim ranges on pages 15 through 17", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt`,
+      "utf8",
+    );
+    const page = (number: number) => {
+      const marker = `--- REVIEWED TRANSCRIPTION PAGE ${number} OF 17 ---`;
+      const start = ledger.indexOf(marker);
+      const next = ledger.indexOf(`--- REVIEWED TRANSCRIPTION PAGE ${number + 1} OF 17 ---`);
+      return ledger.slice(start, next < 0 ? ledger.length : next);
+    };
+    expect(
+      page(15)
+        .match(/^\d+\./gm)
+        ?.map(Number),
+    ).toEqual([1, 2, 3, 4, 5, 6]);
+    expect(
+      page(16)
+        .match(/^\d+\./gm)
+        ?.map(Number),
+    ).toEqual([7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
+    expect(
+      page(17)
+        .match(/^\d+\./gm)
+        ?.map(Number),
+    ).toEqual([18, 19, 20, 21]);
+  });
+
   test("uses specific term annotations rather than leaving period language unexplained", () => {
     const terms = hollerithTabulatingArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block ? block.inlines.filter((inline) => inline.kind === "term") : [],

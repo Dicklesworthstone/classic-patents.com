@@ -538,7 +538,7 @@ export const hollerithTabulatingPatent: Patent = {
     pageCount: 17,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: hollerithTabulatingArchivalEdition.sourcePdfSha256,
   },
   originalText: `UNITED STATES PATENT OFFICE.
@@ -547,7 +547,7 @@ HERMAN HOLLERITH, OF NEW YORK, N. Y.
 ART OF COMPILING STATISTICS.
 
 SPECIFICATION forming part of Letters Patent No. 395,781, dated January 8, 1889.
-Application filed June 8, 1887. Serial No. 240,029. (No model.)
+Application filed June 8, 1887. Serial No. 240,629. (No model.)
 
 To all whom it may concern:
 Be it known that I, HERMAN HOLLERITH, of New York, in the county of New York and State of New York, have invented certain new and useful Improvements in the Art and System of Compiling Statistics.

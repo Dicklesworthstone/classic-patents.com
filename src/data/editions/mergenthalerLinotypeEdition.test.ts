@@ -14,9 +14,10 @@ import {
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
 describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
-  test("attaches the reviewed archival edition and source asset to the public record", () => {
-    expect(mergenthalerLinotypePatent.archivalEdition).toBeDefined();
+  test("keeps the incomplete manual edition withheld and exposes only the source text asset", () => {
+    expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
     expect(mergenthalerLinotypePatent.originalTextAsset).toBeDefined();
+    expect(mergenthalerLinotypePatent.originalTextAsset?.kind).toBe("source-pdf-text-layer");
   });
 
   test("pins the 35-page facsimile and retains a structurally valid staged edition", () => {

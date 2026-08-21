@@ -32,9 +32,9 @@
 | 12 | Specification p. 6: direct circuits, relays, and Figs. 6–9 combinations. |
 | 13 | Specification p. 7: relay systems in Figs. 7 and 8. |
 | 14 | Specification p. 8: Fig. 11 and Fig. 12 circuit combinations and sorting sequence. |
-| 15 | Specification p. 9: Figs. 14–17 circuit variants; claims 1–3 begin. |
-| 16 | Specification p. 10: claims 3–14. |
-| 17 | Specification p. 11: claims 14–21, inventor and witnesses. |
+| 15 | Specification p. 9: Figs. 14–17 circuit variants; claims 1–6. |
+| 16 | Specification p. 10: claims 7–17. |
+| 17 | Specification p. 11: claims 18–21, inventor, and witnesses. |
 
 ## Editorial and preservation boundary
 

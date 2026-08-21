@@ -799,6 +799,179 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
       },
     ],
   },
+  {
+    kind: "paragraph",
+    inlines: [
+      { kind: "text", text: "A modification of the system just described is illustrated in " },
+      figureReference("Fig. 7", ...hollerithTabulatingFigureCrops["Fig. 7"]),
+      {
+        kind: "text",
+        text: ', wherein, instead of using three relays each for males and females, only one is used. Relays m⁷ m⁹ (males) and m⁸ m¹⁰ (females) are dispensed with. The circuits of the operating-magnets M¹ M³ M⁵, each of the latter representing a statistical item of which the index-point marked "male" forms one ingredient, are connected to a branch circuit of which the contact-points of relay m⁵ (male) form part, while the magnets M² M⁴ M⁶, representing items including the index-point marked "female," are connected in a branch of which the contact-points of relay m⁶ (female) form a part. In this case the relays m¹ m² m³ and m⁴ are in circuit with one terminal of the series of magnets M¹, &c., and the relays m⁵ and m⁶ with the other terminal.',
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      { kind: "text", text: "In " },
+      figureReference("Fig. 8", ...hollerithTabulatingFigureCrops["Fig. 8"]),
+      {
+        kind: "text",
+        text: ' is illustrated a system by which the same results may be effected with but two relays and an increased number of batteries. In this example the cup of the pin marked "native" is connected to the relay-magnet n¹, and the cup of the pin marked "foreign" to relay-magnet n², the opposite terminals of both relay-magnets being connected through battery n³ with the cup of pin G, so that when the circuit is closed through pin G and the points marked "native" or "foreign," one or the other relay n¹ n² will be energized. As the statistical items represented by the operating-magnets M¹, &c., each contains as one element the index-point for male or female, a separate battery is employed for each. The battery o is connected on the one side to the cup opposite the pin marked "male" and on the other to each of the magnets M¹ M³ M⁵, representing native white, foreign white, and colored males, respectively. The battery o¹ is connected on the one side to the cup opposite the point marked "female" and on the other to the series of magnets M² M⁴ M⁶. The opposite terminals of magnets M⁵ M⁶, colored males and colored females, are connected to the cup opposite the pin marked "colored," those of magnets M³ M⁴, foreign white males and females, to the contact-points of relay n² (foreign), and those of magnets M¹ M², native white males and females, to the contact-points of relay n¹ (native). The contact-points of both relays n¹ n² are connected to the cup opposite the pin marked "white." To illustrate the operation of this system, let us assume that the index-points on the record-card represent the three items "native," "white," and "male." This card having been placed in position and the platen of the press reciprocated, the pins marked "native," "white," "male," and G only will be projected into the mercury-cups, thereby closing the circuits at those points. The current from battery n³ will flow through pins G and "native" and the relay n¹, energizing the magnet and closing the contact-point. The current from battery o will be conducted through pins "male" and "white" and the magnet M¹, thereby operating the counter or distributing device representing the item "native white male." Should the index-points represent the items "colored" and "female," the correspondingly marked points would close the circuit from battery o¹ through magnet M⁶, the circuits through all the other operating-magnets remaining open.',
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "The same results can be produced by the use of a single battery, as illustrated in ",
+      },
+      figureReference("Fig. 9", ...hollerithTabulatingFigureCrops["Fig. 9"]),
+      {
+        kind: "text",
+        text: '. For convenience of illustration merely the relative arrangement of the operating-magnets M¹ M⁶ has been changed, the magnets numbered 1, 3, and 5, representing items having a common index-point, (male,) being associated together in one group, and those numbered 2, 4, and 6 (female) in another. One terminal of all the operating-magnet coils is joined to a common conductor attached to one pole of a battery, p, the opposite pole whereof is connected to the pin G. The other terminal of each magnet-coil M¹ M⁶ is connected to the contact of one of a series of relays p¹ p⁶, the opposite contacts being connected as follows: p¹ and p² to the contact of a relay p⁷, whose opposite contact communicates with the pin marked "male," p³ to the pin marked "male," p⁴ and p⁵ to the contact of a relay p⁸, whose opposite contact communicates with the pin marked "female," and p⁶ to the pin marked "female." It will thus be seen that when the index-point "male" occurs the circuit will be closed to the contacts of relays p⁷ and p³. The relay p⁷ serves merely to establish communication with contacts of relays p¹ and p², so that even though relay p⁷ is operated communication with the battery will not be established, this latter operation being performed by one of the relays p¹ p² p³. In like manner the index-point "female" closes circuits extending to relays p⁶ and p⁸, the latter in turn closing circuit to relays p⁴ p⁵ which, together with p⁶, control communication with the battery through magnets M² M⁴ M⁶, respectively. If therefore follows that to operate any one of the magnets M¹ M⁶ the circuit must be closed at two or more points, according to the number of index-points representing the given statistical item. Thus, for combinations of two items such as "colored" and "male" or "colored" and "female," the pin "colored" would serve to close the circuit at one point and the relay p³ or p⁶ at another. For combinations of three items as "native," "white," and "male," the pin "male" closes circuit at one point, relay p⁷ (white) at another, and relay p¹ (native) at a third. If the record shows native, white, and female, relay p² instead of p¹ will close. It will be noticed that in this system but two of the pins, those corresponding to male and female, act directly upon the circuits through the operating-magnets M¹ M⁶; hence the other index-points or pins are employed for effecting the necessary action of the relays. To do this and at the same time make use of the same battery p, the following arrangement may be employed: one end of each relay-coil is connected to the battery on the same side as the magnets M¹ M⁶, while the opposite ends of the coils of relays p⁷ and p⁸ (representing the item "white" forming part of the items represented by magnets M¹ M³ M² M⁴) are connected to the cup of the point marked "white," the coils of relays p³ and p⁶ (representing the item "colored," common to magnets M⁵ M⁶) to the cup of the point marked "colored," the coils of relays p¹ and p⁴ (representing the item "native," common to magnets M¹ and M²) to the cup of the point marked "native," and the coils of relays p² and p⁵ (representing the item "foreign," common to magnets M³ M⁴) to the cup of the pin marked "foreign."',
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "This system is based upon the use of two independent series of circuits—primary and secondary—one governed by the index-points for controlling the relays and the other governed by the relay-contacts to control the operation of the distributing or counting devices, each of said series of circuits being provided with a separate generator or generators of electricity, so that a battery of low electro-motive force may be employed for the primary circuits, which merely operate the relays, while a stronger battery may be employed in the secondary circuit, where the most work is to be done.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "Two modifications of the single-battery system as arranged for counting items represented by two index-points are shown in ",
+      },
+      figureReference(
+        "Figs. 10 and 11",
+        ...hollerithTabulatingFigureCrops["Fig. 10"],
+        ...hollerithTabulatingFigureCrops["Fig. 11"],
+      ),
+      {
+        kind: "text",
+        text: ". In my prior application I have shown an arrangement of circuits for counting items represented by two holes wherein but a single battery was employed; but the method therein represented required a very nice adjustment of battery-current, resistance of magnets, and circuits, &c.; hence I prefer the arrangement shown in ",
+      },
+      figureReference("Fig. 11", ...hollerithTabulatingFigureCrops["Fig. 11"]),
+      {
+        kind: "text",
+        text: ", wherein X Y Z represent the index-points of one series, and x y z those of another series. The points X Y Z are each connected to three operating-magnets, the opposite terminals of which are connected to the contacts of three relays x¹ y¹ z¹, and through the latter to the battery, which is in communication with the pin G of the platen. Each point x y z is connected to one of the relay-coils x¹ y¹ z¹ and to the battery. From an inspection of the drawings it will be seen that the points X Y Z determine the group, and the points x y z, acting through the relays, the particular magnet in the group. Thus when the circuit is closed at X the first three magnets, Xx, Xy, and Xz, will be connected to one pole of the battery, and as the circuit is made through one of the points x, y, and z it will operate its relay and connect that one of the three magnets corresponding to the point to the other pole of the battery.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      { kind: "text", text: "In " },
+      figureReference("Fig. 12", ...hollerithTabulatingFigureCrops["Fig. 12"]),
+      {
+        kind: "text",
+        text: " is shown another arrangement for effecting combinations of two items. The letters X Y Z W represent four index-points of the card, and G the ground or return circuit. X Y, X Z, X W, Y Z, Y W, and Z W designate the operating-magnets representing the six combined items. One point, X, is connected to the three magnets X Y, X Z, and X W, another, Y, to two of the magnets, Y Z and Y W, and a third, Z, to one magnet, Z W. The fourth point, W, is connected to a relay W¹, the third Z to a relay Z¹, and the second Y to a relay Y¹. Upon inspecting the drawings it will be seen that each operating-magnet will be put in circuit with the battery whenever the circuit is closed through two points representing the individual items of the combination, and that for each combination one point will close the operating-circuit and the other a relay circuit.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "It is proper to remark that when using this system of circuits with a single battery it is necessary to properly proportion and adjust the resistance of the working and relay circuits to prevent the relay-circuits from being short-circuited to such an extent as will permit the separation of the relay-contacts when the working-circuit is closed. In the preceding description, I have for convenience illustrated the invention as applied to open-circuit systems and the common forms of relays, but my invention is not restricted thereto, as it can readily be adapted to a closed-circuit system (see the examples illustrated in ",
+      },
+      figureReference(
+        "Figs. 16 and 17",
+        ...hollerithTabulatingFigureCrops["Fig. 16"],
+        ...hollerithTabulatingFigureCrops["Fig. 17"],
+      ),
+      {
+        kind: "text",
+        text: ") or one in which part of the circuits are normally closed and part open.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: 'The operation of the magnets M¹ M⁶ of the systems described may belong to either the counting or sorting apparatus, or partly to each, and if it is desired to sort the cards into groups according to the items mentioned, any other items or series of items may at the same time be computed and registered on the counting apparatus, the operating-magnets being connected by the same or a different system, the circuits whereof are controlled by index-points on the card. Thus the cards can be passed through once and sorted into two or more groups, and each group passed through again and sorted into two or more divisions as, for example, by passing the cards through and sorting them into "white" and "colored," then passing each group through and sorting them into "native" and "foreign," giving four piles, "native white," "foreign white," "native colored," and "foreign colored." Each pile can, if desired, be again subdivided into "male" and "female," and while any of the divisions are being made the separate items occurring in each division or the totals of all the divisions may be computed and registered on the counting-machines. In making these divisions of the cards, say into "native white," "foreign white," and "colored," two sorting-boxes may be connected as shown in ',
+      },
+      figureReference("Fig. 10", ...hollerithTabulatingFigureCrops["Fig. 10"]),
+      {
+        kind: "text",
+        text: ', the magnet N W of one being connected in circuit with pins "native" and "white" and the other F W with pins "foreign" and "white." If the cards are now run through, the boxes will sort the cards into "native white" and "foreign white," "colored" being left over and placed in the receptacle in front of the machine, as no sorting-box would in this case open when a card having the index-point "colored" was inserted in the apparatus.',
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "With a view merely of illustrating typical modifications such as hereinbefore referred to, I have added ",
+      },
+      figureReference(
+        "Figs. 14 to 17, inclusive",
+        ...hollerithTabulatingFigureCrops["Fig. 14"],
+        ...hollerithTabulatingFigureCrops["Fig. 15"],
+        ...hollerithTabulatingFigureCrops["Fig. 16"],
+        ...hollerithTabulatingFigureCrops["Fig. 17"],
+      ),
+      {
+        kind: "text",
+        text: ".",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "Fig. 14 illustrates a form of record-card or strip wherein, instead of punching a hole for each item occurring in the record of an individual or unit, the entire series of items is represented by perforations and the designated items by wafers, strips, or other form of impediment, h, which engage and prevent the passage of the points corresponding to the items so designated. ",
+      },
+      figureReference("Fig. 15", ...hollerithTabulatingFigureCrops["Fig. 15"]),
+      {
+        kind: "text",
+        text: " illustrates the application of a circuit-closing contact independent of and separated from the points. In this example the pins c are not included in the circuits, their place being occupied by supplemental contact-point pins i, mounted on light springs and connected together electrically as through a metallic bed-plate, H. The pins i are arranged to co-operate each with one of a series of insulated contacts, i¹. The circuit is closed through the contacts i i¹ whenever the pin c corresponding thereto enters a perforation in the card or strip and by engaging the pin i presses it down or in contact with i¹.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "Fig. 16 illustrates an arrangement such as is adapted to either an open or a closed-circuit system. The pins c are insulated from each other, as by mounting them in plates c¹ c² of non-conducting material, and each pin is connected with a circuit-wire. The conducting-collars c³ rest normally in contact with a metallic plate, j, also connected in circuit, so that the several circuits are closed through the series of pins and the plate. If the closed-circuit system is to be employed, a card or record-strip of the character indicated in ",
+      },
+      figureReference("Fig. 14", ...hollerithTabulatingFigureCrops["Fig. 14"]),
+      {
+        kind: "text",
+        text: " may be used, that is to say, one in which the items are recorded by interceptors. When the pins are brought into contact with the record-strip, those circuits corresponding to the designated items will be broken as their pins c are forced back and the collars withdrawn from contact with plate j, while all the other remaining circuits remain closed. The same device may, when desired, be used in open circuit and in connection with the record-cards perforated to represent designated items by the simple addition of a pin G, co-operating with a contact, g, in the lower-plate B. Said pin, being slightly shorter than pins c, will, after the latter have been acted upon by the record-card or strip to set the circuits, close the circuit between plate j and the ground or return wire connected to the opposite contact or terminal g.",
+      },
+    ],
+  },
+  {
+    kind: "paragraph",
+    inlines: [
+      {
+        kind: "text",
+        text: "Fig. 17 illustrates another application of the closed-circuit system as adapted for use in connection with the perforated record-strips, the contacts being removed from but actuated by the pins c. In this instance the plate B is furnished with a conducting-plate, k¹, against which contacts k are held in elastic contact by means of springs. Plate k¹ is connected to the ground or return wire, and each contact k to one of the series of circuit-wires. The record-card or strip being interposed between the points c and plate k¹ and the press operated, those points which register with and pass through the perforations in the record-card will press into the corresponding contacts k away from the plate k¹, thereby opening the circuits including said contacts, while all the other circuits remain closed. In using a closed-circuit system in connection with the several circuit arrangements shown involving the employment of relays, it is necessary that the contacts of the relays should be reversed, as indicated in ",
+      },
+      figureReference("Fig. 17", ...hollerithTabulatingFigureCrops["Fig. 17"]),
+      {
+        kind: "text",
+        text: "; that is to say, where in the open circuit the contact of the relay is closed by the passage of the current through the coil of the relay and held open by a spring or gravity, in the closed system it would be held open by the passage of the current through the coil of the relay and closed by the spring or weight when the circuit through the coil of the relay was broken, as is well understood.",
+      },
+    ],
+  },
 ];
 
 /**
@@ -858,6 +1031,36 @@ export const hollerithTabulatingPages10To14ParallelReadings: Readonly<
   ],
   35: [
     "Hollerith separates low-power sensing from higher-power work: primary circuits move relays, while independent secondary circuits drive counters or distributing devices after the required relay contacts concur.",
+  ],
+  36: [
+    "Figure 7 reduces the male and female relay count: one relay for each sex branch combines with the remaining attribute relays to select the operating magnets.",
+  ],
+  37: [
+    "Figure 8 obtains the same six combinations with two relays and more batteries, using native or foreign relay selection plus separate male and female supply paths.",
+  ],
+  38: [
+    "Figure 9 shows a single-battery arrangement in which staged relays require two or three attribute contacts before an operating magnet can energize.",
+  ],
+  39: [
+    "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method.",
+  ],
+  40: [
+    "Figure 12 uses one direct and one relay branch for each pair of four index-points, so every two-item combination closes its operating magnet through two contacts.",
+  ],
+  41: [
+    "The sorting pass is successive: white and colored first, native and foreign next, then male and female, while counters may register each intermediate or final division.",
+  ],
+  42: [
+    "Figures 14 through 17 add representative record-media and contact arrangements, including impediment wafers and both open-circuit and closed-circuit forms.",
+  ],
+  43: [
+    "Figure 14 uses perforations plus impediments to represent selected items, while Figure 15 puts the circuit-closing contacts on spring-mounted pins separate from the card-sensing pins.",
+  ],
+  44: [
+    "Figure 16 insulates the sensing pins and uses conducting collars for either open or closed circuits, with the Figure 14 interceptors breaking selected paths.",
+  ],
+  45: [
+    "Figure 17 moves the closed-circuit contacts below the card; perforations press them away from a common plate, and relay contacts reverse their normal open-circuit action.",
   ],
 };
 
@@ -1095,7 +1298,7 @@ export const hollerithTabulatingSignatureDraft: readonly CuratedSpecificationBlo
 export const hollerithTabulatingSignatureParallelReading: Readonly<
   Record<number, readonly string[]>
 > = {
-  58: [
+  68: [
     "Herman Hollerith signs the completed claim set; John R. Floyd and Edward N. Hill appear as the printed witnesses.",
   ],
 };

@@ -848,4 +848,3 @@ export function fermiReactorManualClaimText(number: number): string {
   }
   return block.inlines.map((inline) => inline.text).join("");
 }
-
