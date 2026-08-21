@@ -258,6 +258,7 @@ export function ColtRevolver3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Samuel Colt Revolving Gun Paterson 3D</div>
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative min-h-[420px] sm:min-h-[500px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
