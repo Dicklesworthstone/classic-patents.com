@@ -6,6 +6,7 @@ import {
   Gauge,
   HelpCircle,
   Radio,
+  RotateCcw,
   RotateCw,
   Sliders,
   Volume2,
@@ -15,9 +16,11 @@ import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function WestinghouseAirBrakeSim() {
-  const { params, updateParam } = usePatentPhysics("us-124404-westinghouse-air-brake");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-124404-westinghouse-air-brake");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const trainPipePressurePsi = params.trainPipePressure ?? 0;
   const reservoirPipePressurePsi = params.reservoirPipePressure ?? 90;
@@ -30,7 +33,6 @@ export function WestinghouseAirBrakeSim() {
   const selectingCockState = selectingCockPos === 1 ? "reversed" : "normal";
 
   const [activeClaimProbe, setActiveClaimProbe] = useState<number | null>(null);
-  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [pulseAnim, setPulseAnim] = useState<number>(0);
 
   const wh = FrankenSimEngine.stepWestinghouseAirBrake({
