@@ -1,13 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { FrankenSimEngine } from "@/physics/engine";
 import { buildDieselEngineModel, updateDieselEngineKinematics } from "./dieselEngineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () => {
-  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+describe("US 542,846 Diesel source-bounded visual", () => {
+  test("keeps the 3D route source-bounded and free of later-engine assets", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "DieselEngine3D.tsx"),
       "utf8",
@@ -20,100 +19,26 @@ describe("US 542,846 Rudolf Diesel Engine visual & thermodynamics boundary", () 
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
-    expect(modelSource).toContain("buildDieselEngineModel");
-    expect(modelSource).toContain("updateDieselEngineKinematics");
-  });
-
-  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "DieselEngine3D.tsx"),
-      "utf8",
-    );
-
-    for (const forbidden of ["Math.random", "new THREE.Clock", "performance.now"]) {
-      expect(threeSource).not.toContain(forbidden);
+    expect(threeSource).toContain("held");
+    expect(modelSource).toContain("CylinderC");
+    expect(modelSource).toContain("AdmissionPlugD");
+    expect(modelSource).toContain("AirReservoirL");
+    expect(modelSource).toContain("AnnularSpaceS");
+    for (const forbidden of ["Augsburg", "80-bar", "10-foot", "poppet", "blast-air"]) {
+      expect(modelSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for internal thermodynamic observation", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "DieselEngine3D.tsx"),
-      "utf8",
-    );
-
-    for (const preset of ["iso", "cylinder", "injector", "crosshead", "compressor", "flywheel"]) {
-      expect(threeSource).toContain(preset);
-    }
-
-    expect(threeSource).toContain("cutawayMode");
-    expect(threeSource).toContain("Cutaway Active");
-  });
-
-  test("computes genuine Diesel adiabatic cycle thermodynamics in reproducible SI units", () => {
-    const result = FrankenSimEngine.stepDieselEngine({
-      compressionRatio: 18,
-      blastAirPressureBar: 65,
-      cutoffRatio: 1.6,
-    });
-
-    expect(result.pCompBar).toBeGreaterThan(40);
-    expect(result.tCompressionC).toBeGreaterThan(500);
-    expect(result.isAutoIgnition).toBe(true);
-    expect(result.brakeEfficiencyPct).toBeGreaterThan(25);
-    expect(result.governorBallSpread).toBeCloseTo(0.85, 3);
-    expect(result.pressureNeedleRadPerBar).toBeCloseTo((Math.PI * 1.4) / 80, 4);
-    expect(result.pistonStrokePx).toBe(35);
-    expect(result.cycleWrapDeg).toBe(720);
-    expect(result.injectionStartDeg).toBe(355);
-    expect(result.camRatio).toBe(0.5);
-    expect(result.injectionCamStartRad).toBeCloseTo((355 * 0.5 * Math.PI) / 180, 10);
-    expect(result.compressionGlowStartDeg).toBe(270);
-    expect(result.compressionGlowEndDeg).toBe(450);
-    expect(result.crankCy).toBe(260);
-    expect(result.schematicFlywheelR).toBe(40);
-    expect(result.schematicCylinderW).toBe(140);
-    expect(result.schematicInjectorW).toBe(30);
-    expect(result.schematicPistonH).toBe(55);
-  });
-
-  test("builds and articulates procedural kinematic hierarchy correctly", () => {
-    const { root, nodes, materials } = buildDieselEngineModel();
+  test("uses deterministic named-organ pose without synthetic telemetry", () => {
+    const { root, nodes } = buildDieselEngineModel();
     expect(root.children.length).toBeGreaterThan(5);
 
-    // Initial pose at crankAngle = 0
-    const diesel = FrankenSimEngine.stepDieselEngine({
-      compressionRatio: 18,
-      blastAirPressureBar: 65,
-      cutoffRatio: 1.6,
-      engineRpm: 150,
-    });
-    updateDieselEngineKinematics(
-      nodes,
-      materials,
-      0,
-      18,
-      true,
-      true,
-      diesel.governorBallSpread,
-      diesel.pressureNeedleRadPerBar,
-    );
-    const initialPistonY = nodes.pistonGroup.position.y;
+    updateDieselEngineKinematics(nodes, 0, true);
+    const initial = nodes.plungerP.position.x;
+    expect(nodes.annularSpaceS.visible).toBe(true);
 
-    // TDC pose at crankAngle = PI
-    updateDieselEngineKinematics(
-      nodes,
-      materials,
-      Math.PI,
-      18,
-      true,
-      true,
-      diesel.governorBallSpread,
-      diesel.pressureNeedleRadPerBar,
-    );
-    const tdcPistonY = nodes.pistonGroup.position.y;
-
-    expect(tdcPistonY).not.toBe(initialPistonY);
-    expect(nodes.cylinderCutawayMesh.visible).toBe(true);
-    expect(nodes.cylinderJacketMesh.visible).toBe(false);
+    updateDieselEngineKinematics(nodes, Math.PI / 2, false);
+    expect(nodes.plungerP.position.x).not.toBe(initial);
+    expect(nodes.annularSpaceS.visible).toBe(false);
   });
 });

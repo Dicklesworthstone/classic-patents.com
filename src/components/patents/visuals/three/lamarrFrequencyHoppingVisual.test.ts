@@ -64,24 +64,17 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(threeSource).toContain("isCutaway");
   });
 
-  test("computes genuine processing gain and anti-jamming margin in SI / dB units", () => {
-    const result = FrankenSimEngine.stepLamarrFrequencyHopping(88, 4);
-    expect(result.processingGainDb).toBeGreaterThan(15);
-    expect(result.antiJammingMarginDb).toBeGreaterThan(10);
-    expect(result.spreadSpectrumBandwidthMhz).toBeGreaterThan(5);
-    expect(result.spreadSpectrumBandwidthMhz).toBeLessThan(50);
-    expect(result.spreadSpectrumBandwidthHz).toBe(result.spreadSpectrumBandwidthMhz * 1e6);
-    expect(result.bandMinMhz).toBe(302);
-    expect(result.bandMaxMhz).toBe(520);
-    expect(result.defaultJamChannel).toBe(26);
-    expect(result.pianoKeys).toBe(88);
-    expect(result.pianoRollStep).toBe(37);
-    expect(result.hopSoundStride).toBe(3);
-    expect(result.drumDisplayOmegaRadPerS).toBeCloseTo(1.5, 3);
-    expect(FrankenSimEngine.stepLamarrFrequencyHopping(88, 8).drumDisplayOmegaRadPerS).toBeCloseTo(
-      3.0,
-      3,
-    );
+  test("keeps telemetry bounded to the illustrated seven-row record system", () => {
+    const result = FrankenSimEngine.stepLamarrFrequencyHopping(7, 0);
+    expect(result.channelsCount).toBe(7);
+    expect(result.processingGainDb).toBe(0);
+    expect(result.antiJammingMarginDb).toBe(0);
+    expect(result.spreadSpectrumBandwidthMhz).toBe(0);
+    expect(result.spreadSpectrumBandwidthHz).toBe(0);
+    expect(result.pianoKeys).toBe(7);
+    expect(result.pianoRollStep).toBe(1);
+    expect(result.hopSoundStride).toBe(1);
+    expect(result.drumDisplayOmegaRadPerS).toBe(0);
     expect(result.spectrumBarOriginX).toBe(20);
     expect(result.spectrumBarPitchPx).toBe(4.5);
     expect(result.schematicStaffCount).toBe(11);
@@ -93,20 +86,20 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(lamarrSchematicHop(0, 0).x).toBe(80);
     expect(lamarrSchematicHop(1, 3).y).toBe(114);
     expect(lamarrPianoRollChannel(0)).toBe(1);
-    expect(lamarrChannelFrequencyMhz(1)).toBe(302);
-    expect(lamarrChannelFrequencyMhz(88)).toBe(520);
-    expect(lamarrDefaultJamChannel(88)).toBe(26);
-    expect(lamarrRadioChannel(1, 88)).toBe(1);
-    expect(lamarrPianoKeyHz(88)).toBeCloseTo(880, 5);
+    expect(lamarrChannelFrequencyMhz(1)).toBe(1);
+    expect(lamarrChannelFrequencyMhz(7)).toBe(7);
+    expect(lamarrDefaultJamChannel(7)).toBe(1);
+    expect(lamarrRadioChannel(1, 7)).toBe(1);
+    expect(lamarrPianoKeyHz(7)).toBe(0);
 
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "LamarrFrequencyHopping3D.tsx"),
       "utf8",
     );
-    expect(threeSource).toContain("spreadSpectrumBandwidthHz");
-    expect(threeSource).toContain("drumDisplayOmegaRadPerS");
-    expect(threeSource).not.toContain("* 1e6");
-    expect(threeSource).not.toContain("liveChannels * 0.3");
+    expect(threeSource).toContain("recordPosition");
+    expect(threeSource).toContain("elapsed");
+    expect(threeSource).not.toContain("Date.now()");
+    expect(threeSource).not.toContain("0.016");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "lamarrFrequencyHoppingModel.ts"),
       "utf8",
@@ -132,13 +125,13 @@ describe("US 2,292,387 Hedy Lamarr & George Antheil Secret Communication System 
     expect(model.paperWeb).toBeDefined();
     expect(model.comb).toBeDefined();
     expect(model.spectrumBarsGroup).toBeDefined();
-    expect(model.barMeshes.length).toBe(44);
+    expect(model.barMeshes.length).toBe(7);
     expect(model.hopPoints).toBeDefined();
 
     // Test kinematics update & cutaway
-    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 22, 44, true, 13, true, 1.5);
-    expect(model.barMeshes[22].scale.y).toBeGreaterThan(1.0);
-    expect(model.drum1.rotation.y).toBeCloseTo(1.5 / 60, 5);
+    updateLamarrFrequencyHoppingKinematics(model, 1 / 60, 3, 7, true, false, true, 1.5);
+    expect(model.barMeshes[3].scale.y).toBeGreaterThan(1.0);
+    expect(model.drum1.rotation.y).toBeCloseTo(0.75, 5);
     expect(model.materials.torpedoBayMat.opacity).toBe(0.35);
 
     model.dispose();

@@ -1,21 +1,18 @@
 /**
  * parsonsTurbineModel.ts
  *
- * Museum-Grade Procedural 3D Model for Sir Charles Parsons' 1898 Multi-Stage Axial Reaction Steam Turbine
+ * Museum-Grade Procedural 3D Model for Sir Charles Parsons' 1898 marine turbine network
  * (US Patent 608,969).
  *
- * Reconstructs the revolutionary Turbinia high-speed steam turbomachinery:
- * 1. Heavy cast-iron bedplate with flanged journal bearing pedestals.
- * 2. Stepped cylindrical rotor drum shaft with dummy piston axial thrust balance.
- * 3. 3-stage expansion (High-Pressure, Intermediate-Pressure, Low-Pressure) with increasing drum diameters.
- * 4. High-density curved reaction blade rings (instanced bronze rotor blades & steel stator guide vanes).
- * 5. Cutaway upper casing shell allowing visual inspection of internal blade rows and steam expansion annular channel.
- * 6. Dynamic steam streamline particle flow expanding axially through the reaction stages.
+ * Reconstructs the source's valve-and-pipe arrangement:
+ * 1. Separate turbine banks on multiple screw-shafts.
+ * 2. Steam pipes and selectable junctions between turbine casings.
+ * 3. Condenser outlets and dedicated X/Y reversing motors from Figure 2.
+ * 4. Dynamic steam particles following the live route topology.
  */
 
 import * as THREE from "three";
-import { stepParsonsTurbine } from "@/physics/catalogKernels";
-import { computeSteamEnthalpyField } from "@/physics/fieldTextures";
+import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 
@@ -28,7 +25,10 @@ export interface ParsonsTurbineModelNodes {
   casingGroup: THREE.Group;
   casingShells: THREE.Mesh[];
   shaft: THREE.Mesh;
-  dummyPiston: THREE.Mesh;
+  turbineMeshes: THREE.Mesh[];
+  pipeMeshes: THREE.Mesh[];
+  routePipeGroups: Record<ParsonsRoutingMode, THREE.Mesh[]>;
+  reversingPipes: THREE.Mesh[];
   steamPoints: THREE.Points;
   steamPositions: Float32Array;
   steamRadii: Float32Array;
@@ -38,8 +38,8 @@ export interface ParsonsTurbineModelNodes {
 export interface ParsonsTurbineMaterials {
   castIronCasing: THREE.MeshStandardMaterial;
   steelRotor: THREE.MeshStandardMaterial;
-  bronzeBlades: THREE.MeshStandardMaterial;
-  statorBlades: THREE.MeshStandardMaterial;
+  reversingHousing: THREE.MeshStandardMaterial;
+  pipes: THREE.MeshStandardMaterial;
   steamPoints: THREE.PointsMaterial;
 }
 
@@ -83,7 +83,7 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
         metalness: 0.8,
       }),
     ),
-    bronzeBlades: trackMat(
+    reversingHousing: trackMat(
       new THREE.MeshStandardMaterial({
         color: 0xd97706,
         roughness: 0.3,
@@ -91,7 +91,7 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
         side: THREE.DoubleSide,
       }),
     ),
-    statorBlades: trackMat(
+    pipes: trackMat(
       new THREE.MeshStandardMaterial({
         color: 0x64748b,
         roughness: 0.4,
@@ -111,7 +111,7 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
     ),
   };
 
-  // 1. Bedplate & Bearing Pedestals
+  // 1. Shared bedplate supporting the pictured screw-shaft groups.
   const bedplateGroup = new THREE.Group();
   rootGroup.add(bedplateGroup);
 
@@ -141,135 +141,70 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
   const casingGroup = new THREE.Group();
   rootGroup.add(casingGroup);
 
-  // 3. Rotor Group (Shaft, dummy balance piston, drum stages, reaction blades)
+  // 3. Turbine banks and screw-shafts from Figures 1–3.
   const rotorGroup = new THREE.Group();
   rootGroup.add(rotorGroup);
 
   const shaft = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.3, 0.3, 12.5, 32)),
+    trackGeo(new THREE.CylinderGeometry(0.16, 0.16, 12.5, 20)),
     materials.steelRotor,
   );
   shaft.rotation.z = Math.PI / 2;
+  shaft.position.y = -1.8;
   rotorGroup.add(shaft);
 
-  const dummyPiston = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.85, 0.85, 0.8, 32)),
-    materials.steelRotor,
-  );
-  dummyPiston.rotation.z = Math.PI / 2;
-  dummyPiston.position.set(-4.8, 0, 0);
-  rotorGroup.add(dummyPiston);
-
-  // Stages Configuration (HP, IP, LP)
-  const stages = [
-    { cx: -2.8, drumR: 0.8, casingR: 1.3, length: 3.0, rows: 8, bladeCount: 40 }, // HP Stage
-    { cx: 0.2, drumR: 1.2, casingR: 1.8, length: 2.8, rows: 7, bladeCount: 60 }, // IP Stage
-    { cx: 3.4, drumR: 1.6, casingR: 2.4, length: 3.2, rows: 6, bladeCount: 80 }, // LP Stage
-  ];
-
-  const bladeShape = new THREE.Shape();
-  bladeShape.moveTo(0, 0.08);
-  bladeShape.quadraticCurveTo(0.1, 0.04, 0.15, -0.08);
-  bladeShape.quadraticCurveTo(0.05, -0.02, 0, 0.08);
-  const extrudeSettings = { depth: 1.0, bevelEnabled: false };
-  const baseBladeGeo = trackGeo(new THREE.ExtrudeGeometry(bladeShape, extrudeSettings));
-  baseBladeGeo.center();
-
-  let totalRotorBlades = 0;
-  let totalStatorBlades = 0;
-  for (const s of stages) {
-    totalRotorBlades += s.rows * s.bladeCount;
-    totalStatorBlades += s.rows * s.bladeCount;
-  }
-
-  const rotorInstanced = new THREE.InstancedMesh(
-    baseBladeGeo,
-    materials.bronzeBlades,
-    totalRotorBlades,
-  );
-  rotorGroup.add(rotorInstanced);
-
-  const statorInstanced = new THREE.InstancedMesh(
-    baseBladeGeo,
-    materials.statorBlades,
-    totalStatorBlades,
-  );
-  casingGroup.add(statorInstanced);
-
-  let rotorIdx = 0;
-  let statorIdx = 0;
-  const dummyObj = new THREE.Object3D();
   const casingShells: THREE.Mesh[] = [];
-
-  for (const { cx, drumR, casingR, length, rows, bladeCount } of stages) {
-    const drum = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(drumR, drumR, length, 32)),
-      materials.steelRotor,
-    );
-    drum.rotation.z = Math.PI / 2;
-    drum.position.set(cx, 0, 0);
-    rotorGroup.add(drum);
-
+  const turbineMeshes: THREE.Mesh[] = [];
+  const pipeMeshes: THREE.Mesh[] = [];
+  const turbineNames = ["A", "A′", "B", "B′", "C", "C′", "D", "D′", "X", "Y"];
+  const positions = new Map<string, THREE.Vector3>();
+  turbineNames.forEach((name, index) => {
+    const row = name === "X" || name === "Y" ? 2 : Math.floor(index / 4);
+    const column = name === "X" ? 1 : name === "Y" ? 2 : index % 4;
+    const center = new THREE.Vector3(-4.2 + column * 2.7, 0.8 - row * 1.5, 0);
+    positions.set(name, center);
     const casing = new THREE.Mesh(
-      trackGeo(
-        new THREE.CylinderGeometry(
-          casingR + 0.1,
-          casingR + 0.1,
-          length,
-          64,
-          1,
-          false,
-          0,
-          Math.PI * 1.3,
-        ),
-      ),
-      materials.castIronCasing,
+      trackGeo(new THREE.CylinderGeometry(name === "X" || name === "Y" ? 0.6 : 0.72, name === "X" || name === "Y" ? 0.6 : 0.72, 1.45, 24, 1, false, 0, Math.PI * 1.35)),
+      name === "X" || name === "Y" ? materials.reversingHousing : materials.castIronCasing,
     );
     casing.rotation.z = Math.PI / 2;
-    casing.position.set(cx, 0, 0);
+    casing.position.copy(center);
     casing.castShadow = true;
     casing.receiveShadow = true;
     casingGroup.add(casing);
     casingShells.push(casing);
+    turbineMeshes.push(casing);
+  });
 
-    const rowSpacing = length / (rows * 2);
-    const startX = cx - length / 2 + rowSpacing;
-
-    for (let r = 0; r < rows; r++) {
-      const rX = startX + r * 2 * rowSpacing;
-      const bladeHeight = casingR - drumR - 0.02;
-
-      for (let b = 0; b < bladeCount; b++) {
-        const angle = (b / bladeCount) * Math.PI * 2;
-        dummyObj.position.set(
-          rX,
-          Math.cos(angle) * (drumR + bladeHeight / 2),
-          Math.sin(angle) * (drumR + bladeHeight / 2),
-        );
-        dummyObj.rotation.set(angle, Math.PI / 2, 0);
-        dummyObj.rotateY(Math.PI / 6);
-        dummyObj.scale.set(1.0, 1.0, bladeHeight);
-        dummyObj.updateMatrix();
-        rotorInstanced.setMatrixAt(rotorIdx++, dummyObj.matrix);
-      }
-
-      const sX = startX + r * 2 * rowSpacing + rowSpacing;
-      for (let b = 0; b < bladeCount; b++) {
-        const angle = (b / bladeCount) * Math.PI * 2;
-        if (angle > Math.PI * 1.3 && angle < Math.PI * 2) continue;
-
-        dummyObj.position.set(
-          sX,
-          Math.cos(angle) * (casingR - bladeHeight / 2),
-          Math.sin(angle) * (casingR - bladeHeight / 2),
-        );
-        dummyObj.rotation.set(angle + Math.PI, Math.PI / 2, 0);
-        dummyObj.rotateY(-Math.PI / 6);
-        dummyObj.scale.set(1.0, 1.0, bladeHeight);
-        dummyObj.updateMatrix();
-        statorInstanced.setMatrixAt(statorIdx++, dummyObj.matrix);
-      }
+  const pipeBetween = (from: THREE.Vector3, to: THREE.Vector3) => {
+    const delta = new THREE.Vector3().subVectors(to, from);
+    const pipe = new THREE.Mesh(
+      trackGeo(new THREE.CylinderGeometry(0.08, 0.08, delta.length(), 12)),
+      materials.pipes,
+    );
+    pipe.position.copy(from).add(to).multiplyScalar(0.5);
+    pipe.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), delta.normalize());
+    casingGroup.add(pipe);
+    pipeMeshes.push(pipe);
+    return pipe;
+  };
+  const routePipeGroups: Record<ParsonsRoutingMode, THREE.Mesh[]> = {
+    series: [],
+    "compound-parallel": [],
+    "simple-parallel": [],
+  };
+  const reversingPipes: THREE.Mesh[] = [];
+  for (const route of ["series", "compound-parallel", "simple-parallel"] as const) {
+    for (const [from, to] of stepParsonsMarine({ routing: route }).routeEdges) {
+      const fromPos = from === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : from.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(from);
+      const toPos = to === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : to.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(to);
+      if (fromPos && toPos) routePipeGroups[route].push(pipeBetween(fromPos, toPos));
     }
+  }
+  for (const [from, to] of stepParsonsMarine({ reversing: true }).routeEdges) {
+    const fromPos = from === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : from.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(from);
+    const toPos = to === "boiler" ? new THREE.Vector3(-6.0, 0, 0) : to.startsWith("condenser") ? new THREE.Vector3(6.0, 0, 0) : positions.get(to);
+    if (fromPos && toPos) reversingPipes.push(pipeBetween(fromPos, toPos));
   }
 
   // 4. Steam Flow Streamline Particles
@@ -280,12 +215,7 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
   for (let i = 0; i < STEAM_COUNT; i++) {
     const idx = i * 3;
     const x = -4.5 + lcg() * 9.5;
-    let maxR = 0.8;
-    if (x > -4.3 && x <= -1.3) maxR = 1.25;
-    else if (x > -1.3 && x <= 1.7) maxR = 1.75;
-    else if (x > 1.7 && x <= 5.0) maxR = 2.35;
-
-    const r = maxR * lcg() ** 0.5;
+    const r = 0.4 + 1.2 * lcg();
     const a = lcg() * Math.PI * 2;
 
     steamPositions[idx] = x;
@@ -305,7 +235,10 @@ export function buildParsonsTurbineModel(): ParsonsTurbineModelResult {
     casingGroup,
     casingShells,
     shaft,
-    dummyPiston,
+    turbineMeshes,
+    pipeMeshes,
+    routePipeGroups,
+    reversingPipes,
     steamPoints,
     steamPositions,
     steamRadii,
@@ -338,56 +271,42 @@ export function updateParsonsTurbineKinematics(
   steamSwirlOmegaRadPerS: number,
   showSteamFlow: boolean,
   isCutaway: boolean,
-  rotorRpm = 3000,
-  steamPressureBar = 12.4,
+  routing: ParsonsRoutingMode = "series",
+  reversing = false,
 ) {
   // 1. Rotor Rotation
   nodes.rotorGroup.rotation.x += displayOmegaRadPerS * dt;
 
-  // 2. Steam Streamline Particle Advection
-  const inletPsi = steamPressureBar * 14.5038;
-  const parsons = stepParsonsTurbine({
-    rotorRpm,
-    inletPressurePsi: inletPsi,
-  });
-  const enthalpyField = computeSteamEnthalpyField(inletPsi, 48, 16);
+  // 2. Steam particles traverse the selected source route.
+  const marine = stepParsonsMarine({ routing, reversing });
+  for (const [mode, pipes] of Object.entries(nodes.routePipeGroups) as [ParsonsRoutingMode, THREE.Mesh[]][]) {
+    for (const pipe of pipes) pipe.visible = !reversing && mode === routing;
+  }
+  for (const pipe of nodes.reversingPipes) pipe.visible = reversing;
   const fluid = fluidFrames(16, 8);
   const frame = Math.abs(Math.floor(_timeSec * 4)) % 8;
   const pos = nodes.steamPositions;
   for (let i = 0; i < nodes.steamCount; i++) {
     const idx = i * 3;
-    const u = Math.max(
-      0,
-      Math.min(
-        1,
-        ((pos[idx] ?? 0) - parsons.steamResetX) /
-          Math.max(0.1, parsons.steamWrapX - parsons.steamResetX),
-      ),
-    );
+    const u = Math.max(0, Math.min(1, ((pos[idx] ?? 0) + 4.5) / 9.5));
     const v = 0.5 + ((pos[idx + 1] ?? 0) + 2.5) / 5;
     const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
-    const gx = Math.floor(u * 15);
-    const enthalpyFactor = 0.8 + 0.4 * (enthalpyField[gx] ?? 0.5);
-    pos[idx] += steamAdvancePerS * dt * (1 + dens) * enthalpyFactor;
+    const routeFactor = marine.routeEdges.length / 9;
+    pos[idx] += steamAdvancePerS * dt * (0.6 + dens) * routeFactor;
     let x = pos[idx];
 
-    if (x > parsons.steamWrapX) {
-      x = parsons.steamResetX;
+    if (x > 5.0) {
+      x = -4.5;
       pos[idx] = x;
     }
 
-    let maxR = parsons.steamRadiusHp;
-    if (x > parsons.steamRadiusIpStart && x <= parsons.steamRadiusIpEnd)
-      maxR = parsons.steamRadiusIp;
-    else if (x > parsons.steamRadiusIpEnd && x <= parsons.steamRadiusMpEnd)
-      maxR = parsons.steamRadiusMp;
-    else if (x > parsons.steamRadiusMpEnd && x <= parsons.steamWrapX) maxR = parsons.steamRadiusLp;
+    const maxR = 0.45 + 0.1 * marine.routeEdges.length;
 
     let r = nodes.steamRadii[i];
     if (r < maxR) {
-      r += (maxR - r) * parsons.steamGrowPerS * dt;
-    } else if (r > maxR + parsons.steamShrinkSlack) {
-      r -= (r - maxR) * parsons.steamShrinkPerS * dt;
+      r += (maxR - r) * 0.6 * dt;
+    } else if (r > maxR + 0.1) {
+      r -= (r - maxR) * 0.6 * dt;
     }
     nodes.steamRadii[i] = r;
 

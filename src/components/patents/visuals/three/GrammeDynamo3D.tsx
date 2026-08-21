@@ -6,7 +6,8 @@ import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGrammeDynamoModel, updateGrammeDynamoKinematics } from "./grammeDynamoModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -46,6 +47,7 @@ export const GrammeDynamo3D = memo(() => {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
     shaftRate,
@@ -294,6 +296,21 @@ export const GrammeDynamo3D = memo(() => {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-120057-gramme-dynamo"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-120057-gramme-dynamo"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -2,25 +2,22 @@
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { stepPeltonWheelVisual } from "@/physics/peltonWheelKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function PeltonWheelSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-233692-pelton-water-wheel");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const waterHeadMeters = params.headMeters ?? 450;
-  const wheelRpm = params.runnerRpm ?? 600;
+  const waterHeadMeters = params.headMeters ?? 0;
+  const wheelRpm = params.runnerRpm ?? 0;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [wheelAngleDeg, setWheelAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
 
-  const pelton = stepPeltonWheel({ headMeters: waterHeadMeters, runnerRpm: wheelRpm });
-  const jetVelocityMps = pelton.jetVelocityMps;
-  const optimalSpeedRatio = pelton.speedRatio;
-  const turbineEfficiencyPct = pelton.etaPct;
-  const shaftPowerKw = pelton.shaftPowerKw;
+  const visualState = stepPeltonWheelVisual({ runnerRpm: wheelRpm, jetEnabled: waterHeadMeters > 0 });
+  const runnerOmegaDegPerS = (visualState.runnerOmegaRadPerS * 180) / Math.PI;
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -31,7 +28,7 @@ export function PeltonWheelSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setWheelAngleDeg((prev) => (prev + pelton.runnerOmegaDegPerS * dt) % pelton.displayWrapDeg);
+      setWheelAngleDeg((prev) => (prev + runnerOmegaDegPerS * dt) % 360);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -39,7 +36,7 @@ export function PeltonWheelSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, pelton.runnerOmegaDegPerS, pelton.displayWrapDeg]);
+  }, [isPlaying, runnerOmegaDegPerS]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
@@ -52,7 +49,7 @@ export function PeltonWheelSim() {
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            High-head water jet, knife-edge splitter wedge, and 170° impulse flow reversal.
+            Source-bounded view of the wheel, nozzle, split apex, curved bottoms, and side discharge.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -100,7 +97,7 @@ export function PeltonWheelSim() {
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
-          {/* High-Pressure Needle Nozzle (Left) */}
+          {/* Source nozzle arrangement (left) */}
           <g transform="translate(60, 260)">
             <polygon
               points="0,-15 100,-8 100,8 0,15"
@@ -126,16 +123,16 @@ export function PeltonWheelSim() {
             </text>
           </g>
 
-          {/* High-Velocity Supersonic Water Jet */}
+          {/* Source-described water stream */}
           <line
             x1="190"
             y1="260"
             x2="360"
             y2="260"
             stroke="#3182CE"
-            strokeWidth={6 + pelton.jetCrateDensity * 6}
+            strokeWidth={waterHeadMeters > 0 ? 7 : 3}
             strokeLinecap="round"
-            opacity={pelton.jetOpacity}
+            opacity={waterHeadMeters > 0 ? 0.9 : 0.3}
           />
 
           {/* Pelton Turbine Runner Disk (Center) */}
@@ -144,49 +141,41 @@ export function PeltonWheelSim() {
             <circle
               cx="0"
               cy="0"
-              r={pelton.runnerSvgR}
+              r={75}
               fill="#2D3748"
               stroke="#1A202C"
               strokeWidth="4"
             />
-            <circle cx="0" cy="0" r={pelton.hubSvgR} fill="#1A1A1A" />
+            <circle cx="0" cy="0" r={18} fill="#1A1A1A" />
 
-            {/* Perimeter Split Buckets */}
-            {Array.from({ length: pelton.bucketCount }).map((_, i) => {
-              const bAngle = i * pelton.bucketPitchDeg;
-              return (
-                <g
-                  key={`pelton-bucket-${bAngle}`}
-                  transform={`rotate(${bAngle}) translate(0, ${pelton.runnerSvgR})`}
-                >
+            {/* One enlarged source-faithful bucket; the grant gives no bucket count. */}
+            <g transform="rotate(0) translate(0, -110)">
                   {/* Double-cup bucket profile */}
-                  <path
+                <path
                     d="M -14 0 Q -18 22, -8 30 Q 0 15, 0 5 Q 0 15, 8 30 Q 18 22, 14 0 Z"
                     fill="#D4AF37"
                     stroke="#744210"
                     strokeWidth="1.5"
-                  />
+                />
                   {/* Knife edge splitter line */}
-                  <line x1="0" y1="5" x2="0" y2="28" stroke="#FFFFFF" strokeWidth="1.5" />
-                </g>
-              );
-            })}
+                <line x1="0" y1="5" x2="0" y2="28" stroke="#FFFFFF" strokeWidth="1.5" />
+            </g>
           </g>
 
-          {/* Symmetrical 170-degree Reversed Water Discharge Sheets */}
+          {/* Two source-described discharge paths leaving at the wheel sides. */}
           <path
             d="M 360 260 Q 320 280, 270 310"
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity={Math.min(1, pelton.jetOpacity)}
+            opacity={waterHeadMeters > 0 ? 0.8 : 0.25}
           />
           <path
             d="M 360 260 Q 400 280, 450 310"
             stroke="#63B3ED"
             strokeWidth="4"
             fill="none"
-            opacity={Math.min(1, pelton.jetOpacity)}
+            opacity={waterHeadMeters > 0 ? 0.8 : 0.25}
           />
           <text
             x="320"
@@ -196,59 +185,27 @@ export function PeltonWheelSim() {
             fontWeight="bold"
             fontFamily="sans-serif"
           >
-            Reversed Discharge Flow (Exit Velocity ≈ 0)
+            Divided stream → curved bottoms → side discharge
           </text>
         </svg>
       </div>
 
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Jet Velocity
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {jetVelocityMps} m/s · u {pelton.bucketSpeedMps} m/s
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Speed Ratio (u/v)
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {optimalSpeedRatio} (Optimal: 0.50)
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Shaft Output
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {shaftPowerKw} kW
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Hydro Efficiency
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {turbineEfficiencyPct}%
-          </span>
-        </div>
+      <div className="my-4 rounded-xl border border-parchment-200 dark:border-ink-800 bg-parchment-100 dark:bg-ink-900 p-3 text-sm text-ink-700 dark:text-parchment-300">
+        The grant supplies no operating head, speed, bucket count, efficiency, or dimensions. Controls are visitor-set parameters; the drawing and source text establish the bucket geometry and nozzle arrangement only.
       </div>
 
       {/* Sliders */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Alpine Hydraulic Head (H)</span>
-            <span className="font-mono">{waterHeadMeters} meters</span>
+            <span>Visitor-set head parameter</span>
+            <span className="font-mono">{waterHeadMeters}</span>
           </div>
           <input
             type="range"
-            min="50"
-            max="600"
-            step="25"
+            min="0"
+            max="1000"
+            step="10"
             value={waterHeadMeters}
             onChange={(e) => updateParam("headMeters", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
@@ -256,14 +213,14 @@ export function PeltonWheelSim() {
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Turbine Runner Speed</span>
-            <span className="font-mono">{wheelRpm} RPM</span>
+            <span>Visitor-set runner speed</span>
+            <span className="font-mono">{wheelRpm}</span>
           </div>
           <input
             type="range"
-            min="100"
-            max="900"
-            step="25"
+            min="0"
+            max="1000"
+            step="10"
             value={wheelRpm}
             onChange={(e) => updateParam("runnerRpm", Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"

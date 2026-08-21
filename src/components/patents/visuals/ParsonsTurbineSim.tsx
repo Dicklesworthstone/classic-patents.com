@@ -1,30 +1,22 @@
 "use client";
 
-import { Disc, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { GitBranch, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { parsonsIsRotor, parsonsStageHeight } from "@/physics/catalogKernels";
-import { FrankenSimEngine } from "@/physics/engine";
+import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function ParsonsTurbineSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-608969-parsons-turbine");
+  const { resetParams } = usePatentPhysics("us-608969-parsons-turbine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const rotorRpm = params.rotorRpm ?? 3000;
-  const inletPressurePsi = params.inletPressurePsi ?? 180;
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [angleDeg, setAngleDeg] = useState<number>(0);
+  const [routing, setRouting] = useState<ParsonsRoutingMode>("series");
+  const [reversing, setReversing] = useState(false);
+  const [throttle, setThrottle] = useState(0.75);
+  const [flowPhase, setFlowPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
-
-  // Reaction Turbine Thermodynamics
-  const parsons = FrankenSimEngine.stepParsonsTurbine({
-    rotorRpm,
-    inletPressurePsi,
-  });
-  const pInletMpa = parsons.inletMpa;
-  const stageCount = parsons.stageCount;
-  const steamBladeSpeedRatio = parsons.steamBladeSpeedRatio;
+  const marine = stepParsonsMarine({ routing, reversing, throttle });
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -34,7 +26,7 @@ export function ParsonsTurbineSim() {
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
-      setAngleDeg((prev) => (prev + parsons.displayOmegaDegPerS * dt) % parsons.displayWrapDeg);
+      setFlowPhase((prev) => (prev + dt * (0.5 + marine.flowRateRelative)) % 1);
       animRef.current = requestAnimationFrame(loop);
     };
 
@@ -42,21 +34,21 @@ export function ParsonsTurbineSim() {
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, parsons.displayOmegaDegPerS, parsons.displayWrapDeg]);
+  }, [isPlaying, marine.flowRateRelative]);
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Disc className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+            <GitBranch className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Charles Parsons Multistage Reaction Steam Turbine (US 608,969)
+              Charles Parsons Marine Turbine Routing (US 608,969)
             </h3>
           </div>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Compound pressure-staging ({stageCount} rings), expanding conical casing, and dummy
-            piston thrust balance.
+            Valve-and-pipe routing between turbine banks, screw-shafts, condensers, and reversing
+            turbines.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -90,7 +82,9 @@ export function ParsonsTurbineSim() {
             type="button"
             onClick={() => {
               resetParams();
-              setAngleDeg(0);
+              setRouting("series");
+              setReversing(false);
+              setThrottle(0.75);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -101,173 +95,45 @@ export function ParsonsTurbineSim() {
         </div>
       </div>
 
-      {/* SVG Animation Stage */}
+      {/* SVG Animation Stage: a source-bound valve-and-pipe network. */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
         <svg viewBox="0 0 600 340" className="w-full h-full">
-          {/* Stepped Expanding Casing (Top & Bottom halves) */}
-          <polygon
-            points="120,110 240,95 380,80 500,60 500,280 380,260 240,245 120,230"
-            fill="#2D3748"
-            stroke="#1A202C"
-            strokeWidth="2"
-            opacity="0.3"
-          />
-
-          {/* High-Pressure Steam Inlet Port (Left) */}
-          <g transform="translate(80, 140)">
-            <rect
-              x="0"
-              y="0"
-              width="40"
-              height="60"
-              rx="4"
-              fill="#E53E3E"
-              opacity={Math.min(1, 0.55 + parsons.steamCrateDensity)}
-            />
-            <text
-              x="-70"
-              y="35"
-              fill="#E53E3E"
-              fontSize="10"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              Inlet ({inletPressurePsi} psi)
-            </text>
-          </g>
-
-          {/* Low-Pressure Exhaust to Condenser (Right) */}
-          <g transform="translate(500, 110)">
-            <rect x="0" y="0" width="50" height="120" rx="4" fill="#3182CE" opacity="0.6" />
-            <text
-              x="5"
-              y="65"
-              fill="#FFFFFF"
-              fontSize="10"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              Exhaust
-            </text>
-          </g>
-
-          {/* Central Rotating Turbine Rotor Shaft */}
-          <rect
-            x="60"
-            y="162"
-            width="480"
-            height="16"
-            fill="#718096"
-            stroke="#1A202C"
-            strokeWidth="1.5"
-          />
-
-          {/* 3 Step Expansion Cylinders on Drum Rotor */}
-          <rect
-            x="130"
-            y="145"
-            width="100"
-            height="50"
-            fill="#4A5568"
-            stroke="#2D3748"
-            strokeWidth="1"
-          />
-          <rect
-            x="240"
-            y="135"
-            width="130"
-            height="70"
-            fill="#4A5568"
-            stroke="#2D3748"
-            strokeWidth="1"
-          />
-          <rect
-            x="380"
-            y="120"
-            width="110"
-            height="100"
-            fill="#4A5568"
-            stroke="#2D3748"
-            strokeWidth="1"
-          />
-
-          {/* Alternating Fixed Stator Blades & Moving Rotor Blade Rings */}
-          {Array.from({ length: parsons.stageRingSvgCount }).map((_, i) => {
-            const xPos = parsons.stageSvgOriginX + i * parsons.stageSvgPitch;
-            const isRotor = parsonsIsRotor(i, parsons.rotorStageParity);
-            const height = parsonsStageHeight(
-              xPos,
-              parsons.stageSplitX0,
-              parsons.stageSplitX1,
-              parsons.stageHeightNear,
-              parsons.stageHeightMid,
-              parsons.stageHeightFar,
-            );
+          <defs>
+            <marker id="parsons-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+            </marker>
+          </defs>
+          <rect x="18" y="18" width="564" height="304" rx="12" fill="#0f172a" opacity="0.3" />
+          <text x="300" y="40" textAnchor="middle" fill="#fbbf24" fontSize="12">
+            {marine.routeLabel}
+          </text>
+          <text x="38" y="72" fill="#f87171" fontSize="10">boiler</text>
+          <rect x="34" y="82" width="52" height="184" rx="6" fill="#7f1d1d" opacity="0.7" />
+          <text x="560" y="72" textAnchor="end" fill="#67e8f9" fontSize="10">condenser</text>
+          <rect x="510" y="82" width="54" height="184" rx="6" fill="#164e63" opacity="0.8" />
+          {marine.activeTurbines.map((name, index) => {
+            const x = 120 + (index % 4) * 94;
+            const y = 96 + Math.floor(index / 4) * 92;
             return (
-              <g key={`stage-ring-${xPos}`}>
-                {/* Upper Blades */}
-                <line
-                  x1={xPos}
-                  y1={parsons.bladeMidY - height}
-                  x2={xPos + (isRotor ? parsons.bladeLean : -parsons.bladeLean)}
-                  y2={parsons.bladeMidY - parsons.bladeGap}
-                  stroke={isRotor ? "#D4AF37" : "#CBD5E0"}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                {/* Lower Blades */}
-                <line
-                  x1={xPos}
-                  y1={parsons.bladeMidY + parsons.bladeGap}
-                  x2={xPos + (isRotor ? parsons.bladeLean : -parsons.bladeLean)}
-                  y2={parsons.bladeMidY + height}
-                  stroke={isRotor ? "#D4AF37" : "#CBD5E0"}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
+              <g key={name}>
+                <rect x={x} y={y} width="64" height="42" rx="6" fill={name === "X" || name === "Y" ? "#581c87" : "#334155"} stroke="#cbd5e1" />
+                <text x={x + 32} y={y + 25} textAnchor="middle" fill="#f8fafc" fontSize="13">{name}</text>
               </g>
             );
           })}
-
-          {/* Axial Balancing Dummy Pistons (Opposing Thrust) */}
-          <rect
-            x="90"
-            y="135"
-            width="30"
-            height="70"
-            fill="#CBD5E0"
-            stroke="#718096"
-            strokeWidth="1"
-          />
-          <text
-            x="60"
-            y="225"
-            fill="#718096"
-            fontSize="9"
-            fontWeight="bold"
-            fontFamily="sans-serif"
-          >
-            Dummy Piston Balance
+          {marine.routeEdges.map(([from, to], index) => {
+            const fromIndex = marine.activeTurbines.indexOf(from);
+            const toIndex = marine.activeTurbines.indexOf(to);
+            const fromX = from === "boiler" ? 86 : from === "condenser E" || from === "condenser G" || from === "condenser H" ? 510 : 120 + (fromIndex % 4) * 94 + 64;
+            const fromY = from === "boiler" ? 174 : from.startsWith("condenser") ? 174 : 117 + Math.floor(fromIndex / 4) * 92;
+            const toX = to === "condenser E" || to === "condenser G" || to === "condenser H" ? 510 : to === "boiler" ? 86 : 120 + (toIndex % 4) * 94;
+            const toY = to.startsWith("condenser") ? 174 : to === "boiler" ? 174 : 117 + Math.floor(toIndex / 4) * 92;
+            const pulse = (flowPhase + index / Math.max(1, marine.routeEdges.length)) % 1;
+            return <line key={`${from}-${to}`} x1={fromX} y1={fromY} x2={toX} y2={toY} stroke={pulse > 0.2 ? "#38bdf8" : "#fbbf24"} strokeWidth="2.5" markerEnd="url(#parsons-arrow)" opacity={0.8 + marine.throttle * 0.2} />;
+          })}
+          <text x="300" y="294" textAnchor="middle" fill={marine.reversing ? "#e879f9" : "#4ade80"} fontSize="11">
+            {marine.directionLabel.toUpperCase()} · valve topology is live
           </text>
-
-          {/* Shaft-end view — display ω, not leftover rpm×6 */}
-          <g transform="translate(545, 300)">
-            <circle r="22" fill="#1A202C" stroke="#718096" strokeWidth="1.5" />
-            <g transform={`rotate(${angleDeg})`}>
-              {[0, 45, 90, 135].map((a) => (
-                <line
-                  key={`rotor-spoke-${a}`}
-                  x1="0"
-                  y1="-18"
-                  x2="0"
-                  y2="18"
-                  transform={`rotate(${a})`}
-                  stroke="#D4AF37"
-                  strokeWidth="2"
-                />
-              ))}
-            </g>
-          </g>
         </svg>
       </div>
 
@@ -275,70 +141,73 @@ export function ParsonsTurbineSim() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Turbine Speed
+            Route topology
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {rotorRpm} RPM · ω×{parsons.displaySlowdown} {parsons.displayOmegaDegPerS.toFixed(0)}{" "}
-            °/s
+            {marine.routing}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Inlet Pressure
+            Active turbines
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {pInletMpa} MPa ({inletPressurePsi} psi)
+            {marine.activeTurbines.length}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Turbine Power
+            Screw-shafts
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {parsons.shaftPowerMw} MW
+            {marine.activeShafts}
           </span>
         </div>
         <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
           <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Blade Speed Ratio
+            Direction
           </span>
           <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {steamBladeSpeedRatio} u/c
+            {marine.directionLabel}
           </span>
         </div>
       </div>
 
-      {/* Sliders */}
+      {/* Source controls: valve topology and live steam admission. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Turbine Rotational Speed</span>
-            <span className="font-mono">{rotorRpm} RPM</span>
+            <span>Valve connection</span>
+            <span className="font-mono">{marine.routing}</span>
           </div>
-          <input
-            type="range"
-            min="1000"
-            max="6000"
-            step="100"
-            value={rotorRpm}
-            onChange={(e) => updateParam("rotorRpm", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
+          <select
+            value={routing}
+            onChange={(e) => setRouting(e.target.value as ParsonsRoutingMode)}
+            className="w-full rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-900 px-2 py-2 text-sm"
+          >
+            <option value="series">Series (Fig. 1)</option>
+            <option value="compound-parallel">Compound parallel (Fig. 1)</option>
+            <option value="simple-parallel">Simple parallel (Fig. 1 / 3)</option>
+          </select>
         </div>
         <div>
           <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Boiler Superheated Steam Pressure</span>
-            <span className="font-mono">{inletPressurePsi} psi</span>
+            <span>Steam admission</span>
+            <span className="font-mono">{Math.round(marine.throttle * 100)}%</span>
           </div>
           <input
             type="range"
-            min="60"
-            max="300"
-            step="10"
-            value={inletPressurePsi}
-            onChange={(e) => updateParam("inletPressurePsi", Number(e.target.value))}
+            min="0"
+            max="1"
+            step="0.05"
+            value={throttle}
+            onChange={(e) => setThrottle(Number(e.target.value))}
             className="w-full accent-amber-600 cursor-pointer"
           />
+          <label className="mt-2 flex items-center gap-2 text-xs text-ink-700 dark:text-parchment-300">
+            <input type="checkbox" checked={reversing} onChange={(e) => setReversing(e.target.checked)} />
+            Figure 2 reversing turbines X / Y (astern)
+          </label>
         </div>
       </div>
     </div>

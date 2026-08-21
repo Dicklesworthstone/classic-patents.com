@@ -2,13 +2,10 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLindeLiquefactionModel,
   type LindeLiquefactionModelResult,
@@ -46,20 +43,15 @@ export function LindeAirLiquefaction3D() {
   const [showFlowTracer, setShowFlowTracer] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
-  const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
-    inletPressureAtm: params.inletPressureAtm ?? params.highPressureAtm,
-    coolerOutletC: params.coolerOutletC,
-  });
+  usePatentPhysics("us-727650-linde-air-liquefaction");
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
   const highPressureAtm = linde.highPressureAtm;
   const lowPressureAtm = linde.lowPressureAtm;
   const coolerOutletC = linde.coolerOutletC;
 
   const live = useLiveSimParams({
-    highPressureAtm,
     showFlowTracer,
     cutawayMode,
     isAudioMuted,
@@ -107,7 +99,6 @@ export function LindeAirLiquefaction3D() {
         liquefierModel.materials,
         delta,
         timeSec,
-        p.highPressureAtm,
         p.showFlowTracer,
         p.cutawayMode,
       );
@@ -166,14 +157,6 @@ export function LindeAirLiquefaction3D() {
 
         {/* Top Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
-          <ClaimConstraintToggle
-            patentId="us-727650-linde-air-liquefaction"
-            claimStates={claimStates}
-            onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("highPressureAtm", active ? 200 : 20);
-            }}
-          />
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
@@ -262,57 +245,27 @@ export function LindeAirLiquefaction3D() {
         )}
       </div>
 
-      {/* Interactive Controls Bar */}
+      {/* Printed operating example. The grant supplies no visitor-adjustable
+          pressure, temperature, flow, or product-quantity range. */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SensitivitySlider
-            id="lindeHighPressure"
-            patentId="us-727650-linde-air-liquefaction"
-            paramKey="throttlePressureBar"
-            label="Inlet High Pressure (p²)"
-            value={highPressureAtm}
-            min={40}
-            max={200}
-            step={5}
-            unit="atm"
-            onChange={(val) => updateParam("highPressureAtm", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="lindeLowPressure"
-            patentId="us-727650-linde-air-liquefaction"
-            paramKey="pressure"
-            label="Return Low Pressure (p′)"
-            value={lowPressureAtm}
-            min={1}
-            max={50}
-            step={1}
-            unit="atm"
-            onChange={(val) => updateParam("lowPressureAtm", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="lindeCoolerOutlet"
-            patentId="us-727650-linde-air-liquefaction"
-            paramKey="temperature"
-            label="Pre-Cooler Temperature (t³)"
-            value={coolerOutletC}
-            min={-20}
-            max={30}
-            step={1}
-            unit="°C"
-            onChange={(val) => updateParam("coolerOutletC", val)}
-            allParams={params}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-mono">
+          <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
+            <div className="text-ink-500">High side p²</div>
+            <div className="mt-1 font-bold text-cyan-700 dark:text-cyan-400">75 atm</div>
+          </div>
+          <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
+            <div className="text-ink-500">Low side p′</div>
+            <div className="mt-1 font-bold text-emerald-700 dark:text-emerald-400">25 atm</div>
+          </div>
+          <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
+            <div className="text-ink-500">Cooler outlet t³</div>
+            <div className="mt-1 font-bold text-amber-700 dark:text-amber-400">about 10 °C or less</div>
+          </div>
+          <div className="rounded-lg border border-parchment-300 dark:border-ink-700 p-3">
+            <div className="text-ink-500">G′ length</div>
+            <div className="mt-1 font-bold text-sky-700 dark:text-sky-400">about 100 m</div>
+          </div>
         </div>
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-727650-linde-air-liquefaction"
-          params={params}
-          className="mt-3"
-        />
       </div>
 
       <StudioKernelChips
@@ -324,10 +277,10 @@ export function LindeAirLiquefaction3D() {
           { label: "t³ after K", value: `about ${coolerOutletC} °C or less` },
           {
             label: "G′ construction",
-            value: `${linde.counterCurrentLengthM} m suggested`,
+            value: `about ${linde.counterCurrentLengthM} m suggested`,
             tone: "ok",
           },
-          { label: "Boundary", value: "No yield or terminal temperature printed", tone: "warn" },
+          { label: "Boundary", value: "No terminal temperature or rate printed", tone: "warn" },
         ]}
       />
     </div>

@@ -75,7 +75,6 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(result.sourceGroovesPerInch).toBe(10);
     expect(result.sourceThreadsPerInch).toBe(10);
     expect(result.leadScrewPitchMm).toBe(2.54);
-    expect(result.modelMandrelDiameterInches).toBeGreaterThan(0);
     expect(result.stylusAmp).toBeGreaterThan(0);
     expect(result.stylusOmegaRadPerS).toBeGreaterThan(0);
     expect(result.axialDisplayWrapMm).toBeGreaterThan(0);
@@ -128,7 +127,8 @@ describe("US 200,521 Thomas Edison Tinfoil Phonograph visual & acoustics boundar
     expect(twoDimensionalSource).toContain("Illustrative diaphragm-excitation level");
     expect(twoDimensionalSource).toContain("model-only reader aids");
     expect(twoDimensionalSource).toContain("additional patent claims");
-    expect(threeDimensionalSource).toContain("model-only reader aids");
+    expect(threeDimensionalSource).toContain("Reader aid only");
+    expect(threeDimensionalSource).toContain("Illustrative stylus motion");
     expect(modelSource).toContain("not source claims");
     expect(kernelSource).toContain("model-only display");
     for (const unsupportedHistoricalLabel of ["Mica Diaphragm", "Brass Horn", "Flywheel"]) {

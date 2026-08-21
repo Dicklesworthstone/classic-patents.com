@@ -1,17 +1,13 @@
 "use client";
 
 import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import {
-  FrankenSimEngine,
-  lamarrChannelFrequencyMhz,
-  lamarrDefaultJamChannel,
-  lamarrPianoRollChannel,
-  lamarrRadioChannel,
-} from "@/physics/engine";
+import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+
+const TRANSMITTER_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
+const RECEIVER_ROWS = new Set(["D", "E", "F", "G"]);
 
 export function LamarrFrequencyHoppingSim() {
   const { params, updateParam, resetParams } = usePatentPhysics(
@@ -19,43 +15,27 @@ export function LamarrFrequencyHoppingSim() {
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
-  const hopsPerSec = params.hopRate ?? 4.0;
-  const liveChannels = Math.max(8, Math.min(88, Math.round(params.channels ?? 88)));
-  const isEnemyJamming = params.isJammingActive !== 0;
-  const jammingFrequencyChannel = Math.min(
-    liveChannels,
-    Math.max(1, Math.round(params.jamChannel ?? lamarrDefaultJamChannel(liveChannels))),
-  );
-  const [currentChannel, setCurrentChannel] = useState<number>(() => lamarrPianoRollChannel(0));
-  const [historyChannels, setHistoryChannels] = useState<number[]>(() =>
-    [0, 1, 2, 3, 4, 5].map((step) => lamarrPianoRollChannel(step)),
-  );
-  const rollStepRef = useRef(0);
+  const [recordPosition, setRecordPosition] = useState(() => Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))));
+  const [rudderStep, setRudderStep] = useState(0);
+  const [commandTone, setCommandTone] = useState<100 | 500>(100);
 
   // Shared player-piano roll — not Math.random. Transmitter and receiver share the same punched sequence.
   useEffect(() => {
     if (!isHoppingActive) return;
 
-    const intervalMs = FrankenSimEngine.stepLamarrFrequencyHopping(
-      liveChannels,
-      hopsPerSec,
-    ).hopIntervalMs;
-    const interval = setInterval(() => {
-      rollStepRef.current += 1;
-      const nextChannel = lamarrPianoRollChannel(rollStepRef.current);
-      setCurrentChannel(nextChannel);
-      setHistoryChannels((hist) => [nextChannel, ...hist.slice(0, 15)]);
-    }, intervalMs);
+    const interval = setInterval(() => setRecordPosition((position) => (position + 1) % 7), 700);
 
     return () => clearInterval(interval);
-  }, [isHoppingActive, hopsPerSec, liveChannels]);
+  }, [isHoppingActive]);
 
-  // Is current carrier jammed?
-  const radioChannel = lamarrRadioChannel(currentChannel, liveChannels);
-  const isJammedThisInstant = isEnemyJamming && radioChannel === jammingFrequencyChannel;
-  const fh = FrankenSimEngine.stepLamarrFrequencyHopping(liveChannels, hopsPerSec);
-  const jammingInterferencePercent = isEnemyJamming ? fh.jamOccupancyPct : 0;
-  const recentHopSet = new Set(historyChannels);
+  const txRow = TRANSMITTER_ROWS[recordPosition] ?? "A";
+  const receiverTuned = RECEIVER_ROWS.has(txRow);
+  const lampOn = !receiverTuned;
+  const transmitCommand = () => {
+    if (!receiverTuned) return;
+    setRudderStep((step) => step + (commandTone === 100 ? -1 : 1));
+    soundEngine.playSwitchClick();
+  };
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
@@ -65,12 +45,11 @@ export function LamarrFrequencyHoppingSim() {
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-purple-500 animate-pulse" />
             <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Lamarr–Antheil 88-Channel Frequency-Hopping Spread Spectrum Simulator (US 2,292,387)
+              Lamarr–Antheil synchronized record simulator (US 2,292,387)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Observe how pseudo-random piano-roll carrier hopping makes radio torpedo guidance immune
-            to enemy spot jamming.
+            Step matched perforated records through the seven illustrated transmitter channels and four receiver channels.
           </p>
         </div>
 
@@ -92,20 +71,6 @@ export function LamarrFrequencyHoppingSim() {
           <button
             type="button"
             onClick={() => {
-              updateParam("isJammingActive", isEnemyJamming ? 0 : 1);
-              soundEngine.playSwitchClick();
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
-              isEnemyJamming
-                ? "bg-red-600 text-white border-red-700 animate-pulse"
-                : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
-            }`}
-          >
-            {isEnemyJamming ? "⚠ Jammer Active" : "Jammer Off"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
@@ -120,6 +85,9 @@ export function LamarrFrequencyHoppingSim() {
             onClick={() => {
               resetParams();
               setIsHoppingActive(true);
+              setRecordPosition(0);
+              setRudderStep(0);
+              setCommandTone(100);
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
@@ -131,167 +99,20 @@ export function LamarrFrequencyHoppingSim() {
         </div>
       </div>
 
-      {/* Visual Canvas: 88-Channel RF Spectrum Analyzer */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[360px] space-y-4">
-          {/* Status Banner */}
-          <div className="w-full flex items-center justify-between z-10 px-2 text-xs font-mono">
-            {isJammedThisInstant ? (
-              <span className="px-3 py-1 bg-red-950/90 border border-red-700 text-red-300 rounded-lg">
-                ⚠ BLIP JAMMED: Single channel hit, but carrier hops immediately!
-              </span>
-            ) : (
-              <span className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 rounded-lg">
-                ✓ SIGNAL CLEAR: Active on Carrier Channel #{currentChannel} (
-                {lamarrChannelFrequencyMhz(radioChannel, liveChannels).toFixed(1)} MHz)
-              </span>
-            )}
-
-            <div className="text-purple-400 font-bold">
-              Processing Gain:{" "}
-              <span className="text-amber-400 font-bold">+{fh.processingGainDb} dB</span>
-            </div>
+        <div className="lg:col-span-8 rounded-2xl bg-ink-950 p-6 border border-ink-800 space-y-5">
+          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+            <div className="rounded-xl border border-purple-700/50 bg-purple-950/40 p-4"><span className="text-purple-300 block mb-2">TRANSMITTER RECORD 37</span><div className="flex gap-1.5">{TRANSMITTER_ROWS.map((row) => <span key={row} className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow ? "bg-purple-500 text-white border-purple-300" : "border-ink-600 text-ink-400"}`}>{row}</span>)}</div><span className="text-ink-400 block mt-3">7 tuning condensers · 24a–24g</span></div>
+            <div className="rounded-xl border border-cyan-700/50 bg-cyan-950/30 p-4"><span className="text-cyan-300 block mb-2">RECEIVER RECORD 37′</span><div className="flex gap-1.5">{TRANSMITTER_ROWS.map((row) => <span key={row} className={`w-8 h-8 rounded border flex items-center justify-center ${row === txRow && receiverTuned ? "bg-cyan-500 text-white border-cyan-300" : "border-ink-600 text-ink-400"}`}>{row}</span>)}</div><span className="text-ink-400 block mt-3">4 effective channels · 24′d–24′g</span></div>
           </div>
-
-          {/* 88 Piano Key RF Channel Spectrum Analyzer SVG */}
-          <svg viewBox="0 0 440 180" className="w-full max-w-md h-auto select-none">
-            {/* 88 Channel Frequency Bars */}
-            {Array.from({ length: fh.pianoKeys }).map((_, i) => {
-              const channelNum = i + 1;
-              const xPos = fh.spectrumBarOriginX + i * fh.spectrumBarPitchPx;
-              const isCurrent = channelNum === currentChannel;
-              const isJammer = isEnemyJamming && channelNum === jammingFrequencyChannel;
-              const wasRecent = recentHopSet.has(channelNum);
-
-              let barHeight = 15;
-              let barColor = "#334155";
-
-              if (isCurrent) {
-                barHeight = 110;
-                barColor = isJammer ? "#ef4444" : "#10b981";
-              } else if (isJammer) {
-                barHeight = 90;
-                barColor = "#ef4444";
-              } else if (wasRecent) {
-                barHeight = 45;
-                barColor = "#a855f7";
-              }
-
-              return (
-                <rect
-                  key={i}
-                  x={xPos}
-                  y={140 - barHeight}
-                  width="3.2"
-                  height={barHeight}
-                  rx="1"
-                  fill={barColor}
-                />
-              );
-            })}
-
-            {/* Base Frequency Axis Line */}
-            <line x1="15" y1="140" x2="425" y2="140" stroke="#475569" strokeWidth="1.5" />
-            <text x="20" y="160" fill="#94a3b8" fontSize="8" fontFamily="monospace">
-              Channel 1 ({fh.bandMinMhz} MHz)
-            </text>
-            <text
-              x="420"
-              y="160"
-              fill="#94a3b8"
-              fontSize="8"
-              textAnchor="end"
-              fontFamily="monospace"
-            >
-              Channel {fh.pianoKeys} ({fh.bandMaxMhz} MHz)
-            </text>
-          </svg>
-
-          {/* Telemetry Footer */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs font-mono pt-3 border-t border-ink-800 text-ink-300">
-            <div>
-              <span className="text-ink-500 block text-[10px]">HOPPING CHANNELS</span>
-              <span className="text-purple-400 font-bold">{fh.channelsCount} channels</span>
-            </div>
-            <div>
-              <span className="text-ink-500 block text-[10px]">PROCESS GAIN</span>
-              <span className="text-amber-400 font-bold">{fh.processingGainDb} dB</span>
-            </div>
-            <div>
-              <span className="text-ink-500 block text-[10px]">JAMMER IMPACT</span>
-              <span className="text-emerald-400 font-bold">
-                &lt; {jammingInterferencePercent.toFixed(1)}% Loss (Negligible)
-              </span>
-            </div>
-          </div>
+          <div className={`rounded-xl border p-4 flex items-center justify-between ${lampOn ? "border-amber-500 bg-amber-950/50" : "border-emerald-700 bg-emerald-950/30"}`}><div><span className="text-xs font-mono text-ink-400 block">ROW H / LAMP 43</span><span className="text-sm text-parchment-100">{lampOn ? "LAMP ON — transmitter-only false channel" : "LAMP OFF — transmitter and receiver tuned alike"}</span></div><span className={`w-5 h-5 rounded-full ${lampOn ? "bg-amber-300 shadow-[0_0_18px_#fcd34d]" : "bg-ink-700"}`} /></div>
+          <div className="rounded-xl border border-ink-700 p-4 text-sm text-parchment-100 flex items-center justify-between"><span>Discrete rudder position</span><span className="font-mono text-cyan-300">{rudderStep > 0 ? `+${rudderStep}` : rudderStep} steps</span></div>
         </div>
-
-        {/* Controls Sidebar */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-4">
-            <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100 block">
-              Piano Roll Coder &amp; Jammer
-            </span>
-
-            {/* Hop Speed Slider */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Piano Roll Advance Speed
-                </span>
-                <span className="text-purple-600 dark:text-purple-400 font-bold">
-                  {hopsPerSec} hops/sec
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Piano Roll Advance Speed"
-                min="1"
-                max="30"
-                step="0.5"
-                value={hopsPerSec}
-                onChange={(e) => updateParam("hopRate", Number(e.target.value))}
-                className="w-full accent-purple-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-              <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-                <span>1 hop/sec</span>
-                <span>30 hops/sec</span>
-              </div>
-            </div>
-
-            {/* Enemy Jamming Spot Channel */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  Enemy Jammer Target Channel
-                </span>
-                <span className="text-red-600 dark:text-red-400 font-bold">
-                  Ch #{jammingFrequencyChannel}
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Enemy Jammer Target Channel"
-                min="1"
-                max={liveChannels}
-                value={jammingFrequencyChannel}
-                onChange={(e) => updateParam("jamChannel", Number(e.target.value))}
-                className="w-full accent-red-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-ink-900 dark:text-parchment-100 text-xs font-sans space-y-1">
-              <span className="font-bold text-purple-900 dark:text-purple-300 block font-mono text-[11px]">
-                Why Frequency Hopping Conquered Jamming:
-              </span>
-              <p className="leading-relaxed">
-                An enemy broadcasting high-power noise on Channel #{jammingFrequencyChannel} only
-                blocks the torpedo signal when the carrier hits that exact channel (1 out of{" "}
-                {fh.channelsCount}). Processing gain {fh.processingGainDb} dB; jammer occupancy{" "}
-                {jammingInterferencePercent.toFixed(2)}%.
-              </p>
-            </div>
-          </div>
+        <div className="lg:col-span-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/60 p-5 space-y-5">
+          <label className="space-y-2 block text-xs font-mono"><span className="font-semibold text-ink-800 dark:text-parchment-200">Record position (matched strips)</span><input type="range" min="0" max="6" step="1" value={recordPosition} onChange={(event) => { const next = Number(event.target.value); setRecordPosition(next); updateParam("recordPosition", next); }} className="w-full accent-purple-600" /><span className="text-ink-500">Row {txRow} · transmitter {receiverTuned ? "and receiver" : "only"}</span></label>
+          <div className="space-y-2"><span className="text-xs font-mono font-semibold text-ink-800 dark:text-parchment-200">Command tone</span><div className="grid grid-cols-2 gap-2">{([100, 500] as const).map((tone) => <button key={tone} type="button" onClick={() => setCommandTone(tone)} className={`rounded-lg border px-3 py-2 text-xs font-mono ${commandTone === tone ? "bg-purple-700 text-white border-purple-800" : "bg-white/60 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"}`}>{tone}-cycle → {tone === 100 ? "left" : "right"} rudder</button>)}</div></div>
+          <button type="button" onClick={transmitCommand} disabled={!receiverTuned} className="w-full rounded-lg border border-cyan-700 bg-cyan-700 px-3 py-2 text-xs font-mono font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Transmit one discrete command</button>
+          <p className="text-xs leading-relaxed text-ink-700 dark:text-ink-300">A brief 100-cycle or 500-cycle modulation is detected at the receiver and advances the rudder by one ratchet increment. A, B, and C are deliberately unreceivable transmitter channels; the lamp warns the operator.</p>
         </div>
       </div>
     </div>

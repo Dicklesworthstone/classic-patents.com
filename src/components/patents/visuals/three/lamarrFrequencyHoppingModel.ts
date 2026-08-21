@@ -2,17 +2,14 @@
  * Procedural Three.js Model Builder for US 2,292,387
  * Hedy Kiesler Markey (Hedy Lamarr) & George Antheil — Secret Communication System (1942)
  *
- * Implements the authentic spread-spectrum frequency-hopping torpedo guidance system:
- * - Cylindrical torpedo instrument bay aluminum frame with brass sideplates
- * - Clockwork-driven slotted 88-key perforated piano roll paper tape web (Claim 1)
- * - Twin flanged brass supply and take-up tape reels with escapement gear train
- * - 88-contact spring finger sensing comb with gold plunger pins (Claim 2)
- * - 88-channel RF spectral frequency waterfall bars showing active carrier hops vs jamming (Claim 3)
- * - RF carrier hopping trajectory particles
+ * Implements the illustrated record-controlled torpedo apparatus:
+ * - Clockwork-driven perforated record strip and matching receiver strip
+ * - Seven transmitter tuning positions and four receiver positions
+ * - False transmitter channels A–C, useful receiver channels D–G, and a warning lamp
+ * - Discrete record movement and rudder-command presentation
  */
 
 import * as THREE from "three";
-import { laplacianModeShape, laplacianModes } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -39,8 +36,8 @@ export interface LamarrFrequencyHoppingModel {
     delta: number,
     activeChan: number,
     liveChannels: number,
-    isJammingActive: boolean,
-    jamCenter: number,
+    receiverTuned: boolean,
+    lampOn: boolean,
     isCutaway?: boolean,
   ) => void;
   dispose: () => void;
@@ -86,7 +83,7 @@ function createPianoRollTexture(): THREE.CanvasTexture | undefined {
   ctx.lineWidth = 1.0;
   ctx.strokeRect(16, 0, 480, 512);
 
-  // Perforated 88-key note slot punches
+  // Perforated record-strip slots
   ctx.fillStyle = "#1e293b";
   for (let row = 0; row < 18; row++) {
     for (let col = 0; col < 12; col++) {
@@ -222,7 +219,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     apparatusGroup.add(flange);
   });
 
-  // Slotted 88-Key Perforated Paper Web
+  // Slotted perforated paper web
   const webGeo = new THREE.PlaneGeometry(3.6, 4.8, 24, 16);
   disposables.push(webGeo);
   const paperWeb = new THREE.Mesh(webGeo, pianoRollPaperMat);
@@ -232,7 +229,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   apparatusGroup.add(paperWeb);
 
   // ==========================================
-  // 88-CONTACT SENSING COMB (CLAIM 2)
+  // Record-responsive sensing comb (Claim 2)
   // ==========================================
   const combGeo = new THREE.BoxGeometry(0.35, 0.4, 4.9);
   disposables.push(combGeo);
@@ -241,7 +238,7 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   comb.castShadow = true;
   apparatusGroup.add(comb);
 
-  for (let p = 0; p < 22; p++) {
+  for (let p = 0; p < 7; p++) {
     const pinGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.35, 8);
     disposables.push(pinGeo);
     const pin = new THREE.Mesh(pinGeo, pinMat);
@@ -250,13 +247,13 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
   }
 
   // ==========================================
-  // 88-CHANNEL RF SPECTRAL WATERFALL (CLAIM 3)
+  // Seven transmitter tuning positions; D–G are receiver-effective
   // ==========================================
   const spectrumBarsGroup = new THREE.Group();
   spectrumBarsGroup.position.set(0, -2.4, 0);
   root.add(spectrumBarsGroup);
 
-  const maxDisplayChannels = 44;
+  const maxDisplayChannels = 7;
   const barMeshes: THREE.Mesh[] = [];
 
   for (let c = 0; c < maxDisplayChannels; c++) {
@@ -277,8 +274,8 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     barMeshes.push(bar);
   }
 
-  // Carrier Hop Trajectory Particles
-  const hopCount = 88;
+  // Deterministic record-position points
+  const hopCount = 7;
   const hopGeo = new THREE.BufferGeometry();
   disposables.push(hopGeo);
   const hopPos = new Float32Array(hopCount * 3);
@@ -313,8 +310,8 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     delta: number,
     activeChan: number,
     liveChannels: number,
-    isJammingActive: boolean,
-    jamCenter: number,
+    receiverTuned: boolean,
+    lampOn: boolean,
     isCutaway = false,
     drumDisplayOmegaRadPerS = 0,
   ) => {
@@ -323,8 +320,8 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
       delta,
       activeChan,
       liveChannels,
-      isJammingActive,
-      jamCenter,
+      receiverTuned,
+      lampOn,
       isCutaway,
       drumDisplayOmegaRadPerS,
     );
@@ -362,23 +359,24 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
 }
 
 /**
- * Updates Hedy Lamarr & George Antheil 88-key piano roll frequency-hopping synchronization, spectrum waterfall bars, and torpedo bay cutaway.
+ * Updates the matched record strips, source-illustrated channel mapping, and cutaway.
  */
 export function updateLamarrFrequencyHoppingKinematics(
   model: LamarrFrequencyHoppingModel,
   delta: number,
   activeChan: number,
   liveChannels: number,
-  isJammingActive: boolean,
-  jamCenter: number,
+  receiverTuned: boolean,
+  lampOn: boolean,
   isCutaway = false,
   drumDisplayOmegaRadPerS = 0,
 ): void {
-  model.drum1.rotation.y += delta * drumDisplayOmegaRadPerS;
-  model.drum2.rotation.y += delta * drumDisplayOmegaRadPerS;
+  // Use the renderer's elapsed timestamp for a deterministic visual clock;
+  // it is not a claimed motor speed or RF hop rate.
+  model.drum1.rotation.y = drumDisplayOmegaRadPerS * 0.5;
+  model.drum2.rotation.y = drumDisplayOmegaRadPerS * 0.5;
 
   const maxDisplayChannels = model.barMeshes.length;
-  const modes = laplacianModes(16, 3);
   for (let c = 0; c < maxDisplayChannels; c++) {
     const bar = model.barMeshes[c];
     if (c >= liveChannels) {
@@ -388,21 +386,18 @@ export function updateLamarrFrequencyHoppingKinematics(
     bar.visible = true;
 
     const mat = bar.material as THREE.MeshStandardMaterial;
-    const isJamZone = isJammingActive && Math.abs(c - jamCenter) <= 2;
     const isActive = c === activeChan;
-
-    const mode = 1 + 0.35 * Math.abs(laplacianModeShape(modes, 16, 3, 0, c));
     if (isActive) {
-      bar.scale.y = 3.5 * mode;
+      bar.scale.y = receiverTuned ? 3.5 : 2.5;
       bar.position.y = 0.7;
-      mat.color.setHex(0x38bdf8);
-      mat.emissive.setHex(0x0284c7);
+      mat.color.setHex(receiverTuned ? 0x38bdf8 : 0xfbbf24);
+      mat.emissive.setHex(receiverTuned ? 0x0284c7 : 0xb45309);
       mat.emissiveIntensity = 0.8;
-    } else if (isJamZone) {
-      bar.scale.y = 2.2;
+    } else if (c < 3) {
+      bar.scale.y = 1.6;
       bar.position.y = 0.44;
-      mat.color.setHex(0xef4444);
-      mat.emissive.setHex(0x991b1b);
+      mat.color.setHex(lampOn ? 0xf59e0b : 0x475569);
+      mat.emissive.setHex(lampOn ? 0xb45309 : 0x000000);
       mat.emissiveIntensity = 0.4;
     } else {
       bar.scale.y = 1.0;

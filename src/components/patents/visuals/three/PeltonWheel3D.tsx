@@ -3,8 +3,8 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { stepPeltonWheelVisual } from "@/physics/peltonWheelKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -16,7 +16,7 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "split_bucket" | "needle_nozzle" | "runner_wheel" | "tailrace" | "top";
+type CameraPreset = "iso" | "split_bucket" | "nozzle" | "runner_wheel" | "tailrace" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
@@ -24,7 +24,7 @@ const CAMERA_PRESETS: Record<
 > = {
   iso: { pos: [10.5, 7.5, 11.5], target: [0, 0, 0] },
   split_bucket: { pos: [-1.0, 2.5, 3.5], target: [-0.5, 1.8, 0] },
-  needle_nozzle: { pos: [-3.5, 0.5, 3.8], target: [-2.2, -0.4, 0] },
+  nozzle: { pos: [-3.5, 0.5, 3.8], target: [-2.2, -0.4, 0] },
   runner_wheel: { pos: [0, 1.0, 4.5], target: [0, 0, 0] },
   tailrace: { pos: [0, -3.2, 5.0], target: [0, -2.0, 0] },
   top: { pos: [0, 12.5, 0.1], target: [0, 0, 0] },
@@ -37,12 +37,10 @@ export function PeltonWheel3D() {
 
   // Hydrodynamic Impulse Parameters
   const { params, updateParam } = usePatentPhysics("us-233692-pelton-water-wheel");
-  const headMeters = (params.headMeters as number) ?? 450;
-  const wheelRpm = (params.runnerRpm as number) ?? (params.rotorRpm as number) ?? 600;
-  const pelton = stepPeltonWheel({ headMeters, runnerRpm: wheelRpm });
-  const jetVelocityMps = pelton.jetVelocityMps;
-  const hydraulicEfficiencyPct = pelton.etaPct;
-  const powerKw = pelton.shaftPowerKw;
+  const headMeters = (params.headMeters as number) ?? 0;
+  const wheelRpm = (params.runnerRpm as number) ?? (params.rotorRpm as number) ?? 0;
+  const visualState = stepPeltonWheelVisual({ runnerRpm: wheelRpm, jetEnabled: headMeters > 0 });
+  const runnerOmegaRadPerS = visualState.runnerOmegaRadPerS;
   const [showJet, setShowJet] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -52,21 +50,13 @@ export function PeltonWheel3D() {
   const live = useLiveSimParams({
     headMeters,
     wheelRpm,
-    jetVelocityMps,
     showJet,
     isCutaway,
     isAudioMuted,
-    etaPct: hydraulicEfficiencyPct,
-    shaftPowerKw: powerKw,
-    speedRatio: pelton.speedRatio,
-    runnerOmegaRadPerS: pelton.runnerOmegaRadPerS,
-    jetDisplaySpeed: pelton.jetDisplaySpeed,
-    sprayDisplaySpeed: pelton.sprayDisplaySpeed,
-    pressureNeedleRad: pelton.pressureNeedleRad,
-    needleStudioX: pelton.needleStudioX,
-    needleStudioY: pelton.needleStudioY,
-    handwheelOmegaRadPerS: pelton.handwheelOmegaRadPerS,
-    jetOpacity: pelton.jetOpacity,
+    runnerOmegaRadPerS,
+    jetDisplaySpeed: visualState.jetDisplaySpeed,
+    sprayDisplaySpeed: visualState.sprayDisplaySpeed,
+    jetOpacity: visualState.jetOpacity,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -120,18 +110,12 @@ export function PeltonWheel3D() {
         p.runnerOmegaRadPerS,
         p.jetDisplaySpeed,
         p.sprayDisplaySpeed,
-        p.pressureNeedleRad,
-        p.needleStudioX,
-        p.needleStudioY,
-        p.handwheelOmegaRadPerS,
-        p.isCutaway,
         p.showJet,
+        p.isCutaway,
       );
 
-      // Euler optimum is u/v ≈ 0.5. Off-design color shift
-      const ratioErr = Math.abs(p.speedRatio - 0.5);
       const jetMat = model.materials.waterJet;
-      jetMat.color.setHex(ratioErr < 0.08 ? 0x38bdf8 : p.speedRatio < 0.5 ? 0x0284c7 : 0xfb7185);
+      jetMat.color.setHex(0x38bdf8);
       jetMat.opacity = p.jetOpacity;
 
       controls.update();
@@ -164,7 +148,7 @@ export function PeltonWheel3D() {
               [
                 ["iso", "Isometric"],
                 ["split_bucket", "Split Bucket"],
-                ["needle_nozzle", "Needle Nozzle"],
+                ["nozzle", "Nozzle"],
                 ["runner_wheel", "Runner Wheel"],
                 ["tailrace", "Tailrace"],
                 ["top", "Plan View"],
@@ -193,7 +177,6 @@ export function PeltonWheel3D() {
             claimStates={claimStates}
             onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("runnerRpm", active ? 600 : 50);
             }}
           />
           <button
@@ -264,24 +247,24 @@ export function PeltonWheel3D() {
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
                 Water Head:
               </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{headMeters} m</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{headMeters}</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Jet Velocity:</span>
+              <span className="text-ink-600 dark:text-ink-400">Source jet control:</span>
               <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {jetVelocityMps.toFixed(1)} m/s
+                {headMeters}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Efficiency (η):</span>
+              <span className="text-ink-600 dark:text-ink-400">Bucket path:</span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {hydraulicEfficiencyPct}%
+                apex d → sides e
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Shaft Power:</span>
+              <span className="text-ink-600 dark:text-ink-400">Source claim:</span>
               <span className="font-bold text-purple-800 dark:text-purple-400">
-                {powerKw.toFixed(1)} kW
+                1
               </span>
             </div>
           </div>
@@ -292,17 +275,10 @@ export function PeltonWheel3D() {
           side="right"
           title="Pelton impulse runner"
           chips={[
-            { label: "Head", value: String(headMeters), unit: "m" },
-            { label: "v_jet", value: String(jetVelocityMps), unit: "m/s" },
-            { label: "u", value: String(pelton.bucketSpeedMps), unit: "m/s" },
-            {
-              label: "u/v",
-              value: pelton.speedRatio.toFixed(3),
-              tone: Math.abs(pelton.speedRatio - 0.5) < 0.08 ? "ok" : "warn",
-            },
-            { label: "η", value: String(hydraulicEfficiencyPct), unit: "%" },
-            { label: "Shaft", value: String(powerKw), unit: "kW" },
-            { label: "ω", value: pelton.runnerOmegaRadPerS.toFixed(1), unit: "rad/s" },
+            { label: "Head control", value: String(headMeters) },
+            { label: "Runner control", value: String(wheelRpm) },
+            { label: "ω", value: runnerOmegaRadPerS.toFixed(2), unit: "rad/s" },
+            { label: "Claim", value: "bucket geometry" },
             {
               label: "Jet crate",
               value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
@@ -318,12 +294,11 @@ export function PeltonWheel3D() {
             id="waterHead"
             patentId="us-233692-pelton-wheel"
             paramKey="waterHeadM"
-            label="Hydraulic Water Head"
+            label="Visitor-set head parameter"
             value={headMeters}
-            min={50}
-            max={600}
-            step={25}
-            unit="m"
+            min={0}
+            max={1000}
+            step={10}
             onChange={(val) => updateParam("headMeters", val)}
             allParams={params}
           />
@@ -331,17 +306,17 @@ export function PeltonWheel3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Runner Rotational Speed
+                Visitor-set runner speed
               </span>
               <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {wheelRpm} RPM
+                {wheelRpm}
               </span>
             </div>
             <input
               type="range"
-              min="100"
-              max="900"
-              step="25"
+              min="0"
+              max="1000"
+              step="10"
               value={wheelRpm}
               onChange={(e) => updateParam("runnerRpm", Number.parseInt(e.target.value, 10))}
               className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"

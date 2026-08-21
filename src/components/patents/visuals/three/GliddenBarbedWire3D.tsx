@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildGliddenBarbedWireModel,
   updateGliddenBarbedWireKinematics,
@@ -50,6 +52,7 @@ export const GliddenBarbedWire3D = memo(() => {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
     machineRpm: glidden.machineRpm,
@@ -340,6 +343,21 @@ export const GliddenBarbedWire3D = memo(() => {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-157124-glidden-barbed-wire"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-157124-glidden-barbed-wire"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

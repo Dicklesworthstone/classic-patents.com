@@ -4,30 +4,26 @@
  * Museum-Grade Procedural 3D Model for Lester Pelton's 1880 Impulse Water Wheel (US Patent 233,692).
  *
  * Reconstructs the authentic 19th-century California Gold Rush / Nevada City mining turbine:
- * 1. Heavy ribbed cast-iron runner disc with mounting rim and 18 bolted phosphor-bronze split buckets.
- * 2. Authentic Pelton double-cup bucket geometry: sharp knife-edge central splitter, twin hemispherical
- *    deflection bowls (165° turning angle), and front notch / scallop lip for clear jet entry.
- * 3. High-pressure convergent needle nozzle with internal axial spear needle and exterior handwheel throttle.
+ * 1. Heavy ribbed cast-iron runner disc with a representative source-drawn split bucket.
+ * 2. Source-faithful double-cup bucket geometry: central dividing apex, twin curved bottoms,
+ *    inclined discharge sides, and a sloped front for clear jet entry.
+ * 3. Generic nozzle and distributing-box arrangement shown in the source drawing.
  * 4. Heavy split-casing cast-iron housing with viewing cutaway, pillow block journal bearings, grease cups,
  *    and lower discharge tailrace pit.
- * 5. High-fidelity water physics: high-velocity needle jet stream, twin deflected bucket spray sheets,
+ * 5. Source-described water stream and twin split discharge paths,
  *    and animated tailrace discharge mist.
  */
 
 import * as THREE from "three";
-import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { fluidFrames, sampleFluidAt } from "@/physics/genericWasm";
 
 export interface PeltonWheelModel {
   rootGroup: THREE.Group;
   runnerGroup: THREE.Group;
-  nozzleNeedle: THREE.Group;
-  needleHandwheel: THREE.Mesh;
   casingGroup: THREE.Group;
   casingCutaway: THREE.Mesh;
   jetPoints: THREE.Points;
   sprayPoints: THREE.Points;
-  pressureNeedle: THREE.Mesh;
   materials: {
     castIron: THREE.MeshStandardMaterial;
     darkCastIron: THREE.MeshStandardMaterial;
@@ -202,8 +198,8 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     }
   }
 
-  // --- 18 PELTON SPLIT DOUBLE-CUP BUCKETS (Claim 1 & Claim 2) ---
-  const bucketCount = 18;
+  // The grant gives no bucket count; show one representative source bucket.
+  const bucketCount = 1;
   for (let b = 0; b < bucketCount; b++) {
     const bAngle = (b * Math.PI * 2) / bucketCount;
     const bucketGroup = new THREE.Group();
@@ -234,7 +230,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     const leftBowl = new THREE.Mesh(leftBowlGeo, bronzeBucket);
     leftBowl.position.set(0.12, 0, -0.2);
     leftBowl.rotation.y = -Math.PI / 2;
-    leftBowl.rotation.z = -0.15; // 165° backward discharge angle
+    leftBowl.rotation.z = -0.15;
     leftBowl.scale.set(0.85, 1.25, 0.85);
     leftBowl.castShadow = true;
     bucketGroup.add(leftBowl);
@@ -270,7 +266,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     runnerGroup.add(bucketGroup);
   }
 
-  // --- 3. HIGH-PRESSURE NEEDLE NOZZLE ASSEMBLY ---
+  // --- 3. SOURCE NOZZLE ARRANGEMENT ---
   const nozzleGroup = new THREE.Group();
   nozzleGroup.position.set(-3.4, -2.25, 0);
   rootGroup.add(nozzleGroup);
@@ -293,32 +289,6 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   nozzle.castShadow = true;
   nozzleGroup.add(nozzle);
 
-  // Internal Streamlined Spear Needle (Actuator)
-  const nozzleNeedle = new THREE.Group();
-  nozzleNeedle.position.set(0.2, 0.12, 0);
-  nozzleNeedle.rotation.z = -Math.PI / 3;
-  nozzleGroup.add(nozzleNeedle);
-
-  const needleSpearGeo = new THREE.ConeGeometry(0.12, 0.85, 16);
-  geometriesToDispose.push(needleSpearGeo);
-  const needleSpear = new THREE.Mesh(needleSpearGeo, polishedSteel);
-  needleSpear.position.y = 0.42;
-  nozzleNeedle.add(needleSpear);
-
-  const needleStemGeo = new THREE.CylinderGeometry(0.05, 0.05, 1.8, 12);
-  geometriesToDispose.push(needleStemGeo);
-  const needleStem = new THREE.Mesh(needleStemGeo, polishedSteel);
-  needleStem.position.y = -0.7;
-  nozzleNeedle.add(needleStem);
-
-  // Exterior Needle Regulation Handwheel
-  const handwheelGeo = new THREE.TorusGeometry(0.32, 0.04, 8, 24);
-  geometriesToDispose.push(handwheelGeo);
-  const needleHandwheel = new THREE.Mesh(handwheelGeo, brass);
-  needleHandwheel.rotation.x = Math.PI / 2;
-  needleHandwheel.position.set(-2.2, -1.3, 0);
-  nozzleGroup.add(needleHandwheel);
-
   // --- 4. HEAVY CAST-IRON HOUSING & CASING ---
   const casingGroup = new THREE.Group();
   rootGroup.add(casingGroup);
@@ -338,7 +308,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   trough.position.set(0, -2.6, 0);
   casingGroup.add(trough);
 
-  // Split-Casing Wheel Hood (180° Arch Cover with Front Viewing Cutaway)
+  // Split-casing wheel hood with a front viewing cutaway.
   const hoodGeo = new THREE.CylinderGeometry(3.1, 3.1, 1.8, 32, 1, true, 0, Math.PI * 1.4);
   geometriesToDispose.push(hoodGeo);
   const casingCutaway = new THREE.Mesh(hoodGeo, castIron);
@@ -363,29 +333,6 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     casingGroup.add(cup);
   }
 
-  // Hydrostatic Head Bourdon Pressure Gauge
-  const gaugeBodyGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.12, 24);
-  geometriesToDispose.push(gaugeBodyGeo);
-  const gaugeBody = new THREE.Mesh(gaugeBodyGeo, brass);
-  gaugeBody.rotation.x = Math.PI / 2;
-  gaugeBody.position.set(-2.5, -1.0, 1.6);
-  casingGroup.add(gaugeBody);
-
-  const dialGeo = new THREE.CircleGeometry(0.3, 24);
-  geometriesToDispose.push(dialGeo);
-  const dialMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
-  materialsToDispose.push(dialMat);
-  const dial = new THREE.Mesh(dialGeo, dialMat);
-  dial.position.set(-2.5, -1.0, 1.67);
-  casingGroup.add(dial);
-
-  const needleGeo = new THREE.BoxGeometry(0.02, 0.24, 0.01);
-  geometriesToDispose.push(needleGeo);
-  const needleMat = new THREE.MeshBasicMaterial({ color: 0xb91c1c });
-  materialsToDispose.push(needleMat);
-  const pressureNeedle = new THREE.Mesh(needleGeo, needleMat);
-  pressureNeedle.position.set(-2.5, -1.0, 1.68);
-  casingGroup.add(pressureNeedle);
 
   // --- 5. WATER JET & SPRAY PARTICLE SYSTEMS ---
   // High-Speed Concentrated Water Jet (Nozzle -> Bucket Splitter)
@@ -413,7 +360,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   const jetPoints = new THREE.Points(jetGeo, waterJet);
   rootGroup.add(jetPoints);
 
-  // Deflected Spray Particles (Exiting Bucket Cups at 165°)
+  // Split discharge spray particles.
   const sprayCount = 300;
   const sprayGeo = new THREE.BufferGeometry();
   const sprayPos = new Float32Array(sprayCount * 3);
@@ -448,13 +395,10 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
   return {
     rootGroup,
     runnerGroup,
-    nozzleNeedle,
-    needleHandwheel,
     casingGroup,
     casingCutaway,
     jetPoints,
     sprayPoints,
-    pressureNeedle,
     materials: {
       castIron,
       darkCastIron,
@@ -469,7 +413,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
 }
 
 /**
- * Updates Pelton wheel runner rotation, needle nozzle jet, bucket spray, and cutaway state.
+ * Updates runner rotation, source-described jet/split discharge, and cutaway state.
  */
 export function updatePeltonWheelKinematics(
   model: PeltonWheelModel,
@@ -477,44 +421,36 @@ export function updatePeltonWheelKinematics(
   runnerOmegaRadPerS: number,
   jetDisplaySpeed: number,
   sprayDisplaySpeed: number,
-  pressureNeedleRad: number,
-  needleStudioX: number,
-  needleStudioY: number,
-  handwheelOmegaRadPerS: number,
   showJet: boolean,
   isCutaway = false,
-  headMeters = 450,
-  runnerRpm = 600,
 ): void {
   // Runner wheel rotation
   model.runnerGroup.rotation.z += runnerOmegaRadPerS * dt;
 
-  // Pressure gauge needle deflection
-  model.pressureNeedle.rotation.z = pressureNeedleRad;
-  model.nozzleNeedle.position.set(needleStudioX, needleStudioY, 0);
-  model.needleHandwheel.rotation.z += dt * handwheelOmegaRadPerS;
-
   if (showJet) {
     model.jetPoints.visible = true;
     model.sprayPoints.visible = true;
-    const pelton = stepPeltonWheel({ headMeters, runnerRpm });
     const fluid = fluidFrames(16, 8);
     const frame = Math.abs(Math.floor(model.runnerGroup.rotation.z * 3)) % 8;
 
     // High-speed jet streamline flow
     const jPos = model.jetPoints.geometry.attributes.position.array as Float32Array;
     const jetSpeed = jetDisplaySpeed * dt;
-    const spanX = Math.max(0.1, pelton.jetWrapX - pelton.jetResetX);
+    const jetResetX = -3.2;
+    const jetResetY = -2.25;
+    const jetWrapX = 0;
+    const jetYOverX = 0.7;
+    const spanX = Math.max(0.1, jetWrapX - jetResetX);
     for (let i = 0; i < jPos.length; i += 3) {
-      const u = ((jPos[i] ?? 0) - pelton.jetResetX) / spanX;
-      const v = ((jPos[i + 1] ?? 0) - pelton.jetResetY + 3) / 6;
+      const u = ((jPos[i] ?? 0) - jetResetX) / spanX;
+      const v = ((jPos[i + 1] ?? 0) - jetResetY + 3) / 6;
       const dens = sampleFluidAt(fluid, 16, 8, frame, u, v);
       const local = 1 + dens;
       jPos[i] += jetSpeed * local;
-      jPos[i + 1] += jetSpeed * pelton.jetYOverX * local;
-      if (jPos[i] > pelton.jetWrapX) {
-        jPos[i] = pelton.jetResetX;
-        jPos[i + 1] = pelton.jetResetY;
+      jPos[i + 1] += jetSpeed * jetYOverX * local;
+      if (jPos[i] > jetWrapX) {
+        jPos[i] = jetResetX;
+        jPos[i + 1] = jetResetY;
       }
     }
     model.jetPoints.geometry.attributes.position.needsUpdate = true;
@@ -524,8 +460,8 @@ export function updatePeltonWheelKinematics(
     const spraySpeed = sprayDisplaySpeed * dt;
     for (let i = 0; i < sPos.length; i += 3) {
       sPos[i + 1] -= spraySpeed;
-      if (sPos[i + 1] < pelton.sprayFloorY) {
-        sPos[i + 1] = pelton.sprayResetY;
+      if (sPos[i + 1] < -2.8) {
+        sPos[i + 1] = -1;
       }
     }
     model.sprayPoints.geometry.attributes.position.needsUpdate = true;

@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
@@ -45,7 +44,7 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     for (const preset of [
       "iso",
       "split_bucket",
-      "needle_nozzle",
+      "nozzle",
       "runner_wheel",
       "tailrace",
       "top",
@@ -59,40 +58,29 @@ describe("US 233,692 Lester Pelton Impulse Water Wheel visual & hydrodynamics bo
     expect(threeSource).not.toContain("cameraRef");
   });
 
-  test("computes genuine Torricelli jet velocity, impulse force, and hydraulic efficiency in SI units", () => {
-    const result = stepPeltonWheel({ headMeters: 450, runnerRpm: 600 });
-    expect(result.jetVelocityMps).toBeGreaterThan(90);
-    expect(result.shaftPowerKw).toBeGreaterThan(150);
-    expect(result.etaPct).toBeGreaterThan(85);
-    expect(result.jetDisplaySpeed).toBeCloseTo((result.jetVelocityMps / 90) * 12, 2);
-    expect(result.sprayDisplaySpeed).toBe(8);
-    expect(result.jetYOverX).toBe(0.7);
-    expect(result.jetResetX).toBe(-3.2);
-    expect(result.sprayFloorY).toBe(-3.8);
+  test("does not invent operating values absent from the three-sheet grant", () => {
+    const source = readFileSync(join(VISUALS_DIRECTORY, "three", "peltonWheelModel.ts"), "utf8");
+    expect(source).not.toContain("165°");
+    expect(source).not.toContain("needle spear");
+    expect(source).not.toContain("pressure gauge");
+    expect(source).not.toContain("bucketCount = 18");
   });
 
-  test("builds and articulates procedural 18-bucket runner, needle nozzle, and spray particles correctly", () => {
+  test("builds and articulates the source bucket, nozzle, and spray particles correctly", () => {
     const model = buildPeltonWheelModel();
 
     expect(model.rootGroup.children.length).toBeGreaterThan(3);
     expect(model.runnerGroup).toBeDefined();
-    expect(model.nozzleNeedle).toBeDefined();
-    expect(model.needleHandwheel).toBeDefined();
     expect(model.casingGroup).toBeDefined();
     expect(model.materials.bronzeBucket).toBeDefined();
     expect(model.materials.waterJet).toBeDefined();
 
-    const pelton = stepPeltonWheel({ headMeters: 450, runnerRpm: 600 });
     updatePeltonWheelKinematics(
       model,
       0.016,
-      pelton.runnerOmegaRadPerS,
-      pelton.jetDisplaySpeed,
-      pelton.sprayDisplaySpeed,
-      pelton.pressureNeedleRad,
-      pelton.needleStudioX,
-      pelton.needleStudioY,
-      pelton.handwheelOmegaRadPerS,
+      0,
+      0.1,
+      0.1,
       true,
       true,
     );

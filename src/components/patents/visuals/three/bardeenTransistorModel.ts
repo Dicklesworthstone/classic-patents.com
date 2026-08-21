@@ -1,52 +1,43 @@
 /**
  * bardeenTransistorModel.ts
  *
- * Museum-Grade Procedural 3D Model for John Bardeen & Walter Brattain's 1948 Point-Contact Transistor
- * (US Patent 2,569,347 - "Three-Electrode Circuit Element Utilizing Semiconductive Materials").
+ * Procedural 3D reading of Fig. 1 and Fig. 1a in US 2,524,035.
  *
- * Reconstructs the Bell Labs point-contact germanium transistor:
- * 1. Heavy copper grounding base platen providing ohmic base connection.
- * 2. High-purity n-type etched germanium crystal slab with crystalline grain (Claim 1).
- * 3. Triangular polystyrene plastic wedge with razor-slit gold foil ribbon (Claim 2).
- * 4. Microscopic point contacts (~50 µm spacing) forming emitter and collector electrodes.
- * 5. Phosphor-bronze cantilever spring and brass knurled adjustment micrometer screw.
- * 6. Minority carrier (positive hole) drift particle stream injected across the space-charge inversion layer.
+ * The model is intentionally limited to structures printed in this grant:
+ * block 1, plated base 2, P-type surface layer 3, barrier 4, and the close
+ * spring-wire emitter 5 and collector 6. It does not reconstruct the separate
+ * December 1947 laboratory fixture.
  */
 
 import * as THREE from "three";
-import { BARDEEN_HOLE_RESET_PAD, BARDEEN_HOLE_WRAP_PAD } from "@/physics/catalogKernels";
-import { createLcg } from "@/utils/lcg";
+import {
+  BARDEEN_CARRIER_RESET_PAD,
+  BARDEEN_CARRIER_WRAP_PAD,
+} from "@/physics/bardeenPointContactKernel";
 import { createGlowPointTexture } from "./ThreeStudioScene";
-
-const lcg = createLcg(1770);
 
 export interface BardeenTransistorModelNodes {
   rootGroup: THREE.Group;
-  basePlaten: THREE.Mesh;
-  baseLug: THREE.Mesh;
+  baseFilm: THREE.Mesh;
   geBlock: THREE.Mesh;
-  wedge: THREE.Mesh;
-  springGroup: THREE.Group;
-  springArm: THREE.Mesh;
-  adjustmentScrew: THREE.Mesh;
-  post: THREE.Mesh;
+  surfaceLayer: THREE.Mesh;
+  barrierLayer: THREE.Mesh;
   emitterGroup: THREE.Group;
   collectorGroup: THREE.Group;
-  emitterFoil: THREE.Mesh;
-  collectorFoil: THREE.Mesh;
-  holePoints: THREE.Points;
-  holePos: Float32Array;
-  holeCount: number;
+  emitterContact: THREE.Mesh;
+  collectorContact: THREE.Mesh;
+  carrierPoints: THREE.Points;
+  carrierPositions: Float32Array;
+  carrierCount: number;
 }
 
 export interface BardeenTransistorMaterials {
   germaniumCrystal: THREE.MeshStandardMaterial;
-  goldFoil: THREE.MeshStandardMaterial;
-  polystyreneWedge: THREE.MeshPhysicalMaterial;
-  phosphorBronze: THREE.MeshStandardMaterial;
-  copperPlaten: THREE.MeshStandardMaterial;
-  brass: THREE.MeshStandardMaterial;
-  holeMat: THREE.PointsMaterial;
+  baseMetal: THREE.MeshStandardMaterial;
+  surfaceLayer: THREE.MeshPhysicalMaterial;
+  barrierLayer: THREE.MeshPhysicalMaterial;
+  springWire: THREE.MeshStandardMaterial;
+  carrierMaterial: THREE.PointsMaterial;
 }
 
 export interface BardeenTransistorModelResult {
@@ -109,7 +100,7 @@ function createGermaniumTexture(): THREE.CanvasTexture | undefined {
   return tex;
 }
 
-const HOLE_COUNT = 120;
+const CARRIER_COUNT = 120;
 
 export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   const rootGroup = new THREE.Group();
@@ -142,45 +133,39 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
         metalness: 0.85,
       }),
     ),
-    goldFoil: trackMat(
+    baseMetal: trackMat(
       new THREE.MeshStandardMaterial({
-        color: 0xf59e0b,
-        roughness: 0.1,
-        metalness: 0.98,
-      }),
-    ),
-    polystyreneWedge: trackMat(
-      new THREE.MeshPhysicalMaterial({
-        color: 0xffffff,
-        transmission: 0.88,
-        opacity: 0.9,
-        transparent: true,
-        roughness: 0.1,
-        ior: 1.5,
-      }),
-    ),
-    phosphorBronze: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xb45309,
-        roughness: 0.2,
-        metalness: 0.92,
-      }),
-    ),
-    copperPlaten: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xc25e1a,
+        color: 0xb87333,
         roughness: 0.25,
         metalness: 0.9,
       }),
     ),
-    brass: trackMat(
-      new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        roughness: 0.22,
-        metalness: 0.92,
+    surfaceLayer: trackMat(
+      new THREE.MeshPhysicalMaterial({
+        color: 0x38bdf8,
+        transmission: 0.3,
+        opacity: 0.62,
+        transparent: true,
+        roughness: 0.25,
       }),
     ),
-    holeMat: trackMat(
+    barrierLayer: trackMat(
+      new THREE.MeshPhysicalMaterial({
+        color: 0xa78bfa,
+        transmission: 0.2,
+        opacity: 0.5,
+        transparent: true,
+        roughness: 0.3,
+      }),
+    ),
+    springWire: trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0xb7791f,
+        roughness: 0.28,
+        metalness: 0.88,
+      }),
+    ),
+    carrierMaterial: trackMat(
       new THREE.PointsMaterial({
         color: 0x38bdf8,
         size: 0.22,
@@ -193,40 +178,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
     ),
   };
 
-  // 1. Heavy Copper Grounding Base Platen with Screw Terminals
-  const basePlaten = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(8.2, 0.5, 6.8)),
-    materials.copperPlaten,
-  );
-  basePlaten.position.y = -1.35;
-  basePlaten.receiveShadow = true;
-  rootGroup.add(basePlaten);
-
-  const baseLug = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 1.4, 12)),
-    materials.brass,
-  );
-  baseLug.rotation.z = Math.PI / 2;
-  baseLug.position.set(-3.8, -1.35, 0);
-  baseLug.castShadow = true;
-  rootGroup.add(baseLug);
-
-  // Platen Corner Fastener Screws
-  [
-    [-3.6, -2.9],
-    [3.6, -2.9],
-    [-3.6, 2.9],
-    [3.6, 2.9],
-  ].forEach(([sx, sz]) => {
-    const screw = new THREE.Mesh(
-      trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 0.15, 16)),
-      materials.brass,
-    );
-    screw.position.set(sx, -1.05, sz);
-    rootGroup.add(screw);
-  });
-
-  // 2. Germanium Crystal Slab (US 2,524,035 Claim 1)
+  // Block 1: the supporting semiconductor body shown in Fig. 1 and Fig. 1a.
   const geBlock = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(6.2, 1.1, 5.2)),
     materials.germaniumCrystal,
@@ -235,118 +187,85 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
   geBlock.castShadow = true;
   rootGroup.add(geBlock);
 
-  // 3. Polystyrene Wedge with Razor Slit Apex
-  const wedgeShape = new THREE.Shape();
-  wedgeShape.moveTo(-0.9, 2.2);
-  wedgeShape.lineTo(0.9, 2.2);
-  wedgeShape.lineTo(0, 0.05);
-  wedgeShape.closePath();
-
-  const wedgeGeo = trackGeo(
-    new THREE.ExtrudeGeometry(wedgeShape, { depth: 0.8, bevelEnabled: false }),
+  // Metal film 2: the patent permits copper or gold but does not require
+  // either one. The neutral copper color is a display choice, not a claim.
+  const baseFilm = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.0, 0.12, 5.0)),
+    materials.baseMetal,
   );
-  wedgeGeo.center();
-  const wedge = new THREE.Mesh(wedgeGeo, materials.polystyreneWedge);
-  wedge.position.set(0, 1.25, 0);
-  rootGroup.add(wedge);
+  baseFilm.position.y = -1.18;
+  baseFilm.receiveShadow = true;
+  rootGroup.add(baseFilm);
 
-  // 4. Phosphor-Bronze Cantilever Spring & Micrometer Screw
-  const springGroup = new THREE.Group();
-  springGroup.position.set(0, 2.6, 0);
-
-  const springArm = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.35, 0.08, 3.2)),
-    materials.phosphorBronze,
+  // P-type surface layer 3 and high-resistance barrier 4 from Fig. 1a. Their
+  // visible thicknesses are exaggerated so the visitor can inspect them.
+  const barrierLayer = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.0, 0.08, 5.0)),
+    materials.barrierLayer,
   );
-  springGroup.add(springArm);
+  barrierLayer.position.y = 0.02;
+  rootGroup.add(barrierLayer);
 
-  const adjustmentScrew = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.24, 0.24, 0.9, 24)),
-    materials.brass,
+  const surfaceLayer = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.0, 0.1, 5.0)),
+    materials.surfaceLayer,
   );
-  adjustmentScrew.position.set(0, 0.45, 1.2);
-  adjustmentScrew.castShadow = true;
-  springGroup.add(adjustmentScrew);
+  surfaceLayer.position.y = 0.11;
+  rootGroup.add(surfaceLayer);
 
-  const post = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.18, 0.18, 3.6, 16)),
-    materials.brass,
-  );
-  post.position.set(0, -1.2, 1.2);
-  post.castShadow = true;
-  springGroup.add(post);
-
-  rootGroup.add(springGroup);
-
-  // 5. Emitter and Collector Electrodes
+  // Emitter 5 and collector 6: pointed spring wires, one of the expressly
+  // described contact forms. Their separation is animated from the shared
+  // source-bounded step.
   const emitterGroup = new THREE.Group();
   const collectorGroup = new THREE.Group();
 
-  const emitterFoil = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.18, 1.8, 0.75)),
-    materials.goldFoil,
+  const emitterContact = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 3.1, 12)),
+    materials.springWire,
   );
-  emitterFoil.rotation.z = -0.42;
-  emitterFoil.position.set(-0.55, 1.1, 0);
-  emitterFoil.castShadow = true;
-  emitterGroup.add(emitterFoil);
-
-  const emitterWire = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8)),
-    materials.phosphorBronze,
-  );
-  emitterWire.rotation.z = -0.6;
-  emitterWire.position.set(-1.4, 2.0, 0);
-  emitterGroup.add(emitterWire);
+  emitterContact.rotation.z = -0.46;
+  emitterContact.position.set(-0.7, 1.5, 0);
+  emitterContact.castShadow = true;
+  emitterGroup.add(emitterContact);
   rootGroup.add(emitterGroup);
 
-  const collectorFoil = new THREE.Mesh(
-    trackGeo(new THREE.BoxGeometry(0.18, 1.8, 0.75)),
-    materials.goldFoil,
+  const collectorContact = new THREE.Mesh(
+    trackGeo(new THREE.CylinderGeometry(0.055, 0.055, 3.1, 12)),
+    materials.springWire,
   );
-  collectorFoil.rotation.z = 0.42;
-  collectorFoil.position.set(0.55, 1.1, 0);
-  collectorFoil.castShadow = true;
-  collectorGroup.add(collectorFoil);
-
-  const collectorWire = new THREE.Mesh(
-    trackGeo(new THREE.CylinderGeometry(0.04, 0.04, 2.2, 8)),
-    materials.phosphorBronze,
-  );
-  collectorWire.rotation.z = 0.6;
-  collectorWire.position.set(1.4, 2.0, 0);
-  collectorGroup.add(collectorWire);
+  collectorContact.rotation.z = 0.46;
+  collectorContact.position.set(0.7, 1.5, 0);
+  collectorContact.castShadow = true;
+  collectorGroup.add(collectorContact);
   rootGroup.add(collectorGroup);
 
-  // 6. Minority Carrier (Hole) Drift Particles
-  const holeGeo = trackGeo(new THREE.BufferGeometry());
-  const holePos = new Float32Array(HOLE_COUNT * 3);
-  for (let i = 0; i < HOLE_COUNT; i++) {
-    holePos[i * 3] = -0.6 + lcg() * 1.2;
-    holePos[i * 3 + 1] = 0.05 - lcg() * 0.35;
-    holePos[i * 3 + 2] = (lcg() - 0.5) * 0.8;
+  // Deterministic illustrative carrier paths. Their speed is explicitly a
+  // display mapping; the grant does not report carrier lifetime or transit time.
+  const carrierGeometry = trackGeo(new THREE.BufferGeometry());
+  const carrierPositions = new Float32Array(CARRIER_COUNT * 3);
+  for (let i = 0; i < CARRIER_COUNT; i++) {
+    const fraction = i / CARRIER_COUNT;
+    carrierPositions[i * 3] = -0.6 + fraction * 1.2;
+    carrierPositions[i * 3 + 1] = 0.18 - (i % 7) * 0.025;
+    carrierPositions[i * 3 + 2] = ((i % 11) / 10 - 0.5) * 0.9;
   }
-  holeGeo.setAttribute("position", new THREE.BufferAttribute(holePos, 3));
-  const holePoints = new THREE.Points(holeGeo, materials.holeMat);
-  rootGroup.add(holePoints);
+  carrierGeometry.setAttribute("position", new THREE.BufferAttribute(carrierPositions, 3));
+  const carrierPoints = new THREE.Points(carrierGeometry, materials.carrierMaterial);
+  rootGroup.add(carrierPoints);
 
   const nodes: BardeenTransistorModelNodes = {
     rootGroup,
-    basePlaten,
-    baseLug,
+    baseFilm,
     geBlock,
-    wedge,
-    springGroup,
-    springArm,
-    adjustmentScrew,
-    post,
+    surfaceLayer,
+    barrierLayer,
     emitterGroup,
     collectorGroup,
-    emitterFoil,
-    collectorFoil,
-    holePoints,
-    holePos,
-    holeCount: HOLE_COUNT,
+    emitterContact,
+    collectorContact,
+    carrierPoints,
+    carrierPositions,
+    carrierCount: CARRIER_COUNT,
   };
 
   const dispose = () => {
@@ -359,7 +278,7 @@ export function buildBardeenTransistorModel(): BardeenTransistorModelResult {
 }
 
 /**
- * Updates point contact gap spacing, hole diffusion drift velocity, and cutaway mode.
+ * Updates point-contact spacing, illustrative carrier motion, and cutaway mode.
  */
 export function updateBardeenTransistorKinematics(
   nodes: BardeenTransistorModelNodes,
@@ -367,29 +286,31 @@ export function updateBardeenTransistorKinematics(
   dt: number,
   _timeSec: number,
   gapStudioUnits: number,
-  holeDriftSpeed: number,
-  showHoleDrift: boolean,
+  carrierDisplaySpeed: number,
+  showCarrierPaths: boolean,
   isCutaway: boolean,
 ) {
   const currentGapUnits = gapStudioUnits;
   nodes.emitterGroup.position.x = -currentGapUnits / 2;
   nodes.collectorGroup.position.x = currentGapUnits / 2;
 
-  const driftSpeed = holeDriftSpeed * dt;
-  const pos = nodes.holePos;
+  const displayStep = carrierDisplaySpeed * dt;
+  const pos = nodes.carrierPositions;
 
-  for (let i = 0; i < nodes.holeCount; i++) {
+  for (let i = 0; i < nodes.carrierCount; i++) {
     const idx = i * 3;
-    pos[idx] += driftSpeed;
-    if (pos[idx] > currentGapUnits / 2 + BARDEEN_HOLE_WRAP_PAD) {
-      pos[idx] = -currentGapUnits / 2 - BARDEEN_HOLE_RESET_PAD;
+    pos[idx] += displayStep;
+    if (pos[idx] > currentGapUnits / 2 + BARDEEN_CARRIER_WRAP_PAD) {
+      pos[idx] = -currentGapUnits / 2 - BARDEEN_CARRIER_RESET_PAD;
     }
   }
-  nodes.holePoints.geometry.attributes.position.needsUpdate = true;
-  nodes.holePoints.visible = showHoleDrift;
+  nodes.carrierPoints.geometry.attributes.position.needsUpdate = true;
+  nodes.carrierPoints.visible = showCarrierPaths && carrierDisplaySpeed > 0;
+  nodes.collectorGroup.visible = showCarrierPaths;
 
   // Cutaway Mode
   materials.germaniumCrystal.opacity = isCutaway ? 0.45 : 1.0;
   materials.germaniumCrystal.transparent = isCutaway;
-  materials.polystyreneWedge.transmission = isCutaway ? 0.95 : 0.88;
+  materials.surfaceLayer.opacity = isCutaway ? 0.85 : 0.62;
+  materials.barrierLayer.opacity = isCutaway ? 0.75 : 0.5;
 }

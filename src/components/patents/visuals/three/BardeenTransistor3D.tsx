@@ -1,15 +1,15 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { FrankenSimEngine } from "@/physics/engine";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import {
+  BARDEEN_REPORTED_SAMPLES,
+  stepBardeenPointContact,
+  type BardeenOperatingSampleNumber,
+} from "@/physics/bardeenPointContactKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildBardeenTransistorModel,
   updateBardeenTransistorKinematics,
@@ -17,18 +17,16 @@ import {
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "apex" | "band" | "spring" | "base" | "top";
+type CameraPreset = "iso" | "contacts" | "layer" | "base" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [10, 8, 12], target: [0, 0.5, 0] },
-  apex: { pos: [0, 1.2, 3.2], target: [0, 0.4, 0] },
-  band: { pos: [0, 7.5, 0.1], target: [0, 0, 0] },
-  spring: { pos: [4, 5, 6], target: [0, 1.5, 0] },
+  contacts: { pos: [0, 1.2, 3.2], target: [0, 0.4, 0] },
+  layer: { pos: [0, 6.4, 0.1], target: [0, 0, 0] },
   base: { pos: [-5, 2, 4], target: [-2, 0, 1] },
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
@@ -39,36 +37,22 @@ export const BardeenTransistor3D = memo(() => {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
-  // Semiconductor Point-Contact State Controls
   const { params, updateParam } = usePatentPhysics("us-2524035-bardeen-transistor");
-  const emitterCurrentMa = params.emitterCurrent ?? 1.5;
-  const collectorVoltageV = params.collectorBias ?? -40;
-  const pointContactGapMicrons = params.pointSpacing ?? 50;
-  const [showHoleDrift] = useState<boolean>(true);
+  const operatingSample = Math.min(3, Math.max(1, Math.round(params.operatingSample ?? 1)));
+  const pointSpacingMils = params.pointSpacingMils ?? 2;
+  const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+  const sourceState = stepBardeenPointContact({
+    operatingSample,
+    pointSpacingMils,
+    claim1Active,
+  });
+  const sample = sourceState.sample;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
-
-  // Transistor Physics Calculations (FrankenSim Germanium Minority Transport)
-  const semiState = FrankenSimEngine.stepBardeenTransistor(
-    emitterCurrentMa,
-    collectorVoltageV,
-    pointContactGapMicrons,
-  );
-
-  const alphaCurrentGain = semiState.currentGainAlpha.toFixed(2);
-  const collectorCurrentMa = semiState.collectorCurrentMa.toFixed(2);
-  const voltageGain = semiState.voltageGain;
-  const powerGainDb = semiState.powerGainDb;
 
   const live = useLiveSimParams({
-    collectorVoltageV,
-    showHoleDrift,
-    currentGainAlpha: semiState.currentGainAlpha,
-    holeDiffusion: semiState.holeDiffusionCoefficientCm2ps,
-    holeDriftSpeed: semiState.holeDriftSpeed ?? 0,
-    gapStudioUnits: semiState.gapStudioUnits ?? 0,
+    carrierDisplaySpeed: sourceState.carrierDisplaySpeed,
+    gapStudioUnits: sourceState.gapStudioUnits,
+    showCarrierPaths: sourceState.collectorCollectionActive,
     isCutaway,
   });
 
@@ -77,16 +61,6 @@ export const BardeenTransistor3D = memo(() => {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
-  };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -126,8 +100,8 @@ export const BardeenTransistor3D = memo(() => {
         dt,
         Math.floor(simTimeSec * 60),
         p.gapStudioUnits,
-        p.holeDriftSpeed,
-        p.showHoleDrift,
+        p.carrierDisplaySpeed,
+        p.showCarrierPaths,
         p.isCutaway ?? false,
       );
 
@@ -160,10 +134,9 @@ export const BardeenTransistor3D = memo(() => {
             {(
               [
                 ["iso", "Isometric"],
-                ["apex", "Point Contacts"],
-                ["band", "Energy Bands"],
-                ["spring", "Cantilever Spring"],
-                ["base", "Base Platen"],
+                ["contacts", "Contacts 5 & 6"],
+                ["layer", "Layer 3 / Barrier 4"],
+                ["base", "Plated Base 2"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -200,15 +173,6 @@ export const BardeenTransistor3D = memo(() => {
           </button>
           <button
             type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showUiOverlay
@@ -236,28 +200,28 @@ export const BardeenTransistor3D = memo(() => {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Current Gain α:
+                Reported Sample:
               </span>
               <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {alphaCurrentGain}
+                {sample.number}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Collector Current:</span>
+              <span className="text-ink-600 dark:text-ink-400">Input / output bias:</span>
               <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {collectorCurrentMa} mA
+                +{sample.emitterBiasVolts} / {sample.collectorBiasVolts} V
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Power Gain:</span>
+              <span className="text-ink-600 dark:text-ink-400">Reported voltage / power gain:</span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
-                +{powerGainDb.toFixed(1)} dB ({voltageGain.toFixed(1)}×)
+                {sample.voltageGainFactor}× / {sample.powerGainFactor}×
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Contact Spacing:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
-                {pointContactGapMicrons} µm
+                {sourceState.pointSpacingMils} mils
               </span>
             </div>
           </div>
@@ -266,81 +230,76 @@ export const BardeenTransistor3D = memo(() => {
 
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SensitivitySlider
-            id="bardeenEmitterCurrent"
-            patentId="us-2524035-bardeen-transistor"
-            paramKey="emitterCurrent"
-            label="Emitter Current (I_e)"
-            value={emitterCurrentMa}
-            min={0.5}
-            max={5.0}
-            step={0.1}
-            unit=" mA"
-            onChange={(val) => updateParam("emitterCurrent", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="bardeenCollectorBias"
-            patentId="us-2524035-bardeen-transistor"
-            paramKey="collectorBias"
-            label="Collector Bias (V_c)"
-            value={collectorVoltageV}
-            min={-80}
-            max={-10}
-            step={5}
-            unit=" V"
-            onChange={(val) => updateParam("collectorBias", val)}
-            allParams={params}
-          />
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-parchment-300 dark:border-ink-700 p-3">
+            <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-ink-600 dark:text-ink-300">
+              Table I operating sample
+            </span>
+            <div className="grid grid-cols-3 gap-2">
+              {([1, 2, 3] as BardeenOperatingSampleNumber[]).map((number) => (
+                <button
+                  key={number}
+                  type="button"
+                  aria-pressed={sample.number === number}
+                  onClick={() => updateParam("operatingSample", number)}
+                  className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
+                    sample.number === number
+                      ? "border-emerald-600 bg-emerald-600 text-white"
+                      : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
+                  }`}
+                >
+                  {BARDEEN_REPORTED_SAMPLES[number].number}
+                </button>
+              ))}
+            </div>
+          </div>
           <SensitivitySlider
             id="bardeenPointSpacing"
             patentId="us-2524035-bardeen-transistor"
-            paramKey="pointSpacing"
-            label="Point Contact Spacing"
-            value={pointContactGapMicrons}
-            min={10}
-            max={150}
-            step={5}
-            unit=" µm"
-            onChange={(val) => updateParam("pointSpacing", val)}
+            paramKey="pointSpacingMils"
+            label="Preferred Contact Spacing"
+            value={sourceState.pointSpacingMils}
+            min={1}
+            max={10}
+            step={0.5}
+            unit=" mils"
+            onChange={(val) => updateParam("pointSpacingMils", val)}
             allParams={params}
           />
         </div>
-
-        <ClaimConstraintToggle
-          patentId="us-2524035-bardeen-transistor"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
-          className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-2524035-bardeen-transistor"
-          params={params}
-          className="mt-3"
-        />
+        <button
+          type="button"
+          aria-pressed={claim1Active}
+          onClick={() => updateParam("claim1Active", claim1Active ? 0 : 1)}
+          className={`mt-3 w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
+            claim1Active
+              ? "border-blue-600 bg-blue-600 text-white"
+              : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
+          }`}
+        >
+          Claim 1 collection topology: {claim1Active ? "complete" : "collector path removed"}
+        </button>
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
         side="right"
-        title="Bardeen point-contact semiconductor transport"
+        title="US 2,524,035 source-bounded point-contact model"
         chips={[
-          { label: "Emitter I_e", value: `${emitterCurrentMa}`, unit: "mA" },
-          { label: "Collector V_c", value: `${collectorVoltageV}`, unit: "V" },
-          { label: "Contact Gap", value: `${pointContactGapMicrons}`, unit: "µm" },
-          { label: "Current Gain α", value: alphaCurrentGain, tone: "ok" },
-          { label: "Collector I_c", value: collectorCurrentMa, unit: "mA" },
-          { label: "Voltage Gain A_v", value: `${voltageGain.toFixed(1)}×` },
-          { label: "Power Gain G_p", value: `${powerGainDb.toFixed(1)}`, unit: "dB" },
+          { label: "Reported sample", value: `${sample.number}` },
+          { label: "Emitter bias", value: `${sample.emitterBiasVolts}`, unit: "V" },
+          { label: "Collector bias", value: `${sample.collectorBiasVolts}`, unit: "V" },
+          { label: "Contact gap", value: `${sourceState.pointSpacingMils}`, unit: "mils" },
+          { label: "Reported voltage gain", value: `${sample.voltageGainFactor}×` },
+          { label: "Reported power gain", value: `${sample.powerGainFactor}×` },
           {
-            label: "Hole crate",
-            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+            label: "Claim 1 path",
+            value: claim1Active ? "complete" : "removed",
+            tone: claim1Active ? "ok" : "warn",
+          },
+          {
+            label: "Kernel",
+            value: sourceState.kernelSource,
           },
         ]}
       />

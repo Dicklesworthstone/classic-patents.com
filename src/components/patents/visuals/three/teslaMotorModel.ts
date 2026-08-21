@@ -6,8 +6,8 @@ import { createGlowPointTexture } from "./ThreeStudioScene";
 
 /**
  * Museum-Grade Procedural 3D Model for Nikola Tesla's Electro-Magnetic Motor (US 381,968).
- * Combines full historical Fig. 9 printed apparatus with authentic industrial-era
- * electromagnetic stator construction, squirrel-cage induction bars, and separate generator G.
+ * Models the source-bounded Fig. 9 apparatus: annular ring R with coils C/C′,
+ * magnetic disk D, generator G with coils B/B′, and its four collector rings and brushes.
  */
 export interface TeslaMotorModel {
   rootGroup: THREE.Group;
@@ -26,7 +26,6 @@ export interface TeslaMotorModel {
     statorIron: THREE.MeshStandardMaterial;
     bedplateMat: THREE.MeshStandardMaterial;
     copperCoil: THREE.MeshStandardMaterial;
-    copperBar: THREE.MeshStandardMaterial;
     insulatedWire: THREE.MeshStandardMaterial;
     magneticDisk: THREE.MeshStandardMaterial;
     rotorCoreMat: THREE.MeshStandardMaterial;
@@ -41,7 +40,7 @@ export interface TeslaMotorModel {
   dispose: () => void;
 }
 
-export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
+export function buildTeslaMotorModel(): TeslaMotorModel {
   const lcg = createLcg(1888);
   const rootGroup = new THREE.Group();
   rootGroup.name = "US 381,968 Fig. 9 Electro-Magnetic Motor";
@@ -87,14 +86,6 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   );
   const insulatedWire = copperCoil;
 
-  const copperBar = trackMat(
-    new THREE.MeshStandardMaterial({
-      color: 0xf59e0b,
-      roughness: 0.18,
-      metalness: 0.95,
-    }),
-  );
-
   const magneticDisk = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0x64748b,
@@ -103,6 +94,8 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
     }),
   );
 
+  // Retained as a disposable palette slot for the model contract; Fig. 9's
+  // visible rotating member is the source-described magnetic disk D.
   const rotorCoreMat = trackMat(
     new THREE.MeshStandardMaterial({
       color: 0x64748b,
@@ -209,7 +202,7 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   annulusMesh.receiveShadow = true;
   statorGroup.add(annulusMesh);
 
-  // Stator Lamination Stack Rings
+  // Insulated ring bands represented in the source's annulus R.
   const lamRingGeo = trackGeo(new THREE.TorusGeometry(5.22, 0.04, 8, 48));
   for (let l = 0; l < 8; l++) {
     const lamRing = new THREE.Mesh(lamRingGeo, collector);
@@ -252,7 +245,7 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   }
 
   // Salient Stator Poles & Copper Windings (C, C, C', C')
-  const numPoles = phaseCount === 2 ? 4 : 6;
+  const numPoles = 4;
   const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number; defaultEmissive?: THREE.Color }[] = [];
 
   const poleIronGeo = trackGeo(new THREE.BoxGeometry(1.5, 2.8, 1.3));
@@ -282,23 +275,16 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
 
     coilMeshes.push({
       mesh: coilMesh,
-      phaseIdx: p % phaseCount,
+      phaseIdx: p % 2,
       defaultEmissive: new THREE.Color(0x000000),
     });
     statorGroup.add(poleGroup);
   }
 
-  // --- 3. ROTOR, SQUIRREL CAGE & FIG. 9 MAGNETIC DISK D ---
+  // --- 3. FIG. 9 MAGNETIC DISK D ON AXIS a ---
   const rotorGroup = new THREE.Group();
   rotorGroup.name = "D magnetic disk on axis a";
   rootGroup.add(rotorGroup);
-
-  // Laminated Iron Rotor Cylinder Core
-  const rotorCoreGeo = trackGeo(new THREE.CylinderGeometry(2.45, 2.45, 3.2, 32));
-  const rotorCore = new THREE.Mesh(rotorCoreGeo, rotorCoreMat);
-  rotorCore.castShadow = true;
-  rotorCore.receiveShadow = true;
-  rotorGroup.add(rotorCore);
 
   // Polished Drive Shaft (axis a)
   const shaftGeo = trackGeo(new THREE.CylinderGeometry(0.35, 0.35, 9.6, 24));
@@ -317,44 +303,6 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   const shaftMarker = new THREE.Mesh(markerGeo, magneticDisk);
   shaftMarker.position.y = 0.32;
   rotorGroup.add(shaftMarker);
-
-  // 16 Skewed Pure-Copper Squirrel-Cage Conductor Bars
-  const barCount = 16;
-  const barGeo = trackGeo(new THREE.CylinderGeometry(0.1, 0.1, 3.3, 12));
-  for (let b = 0; b < barCount; b++) {
-    const barAngle = (b * (2 * Math.PI)) / barCount;
-    const bar = new THREE.Mesh(barGeo, copperBar);
-    bar.position.set(Math.cos(barAngle) * 2.38, 0, Math.sin(barAngle) * 2.38);
-    bar.rotation.z = 0.08;
-    bar.castShadow = true;
-    rotorGroup.add(bar);
-  }
-
-  // Heavy Copper Short-Circuit End Rings
-  const endRingGeo = trackGeo(new THREE.TorusGeometry(2.38, 0.15, 12, 32));
-  [-1.62, 1.62].forEach((endY) => {
-    const endRing = new THREE.Mesh(endRingGeo, copperBar);
-    endRing.rotation.x = Math.PI / 2;
-    endRing.position.y = endY;
-    endRing.castShadow = true;
-    rotorGroup.add(endRing);
-  });
-
-  // Crowned Output Belt Pulley on Shaft Extension
-  const pulleyGroup = new THREE.Group();
-  pulleyGroup.position.set(0, 0, 4.4);
-
-  const pulleyRimGeo = trackGeo(new THREE.CylinderGeometry(1.4, 1.4, 1.0, 24));
-  const pulleyRim = new THREE.Mesh(pulleyRimGeo, collector);
-  pulleyRim.rotation.x = Math.PI / 2;
-  pulleyRim.castShadow = true;
-  pulleyGroup.add(pulleyRim);
-
-  const pulleyHubGeo = trackGeo(new THREE.CylinderGeometry(0.65, 0.65, 1.2, 16));
-  const pulleyHub = new THREE.Mesh(pulleyHubGeo, shaftSteel);
-  pulleyHub.rotation.x = Math.PI / 2;
-  pulleyGroup.add(pulleyHub);
-  rotorGroup.add(pulleyGroup);
 
   // --- 4. SOURCE GENERATOR G, COLLECTOR RINGS, AND BRUSHES ---
   // Fig. 9 prints generator G with coils B/B' and collector rings b/b'
@@ -385,7 +333,7 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   const ringGeo = trackGeo(new THREE.TorusGeometry(0.38, 0.065, 8, 18));
   const brushGeo = trackGeo(new THREE.BoxGeometry(0.24, 0.35, 0.16));
 
-  const ringCount = phaseCount === 2 ? 4 : 6;
+  const ringCount = 4;
   for (let index = 0; index < ringCount; index++) {
     const ring = new THREE.Mesh(ringGeo, contactRing);
     ring.rotation.y = Math.PI / 2;
@@ -466,7 +414,6 @@ export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
       statorIron,
       bedplateMat,
       copperCoil,
-      copperBar,
       insulatedWire,
       magneticDisk,
       rotorCoreMat,

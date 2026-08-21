@@ -307,19 +307,20 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
 
   // Update loop
   const update = (state: BellPhotophoneState, timeSec: number) => {
-    // Dynamic beam divergence and pulsation
-    const audioFreq = 12.0; // Visual oscillation speed
-    const pulsation = 1 + Math.sin(timeSec * audioFreq) * state.modulationDepth * 0.35;
+    // A deliberately non-quantitative visual cue. US 235,199 establishes that
+    // the beam varies with the transmitter; it does not supply an audio rate or
+    // diaphragm displacement from which an animation frequency can be derived.
+    const visualPhase = timeSec * 2;
+    const pulsation = 1 + Math.sin(visualPhase) * (state.beamVariationActive ? 0.18 : 0);
     beamMesh.scale.set(1.0, pulsation, pulsation);
-    beamMat.opacity = 0.4 + state.modulationDepth * 0.3 * Math.abs(Math.sin(timeSec * audioFreq));
+    beamMat.opacity = 0.4 + (state.beamVariationActive ? 0.18 : 0);
 
     // Diaphragm flexure
-    const flexAmount =
-      (state.diaphragmDisplacementUm / 25.0) * 0.08 * Math.sin(timeSec * audioFreq);
+    const flexAmount = (state.beamVariationActive ? 0.04 : 0) * Math.sin(visualPhase);
     diaphragmMesh.scale.set(1.0 + flexAmount * 2, 1.0, 1.0);
 
     // Selenium glowing response to concentrated flux
-    const glowLevel = Math.min(1.0, state.concentratedPowerMw / 30.0);
+    const glowLevel = state.beamVariationActive ? 0.35 : 0.08;
     seleniumGreenMat.emissive = new THREE.Color(0x10b981).multiplyScalar(glowLevel * 0.5);
   };
 

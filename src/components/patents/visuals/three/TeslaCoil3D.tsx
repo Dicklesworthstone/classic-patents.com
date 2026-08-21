@@ -12,12 +12,15 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./teslaCoilModel";
@@ -58,6 +61,7 @@ export function TeslaCoil3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Interpretive coupled-LC host-model calculations.
   const coilPhysics = FrankenSimEngine.stepTeslaCoilFromControls({
@@ -327,82 +331,73 @@ export function TeslaCoil3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Primary Capacitance
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {primaryCap} nF
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="5"
-              value={primaryCap}
-              onChange={(e) => updateParam("primaryCap", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="primaryCap"
+            patentId="us-593138-tesla-coil"
+            paramKey="primaryCap"
+            label="Primary Capacitance"
+            value={primaryCap}
+            min={10}
+            max={100}
+            step={5}
+            onChange={(val) => updateParam("primaryCap", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Input Voltage</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {inputVoltageKv} kV
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              step="1"
-              value={inputVoltageKv}
-              onChange={(e) => updateParam("inputVoltageKv", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="inputVoltage"
+            patentId="us-593138-tesla-coil"
+            paramKey="inputVoltageKv"
+            label="Input Voltage"
+            value={inputVoltageKv}
+            min={5}
+            max={30}
+            step={1}
+            onChange={(val) => updateParam("inputVoltageKv", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Spark Gap Distance</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {sparkGapDistanceMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2"
-              max="30"
-              step="1"
-              value={sparkGapDistanceMm}
-              onChange={(e) =>
-                updateParam("sparkGapDistanceMm", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="sparkGapDistance"
+            patentId="us-593138-tesla-coil"
+            paramKey="sparkGapDistanceMm"
+            label="Spark Gap Distance"
+            value={sparkGapDistanceMm}
+            min={2}
+            max={30}
+            step={1}
+            onChange={(val) => updateParam("sparkGapDistanceMm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Coil Coupling (k)</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {couplingK.toFixed(2)}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.05"
-              max="0.40"
-              step="0.01"
-              value={couplingK}
-              onChange={(e) => updateParam("couplingK", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="couplingK"
+            patentId="us-593138-tesla-coil"
+            paramKey="couplingK"
+            label="Coil Coupling (k)"
+            value={couplingK}
+            min={0.05}
+            max={0.4}
+            step={0.01}
+            onChange={(val) => updateParam("couplingK", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-593138-tesla-coil"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-593138-tesla-coil"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

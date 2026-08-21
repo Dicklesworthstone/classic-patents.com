@@ -2,11 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildMarconiRadioModel, updateMarconiRadioKinematics } from "./marconiRadioModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -48,6 +51,7 @@ export function MarconiRadio3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Electromagnetic Wireless Physics (FrankenSim Monopole Radiation)
   const radioPhysics = FrankenSimEngine.stepMarconiRadio(
@@ -311,45 +315,31 @@ export function MarconiRadio3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Induction Coil Potential
-              </span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {inductionCoilKv} kV
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="50"
-              step="1"
-              value={inductionCoilKv}
-              onChange={(e) => updateParam("sparkVoltage", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="sparkVoltage"
+            patentId="us-586193-marconi-radio"
+            paramKey="sparkVoltageKv"
+            label="Induction Coil Potential"
+            value={inductionCoilKv}
+            min={5}
+            max={50}
+            step={1}
+            onChange={(val) => updateParam("sparkVoltage", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Vertical Aerial Mast Height
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {aerialHeightMeters} m
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="120"
-              step="2"
-              value={aerialHeightMeters}
-              onChange={(e) => updateParam("aerialHeight", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="aerialHeight"
+            patentId="us-586193-marconi-radio"
+            paramKey="antennaHeightM"
+            label="Vertical Aerial Mast Height"
+            value={aerialHeightMeters}
+            min={10}
+            max={120}
+            step={2}
+            onChange={(val) => updateParam("aerialHeight", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -369,6 +359,21 @@ export function MarconiRadio3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-586193-marconi-radio"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-586193-marconi-radio"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

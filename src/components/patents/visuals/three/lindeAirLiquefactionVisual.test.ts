@@ -36,6 +36,9 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
     expect(modelSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("performance.now()");
+    for (const forbidden of ["77 K", "Dewar", "tripod", "brass", "copper", "glass", "frost", "condensedGasVolume"]) {
+      expect(modelSource.toLowerCase()).not.toContain(forbidden.toLowerCase());
+    }
   });
 
   test("exposes source-named camera presets and a bounded apparatus overlay", () => {
@@ -71,7 +74,7 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & thermodynamics bou
     expect(model.nodes.counterCurrentCoilGroup).toBeDefined();
     expect(model.nodes.jtValveGroup).toBeDefined();
     expect(model.nodes.receiverVessel).toBeDefined();
-    expect(model.nodes.condensedGasVolume).toBeDefined();
+    expect("condensedGasVolume" in model.nodes).toBe(false);
 
     model.dispose();
   });

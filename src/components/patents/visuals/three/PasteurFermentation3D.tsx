@@ -3,8 +3,6 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -16,127 +14,71 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset =
-  | "iso"
-  | "gooseneck_airlock"
-  | "cooling_coil"
-  | "sampling_valve"
-  | "cotton_filter"
-  | "top";
+type CameraPreset = "iso" | "vessel" | "nozzle" | "generator" | "exit_cup" | "top";
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [9.0, 7.0, 10.5], target: [0, 0, 0] },
-  gooseneck_airlock: { pos: [0, 4.5, 3.5], target: [0, 3.0, 0] },
-  cooling_coil: { pos: [2.8, 0, 3.5], target: [0, -0.5, 0] },
-  sampling_valve: { pos: [0, -0.8, 3.8], target: [0, -1.2, 1.2] },
-  cotton_filter: { pos: [2.8, 3.5, 1.8], target: [2.2, 3.2, 0] },
-  top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+  iso: { pos: [10, 7, 11], target: [0, 0, 0] },
+  vessel: { pos: [5.5, 2.8, 7], target: [0, 0.3, 0] },
+  nozzle: { pos: [4, 5.5, 5], target: [0, 3.4, 0] },
+  generator: { pos: [-7, 1.2, 5], target: [-4.2, -0.7, 0] },
+  exit_cup: { pos: [6, 0.2, 5], target: [3.1, -0.8, 0] },
+  top: { pos: [0, 12, 0.1], target: [0, 0, 0] },
 };
 
 export const PasteurFermentation3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
-
-  // Biochemical Fermentation Parameters
-  const { params, updateParam } = usePatentPhysics("us-135245-pasteur-fermentation");
-  const fermentationTempC = (params.wortTempC as number) ?? (params.tempCelsius as number) ?? 22;
-  const pasteurizationTempC = (params.pasteurizationTempC as number) ?? 58;
-  const holdTimeMin = (params.holdTimeMin as number) ?? 20;
-  const isPureYeast = Boolean(params.pureYeast ?? true);
-
-  const pasteur = stepPasteurFermentation({
-    pasteurizationTempC,
-    holdTimeMin,
-    wortTempC: fermentationTempC,
-  });
-  const [showBubbles] = useState<boolean>(true);
-  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
-
-  const live = useLiveSimParams({
-    fermentationTempC,
-    isPureYeast,
-    showBubbles,
-    isAudioMuted,
-    yeastActivityPct: pasteur.yeastActivityPct,
-    logReduction: pasteur.logReduction,
-    isCutaway,
-  });
-
   const studioRef = useRef<StudioContext | null>(null);
+  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
+  const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const { params, updateParam } = usePatentPhysics("us-135245-pasteur-fermentation");
+  const co2SweepPct = params.co2SweepPct ?? 100;
+  const sprayCoveragePct = params.sprayCoveragePct ?? 100;
+  const wortTempC = params.wortTempC ?? 21.25;
+  const process = stepPasteurFermentation({ co2SweepPct, sprayCoveragePct, wortTempC });
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const live = useLiveSimParams({ co2SweepPct, sprayCoveragePct, isCutaway });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
-    const cfg = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+    const camera = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(camera.pos, camera.target);
   };
-
-  const toggleSound = () => {
-    toggleEngine(() => {
-      soundEngine.playSwitchClick();
-    });
-  };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
-    const iso = CAMERA_PRESETS.iso;
     const studio = createThreeStudioScene({
       container,
-      cameraPos: iso.pos,
-      targetPos: iso.target,
+      cameraPos: CAMERA_PRESETS.iso.pos,
+      targetPos: CAMERA_PRESETS.iso.target,
     });
     studioRef.current = studio;
-
-    const { scene, camera, renderer, controls } = studio;
-
     const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
-    scene.add(rootGroup);
-
-    let reqId: number;
-    let simTimeSec = 0;
-    const sched = new TickScheduler(1 / 60, 0);
-    let lastMs: number | undefined;
-
-    const animate = (now: number) => {
-      reqId = requestAnimationFrame(animate);
-      const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
-      lastMs = now;
-      sched.pump(now / 1000, () => {
-        simTimeSec += 1 / 60;
-      });
-      const elapsedSec = simTimeSec;
-      const p = live.current;
-
+    studio.scene.add(rootGroup);
+    let requestId = 0;
+    let previousMs: number | undefined;
+    const animate = (nowMs: number) => {
+      requestId = requestAnimationFrame(animate);
+      const dt = previousMs === undefined ? 0 : Math.min((nowMs - previousMs) / 1000, 0.1);
+      previousMs = nowMs;
       updatePasteurFermentationKinematics(
         nodes,
         materials,
         dt,
-        elapsedSec,
-        p.fermentationTempC,
-        p.yeastActivityPct,
-        p.showBubbles,
-        p.isCutaway ?? false,
+        live.current.co2SweepPct,
+        live.current.sprayCoveragePct,
+        live.current.isCutaway,
       );
-
-      controls.update();
-      renderer.render(scene, camera);
+      studio.controls.update();
+      studio.renderer.render(studio.scene, studio.camera);
     };
-
-    reqId = requestAnimationFrame(animate);
-
+    requestId = requestAnimationFrame(animate);
     return () => {
-      cancelAnimationFrame(reqId);
+      cancelAnimationFrame(requestId);
       dispose();
       studio.cleanup();
       studioRef.current = null;
@@ -144,24 +86,22 @@ export const PasteurFermentation3D = memo(() => {
   }, [live]);
 
   return (
-    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Pasteur Fermentation Vat 3D</div>
-      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
-        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
-
-        {/* Top-Left Camera Preset Toolbar */}
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-parchment-300 bg-parchment-50/60 shadow-patent dark:border-ink-800 dark:bg-ink-950/80">
+      <div className="sr-only">Pasteur closed-vessel process apparatus in three dimensions</div>
+      <div className="relative min-h-[380px] w-full flex-1 cursor-grab active:cursor-grabbing sm:min-h-[460px]">
+        <div ref={containerRef} className="absolute inset-0 h-full w-full" />
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
+          <div className="absolute left-3 top-3 z-10 flex max-w-[calc(100%-14rem)] flex-nowrap gap-1 overflow-x-auto rounded-xl border border-parchment-300 bg-white/85 p-1 text-[10px] shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/85 sm:left-4 sm:top-4 sm:max-w-none sm:gap-1.5 sm:p-1.5 sm:text-xs">
+            <span className="flex shrink-0 items-center gap-1 px-1.5 py-0.5 font-sans text-ink-500 sm:px-2 sm:py-1">
+              <Camera className="h-3.5 w-3.5" /> View:
             </span>
             {(
               [
                 ["iso", "Isometric"],
-                ["gooseneck_airlock", "Gooseneck Trap"],
-                ["cooling_coil", "Cooling Coils"],
-                ["sampling_valve", "Sampling Valve"],
-                ["cotton_filter", "Cotton Filter"],
+                ["vessel", "Vessel A"],
+                ["nozzle", "Pipe E / Nozzle P"],
+                ["generator", "Generator M M"],
+                ["exit_cup", "Exit x / Cup v"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -169,10 +109,10 @@ export const PasteurFermentation3D = memo(() => {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                className={`shrink-0 rounded-lg px-2 py-1 font-medium transition-colors ${
                   activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                    ? "bg-cyan-700 font-semibold text-white shadow-xs"
+                    : "text-ink-700 hover:bg-parchment-200 dark:text-ink-300 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}
@@ -180,176 +120,95 @@ export const PasteurFermentation3D = memo(() => {
             ))}
           </div>
         )}
-
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="pointer-events-auto absolute right-3 top-3 z-10 flex items-center gap-1.5 sm:right-4 sm:top-4 sm:gap-2">
           <button
             type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Vat" : "Cutaway Copper Vat"}
-            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
+            onClick={() => setIsCutaway((value) => !value)}
+            title={isCutaway ? "Show solid vessel" : "Show illustrative cutaway"}
+            className={`flex items-center gap-1 rounded-xl border p-1.5 text-xs shadow-sm backdrop-blur-md transition-colors sm:p-2 ${
               isCutaway
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                ? "border-cyan-800 bg-cyan-700 text-white"
+                : "border-parchment-300 bg-white/90 text-ink-700 dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300"
             }`}
           >
-            <Layers className="w-4 h-4" />
+            <Layers className="h-4 w-4" />
             <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
-
           <button
             type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            onClick={() => toggleEngine(() => soundEngine.playSwitchClick())}
+            aria-label={isAudioMuted ? "Unmute audio" : "Mute audio"}
+            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
-
           <button
             type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            onClick={() => setShowUiOverlay((value) => !value)}
+            aria-label={showUiOverlay ? "Hide overlay" : "Show overlay"}
+            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
-            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showUiOverlay ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
-
           <button
-            aria-label="Reset camera view"
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
+            aria-label="Reset camera"
+            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="h-4 w-4" />
           </button>
         </div>
-
-        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
-            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Wort Temperature:
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {fermentationTempC} °C
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Yeast Activity:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {pasteur.yeastActivityPct}%
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Alcohol Yield:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {pasteur.alcoholAbvPct.toFixed(1)}% ABV
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Microbial Kill:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">
-                {pasteur.logReduction.toFixed(1)} log
-              </span>
-            </div>
+          <div className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-xs rounded-xl border border-parchment-300 bg-parchment-50/95 p-3 font-mono text-xs text-ink-900 shadow-md backdrop-blur-md dark:border-ink-800 dark:bg-ink-950/95 dark:text-parchment-100 sm:bottom-4 sm:left-4">
+            <p className="mb-2 font-sans font-semibold">US 135,245 source sequence</p>
+            <p>1. Boil wort in closed vessel A.</p>
+            <p>2. Sweep air out with carbonic-acid gas.</p>
+            <p>3. Cool by spraying the vessel exterior.</p>
+            <p>4. Add yeast at 20–22.5 °C.</p>
           </div>
         )}
-
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Pasteur closed brewing vat kinematics"
+          title="Source-bounded reader controls"
           chips={[
-            {
-              label: "Wort Temp",
-              value: `${fermentationTempC}`,
-              unit: "°C",
-              tone: pasteur.yeastActivityPct > 40 ? "ok" : "warn",
-            },
-            { label: "Yeast Activity", value: `${pasteur.yeastActivityPct}`, unit: "%" },
-            { label: "Alcohol Yield", value: pasteur.alcoholAbvPct.toFixed(1), unit: "% ABV" },
-            { label: "CO₂ Overpressure", value: pasteur.co2PressureBar.toFixed(2), unit: "bar" },
-            { label: "Microbial Log Kill", value: pasteur.logReduction.toFixed(1) },
-            { label: "Spoilage Survivors", value: `${pasteur.survivorPct}`, unit: "%" },
-            { label: "Shelf Life", value: `${pasteur.shelfLifeMonths}`, unit: "months" },
-            {
-              label: "Wort crate",
-              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-            },
+            { label: "CO₂ sweep", value: `${process.co2SweepPct}`, unit: "%" },
+            { label: "Exterior spray", value: `${process.sprayCoveragePct}`, unit: "%" },
+            { label: "Yeast-addition band", value: `${process.wortTempC}`, unit: "°C" },
+            { label: "Sequence", value: process.readyForYeast ? "ready" : "incomplete" },
           ]}
         />
       </div>
-
-      {/* Interactive Controls Bar */}
-      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Fermentation Wort Temp
+      <div className="border-t border-parchment-300 bg-parchment-100/90 p-4 dark:border-ink-800 dark:bg-ink-900/90">
+        <p className="mb-3 text-xs text-ink-600 dark:text-ink-300">
+          Percentages control the reader animation only; the patent states no gas flow, spray rate,
+          cooling time, pressure, or fixed vessel material beyond galvanized iron, wood, or another
+          suitable material. This studio isolates one representative vessel A; the 2D face shows
+          all three vessels printed in Fig. 1.
+        </p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { id: "co2SweepPct", label: "CO₂ sweep progress", value: co2SweepPct, min: 0, max: 100, step: 5, unit: "%" },
+            { id: "sprayCoveragePct", label: "Exterior spray coverage", value: sprayCoveragePct, min: 0, max: 100, step: 5, unit: "%" },
+            { id: "wortTempC", label: "Yeast-addition temperature", value: wortTempC, min: 20, max: 22.5, step: 0.25, unit: "°C" },
+          ].map((control) => (
+            <label key={control.id} className="flex flex-col gap-1.5 text-xs font-medium text-ink-700 dark:text-ink-300">
+              <span className="flex justify-between">
+                <span>{control.label}</span>
+                <span className="font-mono font-bold">{control.value}{control.unit}</span>
               </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {fermentationTempC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="45"
-              step="1"
-              value={fermentationTempC}
-              onChange={(e) => updateParam("wortTempC", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Pasteurization Bath Temp
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {pasteurizationTempC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="45"
-              max="75"
-              step="1"
-              value={pasteurizationTempC}
-              onChange={(e) =>
-                updateParam("pasteurizationTempC", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Thermal Hold Time</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {holdTimeMin} min
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="40"
-              step="5"
-              value={holdTimeMin}
-              onChange={(e) => updateParam("holdTimeMin", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+              <input
+                type="range"
+                min={control.min}
+                max={control.max}
+                step={control.step}
+                value={control.value}
+                onChange={(event) => updateParam(control.id, Number(event.target.value))}
+                className="h-2 w-full cursor-pointer rounded-lg accent-cyan-700"
+              />
+            </label>
+          ))}
         </div>
       </div>
     </div>

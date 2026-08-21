@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { stepParsonsTurbine } from "@/physics/catalogKernels";
+import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { buildParsonsTurbineModel, updateParsonsTurbineKinematics } from "./parsonsTurbineModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics boundary", () => {
+describe("US 608,969 Sir Charles Parsons marine routing visual boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "ParsonsTurbine3D.tsx"),
@@ -22,9 +22,9 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildParsonsTurbineModel");
     expect(modelSource).toContain("updateParsonsTurbineKinematics");
-    expect(modelSource).toContain("fluidFrames");
-    expect(modelSource).toContain("sampleFluidAt");
-    expect(modelSource).not.toContain("stepParsonsTurbine({})");
+    expect(modelSource).toContain("stepParsonsMarine");
+    expect(modelSource).toContain("routeEdges");
+    expect(modelSource).not.toContain("dummyPiston");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -51,10 +51,10 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
 
     for (const preset of [
       "iso",
-      "turbine_stages",
-      "rotor_blades",
-      "governor",
-      "bearing_pedestal",
+      "figure_1_banks",
+      "figure_2_reverse",
+      "figure_3_network",
+      "shaft_network",
       "top",
     ]) {
       expect(threeSource).toContain(preset);
@@ -66,44 +66,36 @@ describe("US 608,969 Sir Charles Parsons Steam Turbine visual & thermodynamics b
     expect(threeSource).not.toContain("cameraRef");
   });
 
-  test("computes genuine steam enthalpy expansion and shaft power in SI units", () => {
-    const result = stepParsonsTurbine({
-      rotorRpm: 3000,
-      inletPressurePsi: 180,
-    });
-    expect(result.shaftPowerKw).toBeGreaterThan(100);
-    expect(result.shaftPowerMw).toBeCloseTo(result.shaftPowerKw / 1000, 1);
-    expect(result.inletBar).toBeCloseTo(180 / 14.5038, 2);
-    expect(result.enthalpyKjKg).toBeGreaterThan(300);
-    expect(result.stageCount).toBe(48);
-    expect(result.stageRingSvgCount).toBe(22);
-    expect(result.stageSvgPitch).toBe(16);
-    expect(result.inletMpa).toBeGreaterThan(1.0);
-    expect(result.bladeSpeedMps).toBeGreaterThan(40);
-    expect(result.steamAdvancePerS).toBeCloseTo(12, 3);
-    expect(result.steamOpacity).toBeGreaterThan(0.2);
-    expect(result.steamSwirlOmegaRadPerS).toBeCloseTo(result.displayOmegaRadPerS * 0.5, 3);
+  test("changes the physical route topology and reversing flow", () => {
+    const series = stepParsonsMarine({ routing: "series" });
+    const parallel = stepParsonsMarine({ routing: "simple-parallel" });
+    const astern = stepParsonsMarine({ reversing: true });
+    expect(series.routeEdges).not.toEqual(parallel.routeEdges);
+    expect(series.routeEdges.length).toBe(9);
+    expect(astern.directionLabel).toBe("astern");
+    expect(astern.activeTurbines).toEqual(["X", "Y"]);
   });
 
-  test("builds and articulates procedural casing, rotor stages, dummy piston, and steam streamline flow correctly", () => {
+  test("builds and articulates procedural turbine banks, pipes, and steam flow correctly", () => {
     const { rootGroup, nodes, materials, dispose } = buildParsonsTurbineModel();
     expect(rootGroup.children.length).toBeGreaterThan(2);
-    expect(nodes.casingShells.length).toBe(3);
-    expect(nodes.dummyPiston).toBeDefined();
+    expect(nodes.casingShells.length).toBe(10);
+    expect(nodes.turbineMeshes.length).toBe(10);
+    expect(nodes.pipeMeshes.length).toBeGreaterThan(0);
     expect(nodes.steamPositions.length).toBe(300 * 3);
 
-    const parsons = stepParsonsTurbine({ rotorRpm: 3000, inletPressurePsi: 180 });
     updateParsonsTurbineKinematics(
       nodes,
       materials,
       0.016,
       0.5,
-      parsons.displayOmegaRadPerS,
-      parsons.steamAdvancePerS,
-      parsons.steamOpacity,
-      parsons.steamSwirlOmegaRadPerS ?? 0.8,
+      0.3,
+      1.2,
+      0.72,
+      0.2,
       true,
       true,
+      "compound-parallel",
     );
     expect(materials.castIronCasing.transparent).toBe(true);
 

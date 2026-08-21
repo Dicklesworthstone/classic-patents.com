@@ -11,7 +11,7 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -44,7 +44,7 @@ export function DaimlerEngine3D() {
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");

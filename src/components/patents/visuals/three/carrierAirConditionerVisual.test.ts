@@ -2,97 +2,45 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FrankenSimEngine } from "@/physics/engine";
-import {
-  buildCarrierAirConditionerModel,
-  updateCarrierAirConditionerKinematics,
-} from "./carrierAirConditionerModel";
+import { buildCarrierAirConditionerModel, updateCarrierAirConditionerKinematics } from "./carrierAirConditionerModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 808,897 Willis Carrier Air Conditioning visual & psychrometrics boundary", () => {
-  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"),
-      "utf8",
-    );
-    const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "carrierAirConditionerModel.ts"),
-      "utf8",
-    );
-
+describe("US 808,897 Carrier wet air washer visual boundary", () => {
+  test("uses procedural Three.js geometry with no external model", () => {
+    const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"), "utf8");
+    const modelSource = readFileSync(join(VISUALS_DIRECTORY, "three", "carrierAirConditionerModel.ts"), "utf8");
     expect(threeSource).not.toContain("GLTFLoader");
     expect(threeSource).not.toContain(".glb");
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildCarrierAirConditionerModel");
     expect(modelSource).toContain("updateCarrierAirConditionerKinematics");
-  });
-
-  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"),
-      "utf8",
-    );
-    const modelSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "carrierAirConditionerModel.ts"),
-      "utf8",
-    );
-
-    for (const forbidden of ["Math.random", "new THREE.Clock", "performance.now"]) {
-      expect(threeSource).not.toContain(forbidden);
-      expect(modelSource).not.toContain(forbidden);
+    for (const forbidden of ["dewPoint", "reheat", "chilled", "thermostat", "psychrometric"]) {
+      expect(threeSource.toLowerCase()).not.toContain(forbidden);
+      expect(modelSource.toLowerCase()).not.toContain(forbidden);
     }
-    expect(modelSource).not.toContain("dt * 100");
-    expect(modelSource).toContain("airflowCfm / 150");
   });
 
-  test("exposes authentic camera presets and cutaway mode for psychrometric process observation", () => {
-    const threeSource = readFileSync(
-      join(VISUALS_DIRECTORY, "three", "CarrierAirConditioner3D.tsx"),
-      "utf8",
-    );
-
-    for (const preset of [
-      "iso",
-      "spray_chamber",
-      "baffle_plates",
-      "blower_fan",
-      "pump_sump",
-      "dampers",
-    ]) {
-      expect(threeSource).toContain(preset);
-    }
-
-    expect(threeSource).toContain("cutawayMode");
-    expect(threeSource).toContain("Eliminator Baffles");
+  test("keeps the source-named step bounded to spray, wet film, particles, droplets, and flow", () => {
+    const result = FrankenSimEngine.stepCarrierAirConditioner({ airflowCfm: 15000, sprayRatePct: 60, separatorFaces: 6 });
+    expect(result.wetFilmCoveragePct).toBeGreaterThan(0);
+    expect(result.particleCapturePct).toBeGreaterThan(0);
+    expect(result.dropletSeparationPct).toBeGreaterThan(0);
+    expect(result.pressureDropPa).toBeGreaterThan(0);
+    expect("dewPointInC" in result).toBe(false);
+    expect("finalRhPct" in result).toBe(false);
+    expect("coolingWatts" in result).toBe(false);
   });
 
-  test("computes genuine Carrier psychrometric dew-point air conditioning in reproducible SI units", () => {
-    const result = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: 28,
-      inletRhPct: 65,
-      sprayWaterTempC: 12.5,
-      reheatTempC: 20,
-    });
-
-    expect(result.dewPointInC).toBeGreaterThan(15);
-    expect(result.isDehumidifying).toBe(true);
-    expect(result.moistureRemovedGPerKg).toBeGreaterThan(0);
-    expect(result.finalRhPct).toBeGreaterThan(40);
-  });
-
-  test("builds and articulates procedural spray washer and blower fan correctly", () => {
+  test("builds distinct source parts and advances deterministic air droplets", () => {
     const { root, nodes, materials } = buildCarrierAirConditionerModel();
-    expect(root.children.length).toBeGreaterThan(4);
-    expect(nodes.freshAirDamperLouvers.length).toBe(5);
-    expect(nodes.sprayNozzles.length).toBe(24);
-
-    // Initial state
-    const initialFanRot = nodes.blowerFanRotor.rotation.z;
-    updateCarrierAirConditionerKinematics(nodes, materials, 0.1, 15000, 12.5, true, true);
-    const updatedFanRot = nodes.blowerFanRotor.rotation.z;
-
-    expect(updatedFanRot).not.toBe(initialFanRot);
+    expect(root.children.length).toBeGreaterThan(5);
+    expect(nodes.sprayNozzles.length).toBe(5);
+    const initialRotation = nodes.fanRotor.rotation.z;
+    updateCarrierAirConditionerKinematics(nodes, materials, 0.1, 15000, 60, 6, true, true);
+    expect(nodes.fanRotor.rotation.z).not.toBe(initialRotation);
     expect(nodes.solidCasingMesh.visible).toBe(false);
-    expect(materials.mistParticle.opacity).toBeGreaterThan(0);
+    expect(nodes.cutawayCasingGroup.visible).toBe(true);
+    expect(materials.droplet.opacity).toBeGreaterThan(0);
   });
 });

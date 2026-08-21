@@ -2,13 +2,16 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildCorlissEngineModel, updateCorlissEngineKinematics } from "./corlissSteamEngineModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -33,7 +36,7 @@ export function CorlissSteamEngine3D() {
 
   // Thermodynamic Simulation Parameters
   const { params, updateParam } = usePatentPhysics("us-6162-corliss-steam-engine");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const engineRpm = params.engineRpm ?? 65;
   const steamPressurePsi = params.steamPressurePsi ?? 100;
@@ -41,6 +44,7 @@ export function CorlissSteamEngine3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const corliss = stepCorlissEngine({ steamPressurePsi, engineRpm, cutoffPct });
   const indicatedHp = corliss.indicatedHp;
@@ -261,25 +265,18 @@ export function CorlissSteamEngine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Boiler Steam Pressure
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {steamPressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="180"
-              step="5"
-              value={steamPressurePsi}
-              onChange={(e) => updateParam("steamPressurePsi", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="steamPressure"
+            patentId="us-6162-corliss-steam-engine"
+            paramKey="boilerPressurePsi"
+            label="Boiler Steam Pressure"
+            value={steamPressurePsi}
+            min={40}
+            max={180}
+            step={5}
+            onChange={(val) => updateParam("steamPressurePsi", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -299,26 +296,34 @@ export function CorlissSteamEngine3D() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Governor Cutoff Fraction
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {cutoffPct}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="60"
-              step="5"
-              value={cutoffPct}
-              onChange={(e) => updateParam("cutoffPct", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="cutoffPct"
+            patentId="us-6162-corliss-steam-engine"
+            paramKey="cutoffPct"
+            label="Governor Cutoff Fraction"
+            value={cutoffPct}
+            min={10}
+            max={60}
+            step={5}
+            onChange={(val) => updateParam("cutoffPct", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6162-corliss-steam-engine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-6162-corliss-steam-engine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

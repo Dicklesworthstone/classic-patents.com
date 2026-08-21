@@ -15,7 +15,6 @@ import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/tesla
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
@@ -42,9 +41,7 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
-  const acFrequencyHz = teslaMotorPhaseHz(params);
-  const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
-  const fig13Unavailable = phaseCount === 3;
+  const generatorFrequencyHz = teslaMotorPhaseHz(params);
   const [showMagneticFlux] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -52,25 +49,15 @@ export function TeslaMotor3D() {
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const apparatus = stepTeslaMotorFig9(acFrequencyHz);
+  const apparatus = stepTeslaMotorFig9(generatorFrequencyHz);
 
-  // Electromechanical Induction Physics Calculations
-  const appliedLoadTorqueNm = params.loadTorque ?? 14;
-  const synchronousSpeedRpm = apparatus.generatorRpm;
-  const slip = 0.03;
-  const rotorSpeedRpm = Math.round(synchronousSpeedRpm * (1 - slip));
-  const electricalPowerWatts = Math.round(
-    ((appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60) * 1.15,
-  );
-  const rotorInducedCurrentAmps = Math.round(12 * (acFrequencyHz / 60));
+  const generatorRpm = apparatus.generatorRpm;
 
   const live = useLiveSimParams({
-    acFrequencyHz,
-    phaseCount,
+    generatorFrequencyHz,
     showMagneticFlux,
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
     isAudioMuted,
-    rotorSpeedRpm,
     claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
@@ -86,17 +73,17 @@ export function TeslaMotor3D() {
     void ensureGenericWasm().then((next) => setCrateSource(next));
   }, []);
 
-  // Web Audio AC Motor 60Hz Harmonic Sound
+  // Optional generator-phase teaching tone.
   useEffect(() => {
     if (!isAudioMuted) {
-      soundEngine.playTeslaMotorHum(acFrequencyHz, rotorSpeedRpm);
+      soundEngine.playTeslaGeneratorTone(generatorFrequencyHz, generatorRpm);
     } else {
       soundEngine.stopContinuousTone();
     }
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isAudioMuted, acFrequencyHz, rotorSpeedRpm]);
+  }, [isAudioMuted, generatorFrequencyHz, generatorRpm]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -113,7 +100,9 @@ export function TeslaMotor3D() {
     const { scene, camera, renderer, controls } = studio;
 
     // --- 3D STATOR & ROTOR ASSEMBLY ---
-    const fig9Model = buildTeslaMotorModel(phaseCount);
+    // The 3D studio is intentionally Fig. 9 only. Fig. 13 remains a separate
+    // three-circuit teaching view in the 2D face, rather than a hybrid mesh.
+    const fig9Model = buildTeslaMotorModel();
     scene.add(fig9Model.rootGroup);
 
     // --- ROTATING B-FIELD VECTOR ARROW ---
@@ -129,7 +118,7 @@ export function TeslaMotor3D() {
 
     const fieldGrid = 32;
     const fieldTex = createColormappedFieldTexture(
-      computeTeslaRotatingBField(0, 2, fieldGrid),
+      computeTeslaRotatingBField(0, fieldGrid),
       fieldGrid,
       fieldGrid,
     );
@@ -160,7 +149,6 @@ export function TeslaMotor3D() {
         lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
       lastFrameTimeMs = frameTimeMs;
       const p = live.current;
-      const fig9Available = p.phaseCount === 2;
       const refused = (p.claim1Active ?? 1) < 0.5;
 
       if (refused) {
@@ -188,15 +176,15 @@ export function TeslaMotor3D() {
         refused ? 0 : delta,
         p.fieldDisplayOmegaRadPerS,
         bFieldAngle,
-        p.showMagneticFlux && fig9Available,
+        p.showMagneticFlux,
         fieldTimeSec,
       );
 
-      bFieldArrow.visible = p.showMagneticFlux && fig9Available;
-      fieldPlane.visible = p.showMagneticFlux && fig9Available;
+      bFieldArrow.visible = p.showMagneticFlux;
+      fieldPlane.visible = p.showMagneticFlux;
       writeColormappedField(
         fieldRgba,
-        computeTeslaRotatingBField(bFieldAngle, p.phaseCount === 3 ? 3 : 2, fieldGrid),
+        computeTeslaRotatingBField(bFieldAngle, fieldGrid),
         fieldGrid,
         fieldGrid,
       );
@@ -218,7 +206,7 @@ export function TeslaMotor3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [live, phaseCount]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -326,65 +314,27 @@ export function TeslaMotor3D() {
               <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-pulse text-amber-500" />
               US 381,968 Fig. 9 motor-generator
             </div>
-            {!fig13Unavailable ? (
-              <div className="space-y-1">
+            <div className="space-y-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Sync ($n_s$):" />
+                    Generator:
                   </span>
                   <span className="font-bold text-blue-700 dark:text-blue-400">
-                    {synchronousSpeedRpm} rpm
+                    {generatorRpm} rpm
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Rotor ($n_r$):" />
+                    <HudText text="Disk D:" />
                   </span>
                   <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                    {rotorSpeedRpm} rpm
+                    {apparatus.diskRpm} rpm (source relation)
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Slip ($s$):" />
-                  </span>
-                  <span className="font-bold text-amber-700 dark:text-amber-400">
-                    {(slip * 100).toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">Power:</span>
-                  <span className="font-bold text-purple-700 dark:text-purple-400">
-                    {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(1)} HP)
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">Rotor Current:</span>
-                  <span className="font-bold text-cyan-700 dark:text-cyan-400">
-                    {rotorInducedCurrentAmps} A RMS
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">Generator:</span>
-                  <span className="font-bold text-blue-700 dark:text-blue-400">
-                    {apparatus.generatorRpm} rpm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">Disk D:</span>
-                  <span className="font-bold text-amber-700 dark:text-amber-400">
-                    {apparatus.diskRpm} rpm
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-[10px] sm:text-xs font-sans text-ink-700 dark:text-ink-300">
-                The three-circuit Fig. 13 arrangement is available in the facsimile, but this 3D
-                instrument deliberately renders Fig. 9 only rather than synthesizing another model.
-              </div>
-            )}
+            </div>
             <div className="text-[10px] font-sans text-ink-500 dark:text-ink-400 pt-1 border-t border-parchment-200 dark:border-ink-800/80">
-              Fig. 15–16 is the distinct source variant that dispenses with sliding contacts.
+              Fig. 9 uses the generator's four collector rings and brushes; Fig. 15–16 is a
+              distinct source variant that dispenses with sliding contacts.
             </div>
           </div>
         )}
@@ -392,10 +342,10 @@ export function TeslaMotor3D() {
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="fs-ga rotating-field motor"
+          title="source-bounded rotating-field motor"
           chips={[
             { label: "Crate", value: crateSource === "wasm" ? "fs-wasm" : "ts-ga-fallback" },
-            { label: "Field f", value: acFrequencyHz.toFixed(0), unit: "Hz" },
+            { label: "Generator f", value: generatorFrequencyHz.toFixed(0), unit: "Hz" },
             {
               label: "ω_display",
               value: apparatus.fieldDisplayOmegaRadPerS.toFixed(2),
@@ -409,11 +359,11 @@ export function TeslaMotor3D() {
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <SensitivitySlider
-            id="acFrequency"
+            id="frequency"
             patentId="us-381968-tesla-motor"
-            paramKey="acFrequencyHz"
-            label="Generator AC Frequency"
-            value={acFrequencyHz}
+            paramKey="frequency"
+            label="Generator alternating-current frequency"
+            value={generatorFrequencyHz}
             min={20}
             max={120}
             step={5}
@@ -422,47 +372,7 @@ export function TeslaMotor3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Phase Circuit Families
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {phaseCount} Phases
-              </span>
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => updateParam("phaseCount", 2)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
-                  phaseCount === 2
-                    ? "bg-amber-600 text-white border-amber-700 shadow-xs"
-                    : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-parchment-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
-                }`}
-              >
-                2-Phase (Fig. 9)
-              </button>
-              <button
-                type="button"
-                onClick={() => updateParam("phaseCount", 3)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors border ${
-                  phaseCount === 3
-                    ? "bg-amber-600 text-white border-amber-700 shadow-xs"
-                    : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-parchment-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
-                }`}
-              >
-                3-Phase (Fig. 13)
-              </button>
-            </div>
-          </div>
         </div>
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-381968-tesla-motor"
-          params={params}
-          className="mt-3"
-        />
       </div>
     </div>
   );

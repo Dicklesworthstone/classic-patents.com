@@ -2,22 +2,15 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { FrankenSimEngine, lamarrChannelFrequencyMhz } from "@/physics/engine";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
 } from "./lamarrFrequencyHoppingModel";
-import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
+import { useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
-import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "roll" | "waterfall" | "escapement" | "torpedo" | "top";
@@ -45,65 +38,10 @@ export function LamarrFrequencyHopping3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const [_crateSource, setCrateSource] = useState(genericKernelSource());
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
-
-  const carrierChannelsCount = params.channels ?? params.carrierChannelsCount ?? 88;
-  const hopRateHopsPerSec = params.hopRate ?? params.hopRateHopsPerSec ?? 4;
-  const isJammingActive = params.isJammingActive !== 0;
-  const currentChannel = Math.max(
-    1,
-    Math.min(carrierChannelsCount, Math.round(params.channel ?? 1)),
-  );
-
-  const fhPhysics = FrankenSimEngine.stepLamarrFrequencyHopping(
-    carrierChannelsCount,
-    hopRateHopsPerSec,
-  );
-
-  useFrankenSimPhysics("us-2292387-lamarr-frequency-hopping", {
-    domain: "electromagnetics_flux",
-    timestampMs: Date.now(),
-    timeStepDt: 0.016,
-    refusal: { isRefused: false },
-    em: {
-      frequencyHz: fhPhysics.spreadSpectrumBandwidthHz,
-      magneticFluxDensityTesla: 0,
-      electricFieldVpm: 0,
-      phaseAngleRad: 0,
-      inductanceHenry: 0,
-      capacitanceFarad: 0,
-      currentAmperes: 0,
-      voltageVolts: 0,
-      powerFactor: 0,
-      efficiencyPct: 0,
-      synchronousRpm: 0,
-      slipFraction: 0,
-      rotorRpm: 0,
-      shaftPowerWatts: 0,
-      electricalInputWatts: 0,
-    },
-  });
-
-  const carrierFrequencyMhz = lamarrChannelFrequencyMhz(currentChannel, carrierChannelsCount);
-
-  const live = useLiveSimParams({
-    currentChannel,
-    carrierChannelsCount,
-    hopRateHopsPerSec,
-    isJammingActive,
-    jamCenter: params.jamCenter ?? 44,
-    isCutaway,
-    isAudioMuted,
-    carrierFrequencyMhz,
-    antiJammingMarginDb: fhPhysics.antiJammingMarginDb,
-    processingGainDb: fhPhysics.processingGainDb,
-    drumDisplayOmegaRadPerS: fhPhysics.drumDisplayOmegaRadPerS,
-  });
+  const [recordPosition, setRecordPosition] = useState(() => Math.max(0, Math.min(6, Math.round(params.recordPosition ?? 0))));
+  const txRow = "ABCDEFG"[recordPosition] ?? "A";
+  const receiverTuned = recordPosition >= 3;
+  const lampOn = !receiverTuned;
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -141,17 +79,17 @@ export function LamarrFrequencyHopping3D() {
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       const { dt } = clock.pump(now);
-      const p = live.current;
+      const elapsed = now / 1000;
 
       updateLamarrFrequencyHoppingKinematics(
         model,
         dt,
-        p.currentChannel,
-        p.carrierChannelsCount,
-        p.isJammingActive,
-        p.jamCenter,
-        p.isCutaway,
-        p.drumDisplayOmegaRadPerS,
+        recordPosition,
+        7,
+        receiverTuned,
+        lampOn,
+        isCutaway,
+        elapsed,
       );
 
       controls.update();
@@ -166,7 +104,7 @@ export function LamarrFrequencyHopping3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, [live]);
+  }, [recordPosition, receiverTuned, lampOn, isCutaway]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -183,10 +121,10 @@ export function LamarrFrequencyHopping3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["roll", "88-Key Roll"],
-                ["waterfall", "RF Waterfall"],
-                ["escapement", "Escapement"],
-                ["torpedo", "Torpedo Bay"],
+                ["roll", "Record Strip"],
+                ["waterfall", "Channel Rows"],
+                ["escapement", "Switch Head"],
+                ["torpedo", "Torpedo Control"],
                 ["top", "Top View"],
               ] as const
             ).map(([id, label]) => (
@@ -278,127 +216,21 @@ export function LamarrFrequencyHopping3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Carrier Freq:
-              </span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                {carrierFrequencyMhz.toFixed(1)} MHz (Ch {currentChannel}/{carrierChannelsCount})
-              </span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Matched record row:</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">{txRow} ({receiverTuned ? "D–G receiver channel" : "A–C false channel"})</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Processing Gain:</span>
-              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
-                +{fhPhysics.processingGainDb} dB
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Anti-Jam Margin:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">
-                +{fhPhysics.antiJammingMarginDb} dB
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Hop Rate:</span>
-              <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {hopRateHopsPerSec} hops/sec
-              </span>
+              <span className="text-ink-600 dark:text-ink-400">Lamp 43:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">{lampOn ? "ON (false channel)" : "OFF (matched)"}</span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Interactive Controls Bar */}
-      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SensitivitySlider
-            id="lamarrCarrierChannels"
-            patentId="us-2292387-lamarr-frequency-hopping"
-            paramKey="carrierChannelsCount"
-            label="Carrier Channels (N)"
-            value={carrierChannelsCount}
-            min={16}
-            max={88}
-            step={4}
-            unit=" channels"
-            onChange={(val) => updateParam("carrierChannelsCount", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="lamarrHopRate"
-            patentId="us-2292387-lamarr-frequency-hopping"
-            paramKey="hopRateHopsPerSec"
-            label="Slotted Hop Rate"
-            value={hopRateHopsPerSec}
-            min={1}
-            max={16}
-            step={1}
-            unit=" hops/s"
-            onChange={(val) => updateParam("hopRateHopsPerSec", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="lamarrCurrentChannel"
-            patentId="us-2292387-lamarr-frequency-hopping"
-            paramKey="channel"
-            label="Channel Number"
-            value={currentChannel}
-            min={1}
-            max={carrierChannelsCount}
-            step={1}
-            unit={` / ${carrierChannelsCount}`}
-            onChange={(val) => updateParam("channel", val)}
-            allParams={params}
-          />
-        </div>
-
-        <ClaimConstraintToggle
-          patentId="us-2292387-lamarr-frequency-hopping"
-          claimStates={claimStates}
-          onToggleClaim={(claimNo, active) =>
-            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
-          }
-          className="mt-2"
-        />
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-2292387-lamarr-frequency-hopping"
-          params={params}
-          className="mt-3"
-        />
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+        <label className="space-y-2">Matched record position<input type="range" min="0" max="6" value={recordPosition} onChange={(event) => { const next = Number(event.target.value); setRecordPosition(next); updateParam("recordPosition", next); }} className="w-full accent-purple-600" /><span>Row {txRow} · transmitter 7 positions · receiver 4 effective positions</span></label>
+        <div className="space-y-2"><span>Command labels</span><div className="flex gap-2"><span className="rounded border border-cyan-700 px-2 py-1">100-cycle → left step</span><span className="rounded border border-cyan-700 px-2 py-1">500-cycle → right step</span></div><span>{lampOn ? "Lamp 43 warns: do not send a control impulse." : "Lamp 43 off: records select the same channel."}</span></div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="FREQUENCY HOPPING SPREAD SPECTRUM"
-        chips={[
-          {
-            label: "Channel",
-            value: `${currentChannel} / ${carrierChannelsCount}`,
-            unit: "slots",
-          },
-          { label: "RF Frequency", value: `${carrierFrequencyMhz.toFixed(2)}`, unit: "MHz" },
-          { label: "Hop Rate", value: `${hopRateHopsPerSec.toFixed(1)}`, unit: "hops/s" },
-          {
-            label: "Processing Gain",
-            value: `${fhPhysics.processingGainDb.toFixed(1)}`,
-            unit: "dB",
-          },
-          {
-            label: "Anti-Jam Margin",
-            value: `${fhPhysics.antiJammingMarginDb.toFixed(1)}`,
-            unit: "dB",
-          },
-          { label: "Synchronization", value: "Slotted Player-Piano Tape" },
-          {
-            label: "Jam Resistance",
-            value: isJammingActive ? "Frequency Agile Evading" : "Clear Channel",
-            tone: isJammingActive ? "warn" : "ok",
-          },
-        ]}
-      />
     </div>
   );
 }

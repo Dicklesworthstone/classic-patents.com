@@ -3,17 +3,20 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildMaximMachineGunModel,
   type MaximMachineGunModel,
   updateMaximMachineGunKinematics,
 } from "./maximMachineGunModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -34,8 +37,9 @@ const CAMERA_PRESETS: Record<
 
 export function MaximMachineGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Automatic Recoil Ballistics Parameters
   const { params, updateParam } = usePatentPhysics("us-319596-maxim-machine-gun");
@@ -173,34 +177,44 @@ export function MaximMachineGun3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Top-Left Camera Preset Toolbar */}
+        {/* Camera Preset Toolbar & Claim Inversion Toggle */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["toggle_lock", "Toggle Lock"],
-                ["water_jacket", "Water Jacket"],
-                ["belt_feed", "Belt Feed"],
-                ["spade_grips", "Spade Grips"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-14rem)] sm:max-w-none pointer-events-auto">
+            <ClaimConstraintToggle
+              patentId="us-319596-maxim-machine-gun"
+              claimStates={claimStates}
+              onToggleClaim={(num, active) =>
+                setClaimStates((prev) => ({ ...prev, [num]: active }))
+              }
+            />
+            <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+                <Camera className="w-3.5 h-3.5" /> View:
+              </span>
+              {(
+                [
+                  ["iso", "Isometric"],
+                  ["toggle_lock", "Toggle Lock"],
+                  ["water_jacket", "Water Jacket"],
+                  ["belt_feed", "Belt Feed"],
+                  ["spade_grips", "Spade Grips"],
+                  ["top", "Plan View"],
+                ] as [CameraPreset, string][]
+              ).map(([preset, label]) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => applyCameraPreset(preset)}
+                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                    activeCamera === preset
+                      ? "bg-amber-600 text-white shadow-xs font-semibold"
+                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -317,23 +331,18 @@ export function MaximMachineGun3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Cyclic Firing Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {Math.round(fireRateRpm)} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="300"
-              max="750"
-              step="25"
-              value={fireRateRpm}
-              onChange={(e) => updateParam("firingRate", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="firingRate"
+            patentId="us-319596-maxim-machine-gun"
+            paramKey="firingRateRpm"
+            label="Cyclic Firing Rate"
+            value={fireRateRpm}
+            min={300}
+            max={750}
+            step={25}
+            onChange={(val) => updateParam("firingRate", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -353,26 +362,34 @@ export function MaximMachineGun3D() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Short-Recoil Stroke
-              </span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {recoilStrokeMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="12"
-              max="25"
-              step="1"
-              value={recoilStrokeMm}
-              onChange={(e) => updateParam("recoilStroke", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="recoilStroke"
+            patentId="us-319596-maxim-machine-gun"
+            paramKey="recoilTravelMm"
+            label="Short-Recoil Stroke"
+            value={recoilStrokeMm}
+            min={12}
+            max={25}
+            step={1}
+            onChange={(val) => updateParam("recoilStroke", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-319596-maxim-machine-gun"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-319596-maxim-machine-gun"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

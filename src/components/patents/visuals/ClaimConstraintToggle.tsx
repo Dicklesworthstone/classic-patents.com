@@ -53,7 +53,7 @@ export const ClaimConstraintToggle: React.FC<ClaimConstraintToggleProps> = ({
             )}
             <span>
               Claim {c.claimNumber}:{" "}
-              {isActive ? "Active (Patent Mode)" : "Inverted (Prior-Art Crash)"}
+              {isActive ? "Active (Patent Mode)" : "Constraint Inverted"}
             </span>
           </button>
         );

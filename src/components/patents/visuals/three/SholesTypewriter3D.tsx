@@ -6,7 +6,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import {
   buildSholesTypewriterModel,
@@ -15,6 +16,7 @@ import {
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset =
   | "iso"
@@ -50,6 +52,7 @@ export const SholesTypewriter3D = memo(() => {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
     demonstrationCadence,
@@ -281,6 +284,21 @@ export const SholesTypewriter3D = memo(() => {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-79265-sholes-typewriter"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-79265-sholes-typewriter"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

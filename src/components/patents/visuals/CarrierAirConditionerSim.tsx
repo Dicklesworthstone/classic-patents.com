@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
+import { Droplets, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -12,416 +12,80 @@ export function CarrierAirConditionerSim() {
     "us-808897-carrier-air-conditioner",
   );
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const [activeTab, setActiveTab] = useState<"chamber" | "psychrometric">("chamber");
+  const [activeTab, setActiveTab] = useState<"washer" | "separator">("washer");
 
-  const tIn = params.inletTempC ?? 35;
-  const rhIn = params.inletRhPct ?? 75;
-  const tSpray = params.sprayWaterTempC ?? 8;
-  const tReheat = params.reheatTempC ?? 22;
+  const airflowCfm = params.airflowCfm ?? 15000;
+  const sprayRatePct = params.sprayRatePct ?? 60;
+  const separatorFaces = params.separatorFaces ?? 6;
   const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-    inletTempC: tIn,
-    inletRhPct: rhIn,
-    sprayWaterTempC: tSpray,
-    reheatTempC: tReheat,
-    airflowCfm: params.airflowCfm ?? 15000,
+    airflowCfm,
+    sprayRatePct,
+    separatorFaces,
   });
-  const dewPoint = carrier.dewPointInC.toFixed(1);
-  const moistureRemoved = carrier.moistureRemovedGPerKg.toFixed(1);
-  const finalRh = carrier.finalRhPct;
 
   return (
     <div className="w-full rounded-2xl bg-parchment-50 dark:bg-neutral-950 border border-parchment-300 dark:border-neutral-800 p-6 space-y-6 text-ink-900 dark:text-neutral-200">
-      {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+            <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
             <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-neutral-100">
-              Willis H. Carrier — Psychrometric Dew-Point Air Conditioning Apparatus (US 808,897)
+              Willis H. Carrier — Apparatus for Treating Air (US 808,897)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-neutral-400 mt-0.5">
-            Chilled Water Spray Dehumidification, Inertial Baffles & Sensible Reheat
+            Fine liquid spray, wet sinuous plates, and rear gutters for separating liquid and suspended impurities
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+        <div className="flex items-center gap-2 self-end lg:self-auto">
           <div className="flex rounded-lg bg-parchment-200 dark:bg-neutral-900 p-1 border border-parchment-300 dark:border-neutral-800 text-xs">
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("chamber");
-                soundEngine.playSwitchClick();
-              }}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                activeTab === "chamber"
-                  ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/30"
-                  : "text-ink-600 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
-              }`}
-            >
-              1. Spray Chamber
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab("psychrometric");
-                soundEngine.playSwitchClick();
-              }}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                activeTab === "psychrometric"
-                  ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/30"
-                  : "text-ink-600 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
-              }`}
-            >
-              2. Psychrometric Process
-            </button>
+            <button type="button" onClick={() => { setActiveTab("washer"); soundEngine.playSwitchClick(); }} className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "washer" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-neutral-400"}`}>Washer path</button>
+            <button type="button" onClick={() => { setActiveTab("separator"); soundEngine.playSwitchClick(); }} className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "separator" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-neutral-400"}`}>Separator geometry</button>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
+          <button type="button" onClick={() => { toggleSound(); soundEngine.playSwitchClick(); }} aria-label={isAudioMuted ? "Unmute sound" : "Mute sound"} className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200">
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              setActiveTab("chamber");
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
-          >
+          <button type="button" onClick={() => { resetParams(); setActiveTab("washer"); soundEngine.playSwitchClick(); }} aria-label="Reset Carrier air-washer simulation" className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200">
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Main Viewport */}
-      <div className="relative w-full aspect-[16/9] min-h-[320px] rounded-xl bg-neutral-900/90 border border-neutral-800 overflow-hidden flex items-center justify-center p-6">
-        {activeTab === "chamber" && (
-          <svg viewBox="0 0 700 340" className="w-full h-full">
-            <defs>
-              <linearGradient id="humidAirGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#f97316" stopOpacity="0.6" />
-                <stop offset="35%" stopColor="#0284c7" stopOpacity="0.8" />
-                <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#22c55e" stopOpacity="0.6" />
-              </linearGradient>
-            </defs>
-
-            {/* Conditioning Tunnel Plenum */}
-            <rect
-              x="40"
-              y="70"
-              width="620"
-              height="180"
-              rx="10"
-              fill="#18181b"
-              stroke="#52525b"
-              strokeWidth="2"
-            />
-            <rect
-              x="42"
-              y="72"
-              width="616"
-              height="176"
-              rx="8"
-              fill="url(#humidAirGrad)"
-              opacity="0.3"
-            />
-
-            {/* Stage 1: Intake Air */}
-            <g transform="translate(60, 110)">
-              <text
-                x="0"
-                y="0"
-                fill="#f97316"
-                fontSize="12"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                1. INTAKE AIR
-              </text>
-              <text x="0" y="20" fill="#a1a1aa" fontSize="10" fontFamily="monospace">
-                {tIn}°C · {rhIn}% RH
-              </text>
-              <text x="0" y="38" fill="#fbbf24" fontSize="10" fontFamily="monospace">
-                Dew Point: {dewPoint}°C
-              </text>
-            </g>
-
-            {/* Stage 2: Atomizing Chilled Water Spray Header */}
-            <g transform="translate(240, 70)">
-              <line x1="20" y1="0" x2="20" y2="180" stroke="#0284c7" strokeWidth="4" />
-              {/* Nozzles Spraying Water Mist */}
-              {[30, 60, 90, 120, 150].map((y, i) => (
-                <g key={i} transform={`translate(20, ${y})`}>
-                  <circle cx="0" cy="0" r="4" fill="#fbbf24" />
-                  <polygon points="0,0 45,-15 45,15" fill="#38bdf8" opacity="0.6" />
-                </g>
-              ))}
-              <text
-                x="20"
-                y="-10"
-                textAnchor="middle"
-                fill="#38bdf8"
-                fontSize="11"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                2. CHILLED SPRAY ({tSpray}°C)
-              </text>
-            </g>
-
-            {/* Stage 3: Zigzag Inertial Mist Eliminator Baffles */}
-            <g transform="translate(380, 80)">
-              {[0, 15, 30, 45].map((x, i) => (
-                <polyline
-                  key={i}
-                  points={`${x},10 ${x + 10},40 ${x},70 ${x + 10},100 ${x},130 ${x + 10},150`}
-                  fill="none"
-                  stroke="#a1a1aa"
-                  strokeWidth="3"
-                />
-              ))}
-              <text
-                x="30"
-                y="-20"
-                textAnchor="middle"
-                fill="#a1a1aa"
-                fontSize="11"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                3. ELIMINATORS
-              </text>
-            </g>
-
-            {/* Stage 4: Sensible Reheat Steam Fin Coils */}
-            <g transform="translate(500, 80)">
-              <rect x="0" y="10" width="25" height="140" fill="#dc2626" opacity="0.4" rx="3" />
-              {[20, 40, 60, 80, 100, 120, 140].map((y, i) => (
-                <line key={i} x1="0" y1={y} x2="25" y2={y} stroke="#ef4444" strokeWidth="2" />
-              ))}
-              <text
-                x="12"
-                y="-20"
-                textAnchor="middle"
-                fill="#ef4444"
-                fontSize="11"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                4. REHEAT ({tReheat}°C)
-              </text>
-            </g>
-
-            {/* Stage 5: Supply Air Output */}
-            <g transform="translate(560, 110)">
-              <text
-                x="0"
-                y="0"
-                fill="#4ade80"
-                fontSize="12"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                5. CONDITIONED
-              </text>
-              <text
-                x="0"
-                y="20"
-                fill="#4ade80"
-                fontSize="13"
-                fontFamily="monospace"
-                fontWeight="bold"
-              >
-                {tReheat}°C · {finalRh}% RH
-              </text>
-              <text x="0" y="38" fill="#a1a1aa" fontSize="10" fontFamily="monospace">
-                - {moistureRemoved} g/kg
-              </text>
-            </g>
-
-            {/* Bottom Sump */}
-            <rect
-              x="200"
-              y="250"
-              width="160"
-              height="40"
-              rx="4"
-              fill="#0c4a6e"
-              stroke="#0284c7"
-              strokeWidth="1.5"
-            />
-            <text
-              x="280"
-              y="275"
-              textAnchor="middle"
-              fill="#38bdf8"
-              fontSize="10"
-              fontFamily="monospace"
-            >
-              DRAIN SUMP (-{moistureRemoved} g/kg condensed)
-            </text>
+      <div className="relative w-full aspect-[16/9] min-h-[320px] rounded-xl bg-neutral-950 border border-neutral-800 overflow-hidden flex items-center justify-center p-5">
+        {activeTab === "washer" ? (
+          <svg viewBox="0 0 760 340" className="w-full h-full" role="img" aria-label="Source-faithful Carrier wet air washer path">
+            <defs><linearGradient id="carrierAirWash" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#f59e0b" stopOpacity="0.55" /><stop offset="45%" stopColor="#38bdf8" stopOpacity="0.45" /><stop offset="100%" stopColor="#a7f3d0" stopOpacity="0.35" /></linearGradient></defs>
+            <rect x="35" y="75" width="690" height="165" rx="8" fill="url(#carrierAirWash)" stroke="#64748b" strokeWidth="2" />
+            <text x="45" y="55" fill="#f59e0b" fontSize="12" fontFamily="monospace">air current through casing m →</text>
+            <g transform="translate(130 75)"><line x1="0" y1="15" x2="0" y2="150" stroke="#38bdf8" strokeWidth="4" />{[35, 65, 95, 125].map((y) => <g key={y}><circle cx="0" cy={y} r="4" fill="#fbbf24" /><path d={`M 5 ${y} l 48 -14 l 0 28 z`} fill="#38bdf8" opacity="0.55" /></g>)}<text x="0" y="-10" textAnchor="middle" fill="#7dd3fc" fontSize="11" fontFamily="monospace">spray h</text></g>
+            <g transform="translate(285 92)">{[0, 24, 48, 72, 96].slice(0, Math.max(2, Math.min(5, Math.round(separatorFaces / 2)))).map((x, i) => <polyline key={i} points={`${x},0 ${x + 13},25 ${x},50 ${x + 13},75 ${x},100 ${x + 13},125`} fill="none" stroke="#cbd5e1" strokeWidth="4" />)}<text x="50" y="-15" textAnchor="middle" fill="#e2e8f0" fontSize="11" fontFamily="monospace">wet front faces i / bends j</text></g>
+            <g transform="translate(470 92)">{[0, 24, 48, 72].slice(0, Math.max(2, Math.min(4, Math.round(separatorFaces / 3)))).map((x, i) => <g key={i}><polyline points={`${x},0 ${x + 13},25 ${x},50 ${x + 13},75 ${x},100 ${x + 13},125`} fill="none" stroke="#94a3b8" strokeWidth="4" /><path d={`M ${x + 13} 25 l 17 7 l -17 7 M ${x + 13} 75 l 17 7 l -17 7`} fill="none" stroke="#fbbf24" strokeWidth="3" /></g>)}<text x="45" y="-15" textAnchor="middle" fill="#fbbf24" fontSize="11" fontFamily="monospace">rear faces f / g, flanges b / c</text></g>
+            <g transform="translate(640 104)"><rect x="0" y="0" width="55" height="115" rx="4" fill="#164e63" stroke="#38bdf8" /><text x="27" y="136" textAnchor="middle" fill="#7dd3fc" fontSize="11" fontFamily="monospace">trap j / filter l</text></g>
+            <text x="380" y="305" textAnchor="middle" fill="#e2e8f0" fontSize="12" fontFamily="monospace">wet film catches dust; sinuous turns separate free droplets</text>
           </svg>
-        )}
-
-        {activeTab === "psychrometric" && (
-          <svg viewBox="0 0 600 320" className="w-full h-full">
-            {/* Psychrometric Axes */}
-            <line x1="80" y1="260" x2="520" y2="260" stroke="#71717a" strokeWidth="2" />
-            <line x1="80" y1="260" x2="80" y2="40" stroke="#71717a" strokeWidth="2" />
-            <text x="530" y="265" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
-              Dry-Bulb Temp (°C)
-            </text>
-            <text x="70" y="35" fill="#a1a1aa" fontSize="11" fontFamily="monospace">
-              Humidity Ratio (W)
-            </text>
-
-            {/* 100% Saturation Curve */}
-            <path
-              d="M 80 250 Q 200 240, 350 150 T 500 50"
-              fill="none"
-              stroke="#0284c7"
-              strokeWidth="2"
-              strokeDasharray="4 2"
-            />
-            <text x="440" y="45" fill="#0284c7" fontSize="10" fontFamily="monospace">
-              100% Saturation Curve
-            </text>
-
-            {/* Psychrometric Process Line: Point A (Intake) -> Point B (Chilled Saturation at Spray Temp) -> Point C (Reheated Room Supply) */}
-            {/* Point A: Intake */}
-            <circle cx="420" cy="110" r="6" fill="#f97316" />
-            <text
-              x="430"
-              y="105"
-              fill="#f97316"
-              fontSize="11"
-              fontFamily="monospace"
-              fontWeight="bold"
-            >
-              A: Intake ({tIn}°C, {rhIn}%)
-            </text>
-
-            {/* Point B: Dew Point Condensation */}
-            <circle cx="180" cy="200" r="6" fill="#0284c7" />
-            <text
-              x="110"
-              y="195"
-              fill="#0284c7"
-              fontSize="11"
-              fontFamily="monospace"
-              fontWeight="bold"
-            >
-              B: Spray Dew Point ({tSpray}°C)
-            </text>
-
-            {/* Point C: Sensible Reheat */}
-            <circle cx="310" cy="200" r="6" fill="#22c55e" />
-            <text
-              x="320"
-              y="215"
-              fill="#22c55e"
-              fontSize="11"
-              fontFamily="monospace"
-              fontWeight="bold"
-            >
-              C: Reheat Supply ({tReheat}°C, {finalRh}%)
-            </text>
-
-            {/* Process Vectors */}
-            <line x1="420" y1="110" x2="180" y2="200" stroke="#0284c7" strokeWidth="3" />
-            <line x1="180" y1="200" x2="310" y2="200" stroke="#ef4444" strokeWidth="3" />
-
-            <text
-              x="300"
-              y="300"
-              textAnchor="middle"
-              fill="#e4e4e7"
-              fontSize="12"
-              fontFamily="monospace"
-            >
-              Carrier Psychrometric Path: Cooling & Dehumidification (A → B) followed by Sensible
-              Reheat (B → C)
-            </text>
+        ) : (
+          <svg viewBox="0 0 680 340" className="w-full h-full" role="img" aria-label="Carrier sinuous separator plate geometry">
+            <path d="M 80 60 L 170 105 L 80 150 L 170 195 L 80 240" fill="none" stroke="#cbd5e1" strokeWidth="6" /><path d="M 170 105 l 25 12 M 170 195 l 25 12" stroke="#fbbf24" strokeWidth="4" />
+            <path d="M 320 60 L 410 105 L 320 150 L 410 195 L 320 240" fill="none" stroke="#cbd5e1" strokeWidth="6" /><path d="M 410 105 l 25 12 M 410 195 l 25 12" stroke="#fbbf24" strokeWidth="4" />
+            <path d="M 80 275 H 470" stroke="#38bdf8" strokeWidth="3" markerEnd="url(#carrierArrow)" />
+            <text x="275" y="40" textAnchor="middle" fill="#e2e8f0" fontSize="13" fontFamily="monospace">continuous sinuous air passages</text><text x="120" y="315" fill="#cbd5e1" fontSize="11" fontFamily="monospace">front smooth / unobstructed</text><text x="350" y="315" fill="#fbbf24" fontSize="11" fontFamily="monospace">rear projections form gutters</text>
+            <text x="540" y="145" fill="#a7f3d0" fontSize="12" fontFamily="monospace">faces: {separatorFaces}</text><text x="540" y="170" fill="#a7f3d0" fontSize="12" fontFamily="monospace">wet film: {carrier.wetFilmCoveragePct}%</text><text x="540" y="195" fill="#a7f3d0" fontSize="12" fontFamily="monospace">dust capture: {carrier.particleCapturePct}%</text><text x="540" y="220" fill="#a7f3d0" fontSize="12" fontFamily="monospace">droplet separation: {carrier.dropletSeparationPct}%</text>
+            <defs><marker id="carrierArrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#38bdf8" /></marker></defs>
           </svg>
         )}
       </div>
 
-      {/* Physics Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
-        <div>
-          <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1.5">
-            <span>Outdoor Summer Temp</span>
-            <span className="text-orange-400 font-bold">{tIn}°C</span>
-          </div>
-          <input
-            type="range"
-            min={25}
-            max={42}
-            step={1}
-            value={tIn}
-            onChange={(e) => updateParam("inletTempC", Number(e.target.value))}
-            className="w-full accent-orange-500"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1.5">
-            <span>Outdoor Humidity</span>
-            <span className="text-cyan-400 font-bold">{rhIn}%</span>
-          </div>
-          <input
-            type="range"
-            min={40}
-            max={95}
-            step={5}
-            value={rhIn}
-            onChange={(e) => updateParam("inletRhPct", Number(e.target.value))}
-            className="w-full accent-cyan-500"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1.5">
-            <span>Chilled Water Spray Temp</span>
-            <span className="text-cyan-400 font-bold">{tSpray}°C</span>
-          </div>
-          <input
-            type="range"
-            min={4}
-            max={18}
-            step={1}
-            value={tSpray}
-            onChange={(e) => updateParam("sprayWaterTempC", Number(e.target.value))}
-            className="w-full accent-cyan-500"
-          />
-        </div>
-
-        <div>
-          <div className="flex justify-between text-xs font-mono text-neutral-300 mb-1.5">
-            <span>Reheat Supply Temp</span>
-            <span className="text-emerald-400 font-bold">{tReheat}°C</span>
-          </div>
-          <input
-            type="range"
-            min={18}
-            max={26}
-            step={1}
-            value={tReheat}
-            onChange={(e) => updateParam("reheatTempC", Number(e.target.value))}
-            className="w-full accent-emerald-500"
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
+        <label className="text-xs font-mono text-neutral-300"><span className="flex justify-between mb-1.5"><span>Air current through casing</span><span className="text-orange-400 font-bold">{airflowCfm} cfm</span></span><input aria-label="Air current through Carrier casing" type="range" min={2000} max={30000} step={500} value={airflowCfm} onChange={(e) => updateParam("airflowCfm", Number(e.target.value))} className="w-full accent-orange-500" /></label>
+        <label className="text-xs font-mono text-neutral-300"><span className="flex justify-between mb-1.5"><span>Fine spray rate</span><span className="text-cyan-400 font-bold">{sprayRatePct}%</span></span><input aria-label="Fine liquid spray rate" type="range" min={10} max={100} step={5} value={sprayRatePct} onChange={(e) => updateParam("sprayRatePct", Number(e.target.value))} className="w-full accent-cyan-500" /></label>
+        <label className="text-xs font-mono text-neutral-300"><span className="flex justify-between mb-1.5"><span>Separator faces and flanges</span><span className="text-amber-400 font-bold">{separatorFaces}</span></span><input aria-label="Number of sinuous separator faces" type="range" min={2} max={12} step={1} value={separatorFaces} onChange={(e) => updateParam("separatorFaces", Number(e.target.value))} className="w-full accent-amber-500" /></label>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
+        <div className="rounded-lg border border-cyan-900/50 bg-cyan-950/20 p-2"><Droplets className="w-4 h-4 text-cyan-400 mb-1" /><span className="block text-neutral-400">Wet film</span><strong>{carrier.wetFilmCoveragePct}%</strong></div>
+        <div className="rounded-lg border border-amber-900/50 bg-amber-950/20 p-2"><span className="block text-neutral-400">Dust capture</span><strong>{carrier.particleCapturePct}%</strong></div>
+        <div className="rounded-lg border border-sky-900/50 bg-sky-950/20 p-2"><span className="block text-neutral-400">Droplet separation</span><strong>{carrier.dropletSeparationPct}%</strong></div>
+        <div className="rounded-lg border border-neutral-700 bg-neutral-900/30 p-2"><span className="block text-neutral-400">Air current</span><strong>{carrier.airCurrentMps} m/s</strong></div>
+        <div className="rounded-lg border border-neutral-700 bg-neutral-900/30 p-2"><span className="block text-neutral-400">Flow resistance</span><strong>{carrier.pressureDropPa} Pa</strong></div>
       </div>
     </div>
   );

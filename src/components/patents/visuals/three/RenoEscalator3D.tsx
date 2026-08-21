@@ -7,6 +7,8 @@ import { stepRenoEscalator } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildRenoEscalatorModel,
   type RenoEscalatorModelResult,
@@ -51,6 +53,7 @@ export function RenoEscalator3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
     beltSpeedMps,
@@ -328,6 +331,21 @@ export function RenoEscalator3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-470918-reno-escalator"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-470918-reno-escalator"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import {
@@ -49,6 +52,7 @@ export function TeslaTeleautomaton3D() {
   const [showRadioWaves, setShowRadioWaves] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const tele = stepTeslaTeleautomaton({
     rfFrequency: transmitterFreqKhz,
@@ -302,43 +306,31 @@ export function TeslaTeleautomaton3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Transmitter RF Frequency
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {transmitterFreqKhz} kHz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="200"
-              step="5"
-              value={transmitterFreqKhz}
-              onChange={(e) => updateParam("rfFrequency", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="rfFrequency"
+            patentId="us-613809-tesla-teleautomaton"
+            paramKey="rfFrequency"
+            label="Transmitter RF Frequency"
+            value={transmitterFreqKhz}
+            min={100}
+            max={200}
+            step={5}
+            onChange={(val) => updateParam("rfFrequency", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Rudder Position</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {rudderAngleDeg}°
-              </span>
-            </div>
-            <input
-              type="range"
-              min="-45"
-              max="45"
-              step="5"
-              value={rudderAngleDeg}
-              onChange={(e) => updateParam("rudderAngle", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="rudderAngle"
+            patentId="us-613809-tesla-teleautomaton"
+            paramKey="rudderAngleDeg"
+            label="Rudder Position"
+            value={rudderAngleDeg}
+            min={-45}
+            max={45}
+            step={5}
+            onChange={(val) => updateParam("rudderAngle", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -360,6 +352,21 @@ export function TeslaTeleautomaton3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-613809-tesla-teleautomaton"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-613809-tesla-teleautomaton"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

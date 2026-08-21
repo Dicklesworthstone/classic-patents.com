@@ -7,6 +7,7 @@ import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   articulateHewittMercuryLampModel,
@@ -55,6 +56,7 @@ export function HewittMercuryLamp3D({
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-682690-hewitt-mercury-lamp");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const mainsVoltageV = params.mainsVoltageV ?? initialMainsVoltageV;
   const tubeLengthCm = params.tubeLengthCm ?? initialTubeLengthCm;
   const tubeDiameterMm = params.tubeDiameterMm ?? initialTubeDiameterMm;
@@ -155,28 +157,37 @@ export function HewittMercuryLamp3D({
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Camera Preset Toolbar */}
+        {/* Top-Left Camera Preset Toolbar & Claim Constraint Toggle */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(["isometric", "cathode", "plasmaColumn", "condenser"] as CameraPreset[]).map(
-              (preset) => (
-                <button
-                  type="button"
-                  key={preset}
-                  onClick={() => handlePresetChange(preset)}
-                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
-                    cameraPreset === preset
-                      ? "bg-amber-600 text-white shadow-xs font-semibold"
-                      : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                  }`}
-                >
-                  {preset.replace(/([A-Z])/g, " $1")}
-                </button>
-              ),
-            )}
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-14rem)] sm:max-w-none pointer-events-auto">
+            <ClaimConstraintToggle
+              patentId="us-682690-hewitt-mercury-lamp"
+              claimStates={claimStates}
+              onToggleClaim={(num, active) =>
+                setClaimStates((prev) => ({ ...prev, [num]: active }))
+              }
+            />
+            <div className="flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+              <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+                <Camera className="w-3.5 h-3.5" /> View:
+              </span>
+              {(["isometric", "cathode", "plasmaColumn", "condenser"] as CameraPreset[]).map(
+                (preset) => (
+                  <button
+                    type="button"
+                    key={preset}
+                    onClick={() => handlePresetChange(preset)}
+                    className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
+                      cameraPreset === preset
+                        ? "bg-amber-600 text-white shadow-xs font-semibold"
+                        : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                    }`}
+                  >
+                    {preset.replace(/([A-Z])/g, " $1")}
+                  </button>
+                ),
+              )}
+            </div>
           </div>
         )}
 

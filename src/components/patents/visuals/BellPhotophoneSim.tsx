@@ -1,41 +1,21 @@
 "use client";
 
-import { RotateCcw, Sun, Volume2, VolumeX } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { RotateCcw, Sun } from "lucide-react";
+import { useMemo } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
-
-interface BellPhotophoneSimProps {
-  initialVoiceSplDb?: number;
-  initialDistanceM?: number;
-  initialSolarWPerM2?: number;
-}
-
-export function BellPhotophoneSim({
-  initialVoiceSplDb = 75,
-  initialDistanceM = 213,
-  initialSolarWPerM2 = 950,
-}: BellPhotophoneSimProps) {
-  const voiceId = useId();
-  const distId = useId();
-  const solarId = useId();
-
-  const { params, updateParam, resetParams } = usePatentPhysics("us-235199-bell-photophone");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
-  const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
-  const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
-  const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
-  const [isAudioActive, setIsAudioActive] = useState<boolean>(true);
+export function BellPhotophoneSim() {
+  const { params, updateParam } = usePatentPhysics("us-235199-bell-photophone");
+  // Until the shared registry receives a typed boolean control, this existing
+  // shared value is only a cross-face switch: zero means a static beam. It is
+  // never shown as a real sound-pressure measurement.
+  const beamVariationActive = (params.voiceSplDb ?? 1) > 0;
 
   const photoState = useMemo(() => {
     return stepBellPhotophone({
-      voiceSplDb: isAudioActive ? voiceSplDb : 40,
-      transmissionDistanceM,
-      solarIrradianceWPerM2,
+      beamVariationActive,
     });
-  }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioActive]);
+  }, [beamVariationActive]);
 
   return (
     <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-md backdrop-blur-md transition-colors">
@@ -56,35 +36,20 @@ export function BellPhotophoneSim({
           <button
             type="button"
             onClick={() => {
-              setIsAudioActive(!isAudioActive);
-              soundEngine.playSwitchClick();
+              updateParam("voiceSplDb", beamVariationActive ? 0 : 1);
             }}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
-              isAudioActive
+              beamVariationActive
                 ? "bg-amber-100 dark:bg-cyan-500/20 text-amber-900 dark:text-cyan-300 border-amber-400 dark:border-cyan-500/40"
                 : "bg-parchment-200 dark:bg-neutral-800 text-ink-600 dark:text-neutral-400 border-parchment-300 dark:border-neutral-700"
             }`}
           >
-            {isAudioActive ? "Voice Modulating ON" : "Quiet Beam"}
+            {beamVariationActive ? "Beam Variation: On" : "Beam Variation: Off"}
           </button>
           <button
             type="button"
             onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              setIsAudioActive(true);
-              soundEngine.playSwitchClick();
+              updateParam("voiceSplDb", 1);
             }}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
@@ -228,7 +193,7 @@ export function BellPhotophoneSim({
             </text>
 
             {/* Vocal Sound Waves (Concentric arcs) */}
-            {isAudioActive && (
+            {beamVariationActive && (
               <g stroke="#38bdf8" strokeWidth="1.5" fill="none" opacity="0.8">
                 <path d="M -35 -15 A 20 20 0 0 1 -35 15" />
                 <path d="M -25 -10 A 12 12 0 0 1 -25 10" />
@@ -237,7 +202,7 @@ export function BellPhotophoneSim({
 
             {/* Flexible Mirror Diaphragm */}
             {(() => {
-              const flex = (photoState.diaphragmDisplacementUm / 25.0) * 8;
+              const flex = photoState.beamVariationActive ? 7 : 0;
               return (
                 <g>
                   <path
@@ -289,7 +254,7 @@ export function BellPhotophoneSim({
 
           {/* 2. FREE-SPACE MODULATED OPTICAL BEAM (CENTER) */}
           {(() => {
-            const spread = 20 + photoState.modulationDepth * 25;
+            const spread = 20 + (photoState.beamVariationActive ? 25 : 0);
             return (
               <g>
                 <polygon
@@ -315,7 +280,7 @@ export function BellPhotophoneSim({
                   fontFamily="monospace"
                   fontWeight="bold"
                 >
-                  MODULATED LIGHT BEAM ({transmissionDistanceM} METERS)
+                  {photoState.beamVariationActive ? "VARYING RADIANT BEAM" : "STATIC RADIANT BEAM"}
                 </text>
                 <text
                   x="510"
@@ -325,8 +290,7 @@ export function BellPhotophoneSim({
                   textAnchor="middle"
                   fontFamily="monospace"
                 >
-                  Divergence: {photoState.beamDivergenceMrad.toFixed(1)} mrad • Mod:{" "}
-                  {(photoState.modulationDepth * 100).toFixed(0)}%
+                  Qualitative source schematic — not to scale and not a link-budget calculation
                 </text>
               </g>
             );
@@ -452,7 +416,7 @@ export function BellPhotophoneSim({
                 T (Telephone)
               </text>
               {/* Output sound waves */}
-              {isAudioActive && (
+              {beamVariationActive && (
                 <g stroke="#34d399" strokeWidth="2" fill="none" opacity="0.9">
                   <path d="M 22 -10 A 15 15 0 0 1 22 10" />
                   <path d="M 28 -16 A 24 24 0 0 1 28 16" />
@@ -463,129 +427,18 @@ export function BellPhotophoneSim({
         </svg>
       </div>
 
-      {/* Interactive Controls & Telemetry Readouts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-neutral-950/60 p-5 rounded-xl border border-neutral-800">
-        {/* Left: Input Sliders */}
-        <div className="flex flex-col gap-4">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Real-Time Optical Link Controllers
-          </h4>
-
-          {/* Voice SPL Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={voiceId} className="text-neutral-300">
-                Speaker Vocal Sound Pressure Level
-              </label>
-              <span className="text-amber-400 font-bold">{voiceSplDb} dB SPL</span>
-            </div>
-            <input
-              id={voiceId}
-              type="range"
-              min="50"
-              max="95"
-              step="1"
-              value={voiceSplDb}
-              onChange={(e) => updateParam("voiceSplDb", parseInt(e.target.value, 10))}
-              className="w-full accent-amber-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-neutral-500 font-mono">
-              <span>50 dB (Whisper)</span>
-              <span>75 dB (Conversation)</span>
-              <span>95 dB (Shout)</span>
-            </div>
-          </div>
-
-          {/* Transmission Distance Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={distId} className="text-neutral-300">
-                Free-Space Wireless Distance
-              </label>
-              <span className="text-cyan-400 font-bold">{transmissionDistanceM} meters</span>
-            </div>
-            <input
-              id={distId}
-              type="range"
-              min="10"
-              max="500"
-              step="5"
-              value={transmissionDistanceM}
-              onChange={(e) => updateParam("transmissionDistanceM", parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
-            />
-            <div className="flex justify-between text-[10px] text-neutral-500 font-mono">
-              <span>10 m (Lab)</span>
-              <span>213 m (Franklin School 1880)</span>
-              <span>500 m (Long Range)</span>
-            </div>
-          </div>
-
-          {/* Solar Irradiance Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-mono">
-              <label htmlFor={solarId} className="text-neutral-300">
-                Source Solar Radiant Flux
-              </label>
-              <span className="text-yellow-400 font-bold">{solarIrradianceWPerM2} W/m²</span>
-            </div>
-            <input
-              id={solarId}
-              type="range"
-              min="200"
-              max="1200"
-              step="50"
-              value={solarIrradianceWPerM2}
-              onChange={(e) => updateParam("solarIrradianceWPerM2", parseInt(e.target.value, 10))}
-              className="w-full accent-yellow-500 bg-neutral-800 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* Right: Live SI Telemetry HUD */}
-        <div className="flex flex-col gap-3 justify-center font-mono text-xs">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
-            Computed Telemetry & Semiconductor State
-          </h4>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block uppercase">
-                Concentrated Power
-              </span>
-              <span className="text-sm font-bold text-amber-400">
-                {photoState.concentratedPowerMw.toFixed(2)} mW
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block uppercase">
-                Selenium Resistance
-              </span>
-              <span className="text-sm font-bold text-emerald-400">
-                {photoState.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block uppercase">
-                Audio Signal Current
-              </span>
-              <span className="text-sm font-bold text-cyan-400">
-                {photoState.audioSignalCurrentUa.toFixed(2)} µA
-              </span>
-            </div>
-            <div className="p-3 rounded-lg bg-neutral-900 border border-neutral-800">
-              <span className="text-neutral-500 text-[10px] block uppercase">Reproduced Audio</span>
-              <span className="text-sm font-bold text-indigo-400">
-                {photoState.reproducedAudioSplDb.toFixed(1)} dB SPL
-              </span>
-            </div>
-          </div>
-          <div className="p-2.5 rounded bg-neutral-900/80 border border-neutral-800 text-[11px] text-neutral-400">
-            <span className="text-amber-300 font-semibold">Historic Note: </span>
-            On June 3, 1880, Bell and Tainter transmitted articulate speech 213 meters from the roof
-            of Franklin School to 1325 L Street NW, Washington, D.C.
-          </div>
-        </div>
-      </div>
+      <aside className="rounded-xl border border-neutral-800 bg-neutral-950/60 p-5 text-sm text-neutral-300">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+          Source boundary
+        </h4>
+        <p className="mt-2 leading-6">
+          This is a qualitative reading aid for the arrangement Bell describes: a transmitter varies
+          radiant energy; optics direct it; a sensitive body produces direct sound or changes a
+          telephone circuit. The patent does not supply measured irradiance, range, optical efficiency,
+          resistance, current, sound pressure, or a validated numerical transfer function. Those values
+          are therefore intentionally withheld here.
+        </p>
+      </aside>
     </div>
   );
 }

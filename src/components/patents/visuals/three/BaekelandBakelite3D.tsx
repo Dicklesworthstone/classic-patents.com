@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildBaekelandBakeliteModel } from "./baekelandBakeliteModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -42,6 +45,7 @@ export function BaekelandBakelite3D() {
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const tempC = (params.curingTempC as number) ?? 130;
@@ -252,43 +256,31 @@ export function BaekelandBakelite3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Curing Temperature</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {tempC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="110"
-              max="200"
-              step="5"
-              value={tempC}
-              onChange={(e) => updateParam("curingTempC", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="curingTemp"
+            patentId="us-942699-baekeland-bakelite"
+            paramKey="autoclaveTempC"
+            label="Curing Temperature"
+            value={tempC}
+            min={110}
+            max={200}
+            step={5}
+            onChange={(val) => updateParam("curingTempC", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Autoclave Pressure</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {pressPsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="25"
-              max="150"
-              step="5"
-              value={pressPsi}
-              onChange={(e) =>
-                updateParam("autoclavePressurePsi", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="autoclavePressure"
+            patentId="us-942699-baekeland-bakelite"
+            paramKey="autoclavePressurePsi"
+            label="Autoclave Pressure"
+            value={pressPsi}
+            min={25}
+            max={150}
+            step={5}
+            onChange={(val) => updateParam("autoclavePressurePsi", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -308,6 +300,21 @@ export function BaekelandBakelite3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-942699-baekeland-bakelite"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-942699-baekeland-bakelite"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

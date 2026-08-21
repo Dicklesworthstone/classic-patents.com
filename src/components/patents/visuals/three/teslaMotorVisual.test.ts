@@ -46,10 +46,10 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
 
     expect(threeSource).not.toContain("isCutaway");
     expect(threeSource).toContain("US 381,968 Fig. 9 motor-generator");
-    expect(threeSource).toContain("apparatus.generatorRpm");
+    expect(threeSource).toContain("generatorRpm");
     expect(threeSource).toContain("apparatus.diskRpm");
-    expect(threeSource).toContain("Fig. 15–16 is the distinct source variant");
-    expect(threeSource).toContain("deliberately renders Fig. 9 only");
+    expect(threeSource).toMatch(/Fig\. 15[–-]16 is a\s+distinct source variant/i);
+    expect(threeSource).toMatch(/(?:intentionally|deliberately) Fig\. 9 only/i);
     expect(threeSource).not.toContain("squirrel_cage");
     expect(threeSource).not.toContain("Source Guide");
     expect(threeSource).not.toContain("pole count");

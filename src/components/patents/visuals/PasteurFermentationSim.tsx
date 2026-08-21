@@ -2,62 +2,52 @@
 
 import { FlaskConical, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { pasteurMicrobeSvg, stepPasteurFermentation } from "@/physics/catalogKernels";
+import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
+const VESSEL_X = [145, 300, 455] as const;
+
 export function PasteurFermentationSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-135245-pasteur-fermentation");
   const { isAudioMuted, toggleSound } = usePatentAudio();
-  const bathTempC = params.pasteurizationTempC ?? 58;
-  const holdTimeMinutes = params.holdTimeMin ?? 20;
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [timerSeconds, setTimerSeconds] = useState<number>(0);
+  const co2SweepPct = params.co2SweepPct ?? 100;
+  const sprayCoveragePct = params.sprayCoveragePct ?? 100;
+  const wortTempC = params.wortTempC ?? 21.25;
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [timerSeconds, setTimerSeconds] = useState(0);
   const animRef = useRef<number | null>(null);
 
-  const pasteur = stepPasteurFermentation({
-    pasteurizationTempC: bathTempC,
-    holdTimeMin: holdTimeMinutes,
-    wortTempC: params.wortTempC ?? 22,
-  });
-  const decimalReductionLog = pasteur.logReduction;
-  const isMicrobesKilled = decimalReductionLog >= 6;
-  const isAromaPreserved = bathTempC <= 65;
-  const survivingBacteriaPct = pasteur.survivorPct;
-  const shelfLifeMonths = pasteur.shelfLifeMonths;
+  const process = stepPasteurFermentation({ co2SweepPct, sprayCoveragePct, wortTempC });
 
   useEffect(() => {
     if (!isPlaying) return;
-
-    let lastTime = performance.now();
-
+    let lastTime: number | undefined;
     const loop = (time: number) => {
-      const dt = Math.min(0.1, (time - lastTime) / 1000);
+      const dt = lastTime === undefined ? 0 : Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
-
-      setTimerSeconds((prev) => (prev + dt) % pasteur.timerWrapS);
+      setTimerSeconds((previous) => (previous + dt) % 10);
       animRef.current = requestAnimationFrame(loop);
     };
-
     animRef.current = requestAnimationFrame(loop);
     return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current);
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, pasteur.timerWrapS]);
+  }, [isPlaying]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
+    <div className="w-full rounded-2xl border border-parchment-300 bg-parchment-50 p-4 shadow-md transition-colors dark:border-ink-800 dark:bg-ink-950 sm:p-6">
+      <div className="mb-4 flex flex-col items-start justify-between gap-3 border-b border-parchment-200 pb-3 dark:border-ink-800 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <FlaskConical className="h-5 w-5 text-cyan-700 dark:text-cyan-400" />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Louis Pasteur Thermal Fermentation &amp; Preservation (US 135,245)
+              Pasteur Closed-Vessel Wort Process (US 135,245)
             </h3>
           </div>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
-            Sub-boiling thermal inactivation, aseptic filtered cooling, and pure yeast monoculture.
+          <p className="mt-0.5 font-sans text-xs text-ink-500 dark:text-ink-400">
+            Carbonic-acid-gas air displacement followed by exterior water-spray cooling.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -67,14 +57,10 @@ export function PasteurFermentationSim() {
               setIsPlaying(!isPlaying);
               soundEngine.playSwitchClick();
             }}
-            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            aria-label={isPlaying ? "Pause animation" : "Play animation"}
+            className="rounded-lg bg-parchment-200 p-2 text-ink-800 transition-colors hover:bg-parchment-300 dark:bg-ink-800 dark:text-parchment-200 dark:hover:bg-ink-700"
           >
-            {isPlaying ? (
-              <Pause className="w-4 h-4 text-emerald-600" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
+            {isPlaying ? <Pause className="h-4 w-4 text-cyan-700" /> : <Play className="h-4 w-4" />}
           </button>
           <button
             type="button"
@@ -82,14 +68,10 @@ export function PasteurFermentationSim() {
               toggleSound();
               soundEngine.playSwitchClick();
             }}
-            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            aria-label={isAudioMuted ? "Unmute audio" : "Mute audio"}
+            className="rounded-lg bg-parchment-200 p-2 text-ink-800 transition-colors hover:bg-parchment-300 dark:bg-ink-800 dark:text-parchment-200 dark:hover:bg-ink-700"
           >
-            {isAudioMuted ? (
-              <VolumeX className="w-4 h-4" />
-            ) : (
-              <Volume2 className="w-4 h-4 text-emerald-600" />
-            )}
+            {isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
           <button
             type="button"
@@ -98,198 +80,215 @@ export function PasteurFermentationSim() {
               setTimerSeconds(0);
               soundEngine.playSwitchClick();
             }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            aria-label="Reset source-sequence controls"
+            className="rounded-lg bg-parchment-200 p-2 text-ink-800 transition-colors hover:bg-parchment-300 dark:bg-ink-800 dark:text-parchment-200 dark:hover:bg-ink-700"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {/* SVG Animation Stage */}
-      <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
-          {/* Water Heating Jacket Tank */}
-          <rect
-            x="140"
-            y="80"
-            width="320"
-            height="200"
-            rx="16"
-            fill="#ED8936"
-            opacity={Math.min(1, pasteur.bathGlowOpacity * (0.85 + pasteur.wortHeatSample))}
-            stroke="#C05621"
-            strokeWidth="3"
-          />
-          <text
-            x="160"
-            y="105"
-            fill="#FFFFFF"
-            fontWeight="bold"
-            fontSize="12"
-            fontFamily="sans-serif"
-          >
-            Water Bath: {bathTempC}°C
+      <div className="relative flex aspect-[16/9] max-h-[360px] w-full items-center justify-center overflow-hidden rounded-xl border border-parchment-200 bg-parchment-100 dark:border-ink-800 dark:bg-ink-900">
+        <svg
+          viewBox="0 0 600 340"
+          className="h-full w-full"
+          aria-label="Source-based Fig. 1 process diagram"
+        >
+          <title>Three vessels A with pipe E, nozzles P, generator M M, and exit cups v</title>
+          <path d="M70 45 H535" stroke="#475569" strokeWidth="8" />
+          <text x="292" y="34" fill="currentColor" fontSize="14" fontWeight="700">
+            E
           </text>
 
-          {/* Sealed Copper Fermentation Vat inside Bath */}
-          <rect
-            x="200"
-            y="110"
-            width="200"
-            height="150"
-            rx="8"
-            fill="#8B5A2B"
-            stroke="#5C4033"
-            strokeWidth="2"
-          />
-          <rect x="210" y="125" width="180" height="120" rx="4" fill="#D69E2E" opacity="0.75" />
-          <text
-            x="235"
-            y="180"
-            fill="#2D3748"
-            fontWeight="bold"
-            fontSize="13"
-            fontFamily="sans-serif"
-          >
-            Sealed Liquid Vat
-          </text>
-
-          {/* Microscopic Spoilage Microbes vs Yeast Cells */}
-          <g id="microbial-view">
-            {Array.from({ length: pasteur.microbeCount }).map((_, i) => {
-              const { xPos, yPos } = pasteurMicrobeSvg(
-                i,
-                timerSeconds,
-                pasteur.microbeWobbleOmega,
-                pasteur.microbeWobbleAmpPx,
-                pasteur.microbeSvgOriginX,
-                pasteur.microbeSvgOriginY,
-                pasteur.microbeSvgPitchX,
-                pasteur.microbeSvgPitchY,
-                pasteur.microbeCols,
-              );
-              const isAlive = !isMicrobesKilled;
-              return (
-                <g key={`microbe-${xPos}-${i}`}>
-                  {/* Round Yeast cells (Intact) */}
-                  <circle
-                    cx={xPos}
-                    cy={yPos}
-                    r={pasteur.yeastSvgR}
-                    fill="#FAF089"
-                    stroke="#B7791F"
-                    strokeWidth="1.5"
-                  />
-                  {/* Rod-shaped Lactic/Acetic Bacteria (Killed if hot) */}
-                  <rect
-                    x={xPos + pasteur.rodDx}
-                    y={yPos - pasteur.rodDy}
-                    width={pasteur.rodSvgW}
-                    height={pasteur.rodSvgH}
-                    rx="2"
-                    fill={isAlive ? "#E53E3E" : "#718096"}
-                    opacity={isAlive ? 0.9 : 0.25}
-                  />
-                </g>
-              );
-            })}
-          </g>
-
-          {/* Cotton-Wool Sterile Air Filter Tube on Top */}
-          <g transform="translate(300, 70)">
-            <line x1="0" y1="0" x2="0" y2="40" stroke="#CBD5E0" strokeWidth="6" />
-            <ellipse
-              cx="0"
-              cy="-5"
-              rx="20"
-              ry="12"
-              fill="#EDF2F7"
-              stroke="#A0AEC0"
+          <g transform="translate(42 78)">
+            <rect
+              x="0"
+              y="0"
+              width="74"
+              height="58"
+              rx="5"
+              fill="#d6d3d1"
+              stroke="#57534e"
               strokeWidth="2"
             />
-            <text
-              x="-45"
-              y="-12"
-              fill="#718096"
-              fontSize="9"
-              fontWeight="bold"
-              fontFamily="sans-serif"
-            >
-              Cotton Filter
+            <text x="18" y="26" fill="#292524" fontSize="13" fontWeight="700">
+              M M
+            </text>
+            <text x="6" y="45" fill="#57534e" fontSize="9">
+              CO₂ generator
+            </text>
+            <path d="M74 30 H103 V106" fill="none" stroke="#2563eb" strokeWidth="4" />
+            <text x="80" y="23" fill="#2563eb" fontSize="11">
+              w
             </text>
           </g>
+
+          {VESSEL_X.map((x, vesselIndex) => (
+            <g key={x}>
+              <path
+                d={`M ${x - 48} 142 Q ${x} 105 ${x + 48} 142 V274 H ${x - 48} Z`}
+                fill="#d6b98c"
+                stroke="#57534e"
+                strokeWidth="3"
+              />
+              <text x={x - 6} y="205" fill="#292524" fontSize="16" fontWeight="700">
+                A
+              </text>
+              <path
+                d={`M ${x - 52} 274 Q ${x} 292 ${x + 52} 274`}
+                fill="none"
+                stroke="#475569"
+                strokeWidth="6"
+              />
+              <text x={x - 61} y="292" fill="#475569" fontSize="11">
+                g
+              </text>
+              <path
+                d={`M ${x - 35} 298 V318 M ${x + 35} 298 V318`}
+                stroke="#57534e"
+                strokeWidth="7"
+              />
+              <path d={`M ${x - 52} 286 H ${x + 52}`} stroke="#57534e" strokeWidth="4" />
+              <text x={x + 35} y="285" fill="#57534e" fontSize="11">
+                R
+              </text>
+
+              <path d={`M ${x} 45 V104`} stroke="#475569" strokeWidth="4" />
+              <path
+                d={`M ${x - 19} 116 L ${x + 19} 116 L ${x} 139 Z`}
+                fill="#94a3b8"
+                stroke="#475569"
+                strokeWidth="2"
+              />
+              <text x={x + 23} y="123" fill="#475569" fontSize="11">
+                P
+              </text>
+
+              {Array.from({ length: 7 }).map((_, dropIndex) => {
+                const phase = (timerSeconds * 36 + dropIndex * 17 + vesselIndex * 9) % 75;
+                const spread = (dropIndex - 3) * 10;
+                return (
+                  <circle
+                    key={dropIndex}
+                    cx={x + spread}
+                    cy={142 + phase}
+                    r="2.4"
+                    fill="#0891b2"
+                    opacity={0.15 + 0.0085 * process.sprayCoveragePct}
+                  />
+                );
+              })}
+
+              {Array.from({ length: 5 }).map((_, markerIndex) => (
+                <circle
+                  key={markerIndex}
+                  cx={x - 28 + markerIndex * 14}
+                  cy={244 - ((timerSeconds * 14 + markerIndex * 19) % 80)}
+                  r="3"
+                  fill="#2563eb"
+                  opacity={0.12 + 0.008 * process.co2SweepPct}
+                />
+              ))}
+            </g>
+          ))}
+
+          <path d="M95 184 H76 V235 H53" fill="none" stroke="#2563eb" strokeWidth="4" />
+          <rect
+            x="28"
+            y="226"
+            width="27"
+            height="25"
+            rx="3"
+            fill="#bfdbfe"
+            stroke="#2563eb"
+            strokeWidth="2"
+          />
+          <text x="62" y="226" fill="#2563eb" fontSize="11">
+            x
+          </text>
+          <text x="36" y="244" fill="#2563eb" fontSize="11">
+            v
+          </text>
+
+          <text x="410" y="328" fill="#64748b" fontSize="10">
+            Animated percentages are reader controls; the patent gives no flow rate or cooling time.
+          </text>
         </svg>
       </div>
 
-      {/* Telemetry Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Water Temperature
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {bathTempC}°C
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Microbial Lethality
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-amber-700 dark:text-amber-500">
-            {decimalReductionLog} Log Reduction
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Surviving Bacteria
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-emerald-700 dark:text-emerald-500">
-            {survivingBacteriaPct}%
-          </span>
-        </div>
-        <div className="bg-parchment-100 dark:bg-ink-900 border border-parchment-200 dark:border-ink-800 p-2.5 rounded-xl text-center">
-          <span className="text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400 block font-sans">
-            Aroma / Shelf-Life
-          </span>
-          <span className="font-mono text-sm sm:text-base font-bold text-ink-900 dark:text-parchment-100">
-            {isAromaPreserved ? "Intact" : "Boiled"} / {shelfLifeMonths} mo
-          </span>
-        </div>
+      <div className="my-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          ["CO₂ sweep", `${process.co2SweepPct}%`],
+          ["Exterior spray", `${process.sprayCoveragePct}%`],
+          ["Yeast-addition band", `${process.wortTempC} °C`],
+          ["Source sequence", process.readyForYeast ? "Ready for yeast" : "Incomplete"],
+        ].map(([label, value]) => (
+          <div
+            key={label}
+            className="rounded-xl border border-parchment-200 bg-parchment-100 p-2.5 text-center dark:border-ink-800 dark:bg-ink-900"
+          >
+            <span className="block font-sans text-[10px] uppercase tracking-wider text-ink-500 dark:text-ink-400">
+              {label}
+            </span>
+            <span className="font-mono text-sm font-bold text-ink-900 dark:text-parchment-100 sm:text-base">
+              {value}
+            </span>
+          </div>
+        ))}
       </div>
 
-      {/* Sliders */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-parchment-200 dark:border-ink-800">
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Water Bath Temperature</span>
-            <span className="font-mono">{bathTempC}°C</span>
-          </div>
-          <input
-            type="range"
-            min="45"
-            max="75"
-            step="1"
-            value={bathTempC}
-            onChange={(e) => updateParam("pasteurizationTempC", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
-        </div>
-        <div>
-          <div className="flex justify-between text-xs font-sans font-medium text-ink-700 dark:text-parchment-300 mb-1">
-            <span>Thermal Hold Time</span>
-            <span className="font-mono">{holdTimeMinutes} minutes</span>
-          </div>
-          <input
-            type="range"
-            min="5"
-            max="40"
-            step="5"
-            value={holdTimeMinutes}
-            onChange={(e) => updateParam("holdTimeMin", Number(e.target.value))}
-            className="w-full accent-amber-600 cursor-pointer"
-          />
-        </div>
+      <div className="grid grid-cols-1 gap-4 border-t border-parchment-200 pt-3 dark:border-ink-800 sm:grid-cols-3">
+        {[
+          {
+            id: "co2SweepPct",
+            label: "CO₂ Sweep Progress",
+            value: co2SweepPct,
+            min: 0,
+            max: 100,
+            step: 5,
+            unit: "%",
+          },
+          {
+            id: "sprayCoveragePct",
+            label: "Exterior Spray Coverage",
+            value: sprayCoveragePct,
+            min: 0,
+            max: 100,
+            step: 5,
+            unit: "%",
+          },
+          {
+            id: "wortTempC",
+            label: "Yeast-Addition Temperature",
+            value: wortTempC,
+            min: 20,
+            max: 22.5,
+            step: 0.25,
+            unit: "°C",
+          },
+        ].map((control) => (
+          <label
+            key={control.id}
+            className="font-sans text-xs font-medium text-ink-700 dark:text-parchment-300"
+          >
+            <span className="mb-1 flex justify-between">
+              <span>{control.label}</span>
+              <span className="font-mono">
+                {control.value}
+                {control.unit}
+              </span>
+            </span>
+            <input
+              type="range"
+              min={control.min}
+              max={control.max}
+              step={control.step}
+              value={control.value}
+              onChange={(event) => updateParam(control.id, Number(event.target.value))}
+              className="w-full cursor-pointer accent-cyan-700"
+            />
+          </label>
+        ))}
       </div>
     </div>
   );

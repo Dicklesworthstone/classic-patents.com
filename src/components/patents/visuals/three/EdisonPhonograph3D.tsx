@@ -2,9 +2,7 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -53,7 +51,6 @@ export function EdisonPhonograph3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const phono = stepEdisonPhonograph({
     mandrelRpm,
@@ -66,10 +63,7 @@ export function EdisonPhonograph3D() {
     voiceVolumeDb,
     isAudioMuted,
     isCutaway,
-    grooveDepthMicrons: phono.grooveDepthMicrons,
     leadScrewPitchMm: phono.leadScrewPitchMm,
-    surfaceSpeedCmPerS: phono.surfaceSpeedCmPerS,
-    audioBandwidthHz: phono.audioBandwidthHz,
     mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
     stylusAmp: phono.stylusAmp,
     stylusOmegaRadPerS: phono.stylusOmegaRadPerS,
@@ -86,10 +80,6 @@ export function EdisonPhonograph3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -145,13 +135,6 @@ export function EdisonPhonograph3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <PortHamiltonianEnergyStrip
-        patentId="us-200521-edison-phonograph"
-        params={{
-          cylinderRpm: mandrelRpm,
-          voiceVolumeDb,
-        }}
-      />
       <div className="sr-only">Thomas Edison Phonograph 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -252,21 +235,9 @@ export function EdisonPhonograph3D() {
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
               <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Mandrel Rate:
+                Illustrative turn setting:
               </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{mandrelRpm} RPM</span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Groove Depth:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">
-                {phono.grooveDepthMicrons.toFixed(1)} µm
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Surface Speed:</span>
-              <span className="font-bold text-emerald-800 dark:text-emerald-400">
-                {phono.surfaceSpeedCmPerS.toFixed(1)} cm/s
-              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{mandrelRpm} model rpm</span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Lead Screw Pitch:</span>
@@ -274,13 +245,22 @@ export function EdisonPhonograph3D() {
                 {phono.leadScrewPitchMm.toFixed(2)} mm
               </span>
             </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Illustrative stylus motion:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {phono.stylusAmp.toFixed(4)} display units
+              </span>
+            </div>
+            <p className="pt-1 border-t border-parchment-200 dark:border-ink-800/80 text-[10px] leading-relaxed text-ink-500 dark:text-ink-400">
+              Reader aid only: the grant gives no rate, indentation depth, surface speed, or audio response.
+            </p>
           </div>
         )}
 
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Edison cylinder acoustics"
+          title="Edison source and reader aids"
           chips={[
             {
               label: "Source groove pitch",
@@ -292,24 +272,20 @@ export function EdisonPhonograph3D() {
               value: String(phono.sourceThreadsPerInch),
               unit: "threads/in",
             },
-            { label: "Illustrative turn setting", value: String(mandrelRpm), unit: "rpm" },
+            { label: "Illustrative turn setting", value: String(mandrelRpm), unit: "model rpm" },
             {
               label: "Illustrative axial animation",
               value: phono.axialTravelMmPerS.toFixed(2),
               unit: "mm/s",
             },
-            { label: "Model ω", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
+            { label: "Illustrative angular rate", value: phono.mandrelOmegaRadPerS.toFixed(1), unit: "rad/s" },
             {
-              label: "Groove crate",
-              value: crateSource === "wasm" ? "fs-fft" : "ts-wave-fallback",
+              label: "Illustrative stylus motion",
+              value: phono.stylusAmp.toFixed(4),
+              unit: "display units",
             },
           ]}
         />
-
-        <div className="sr-only">
-          Note: Rotational rate, travel range, indentation motion, and sound character are
-          model-only reader aids, not source claims.
-        </div>
       </div>
 
       {/* Interactive Controls Bar */}
@@ -318,10 +294,10 @@ export function EdisonPhonograph3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Mandrel Rotational Rate
+                Illustrative clock-work rate
               </span>
               <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {mandrelRpm} RPM
+                {mandrelRpm} model rpm
               </span>
             </div>
             <input
@@ -338,10 +314,10 @@ export function EdisonPhonograph3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Voice Diaphragm Excitation
+                Illustrative diaphragm-excitation level
               </span>
               <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {voiceVolumeDb} dB
+                {voiceVolumeDb} model units
               </span>
             </div>
             <input
@@ -356,23 +332,20 @@ export function EdisonPhonograph3D() {
           </div>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800 max-w-2xl">
-          <SensitivitySlider
-            id="us-200521-edison-phonograph-groovedepthum"
-            patentId="us-200521-edison-phonograph"
-            paramKey="grooveDepthUm"
-            label="Tinfoil Indentation Depth"
-            value={Number((voiceVolumeDb * 0.35).toFixed(1))}
-            unit="µm"
-            min={5.0}
-            max={45.0}
-            step={0.5}
-            onChange={(val) => {
-              const newDb = Math.round(val / 0.35);
-              updateParam("voiceVolumeDb", newDb);
-            }}
-          />
-        </div>
+        <ClaimConstraintToggle
+          patentId="us-200521-edison-phonograph"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-200521-edison-phonograph"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

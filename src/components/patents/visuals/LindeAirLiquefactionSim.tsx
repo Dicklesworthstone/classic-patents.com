@@ -10,16 +10,13 @@ import { usePatentAudio } from "./three/usePatentAudio";
 /**
  * An annotated reading of the apparatus in US 727,650, not a plant-sizing
  * calculator. The grant gives one operating example but no terminal
- * temperature, flow, yield, or production-rate measurement.
+ * temperature, flow, or production-rate measurement.
  */
 export function LindeAirLiquefactionSim() {
-  const { params, resetParams } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { resetParams } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [activeTab, setActiveTab] = useState<"liquefaction" | "separation">("liquefaction");
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
-    inletPressureAtm: params.inletPressureAtm ?? params.highPressureAtm,
-    coolerOutletC: params.coolerOutletC,
-  });
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-neutral-800 bg-parchment-50 dark:bg-neutral-950 p-4 sm:p-6 text-ink-900 dark:text-neutral-100 shadow-md transition-colors">
@@ -285,7 +282,7 @@ export function LindeAirLiquefactionSim() {
                 t³ after K: about {linde.coolerOutletC}°C or less
               </text>
               <text x="14" y="120" fill="#a1a1aa" fontFamily="monospace" fontSize="9">
-                No terminal temperature, yield, or rate is printed.
+                No terminal temperature or production rate is printed.
               </text>
             </g>
             <text

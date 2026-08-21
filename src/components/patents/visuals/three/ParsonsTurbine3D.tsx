@@ -2,14 +2,10 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { stepParsonsTurbine } from "@/physics/catalogKernels";
-import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { stepParsonsMarine, type ParsonsRoutingMode } from "@/physics/parsonsMarineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
-import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildParsonsTurbineModel, updateParsonsTurbineKinematics } from "./parsonsTurbineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -18,10 +14,10 @@ import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset =
   | "iso"
-  | "turbine_stages"
-  | "rotor_blades"
-  | "governor"
-  | "bearing_pedestal"
+  | "figure_1_banks"
+  | "figure_2_reverse"
+  | "figure_3_network"
+  | "shaft_network"
   | "top";
 
 const CAMERA_PRESETS: Record<
@@ -29,10 +25,10 @@ const CAMERA_PRESETS: Record<
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [12.5, 8.0, 14.0], target: [0, 0, 0] },
-  turbine_stages: { pos: [0, 2.0, 5.0], target: [0, 0.5, 0] },
-  rotor_blades: { pos: [2.8, 1.8, 3.5], target: [1.5, 0.4, 0] },
-  governor: { pos: [-4.5, 2.2, 3.5], target: [-3.5, 1.0, 0] },
-  bearing_pedestal: { pos: [5.5, 2.5, 3.8], target: [5.5, -1.0, 0] },
+  figure_1_banks: { pos: [0, 2.0, 5.0], target: [0, 0.5, 0] },
+  figure_2_reverse: { pos: [2.8, 1.8, 3.5], target: [1.5, 0.4, 0] },
+  figure_3_network: { pos: [-4.5, 2.2, 3.5], target: [-3.5, 1.0, 0] },
+  shaft_network: { pos: [5.5, 2.5, 3.8], target: [5.5, -1.0, 0] },
   top: { pos: [0, 14.5, 0.1], target: [0, 0, 0] },
 };
 
@@ -40,40 +36,27 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
-  // Steam Turbomachinery Parameters
-  const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
-  const turbineRpm = params.rotorRpm ?? 3000;
-  const inletPressurePsi = params.inletPressurePsi ?? 180;
-  const parsons = stepParsonsTurbine({
-    rotorRpm: turbineRpm,
-    inletPressurePsi,
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
+    1: true,
+    2: false,
+    3: false,
   });
-  const steamPressureBar = params.steamPressureBar ?? parsons.inletBar;
-  const powerKw = parsons.shaftPowerKw;
-  const stageCount = parsons.stageCount;
+  const [routing, setRouting] = useState<ParsonsRoutingMode>("series");
+  const [reversing, setReversing] = useState(false);
+  const marine = stepParsonsMarine({ routing, reversing });
   const [showSteamFlow, setShowSteamFlow] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
-  const [crateSource, setCrateSource] = useState(genericKernelSource());
-
   const live = useLiveSimParams({
-    turbineRpm,
-    steamPressureBar,
+    routing,
+    reversing,
     showSteamFlow,
     isAudioMuted,
     isCutaway,
-    shaftPowerKw: powerKw,
-    enthalpyKjKg: parsons.enthalpyKjKg,
-    inletMpa: parsons.inletMpa,
-    displayOmegaRadPerS: parsons.displayOmegaRadPerS,
-    steamAdvancePerS: parsons.steamAdvancePerS,
-    steamOpacity: parsons.steamOpacity,
-    steamSwirlOmegaRadPerS: parsons.steamSwirlOmegaRadPerS,
-    rotorOmegaRadPerS: parsons.rotorOmegaRadPerS,
-    bladeSpeedMps: parsons.bladeSpeedMps,
-    steamSpeedMps: parsons.steamSpeedMps,
+    displayOmegaRadPerS: 0.3,
+    steamAdvancePerS: 1.2,
+    steamOpacity: 0.72,
+    steamSwirlOmegaRadPerS: 0.2,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -89,10 +72,6 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
       soundEngine.playSwitchClick();
     });
   };
-
-  useEffect(() => {
-    void ensureGenericWasm().then((next) => setCrateSource(next));
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -133,8 +112,8 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
         p.steamSwirlOmegaRadPerS,
         p.showSteamFlow,
         p.isCutaway,
-        p.turbineRpm,
-        p.steamPressureBar,
+        p.routing,
+        p.reversing,
       );
 
       controls.update();
@@ -166,10 +145,10 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             {(
               [
                 ["iso", "Isometric"],
-                ["turbine_stages", "Stages"],
-                ["rotor_blades", "Blades"],
-                ["governor", "Governor"],
-                ["bearing_pedestal", "Bearings"],
+                ["figure_1_banks", "Fig. 1 banks"],
+                ["figure_2_reverse", "Fig. 2 reverse"],
+                ["figure_3_network", "Fig. 3 network"],
+                ["shaft_network", "Shafts"],
                 ["top", "Plan View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
@@ -196,7 +175,8 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             claimStates={claimStates}
             onToggleClaim={(claimNo, active) => {
               setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
-              updateParam("rotorRpm", active ? 3000 : 28000);
+              if (claimNo === 1) setRouting(active ? "series" : "simple-parallel");
+              if (claimNo === 2 || claimNo === 3) setReversing(active);
             }}
           />
           <button
@@ -265,21 +245,21 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Shaft Power:
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Route:</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {marine.routing}
               </span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{powerKw} kW</span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Rotor Speed:</span>
+              <span className="text-ink-600 dark:text-ink-400">Turbine banks:</span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {Math.round(turbineRpm)} RPM
+                {marine.activeTurbines.join(" ")}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Inlet Pressure:</span>
+              <span className="text-ink-600 dark:text-ink-400">Direction:</span>
               <span className="text-cyan-800 dark:text-cyan-400 font-bold">
-                {parsons.inletMpa.toFixed(2)} MPa ({inletPressurePsi} psi)
+                {marine.directionLabel}
               </span>
             </div>
           </div>
@@ -289,59 +269,40 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <SensitivitySlider
-            id="parsonsRotorRpm"
-            patentId="us-608969-parsons-turbine"
-            paramKey="rotorRpm"
-            label="Rotor Speed"
-            value={turbineRpm}
-            min={1000}
-            max={6000}
-            step={100}
-            unit=" RPM"
-            onChange={(val) => updateParam("rotorRpm", val)}
-            allParams={params}
-          />
-
-          <SensitivitySlider
-            id="parsonsInletPressurePsi"
-            patentId="us-608969-parsons-turbine"
-            paramKey="inletPressurePsi"
-            label="Inlet Steam Pressure"
-            value={inletPressurePsi}
-            min={50}
-            max={300}
-            step={10}
-            unit=" psi"
-            onChange={(val) => updateParam("inletPressurePsi", val)}
-            allParams={params}
-          />
+          <label className="text-xs font-sans text-ink-700 dark:text-parchment-300">
+            <span className="mb-1 block font-semibold">Valve connection</span>
+            <select
+              value={routing}
+              onChange={(event) => setRouting(event.target.value as ParsonsRoutingMode)}
+              className="w-full rounded-lg border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-900 px-2 py-2"
+            >
+              <option value="series">Series (Fig. 1)</option>
+              <option value="compound-parallel">Compound parallel (Fig. 1)</option>
+              <option value="simple-parallel">Simple parallel (Fig. 1 / 3)</option>
+            </select>
+          </label>
+          <label className="text-xs font-sans text-ink-700 dark:text-parchment-300 flex items-end gap-2 pb-2">
+            <input
+              type="checkbox"
+              checked={reversing}
+              onChange={(event) => setReversing(event.target.checked)}
+            />
+            Figure 2 X / Y reversing turbines (astern)
+          </label>
         </div>
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-608969-parsons-turbine"
-          params={params}
-          className="mt-3"
-        />
       </div>
 
       <StudioKernelChips
         visible={showUiOverlay}
         side="right"
-        title="Parsons reaction stages"
+        title="Parsons marine routing"
         chips={[
-          { label: "Rotor", value: String(Math.round(turbineRpm)), unit: "rpm" },
-          { label: "Inlet", value: parsons.inletMpa.toFixed(2), unit: "MPa" },
-          { label: "h", value: String(parsons.enthalpyKjKg), unit: "kJ/kg" },
-          { label: "Shaft", value: String(powerKw), unit: "kW" },
-          { label: "Stages", value: String(stageCount) },
-          { label: "u/c", value: String(parsons.steamBladeSpeedRatio) },
-          { label: "u", value: String(parsons.bladeSpeedMps), unit: "m/s" },
-          { label: "ω×0.08", value: parsons.displayOmegaRadPerS.toFixed(1), unit: "rad/s" },
-          {
-            label: "Steam crate",
-            value: crateSource === "wasm" ? "fs-lbm" : "ts-fluid-fallback",
-          },
+          { label: "Topology", value: marine.routing },
+          { label: "Banks", value: String(marine.activeTurbines.length) },
+          { label: "Shafts", value: String(marine.activeShafts) },
+          { label: "Direction", value: marine.directionLabel },
+          { label: "Flow edges", value: String(marine.routeEdges.length) },
+          { label: "Control", value: "valves + pipes" },
         ]}
       />
     </div>

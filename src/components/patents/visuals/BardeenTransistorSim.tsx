@@ -1,28 +1,25 @@
 "use client";
 
-import { Cpu, RotateCcw, Volume2, VolumeX } from "lucide-react";
-import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { bardeenHoleStream, stepBardeenTransistor } from "@/physics/catalogKernels";
+import { Cpu, RotateCcw } from "lucide-react";
+import {
+  BARDEEN_REPORTED_SAMPLES,
+  bardeenCarrierPath,
+  stepBardeenPointContact,
+  type BardeenOperatingSampleNumber,
+} from "@/physics/bardeenPointContactKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
 
 export function BardeenTransistorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2524035-bardeen-transistor");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
-  const emitterCurrentMa = params.emitterCurrent ?? 1.5;
-  const collectorVoltageV = Math.abs(params.collectorBias ?? -40);
-  const pointSpacingMicrons = params.pointSpacing ?? 50;
-
-  const semi = stepBardeenTransistor(
-    emitterCurrentMa,
-    params.collectorBias ?? -40,
-    pointSpacingMicrons,
-  );
-  const alphaRatio = semi.currentGainAlpha;
-  const collectorCurrentMa = semi.collectorCurrentMa;
-  const voltageGain = semi.voltageGain;
-  const powerGainDb = semi.powerGainDb.toFixed(1);
+  const operatingSample = Math.min(3, Math.max(1, Math.round(params.operatingSample ?? 1)));
+  const pointSpacingMils = params.pointSpacingMils ?? 2;
+  const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+  const state = stepBardeenPointContact({
+    operatingSample,
+    pointSpacingMils,
+    claim1Active,
+  });
+  const sample = state.sample;
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
@@ -32,37 +29,22 @@ export function BardeenTransistorSim() {
           <div className="flex items-center gap-2.5">
             <Cpu className="w-6 h-6 text-emerald-500 animate-pulse" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Bardeen &amp; Brattain&apos;s Point-Contact Transistor Simulator (US 2,524,035)
+              US 2,524,035 Fig. 1 Teaching Model
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Simulate minority carrier hole injection in n-type germanium and solid-state power
-            amplification.
+            Inspect the printed block, surface layer, barrier, contacts, and the three reported
+            operating samples.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
           <div className="px-3.5 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 text-xs sm:text-sm font-mono font-bold border border-emerald-300 dark:border-emerald-800 shadow-2xs">
-            +{powerGainDb} dB Gain
+            Reported Sample {sample.number}
           </div>
           <button
             type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
+            onClick={resetParams}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
             title="Reset Simulation"
@@ -81,7 +63,7 @@ export function BardeenTransistorSim() {
 
             {/* Germanium Crystal Block */}
             <g transform="translate(150, 160)">
-              {/* Main Germanium Wedge */}
+              {/* Supporting block 1 */}
               <polygon
                 points="0,0 300,0 270,100 30,100"
                 fill="#334155"
@@ -96,7 +78,7 @@ export function BardeenTransistorSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                n-TYPE GERMANIUM CRYSTAL
+                N-TYPE BLOCK 1
               </text>
 
               {/* Base Electrode (Bottom Metal Plate) */}
@@ -117,20 +99,20 @@ export function BardeenTransistorSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                BASE ELECTRODE
+                PLATED BASE 2
               </text>
 
-              {/* Surface Depletion / Inversion Layer */}
-              <rect x="20" y="0" width="260" height="12" fill="#0284c7" opacity="0.4" />
+              {/* Surface layer 3 and barrier 4, exaggerated for legibility. */}
+              <rect x="20" y="0" width="260" height="7" fill="#38bdf8" opacity="0.7" />
+              <rect x="20" y="7" width="260" height="5" fill="#a78bfa" opacity="0.65" />
             </g>
 
-            {/* Emitter Gold Contact (Left Point) */}
-            <g transform={`translate(${280 - semi.pointGapSvgPx}, 160)`}>
-              {/* Gold Foil / Phosphor Bronze Whisker */}
+            {/* Pointed spring-wire emitter 5 */}
+            <g transform={`translate(${300 - state.pointGapSvgPx}, 160)`}>
               <polygon
                 points="-12,-100 0,-100 0,0 -8,-2"
-                fill="#fbbf24"
-                stroke="#d97706"
+                fill="#b7791f"
+                stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <circle cx="0" cy="0" r="3" fill="#ef4444" />
@@ -142,20 +124,22 @@ export function BardeenTransistorSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                EMITTER (+)
+                EMITTER 5
               </text>
               <text x="-45" y="-95" fill="#94a3b8" fontSize="9" fontFamily="monospace">
-                {emitterCurrentMa} mA
+                +{sample.emitterBiasVolts} V reported bias
               </text>
             </g>
 
-            {/* Collector Gold Contact (Right Point) */}
-            <g transform={`translate(${280 + semi.pointGapSvgPx}, 160)`}>
-              {/* Gold Foil / Phosphor Bronze Whisker */}
+            {/* Pointed spring-wire collector 6 */}
+            <g
+              transform={`translate(${300 + state.pointGapSvgPx}, 160)`}
+              opacity={state.collectorCollectionActive ? 1 : 0.2}
+            >
               <polygon
                 points="0,-100 12,-100 8,-2 0,0"
-                fill="#fbbf24"
-                stroke="#d97706"
+                fill="#b7791f"
+                stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <circle cx="0" cy="0" r="3" fill="#38bdf8" />
@@ -167,63 +151,51 @@ export function BardeenTransistorSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                COLLECTOR (-)
+                COLLECTOR 6
               </text>
               <text x="10" y="-95" fill="#94a3b8" fontSize="9" fontFamily="monospace">
-                -{collectorVoltageV}V / {collectorCurrentMa.toFixed(2)} mA
+                {sample.collectorBiasVolts} V reported bias
               </text>
             </g>
 
-            {/* Minority Carrier Hole Injection Stream (Red moving to Collector) */}
-            <g transform="translate(150, 160)">
-              {Array.from({ length: semi.holeStreamCount }).map((_, i) => {
-                const { cx, cy } = bardeenHoleStream(
+            {/* Schematic carrier path, visible only when Claim 1 topology is present. */}
+            <g>
+              {Array.from({ length: state.carrierStreamCount }).map((_, i) => {
+                const { cx, cy } = bardeenCarrierPath(
                   i,
-                  semi.pointGapSvgPx,
-                  semi.holeStreamCount,
-                  semi.holeStreamHubX,
-                  semi.holeStreamBaseY,
-                  semi.holeStreamArcAmpPx,
+                  state.pointGapSvgPx,
+                  state.carrierStreamCount,
                 );
                 return (
                   <g key={i}>
-                    <circle cx={cx} cy={cy} r={semi.holeSvgR} fill="#ef4444" />
-                    <text
-                      x={cx - semi.holeLabelDx}
-                      y={cy + semi.holeLabelDy}
-                      fill="#ffffff"
-                      fontSize="7"
-                      fontWeight="bold"
-                    >
-                      +
-                    </text>
+                    <circle cx={cx} cy={cy} r="3" fill="#ef4444" />
                   </g>
                 );
               })}
             </g>
 
             {/* Point Spacing Dimension Line */}
-            <g transform="translate(280, 130)">
+            <g transform="translate(300, 130)">
               <line
-                x1={-semi.pointGapSvgPx}
+                x1={-state.pointGapSvgPx}
                 y1="0"
-                x2={semi.pointGapSvgPx}
+                x2={state.pointGapSvgPx}
                 y2="0"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <line
-                x1={-semi.pointGapSvgPx}
+                x1={-state.pointGapSvgPx}
                 y1="-5"
-                x2={-semi.pointGapSvgPx}
+                x2={-state.pointGapSvgPx}
                 y2="5"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <line
-                x1={semi.pointGapSvgPx}
+                x1={state.pointGapSvgPx}
                 y1="-5"
-                x2={semi.pointGapSvgPx}
+                x2={state.pointGapSvgPx}
                 y2="5"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
@@ -236,29 +208,35 @@ export function BardeenTransistorSim() {
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                {pointSpacingMicrons} µm
+                {state.pointSpacingMils} mils
               </text>
             </g>
           </svg>
 
           {/* Telemetry Strip */}
-          <div className="w-full grid grid-cols-3 gap-2 text-center text-xs sm:text-sm font-mono pt-3 border-t border-ink-800 text-ink-300">
+          <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs sm:text-sm font-mono pt-3 border-t border-ink-800 text-ink-300">
             <div>
-              <span className="text-ink-400 block text-xs">CURRENT GAIN (α)</span>
+              <span className="text-ink-400 block text-xs">INPUT BIAS</span>
               <span className="text-emerald-400 font-bold text-sm sm:text-base">
-                {alphaRatio.toFixed(2)}
+                +{sample.emitterBiasVolts} V
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">VOLTAGE GAIN</span>
+              <span className="text-ink-400 block text-xs">OUTPUT BIAS</span>
               <span className="text-amber-400 font-bold text-sm sm:text-base">
-                {voltageGain.toFixed(0)}x
+                {sample.collectorBiasVolts} V
               </span>
             </div>
             <div>
-              <span className="text-ink-400 block text-xs">POWER GAIN</span>
+              <span className="text-ink-400 block text-xs">REPORTED VOLTAGE GAIN</span>
               <span className="text-blue-400 font-bold text-sm sm:text-base">
-                +{powerGainDb} dB
+                {sample.voltageGainFactor}×
+              </span>
+            </div>
+            <div>
+              <span className="text-ink-400 block text-xs">REPORTED POWER GAIN</span>
+              <span className="text-purple-400 font-bold text-sm sm:text-base">
+                {sample.powerGainFactor}×
               </span>
             </div>
           </div>
@@ -268,84 +246,90 @@ export function BardeenTransistorSim() {
         <div className="lg:col-span-4 space-y-4">
           <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/70 p-5 space-y-4 shadow-sm">
             <span className="font-serif font-bold text-base sm:text-lg text-ink-950 dark:text-parchment-50 block">
-              Solid-State Transistor Controls
+              Source-Bounded Controls
             </span>
 
-            {/* Emitter Current Slider */}
+            {/* The patent's three measured operating samples. */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Emitter Input Current ($I_E$)" />
+                  Table I operating sample
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                  {emitterCurrentMa} mA
+                  No. {sample.number}
                 </span>
               </div>
-              <input
-                type="range"
-                aria-label="Emitter Input Current"
-                min="0.5"
-                max="4.0"
-                step="0.1"
-                value={emitterCurrentMa}
-                onChange={(e) => updateParam("emitterCurrent", Number(e.target.value))}
-                className="w-full accent-emerald-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
+              <div className="grid grid-cols-3 gap-2">
+                {([1, 2, 3] as BardeenOperatingSampleNumber[]).map((number) => (
+                  <button
+                    key={number}
+                    type="button"
+                    aria-pressed={sample.number === number}
+                    onClick={() => updateParam("operatingSample", number)}
+                    className={`rounded-lg border px-3 py-2 font-mono text-xs transition-colors ${
+                      sample.number === number
+                        ? "border-emerald-600 bg-emerald-600 text-white"
+                        : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
+                    }`}
+                  >
+                    Sample {BARDEEN_REPORTED_SAMPLES[number].number}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Contact Spacing Slider */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-xs sm:text-sm font-mono">
                 <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Point Contact Spacing ($d$)" />
+                  Preferred contact spacing
                 </span>
                 <span className="text-amber-600 dark:text-amber-400 font-bold">
-                  {pointSpacingMicrons} µm
+                  {state.pointSpacingMils} mils ({state.pointSpacingMicrometers} µm)
                 </span>
               </div>
               <input
                 type="range"
                 aria-label="Point Contact Spacing"
-                min="20"
-                max="100"
-                step="5"
-                value={pointSpacingMicrons}
-                onChange={(e) => updateParam("pointSpacing", Number(e.target.value))}
+                min="1"
+                max="10"
+                step="0.5"
+                value={state.pointSpacingMils}
+                onChange={(e) => updateParam("pointSpacingMils", Number(e.target.value))}
                 className="w-full accent-amber-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
               />
             </div>
 
-            {/* Collector Voltage Slider */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs sm:text-sm font-mono">
-                <span className="font-semibold text-ink-800 dark:text-parchment-200">
-                  <TextWithLatex text="Reverse Collector Voltage ($V_C$)" />
-                </span>
-                <span className="text-blue-600 dark:text-blue-400 font-bold">
-                  -{collectorVoltageV} V
-                </span>
-              </div>
-              <input
-                type="range"
-                aria-label="Reverse Collector Voltage"
-                min="10"
-                max="80"
-                step="5"
-                value={collectorVoltageV}
-                onChange={(e) => updateParam("collectorBias", -Number(e.target.value))}
-                className="w-full accent-blue-600 cursor-pointer h-2 bg-parchment-300 dark:bg-ink-700 rounded-lg"
-              />
-            </div>
+            <button
+              type="button"
+              aria-pressed={claim1Active}
+              onClick={() => updateParam("claim1Active", claim1Active ? 0 : 1)}
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${
+                claim1Active
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
+              }`}
+            >
+              <span className="block font-mono text-xs uppercase tracking-wide">
+                Claim 1 collection topology
+              </span>
+              <span className="mt-1 block text-sm">
+                {claim1Active
+                  ? "Emitter current can spread through the surface layer to the nearby collector."
+                  : "Collector path removed: the claimed three-electrode combination is incomplete."}
+              </span>
+            </button>
 
             <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-ink-950 dark:text-parchment-100 text-xs sm:text-sm font-sans">
               <span className="font-bold text-emerald-900 dark:text-emerald-300 block font-mono text-xs uppercase tracking-wider mb-1">
-                Minority Hole Injection:
+                Measurement boundary
               </span>
               <p className="leading-relaxed">
-                Forward-biasing the emitter injects minority holes into the surface of the
-                germanium. Because the collector contact is only {pointSpacingMicrons} µm away,
-                almost all holes are captured by the reverse collector field, yielding{" "}
-                {voltageGain.toFixed(0)}x voltage amplification.
+                The gain, resistance, voltage, and power values above are the patent&apos;s reported
+                Sample {sample.number} measurements. The moving points illustrate the described
+                collection path; they do not assert carrier lifetime, transit time, or universal
+                gain. The field example preserves the patent&apos;s own qualified comparison of 10 V
+                across a believed 10⁻⁴ cm layer-plus-barrier thickness.
               </p>
             </div>
           </div>

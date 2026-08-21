@@ -2,15 +2,18 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset = "isometric" | "gridControl" | "filament" | "plateAnode";
 
@@ -27,11 +30,12 @@ const CAMERA_PRESETS: Record<
 export function DeForestAudion3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
 
@@ -267,43 +271,31 @@ export function DeForestAudion3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Plate Anode Voltage
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {plateVoltageV} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="1"
-              value={plateVoltageV}
-              onChange={(e) => updateParam("plateVoltageV", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="plateVoltage"
+            patentId="us-879532-de-forest-audion"
+            paramKey="plateVoltageV"
+            label="Plate Anode Voltage"
+            value={plateVoltageV}
+            min={10}
+            max={100}
+            step={1}
+            onChange={(val) => updateParam("plateVoltageV", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Grid Bias Voltage</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {gridBiasVoltageV.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="-5"
-              max="2"
-              step="0.1"
-              value={gridBiasVoltageV}
-              onChange={(e) => updateParam("gridBiasVoltageV", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="gridBiasVoltage"
+            patentId="us-879532-de-forest-audion"
+            paramKey="gridVoltageV"
+            label="Grid Bias Voltage"
+            value={gridBiasVoltageV}
+            min={-5}
+            max={2}
+            step={0.1}
+            onChange={(val) => updateParam("gridBiasVoltageV", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -323,6 +315,21 @@ export function DeForestAudion3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-879532-de-forest-audion"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-879532-de-forest-audion"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

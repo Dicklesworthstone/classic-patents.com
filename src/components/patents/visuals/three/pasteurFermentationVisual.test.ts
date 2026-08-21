@@ -9,7 +9,7 @@ import {
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
 
-describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics boundary", () => {
+describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "PasteurFermentation3D.tsx"),
@@ -25,8 +25,22 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildPasteurFermentationModel");
     expect(modelSource).toContain("updatePasteurFermentationKinematics");
-    expect(modelSource).not.toContain("stepPasteurFermentation({})");
-    expect(modelSource).toContain("wortTempC: fermentationTempC");
+    expect(modelSource).toContain("generatorM");
+    expect(modelSource).toContain("supplyLineW");
+    expect(modelSource).toContain("exitTubeX");
+    expect(modelSource).toContain("waterCupV");
+    for (const unsupported of [
+      "gooseneck",
+      "swan-neck",
+      "cottonBulb",
+      "coolingCoils",
+      "samplingCock",
+      "tinnedCopper",
+      "heatFrames",
+      "sampleHeatAt",
+    ]) {
+      expect(modelSource.toLowerCase()).not.toContain(unsupported.toLowerCase());
+    }
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -45,57 +59,80 @@ describe("US 135,245 Louis Pasteur Brewing & Fermentation visual & biophysics bo
     }
   });
 
-  test("exposes authentic camera presets and cutaway mode for fermentation vat inspection", () => {
+  test("exposes source-apparatus camera presets and cutaway mode", () => {
     const threeSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "PasteurFermentation3D.tsx"),
       "utf8",
     );
 
-    for (const preset of [
-      "iso",
-      "gooseneck_airlock",
-      "cooling_coil",
-      "sampling_valve",
-      "cotton_filter",
-      "top",
-    ]) {
+    for (const preset of ["iso", "vessel", "nozzle", "generator", "exit_cup", "top"]) {
       expect(threeSource).toContain(preset);
     }
 
     expect(threeSource).toContain("isCutaway");
-    expect(threeSource).toContain("Pasteur Fermentation Vat 3D");
+    expect(threeSource).toContain("Pasteur closed-vessel process apparatus in three dimensions");
     expect(threeSource).toContain("controls.setView");
     expect(threeSource).not.toContain("camera.position.set");
+    expect(threeSource).not.toContain("ensureGenericWasm");
+    expect(threeSource).not.toContain("genericKernelSource");
   });
 
-  test("computes genuine log reduction, yeast activity, and alcohol yield in SI units", () => {
+  test("computes only the source sequence and its explicitly labelled reader controls", () => {
     const result = stepPasteurFermentation({
-      pasteurizationTempC: 58,
-      holdTimeMin: 20,
-      wortTempC: 22,
+      co2SweepPct: 100,
+      sprayCoveragePct: 100,
+      wortTempC: 21,
     });
-    expect(result.logReduction).toBeGreaterThan(4);
-    expect(result.yeastActivityPct).toBeGreaterThan(80);
-    expect(result.alcoholAbvPct).toBeGreaterThan(3.5);
-    expect(result.co2PressureBar).toBeGreaterThan(1.0);
-    expect(result.bathGlowOpacity).toBeCloseTo(58 / 120, 3);
-    expect(result.microbeCount).toBe(14);
-    expect(result.microbeWobbleOmega).toBe(3);
+    expect(result.co2SweepPct).toBe(100);
+    expect(result.sprayCoveragePct).toBe(100);
+    expect(result.wortTempC).toBe(21);
+    expect(result.withinPrintedYeastBand).toBe(true);
+    expect(result.readyForYeast).toBe(true);
+    const serialized = JSON.stringify(result).toLowerCase();
+    for (const unsupported of ["logreduction", "alcohol", "pressure", "shelflife", "microbe"])
+      expect(serialized).not.toContain(unsupported);
   });
 
-  test("builds and articulates procedural tripod, copper vat, gooseneck airlock, and cooling coils correctly", () => {
+  test("builds and animates the source vessel, gas line, exterior spray, and exit cup", () => {
     const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
     expect(rootGroup.children.length).toBeGreaterThan(0);
-    expect(nodes.tripod).toBeDefined();
+    expect(nodes.support).toBeDefined();
     expect(nodes.tank).toBeDefined();
     expect(nodes.domeLid).toBeDefined();
-    expect(nodes.airlockMesh).toBeDefined();
-    expect(nodes.cottonBulb).toBeDefined();
+    expect(nodes.pipeE).toBeDefined();
+    expect(nodes.nozzleP).toBeDefined();
+    expect(nodes.generatorM).toBeDefined();
+    expect(nodes.supplyLineW).toBeDefined();
+    expect(nodes.exitTubeX).toBeDefined();
+    expect(nodes.waterCupV).toBeDefined();
 
-    updatePasteurFermentationKinematics(nodes, materials, 0.016, 0.5, 22, 95, true, true);
-    expect(materials.tinnedCopper.transparent).toBe(true);
-    expect(nodes.bubblePoints.visible).toBe(true);
+    updatePasteurFermentationKinematics(nodes, materials, 0.016, 100, 100, true);
+    expect(materials.vessel.transparent).toBe(true);
+    expect(nodes.gasPoints.visible).toBe(true);
+    expect(nodes.sprayPoints.visible).toBe(true);
 
     dispose();
+  });
+
+  test("forbids the unrelated modern-pasteurization narrative in public Pasteur visuals", () => {
+    const sources = [
+      readFileSync(join(VISUALS_DIRECTORY, "PasteurFermentationSim.tsx"), "utf8"),
+      readFileSync(join(VISUALS_DIRECTORY, "three", "PasteurFermentation3D.tsx"), "utf8"),
+      readFileSync(join(VISUALS_DIRECTORY, "three", "pasteurFermentationModel.ts"), "utf8"),
+    ].join("\n").toLowerCase();
+    for (const unsupported of [
+      "microbial kill",
+      "log reduction",
+      "alcohol yield",
+      "co₂ overpressure",
+      "shelf life",
+      "pasteurization bath",
+      "thermal hold",
+      "swan-neck",
+      "gooseneck",
+      "cotton filter",
+    ]) {
+      expect(sources).not.toContain(unsupported);
+    }
   });
 });

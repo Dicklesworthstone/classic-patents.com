@@ -1,19 +1,14 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "overview" | "transmitter" | "receiver" | "top";
 
@@ -27,28 +22,14 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 14.0, 0.1], target: [0, 1.0, 0] },
 };
 
-interface BellPhotophone3DProps {
-  initialVoiceSplDb?: number;
-  initialDistanceM?: number;
-  initialSolarWPerM2?: number;
-}
-
-export function BellPhotophone3D({
-  initialVoiceSplDb = 75,
-  initialDistanceM = 213,
-  initialSolarWPerM2 = 950,
-}: BellPhotophone3DProps) {
+export function BellPhotophone3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<StudioContext | null>(null);
 
   const { params, updateParam } = usePatentPhysics("us-235199-bell-photophone");
-  const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
-  const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
-  const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
+  const beamVariationActive = (params.voiceSplDb ?? 1) > 0;
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -59,27 +40,9 @@ export function BellPhotophone3D({
 
   const photoState = useMemo(() => {
     return stepBellPhotophone({
-      voiceSplDb: !isAudioMuted ? voiceSplDb : 40,
-      transmissionDistanceM,
-      solarIrradianceWPerM2,
+      beamVariationActive,
     });
-  }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioMuted]);
-
-  useEffect(() => {
-    if (isAudioMuted) {
-      soundEngine.stopContinuousTone();
-      return;
-    }
-    const sample = Math.min(1, Math.abs(photoState.audioSignalCurrentUa) / 40);
-    soundEngine.playFieldTransducer({
-      kind: "photocurrent",
-      sample,
-      carrierHz: 800,
-    });
-    return () => {
-      soundEngine.stopContinuousTone();
-    };
-  }, [isAudioMuted, photoState.audioSignalCurrentUa]);
+  }, [beamVariationActive]);
 
   const live = useLiveSimParams({ photoState, isCutaway });
 
@@ -120,13 +83,6 @@ export function BellPhotophone3D({
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <PortHamiltonianEnergyStrip
-        patentId="us-235199-bell-photophone"
-        params={{
-          beamPowerWatts: solarIrradianceWPerM2 * 0.05 * 0.8,
-          voiceSplDb,
-        }}
-      />
       <div className="sr-only">Alexander Graham Bell Photophone 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -163,29 +119,14 @@ export function BellPhotophone3D({
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
-          <ClaimConstraintToggle
-            patentId="us-235199-bell-photophone"
-            claimStates={claimStates}
-            onToggleClaim={(c: number, active: boolean) => {
-              setClaimStates((prev) => ({ ...prev, [c]: active }));
-              updateParam("voiceSplDb", active ? 75 : 30);
-            }}
-          />
           <button
             type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            onClick={() => updateParam("voiceSplDb", beamVariationActive ? 0 : 1)}
+            className="rounded-xl border border-parchment-300 bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink-700 shadow-sm backdrop-blur-md transition-colors hover:bg-parchment-100 dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 dark:hover:bg-ink-800"
+            title="Toggle the qualitative beam-variation illustration"
+            aria-label="Toggle the qualitative beam-variation illustration"
           >
-            {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            ) : (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            )}
+            Beam variation: {beamVariationActive ? "on" : "off"}
           </button>
 
           <button
@@ -232,151 +173,38 @@ export function BellPhotophone3D({
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
-                Modulation:
-              </span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Beam state:</span>
               <span className="text-amber-800 dark:text-amber-400 font-bold">
-                {(photoState.modulationDepth * 100).toFixed(1)}%
+                {photoState.beamVariationActive ? "varying" : "static"}
               </span>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Selenium R:</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                {photoState.seleniumOperatingResistanceKOhms.toFixed(1)} kΩ
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Signal Current:</span>
-              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
-                {photoState.audioSignalCurrentUa.toFixed(2)} µA
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Reproduced SPL:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">
-                {photoState.reproducedAudioSplDb.toFixed(1)} dB SPL
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-ink-600 dark:text-ink-400">Optical Link SNR:</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-bold">
-                {photoState.linkSnrDb.toFixed(1)} dB
-              </span>
+            <div className="pt-1 text-[11px] leading-4 text-ink-600 dark:text-ink-400">
+              Qualitative source schematic. US 235,199 does not provide a measured optical link budget,
+              selenium resistance curve, or acoustic-output calibration.
             </div>
           </div>
         )}
       </div>
 
-      {/* Interactive Controls Bar */}
+      {/* Source-bounded control */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Voice Acoustic Level
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {voiceSplDb} dB SPL
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="95"
-              step="1"
-              value={voiceSplDb}
-              onChange={(e) => updateParam("voiceSplDb", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Transmission Distance
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {transmissionDistanceM} m
-              </span>
-            </div>
-            <input
-              type="range"
-              min="20"
-              max="500"
-              step="10"
-              value={transmissionDistanceM}
-              onChange={(e) =>
-                updateParam("transmissionDistanceM", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Solar Irradiance</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {solarIrradianceWPerM2} W/m²
-              </span>
-            </div>
-            <input
-              type="range"
-              min="400"
-              max="1200"
-              step="25"
-              value={solarIrradianceWPerM2}
-              onChange={(e) =>
-                updateParam("solarIrradianceWPerM2", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
-        </div>
-
-        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800">
-          <SensitivitySlider
-            id="bell-photophone-beam-power"
-            patentId="us-235199-bell-photophone"
-            paramKey="beamPowerWatts"
-            label="Optical Beam Power"
-            value={Number((solarIrradianceWPerM2 * 0.05 * 0.8).toFixed(2))}
-            unit="W"
-            min={0.5}
-            max={5.0}
-            step={0.1}
-            onChange={(val) => {
-              const newSolar = val / (0.05 * 0.8);
-              updateParam("solarIrradianceWPerM2", Math.round(newSolar));
-            }}
-          />
-        </div>
+        <p className="text-sm leading-6 text-ink-700 dark:text-ink-300">
+          This 3D view is an explanatory arrangement, not a numerical reconstruction. It shows only the
+          source-described chain: transmitter motion changes a beam, optics direct it, and a sensitive
+          receiver can produce a corresponding acoustic or electrical effect.
+        </p>
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
       <StudioKernelChips
         visible={true}
-        title="SELENIUM OPTICAL SPEECH TRANSMISSION"
+        title="QUALITATIVE PHOTOPHONE ARRANGEMENT"
         chips={[
-          {
-            label: "Distance",
-            value: `${transmissionDistanceM.toFixed(0)}`,
-            unit: "m",
-            tone: "hot",
-          },
-          {
-            label: "Voice SPL",
-            value: `${voiceSplDb.toFixed(0)}`,
-            unit: "dB",
-          },
-          {
-            label: "Sunlight Flux",
-            value: `${solarIrradianceWPerM2.toFixed(0)}`,
-            unit: "W/m²",
-          },
+          { label: "Transmitter", value: "Beam controller" },
+          { label: "Optical path", value: "Directed radiant beam" },
           { label: "Detector", value: "Crystalline Selenium (Se) Cell" },
           {
-            label: "Modulation",
-            value: "Diaphragm Mirror Beam Deflection",
+            label: "Output", value: "Direct sound or telephone circuit",
           },
         ]}
       />
