@@ -115,9 +115,9 @@ export const NoycePlanarIC3D = memo(() => {
         nodes,
         materials,
         dt,
+        0,
         p.clockFrequencyMhz,
-        p.reverseBias,
-        p.oxideThickness,
+        true,
         p.isCutaway,
       );
 
