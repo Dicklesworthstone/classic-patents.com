@@ -62,14 +62,21 @@ export function PageRank3D() {
     let renderedSteps = 0;
     const sched = new TickScheduler(1 / 10, 0);
     let displayAngle = 0;
+    let timeSec = 0;
     let hudCounter = 0;
     let rafId = 0;
+    let lastFrameTimeMs: number | undefined;
 
     let currentRanks = [0.2, 0.2, 0.2, 0.2, 0.2];
     let iteration = 0;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
+      const delta =
+        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
+      lastFrameTimeMs = frameTimeMs;
+      timeSec += delta;
+
       renderedSteps += 1;
       const p = live.current;
 
@@ -79,8 +86,9 @@ export function PageRank3D() {
         iteration += 1;
       });
 
-      displayAngle += 0.05 * (1 / 60);
+      displayAngle += 0.15 * delta;
       model.mainGroup.rotation.y = displayAngle;
+      model.updateSurfers(timeSec);
 
       currentRanks.forEach((rank, i) => {
         const targetScale = 0.25 + rank * 3.2;
@@ -101,7 +109,7 @@ export function PageRank3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

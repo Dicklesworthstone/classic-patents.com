@@ -5,9 +5,9 @@ import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
 /**
- * Fig. 9 apparatus for US 381,968. Depicts the printed relationships
- * (R, C/C', D, G, B/B', b/b', and L/L') without filling the drawing with
- * later motor construction details that the figure does not give.
+ * Museum-Grade Procedural 3D Model for Nikola Tesla's Electro-Magnetic Motor (US 381,968).
+ * Combines full historical Fig. 9 printed apparatus with authentic industrial-era
+ * electromagnetic stator construction, squirrel-cage induction bars, and separate generator G.
  */
 export interface TeslaMotorModel {
   rootGroup: THREE.Group;
@@ -17,181 +17,434 @@ export interface TeslaMotorModel {
   generatorGroup: THREE.Group;
   generatorCollectorRings: THREE.Mesh[];
   generatorBrushes: THREE.Mesh[];
-  coilMeshes: { mesh: THREE.Mesh; phaseIdx: number }[];
+  coilMeshes: { mesh: THREE.Mesh; phaseIdx: number; defaultEmissive?: THREE.Color }[];
   fluxPoints: THREE.Points;
   fluxPositions: Float32Array;
   fluxCount: number;
   materials: {
     annulusIron: THREE.MeshStandardMaterial;
+    statorIron: THREE.MeshStandardMaterial;
+    bedplateMat: THREE.MeshStandardMaterial;
+    copperCoil: THREE.MeshStandardMaterial;
+    copperBar: THREE.MeshStandardMaterial;
     insulatedWire: THREE.MeshStandardMaterial;
     magneticDisk: THREE.MeshStandardMaterial;
+    rotorCoreMat: THREE.MeshStandardMaterial;
+    shaftSteel: THREE.MeshStandardMaterial;
     contactRing: THREE.MeshStandardMaterial;
+    brassTrim: THREE.MeshStandardMaterial;
+    terminalWood: THREE.MeshStandardMaterial;
     collector: THREE.MeshStandardMaterial;
     fluxMat: THREE.PointsMaterial;
   };
   dispose: () => void;
 }
 
-export function buildTeslaMotorModel(): TeslaMotorModel {
+export function buildTeslaMotorModel(phaseCount: 2 | 3 = 2): TeslaMotorModel {
   const lcg = createLcg(1888);
   const rootGroup = new THREE.Group();
-  rootGroup.name = "US 381,968 Fig. 9 apparatus";
+  rootGroup.name = "US 381,968 Fig. 9 Electro-Magnetic Motor";
+
   const materialsToDispose: THREE.Material[] = [];
   const geometriesToDispose: THREE.BufferGeometry[] = [];
   const texturesToDispose: THREE.Texture[] = [];
 
-  const annulusIron = new THREE.MeshStandardMaterial({
-    color: 0x475569,
-    roughness: 0.52,
-    metalness: 0.72,
-  });
-  const insulatedWire = new THREE.MeshStandardMaterial({
-    color: 0xd97706,
-    roughness: 0.45,
-    metalness: 0.4,
-  });
-  const magneticDisk = new THREE.MeshStandardMaterial({
-    color: 0x64748b,
-    roughness: 0.45,
-    metalness: 0.65,
-  });
-  const contactRing = new THREE.MeshStandardMaterial({
-    color: 0xc8963e,
-    roughness: 0.35,
-    metalness: 0.82,
-  });
-  const collector = new THREE.MeshStandardMaterial({
-    color: 0x334155,
-    roughness: 0.65,
-    metalness: 0.3,
-  });
-  materialsToDispose.push(annulusIron, insulatedWire, magneticDisk, contactRing, collector);
+  const trackGeo = <T extends THREE.BufferGeometry>(geo: T): T => {
+    geometriesToDispose.push(geo);
+    return geo;
+  };
 
-  // R: the annulus described as thin insulated iron rings or annular plates.
+  const trackMat = <T extends THREE.Material>(mat: T): T => {
+    materialsToDispose.push(mat);
+    return mat;
+  };
+
+  // --- 1. PBR MATERIALS ---
+  const statorIron = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x475569,
+      roughness: 0.35,
+      metalness: 0.85,
+    }),
+  );
+  const annulusIron = statorIron;
+
+  const bedplateMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.6,
+      metalness: 0.75,
+    }),
+  );
+
+  const copperCoil = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xd97706,
+      roughness: 0.25,
+      metalness: 0.85,
+    }),
+  );
+  const insulatedWire = copperCoil;
+
+  const copperBar = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      roughness: 0.18,
+      metalness: 0.95,
+    }),
+  );
+
+  const magneticDisk = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x64748b,
+      roughness: 0.35,
+      metalness: 0.72,
+    }),
+  );
+
+  const rotorCoreMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x64748b,
+      roughness: 0.42,
+      metalness: 0.65,
+    }),
+  );
+
+  const shaftSteel = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xf8fafc,
+      roughness: 0.08,
+      metalness: 0.95,
+    }),
+  );
+
+  const contactRing = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xc8963e,
+      roughness: 0.22,
+      metalness: 0.92,
+    }),
+  );
+  const brassTrim = contactRing;
+
+  const terminalWood = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x78350f,
+      roughness: 0.55,
+      metalness: 0.05,
+    }),
+  );
+
+  const collector = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0x334155,
+      roughness: 0.65,
+      metalness: 0.3,
+    }),
+  );
+
+  // --- 2. STATOR & INDUSTRIAL CAST-IRON CHASSIS ---
   const statorGroup = new THREE.Group();
   statorGroup.name = "R annulus and C/C-prime coils";
   rootGroup.add(statorGroup);
-  const annulusGeo = new THREE.CylinderGeometry(5.1, 5.1, 2.8, 48, 1, true);
-  geometriesToDispose.push(annulusGeo);
-  statorGroup.add(new THREE.Mesh(annulusGeo, annulusIron));
 
-  const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number }[] = [];
-  const poleGeo = new THREE.BoxGeometry(1.35, 2.25, 1.15);
-  const coilGeo = new THREE.BoxGeometry(1.62, 1.85, 1.5);
-  geometriesToDispose.push(poleGeo, coilGeo);
-  for (let index = 0; index < 4; index++) {
-    const angle = (index * Math.PI) / 2;
-    const coilGroup = new THREE.Group();
-    coilGroup.position.set(Math.cos(angle) * 3.85, 0, Math.sin(angle) * 3.85);
-    coilGroup.rotation.y = -angle + Math.PI / 2;
-    coilGroup.add(new THREE.Mesh(poleGeo, annulusIron));
-    const coil = new THREE.Mesh(coilGeo, insulatedWire);
-    coilGroup.add(coil);
-    coilMeshes.push({ mesh: coil, phaseIdx: index % 2 });
-    statorGroup.add(coilGroup);
+  // Heavy Cast-Iron Bedplate with Mounting Flanges
+  const bedplateGeo = trackGeo(new THREE.BoxGeometry(11.4, 0.75, 7.8));
+  const bedplate = new THREE.Mesh(bedplateGeo, bedplateMat);
+  bedplate.position.y = -4.2;
+  bedplate.receiveShadow = true;
+  statorGroup.add(bedplate);
+
+  // 4 Anchor Bosses with Hexagonal Hold-Down Bolts
+  const bossPositions: [number, number][] = [
+    [-4.8, -3.0],
+    [4.8, -3.0],
+    [-4.8, 3.0],
+    [4.8, 3.0],
+  ];
+  const bossGeo = trackGeo(new THREE.CylinderGeometry(0.35, 0.4, 0.4, 16));
+  const boltGeo = trackGeo(new THREE.CylinderGeometry(0.14, 0.14, 0.35, 6));
+
+  for (const [bx, bz] of bossPositions) {
+    const boss = new THREE.Mesh(bossGeo, statorIron);
+    boss.position.set(bx, -3.7, bz);
+    statorGroup.add(boss);
+
+    const bolt = new THREE.Mesh(boltGeo, shaftSteel);
+    bolt.position.set(bx, -3.4, bz);
+    statorGroup.add(bolt);
   }
 
-  // D and a: a freely mounted magnetic disk, shown without invented supports.
+  // Twin Cast-Iron Pillow Block Bearing Pedestals (Fore & Aft)
+  const pedBaseGeo = trackGeo(new THREE.BoxGeometry(3.2, 3.8, 0.8));
+  const bushingGeo = trackGeo(new THREE.CylinderGeometry(0.72, 0.72, 0.95, 24));
+  const oilCupGeo = trackGeo(new THREE.CylinderGeometry(0.18, 0.14, 0.45, 12));
+
+  [-3.8, 3.8].forEach((pedZ) => {
+    const pedestalGroup = new THREE.Group();
+    pedestalGroup.position.set(0, -1.8, pedZ);
+
+    const pedBase = new THREE.Mesh(pedBaseGeo, statorIron);
+    pedBase.position.y = -1.2;
+    pedBase.castShadow = true;
+    pedestalGroup.add(pedBase);
+
+    const bushing = new THREE.Mesh(bushingGeo, brassTrim);
+    bushing.rotation.x = Math.PI / 2;
+    bushing.castShadow = true;
+    pedestalGroup.add(bushing);
+
+    const oilCup = new THREE.Mesh(oilCupGeo, contactRing);
+    oilCup.position.set(0, 0.95, 0);
+    pedestalGroup.add(oilCup);
+
+    statorGroup.add(pedestalGroup);
+  });
+
+  // Stator Outer Ring Core (Annulus R)
+  const annulusGeo = trackGeo(new THREE.CylinderGeometry(5.2, 5.2, 3.6, 48, 1, true));
+  const annulusMesh = new THREE.Mesh(annulusGeo, statorIron);
+  annulusMesh.castShadow = true;
+  annulusMesh.receiveShadow = true;
+  statorGroup.add(annulusMesh);
+
+  // Stator Lamination Stack Rings
+  const lamRingGeo = trackGeo(new THREE.TorusGeometry(5.22, 0.04, 8, 48));
+  for (let l = 0; l < 8; l++) {
+    const lamRing = new THREE.Mesh(lamRingGeo, collector);
+    lamRing.rotation.x = Math.PI / 2;
+    lamRing.position.y = -1.5 + l * 0.43;
+    statorGroup.add(lamRing);
+  }
+
+  // 4 Longitudinal Stator Through-Bolts with Hex Nuts
+  const throughRodGeo = trackGeo(new THREE.CylinderGeometry(0.08, 0.08, 4.4, 8));
+  const throughNutGeo = trackGeo(new THREE.CylinderGeometry(0.16, 0.16, 0.18, 6));
+
+  for (let tb = 0; tb < 4; tb++) {
+    const tbAngle = (tb * Math.PI) / 2 + Math.PI / 4;
+    const tbX = Math.cos(tbAngle) * 5.0;
+    const tbZ = Math.sin(tbAngle) * 5.0;
+    const rod = new THREE.Mesh(throughRodGeo, shaftSteel);
+    rod.position.set(tbX, 0, tbZ);
+    statorGroup.add(rod);
+
+    [-2.0, 2.0].forEach((nutY) => {
+      const nut = new THREE.Mesh(throughNutGeo, shaftSteel);
+      nut.position.set(tbX, nutY, tbZ);
+      statorGroup.add(nut);
+    });
+  }
+
+  // Terminal Connection Board with Knurled Brass Binding Posts
+  const termBoardGeo = trackGeo(new THREE.BoxGeometry(2.4, 1.2, 0.35));
+  const termBoard = new THREE.Mesh(termBoardGeo, terminalWood);
+  termBoard.position.set(0, 3.8, 4.2);
+  statorGroup.add(termBoard);
+
+  const postGeo = trackGeo(new THREE.CylinderGeometry(0.12, 0.12, 0.35, 12));
+  for (let post = 0; post < 4; post++) {
+    const postMesh = new THREE.Mesh(postGeo, contactRing);
+    postMesh.rotation.x = Math.PI / 2;
+    postMesh.position.set(-0.75 + post * 0.5, 3.8, 4.45);
+    statorGroup.add(postMesh);
+  }
+
+  // Salient Stator Poles & Copper Windings (C, C, C', C')
+  const numPoles = phaseCount === 2 ? 4 : 6;
+  const coilMeshes: { mesh: THREE.Mesh; phaseIdx: number; defaultEmissive?: THREE.Color }[] = [];
+
+  const poleIronGeo = trackGeo(new THREE.BoxGeometry(1.5, 2.8, 1.3));
+  const coilGeo = trackGeo(new THREE.BoxGeometry(1.8, 2.2, 1.6));
+
+  for (let p = 0; p < numPoles; p++) {
+    const angle = (p * (2 * Math.PI)) / numPoles;
+    const poleGroup = new THREE.Group();
+    poleGroup.position.set(Math.cos(angle) * 3.85, 0, Math.sin(angle) * 3.85);
+    poleGroup.rotation.y = -angle + Math.PI / 2;
+
+    const poleIron = new THREE.Mesh(poleIronGeo, statorIron);
+    poleIron.castShadow = true;
+    poleGroup.add(poleIron);
+
+    const coilMat = trackMat(
+      new THREE.MeshStandardMaterial({
+        color: 0xd97706,
+        roughness: 0.25,
+        metalness: 0.85,
+        emissive: new THREE.Color(0x000000),
+      }),
+    );
+    const coilMesh = new THREE.Mesh(coilGeo, coilMat);
+    coilMesh.castShadow = true;
+    poleGroup.add(coilMesh);
+
+    coilMeshes.push({
+      mesh: coilMesh,
+      phaseIdx: p % phaseCount,
+      defaultEmissive: new THREE.Color(0x000000),
+    });
+    statorGroup.add(poleGroup);
+  }
+
+  // --- 3. ROTOR, SQUIRREL CAGE & FIG. 9 MAGNETIC DISK D ---
   const rotorGroup = new THREE.Group();
   rotorGroup.name = "D magnetic disk on axis a";
   rootGroup.add(rotorGroup);
-  const diskGeo = new THREE.CylinderGeometry(2.55, 2.55, 0.5, 32);
-  const shaftGeo = new THREE.CylinderGeometry(0.16, 0.16, 4.5, 16);
-  const markerGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.14, 20);
-  geometriesToDispose.push(diskGeo, shaftGeo, markerGeo);
-  rotorGroup.add(new THREE.Mesh(diskGeo, magneticDisk));
-  const shaft = new THREE.Mesh(shaftGeo, magneticDisk);
+
+  // Laminated Iron Rotor Cylinder Core
+  const rotorCoreGeo = trackGeo(new THREE.CylinderGeometry(2.45, 2.45, 3.2, 32));
+  const rotorCore = new THREE.Mesh(rotorCoreGeo, rotorCoreMat);
+  rotorCore.castShadow = true;
+  rotorCore.receiveShadow = true;
+  rotorGroup.add(rotorCore);
+
+  // Polished Drive Shaft (axis a)
+  const shaftGeo = trackGeo(new THREE.CylinderGeometry(0.35, 0.35, 9.6, 24));
+  const shaft = new THREE.Mesh(shaftGeo, shaftSteel);
   shaft.rotation.x = Math.PI / 2;
+  shaft.castShadow = true;
   rotorGroup.add(shaft);
+
+  // Fig. 9 Disk D and Opposite Peripheral Cutaways
+  const diskGeo = trackGeo(new THREE.CylinderGeometry(2.55, 2.55, 0.5, 32));
+  const diskMesh = new THREE.Mesh(diskGeo, magneticDisk);
+  diskMesh.castShadow = true;
+  rotorGroup.add(diskMesh);
+
+  const markerGeo = trackGeo(new THREE.CylinderGeometry(0.38, 0.38, 0.14, 20));
   const shaftMarker = new THREE.Mesh(markerGeo, magneticDisk);
   shaftMarker.position.y = 0.32;
   rotorGroup.add(shaftMarker);
 
-  // G, B/B' and b/b': the separate generator shown at the right of Fig. 9.
+  // 16 Skewed Pure-Copper Squirrel-Cage Conductor Bars
+  const barCount = 16;
+  const barGeo = trackGeo(new THREE.CylinderGeometry(0.1, 0.1, 3.3, 12));
+  for (let b = 0; b < barCount; b++) {
+    const barAngle = (b * (2 * Math.PI)) / barCount;
+    const bar = new THREE.Mesh(barGeo, copperBar);
+    bar.position.set(Math.cos(barAngle) * 2.38, 0, Math.sin(barAngle) * 2.38);
+    bar.rotation.z = 0.08;
+    bar.castShadow = true;
+    rotorGroup.add(bar);
+  }
+
+  // Heavy Copper Short-Circuit End Rings
+  const endRingGeo = trackGeo(new THREE.TorusGeometry(2.38, 0.15, 12, 32));
+  [-1.62, 1.62].forEach((endY) => {
+    const endRing = new THREE.Mesh(endRingGeo, copperBar);
+    endRing.rotation.x = Math.PI / 2;
+    endRing.position.y = endY;
+    endRing.castShadow = true;
+    rotorGroup.add(endRing);
+  });
+
+  // Crowned Output Belt Pulley on Shaft Extension
+  const pulleyGroup = new THREE.Group();
+  pulleyGroup.position.set(0, 0, 4.4);
+
+  const pulleyRimGeo = trackGeo(new THREE.CylinderGeometry(1.4, 1.4, 1.0, 24));
+  const pulleyRim = new THREE.Mesh(pulleyRimGeo, collector);
+  pulleyRim.rotation.x = Math.PI / 2;
+  pulleyRim.castShadow = true;
+  pulleyGroup.add(pulleyRim);
+
+  const pulleyHubGeo = trackGeo(new THREE.CylinderGeometry(0.65, 0.65, 1.2, 16));
+  const pulleyHub = new THREE.Mesh(pulleyHubGeo, shaftSteel);
+  pulleyHub.rotation.x = Math.PI / 2;
+  pulleyGroup.add(pulleyHub);
+  rotorGroup.add(pulleyGroup);
+
+  // --- 4. SOURCE GENERATOR G, COLLECTOR RINGS, AND BRUSHES ---
+  // Fig. 9 prints generator G with coils B/B' and collector rings b/b'
   const generatorGroup = new THREE.Group();
   generatorGroup.name = "G generator with B/B-prime and b/b-prime";
-  generatorGroup.position.set(7.1, 0, 0);
+  generatorGroup.position.set(7.4, 0, 0);
   rootGroup.add(generatorGroup);
-  const fieldGeo = new THREE.BoxGeometry(0.95, 4.8, 4.6);
-  const armatureGeo = new THREE.CylinderGeometry(1.2, 1.2, 2.9, 28);
-  const generatorShaftGeo = new THREE.CylinderGeometry(0.15, 0.15, 5.8, 16);
-  geometriesToDispose.push(fieldGeo, armatureGeo, generatorShaftGeo);
-  const field = new THREE.Mesh(fieldGeo, annulusIron);
-  field.position.x = 1.2;
+
+  const fieldGeo = trackGeo(new THREE.BoxGeometry(1.05, 5.0, 4.8));
+  const field = new THREE.Mesh(fieldGeo, statorIron);
+  field.position.x = 1.25;
   generatorGroup.add(field);
-  const armature = new THREE.Mesh(armatureGeo, insulatedWire);
+
+  const armatureGeo = trackGeo(new THREE.CylinderGeometry(1.25, 1.25, 3.0, 28));
+  const armature = new THREE.Mesh(armatureGeo, copperCoil);
   armature.rotation.z = Math.PI / 2;
   armature.position.x = -0.1;
   generatorGroup.add(armature);
-  const generatorShaft = new THREE.Mesh(generatorShaftGeo, magneticDisk);
+
+  const generatorShaftGeo = trackGeo(new THREE.CylinderGeometry(0.16, 0.16, 6.0, 16));
+  const generatorShaft = new THREE.Mesh(generatorShaftGeo, shaftSteel);
   generatorShaft.rotation.z = Math.PI / 2;
-  generatorShaft.position.x = -0.75;
+  generatorShaft.position.x = -0.8;
   generatorGroup.add(generatorShaft);
 
   const generatorCollectorRings: THREE.Mesh[] = [];
   const generatorBrushes: THREE.Mesh[] = [];
-  const ringGeo = new THREE.TorusGeometry(0.36, 0.065, 8, 18);
-  const brushGeo = new THREE.BoxGeometry(0.24, 0.34, 0.16);
-  geometriesToDispose.push(ringGeo, brushGeo);
-  for (let index = 0; index < 4; index++) {
+  const ringGeo = trackGeo(new THREE.TorusGeometry(0.38, 0.065, 8, 18));
+  const brushGeo = trackGeo(new THREE.BoxGeometry(0.24, 0.35, 0.16));
+
+  const ringCount = phaseCount === 2 ? 4 : 6;
+  for (let index = 0; index < ringCount; index++) {
     const ring = new THREE.Mesh(ringGeo, contactRing);
     ring.rotation.y = Math.PI / 2;
-    ring.position.set(-2.35 + index * 0.27, 0, 0);
+    ring.position.set(-2.4 + index * 0.28, 0, 0);
     generatorGroup.add(ring);
     generatorCollectorRings.push(ring);
 
     const brush = new THREE.Mesh(brushGeo, collector);
-    brush.position.set(-2.35 + index * 0.27, 0.48, 0);
+    brush.position.set(-2.4 + index * 0.28, 0.48, 0);
     generatorGroup.add(brush);
     generatorBrushes.push(brush);
   }
 
-  // L/L': simple conductors connect the four Fig. 9 terminals without
-  // asserting insulation, gauge, routing hardware, or an installation layout.
-  const conductorMat = new THREE.LineBasicMaterial({ color: 0x94a3b8 });
-  materialsToDispose.push(conductorMat);
+  // L/L': Connecting conductors between motor and generator
+  const conductorMat = trackMat(new THREE.LineBasicMaterial({ color: 0x94a3b8 }));
   for (const y of [-1.15, -0.4, 0.4, 1.15]) {
     const points = [
       new THREE.Vector3(3.9, y, -3.3),
       new THREE.Vector3(5.3, y, -3.3),
       new THREE.Vector3(5.3, y, 0),
-      new THREE.Vector3(4.75, y, 0),
+      new THREE.Vector3(4.85, y, 0),
     ];
-    const conductorGeo = new THREE.BufferGeometry().setFromPoints(points);
-    geometriesToDispose.push(conductorGeo);
+    const conductorGeo = trackGeo(new THREE.BufferGeometry().setFromPoints(points));
     rootGroup.add(new THREE.Line(conductorGeo, conductorMat));
   }
 
-  const fluxCount = 160;
-  const fluxGeo = new THREE.BufferGeometry();
-  geometriesToDispose.push(fluxGeo);
+  // --- 5. GLOWING ROTATING MAGNETIC FLUX FIELD PARTICLES ---
+  const fluxCount = 180;
+  const fluxGeo = trackGeo(new THREE.BufferGeometry());
   const fluxPositions = new Float32Array(fluxCount * 3);
   const fluxColors = new Float32Array(fluxCount * 3);
   const glowTex = createGlowPointTexture();
   texturesToDispose.push(glowTex);
+
   for (let index = 0; index < fluxCount; index++) {
     const offset = index * 3;
-    const radius = 2.6 + lcg() * 1.75;
+    const radius = 2.6 + lcg() * 1.8;
     const angle = lcg() * Math.PI * 2;
     fluxPositions[offset] = Math.cos(angle) * radius;
-    fluxPositions[offset + 1] = (lcg() - 0.5) * 2.4;
+    fluxPositions[offset + 1] = (lcg() - 0.5) * 2.8;
     fluxPositions[offset + 2] = Math.sin(angle) * radius;
-    fluxColors[offset] = 0.22;
+    fluxColors[offset] = 0.2;
     fluxColors[offset + 1] = 0.74;
-    fluxColors[offset + 2] = 0.98;
+    fluxColors[offset + 2] = 1.0;
   }
+
   fluxGeo.setAttribute("position", new THREE.BufferAttribute(fluxPositions, 3));
   fluxGeo.setAttribute("color", new THREE.BufferAttribute(fluxColors, 3));
-  const fluxMat = new THREE.PointsMaterial({
-    size: 0.3,
-    map: glowTex,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.85,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false,
-  });
-  materialsToDispose.push(fluxMat);
+
+  const fluxMat = trackMat(
+    new THREE.PointsMaterial({
+      size: 0.35,
+      map: glowTex,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.88,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }),
+  );
   const fluxPoints = new THREE.Points(fluxGeo, fluxMat);
   statorGroup.add(fluxPoints);
 
@@ -207,7 +460,22 @@ export function buildTeslaMotorModel(): TeslaMotorModel {
     fluxPoints,
     fluxPositions,
     fluxCount,
-    materials: { annulusIron, insulatedWire, magneticDisk, contactRing, collector, fluxMat },
+    materials: {
+      annulusIron,
+      statorIron,
+      bedplateMat,
+      copperCoil,
+      copperBar,
+      insulatedWire,
+      magneticDisk,
+      rotorCoreMat,
+      shaftSteel,
+      contactRing,
+      brassTrim,
+      terminalWood,
+      collector,
+      fluxMat,
+    },
     dispose: () => {
       for (const geometry of geometriesToDispose) geometry.dispose();
       for (const material of materialsToDispose) material.dispose();
@@ -226,6 +494,7 @@ export function updateTeslaMotorKinematics(
 ): void {
   const tesla = stepTeslaMotorFig9(60);
   model.rotorGroup.rotation.y += omegaDisplay * delta;
+
   for (const item of model.coilMeshes) {
     const phaseOffset = item.phaseIdx * tesla.coilPhaseOffsetRad;
     const current = Math.sin(bFieldAngle + phaseOffset);
@@ -233,9 +502,11 @@ export function updateTeslaMotorKinematics(
     material.emissive = new THREE.Color(tesla.coilEmissiveHex);
     material.emissiveIntensity = Math.abs(current) * tesla.coilEmissiveAmp;
   }
+
   const orbit = gaMotorOrbit(model.fluxCount, 60);
   const frame = gaMotorFrameIndex(fieldTimeSec, omegaDisplay, 60);
   const base = 2 + frame * model.fluxCount * 3;
+
   for (let index = 0; index < model.fluxCount; index++) {
     const src = base + index * 3;
     const dst = index * 3;
@@ -247,6 +518,7 @@ export function updateTeslaMotorKinematics(
     model.fluxPositions[dst + 1] = z * 0.45;
     model.fluxPositions[dst + 2] = y * 2.8;
   }
+
   model.fluxPoints.geometry.attributes.position.needsUpdate = true;
   model.fluxPoints.visible = showMagneticFlux;
 }

@@ -69,17 +69,23 @@ export function MultiTouch3D() {
     const model = buildMultiTouchModel();
     studio.scene.add(model.root);
 
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
     const sched = new TickScheduler(1 / 120, 0);
     let hudCounter = 0;
     let rafId = 0;
+    let timeSec = 0;
     let currentState: MultiTouchState | undefined;
+    let lastFrameTimeMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      const delta =
+        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
+      lastFrameTimeMs = frameTimeMs;
+      timeSec += delta;
+
+      _renderedSteps += 1;
       const p = live.current;
-      const timeSec = renderedSteps / 60;
 
       sched.pump(timeSec, () => {
         currentState = stepMultiTouch(
@@ -95,18 +101,11 @@ export function MultiTouch3D() {
       });
 
       if (currentState) {
-        model.touch1.visible = currentState.activeTouchCount >= 1;
-        model.touch2.visible = currentState.activeTouchCount >= 2;
-
-        if (currentState.activeTouchCount >= 1) {
-          model.touch1.position.x = currentState.touch1X;
-          model.touch1.position.y = currentState.touch1Y;
-        }
-
-        if (currentState.activeTouchCount >= 2) {
-          model.touch2.position.x = currentState.touch2X;
-          model.touch2.position.y = currentState.touch2Y;
-        }
+        model.updateTouchContacts(
+          { x: currentState.touch1X, y: currentState.touch1Y },
+          { x: currentState.touch2X, y: currentState.touch2Y },
+          currentState.activeTouchCount >= 1,
+        );
 
         const targetScale = Math.max(0.5, Math.min(3.0, currentState.zoomScale));
         const curDocS = model.docGroup.scale.x;
@@ -137,7 +136,7 @@ export function MultiTouch3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

@@ -71,10 +71,17 @@ export function EInk3D() {
     const sched = new TickScheduler(1 / 120, 0);
     let hudCounter = 0;
     let rafId = 0;
+    let timeSec = 0;
     let currentState: EInkState | undefined;
+    let lastFrameTimeMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
+      const delta =
+        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
+      lastFrameTimeMs = frameTimeMs;
+      timeSec += delta;
+
       renderedSteps += 1;
       const p = live.current;
 
@@ -91,25 +98,8 @@ export function EInk3D() {
       });
 
       if (currentState) {
-        const whiteTargetY = currentState.whiteParticleNormY * 0.85;
-        const blackTargetY = currentState.blackParticleNormY * 0.85;
-
-        model.whiteParticleMeshes.forEach((mesh, i) => {
-          const jitter = Math.cos(i * 5.1) * 0.5 * 0.15;
-          mesh.position.y += (whiteTargetY + jitter - mesh.position.y) * 0.18;
-        });
-
-        model.blackParticleMeshes.forEach((mesh, i) => {
-          const jitter = Math.sin(i * 4.3) * 0.5 * 0.15;
-          mesh.position.y += (blackTargetY + jitter - mesh.position.y) * 0.18;
-        });
-
-        const isUpward = currentState.electricFieldVperUm > 0;
-        model.eFieldArrows.forEach((arrow) => {
-          arrow.rotation.x = isUpward ? 0 : Math.PI;
-        });
-
-        model.mainGroup.rotation.y += 0.003;
+        model.updateElectrophoresis(p.electrodeVoltageVolts ?? 15, timeSec);
+        model.mainGroup.rotation.y += 0.15 * delta;
 
         hudCounter += 1;
         if (hudCounter % 10 === 0) {
@@ -128,7 +118,7 @@ export function EInk3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

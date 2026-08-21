@@ -70,17 +70,23 @@ export function DaVinci3D() {
     const model = buildDaVinciModel();
     studio.scene.add(model.root);
 
-    let renderedSteps = 0;
+    let _renderedSteps = 0;
     const sched = new TickScheduler(1 / 120, 0);
     let hudCounter = 0;
     let rafId = 0;
+    let timeSec = 0;
     let currentState: DaVinciState | undefined;
+    let lastFrameTimeMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
-      renderedSteps += 1;
+      const delta =
+        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
+      lastFrameTimeMs = frameTimeMs;
+      timeSec += delta;
+
+      _renderedSteps += 1;
       const p = live.current;
-      const timeSec = renderedSteps / 60;
 
       sched.pump(timeSec, () => {
         currentState = stepDaVinci(
@@ -96,22 +102,17 @@ export function DaVinci3D() {
       });
 
       if (currentState) {
-        model.masterHandle.position.set(
-          currentState.masterX,
-          currentState.masterY + 0.8,
-          currentState.masterZ,
-        );
-
         model.baseGroup.position.set(currentState.slaveX, currentState.slaveY, currentState.slaveZ);
         model.baseGroup.rotation.y = currentState.baseYawRad;
         model.baseGroup.rotation.x = currentState.shoulderPitchRad;
 
-        model.wristPitchGroup.rotation.x = currentState.wristPitchRad;
-        model.wristYawGroup.rotation.y = currentState.wristYawRad;
-        model.wristRollGroup.rotation.z = currentState.wristRollRad;
-
-        model.leftJawGroup.rotation.z = -currentState.gripRad / 2;
-        model.rightJawGroup.rotation.z = currentState.gripRad / 2;
+        model.updateKinematics(
+          currentState.wristPitchRad,
+          currentState.wristYawRad,
+          currentState.wristRollRad,
+          currentState.gripRad,
+          [currentState.masterX, currentState.masterY + 0.8, currentState.masterZ],
+        );
 
         hudCounter += 1;
         if (hudCounter % 10 === 0) {
@@ -126,7 +127,7 @@ export function DaVinci3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

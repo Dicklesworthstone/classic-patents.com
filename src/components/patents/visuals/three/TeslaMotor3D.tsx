@@ -1,15 +1,18 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { HudText } from "@/components/ui/LatexRenderer";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "stator_coils" | "disk" | "shaft" | "generator" | "top";
 
@@ -38,14 +41,27 @@ export function TeslaMotor3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const apparatus = stepTeslaMotorFig9(acFrequencyHz);
+
+  // Electromechanical Induction Physics Calculations
+  const appliedLoadTorqueNm = params.loadTorque ?? 14;
+  const synchronousSpeedRpm = apparatus.generatorRpm;
+  const slip = 0.03;
+  const rotorSpeedRpm = Math.round(synchronousSpeedRpm * (1 - slip));
+  const electricalPowerWatts = Math.round(
+    ((appliedLoadTorqueNm * (rotorSpeedRpm * 2 * Math.PI)) / 60) * 1.15,
+  );
+  const rotorInducedCurrentAmps = Math.round(12 * (acFrequencyHz / 60));
 
   const live = useLiveSimParams({
     acFrequencyHz,
     phaseCount,
     showMagneticFlux,
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
+    isAudioMuted,
+    rotorSpeedRpm,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -59,6 +75,18 @@ export function TeslaMotor3D() {
   useEffect(() => {
     void ensureGenericWasm().then((next) => setCrateSource(next));
   }, []);
+
+  // Web Audio AC Motor 60Hz Harmonic Sound
+  useEffect(() => {
+    if (!isAudioMuted) {
+      soundEngine.playTeslaMotorHum(acFrequencyHz, rotorSpeedRpm);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isAudioMuted, acFrequencyHz, rotorSpeedRpm]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -75,7 +103,7 @@ export function TeslaMotor3D() {
     const { scene, camera, renderer, controls } = studio;
 
     // --- 3D STATOR & ROTOR ASSEMBLY ---
-    const fig9Model = buildTeslaMotorModel();
+    const fig9Model = buildTeslaMotorModel(phaseCount);
     scene.add(fig9Model.rootGroup);
 
     // --- ROTATING B-FIELD VECTOR ARROW ---
@@ -142,7 +170,7 @@ export function TeslaMotor3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [live]);
+  }, [live, phaseCount]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
@@ -182,7 +210,7 @@ export function TeslaMotor3D() {
           </div>
         )}
 
-        {/* Top-right overlay and pin controls */}
+        {/* Top-right overlay and audio controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"
@@ -199,6 +227,19 @@ export function TeslaMotor3D() {
               <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
               <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
+          <button
+            aria-label={isAudioMuted ? "Enable Motor Harmonic Sound" : "Mute Motor Audio"}
+            type="button"
+            onClick={() => toggleSound()}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={!isAudioMuted ? "Mute Motor Audio" : "Enable Motor Harmonic Sound"}
+          >
+            {!isAudioMuted ? (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
+            ) : (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </button>
           <button
@@ -235,27 +276,51 @@ export function TeslaMotor3D() {
             {!fig13Unavailable ? (
               <div className="space-y-1">
                 <div className="flex items-center justify-between gap-2">
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Sync ($n_s$):" />
+                  </span>
+                  <span className="font-bold text-blue-700 dark:text-blue-400">
+                    {synchronousSpeedRpm} rpm
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Rotor ($n_r$):" />
+                  </span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                    {rotorSpeedRpm} rpm
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-ink-600 dark:text-ink-400">
+                    <HudText text="Slip ($s$):" />
+                  </span>
+                  <span className="font-bold text-amber-700 dark:text-amber-400">
+                    {(slip * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-ink-600 dark:text-ink-400">Power:</span>
+                  <span className="font-bold text-purple-700 dark:text-purple-400">
+                    {electricalPowerWatts} W ({(electricalPowerWatts / 745.7).toFixed(1)} HP)
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-ink-600 dark:text-ink-400">Rotor Current:</span>
+                  <span className="font-bold text-cyan-700 dark:text-cyan-400">
+                    {rotorInducedCurrentAmps} A RMS
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-ink-600 dark:text-ink-400">Generator:</span>
                   <span className="font-bold text-blue-700 dark:text-blue-400">
                     {apparatus.generatorRpm} rpm
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">Pole shift:</span>
-                  <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                    {apparatus.poleShiftRpm} rpm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
                   <span className="text-ink-600 dark:text-ink-400">Disk D:</span>
                   <span className="font-bold text-amber-700 dark:text-amber-400">
                     {apparatus.diskRpm} rpm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-ink-600 dark:text-ink-400">B intensity:</span>
-                  <span className="font-bold text-purple-700 dark:text-purple-400">
-                    {apparatus.schematicFieldIntensity}
                   </span>
                 </div>
               </div>

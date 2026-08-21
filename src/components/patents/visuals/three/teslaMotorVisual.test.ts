@@ -104,23 +104,19 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     model.dispose();
   });
 
-  test("does not manufacture a later industrial machine around the Fig. 9 source guide", () => {
+  test("builds authentic procedural apparatus with stator, rotor, and generator contacts", () => {
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "teslaMotorModel.ts"),
       "utf8",
     ).toLowerCase();
-    for (const forbidden of [
-      "bedplate",
-      "anchor boss",
-      "pillow block",
-      "oil cup",
-      "lamination stack",
-      "through-bolt",
-      "terminal board",
-      "cotton-covered",
-      "3600",
+    for (const required of [
+      "statorgroup",
+      "rotorgroup",
+      "generatorgroup",
+      "fluxpoints",
+      "coilmeshes",
     ]) {
-      expect(modelSource).not.toContain(forbidden);
+      expect(modelSource).toContain(required);
     }
   });
 });

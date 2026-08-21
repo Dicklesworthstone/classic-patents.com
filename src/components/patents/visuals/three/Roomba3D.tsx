@@ -67,9 +67,14 @@ export function Roomba3D() {
     let hudCounter = 0;
     let rafId = 0;
     let currentState: RoombaState | undefined;
+    let lastFrameTimeMs: number | undefined;
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
+      const delta =
+        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
+      lastFrameTimeMs = frameTimeMs;
+
       renderedSteps += 1;
       const p = live.current;
 
@@ -90,6 +95,12 @@ export function Roomba3D() {
         model.mainGroup.position.x = currentState.displayX;
         model.mainGroup.position.z = currentState.displayY;
         model.mainGroup.rotation.y = -currentState.heading;
+        model.updateKinematics(
+          delta,
+          p.wheelSpeedMps ?? 0.3,
+          currentState.displayX,
+          currentState.displayY,
+        );
 
         if (renderedSteps % 4 === 0) {
           model.updateTrail(currentState.displayX, currentState.displayY);
@@ -107,7 +118,7 @@ export function Roomba3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);
