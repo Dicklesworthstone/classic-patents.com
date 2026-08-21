@@ -125,6 +125,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
+  "us-682690-hewitt-mercury-lamp": hewittMercuryLampParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
   "us-808897-carrier-air-conditioner": carrierAirConditionerParallelReadings,
   "us-879532-de-forest-audion": deForestAudionParallelReadings,

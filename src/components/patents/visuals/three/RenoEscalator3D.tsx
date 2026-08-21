@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepRenoEscalator } from "@/physics/machineKernels";

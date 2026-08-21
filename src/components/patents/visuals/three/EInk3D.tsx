@@ -208,11 +208,15 @@ export function EInk3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Voltage:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{hud.voltage > 0 ? `+${hud.voltage}` : hud.voltage} V</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {hud.voltage > 0 ? `+${hud.voltage}` : hud.voltage} V
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Reflectance:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{hud.reflectance}%</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {hud.reflectance}%
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Contrast:</span>
@@ -243,8 +247,12 @@ export function EInk3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Electrode Potential</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{electrodeVoltageVolts > 0 ? `+${electrodeVoltageVolts}` : electrodeVoltageVolts} V</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Electrode Potential
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {electrodeVoltageVolts > 0 ? `+${electrodeVoltageVolts}` : electrodeVoltageVolts} V
+              </span>
             </div>
             <input
               type="range"
@@ -252,7 +260,9 @@ export function EInk3D() {
               max="15"
               step="1"
               value={electrodeVoltageVolts}
-              onChange={(e) => updateParam("electrodeVoltageVolts", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("electrodeVoltageVolts", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
@@ -260,7 +270,9 @@ export function EInk3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Fluid Viscosity</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{fluidViscosityCp.toFixed(1)} cP</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {fluidViscosityCp.toFixed(1)} cP
+              </span>
             </div>
             <input
               type="range"

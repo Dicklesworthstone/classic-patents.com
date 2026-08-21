@@ -227,20 +227,30 @@ export function DavenportElectricMotor3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Shaft Speed:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(motorRpm)} RPM</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Shaft Speed:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(motorRpm)} RPM
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Armature Current:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{davenport.armatureCurrentA.toFixed(1)} A</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {davenport.armatureCurrentA.toFixed(1)} A
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Shaft Power:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{davenport.shaftPowerW.toFixed(1)} W</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {davenport.shaftPowerW.toFixed(1)} W
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Efficiency:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{davenport.efficiencyPct.toFixed(1)}%</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {davenport.efficiencyPct.toFixed(1)}%
+              </span>
             </div>
           </div>
         )}
@@ -275,8 +285,12 @@ export function DavenportElectricMotor3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Galvanic Battery Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{supplyVoltage} V</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Galvanic Battery Voltage
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {supplyVoltage} V
+              </span>
             </div>
             <input
               type="range"
@@ -291,8 +305,12 @@ export function DavenportElectricMotor3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Mechanical Load Torque</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{loadTorque.toFixed(2)} N·m</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Mechanical Load Torque
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {loadTorque.toFixed(2)} N·m
+              </span>
             </div>
             <input
               type="range"

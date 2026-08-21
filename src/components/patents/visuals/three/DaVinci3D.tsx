@@ -201,20 +201,30 @@ export function DaVinci3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Scale Ratio:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{motionScaleRatio}:1</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Scale Ratio:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {motionScaleRatio}:1
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Master Speed:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{masterInputSpeedMps.toFixed(2)} m/s</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {masterInputSpeedMps.toFixed(2)} m/s
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Grip Angle:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{gripAngleDeg}°</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {gripAngleDeg}°
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Tremor Filter:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{hud.tremorAtten > 0 ? "ACTIVE (-26 dB)" : "BYPASS"}</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {hud.tremorAtten > 0 ? "ACTIVE (-26 dB)" : "BYPASS"}
+              </span>
             </div>
           </div>
         )}
@@ -240,8 +250,12 @@ export function DaVinci3D() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Motion Scale (Master:Slave)</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{motionScaleRatio}:1</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Motion Scale (Master:Slave)
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {motionScaleRatio}:1
+              </span>
             </div>
             <input
               type="range"
@@ -257,7 +271,9 @@ export function DaVinci3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Surgeon Hand Speed</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{masterInputSpeedMps.toFixed(2)} m/s</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {masterInputSpeedMps.toFixed(2)} m/s
+              </span>
             </div>
             <input
               type="range"
@@ -265,15 +281,21 @@ export function DaVinci3D() {
               max="1.5"
               step="0.05"
               value={masterInputSpeedMps}
-              onChange={(e) => updateParam("masterInputSpeedMps", Number.parseFloat(e.target.value))}
+              onChange={(e) =>
+                updateParam("masterInputSpeedMps", Number.parseFloat(e.target.value))
+              }
               className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">EndoWrist Grip Angle</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{gripAngleDeg}°</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                EndoWrist Grip Angle
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {gripAngleDeg}°
+              </span>
             </div>
             <input
               type="range"

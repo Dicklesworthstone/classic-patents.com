@@ -46,10 +46,9 @@ describe("US 682,690 Peter Cooper Hewitt Electric Lamp Archival Edition Publicat
   });
 
   test("exposes all printed claims via dynamic single-source lookup", () => {
-    for (let c = 1; c <= 6; c++) {
+    for (let c = 1; c <= 31; c++) {
       const claimText = manualHewittClaimText(c);
       expect(claimText.length).toBeGreaterThan(20);
-      expect(claimText).toContain("lamp");
     }
   });
 

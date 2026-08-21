@@ -256,7 +256,9 @@ export function CarlsonElectrophotography3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Corona Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{coronaVoltageKv.toFixed(2)} kV</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {coronaVoltageKv.toFixed(2)} kV
+              </span>
             </div>
             <input
               type="range"
@@ -272,7 +274,9 @@ export function CarlsonElectrophotography3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Exposure</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{exposureLuxSec} lx·s</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {exposureLuxSec} lx·s
+              </span>
             </div>
             <input
               type="range"
@@ -288,7 +292,9 @@ export function CarlsonElectrophotography3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Layer Thickness</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{layerThicknessUm} µm</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {layerThicknessUm} µm
+              </span>
             </div>
             <input
               type="range"
@@ -304,7 +310,9 @@ export function CarlsonElectrophotography3D({
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Fuser Temp</span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">{fuserTemperatureC} °C</span>
+              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
+                {fuserTemperatureC} °C
+              </span>
             </div>
             <input
               type="range"
