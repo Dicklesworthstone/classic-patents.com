@@ -66,13 +66,13 @@ export function WestinghouseAirBrakeSim() {
   const handleToggleSelectingCock = () => {
     const nextPos = selectingCockPos === 0 ? 1 : 0;
     updateParam("selectingCockPosition", nextPos);
-    if (soundEnabled) soundEngine.playTone(320, 0.15, "triangle", 0.3);
+    if (!isAudioMuted) soundEngine.playTone(320, 0.15, "triangle", 0.3);
   };
 
   const handleTripStem = () => {
     const next = accidentTripMode === 1 ? 0 : 1;
     updateParam("accidentTrip", next);
-    if (soundEnabled) {
+    if (!isAudioMuted) {
       if (next === 1) {
         soundEngine.playTone(140, 0.5, "sawtooth", 0.5);
       } else {
@@ -84,7 +84,7 @@ export function WestinghouseAirBrakeSim() {
   const handleTripCord = () => {
     const next = accidentTripMode === 2 ? 0 : 2;
     updateParam("accidentTrip", next);
-    if (soundEnabled) {
+    if (!isAudioMuted) {
       if (next === 2) {
         soundEngine.playTone(180, 0.4, "sawtooth", 0.45);
       } else {
@@ -96,59 +96,53 @@ export function WestinghouseAirBrakeSim() {
   const handleSignalStep = (step: number) => {
     const psi = (step - 1) * 0.5;
     updateParam("signalPulsePressure", psi);
-    if (soundEnabled && step > 1) {
+    if (!isAudioMuted && step > 1) {
       soundEngine.playTone(580 + step * 80, 0.3, "sine", 0.35);
     }
   };
 
   const resetRunning = () => {
-    updateParam("trainPipePressure", 0);
-    updateParam("reservoirPipePressure", 90);
-    updateParam("selectingCockPosition", 0);
-    updateParam("accidentTrip", 0);
-    updateParam("signalPulsePressure", 0);
-    if (soundEnabled) soundEngine.playTone(520, 0.15, "sine", 0.2);
+    resetParams();
+    if (!isAudioMuted) soundEngine.playTone(520, 0.15, "sine", 0.2);
   };
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Gauge className="w-5 h-5 text-amber-600 dark:text-amber-500" />
             <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Westinghouse Double-Pipe Steam-Power Air Brake & Signal (US 124,404)
+              Westinghouse Double-Pipe Steam-Power Air Brake (US 124,404)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1 max-w-2xl">
-            Authentic 1872 dual-pipe pneumatic network: rotate selecting cock $d^1$ to swap pipe
-            roles, trigger automatic cocks $e$ via derailment stem $i^1$ or uncoupling cord $y$ to
-            vent auxiliary receiver $D$ into cylinder $C$, and transmit indexed signals via loop $n,
-            n^1$.
+            Dual-pipe pneumatic network: selecting cock to swap pipe roles, tripping cock for
+            emergency braking, and pneumatic signal loop.
           </p>
         </div>
 
         {/* Action Presets */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setSoundEnabled((prev) => !prev)}
-            className="p-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-parchment-300 hover:text-amber-600 text-xs"
-            title={soundEnabled ? "Mute audio" : "Enable audio"}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute audio" : "Mute audio"}
           >
-            {soundEnabled ? (
-              <Volume2 className="w-4 h-4" />
-            ) : (
-              <VolumeX className="w-4 h-4 text-ink-400" />
-            )}
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={resetRunning}
-            className="px-3 py-1.5 rounded-lg text-xs font-mono font-bold border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            Reset Running State
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
