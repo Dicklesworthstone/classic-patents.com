@@ -14,8 +14,11 @@
  */
 
 import * as THREE from "three";
-import { BARDEEN_HOLE_RESET_PAD, BARDEEN_HOLE_WRAP_PAD } from "@/physics/catalogKernels";
-import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
+import {
+  BARDEEN_HOLE_RESET_PAD,
+  BARDEEN_HOLE_WRAP_PAD,
+  stepBardeenTransistor,
+} from "@/physics/catalogKernels";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -378,13 +381,10 @@ export function updateBardeenTransistorKinematics(
 
   const driftSpeed = holeDriftSpeed * dt;
   const pos = nodes.holePos;
-  const heat = heatFrames(12, 16, 2);
-  const heatFrame = Math.abs(Math.floor(_timeSec * 8)) % 16;
+  const local = 1 + Math.abs(stepBardeenTransistor().poissonPeak);
 
   for (let i = 0; i < nodes.holeCount; i++) {
     const idx = i * 3;
-    const u = (pos[idx] / Math.max(0.1, currentGapUnits)) * 0.5 + 0.5;
-    const local = 1 + Math.abs(sampleHeatAt(heat, 12, 16, heatFrame, u, 0.5));
     pos[idx] += driftSpeed * local;
     if (pos[idx] > currentGapUnits / 2 + BARDEEN_HOLE_WRAP_PAD) {
       pos[idx] = -currentGapUnits / 2 - BARDEEN_HOLE_RESET_PAD;

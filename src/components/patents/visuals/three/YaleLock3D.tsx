@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -40,7 +40,7 @@ export function YaleLock3D({
   const { params, updateParam } = usePatentPhysics("us-48475-yale-lock");
   const keyInsertion = params.keyInsertion ?? initialKeyInsertion;
   const appliedTorqueNm = params.appliedTorqueNm ?? initialAppliedTorque;
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [useAuthorizedKey, setUseAuthorizedKey] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("iso");

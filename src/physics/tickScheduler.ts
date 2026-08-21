@@ -38,3 +38,23 @@ export class TickScheduler {
     return ran;
   }
 }
+
+/** Host-fed rAF clock for catalog 3Ds. Bounded catch-up; no fake 1/60 physics dt. */
+export function createStudioClock(tickS = 1 / 60) {
+  const scheduler = new TickScheduler(tickS, 0);
+  let lastMs: number | undefined;
+  let simTimeSec = 0;
+  return {
+    get simTimeSec() {
+      return simTimeSec;
+    },
+    pump(nowMs: number): { dt: number; simTimeSec: number } {
+      const dt = lastMs !== undefined ? Math.min((nowMs - lastMs) / 1000, 0.1) : 0;
+      lastMs = nowMs;
+      scheduler.pump(nowMs / 1000, () => {
+        simTimeSec += tickS;
+      });
+      return { dt, simTimeSec };
+    },
+  };
+}

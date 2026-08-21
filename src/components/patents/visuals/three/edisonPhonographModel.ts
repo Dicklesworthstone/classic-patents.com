@@ -9,7 +9,6 @@
 
 import * as THREE from "three";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
-import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 
 export interface EdisonPhonographModel {
   rootGroup: THREE.Group;
@@ -309,8 +308,7 @@ export function updateEdisonPhonographKinematics(
 
   // Illustrative display motion only. The source specifies no amplitude or frequency.
   const phonograph = stepEdisonPhonograph({ mandrelRpm, voiceVolumeDb });
-  const field = wave2dFrames(16, 16, 2);
-  const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
+  const rms = phonograph.grooveWaveRms;
   const vibration = Math.sin(timeSec * stylusOmegaRadPerS) * stylusAmp * (1 + rms);
   model.stylus.position.y = phonograph.stylusHomeY + vibration;
 

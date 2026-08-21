@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
-import { heatFrames, sampleHeatAt } from "@/physics/genericWasm";
 import { createLcg } from "@/utils/lcg";
 import { createGlowPointTexture } from "./ThreeStudioScene";
 
@@ -365,14 +364,10 @@ export function updateEdisonBulbKinematics(
     model.gasPoints.visible = true;
     const gPos = model.gasPositions;
     const thermalJitter = thermalJitterPerS * dt;
-    const heat = heatFrames(12, 24, 2);
-    const heatFrame = Math.floor(timeSec * 8) % 24;
+    const local = 1 + Math.abs(edison.filamentHeatSample);
     for (let i = 0; i < model.gasCount; i++) {
       const idx = i * 3;
       const phase = timeSec * edison.gasPhaseOmega + i;
-      const u = 0.5 + ((gPos[idx] ?? 0) + 0.6) / 2.4;
-      const v = 0.5 + ((gPos[idx + 2] ?? 0) + 0.6) / 2.4;
-      const local = 1 + Math.abs(sampleHeatAt(heat, 12, 24, heatFrame, u, v));
       gPos[idx] += Math.sin(phase) * thermalJitter * local;
       gPos[idx + 1] += Math.cos(phase * edison.gasYOmega) * thermalJitter * local;
       gPos[idx + 2] += Math.sin(phase * edison.gasZOmega) * thermalJitter * local;

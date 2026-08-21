@@ -15,7 +15,6 @@
 
 import * as THREE from "three";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
-import { wave2dFrames, waveFrameRms } from "@/physics/genericWasm";
 
 export interface NobelDynamiteModelNodes {
   rootGroup: THREE.Group;
@@ -436,8 +435,7 @@ export function updateNobelDynamiteKinematics(
   // 2. Pulse Fuse Spark when lit
   if (isFuseLit) {
     const nobel = stepNobelDynamite({ ngConcentrationPct, capEnergyJoules });
-    const field = wave2dFrames(16, 16, 2);
-    const rms = waveFrameRms(field, 16, 16, Math.abs(Math.floor(timeSec * 8)) % 16);
+    const rms = nobel.shockWaveRms;
     materials.sparkMat.opacity =
       nobel.sparkOpacity0 + Math.sin(timeSec * nobel.sparkOmega) * nobel.sparkOpacityAmp;
     const wave = (Math.sin(timeSec * nobel.shockwaveOmega) + 1) * 0.5;
