@@ -12,7 +12,7 @@ const p = (inlines: CuratedSpecificationInlines): CuratedSpecificationBlock => (
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
 const figureDimensions: Record<number, readonly [number, number]> = {
-  1: [1856, 2385],
+  1: [780, 1390],
   2: [940, 1410],
   3: [690, 1320],
   4: [700, 650],

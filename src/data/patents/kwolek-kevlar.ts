@@ -316,6 +316,15 @@ export const kwolekKevlarPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3671542-kwolek-kevlar.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3671542A/en",
   usptoClassification: "U.S. Cl. 260/30.8 R; Int. Cl. C08g 51/44.",
+  archivalEdition: kwolekKevlarArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3671542-kwolek-kevlar-reviewed.txt",
+    pageCount: 58,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
+    reviewedAt: "2026-08-18",
+    sourcePdfSha256: "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
+  },
   originalText: `UNITED STATES PATENT
 3,671,542
 Patented June 20, 1972

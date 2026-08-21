@@ -3,12 +3,16 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { kwolekKevlarPatent } from "@/data/patents/kwolek-kevlar";
-import { kwolekKevlarClaims, kwolekKevlarSourceAuthoringWip } from "./kwolekKevlarEdition";
+import {
+  kwolekKevlarArchivalEdition,
+  kwolekKevlarClaims,
+  kwolekKevlarSourceAuthoringWip,
+} from "./kwolekKevlarEdition";
 
 describe("US 3,671,542 Stephanie Kwolek source-authoring boundary", () => {
-  test("pins the 58-page facsimile without claiming an unfinished source edition is public", () => {
-    expect(kwolekKevlarPatent.archivalEdition).toBeUndefined();
-    expect(kwolekKevlarPatent.originalTextAsset).toBeUndefined();
+  test("pins the 58-page facsimile and publishes manual edition and originalTextAsset", () => {
+    expect(kwolekKevlarPatent.archivalEdition).toBe(kwolekKevlarArchivalEdition);
+    expect(kwolekKevlarPatent.originalTextAsset).toBeDefined();
     expect(kwolekKevlarPatent.filingDate).toBe("1969-05-23");
     expect(kwolekKevlarSourceAuthoringWip.sourcePdfSha256).toBe(
       "7a2b753cf8d6f329d5fad750dc2de510f723876cac6aa41a4076f0343a7a62c4",
