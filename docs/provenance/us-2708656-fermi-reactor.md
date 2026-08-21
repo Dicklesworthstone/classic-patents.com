@@ -118,9 +118,10 @@ crops, those later references remain intentionally incomplete under the hold.
   claims**, supplied three invented claims, and assigned incorrect Fig. 1 and
   Fig. 2 captions. It has been replaced with a short opening excerpt; the
   complete source face remains withheld.
-- The canonical record no longer attaches `archivalEdition`. Its
-  `originalTextAsset` is explicitly `source-pdf-text-layer`; that research
-  asset must not be relabeled or served as the complete specification.
+- The canonical record intentionally omits both `archivalEdition` and
+  `originalTextAsset`. The reviewed ledger and candidate edition remain local
+  research evidence only; neither is typed or served as a complete source
+  asset while the facsimile, drawings, and crops remain under review.
 - The certificate of correction identifies corrections in specification
   columns 4, 5, 6, 19, 23, 25, 34, 38, 45, 48, 51, and 53. The WIP edition
   retains the certificate, but publication still requires a second review.
@@ -149,17 +150,19 @@ crops, those later references remain intentionally incomplete under the hold.
 ## Remaining publication gate
 
 No canonical archival edition is published. The canonical record intentionally
-omits `archivalEdition` and binds only the existing PDF text layer as
-`source-pdf-text-layer`; the reviewed ledger is not attached to the record.
-The candidate edition and ledger remain WIP evidence until pages 1–27 receive
-literal drawing-sheet transcription and all source-sheet/per-figure crop
-references receive independent acceptance. A valid-looking candidate block or
-green structural check is not publication evidence.
+omits both `archivalEdition` and `originalTextAsset`; the reviewed ledger is
+not attached to the record. The candidate edition and ledger remain WIP
+evidence until pages 1–27 receive literal drawing-sheet transcription and all
+source-sheet/per-figure crop references receive independent acceptance. A
+valid-looking candidate block or green structural check is not publication
+evidence.
 
 The withheld state is deliberate: visitors must not be shown the WIP edition or
 the reviewed ledger as a complete source face. The pinned PDF remains the
 authoritative facsimile, while the short `originalText` excerpt is the only
-canonical source excerpt currently exposed by the record.
+canonical source excerpt currently exposed by the record. The edition's
+`completeFacsimileReviewed` flag is explicitly `false` and the canonical record
+has no edition or reviewed-ledger binding.
 
 ### Cloud-source continuation (2026-08-21)
 
