@@ -66,7 +66,7 @@ The web application is built with:
 1. **Web Frontend**: Next.js 15 (App Router, React 19, TypeScript).
 2. **Styling & Aesthetics**: Tailwind CSS with custom thematic extensions (Parchment vintage archival mode, Blueprint dark engineering mode, High-contrast clean mode). Google Fonts (Playfair Display, EB Garamond, Inter, JetBrains Mono).
 3. **Interactive Visual & Simulation Engine**: React Three Fiber / Three.js 3D WebGL modules backed by **FrankenSim** (`~/projects/frankensim`) computational physics compiled to WebAssembly. Bind the generic crates that own the law (`fs-time`, `fs-mbd`, `fs-flux`, `fs-lattice`, `fs-conduction`, `fs-truss`, `fs-solid`, and others in `~/projects/frankensim/crates`). Wright happens to have an extra packaged flyer module; that is not the expected shape of every new patent. Blake3 state digests and typed refusal boundaries still apply.
-4. **Data & Pipeline**: TypeScript data schemas (`src/data/patents/`), automated downloading (`scripts/download-patents.ts`), and optional local transcription helpers. Agents may transcribe with any tool, including built-in model vision. The published ledger is a human-reviewed artifact, not a raw OCR dump.
+4. **Data & Pipeline**: TypeScript data schemas (`src/data/patents/`), automated downloading (`scripts/download-patents.ts`), and cloud transcription workers. **OCR must run only on cloud Luna workers, never on this machine.** The published ledger is a human-reviewed artifact, not a raw OCR dump.
 5. **Hosting & Deployment**: Vercel (CLI-managed, prebuilt deploy workflow, zero build credit burn).
 6. **Code Quality**: Biome (`biome check`, `biome format --write`), TypeScript (`tsc --noEmit`), UBS (`ubs --diff`, `ubs --staged`).
 
@@ -844,13 +844,38 @@ the claimed machine, not a hero render.
 - **Reduced motion** pauses auto-fly / spin and still shows the posed
   machine at the current controls. Mute is silent by default.
 
-### 6. Transcribe against the facsimile (tool-agnostic, Wright quality)
+### 6. Transcribe against the facsimile (cloud OCR only, Wright quality)
 
-There is no required OCR engine. Use whatever can read the pinned PDF:
-the existing `focr` pipeline, another OCR tool, the PDF text layer, the
-harness or model's built-in vision, or typing from the facsimile. The
-method is not the product. The reviewed ledger and the archival edition
-are.
+#### Hard resource policy: never run OCR locally
+
+**NEVER RUN OCR ON THIS MACHINE.** Local OCR has already caused severe
+performance degradation, slowed the entire multi-agent campaign, and wasted
+substantial time. This prohibition is permanent and has no convenience,
+deadline, fallback, or "small batch" exception.
+
+- Delegate every OCR or machine-transcription job to a cloud
+  **GPT-5.6 Luna worker**. This includes `focr`, Tesseract, OCRmyPDF, vision
+  transcription loops, and any other process whose purpose is to recognize
+  text from patent-page pixels.
+- Do not install, invoke, benchmark, resume, or monitor a local OCR engine or
+  daemon in this repository or elsewhere on this host. Do not use local CPU,
+  GPU, NPU, or memory for OCR.
+- If a Luna worker or the cloud execution path is unavailable, pause the OCR
+  portion and report the blocker. **Do not fall back to local OCR.**
+- Give cloud Luna workers bounded, checkpointed page ranges. Preserve partial
+  results after every chunk; never create one monolithic all-patents or
+  all-pages OCR batch. Limit concurrency so cloud results remain reviewable
+  and the coordination system is not flooded.
+- Local agents may inspect the pinned PDF, read an existing PDF text layer,
+  review already-produced page renders or OCR drafts, crop figures, and
+  manually correct or author the ledger and React edition. Those activities
+  do not authorize starting a local OCR process.
+- Cloud OCR output remains research evidence only. Every published line must
+  still be checked against the pinned facsimile and manually edited to the
+  Wright standard below.
+
+The reviewed ledger and archival edition—not the OCR engine or its raw
+output—are the product.
 
 A machine draft is a research aid. It is **not** the visitor-facing
 source face, **not** a substitute for the archival edition, and **not**
