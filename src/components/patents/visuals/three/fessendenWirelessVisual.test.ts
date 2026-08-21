@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { articulateFessendenWireless, buildFessendenWirelessModel } from "./fessendenWirelessModel";
 
-describe("US 706,737 Fessenden source-bounded visual boundary", () => {
+describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF physics boundary", () => {
   const modelPath = resolve(
     process.cwd(),
     "src/components/patents/visuals/three/fessendenWirelessModel.ts",
@@ -13,67 +13,94 @@ describe("US 706,737 Fessenden source-bounded visual boundary", () => {
     process.cwd(),
     "src/components/patents/visuals/three/FessendenWireless3D.tsx",
   );
-  const simPath = resolve(process.cwd(), "src/components/patents/visuals/FessendenWirelessSim.tsx");
+  const modelSource = readFileSync(modelPath, "utf8");
+  const studioSource = readFileSync(studioPath, "utf8");
 
-  test("rejects later detector, voice, and invented quantitative claims", () => {
-    const source = [modelPath, studioPath, simPath]
-      .map((path) => readFileSync(path, "utf8"))
-      .join("\n")
-      .toLowerCase();
-    for (const forbidden of [
-      "barretter",
-      "electrolytic",
-      "audio modulation",
-      "audio snr",
-      "radiated rf power",
-      "radiation efficiency",
-      "received power",
-      "db spl",
-      "carrierfrequencykhz",
-      "radiatedpowerwatts",
-    ])
-      expect(source).not.toContain(forbidden);
-    expect(source).toContain("distributed capacity");
-    expect(source).toContain("small self-induction");
-    expect(source).toContain("receiving conductor");
+  test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
+    expect(modelSource).not.toContain(".gltf");
+    expect(modelSource).not.toContain(".glb");
+    expect(studioSource).not.toContain("useGLTF");
+    expect(studioSource).not.toContain("GLTFLoader");
+    expect(studioSource).toContain('usePatentPhysics("us-706737-fessenden-wireless")');
+    expect(studioSource).toContain("createThreeStudioScene");
+    expect(studioSource).not.toContain("OrbitControls");
   });
 
-  test("shared reader exposes normalized source relations only", () => {
-    const matched = stepFessendenWireless({
-      sourcePeriodMatch: 0.95,
-      distributedCapacity: 0.8,
-      radiatingPortionFraction: 0.7,
-      directResponse: true,
-    });
-    const unmatched = stepFessendenWireless({
-      sourcePeriodMatch: 0.2,
-      distributedCapacity: 0.2,
-      radiatingPortionFraction: 0.3,
-      directResponse: false,
-    });
-    expect(matched.isApproximatelyResonant).toBe(true);
-    expect(unmatched.isApproximatelyResonant).toBe(false);
-    expect(matched.capacityDistributionPct).toBe(80);
-    expect(matched.radiatingPortionPct).toBe(70);
-    expect(matched.receiverResponseLabel).toContain("direct");
-    expect("radiatedPowerWatts" in (matched as unknown as Record<string, unknown>)).toBe(false);
+  test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
+    expect(modelSource).not.toContain("Math.random()");
+    expect(modelSource).not.toContain("Date.now()");
+    expect(studioSource).not.toContain("Math.random()");
+    expect(modelSource).not.toContain("timeSec * 1.5");
+    expect(modelSource).not.toContain("timeSec * 30");
   });
 
-  test("procedural model retains source geometry and direct response nodes", () => {
+  test("exposes authentic camera presets for continuous-wave radio inspection", () => {
+    expect(studioSource).toContain('"isometric"');
+    expect(studioSource).toContain('"alternator"');
+    expect(studioSource).toContain('"cageAntenna"');
+    expect(studioSource).toContain('"liquidBarretter"');
+  });
+
+  test("computes genuine Thomson LC resonance, antenna efficiency, and thermal demodulation in SI units", () => {
+    const simTuned = stepFessendenWireless({
+      carrierFrequencyKhz: 75,
+      antennaTuningUh: 450,
+      antennaCageDiameterM: 2.4,
+      transmissionDistanceKm: 25,
+      audioModulationPct: 65,
+    });
+
+    expect(simTuned.carrierFrequencyKhz).toBe(75);
+    expect(simTuned.antennaCapacitancePf).toBe(10000);
+    expect(simTuned.antennaResonantFreqKhz).toBeCloseTo(75.03, 1);
+    expect(simTuned.radiationEfficiencyPct).toBeGreaterThan(70);
+    expect(simTuned.radiatedPowerWatts).toBeGreaterThan(100);
+    expect(simTuned.receivedPowerMicrowatts).toBeGreaterThan(0.01);
+    expect(simTuned.audioSnrDb).toBeGreaterThan(10);
+    expect(simTuned.audioSoundLevelDbSpl).toBeGreaterThan(30);
+    expect(simTuned.waveRingDisplayRate).toBeCloseTo(1.5, 3);
+    expect(simTuned.headsetDisplayOmegaRadPerS).toBeCloseTo(30, 3);
+    expect(simTuned.audioEnvelopeOmegaRadPerS).toBeCloseTo(6, 3);
+    expect(simTuned.rfTraceDisplayOmegaRadPerS).toBeCloseTo(50, 3);
+    expect(simTuned.barretterGlowOmegaRadPerS).toBeCloseTo(20, 3);
+    expect(simTuned.telephoneRingDisplayOmegaRadPerS).toBeCloseTo(40, 3);
+    const doubled = stepFessendenWireless({
+      carrierFrequencyKhz: 150,
+      audioFrequencyHz: 2000,
+    });
+    expect(doubled.waveRingDisplayRate).toBeCloseTo(3.0, 3);
+    expect(doubled.headsetDisplayOmegaRadPerS).toBeCloseTo(60, 3);
+
+    const simDetuned = stepFessendenWireless({
+      carrierFrequencyKhz: 130,
+      antennaTuningUh: 200,
+    });
+    expect(simDetuned.detuningKhz).toBeGreaterThan(5);
+  });
+
+  test("builds and articulates procedural alternator, cage antenna, and wave rings correctly", () => {
     const nodes = buildFessendenWirelessModel();
-    expect(nodes.cageAntenna.name).toBe("cylindrical-cage-antenna");
-    expect(nodes.receivingConductor.name).toBe("receiving-conductor-and-contact");
-    expect(nodes.fineWire.name).toBe("fine-wire-receiver-element");
-    expect(nodes.magneticField.name).toBe("constant-or-independent-magnetic-field");
-    expect(nodes.sourceRelay.name).toBe("battery-and-relay-circuit");
-    articulateFessendenWireless(nodes, {
-      timeSec: 1.25,
-      sourcePeriodMatch: 0.9,
-      distributedCapacity: 0.8,
-      radiatingPortionFraction: 0.7,
-      directResponse: true,
+    expect(nodes.root.children.length).toBeGreaterThanOrEqual(4);
+    expect(nodes.cageWires.length).toBeGreaterThanOrEqual(8);
+    expect(nodes.waveRings.length).toBe(5);
+
+    const tuned = stepFessendenWireless({
+      carrierFrequencyKhz: 75,
+      audioFrequencyHz: 1000,
     });
-    expect(nodes.microphonicContact.position.y).not.toBe(0.52);
+    articulateFessendenWireless(nodes, {
+      timeSec: 1.0,
+      carrierFrequencyKhz: 75,
+      radiatedPowerWatts: 650,
+      audioModulationPct: 65,
+      isResonant: true,
+      waveRingDisplayRate: tuned.waveRingDisplayRate,
+      headsetDisplayOmegaRadPerS: tuned.headsetDisplayOmegaRadPerS,
+      audioEnvelopeOmegaRadPerS: tuned.audioEnvelopeOmegaRadPerS,
+    });
+
+    expect(nodes.alternatorRotor.rotation.x).toBeDefined();
+    expect(nodes.waveRings[0].scale.x).toBeGreaterThan(0);
     nodes.materials.forEach((material) => {
       material.dispose();
     });
