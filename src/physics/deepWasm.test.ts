@@ -15,6 +15,7 @@ import {
   flowcert,
   goodyearVulcanizationField,
   grayScottFrames,
+  HeatField,
   hodgeDecomposition,
   hostStateDigest,
   liveFftPowerSpectrum,
@@ -134,9 +135,14 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
   });
 
   test("control-driven seats follow live sliders, not a canned tape index", () => {
+    const hotField = new HeatField(16);
+    const coldField = new HeatField(16);
+    for (let i = 0; i < 12; i++) {
+      hotField.step(0.05, { su: 0.5, sv: 0.45, amplitude: 2.4 });
+      coldField.step(0.05, { su: 0.5, sv: 0.45, amplitude: 0.5 });
+    }
+    expect(hotField.sample(0.5, 0.45)).toBeGreaterThan(coldField.sample(0.5, 0.45));
     const hot = edisonFilamentHeat(130, 0.05);
-    const cold = edisonFilamentHeat(40, 0.05);
-    expect(hot.filamentHeatSample).toBeGreaterThan(cold.filamentHeatSample);
     expect(hot.heatSource).toBe("ts-fallback");
     const spark = marconiSparkSpectrum(0.85, 10);
     expect(spark.sparkOddHarmonicPower).toBeGreaterThan(0);

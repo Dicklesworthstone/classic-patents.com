@@ -115,6 +115,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Raw natural caoutchouc softened in summer heat and turned brittle and fragile in winter frosts.",
     },
   ],
+  "us-3671542-kwolek-kevlar": [
+    {
+      claimNumber: 1,
+      patentId: "us-3671542-kwolek-kevlar",
+      claimTitle: "Liquid-Crystalline PPTA Anisotropic Spin Dope",
+      activeDescription:
+        "Claim 1 spins extended-chain poly(p-phenylene terephthalamide) nematic dopes into ultra-high-modulus aligned fibers.",
+      invertedDescription:
+        "Isotropic random coils: unaligned polymer chains fold into spherulites with 90% lower tensile strength and low modulus.",
+      failureModeName: "Isotropic Spherulitic Yield & Tensile Sag",
+      historicalPriorArt:
+        "Conventional melt-spun aliphatic polyamides (nylon 6,6) exhibited flexible chain folding and moderate tensile strength.",
+    },
+  ],
 };
 
 /**
@@ -203,6 +217,21 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "POLYMER INSTABILITY: Absence of covalent crosslinks causes unrecoverable plastic creep deformation.";
+      }
+      break;
+    }
+
+    case "us-3671542-kwolek-kevlar": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.drawRatio = 1.2; // Low isotropic draw
+        modified.tensileModulusGpa = 3.5; // Collapsed modulus from 130 GPa to 3.5 GPa
+        modified.tensileStrengthMpa = 240.0; // Collapsed strength from 3200 MPa to 240 MPa
+        activeFailures.push(
+          "Isotropic Chain Spherulites: Unaligned PPTA chains yield plastically upon impact",
+        );
+        refusalWarning =
+          "LIQUID-CRYSTAL LOSS: Loss of nematic liquid-crystalline orientation prevents ballistic energy dispersion.";
       }
       break;
     }

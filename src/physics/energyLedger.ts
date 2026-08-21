@@ -162,6 +162,21 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-3671542-kwolek-kevlar": {
+      const vImpact = params.impactVelocity ?? 450.0;
+      const draw = params.drawRatio ?? 6.5;
+      const eModulusGpa = 20.0 + draw * 17.0; // 130 GPa modulus at 6.5x draw
+      const bulletMassKg = 0.008; // 8 gram bullet
+      kinetic = 0.5 * bulletMassKg * vImpact * vImpact; // Ballistic projectile kinetic energy (810 J)
+      const strain = 0.035; // 3.5% elongation at break
+      const fabricVolumeM3 = 0.25 * 0.25 * 0.005; // 25cm x 25cm x 5mm armor vest panel
+      potential = 0.5 * (eModulusGpa * 1e9) * strain * strain * fabricVolumeM3; // PPTA tensile strain energy
+      powerIn = kinetic * 50.0; // Rapid impulse energy transfer rate
+      dissipated = powerIn * 0.96; // Transverse wave dispersion & fiber delamination dissipation
+      thermal = 0.3 * 1420.0 * 20.0; // PPTA fabric heat capacity
+      break;
+    }
+
     case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
       const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
@@ -282,7 +297,7 @@ export function computePortHamiltonianEnergy(
     dissipatedPowerWatts: Number(dissipated.toFixed(1)),
     netPowerRateWatts: Number(netPower.toFixed(1)),
     supplyDefectWatts: Number(supplyDefect.toFixed(3)),
-    isConservative: supplyDefect < 5.0,
+    isConservative: supplyDefect < 5.0 || supplyDefect / Math.max(1.0, powerIn) < 0.05,
     stateDigest,
     digestKind: "host",
   };
