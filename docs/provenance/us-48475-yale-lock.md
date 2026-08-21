@@ -20,7 +20,7 @@ The pinned four-page PDF was visually reviewed at 300 DPI. The public source fac
 
 | Facsimile locator | Content checked |
 | --- | --- |
-| PDF p. 1 | Drawing sheet: `Figs. 1 to 20` illustrating the complete mortise lock case, bolt B, cylindrical tumbler-case C, eccentric rotating plug D, five-pin tumbler chambers with springs L and drivers I, bottom key pins J, serrated flat bitted key K with corrugated profile, cam lazy-arm E, wing W, and anti-pick notched tumblers; witnesses Henry Wynn and G. Stockwell; inventor Linus Yale Jr. |
+| PDF p. 1 | Drawing sheet headed `No. 48,475`, `L. YALE, Jr.`, `LOCK.`, and `Patented June 27, 1865.`; printed figure labels 1 through 20 and the drawing's reference letters; witness/inventor matter retained in the ledger below the sheet. |
 | PDF p. 2 | Patent Office masthead (`UNITED STATES PATENT OFFICE. LINUS YALE, JR., OF SHELBURNE FALLS, MASSACHUSETTS. IMPROVEMENT IN LOCKS. Specification forming part of Letters Patent No. 48,475, dated June 27, 1865.`); statement of invention; list of figures 1 through 20; bolt retention plate F with screw G; mortise case A with threaded nut O; modular right/left hand cylinder adaptation for varying door thicknesses. |
 | PDF p. 3 | Eccentric cylinder plug D; pin chambers r, r'; two-piece tumblers I and J with helical springs L; flat bitted steel key K; narrow slot-like keyway t; notched/racked anti-picking pin grooves; circumferential ring recess s and longitudinal entry groove t on plug; cam lazy-arm E with stop knobs v; bolt-talon interaction and limited angular throw. |
 | PDF p. 4 | Continuation of lazy-arm functions; formal claim preamble (`I claim as my invention—`); claims 1 through 5 complete; inventor signature line `LINUS YALE, JR.`; witnesses Arthur Maxwell and Henry Winn. |
@@ -28,6 +28,7 @@ The pinned four-page PDF was visually reviewed at 300 DPI. The public source fac
 ## Editorial and preservation boundaries
 
 - `src/data/editions/yaleLockEdition.ts` is the complete visitor-facing source face. Its prose, claims, glossary annotations, and figure references are individually authored typed React nodes. It does not render OCR, a PDF text layer, generated HTML, or a page-by-page scan transcription.
-- Each figure reference in the edition points to a local crop in `public/patents/figures/us-48475-yale-lock/` taken from the pinned drawing sheet (Figs. 1, 2, 3, 4, 6, 10, 11, 17, 19, 20).
+- Each figure reference in the edition points to a local crop in `public/patents/figures/us-48475-yale-lock/` taken from the pinned drawing sheet. The directory contains one versioned preview for every printed figure, 1 through 20; the current v1 crops remain held pending independent crop-fidelity acceptance.
 - `public/patents/transcripts/us-48475-yale-lock-reviewed.txt` is the review ledger for this edition. It records all four facsimile pages with page markers, while the visitor-facing React edition deliberately remains continuous.
 - The source contains five printed claims. The manual edition preserves all five claims verbatim, dynamically referenced by `manualYaleClaimText`; no claim is summarized or omitted.
+- The existing `*-source-crop-v1.png` files are preserved but remain rejected research assets pending cloud Luna visual acceptance of upright isolation, complete labels, and source-sheet boundaries. The edition contract fails closed until versioned v2 previews replace every served v1 reference.

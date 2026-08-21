@@ -1,27 +1,29 @@
 import type { Patent } from "@/types/patent";
-import { einkArchivalEdition } from "../editions/eInkEdition";
+import { manualClaimText } from "../editions/eInkEdition";
 
 export const eInkPatent: Patent = {
   id: "us-6120588-eink",
   patentNumber: "US 6,120,588",
-  title: "Electronically Addressable Display with Visually Contrastive Particles and Fluid",
-  shortTitle: "E-Ink Microencapsulated Electronic Paper",
-  subtitle: "Stokes-Einstein Electrophoretic Drift & Zero-Power Bistable Microcapsules",
-  inventors: ["Joseph M. Jacobson", "Barrett Comiskey", "Jonathan D. Albert"],
+  title: "Electronically Addressable Microencapsulated Ink and Display Thereof",
+  shortTitle: "Jacobson Electronically Addressable Microencapsulated Ink",
+  subtitle: "Electrophoretic Contrast Media, Printed Electronic Inks, and Addressable Displays",
+  inventors: ["Joseph M. Jacobson"],
   inventorLocation: "Cambridge, Massachusetts",
   grantDate: "2000-09-19",
-  filingDate: "1998-08-27",
+  filingDate: "1997-09-23",
   era: "Internet & Modern Computing (1990–Present)",
   category: "materials",
   categoryLabel: "Optoelectronics & Electronic Paper",
   summary:
-    "The Invention of Electronic Paper: Originating from the MIT Media Lab and commercialized by E Ink Corporation, US Patent 6,120,588 solved the long-standing challenge of paper-like digital displays. By encapsulating charged white titanium dioxide particles and black carbon particles in microscopic fluid-filled polymeric shells, E-Ink enabled paper-like reflective reading with zero steady-state power consumption.",
+    "US Patent 6,120,588 describes electronically active ink systems and printing systems for laying down electronically addressable contrast media, conductors, insulators, resistors, semiconductive, magnetic, spin, piezoelectric, optoelectronic, thermoelectric, and radio-frequency materials in patterned structures.",
   heroQuote:
-    "Charged pigment particles suspended in microcapsules migrate electrophoretically under an applied electric field to alter the optical reflectance of electronic paper.",
+    "We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials.",
   originalPdfUrl: "/patents/pdfs/us-6120588-eink.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6120588A/en",
-  usptoClassification: "G02F 1/167 (Electrophoretic displays; Electronic ink)",
-  archivalEdition: einkArchivalEdition,
+  usptoClassification:
+    "U.S. Cl. 106/31.16; 106/31.32; 106/31.64; 106/31.92; 264/6, 10, 12, 7; 425/6, 130, 174.8 E; 427/7",
+  // Withheld: the current authored edition is a bounded draft and does not
+  // yet cover all 16 drawing sheets and every specification paragraph.
   originalTextAsset: {
     url: "/patents/transcripts/us-6120588-eink-reviewed.txt",
     pageCount: 26,
@@ -35,51 +37,47 @@ Jacobson et al.
 Patent No.: US 6,120,588
 Date of Patent: Sep. 19, 2000
 
-ELECTRONICALLY ADDRESSABLE DISPLAY WITH VISUALLY CONTRASTIVE PARTICLES AND FLUID
-Inventors: Joseph M. Jacobson, Barrett Comiskey, Jonathan D. Albert
-Assignee: E Ink Corporation, Cambridge, MA
+ELECTRONICALLY ADDRESSABLE MICROENCAPSULATED INK AND DISPLAY THEREOF
+Inventor: Joseph M. Jacobson, Cambridge, Mass.
+Assignee: E Ink Corporation, Cambridge, Mass.
 
 ABSTRACT
-An electronically addressable display includes a microencapsulated electrophoretic display medium having a dielectric fluid and visually contrastive particles suspended therein. The particles translate under applied electrostatic fields to produce bistable reflective imagery without continuous power consumption.
+We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials. We further describe a printing system capable of laying down said materials in a definite pattern. Such a system may be used for instance to: print a flat panel display complete with onboard drive logic; print a working logic circuit onto any of a large class of substrates; print an electrostatic or piezoelectric motor with onboard logic and feedback or print a working radio transmitter or receiver.
 
 BACKGROUND OF THE INVENTION
-Traditional electronic displays require active emissive illumination or continuous polarizers that suffer from high power drain, narrow viewing angles, and eye fatigue under ambient illumination.
-
-SUMMARY OF THE INVENTION
-The present invention provides an electrophoretic display encapsulated in microscopic polymeric shells. Positively charged titanium dioxide white particles and negatively charged carbon black particles are suspended in a low-viscosity dyed or clear fluid, enabling zero-power image retention once particles are positioned at the viewing electrode.
+The patent begins with prior-art electronically addressable contrast media and extends the concept to electronically active inks and printed functional structures. The specification distinguishes several physical mechanisms, including electrophoretic migration, dielectrophoretic movement, frequency-dependent dielectric response, and printed semiconductor or conductor systems.
 
 CLAIMS
 1. An electrically addressable ink comprising a microcapsule, said microcapsule containing a dielectric fluid, a first particle, and a second particle, wherein said first particle and said second particle are suspended in said dielectric fluid and wherein said first particle has an electrical charge which is opposite in polarity to the electrical charge of said second particle, such that upon application of a first electric field, said first particle and said second particle translate within said microcapsule in opposite directions.`,
   plainEnglishExplanation: {
     overview:
-      "E-Ink creates high-contrast electronic paper that reflects ambient light naturally like real ink on paper, using zero battery power to hold a static image.",
+      "The grant is broader than the later E Ink product story: it describes electronically addressable contrast media together with printable conductors, semiconductors, logic, sensors, actuators, and radio-frequency structures.",
     coreMechanism:
-      "Millions of microscopic capsules contain charged white and black pigment particles in clear fluid. Applying an electric field drives opposite charges toward or away from the viewing surface.",
+      "The specification gives several source embodiments. In the electrophoretic embodiment, oppositely charged particles in a microcapsule migrate toward opposite electrodes under an applied field; other embodiments use dielectrophoresis, frequency-dependent dielectric response, chemical color change, or printed functional inks.",
     mechanicalBreakdown: [
       {
         title: "Polymeric Microencapsulation",
-        summary: "50-micron diameter spherical polymer shells suspend the colloidal fluid.",
+        summary: "Microencapsulation forms a shell around an electronically active internal phase.",
         technicalDetails:
-          "Prevents particle settling, clustering, and fluid migration, allowing flexible printed display manufacturing.",
+          "The source discusses optical clarity, dielectric strength, impermeability, pressure resistance, and several encapsulation routes; it does not limit the invention to a single capsule size or pigment chemistry.",
       },
       {
         title: "Active Matrix Addressing",
-        summary:
-          "Top transparent ITO glass electrode paired with bottom pixel transistor electrodes.",
+        summary: "Electrodes address the encapsulated contrast medium from the top, bottom, or in-plane.",
         technicalDetails:
-          "Applying +15V or -15V pulses switches pixels between reflective white state and absorptive black state.",
+          "The source labels top and bottom electrodes 100 and 110 for one embodiment and in-plane electrodes 270 and 280 for another; it does not prescribe the later product’s TFT stack or drive voltage.",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Electrophoresis & Stokes-Einstein Particle Mobility",
-        formula: "v = \\mu_e E = \\frac{\\epsilon_r \\epsilon_0 \\zeta}{\\eta} E",
+        principle: "Electrophoretic particle migration",
+        formula: "v_d = \\mu_e E",
         explanation:
-          "Electrophoretic drift velocity v depends on solvent permittivity, zeta potential zeta, viscosity eta, and applied field E, providing ~100ms optical switching.",
+          "The grant establishes directional particle migration under an applied electric field; the displayed kernel uses a bounded illustrative mobility and does not claim that the patent reports a measured mobility, switching time, reflectance, or contrast ratio.",
       },
     ],
     whyItMattersToday:
-      "E-Ink enabled the modern e-reader revolution (Amazon Kindle, Kobo) and created the ultra-low-power electronic paper industry.",
+      "The grant’s broader printing-system vision connects addressable contrast media with printed electronics, but later commercial products and their performance are historical context rather than limitations proved by this patent.",
   },
   historicalContext: {
     problemStatement:
@@ -90,7 +88,7 @@ CLAIMS
       "Severe eye strain under emissive LCD reading",
     ],
     breakthroughInsight:
-      "Joseph Jacobson and MIT Media Lab researchers realized that encapsulating electrophoretic fluids in micro-droplets prevented agglomeration and allowed printing on flexible substrates.",
+      "Jacobson’s claimed move was to treat electronically functional matter as an ink and pair it with patterning methods, including encapsulated contrast media and printed conductors, semiconductors, logic, and actuators.",
     patentWars: [
       {
         rivalName: "Xerox Gyricon / Nick Sheridon",
@@ -104,245 +102,159 @@ CLAIMS
       },
     ],
     civilizationalImpact:
-      "E-Ink liberated digital reading from power cords and glowing screens, making hundreds of thousands of books portable in sunlight-readable e-readers.",
+      "The patent supplied a foundational vocabulary for printable electronic structures and addressable contrast media; later electronic-paper products are downstream implementations, not a substitute for the grant’s much wider disclosure.",
   },
-  drawings: [
-    {
-      figureNumber: "Fig. 1",
-      title: "Microcapsule Cross-Sectional Diagram",
-      caption: "Cross-section showing dual charged pigment particles in dielectric carrier fluid.",
-      svgType: "eink",
-      callouts: [
-        {
-          id: "ei-capsule",
-          figureRef: "Fig. 1",
-          label: "10",
-          element: "Polymer Microcapsule Shell",
-          description: "Transparent spherical micro-shell containing electrophoretic fluid.",
-          x: 50,
-          y: 50,
-        },
-        {
-          id: "ei-white-particle",
-          figureRef: "Fig. 1",
-          label: "16",
-          element: "Positively Charged TiO2 Particle",
-          description: "White light-scattering nanoparticle.",
-          x: 40,
-          y: 30,
-        },
-        {
-          id: "ei-black-particle",
-          figureRef: "Fig. 1",
-          label: "18",
-          element: "Negatively Charged Carbon Particle",
-          description: "Black light-absorbing nanoparticle.",
-          x: 60,
-          y: 70,
-        },
-      ],
-    },
-    {
-      figureNumber: "Fig. 2",
-      title: "Dual-Particle Optical State Transitions",
-      caption:
-        "Diagram showing white and black optical states under positive and negative electric fields.",
-      svgType: "eink",
-      callouts: [
-        {
-          id: "ei-white-state",
-          figureRef: "Fig. 2",
-          label: "White",
-          element: "Reflective White State",
-          description: "White particles drawn to top viewing electrode.",
-          x: 30,
-          y: 50,
-        },
-        {
-          id: "ei-dark-state",
-          figureRef: "Fig. 2",
-          label: "Dark",
-          element: "Absorptive Dark State",
-          description: "Black particles drawn to top viewing electrode.",
-          x: 70,
-          y: 50,
-        },
-      ],
-    },
-    {
-      figureNumber: "Fig. 3",
-      title: "Active-Matrix Display Backplane",
-      caption:
-        "Schematic diagram of thin-film transistor array driving individual microencapsulated pixels.",
-      svgType: "eink",
-      callouts: [
-        {
-          id: "ei-tft",
-          figureRef: "Fig. 3",
-          label: "22",
-          element: "TFT Backplane Substrate",
-          description: "Thin-film transistor array applying independent voltage to each pixel.",
-          x: 50,
-          y: 80,
-        },
-      ],
-    },
-  ],
+  // Withheld until the 16 printed drawing sheets have cloud-reviewed,
+  // upright, isolated source crops and exact callout coordinates.
+  drawings: [],
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "An electrically addressable ink comprising a microcapsule, said microcapsule comprising: a first particle having a first charge; and a second particle having a second charge; wherein applying an electric field having a first polarity to said microcapsule effects a perceived optical property change by causing one of said first and second particles to migrate in a direction responsive to said field.",
+      originalText: manualClaimText(1),
       plainEnglish:
-        "An electrically addressable ink comprising a microcapsule, dielectric fluid, and oppositely charged first and second particles.",
+        "Claim 1 covers an electrically addressable microcapsule containing two particles with respective charges, where a field of a stated polarity changes the perceived optical property by moving at least one particle in the field-responsive direction.",
       keyInnovations: [
-        "Microencapsulated electrophoretic ink",
-        "Dual-particle colloidal system",
-        "Opposing charge mobility",
+        "Electrically addressable microcapsule",
+        "Charged particles",
+        "Field-responsive optical change",
       ],
     },
     {
       number: 2,
       isIndependent: false,
-      originalText:
-        "The ink of claim 1 wherein both said first and said second particles move in response to said electric field.",
-      plainEnglish: "Both first and second particles are suspended within the microcapsule.",
-      keyInnovations: ["Colloidal dual suspension", "Enclosed carrier fluid"],
+      originalText: manualClaimText(2),
+      plainEnglish:
+        "Claim 2 narrows claim 1 by requiring that both charged particles move in response to the applied electric field, rather than leaving movement of only one particle within the capsule sufficient.",
+      keyInnovations: ["Two-particle field response", "Capsule-contained contrast medium"],
     },
     {
       number: 3,
       isIndependent: false,
-      originalText: "The ink of claim 1 wherein said first particle has a color.",
-      plainEnglish: "First particle has a distinct optical color.",
-      keyInnovations: ["Color contrast pigment", "Chromatic particle tuning"],
+      originalText: manualClaimText(3),
+      plainEnglish:
+        "Claim 3 narrows the charged-particle system by requiring that the first particle itself has a color, making its movement capable of changing the capsule’s perceived optical state.",
+      keyInnovations: ["Colored first particle", "Perceived optical property"],
     },
     {
       number: 4,
       isIndependent: false,
-      originalText: "The ink of claim 1 wherein said first particle comprises a dye.",
-      plainEnglish: "First particle comprises a dye.",
-      keyInnovations: ["Dye-based pigment particle", "Organic dye encapsulation"],
+      originalText: manualClaimText(4),
+      plainEnglish:
+        "Claim 4 narrows the first colored particle to one that comprises a dye, covering a dye-bearing particle rather than every possible colored particle material.",
+      keyInnovations: ["Dye-bearing particle", "Chemical optical material"],
     },
     {
       number: 5,
       isIndependent: false,
-      originalText:
-        "The ink of claim 1 wherein the first particle further comprises a dye indicator system.",
-      plainEnglish: "First particle comprises a retroreflective material.",
-      keyInnovations: ["Retroreflective optical elements", "High-luminance reflective response"],
+      originalText: manualClaimText(5),
+      plainEnglish:
+        "Claim 5 narrows the first particle to one that further comprises a dye-indicator system, so the optical change can arise from the indicator chemistry associated with that particle.",
+      keyInnovations: ["Dye-indicator system", "Particle-associated color response"],
     },
     {
       number: 6,
       isIndependent: false,
-      originalText:
-        "The ink of claim 1 wherein said microcapsule further comprises a material such that said first and second particles are substantially immobile in the absence of an electric field.",
-      plainEnglish: "Microcapsule further contains a dyed suspending fluid.",
-      keyInnovations: ["Contrast-dyed carrier liquid", "Single-particle absorption"],
+      originalText: manualClaimText(6),
+      plainEnglish:
+        "Claim 6 adds a material in the microcapsule that keeps both particles substantially immobile when no electric field is applied, supplying the claimed field-off stability.",
+      keyInnovations: ["Field-off immobilization", "Bistable material state"],
     },
     {
       number: 7,
       isIndependent: false,
-      originalText:
-        "The ink of claim 1 wherein said second particle comprises a substance capable of reacting with said first particle, whereupon the application of a first electric field causes said first particle to be maintained separate from said substance such that said ink is maintained in a first color state; and whereupon application of a second electric field said first particle and said substance react to form a com- pound having a second color state.",
-      plainEnglish: "Second particle comprises a substrate with a dyed coating.",
-      keyInnovations: ["Coated core-shell particles", "Surface-modified pigments"],
+      originalText: manualClaimText(7),
+      plainEnglish:
+        "Claim 7 covers a second particle or substance that can react with the first particle: one field keeps them separate in a first color state, and another field permits reaction into a compound with a second color state.",
+      keyInnovations: ["Reactive particle pair", "Field-separated color chemistry"],
     },
     {
       number: 8,
       isIndependent: false,
-      originalText:
-        "The ink of claim 7 wherein said first particle and said substance react to form a compound having a color state when at least one of said first and second electric fields is zero. 6,120,588 13",
-      plainEnglish: "First and second particles have visually contrastive optical properties.",
-      keyInnovations: ["High-contrast complementary pigments", "Black/white optical switching"],
+      originalText: manualClaimText(8),
+      plainEnglish:
+        "Claim 8 narrows claim 7 so the reacting first particle and substance produce a colored compound when at least one of the first and second electric fields is zero.",
+      keyInnovations: ["Zero-field color compound", "Reactive contrast medium"],
     },
     {
       number: 9,
       isIndependent: false,
-      originalText:
-        "The ink of claim 1 wherein said first particle comprises a ring structure coupled to a first head having a first charge, and said second particle comprises a substance coupled to a second head having a second charge; wherein application of an electric field causes said ring structure and said substance to become separated from each other, effecting a first color state.",
-      plainEnglish: "First particle comprises a reflective particle.",
-      keyInnovations: ["Titanium dioxide white scatterer", "Lambertian reflectance"],
+      originalText: manualClaimText(9),
+      plainEnglish:
+        "Claim 9 claims a first particle with a charged head coupled to a ring structure and a second charged head coupled to another substance; an electric field separates the ring and substance to produce a first color state.",
+      keyInnovations: ["Charged ring structure", "Field-separated reactive substance"],
     },
     {
       number: 10,
       isIndependent: false,
-      originalText:
-        "The ink of claim 9 wherein application of a second electric field brings said ring structure and said substance into contact to effect a second color state.",
+      originalText: manualClaimText(10),
       plainEnglish:
-        "Application of a second electric field reverses the translation direction of particles.",
-      keyInnovations: ["Reversible polarity switching", "Bipolar field electrophoresis"],
+        "Claim 10 adds reversible operation to claim 9: a second electric field brings the ring structure and substance back into contact to produce a second color state.",
+      keyInnovations: ["Reversible field addressing", "Second optical color state"],
     },
     {
       number: 11,
       isIndependent: true,
-      originalText:
-        "A microencapsulated ink system, comprising: a microcapsule comprising: a photoconductive semiconductor particle; and a dye indicator particle; wherein the application of an electric field to said micro- capsule causes said photoconductive semiconductor particle to generate free charge, causing the dye indi- cator to effect a first color state.",
+      originalText: manualClaimText(11),
       plainEnglish:
-        "A microencapsulated ink system comprising microcapsules containing charged particles and a binder.",
-      keyInnovations: ["Coatable ink binder emulsion", "Printable electronic paper"],
+        "Claim 11 independently covers a microencapsulated ink system containing a photoconductive semiconductor particle and a dye-indicator particle, where an applied field causes generated free charge and a first color state.",
+      keyInnovations: ["Photoconductive semiconductor particle", "Dye-indicator particle"],
     },
     {
       number: 12,
       isIndependent: true,
-      originalText:
-        "An electrically addressable ink comprising a microcapsule, said microcapsule comprising: a hairpin-shaped molecule having a first portion and a second portion, said hair-pin shaped molecule compris- ing: a first moiety having a first charge attached to said first portion of said hairpin-shaped molecule; and a second moiety having a second charge attached to said second portion of said hairpin-shaped molecule, said second moiety capable of reacting with said first moiety, said second charge being opposite to said first charge; the reaction between said first moiety and said second moiety defining a closed state of said hairpin-shaped molecule effecting a first color state; and the separation of said first moiety from said second moiety defining an open state of said hairpin-shaped molecule, effecting a second color state. 10 15 20 25 30 14",
+      originalText: manualClaimText(12),
       plainEnglish:
-        "An electrically addressable ink comprising a microcapsule and a hairpin-shaped molecule.",
-      keyInnovations: ["Molecular conformational switching", "Nanoscale electrophoretic dipole"],
+        "Claim 12 independently covers a capsule containing a charged hairpin molecule whose oppositely charged moieties can react in a closed conformation for one color and separate in an open conformation for another.",
+      keyInnovations: ["Charged hairpin molecule", "Open/closed color states"],
     },
     {
       number: 13,
       isIndependent: false,
-      originalText:
-        "The ink of claim 12 wherein said hairpin-shaped molecule transitions between open and closed states upon application of an electric field.",
+      originalText: manualClaimText(13),
       plainEnglish:
-        "Hairpin-shaped molecule translates within the capsule under an electric field.",
-      keyInnovations: ["Electric-field molecular transport", "Macromolecular orientation"],
+        "Claim 13 narrows the molecular embodiment by requiring that the hairpin transition between its open and closed states when an electric field is applied.",
+      keyInnovations: ["Electric-field conformational transition", "Hairpin state addressing"],
     },
     {
       number: 14,
       isIndependent: false,
-      originalText:
-        "The ink of claim 13 wherein said hairpin-shaped molecule transitions between open and closed states upon application of an alternating field having a frequency reso- nant with the vibrational mode of the first and second moieties.",
+      originalText: manualClaimText(14),
       plainEnglish:
-        "Hairpin-shaped molecule translation alters the visual state of the microcapsule.",
-      keyInnovations: ["Bistable molecular optical states", "Conformational contrast switching"],
+        "Claim 14 further requires an alternating field whose frequency is resonant with a vibrational mode of the two moieties, defining the claimed field-driven conformational transition.",
+      keyInnovations: ["Resonant alternating field", "Moiety vibrational mode"],
     },
     {
       number: 15,
       isIndependent: true,
-      originalText:
-        "An electronically addressable ink comprising a microcapsule, said microcapsule comprising: a polymer molecule having a first non-linear shape in the presence of a first electric field, said polymer molecule comprising: a first moiety attached to a first location; and a second moiety attached to a second location; wherein the application of a second electric field causes said polymer molecule to assume a linear shape, sepa- rating said first and second moities to effect a first color state.",
+      originalText: manualClaimText(15),
       plainEnglish:
-        "An electronically addressable ink with particles capable of displaying multiple distinct colors.",
-      keyInnovations: ["Multi-chromatic particle electrophoresis", "Full-color electronic paper"],
+        "Claim 15 independently covers a capsule containing a polymer molecule that has one nonlinear shape in a first field and becomes linear in a second field, separating two moieties to produce a first color state.",
+      keyInnovations: ["Nonlinear polymer molecule", "Field-dependent molecular shape"],
     },
     {
       number: 16,
       isIndependent: false,
-      originalText:
-        "The ink of claim 15, wherein the application of a third electric field causes causing the polymer molecule to assume a second non-linear shape, causing said first and second moieties to react to effect a second color state.",
-      plainEnglish: "Application of a third electric field displays a third optical color state.",
-      keyInnovations: ["Multi-threshold voltage addressing", "Three-state optical switching"],
+      originalText: manualClaimText(16),
+      plainEnglish:
+        "Claim 16 adds a third-field operation: the polymer assumes a second nonlinear shape and causes the first and second moieties to react, producing a second color state.",
+      keyInnovations: ["Third-field polymer state", "Reactive moieties"],
     },
     {
       number: 17,
       isIndependent: false,
-      originalText:
-        "The ink of claim 16, wherein said first and third electric fields are the same field.",
+      originalText: manualClaimText(17),
       plainEnglish:
-        "First and third electric fields have opposite polarities and distinct magnitudes.",
-      keyInnovations: ["Magnitude-and-polarity tiered driving", "Tri-level voltage control"],
+        "Claim 17 narrows claim 16 by requiring that the first and third electric fields are the same field, tying the two nonlinear-state operations to one shared field condition.",
+      keyInnovations: ["Shared first/third field", "Dependent polymer operation"],
     },
     {
       number: 18,
       isIndependent: true,
-      originalText:
-        "An electrically addressable medium comprising a microcapsule, said microcapsule further comprising a non- colored dye solvent complex, said dye solvent complex being stable when no electric field is applied and wherein applying an electric field causes said dye solvent complex to separate into a dye complex and a solvent complex, effecting a first color state.",
+      originalText: manualClaimText(18),
       plainEnglish:
-        "An electrically addressable medium comprising microcapsules disposed on a substrate.",
-      keyInnovations: ["Printed electronic paper substrate", "Roll-to-roll coated display medium"],
+        "Claim 18 independently covers a capsule containing a non-colored dye-solvent complex that is stable with no field and separates into dye and solvent complexes under an applied field to produce a first color state.",
+      keyInnovations: ["Non-colored dye-solvent complex", "Field-induced dissociation"],
     },
   ],
 };

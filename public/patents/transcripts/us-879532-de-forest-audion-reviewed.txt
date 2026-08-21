@@ -9,8 +9,6 @@ Fig. 1 represents in diagram a wireless telegraph receiving system comprising an
 
 Fig. 2 represents a space telegraph receiving system having a modified form of oscillation detector connected therein in a manner which constitutes one of the subjects matter of said invention.
 
-Fig. 3, Fig. 4, Fig. 5, and Fig. 6 represent circuit diagrams showing alternative arrangements of the oscillation circuits, condensers, batteries, and telephone indicators associated with the filament, grid, and plate electrodes.
-
 Witnesses: Thomas I. Gallagher, Hans W. Goetze.
 Inventor: Lee de Forest.
 

@@ -10,12 +10,12 @@
 - SHA-256: `3a37d70051d784a5a086d53b8d2d09f372b8bb14d40179b68b62a5c166e7876e`
 - PDF page count: 4
 
-## Two direct facsimile checks
+## Facsimile review boundary
 
-The pinned PDF was rendered and visually inspected page by page twice on
-2026-08-19. The first pass established the source sequence and the second pass
-checked the authored edition against the printed pages. OCR and the prior
-text layers were comparison aids only and are not the basis of the published reading.
+The pinned PDF identity, four-page sequence, and page roles were checked against
+the authoritative served facsimile on 2026-08-19. A cloud Luna visual review is
+required before publication acceptance; OCR and prior text layers are comparison
+aids only and are not the basis of the published reading.
 
 | PDF pages | Source matter checked |
 | --- | --- |

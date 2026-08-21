@@ -69,47 +69,47 @@ const p = (
 });
 
 export const YALE_LOCK_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> = {
-  1: [
+  2: [
     "Formal legal preamble: Linus Yale, Jr., master locksmith of Shelburne Falls, Massachusetts, establishes his legal declaration of new and useful improvements in lock mechanisms.",
   ],
-  2: [
+  3: [
     "Comprehensive guide to the twenty patent figures: Fig. 1 side elevation; Fig. 2 front plate elevation; Fig. 3 case interior cross-section; Fig. 4 longitudinal section showing cylinder in door; Figs. 5, 7, 8 bolt elevation and retention contrivance; Fig. 9 elastic bolt-retaining plate; Fig. 6 transverse cylinder cross-section; Fig. 10 longitudinal pin chamber array; Fig. 11 plug body; Figs. 12-14 plug cross-sections; Figs. 15-16 lazy-arm interaction; Figs. 17-18 flat bitted key and tumbler division lines; Fig. 19 pin tumbler and spring stack; Fig. 20 interior tumbler-case end view.",
   ],
-  3: [
-    "Broad mechanical scope: the invention applies primarily to pin-tumbler cylinder locks, with modular applicability to mortise and rim locks across commercial and residential security.",
-  ],
   4: [
-    "Dual pedagogical purpose: the improvements solve two fundamental historical deficits—vulnerability to manipulation/picking, and complex door installation across differing door thicknesses and right/left swing handings.",
+    "The specification says the improvements chiefly apply to pin-locks, while some can be used separately or with other classes of locks, including the mortise and rim arrangements it describes.",
   ],
   5: [
-    "Bolt retention and insertion mechanism: mortise case A houses bolt B with talons and projection F, retained by elastic spring plate F' and clamping screw G, allowing insertion directly through the front mortise faceplate after case installation.",
+    "The specification says the improvements concern security against picking and construction that adapts the lock to either hand and to doors of differing thicknesses.",
   ],
   6: [
-    "Externally threaded modular cylinder housing: cylindrical tumbler-case C features external machine threads mating with tapped nut O in the lock case, clamped via off-axis pointed set screw H to adjust cylinder projection flush with doors of any thickness.",
+    "Bolt retention and insertion mechanism: mortise case A houses bolt B with talons and projection F, retained by elastic spring plate F' and clamping screw G, allowing insertion directly through the front mortise faceplate after case installation.",
   ],
   7: [
-    "The core pin-tumbler shear-line mechanism: eccentric revolving plug D houses five two-piece pin tumblers (upper driver pin I and lower key pin J) loaded by springs L. Flat bitted steel key K lifts the pins so their division lines align exactly at the shear line flush with plug D's circumference. Circumferential anti-pick notches (serrations) prevent picking while wide pin chambers support the pins against key thrust.",
+    "Externally threaded modular cylinder housing: cylindrical tumbler-case C features external machine threads mating with tapped nut O in the lock case, clamped via off-axis pointed set screw H to adjust cylinder projection for doors of differing thickness.",
   ],
   8: [
-    "Lost-motion lost-angle cam (lazy-arm): plug D features ring recess s and axial groove t that engage drive knob v on stamped steel lazy-arm E with bolt-throwing wing W, providing rotary clearance and deadlocking bolt engagement.",
+    "The core pin-tumbler shear-line mechanism: eccentric revolving plug D houses two-piece pin tumblers (upper piece I and lower piece J) loaded by springs L. Flat bitted steel key K lifts the pieces so their division lines align with the periphery of D. Notches on the tumblers or recesses serve the purpose of racking and prevent picking to a certain extent, while the narrow key-hole leaves the projecting parts supported by most of their containing cavities.",
   ],
   9: [
-    "Tumbler-case circumferential clearance slit: transverse arcuate slit W' allows the lazy-arm to rotate freely within the cylinder housing when the cylinder is threaded into place.",
+    "Lost-motion lost-angle cam (lazy-arm): plug D features ring recess s and axial groove t that engage drive knob v on stamped steel lazy-arm E with bolt-throwing wing W, providing rotary clearance and deadlocking bolt engagement.",
   ],
   10: [
-    "Sequential assembly and plug dead-retention: inserting pins and springs, compressing drivers I, sliding plug D with groove t over knob v, and releasing inner pin J into the retaining groove ensures the rotating plug cannot be extracted from the front without the authorized key.",
+    "Tumbler-case circumferential clearance slit: transverse arcuate slit W' allows the lazy-arm to rotate freely within the cylinder housing when the cylinder is threaded into place.",
   ],
   11: [
-    "Lost-motion rotation geometry and anti-forcing deadbolt lock: the key-containing plug rotates nearly a full 360° to allow key extraction, while the lazy-arm traverses a smaller angle (approx. 90°-120°) to remain in direct blocking contact with the bolt talon, mechanically deadlocking the bolt against external forcing.",
+    "Sequential assembly and plug dead-retention: inserting pins and springs, compressing drivers I, sliding plug D with groove t over knob v, and releasing inner pin J into the retaining groove ensures the rotating plug cannot be extracted from the front without the authorized key.",
   ],
   12: [
-    "Automatic key alignment stops: bilateral stop knobs on the lazy-arm strike bolt talons at the locked and unlocked terminal positions, ensuring the cylinder plug always comes to rest with all pin chambers perfectly in line for immediate key insertion or removal.",
+    "Lost-motion rotation geometry and anti-forcing bolt stop: the key-containing plug turns nearly a whole revolution to reach a key-removal position, while the lazy-arm moves through less than a whole revolution and remains in contact with a bolt talon at the locked and unlocked positions.",
   ],
   13: [
+    "Automatic key alignment stops: bilateral stop knobs on the lazy-arm strike bolt talons at the locked and unlocked terminal positions, ensuring the cylinder plug always comes to rest with all pin chambers perfectly in line for immediate key insertion or removal.",
+  ],
+  14: [
     "Independent utility of constituent inventions: Yale notes that the cylinder retention ring, lost-motion lazy-arm deadbolt actuator, alignment stops, and modular threaded mortise mounting possess distinct security and mechanical utility individually or in combination.",
   ],
-  20: ["Inventor signature: Linus Yale, Jr."],
-  21: ["Attestation of subscribing witnesses: Arthur Maxwell and Henry Winn."],
+  21: ["Inventor signature: Linus Yale, Jr."],
+  22: ["Attestation of subscribing witnesses: Arthur Maxwell and Henry Winn."],
 };
 
 export const yaleLockParallelReadings = YALE_LOCK_PARALLEL_READINGS;
@@ -130,12 +130,18 @@ export const yaleLockArchivalEdition: CuratedSpecificationEdition = {
         "Specification forming part of Letters Patent No. 48,475, dated June 27, 1865.",
       ],
     },
+    {
+      kind: "figure-sheet",
+      figureLabel: "Figs. 1 through 20",
+      title: "Lock drawing sheet",
+      description: [{ kind: "text", text: "Figs. 1 through 20." }],
+    },
     p(
       "To all whom it may concern:\nBe it known that I, ",
       term(
         "LINUS YALE, Jr.",
         "Linus Yale Jr.",
-        "American mechanical engineer, inventor, and manufacturer (1821–1868) who revolutionized lock security by miniaturizing the pin-tumbler cylinder lock and inventing the flat serrated key.",
+        "Linus Yale Jr., the named inventor of this 1865 lock patent; this annotation identifies the person without substituting later biographical claims for the source text.",
       ),
       ", of Shelburne Falls, in the county of Franklin and State of Massachusetts, have invented certain new and useful Improvements in Locks; and I do hereby declare that the following, taken in connection with the drawings, is a full, clear, and exact description thereof.",
     ),
@@ -302,7 +308,7 @@ export const yaleLockArchivalEdition: CuratedSpecificationEdition = {
     {
       kind: "heading",
       level: 3,
-      text: "CLAIMS",
+      text: "I claim as my invention—",
     },
     {
       kind: "claim",

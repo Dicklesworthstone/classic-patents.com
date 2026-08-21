@@ -213,9 +213,12 @@ film F', and mirror 121; preserved the Figure 13 corrugated-roll relationship
 between rolls 122 and 124 and corrugations 126; restored the methyl-cellulose,
 layer-affinity, and titanium-dioxide opacity details for Figure 14; and
 separated the Figure 14/15 pod construction from the Figure 16 cavity
-reference. Example 2 now records the visually resolved 11.2 cubic centimeters
-of 10% sodium hydroxide while explicitly withholding the unresolved sodium
-sulfite quantity rather than guessing it.
+reference. Example 2 now records 7.0 grams of sodium sulfite and the visually
+resolved 11.2 cubic centimeters of 10% sodium hydroxide. The 7.0-gram reading
+is corroborated by the cloud primary text's malformed glyph and the same
+formulation printed at ten-times scale in the related continuation disclosure;
+it remains an editorial source correction, not independent Luna image
+acceptance.
 
 Pages 13–16 are still a source-grounded WIP checkpoint, not publication
 acceptance: pages 17–20, claims/formal matter, pages 1–8 literal drawing-sheet
@@ -269,7 +272,8 @@ blockers are literal drawing-sheet review and crop correction for pages 1–8,
 the earlier specification pages, and independent visual confirmation of any
 small glyph or ligature not resolved by the remote primary record. No witness
 or certificate is printed after the inventor signature on the final sheet. No
-uncertainty was silently filled, and no publication gate was changed.
+The Example 2 sodium-sulfite glyph is no longer unresolved, but no publication
+gate was changed.
 
 ### Pages 25–28 cloud claim checkpoint
 

@@ -7,6 +7,7 @@ import {
   yaleLockArchivalEdition,
   yaleLockParallelReadings,
 } from "./yaleLockEdition";
+import { yaleLockPatent } from "../patents/yale-lock";
 
 const PDF_PATH = resolve(process.cwd(), "public/patents/pdfs/us-48475-yale-lock.pdf");
 const LEDGER_PATH = resolve(
@@ -25,20 +26,33 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
   test("contains all 5 printed claims exactly matching manual claim text", () => {
     const claimBlocks = yaleLockArchivalEdition.blocks.filter((b) => b.kind === "claim");
     expect(claimBlocks.length).toBe(5);
+    const ledger = readFileSync(LEDGER_PATH, "utf-8");
 
     for (let i = 1; i <= 5; i++) {
       const claimText = manualYaleClaimText(i);
       expect(claimText.length).toBeGreaterThan(20);
       expect(claimText).toContain(`${i}.`);
+      expect(ledger).toContain(claimText);
     }
   });
 
+  test("canonical drawing metadata covers every printed figure exactly once", () => {
+    const figureNumbers = yaleLockPatent.drawings
+      .map((drawing) => drawing.figureNumber)
+      .sort((a, b) => Number(a.replace(/\D/g, "")) - Number(b.replace(/\D/g, "")));
+    expect(figureNumbers).toEqual(Array.from({ length: 20 }, (_, index) => `Fig. ${index + 1}`));
+  });
+
   test("all figure preview assets exist on disk with exact pixel dimensions", () => {
+    const referencedFigures = new Set<number>();
     for (const block of yaleLockArchivalEdition.blocks) {
       if (block.kind === "paragraph") {
         for (const inline of block.inlines) {
           if (inline.kind === "reference" && inline.figurePreviews) {
             for (const preview of inline.figurePreviews) {
+              const figureMatch = preview.src.match(/fig-(\d+)-source-crop-v\d+\.png$/);
+              expect(figureMatch).not.toBeNull();
+              referencedFigures.add(Number(figureMatch?.[1]));
               const diskPath = resolve(process.cwd(), "public", preview.src.replace(/^\//, ""));
               const fileBuffer = readFileSync(diskPath);
               expect(fileBuffer.length).toBeGreaterThan(100);
@@ -53,6 +67,19 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
         }
       }
     }
+    expect(referencedFigures).toEqual(new Set(Array.from({ length: 20 }, (_, index) => index + 1)));
+  });
+
+  test("publication fails closed until every served crop has independent v2 fidelity review", () => {
+    const previews = yaleLockArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.figurePreviews ? inline.figurePreviews : [],
+          )
+        : [],
+    );
+    expect(previews.length).toBeGreaterThan(0);
+    expect(previews.every((preview) => /-source-crop-v2\.png$/.test(preview.src))).toBe(true);
   });
 
   test("every paragraph block has a corresponding parallel reading", () => {

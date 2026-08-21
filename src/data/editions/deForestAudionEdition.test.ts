@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { deForestAudionPatent } from "@/data/patents/de-forest-audion";
 import {
   deForestAudionArchivalEdition,
   deForestAudionParallelReadings,
@@ -69,11 +70,29 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
     expect(transcript).toContain("LEE DE FOREST");
   });
 
+  test("keeps the printed drawing count and modern-model boundary source-honest", () => {
+    const transcript = readFileSync(transcriptPath, "utf-8");
+    expect(transcript).not.toMatch(/\bFig\.\s*[3-6]\b/i);
+    expect(deForestAudionPatent.summary).toContain("oscillation detector");
+    expect(deForestAudionPatent.summary).toContain("no general voltage, current, pressure, or gain rating");
+    expect(deForestAudionPatent.plainEnglishExplanation.coreMechanism).toContain(
+      "illustrative modern model parameters",
+    );
+    expect(
+      deForestAudionPatent.plainEnglishExplanation.mechanicalBreakdown.some((card) =>
+        card.technicalDetails.includes("not a recovered patent specification value"),
+      ),
+    ).toBe(true);
+  });
+
   test("exposes all 21 printed claims via dynamic single-source lookup", () => {
     for (let c = 1; c <= 21; c++) {
       const claimText = manualDeForestClaimText(c);
       expect(claimText.length).toBeGreaterThan(20);
       expect(claimText).toContain("detector");
+    }
+    for (const claim of deForestAudionPatent.claims) {
+      expect(claim.plainEnglish.trim().split(/\s+/u).length).toBeGreaterThan(30);
     }
   });
 

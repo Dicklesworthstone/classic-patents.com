@@ -263,6 +263,15 @@ describe("US 2,543,181 Edwin Land Polaroid source-draft hold", () => {
     );
   });
 
+  it("retains the resolved Example 2 sodium-sulfite quantity", () => {
+    const paragraphText = landPolaroidArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => block.inlines.map((inline) => inline.text))
+      .join("\n");
+    expect(paragraphText).toContain("sodium sulfite, 7.0 grams");
+    expect(reviewedLedger).toContain("sodium sulfite — 7.0 grams");
+  });
+
   it("retains the literal visible drawing-sheet labels and signature matter for pages 1–8", () => {
     const drawingSheetMarkers = [
       "8 Sheets—Sheet 1.",

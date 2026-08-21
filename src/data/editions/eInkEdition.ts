@@ -21,6 +21,20 @@ export const EINK_FIGURE_DIMS: Record<number, { width: number; height: number }>
   3: { width: 1856, height: 2385 },
 };
 
+/**
+ * Claims are authored once in the edition.  The catalogue record must never
+ * carry a second literal transcription that can drift from this source face.
+ */
+export function manualClaimText(number: number): string {
+  const block = einkArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (!block || block.kind !== "claim") {
+    throw new Error(`E Ink manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 function figureAssetPath(number: number): string {
   return `/patents/figures/us-6120588-eink/fig-${number}-source-crop-v1.png`;
 }
@@ -36,12 +50,8 @@ function makePreview(
     href: `#figure-${figureNumbers[0]}`,
     referenceType: "figure",
     label: altText,
-    figurePreviews: figureNumbers.map((num) => ({
-      src: figureAssetPath(num),
-      alt: `Figure ${num}: ${altText}`,
-      width: EINK_FIGURE_DIMS[num]?.width ?? 1200,
-      height: EINK_FIGURE_DIMS[num]?.height ?? 1600,
-    })),
+    // Source crops are withheld until each occurrence is cloud-verified as an
+    // upright isolated crop from the matching printed drawing sheet.
   };
 }
 
@@ -112,9 +122,9 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
         "Patent No.: US 6,120,588",
         "Date of Patent: Sep. 19, 2000",
         "ELECTRONICALLY ADDRESSABLE MICROENCAPSULATED INK AND DISPLAY THEREOF",
-        "Inventors: Joseph M. Jacobson, Barrett Comiskey, Jonathan D. Albert",
-        "Assignee: E Ink Corporation, Cambridge, MA (US); Massachusetts Institute of Technology, Cambridge, MA (US)",
-        "Application No.: 09/140,846 · Filed: Aug. 27, 1998",
+        "Inventor: Joseph M. Jacobson, Cambridge, Mass.",
+        "Assignee: E Ink Corporation, Cambridge, Mass.",
+        "Application No.: 08/935,800 · Filed: Sep. 23, 1997",
       ],
     },
     {
@@ -123,7 +133,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "ABSTRACT",
     },
     p(
-      "An electronically addressable ink comprising a microcapsule containing a dielectric fluid and a suspension of charged pigment particles that translate within the microcapsule when an electric field is applied across the microcapsule, thereby altering the visual appearance of the ink.",
+      "We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials. We further describe a printing system capable of laying down said materials in a definite pattern. Such a system may be used for instance to: print a flat panel display complete with onboard drive logic; print a working logic circuit onto any of a large class of substrates; print an electrostatic or piezoelectric motor with onboard logic and feedback or print a working radio transmitter or receiver.",
     ),
     {
       kind: "heading",
@@ -131,7 +141,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "FIELD OF THE INVENTION",
     },
     p(
-      "The present invention relates generally to electronically addressable display media, and more particularly to electrophoretic microcapsules and electronic paper displays manufactured therefrom.",
+      "The present invention relates generally to electronically active inks and printing systems for forming electronically functional structures.",
     ),
     {
       kind: "heading",
@@ -139,10 +149,10 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "BACKGROUND OF THE INVENTION",
     },
     p(
-      "Conventional electronic display technologies, such as cathode ray tubes (CRTs) and liquid crystal displays (LCDs), rely on light emission or continuous polarization modulation. Emissive displays suffer from severe eye strain during extended reading, high electrical power consumption, and poor readability under bright ambient sunlight. Liquid crystal displays require continuous electrical refreshing and polarized backlighting, which drastically impairs battery longevity in portable electronic reading devices.",
+      "Means are known in the prior art for producing bichromal particles or microspheres for use in electronic displays. Such techniques produce a particle that does not have an implanted dipole moment but rather relies in general on the Zeta potential of the material to create a permanent dipole.",
     ),
     p(
-      "Electrophoretic displays offer the promise of high-contrast reflective reading similar to ink on paper. However, early unencapsulated electrophoretic cells suffered from severe failure modes, including gravitational particle settling, irreversible lateral agglomeration, and chemical degradation under electrical stress, preventing commercial adoption for over three decades.",
+      "Such a scheme suffers from the fact that it links the material properties to the electronic properties thus limiting the size of the dipole moment which may be created. FIG. 1 details means of producing particles, either bichromal as might be used in an electrostatic display, or monochromal as might be used in a dielectrophoretic display, with an implanted dipole moment.",
     ),
     {
       kind: "heading",
@@ -150,16 +160,11 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       text: "SUMMARY OF THE INVENTION",
     },
     p(
-      "The present invention solves the longstanding instability of electrophoretic displays by encapsulating electrophoretic fluids into discrete microscopic polymeric shells. The resulting ",
-      term(
-        "microencapsulated ink",
-        "Microencapsulated Electrophoretic Ink",
-        "Microscopic polymer shells (30–100 μm diameter) encapsulating dielectric fluid and charged pigment nanoparticles, printed as a coatable ink.",
-      ),
-      " can be printed onto flexible plastic or glass substrates using standard roll-to-roll printing techniques, creating flexible, high-resolution electronic paper.",
+      "A large number of techniques are known in the literature for microencapsulating one material inside another material. Such techniques are generally used in the paper or pharmaceutical industry and do not generally produce a microcapsule which embodies simultaneously the properties of optical clarity, high dielectric strength, impermeability and resistance to pressure. With proper modification however these techniques may be made amenable to microencapsulating systems with electronic properties.",
+      "",
     ),
     p(
-      "In a preferred embodiment, each microcapsule contains a dual-particle suspension comprising positively charged white titanium dioxide (TiO2) nanoparticles and negatively charged black carbon particles suspended in an optically clear, density-matched hydrocarbon fluid. When a positive vertical electric field is applied, white particles migrate toward the viewing surface while black particles migrate toward the bottom electrode, displaying a bright white pixel state. Reversing the electric field polarity drives black particles to the viewing surface, displaying a dark state.",
+      "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",
     ),
     {
       kind: "heading",
@@ -297,7 +302,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The ink of claim 7 wherein said first particle and said substance react to form a compound having a color state when at least one of said first and second electric fields is zero. 6,120,588 13",
+          text: "The ink of claim 7 wherein said first particle and said substance react to form a compound having a color state when at least one of said first and second electric fields is zero.",
         },
       ],
     },
@@ -327,7 +332,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A microencapsulated ink system, comprising: a microcapsule comprising: a photoconductive semiconductor particle; and a dye indicator particle; wherein the application of an electric field to said micro- capsule causes said photoconductive semiconductor particle to generate free charge, causing the dye indi- cator to effect a first color state.",
+          text: "A microencapsulated ink system, comprising: a microcapsule comprising: a photoconductive semiconductor particle; and a dye indicator particle; wherein the application of an electric field to said microcapsule causes said photoconductive semiconductor particle to generate free charge, causing the dye indicator to effect a first color state.",
         },
       ],
     },
@@ -337,7 +342,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "An electrically addressable ink comprising a microcapsule, said microcapsule comprising: a hairpin-shaped molecule having a first portion and a second portion, said hair-pin shaped molecule compris- ing: a first moiety having a first charge attached to said first portion of said hairpin-shaped molecule; and a second moiety having a second charge attached to said second portion of said hairpin-shaped molecule, said second moiety capable of reacting with said first moiety, said second charge being opposite to said first charge; the reaction between said first moiety and said second moiety defining a closed state of said hairpin-shaped molecule effecting a first color state; and the separation of said first moiety from said second moiety defining an open state of said hairpin-shaped molecule, effecting a second color state. 10 15 20 25 30 14",
+          text: "An electrically addressable ink comprising a microcapsule, said microcapsule comprising: a hairpin-shaped molecule having a first portion and a second portion, said hair-pin shaped molecule comprising: a first moiety having a first charge attached to said first portion of said hairpin-shaped molecule; and a second moiety having a second charge attached to said second portion of said hairpin-shaped molecule, said second moiety capable of reacting with said first moiety, said second charge being opposite to said first charge; the reaction between said first moiety and said second moiety defining a closed state of said hairpin-shaped molecule effecting a first color state; and the separation of said first moiety from said second moiety defining an open state of said hairpin-shaped molecule, effecting a second color state.",
         },
       ],
     },
@@ -357,7 +362,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The ink of claim 13 wherein said hairpin-shaped molecule transitions between open and closed states upon application of an alternating field having a frequency reso- nant with the vibrational mode of the first and second moieties.",
+          text: "The ink of claim 13 wherein said hairpin-shaped molecule transitions between open and closed states upon application of an alternating field having a frequency resonant with the vibrational mode of the first and second moieties.",
         },
       ],
     },
@@ -367,7 +372,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "An electronically addressable ink comprising a microcapsule, said microcapsule comprising: a polymer molecule having a first non-linear shape in the presence of a first electric field, said polymer molecule comprising: a first moiety attached to a first location; and a second moiety attached to a second location; wherein the application of a second electric field causes said polymer molecule to assume a linear shape, sepa- rating said first and second moities to effect a first color state.",
+          text: "An electronically addressable ink comprising a microcapsule, said microcapsule comprising: a polymer molecule having a first non-linear shape in the presence of a first electric field, said polymer molecule comprising: a first moiety attached to a first location; and a second moiety attached to a second location; wherein the application of a second electric field causes said polymer molecule to assume a linear shape, separating said first and second moities to effect a first color state.",
         },
       ],
     },
@@ -397,7 +402,7 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "An electrically addressable medium comprising a microcapsule, said microcapsule further comprising a non- colored dye solvent complex, said dye solvent complex being stable when no electric field is applied and wherein applying an electric field causes said dye solvent complex to separate into a dye complex and a solvent complex, effecting a first color state.",
+          text: "An electrically addressable medium comprising a microcapsule, said microcapsule further comprising a non-colored dye solvent complex, said dye solvent complex being stable when no electric field is applied and wherein applying an electric field causes said dye solvent complex to separate into a dye complex and a solvent complex, effecting a first color state.",
         },
       ],
     },

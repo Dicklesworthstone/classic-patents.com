@@ -322,7 +322,7 @@ The reagent is relatively viscous, preferably having a viscosity in excess of fi
 
 In use, silver halide emulsion 212 is exposed through base 210 to predetermined subject matter to form a latent image. After exposure, the film is subjected to compression, for example by pressure rollers. Compression releases reagent 220 from pod 218 and spreads it between layers 212 and 214 in the direction of the exposed portion, permeating at least the surface portions of those layers within the exposed frame. The reagent preferably contains a developer, a compound forming a soluble silver complex with undeveloped silver halide, an alkali, and a thickener, and may contain a restrainer and preservative.
 
-Example 2: Water — 100 cubic centimeters; sodium sulfite — [quantity unresolved in cloud text extraction]; hydroquinone — 3.3 grams; sodium thiosulfate — 1.4 grams; aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams of that compound in 100 cubic centimeters of water — 5 grams; sodium hydroxide, 10% solution — 11.2 cubic centimeters. The sodium-sulfite quantity is not guessed because the cloud PDF text does not resolve that printed table glyph.
+Example 2: Water — 100 cubic centimeters; sodium sulfite — 7.0 grams; hydroquinone — 3.3 grams; sodium thiosulfate — 1.4 grams; aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams of that compound in 100 cubic centimeters of water — 5 grams; sodium hydroxide, 10% solution — 11.2 cubic centimeters.
 
 --- REVIEWED TRANSCRIPTION PAGE 16 OF 32 ---
 

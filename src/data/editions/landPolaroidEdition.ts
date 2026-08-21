@@ -210,7 +210,7 @@ const landPolaroidLegacyParallelReadings: Readonly<Record<number, readonly strin
     "Compression releases reagent 220 from pod 218 between the exposed silver-halide layer 212 and receiving layer 214. The reagent contains developer, complex-forming compound, alkali, and thickener, with optional restrainer and preservative.",
   ],
   57: [
-    "Example 2 gives water, hydroquinone, sodium thiosulfate, sodium carboxymethyl cellulose solution, and 11.2 cubic centimeters of 10% sodium hydroxide solution; the sodium-sulfite quantity is unresolved in the cloud text and is deliberately not guessed.",
+    "Example 2 gives water, 7.0 grams of sodium sulfite, 3.3 grams of hydroquinone, 1.4 grams of sodium thiosulfate, sodium carboxymethyl cellulose solution, and 11.2 cubic centimeters of 10% sodium hydroxide solution.",
   ],
   58: [
     "The stated Example 2 mixing order dissolves the salts, adds the cellulose solution, cools the mixture to 65–75 degrees Fahrenheit, and then adds sodium hydroxide. An alternative dilutes the cellulose solution first and mixes at 80–90 degrees Fahrenheit before cooling.",
@@ -871,7 +871,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       text(
-        "Example 2 specifies: water, 100 cubic centimeters; sodium sulfite, an amount not legible in the cloud text extraction; hydroquinone, 3.3 grams; sodium thiosulfate, 1.4 grams; an aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams in 100 cubic centimeters of water, 5 grams; and 11.2 cubic centimeters of 10% sodium hydroxide solution. The missing sodium-sulfite quantity is retained as an unresolved source glyph rather than guessed.",
+        "Example 2 specifies: water, 100 cubic centimeters; sodium sulfite, 7.0 grams; hydroquinone, 3.3 grams; sodium thiosulfate, 1.4 grams; an aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams in 100 cubic centimeters of water, 5 grams; and 11.2 cubic centimeters of 10% sodium hydroxide solution.",
       ),
     ),
     p(
@@ -2297,7 +2297,7 @@ const landPolaroidParallelReadingsByBlock: Readonly<Record<number, readonly stri
     "The reagent ingredients are mixed in a specified order: the salts and developer are dissolved first, cellulose solution is mixed in, the batch is cooled to 65–75 degrees Fahrenheit, and sodium hydroxide is added last.",
   ],
   81: [
-    "Example 2 records water, unresolved sodium sulfite, hydroquinone, sodium thiosulfate, sodium carboxymethyl cellulose solution, and 10% sodium hydroxide; the unresolved sulfite quantity is deliberately not invented.",
+    "Example 2 records water, 7.0 grams of sodium sulfite, hydroquinone, sodium thiosulfate, sodium carboxymethyl cellulose solution, and 10% sodium hydroxide in the printed quantities.",
   ],
   82: [
     "The alternative mixing route dilutes the cellulose solution first, mixes the remaining ingredients at 80–90 degrees Fahrenheit, cools the batch to approximately 65–75 degrees, and then adds sodium hydroxide.",

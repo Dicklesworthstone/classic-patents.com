@@ -287,7 +287,7 @@ export function DeForestAudion3D() {
           <SensitivitySlider
             id="gridBiasVoltage"
             patentId="us-879532-de-forest-audion"
-            paramKey="gridVoltageV"
+            paramKey="gridBiasVoltageV"
             label="Grid Bias Voltage"
             value={gridBiasVoltageV}
             min={-5}

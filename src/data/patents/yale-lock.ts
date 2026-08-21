@@ -16,7 +16,7 @@ export const yaleLockPatent: Patent = {
   category: "consumer",
   categoryLabel: "Mechanical Locks & Security Systems",
   summary:
-    "Linus Yale Jr.'s 1865 master patent revolutionized physical security worldwide by miniaturizing the pin-tumbler cylinder lock and pairing it with a small, lightweight flat bitted key. By dividing each tumbler into an upper driver pin and lower key pin that align at a cylindrical shear line, introducing anti-pick circumferential serrations, and driving the bolt through a lost-motion lazy-arm cam, Yale rendered heavy Victorian warded keys obsolete and established the universal architecture of modern commercial and residential door locks.",
+    "Linus Yale Jr.'s 1865 patent describes a lock combining a cylindrical tumbler-case, a rotating plug, two-piece pin tumblers, a thin bitted key, and a lost-motion wing or lazy-arm. The same specification also claims a spring plate for retaining the bolt and threaded cylinder mounting that can be adapted to either hand of lock and to doors of different thicknesses.",
   heroQuote:
     "The tumblers or pins are each made in two pieces, I and J, and must all be arranged by the key, so that the various lines of division between the two parts of the tumblers are all in the same line before the cylinder D can be turned.",
   originalPdfUrl: "/patents/pdfs/us-48475-yale-lock.pdf",
@@ -39,52 +39,52 @@ export const yaleLockPatent: Patent = {
 
   plainEnglishExplanation: {
     overview:
-      "Before Linus Yale Jr.'s 1865 invention, doors and safes were secured by heavy iron warded locks or early lever tumbler locks that required massive, cumbersome keys weighing up to several pounds. Because the key had to reach entirely through the door thickness and physically throw the heavy iron bolt, larger and more secure locks required exponentially larger keys. Linus Yale Jr. broke this paradigm by separating the keyway cylinder from the bolt mechanism. By utilizing a compact cylindrical plug with five spring-loaded split pins elevated to a microscopic shear line by a featherweight flat steel key, Yale achieved unprecedented cryptographic permutation security in a lock that could be installed in doors of any thickness.",
+      "The specification addresses two practical problems in a tumbler lock: resistance to picking and the difficulty of adapting a lock to either hand of door and to different door thicknesses. Yale's design puts the key-operated tumblers in a cylindrical case that screws into the lock-case, while a thin wing or lazy-arm actuates and stops the bolt. The key raises the two-piece tumblers until their division lines are in line with the periphery of the plug. The document does not state a pin count, machining tolerance, key thickness, or universal door-thickness range; those values remain unspecified here.",
     coreMechanism:
-      "The lock operates through five distinct mechanical stages governed by precision geometric tolerances: (1) In the resting locked state, helical compression springs push five upper driver pins across the cylindrical shear boundary between the stationary outer housing and the revolving plug, mechanically pinning the plug in place. (2) When the authorized flat steel key is inserted into the narrow keyway slot, its serrated bottom bittings directly lift the five bottom key pins against spring resistance. (3) Because the key notches match the varied lengths of the lower pins, the division lines between every lower key pin and upper driver pin align exactly flush with the cylindrical plug circumference (shear error $\\Delta y_i < 0.09\\text{ mm}$). (4) With all pins clearing the shear line, turning torque applied to the key rotates the plug smoothly. (5) As the plug rotates, an axial knob drives a lost-motion lazy-arm cam through a smaller angle (approx. $90^\\circ$), throwing the heavy sliding deadbolt and deadlocking it against external forced retraction.",
+      "In the locked state, the springs press the two-piece tumblers across the boundary between the stationary tumbler-case and the rotating plug. Inserting the thin key raises the lower pieces so that every division between pieces is brought into line with the plug's periphery; the specification gives no numerical tolerance. The plug can then turn, and its ring recess and axial groove engage the lazy-arm's knob. The lazy-arm moves through less than the plug's whole revolution, so its wing remains in contact with a bolt talon at the locked and unlocked positions.",
     mechanicalBreakdown: [
       {
         title: "Revolving Plug & Eccentric Cylinder Housing",
         summary:
-          "The inner cylindrical core that contains the keyway slot and lower pin chambers, mounted eccentrically inside an externally threaded brass housing.",
+          "The inner cylindrical core that contains the keyway slot and pin chambers, mounted eccentrically inside the externally threaded tumbler-case.",
         technicalDetails:
-          "The inner plug ($R_{\\text{plug}} = 6.35\\text{ mm}$) revolves within a precision-reamed bore in the outer cylindrical casing C. The outer casing features external machine threads that screw directly into tapped nuts in the mortise lock case, enabling continuous adjustment for doors from $1.25\\text{ in}$ to over $3.0\\text{ in}$ thickness while remaining flush with the door escutcheon.",
+          "Plug D revolves in the cylindrical bore of tumbler-case C. The case has an external thread that engages a tapped hole in either side of lock-case A, and a jam-nut or pointed screw H can hold the case at the desired depth so its end remains flush with the door. The source gives no material, diameter, or door-thickness dimensions.",
         archaicTerm: "cylinder D eccentric to the tumbler-case",
         modernEquivalent: "Revolving Lock Core / Plug Cylinder",
       },
       {
         title: "Two-Piece Split Pin Tumblers & Compression Springs",
         summary:
-          "Five vertical pin chambers each containing an upper driver pin, lower key pin, and top helical compression spring.",
+          "Pin chambers contain paired tumbler pieces I and J, with springs L pressing the pieces toward the plug.",
         technicalDetails:
-          "Each chamber houses a flat-ended driver pin I ($L_d = 5.5\\text{ mm}$) and a variable-length key pin J ($L_k = 2.5\\text{ to }6.5\\text{ mm}$), loaded from above by a phosphor-bronze spring ($k_s \\approx 140\\text{ N/m}$). When the division line reaches the shear line $R_{\\text{plug}}$, the shear impedance drops from infinite normal interference to pure journal friction ($F_{\\text{shear}} \\to 0$).",
+          "The source says only that pieces I and J have different lengths and that each tumbler is provided with a spring. The key is shaped so the divisions between the pieces lie in one line before plug D can turn. No pin dimensions, spring constant, material, or force value is stated.",
         archaicTerm: "tumblers or pins made in two pieces, I and J",
         modernEquivalent: "Driver Pins & Key Pins (Pin Stack)",
       },
       {
         title: "Flat Serrated Bitted Key Blade",
         summary:
-          "A thin, lightweight blade stamped from sheet steel with serrated edge bittings that directly set pin heights.",
+          "A thin slip of steel shaped to bring the divisions between the tumbler pieces into one line.",
         technicalDetails:
-          "By replacing heavy cast-iron round key shanks with a flat blade ($1.2\\text{ mm}$ thick) featuring rounded lateral corrugations and five precision-milled bitting depths, Yale reduced key weight by over $90\\%$ while providing $6^5 = 7,776$ unique theoretical key differs per keyway profile.",
+          "The specification calls K a thin slip of steel and describes its shape in relation to the pin divisions and narrow key-hole. It does not quantify the blade thickness, number of bittings, key-space size, or weight reduction.",
         archaicTerm: "thin slip of steel properly shaped (key K)",
         modernEquivalent: "Flat Bitted Paracentric Key",
       },
       {
         title: "Anti-Pick Circumferential Serrations & Racked Chambers",
         summary:
-          "Notched grooves cut into the circumference of the pins and chamber walls that bind against the shear line during picking attempts.",
+          "Notches or screw-like cuts on the tumblers or their containing recesses, used with the narrow key-hole and comparatively large cavities.",
         technicalDetails:
-          "Yale tapped micro-grooves and notches into the pin perimeters and housing bore. When a lockpicker applies rotational tension while probing pins, the serration shelves catch in the housing notch, creating a false set with high frictional lockup ($F_{\\text{bind}} = \\mu_s \\tau / R_{\\text{plug}}$) that prevents feeling the true shear line.",
+          "Yale says these notches serve the purpose of racking on vibrating or rotating tumblers and prevent picking to a certain extent. The narrow key-hole leaves most of each containing cavity supporting the part that projects into the key-hole, reducing the risk of jamming under key thrust. The source does not quantify a picking force or friction coefficient.",
         archaicTerm: "racked pin-tumblers and notched containing-recesses",
         modernEquivalent: "Serrated Security Pins / Spool Pins",
       },
       {
         title: "Lost-Motion Cam (Lazy-Arm) & Deadbolt Deadlock",
         summary:
-          "A rotating cam ring that turns through a smaller angle than the key plug, keeping the bolt permanently deadlocked.",
+          "A thin wing that engages the plug's groove, actuates the bolt talons, holds the cylinder in place, and stops the plug at the key-removal positions.",
         technicalDetails:
-          "The stamped steel lazy-arm E rotates through approximately $90^\\circ$ while the key plug rotates a full $360^\\circ$. In both the locked and unlocked terminal positions, the cam wing W rests in positive contact against the bolt talon at a $90^\\circ$ mechanical angle ($mathbf{r} \\times mathbf{F} = 0$), preventing burglars from jimming or forcing the deadbolt backward into the case.",
+          "Wing E is formed from thin steel with knob v engaging groove t. The source says the key-hole cylinder can turn nearly a whole revolution without moving the wing, while the wing moves less than a whole revolution and remains in contact with a bolt talon at both locked and unlocked positions. It does not state an angular value or a zero-torque condition.",
         archaicTerm: "wing or lazy-arm E",
         modernEquivalent: "Lost-Motion Drive Cam & Deadbolt Actuator",
       },
@@ -93,27 +93,24 @@ export const yaleLockPatent: Patent = {
       {
         principle: "Shear-Line Boundary Kinematics & Geometric Tolerances",
         explanation:
-          "Rotational freedom of the inner plug requires that all five pin division lines simultaneously satisfy the shear boundary condition within machining tolerance $\\delta_{\\text{shear}} \\le 0.09\\text{ mm}$. Any single misaligned pin creates solid brass mechanical interference that withstands hundreds of newtons of rotational torque.",
-        formula:
-          "\\Delta y_i = |y_{\\text{bitting},i} + L_{\\text{keypin},i} - R_{\\text{plug}}| \\le \\delta_{\\text{shear}}",
+          "The plug can turn only when the division between each pair of tumbler pieces is brought into the same line at the plug's periphery. The patent states the alignment condition but supplies no numerical machining tolerance.",
+        formula: "y_{\\mathrm{division},i} = y_{\\mathrm{shear\\ line}}\\quad\\text{for every tumbler }i",
       },
       {
         principle: "Hooke's Law Spring Restoration & Shear Binding Torque",
         explanation:
-          "Individual compression springs apply downward restoring force $F_i = k_s \\Delta x_i$. Under unauthorized turning torque $\\tau$, misaligned pins experience a normal clamping force against the housing wall, generating static friction that resists picking and locks the plug rigidly.",
-        formula:
-          "F_s = \\sum_{i=1}^5 k_s \\Delta x_i \\quad \\text{and} \\quad \\tau_{\\text{net}} = \\tau_{\\text{applied}} - \\sum_{i=1}^5 \\mu_s \\frac{\\tau_{\\text{applied}}}{R_{\\text{plug}}} [1 - \\Theta(\\delta_{\\text{tol}} - \\Delta y_i)]",
+          "The springs provide the restoring action that pushes the tumbler pieces toward their recesses. Their stiffness and travel are not specified in the patent, so the general spring relation is the most that can be stated quantitatively here.",
+        formula: "F_i = k_i\\,\\Delta x_i",
       },
       {
         principle: "Lost-Motion Cam Kinematics & Mechanical Deadlocking",
         explanation:
-          "By decoupling the plug's full $360^\\circ$ key-withdrawal rotation from the cam's $90^\\circ$ bolt-throw arc, the lazy-arm abuts the deadbolt talon perpendicularly, ensuring external forces on the bolt head generate zero rotational torque on the cam.",
-        formula:
-          "\\tau_{\\text{external}} = \\mathbf{r} \\times \\mathbf{F}_{\\text{jimmy}} = r F_{\\text{jimmy}} \\sin(0^\\circ) = 0",
+          "The key-hole cylinder must reach a key-removal position, but Yale's lazy-arm is arranged to move through less than a whole revolution and remain against a bolt talon at both terminal positions. This is the claimed lost-motion relationship, not a quantified torque guarantee.",
+        formula: "0 < \\theta_{\\mathrm{lazy\\mbox{-}arm}} < 2\\pi",
       },
     ],
     whyItMattersToday:
-      "Linus Yale Jr.'s 1865 lock was the foundation of the modern security hardware industry. By creating a standardized, interchangeable cylinder that could be mass-produced, keyed in master-key hierarchies, and operated by small flat keys carried in pockets, Yale transformed physical security across the globe and led directly to the founding of the Yale & Towne Manufacturing Company in 1868.",
+      "The patent is an early primary description of a pin-tumbler cylinder with a thin bitted key, threaded case mounting, bolt-retaining plate, and lost-motion lazy-arm. Later lockmaking may be compared with these mechanisms, but this record does not assign a percentage of modern locks or claim a particular industrial lineage without separate evidence.",
   },
 
   claims: [
@@ -128,8 +125,6 @@ export const yaleLockPatent: Patent = {
         "Elastic spring retention plate",
         "Through-faceplate servicing and installation",
       ],
-      legalSignificance:
-        "Allowed locksmiths and carpenters to install and service lock internals without disassembling the mortise door pocket.",
     },
     {
       number: 2,
@@ -142,8 +137,6 @@ export const yaleLockPatent: Patent = {
         "Modular cylinder-to-case mating architecture",
         "Universal door thickness adaptation",
       ],
-      legalSignificance:
-        "Established the universal concept of modular lock cylinders separate from the mortise chassis, slashing inventory costs for building hardware.",
     },
     {
       number: 3,
@@ -156,8 +149,6 @@ export const yaleLockPatent: Patent = {
         "Internal set-screw clamping through bolt hole",
         "Tamper-resistant hidden cylinder retention",
       ],
-      legalSignificance:
-        'The direct legal ancestor of the standard 1-5/32" threaded mortise cylinder used throughout commercial architecture today.',
     },
     {
       number: 4,
@@ -170,22 +161,18 @@ export const yaleLockPatent: Patent = {
         "Narrow paracentric keyway slot narrower than pin diameter",
         "Wide circumferential pin chamber bearing support",
       ],
-      legalSignificance:
-        "The core security claim of the patent, introducing modern anti-pick serrated pins and narrow paracentric keyways that resisted picking manipulation.",
     },
     {
       number: 5,
       isIndependent: true,
       originalText: manualYaleClaimText(5),
       plainEnglish:
-        "Claims the lost-motion rotating wing or lazy-arm cam in combination with the pin-tumbler cylinder and keyway, allowing full $360^\\circ$ key plug rotation for key withdrawal while driving the deadbolt through a smaller angle and deadlocking it against forced entry.",
+        "Claims the lost-motion rotating wing or lazy-arm cam in combination with the cylinder, key-hole, and pin tumblers. The source says the key-hole cylinder can make nearly a whole revolution while the wing moves through less than a whole revolution and remains against the bolt talons at the terminal positions.",
       keyInnovations: [
         "Lost-motion lazy-arm drive cam",
         "Mechanical deadbolt deadlocking geometry",
-        "360-degree plug rotation with 90-degree bolt throw",
+        "Less-than-whole-revolution wing movement",
       ],
-      legalSignificance:
-        "Solved the fundamental pin-tumbler constraint requiring full plug rotation to align pins for key extraction while maintaining positive deadbolt deadlocking.",
     },
   ],
 
@@ -275,7 +262,7 @@ export const yaleLockPatent: Patent = {
       figureNumber: "Fig. 4",
       title: "Cylinder Pin Tumblers and Revolving Plug",
       caption:
-        "Horizontal section through door showing threaded cylinder, five pin chambers, and revolving plug.",
+        "Horizontal section through door showing threaded cylinder, pin chambers, and revolving plug.",
       svgType: "yale-lock",
       callouts: [
         {
@@ -365,7 +352,7 @@ export const yaleLockPatent: Patent = {
       figureNumber: "Fig. 10",
       title: "Chamber Alignment and Lazy-Arm Slot",
       caption:
-        "Longitudinal section of cylinder showing all five pin tumbler chambers with compression springs.",
+        "Longitudinal section of cylinder showing the pin tumbler chambers with compression springs.",
       svgType: "yale-lock",
       callouts: [
         {
@@ -460,34 +447,112 @@ export const yaleLockPatent: Patent = {
         },
       ],
     },
+    {
+      figureNumber: "Fig. 2",
+      title: "Front Elevation of the Lock",
+      caption: "The patent's front elevation of the lock, identified in the figure list as Fig. 2.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 5",
+      title: "Bolt and Bolt-Retaining Contrivance",
+      caption: "The patent groups Fig. 5 with Figs. 7 and 8 as an elevation of the bolt and the contrivance for securing it.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 7",
+      title: "Bolt Talon Range",
+      caption: "The patent groups Fig. 7 with Figs. 5 and 8 in its description of the bolt and the contrivance for securing it.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 8",
+      title: "Bolt-Retaining Plate in Its Raised Position",
+      caption: "The patent refers to Fig. 8 when describing the elastic plate tending to spring upward.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 9",
+      title: "Plan of the Elastic Bolt-Securer",
+      caption: "The patent identifies Fig. 9 as a plan of the elastic bolt-securer.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 11",
+      title: "Elevation of the Cylinder",
+      caption: "The patent identifies Fig. 11 as an elevation of the cylinder.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 12",
+      title: "Cylinder Section",
+      caption: "The patent groups Fig. 12 with Figs. 13 and 14 as sections through the cylinder.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 13",
+      title: "Cylinder Section at the Key-Hole",
+      caption: "The patent groups Fig. 13 with Figs. 12 and 14 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 14",
+      title: "Cylinder Section at the Key-Hole",
+      caption: "The patent groups Fig. 14 with Figs. 12 and 13 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 15",
+      title: "Cylinder and Lazy-Arm Section",
+      caption: "The patent groups Fig. 15 with Fig. 16 as sections through the cylinder and lazy-arm.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 16",
+      title: "Cylinder and Lazy-Arm Section",
+      caption: "The patent groups Fig. 16 with Fig. 15 as sections through the cylinder and lazy-arm.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 18",
+      title: "Elevation of the Tumblers and Key",
+      caption: "The patent groups Fig. 18 with Fig. 17 as a plan and elevation of one section of the tumblers and the key.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
+    {
+      figureNumber: "Fig. 20",
+      title: "Tumbler-Case and Lazy-Arm from Inside",
+      caption: "The patent identifies Fig. 20 as a plan of the tumbler-case, lazy-arm, and related parts from inside the lock.",
+      svgType: "yale-lock",
+      callouts: [],
+    },
   ],
 
   historicalContext: {
     problemStatement:
-      "In the mid-19th century, locks were heavy iron warded mechanisms operated by giant keys that were difficult to carry, offered low key permutation security, and were readily bypassed by lockpicks.",
+      "The specification addresses a mid-19th-century lockmaking problem: retain the bolt in a mortise case, adapt a cylinder to either hand of door and to different door thicknesses, and make a pin-lock less susceptible to picking.",
     priorArtLimitations: [
-      "Heavy iron keys weighing up to several pounds needed to reach through door thickness",
-      "Warded locks were vulnerable to skeleton keys and impressioning picks",
-      "Bramah and Chubb lever locks were expensive, large, and delicate to install",
+      "A bolt could need to be inserted through the lock's bolt-hole after the case was already fitted to the door.",
+      "A cylinder fixed at one depth or on one side of a case would not adapt readily to different doors or handing.",
+      "The specification identifies picking and unsupported tumbler ends as practical failure modes for the pin-lock arrangement it improves.",
     ],
     breakthroughInsight:
-      "Linus Yale Jr. separated the key cylinder from the bolt throw mechanism, using five miniature spring-loaded split pins aligned to a shear line by a small, lightweight flat bitted key.",
-    patentWars: [
-      {
-        rivalName: "Hobbs, Hart & Co. and European Warded Lockmakers",
-        rivalClaim: "Traditional Warded and Lever Lock Patents",
-        conflictDetails:
-          "Traditional lockmakers argued that Yale's tiny flat key could never generate enough torque to throw a heavy iron deadbolt, claiming the mechanism was too delicate for robust commercial use.",
-        resolution:
-          "Yale proved that separating the key cylinder from the bolt throw and driving the bolt via a lost-motion lazy-arm cam allowed a tiny key to throw bolts with zero mechanical strain.",
-        legalOutcome:
-          "Yale's cylinder lock quickly displaced Victorian warded locks across America and Britain, establishing the modern security lock industry.",
-      },
-    ],
+      "Linus Yale Jr. separated the key cylinder from the bolt throw mechanism, using spring-loaded two-piece tumblers aligned at the plug periphery by a small, thin bitted key.",
+    patentWars: [],
     civilizationalImpact:
-      "US Patent 48,475 is the direct ancestor of over 85% of all mechanical door locks in existence today. Yale's flat serrated key, cylinder housing, split pin tumblers, and interchangeable mortise format became the universal standard for commercial buildings, residential doors, padlocks, automotive ignitions, and cabinet security across the world.",
-    funFact:
-      "Linus Yale Jr. was originally trained as a portrait painter before joining his father's lockmaking business, bringing an artist's precision to geometric mechanical lock design.",
+      "The document preserves a compact combination of pin alignment, threaded cylinder mounting, bolt retention, and lost-motion bolt control. Its later influence on lock hardware requires separate historical evidence and is not quantified here.",
   },
 
   tags: [
