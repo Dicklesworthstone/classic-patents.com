@@ -416,15 +416,16 @@ export function updateLindeLiquefactionKinematics(
   showFlowTracer: boolean,
   cutawayMode: boolean,
 ) {
-  // 1. Regulator handwheel subtle modulation
-  nodes.jtHandwheel.rotation.z = Math.sin(timeSec * 0.4) * 0.2;
+  // 1. Regulator handwheel — display ω scales with grant p (75 atm → leftover 0.4)
+  const pressureNorm = Math.max(0.2, highPressureAtm / 75);
+  nodes.jtHandwheel.rotation.z = Math.sin(timeSec * 0.4 * pressureNorm) * 0.2;
 
   // 2. Cutaway Visibility
   nodes.solidCasingMesh.visible = !cutawayMode;
   nodes.cutawayCasingMesh.visible = cutawayMode;
 
   // 3. Liquid level subtle fluid ripple
-  nodes.condensedGasVolume.scale.y = 1.0 + Math.sin(timeSec * 3.0) * 0.04;
+  nodes.condensedGasVolume.scale.y = 1.0 + Math.sin(timeSec * 3.0 * pressureNorm) * 0.04;
 
   // 4. Flow markers scaled to pressure
   materials.flowTracer.opacity = showFlowTracer

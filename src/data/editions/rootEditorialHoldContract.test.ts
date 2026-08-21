@@ -25,7 +25,11 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-135245-pasteur-fermentation",
   "us-2292387-lamarr-frequency-hopping",
   "us-2708656-fermi-reactor",
+  "us-2929922-townes-laser",
   "us-313224-mergenthaler-linotype",
+  "us-395781-hollerith-tabulating",
+  "us-682690-hewitt-mercury-lamp",
+  "us-706737-fessenden-wireless",
 ] as const;
 
 describe("root editorial publication holds", () => {

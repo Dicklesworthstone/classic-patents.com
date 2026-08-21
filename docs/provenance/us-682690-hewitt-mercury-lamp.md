@@ -34,4 +34,14 @@
 - **Reviewed Ledger**: Full transcript ledger pinned to Pages 1–13 (`public/patents/transcripts/us-682690-hewitt-mercury-lamp-reviewed.txt`).
 - **Figure Crops**: Extracted from Sheets 1–3 at `public/patents/figures/us-682690-hewitt-mercury-lamp/`.
 - **Printed Claims**: Exactly 31 claims printed in grant; foundational claims decoded in the canonical record and archival edition.
+
+## 4. Root Publication Hold
+
+The source face is visitor-withheld. The facsimile prints 31 claims, but the
+current typed edition exposes only six claim nodes, and none of those six claim
+texts is present in the purported reviewed ledger. This is neither a complete
+legal instrument nor a page-complete comparison artifact. Publication may
+resume only after all 31 claims and the complete specification are manually
+reconciled against PDF pages 4–13, the reviewed ledger contains them in source
+order, and an independent root audit accepts the edition and its figure crops.
 - **Physical Law**: Low-pressure mercury gas-discharge plasma physics, cathode spot electron emission ($J_e \sim 10^6	ext{ A/cm}^2$), Paschen inductive starting impulse, negative differential arc resistance ($dV/dI < 0$), series inductive ballast stabilization, and mercury resonance radiation ($253.7	ext{ nm}, 435.8	ext{ nm}, 546.1	ext{ nm}$).

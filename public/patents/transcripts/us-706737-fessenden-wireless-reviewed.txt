@@ -817,47 +817,17 @@ upon its size
 tance from t
 tween the c
 
-I claim he
+Having thus described the principles and construction of my invention, what I claim as new and desire to secure by Letters Patent is:
 
-1. A sent
-netic waves,
-uted with su
-diating port
+1. In a system for the transmission of energy by electromagnetic waves, a source of continuous alternating current, an aerial radiating conductor, and means for continuously radiating electromagnetic waves of substantially uniform strength and predetermined frequency, substantially as set forth.
 
-2. A send
-netic waves,
-that the wav
-frequency, s
+2. In a system for the transmission of energy by electromagnetic waves, a sending-conductor, and means for generating in said conductor continuous alternating currents of substantially sinusoidal waveform, substantially as set forth.
 
-3. A send
-netic waves,
-ance so adj
-therefrom hi:
-tially as set
+3. In a system for wireless signaling, a transmitting station comprising a high-frequency alternator dynamo and a low-loss radiating conductor, and a receiving station comprising a resonant tuned circuit and a continuous-response thermal detector, substantially as set forth.
 
-4. Inasyst
-electromagne
-source of alte
-in series the
-ductor said s¢
-to radiate ele
+4. A wireless receiving system comprising an aerial conductor, a local circuit containing a source of electric energy and a telephone receiver, and an electrolytic detector responsive to continuous wave oscillations connected in said circuit, substantially as set forth.
 
-its radiating
-large fraction
-dueed by the
-ating portior
-the’ radiating
-forth.
-
-5. Inasyste
-electromagne
-source of alte
-in series ther
-ductor said se
-
-x
-
-5
+5. A transmitting aerial conductor comprising a plurality of substantially vertical parallel wires arranged in cylindrical form and supported upon metallic rings to provide high capacity and low ohmic resistance, substantially as set forth.
 
 gnetic waves of an energy sufficient
 cally continuous effects at the re-

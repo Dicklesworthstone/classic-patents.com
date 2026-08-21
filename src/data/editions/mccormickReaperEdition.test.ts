@@ -27,6 +27,25 @@ describe("mccormickReaperArchivalEdition", () => {
     expect(publicText).not.toContain("Application filed April 19");
   });
 
+  test("presents the unnumbered source drawing upright in landscape orientation", () => {
+    const preview = mccormickReaperArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind === "figure-sheet") {
+        const inlines = Array.isArray(block.description) ? block.description : [];
+        return inlines.flatMap((inline) =>
+          inline.kind === "reference" ? (inline.figurePreviews ?? []) : [],
+        );
+      }
+      if ("inlines" in block && Array.isArray(block.inlines)) {
+        return block.inlines.flatMap((inline) =>
+          inline.kind === "reference" ? (inline.figurePreviews ?? []) : [],
+        );
+      }
+      return [];
+    })[0];
+    expect(preview?.src).toBe("/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png");
+    expect(preview?.width).toBeGreaterThan(preview?.height ?? Number.POSITIVE_INFINITY);
+  });
+
   test("provides a non-lossy companion reading for every rendered paragraph block only", () => {
     const paragraphIndexes = [2, 3, 4, 5, 6, 7, 8, 12, 13, 14];
     expect(Object.keys(mccormickReaperParallelReadings).map(Number)).toEqual(paragraphIndexes);

@@ -4217,6 +4217,8 @@ export function stepKilbyIntegratedCircuit(params: {
   // RC time constant tau = R_b * C_j
   const tauNs = Number((baseBiasResistanceOhms * (junctionCapacitancePf * 1e-12) * 1e9).toFixed(2));
   const maxClockFrequencyMhz = Number((1000.0 / (2.5 * Math.max(1.0, tauNs))).toFixed(1));
+  // Leftover 6 rad/s at default Ge 60.3 MHz; silicon’s slower clock dims the switching pulse.
+  const switchingDisplayOmegaRadPerS = Number(((maxClockFrequencyMhz * 6) / 60.3).toFixed(3));
 
   // Phase-shift oscillator resonant frequency f_osc = 1 / (2 * pi * R * C * sqrt(6))
   const fOscKhz = Number(
@@ -4257,6 +4259,7 @@ export function stepKilbyIntegratedCircuit(params: {
     propagationDelayNs: tauNs,
     maxClockFrequencyMhz,
     phaseShiftOscillatorFrequencyKhz: fOscKhz,
+    switchingDisplayOmegaRadPerS,
     componentDensityPerCuFt,
   };
 }

@@ -38,8 +38,9 @@ export const EdisonBulb3D = memo(() => {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Electrical & Thermal Simulation State
-  const { params } = usePatentPhysics("us-223898-edison-lightbulb");
+  const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
   const appliedVoltage = params.voltage ?? 110;
+  const filamentLengthCm = params.filamentLength ?? 22;
   const vacuumTorr = params.vacuumTorr ?? 1e-6;
   const [showGasMolecules] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -48,7 +49,7 @@ export const EdisonBulb3D = memo(() => {
 
   const bulb = stepEdisonBulb({
     voltage: appliedVoltage,
-    filamentLength: params.filamentLength ?? 22,
+    filamentLength: filamentLengthCm,
   });
 
   const live = useLiveSimParams({
@@ -105,13 +106,13 @@ export const EdisonBulb3D = memo(() => {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const delta = 1 / 60;
+      timeSec += delta;
       const p = live.current;
 
       updateEdisonBulbKinematics(
         model,
-        dt,
+        delta,
         timeSec,
         p.incandescenceIntensity,
         p.filamentTempKelvin,
@@ -140,27 +141,48 @@ export const EdisonBulb3D = memo(() => {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Thomas Edison Incandescent Bulb 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Edison Incandescent Bulb 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 223,898 • High-Resistance Carbonized Filament
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["filament_horseshoe", "Horseshoe Filament"],
+                ["screw_base", "Edison Screw Base"],
+                ["exhaust_tip", "Exhaust Seal Tip"],
+                ["glass_stem", "Lead-in Stem"],
+                ["top", "Plan View"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Top Controls */}
+        {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Clear Glass Bulb" : "Cutaway Interior"}
+            title={isCutaway ? "Solid Envelope" : "Cutaway Chamber"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -168,13 +190,14 @@ export const EdisonBulb3D = memo(() => {
             }`}
           >
             {isCutaway ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Glass"}</span>
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
 
           <button
             type="button"
             onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            title={isAudioMuted ? "Unmute Hum" : "Mute Hum"}
+            aria-label={isAudioMuted ? "Unmute Hum" : "Mute Hum"}
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -205,35 +228,35 @@ export const EdisonBulb3D = memo(() => {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["filament_horseshoe", "Horseshoe Filament"],
-                ["screw_base", "Edison Screw Base"],
-                ["exhaust_tip", "Exhaust Seal Tip"],
-                ["glass_stem", "Lead-in Stem"],
-                ["top", "Plan View"],
-              ] as [CameraPreset, string][]
-            ).map(([preset, label]) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === preset
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Filament Temp:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {bulb.filamentTempK.toFixed(0)} K
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Hot Resistance:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {bulb.hotResistanceOhm.toFixed(1)} Ω
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Radiant Output:</span>
+              <span className="font-bold text-emerald-800 dark:text-emerald-400">
+                {bulb.radiantWatts.toFixed(1)} W
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Luminous Efficacy:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {bulb.luminousLmPerW.toFixed(2)} lm/W
+              </span>
+            </div>
           </div>
         )}
 
@@ -260,6 +283,51 @@ export const EdisonBulb3D = memo(() => {
             },
           ]}
         />
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Applied Terminal Voltage
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {appliedVoltage} V
+              </span>
+            </div>
+            <input
+              type="range"
+              min="40"
+              max="130"
+              step="1"
+              value={appliedVoltage}
+              onChange={(e) => updateParam("voltage", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Carbon Filament Length
+              </span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {filamentLengthCm} cm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="30"
+              step="1"
+              value={filamentLengthCm}
+              onChange={(e) => updateParam("filamentLength", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

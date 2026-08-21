@@ -45,11 +45,13 @@ export function LindeAirLiquefaction3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-727650-linde-air-liquefaction");
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
-  const highPressureAtm =
-    params.inletPressureAtm ?? params.highPressureAtm ?? linde.highPressureAtm;
-  const lowPressureAtm = params.lowPressureAtm ?? linde.lowPressureAtm;
-  const coolerOutletC = params.coolerOutletC ?? linde.coolerOutletC;
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+    inletPressureAtm: params.inletPressureAtm ?? params.highPressureAtm,
+    coolerOutletC: params.coolerOutletC,
+  });
+  const highPressureAtm = linde.highPressureAtm;
+  const lowPressureAtm = linde.lowPressureAtm;
+  const coolerOutletC = linde.coolerOutletC;
 
   const live = useLiveSimParams({
     highPressureAtm,
@@ -99,11 +101,11 @@ export function LindeAirLiquefaction3D() {
       updateLindeLiquefactionKinematics(
         liquefierModel.nodes,
         liquefierModel.materials,
-        timeSec,
         delta,
+        timeSec,
         p.highPressureAtm,
-        p.cutawayMode,
         p.showFlowTracer,
+        p.cutawayMode,
       );
 
       controls.update();

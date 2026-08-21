@@ -2,7 +2,6 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { HudText } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -33,7 +32,7 @@ export function TeslaCoil3D() {
   }, []);
 
   // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
-  const { params } = usePatentPhysics("us-593138-tesla-coil");
+  const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const primaryCap = params.primaryCap ?? 45;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
@@ -102,18 +101,6 @@ export function TeslaCoil3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  // Audio synthesis
-  useEffect(() => {
-    if (isPlayingAudio) {
-      soundEngine.playContinuousTone(coilPhysics.toneHz, "sawtooth", 0.035);
-    } else {
-      soundEngine.stopContinuousTone();
-    }
-    return () => {
-      soundEngine.stopContinuousTone();
-    };
-  }, [isPlayingAudio, coilPhysics.toneHz]);
-
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -131,25 +118,34 @@ export function TeslaCoil3D() {
     const model = buildTeslaCoilModel();
     scene.add(model.root);
 
+    // Audio synthesizer
+    let audioTick = 0;
     let reqId: number;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const dt = 1 / 60;
       const p = live.current;
 
       model.updateKinematics(
-        delta,
+        dt,
         p.showLightningStreamers,
         p.streamerStudioLength,
-        Number(p.secondaryVoltageMv),
+        Number.parseFloat(p.secondaryVoltageMv),
       );
+
+      if (isPlayingAudio) {
+        audioTick += 1;
+        if (audioTick % Math.max(1, Math.round(60 / (p.sparkRateHz / 10))) === 0) {
+          soundEngine.playSparkDischarge(0.2);
+        }
+      }
 
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -157,61 +153,42 @@ export function TeslaCoil3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [live]);
+  }, [isPlayingAudio, live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      {/* 3D WebGL Canvas Viewport */}
+      <div className="sr-only">Nikola Tesla Electrical Transformer 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Live HUD Telemetry Overlay */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Zap className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
-                Interpretive Transformer Telemetry
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">
-                    <HudText text="Freq ($f_0$):" />
-                  </span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {resonantFreqKhz} kHz{" "}
-                    <HudText
-                      text={`($k = ${couplingK.toFixed(2)}$, $C_t = ${toploadCapacitancePf}$ pF)`}
-                    />
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Output:</span>{" "}
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {secondaryVoltageMv} MV Potential
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Arc:</span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {streamerLengthInches} In ({streamerLengthMeters} m)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Input:</span>{" "}
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {inputVoltageKv} kV ({sparkGapDistanceMm} mm)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" />
-              <span className="truncate">
-                Nikola Tesla (US 593,138) — Electrical Transformer (1897)
-              </span>
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["toroid_breakout", "Toroid"],
+                ["primary_spiral", "Spiral Primary"],
+                ["spark_gap", "Rotary Gap"],
+                ["top", "Overhead"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -271,36 +248,122 @@ export function TeslaCoil3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["toroid_breakout", "Toroid"],
-                ["primary_spiral", "Spiral Primary"],
-                ["spark_gap", "Rotary Gap"],
-                ["top", "Overhead"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5 pb-1 border-b border-parchment-200 dark:border-ink-800/80">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              Interpretive Transformer Telemetry
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Resonant Freq:</span>
+                <span className="font-bold text-amber-700 dark:text-amber-400">
+                  {resonantFreqKhz} kHz
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Secondary Potential:</span>
+                <span className="font-bold text-cyan-700 dark:text-cyan-400">
+                  {secondaryVoltageMv} MV
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Corona Streamers:</span>
+                <span className="font-bold text-purple-700 dark:text-purple-400">
+                  {streamerLengthInches}" ({streamerLengthMeters} m)
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-ink-600 dark:text-ink-400">Input:</span>
+                <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                  {inputVoltageKv} kV ({sparkGapDistanceMm} mm)
+                </span>
+              </div>
+            </div>
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Primary Capacitance
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {primaryCap} nF
+              </span>
+            </div>
+            <input
+              type="range"
+              min="10"
+              max="100"
+              step="5"
+              value={primaryCap}
+              onChange={(e) => updateParam("primaryCap", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Input Voltage</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {inputVoltageKv} kV
+              </span>
+            </div>
+            <input
+              type="range"
+              min="5"
+              max="30"
+              step="1"
+              value={inputVoltageKv}
+              onChange={(e) => updateParam("inputVoltageKv", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Spark Gap Distance</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {sparkGapDistanceMm} mm
+              </span>
+            </div>
+            <input
+              type="range"
+              min="2"
+              max="30"
+              step="1"
+              value={sparkGapDistanceMm}
+              onChange={(e) =>
+                updateParam("sparkGapDistanceMm", Number.parseInt(e.target.value, 10))
+              }
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Coil Coupling (k)</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {couplingK.toFixed(2)}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0.05"
+              max="0.40"
+              step="0.01"
+              value={couplingK}
+              onChange={(e) => updateParam("couplingK", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

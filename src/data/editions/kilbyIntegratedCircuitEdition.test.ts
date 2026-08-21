@@ -57,6 +57,28 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     }
   });
 
+  test("binds Figs. 1 and 2 to distinct, tightly framed source crops", () => {
+    const references = kilbyIntegratedCircuitArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" &&
+            inline.referenceType === "figure" &&
+            ["Fig. 1", "Fig. 2"].includes(inline.text)
+              ? [inline]
+              : [],
+          )
+        : [],
+    );
+    expect(
+      references.map((reference) =>
+        reference.kind === "reference" ? reference.figurePreviews?.[0]?.src : undefined,
+      ),
+    ).toEqual([
+      "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
+      "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
+    ]);
+  });
+
   test("exposes all 25 printed claims via dynamic single-source lookup", () => {
     for (let c = 1; c <= 25; c++) {
       const textVal = manualKilbyClaimText(c);

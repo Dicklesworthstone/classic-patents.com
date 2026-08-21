@@ -22,9 +22,13 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 });
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v1.png": {
-    width: 1021,
-    height: 443,
+  "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png": {
+    width: 760,
+    height: 560,
+  },
+  "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png": {
+    width: 780,
+    height: 620,
   },
   "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v1.png": {
     width: 1021,
@@ -176,7 +180,7 @@ export const kilbyIntegratedCircuitArchivalEdition: CuratedSpecificationEdition 
         "Fig. 1",
         "#fig-1",
         "Fig. 1: Integrated Bulk Resistor & P-N Junction Capacitor",
-        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v1.png",
+        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
       ),
       text(
         ", there is shown a resistor formed from a wafer of semiconductor material such as silicon or germanium, where resistance is determined by length, cross-sectional area, and bulk resistivity between ohmic end contacts. In ",
@@ -185,7 +189,7 @@ export const kilbyIntegratedCircuitArchivalEdition: CuratedSpecificationEdition 
         "Fig. 2",
         "#fig-1",
         "Fig. 2: Integrated P-N Junction Capacitor",
-        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v1.png",
+        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
       ),
       text(
         ", an integrated capacitor is formed utilizing the transition capacitance of a reverse-biased p-n junction.",

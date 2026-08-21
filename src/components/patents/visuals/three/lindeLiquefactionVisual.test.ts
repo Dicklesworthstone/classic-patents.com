@@ -25,6 +25,12 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(threeSource).not.toContain(".gltf");
     expect(modelSource).toContain("buildLindeLiquefactionModel");
     expect(modelSource).toContain("updateLindeLiquefactionKinematics");
+    expect(threeSource).toContain("p.showFlowTracer");
+    expect(threeSource).toContain("p.cutawayMode");
+    expect(modelSource).toContain("timeSec * 0.4 * pressureNorm");
+    expect(modelSource).toContain("timeSec * 3.0 * pressureNorm");
+    expect(modelSource).not.toContain("Math.sin(timeSec * 0.4)");
+    expect(modelSource).not.toContain("Math.sin(timeSec * 3.0)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -71,6 +77,11 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(result.lowPressureAtm).toBe(25);
     expect(result.coolerOutletC).toBe(10);
     expect(result.modelBoundary).toContain("does not supply");
+    expect(result.handwheelDisplayOmegaRadPerS).toBeCloseTo(0.4, 3);
+    const highP = FrankenSimEngine.stepLindeAirLiquefaction({ inletPressureAtm: 150 });
+    expect(highP.highPressureAtm).toBe(150);
+    expect(highP.handwheelDisplayOmegaRadPerS).toBeCloseTo(0.8, 3);
+    expect(highP.liquidRippleOmegaRadPerS).toBeCloseTo(6.0, 3);
   });
 
   test("builds an apparatus diagram and labels the flow tracer as illustrative", () => {

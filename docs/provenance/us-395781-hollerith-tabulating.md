@@ -46,3 +46,15 @@ The intended source crops live under
 claims and 17 numbered figures. PDF text layers, OCR, and machine drafts are
 research aids only; they are not the public source edition or evidence of its
 completeness.
+
+## Root figure QA hold
+
+The edition is visitor-withheld pending a complete rebuild of its 17 local
+figure previews. A random visual audit on 2026-08-20 rejected five of five
+sampled assets: Figure 1 is rotated sideways; Figures 7, 13, and 17 include
+neighboring drawings or execution matter; Figure 10 includes the drawing-sheet
+masthead and truncates the illustrated mechanism. These version-1 crops remain
+preserved as evidence, but they are not acceptable hover previews. Root QA must
+inspect every replacement against PDF pages 1–6, confirm normal reading
+orientation, and prove that every source-text figure occurrence resolves to the
+correct isolated crop before publication resumes.

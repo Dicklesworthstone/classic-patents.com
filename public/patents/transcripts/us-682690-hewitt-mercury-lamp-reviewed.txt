@@ -925,124 +925,19 @@ In certain otherv applications tiled byime
 approaches completion `it suddenly becomes April 5, 1900,> Serial Nos. 11,606 and 11,607, ¿- ,
 intensely luminous by reason of the passage >and Serial Nos. 44,647, 44,648, and¿_44,649, l - “
 of a current of considerable quantity. Ifthe tiled January 25, 1901.», claims are madeïto'
-higher potential'current employed is an in certain features which aredisclosed herein.>> u
-The invention claimedl is"
-terrupted current, it is desirable to reverse
-,l.> A lamp for producing light by electric Y Y
-theterminals of the-lamp‘with reference to
-that current one or more times, for the cath energy consisting of an i'nclosing chamber, a
-ode is thereby readily heated to a Very high `gas or vapor contained therein capable, un
-i
+higher potential'current employeThe invention claimed is:
 
->
+1. A lamp for producing light by electric energy consisting of an inclosing chamber, a gas or vapor contained therein capable under the influence of electric currents of emitting light, electrodes for the chamber, and a cooling or condensing chamber for the gas or vapor.
 
-fnfvßo
+2. The combination with a lamp for producing light by the conduction of electric currents through a gas or vapor, of an inclosing chamber, electrodes, a cooling or condensing chamber, and means for preventing condensation in the path of the current.
 
-temperature, which >aids in driving off any der proper conditions, of conducting currents
+3. The combination with a lamp for producing light by the conduction of electric currents through a gas or vapor, of an inclosing chamber, electrodes, a cooling or condensing chamber, and means for returning the condensed vapor to the cathode.
 
-occluded `gases and impurities. A circuit-re- » -of considerable quantity under the intiuence
+4. An electric lamp comprising an exhausted transparent tube, a liquid electrode contained in one end of the tube, a solid electrode at the other end, and an enlarged condensing chamber communicating with the tube for maintaining the vapor density at an operative value.
 
-verser 63 may be employed for that purpose.
+5. The method of starting an electric lamp having a vapor path between its electrodes, which consists in applying a momentary electromotive force higher than the normal operating voltage to break down the initial cold resistance, and subsequently maintaining the discharge with a lower operating potential.
 
-.g5
-
-of moderate ‘difference of potentiaL-and -a ` ~
-
-In'th'e form of apparatus shown in Fig. 6 starting material also contained Within'the.
-
-the connections of the spark-'coil are some chamber and serving to‘ convey a starting-4
-what different from those of the similar coil current under the influence of ahigher dif
-
-shown in Fig. 4; but the principle of opera
-
-ference
-
-of
-
-potential.
-
-‘
-
-~
-
-.
-
-'
-
--
-
-'
-
-p
-
-'
-
-v
-
-2. In a gas or vapor lamp, the combination
-tion is the same, and the action of the appa
-ratus can easily be determined by reference with a conducting vapor or gas constituting
-to the description of it in connection with the sole path for the current while the lamp
-
-Fig. 4. In place of the switch 44 (shown in
-Fig. 4) I substitute a variable resistance`44f‘,
-the object of Which is to permit of Varying
-the current passing through thev tube 1 dur-`
-ing the process of manufacture. The switch
-
-is in operation, of a start-ing material serving
-to permit the initial passage of the electric
-
-42 may be replaced by an automatic circuit
-
-trodes within the same, means for securing
-
-current through the lamp.
-
-.
-
-3. An ‘electric lamp consisting of a her
-
-metically-sealed inclosingl chamber, elec
-
-interrupter-snch asillnstrated, for instance, electrical connection therewith, respectively,- IOO
-
-35 in connection with Fig. 3.
-
-'
-
-through the walls of the chamber, a Vapor or
-
-The process of exhausting the lamp does gas contained within the chamber having,
-
-not appear to remove the starting material,
-although apparently a different chemical com
-pound is formed, and it is possible that some
-of the ~sulfur is thrown off or formed into
-some other combination and Withdrawn from
-the tube. In any event sufficient of the start
-ing material remains in the tube to permit
-
-when traversed by anelectric current, are
-sistance so varying with increments of cur
-rent as to render it substantiallyself-regulat
-
-ing, and a steadying resistance in series with
-the lamp.
-
-»
-
-4. In an electric Vapor or gas
-
-'
-
-lamppthe.
-
-combination of two electrodes located at orl
-near the respective ends of the lamp, a con kIIO
-pleted. The amount of sultid of mercury to ducting medium between the electrodes con
-be introduced may be varied within wide sisting o_f a vapor’or gas which is -light-emit->
-limits. I have usedin a lamp of approxi ting under the infiuence of electric currents
+6. The combination with an electric lamp operating by vapor conduction, of a supply circuit of moderate potential, a transformer having its secondary connected in series with the lamp, means for interrupting current in the primary of the transformer to produce a high-potential starting impulse, and an automatic cutout for interrupting the primary circuit upon the passage of operating current through the lamp. have usedin a lamp of approxi ting under the infiuence of electric currents
 
 t-he ready starting of the lamp when it is com
 

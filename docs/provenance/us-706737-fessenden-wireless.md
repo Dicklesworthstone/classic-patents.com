@@ -33,3 +33,13 @@
 ## Technical & Historical Boundary
 
 US 706,737 is the foundational patent of modern continuous-wave (CW) radio. Prior to Fessenden, wireless telegraphy (Marconi, Lodge, Braun) relied entirely on damped spark discharges—brief, decaying bursts of high-voltage noise that could only transmit Morse clicks and caused overwhelming broadband interference. Fessenden realized that true wireless communication required continuous, smooth sinusoidal oscillations. This patent claimed the generation of uninterrupted continuous electromagnetic waves, low-loss cage antennas, and continuous-response thermal/electrolytic detectors, directly enabling the first audio voice transmission in human history (Fessenden's historic 1906 Brant Rock Christmas Eve broadcast).
+
+## Root Publication Hold
+
+The source face is visitor-withheld. The facsimile prints 25 claims, but the
+current typed edition exposes only five claim nodes, and none of those five
+claim texts is present in the purported reviewed ledger. Publication may
+resume only after the complete specification and all 25 claims are manually
+reconciled against PDF pages 2–7, the reviewed ledger contains them in source
+order, every Figure 1–5 citation resolves to a checked local crop, and an
+independent root audit accepts the result.

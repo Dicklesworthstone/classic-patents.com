@@ -305,7 +305,7 @@ export function createKilbyIntegratedCircuitModel(options: KilbyModelOptions = {
     c1Glow.scale.set(1.0, depScale, 1.0);
 
     // Update transistor emitter glow with live switching
-    const pulse = 0.5 + 0.5 * Math.sin(timeSec * 6.0);
+    const pulse = 0.5 + 0.5 * Math.sin(timeSec * state.switchingDisplayOmegaRadPerS);
     emitterDotMat.emissiveIntensity = 0.1 + 0.6 * pulse * (state.collectorCurrentMa / 10.0);
 
     // Update drift electron particle positions

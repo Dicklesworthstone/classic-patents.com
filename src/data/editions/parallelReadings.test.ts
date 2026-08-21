@@ -98,7 +98,9 @@ describe("manual archival parallel-reading registry", () => {
         .map(Number)
         .sort((left, right) => left - right);
 
-      expect(readingIndexes).toEqual(paragraphIndexes);
+      expect(readingIndexes, `Patent ${patent.id} paragraph index mismatch`).toEqual(
+        paragraphIndexes,
+      );
       for (const reading of Object.values(readings)) {
         expect(reading.length).toBeGreaterThan(0);
         for (const paragraph of reading) expect(paragraph.trim().length).toBeGreaterThan(0);

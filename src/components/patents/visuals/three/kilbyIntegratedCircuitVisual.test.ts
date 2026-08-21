@@ -23,6 +23,8 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(modelSource).not.toContain("GLTFLoader");
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
+    expect(modelSource).not.toContain("timeSec * 6.0");
+    expect(modelSource).toContain("switchingDisplayOmegaRadPerS");
     expect(studioSource).not.toContain("GLTFLoader");
     expect(studioSource).toContain('from "./useLiveSimParams"');
     expect(studioSource).toContain("...live.current");
@@ -53,6 +55,12 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(defaultState.collectorCurrentMa).toBeGreaterThan(0.5);
     expect(defaultState.depletionWidthUm).toBeGreaterThan(0.5);
     expect(defaultState.phaseShiftOscillatorFrequencyKhz).toBeGreaterThan(10);
+    expect(defaultState.maxClockFrequencyMhz).toBeCloseTo(60.3, 1);
+    expect(defaultState.switchingDisplayOmegaRadPerS).toBeCloseTo(6.0, 2);
+    const silicon = stepKilbyIntegratedCircuit({ substrateMaterial: "silicon" });
+    expect(silicon.switchingDisplayOmegaRadPerS).toBeLessThan(
+      defaultState.switchingDisplayOmegaRadPerS,
+    );
   });
 
   test("builds and articulates procedural germanium die, mesa transistors, bulk resistors, and gold wire bonds", () => {

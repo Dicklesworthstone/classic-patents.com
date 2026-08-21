@@ -48,9 +48,6 @@ export const haberAmmoniaParallelReadings: Readonly<Record<number, readonly stri
   8: [
     "Formal legal transition from the specification to the enumerated patent claims defining the exclusive scope of catalytic high-pressure synthesis.",
   ],
-  15: [
-    "Formal execution and subscription of the patent specification signed by Fritz Haber and Robert Le Rossignol in the presence of subscribing witnesses J. Alec. Lloyd and A. Raesenbach.",
-  ],
   17: [
     "Formal execution and subscription of the patent specification signed by Fritz Haber and Robert Le Rossignol in the presence of subscribing witnesses J. Alec. Lloyd and A. Raesenbach.",
   ],

@@ -1083,10 +1083,13 @@ export const FrankenSimEngine = {
    * a flow rate, a liquefaction yield, nor a terminal temperature. Reporting
    * any of those as a computed output would fabricate a plant measurement.
    */
-  stepLindeAirLiquefaction() {
-    const highPressureAtm = 75;
+  stepLindeAirLiquefaction(
+    params: { inletPressureAtm?: number; highPressureAtm?: number; coolerOutletC?: number } = {},
+  ) {
+    const highPressureAtm = params.inletPressureAtm ?? params.highPressureAtm ?? 75;
     const lowPressureAtm = 25;
-    const coolerOutletC = 10;
+    const coolerOutletC = params.coolerOutletC ?? 10;
+    const pressureNorm = Math.max(0.2, highPressureAtm / 75);
 
     return {
       highPressureAtm,
@@ -1095,6 +1098,8 @@ export const FrankenSimEngine = {
       coolerOutletC,
       counterCurrentLengthM: 100,
       liquefactionClaimed: true,
+      handwheelDisplayOmegaRadPerS: Number((0.4 * pressureNorm).toFixed(3)),
+      liquidRippleOmegaRadPerS: Number((3.0 * pressureNorm).toFixed(3)),
       modelBoundary:
         "The grant says this arrangement progressively reaches liquefaction; it does not supply a measured outlet temperature, yield, or production rate.",
     };

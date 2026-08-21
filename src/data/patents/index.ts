@@ -12,6 +12,7 @@ import { corlissSteamEnginePatent } from "./corliss-steam-engine";
 import { cortPuddlingRollingPatent } from "./cort-puddling-rolling";
 import { daimlerEnginePatent } from "./daimler-engine";
 import { davenportElectricMotorPatent } from "./davenport-electric-motor";
+import { daVinciPatent } from "./davinci";
 import { deForestAudionPatent } from "./de-forest-audion";
 import { delavalSeparatorPatent } from "./delaval-separator";
 import { dieselEnginePatent } from "./diesel-engine";
@@ -19,17 +20,21 @@ import { eastmanKodakPatent } from "./eastman-kodak";
 import { edisonIndicatorPatent } from "./edison-indicator";
 import { edisonBulbPatent as edisonLightbulbPatent } from "./edison-lightbulb";
 import { edisonPhonographPatent } from "./edison-phonograph";
+import { eInkPatent } from "./eink";
 import { einsteinRefrigeratorPatent } from "./einstein-refrigerator";
 import { engelbartMousePatent } from "./engelbart-mouse";
 import { ericssonPropellerPatent } from "./ericsson-propeller";
 import { farnsworthTvPatent } from "./farnsworth-tv";
 import { fermiReactorPatent } from "./fermi-reactor";
+import { fessendenWirelessPatent } from "./fessenden-wireless";
 import { gatlingGunPatent } from "./gatling-gun";
 import { gliddenBarbedWirePatent } from "./glidden-barbed-wire";
 import { goddardRocketPatent } from "./goddard-rocket";
 import { goodyearRubberPatent } from "./goodyear-rubber";
 import { grammeDynamoPatent } from "./gramme-dynamo";
+import { haberAmmoniaPatent } from "./haber-ammonia";
 import { hallAluminiumPatent } from "./hall-aluminium";
+import { hewittMercuryLampPatent } from "./hewitt-mercury-lamp";
 import { hollerithTabulatingPatent } from "./hollerith-tabulating";
 import { hopkinsPotashPatent } from "./hopkins-potash";
 import { howeSewingMachinePatent } from "./howe-sewing-machine";
@@ -46,15 +51,18 @@ import { maximMachineGunPatent } from "./maxim-machine-gun";
 import { mccormickReaperPatent } from "./mccormick-reaper";
 import { mergenthalerLinotypePatent } from "./mergenthaler-linotype";
 import { morseTelegraphPatent } from "./morse-telegraph";
+import { multiTouchPatent } from "./multitouch";
 import { nobelDynamitePatent } from "./nobel-dynamite";
 import { noyceIcPatent } from "./noyce-ic";
 import { otisElevatorPatent } from "./otis-elevator";
 import { ottoEnginePatent } from "./otto-engine";
+import { pagerankPatent } from "./pagerank";
 import { parsonsTurbinePatent } from "./parsons-turbine";
 import { pasteurFermentationPatent } from "./pasteur-fermentation";
 import { peltonWaterWheelPatent } from "./pelton-water-wheel";
 import { renoEscalatorPatent } from "./reno-escalator";
 import { rillieuxEvaporatorPatent } from "./rillieux-evaporator";
+import { roombaPatent } from "./roomba";
 import { parsePatentCatalog } from "./schema";
 import { sholesTypewriterPatent } from "./sholes-typewriter";
 import { spencerMicrowavePatent } from "./spencer-microwave";
@@ -72,7 +80,17 @@ import { wrightFlyerPatent } from "./wright-flyer";
 import { yaleLockPatent } from "./yale-lock";
 import { zeppelinAirshipPatent } from "./zeppelin-airship";
 
-export { carlsonElectrophotographyPatent };
+export {
+  carlsonElectrophotographyPatent,
+  daVinciPatent,
+  eInkPatent,
+  fessendenWirelessPatent,
+  haberAmmoniaPatent,
+  hewittMercuryLampPatent,
+  multiTouchPatent,
+  pagerankPatent,
+  roombaPatent,
+};
 
 export const allPatents: Patent[] = parsePatentCatalog([
   wattSeparateCondenserPatent,
@@ -124,15 +142,19 @@ export const allPatents: Patent[] = parsePatentCatalog([
   parsonsTurbinePatent,
   teslaTeleautomatonPatent,
   zeppelinAirshipPatent,
-  lindeAirLiquefactionPatent,
+  hewittMercuryLampPatent, // 1901-09-17
+  fessendenWirelessPatent, // 1902-08-12
+  lindeAirLiquefactionPatent, // 1903-05-05
   carrierAirConditionerPatent,
   wrightFlyerPatent,
   deForestAudionPatent,
   baekelandBakelitePatent,
+  haberAmmoniaPatent, // 1910-09-27
   goddardRocketPatent,
   farnsworthTvPatent,
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
+  carlsonElectrophotographyPatent, // 1942-10-06
   spencerMicrowavePatent,
   bardeenTransistor2524035Patent,
   landPolaroidPatent, // 1951-02-27
@@ -145,6 +167,11 @@ export const allPatents: Patent[] = parsePatentCatalog([
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
   wozniakApplePatent,
+  eInkPatent, // 2000-09-19
+  pagerankPatent, // 2001-09-04
+  daVinciPatent, // 2001-12-18
+  roombaPatent, // 2003-07-22
+  multiTouchPatent, // 2009-01-20
 ]);
 
 export function getPatentById(id: string): Patent | undefined {
