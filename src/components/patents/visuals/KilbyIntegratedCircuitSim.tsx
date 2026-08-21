@@ -332,31 +332,78 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
 
   return (
     <div
-      className={`flex flex-col items-center bg-slate-950 p-4 rounded-xl border border-slate-800 ${className}`}
+      className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors ${className}`}
     >
-      <div className="w-full flex flex-wrap justify-between items-center mb-3 gap-2">
-        <div className="flex items-center space-x-2">
-          <span className="text-xs font-mono text-cyan-400 font-semibold uppercase tracking-wider">
-            Solid-State Circuit Architecture:
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Jack Kilby Miniaturized Electronic Circuit (US 3,138,743)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Monolithic semiconductor integrated circuit: bulk germanium resistors, P-N junction
+            capacitors, and mesa transistors.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setActiveCircuitMode("flipflop");
+              setClockState(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full flex flex-wrap justify-between items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-mono text-cyan-600 dark:text-cyan-400 font-semibold uppercase tracking-wider">
+            Architecture:
           </span>
           <button
             type="button"
-            onClick={() => setActiveCircuitMode("flipflop")}
-            className={`px-3 py-1 text-xs font-mono rounded border transition-colors ${
+            onClick={() => {
+              setActiveCircuitMode("flipflop");
+              soundEngine.playSwitchClick();
+            }}
+            className={`px-3 py-1 text-xs font-mono rounded-lg border transition-colors ${
               activeCircuitMode === "flipflop"
-                ? "bg-cyan-950/80 text-cyan-300 border-cyan-500"
-                : "bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200"
+                ? "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border-cyan-400 dark:border-cyan-500"
+                : "bg-parchment-100 dark:bg-slate-900 text-ink-700 dark:text-slate-400 border-parchment-300 dark:border-slate-700 hover:text-ink-900 dark:hover:text-slate-200"
             }`}
           >
             Bistable Multivibrator (Fig. 7)
           </button>
           <button
             type="button"
-            onClick={() => setActiveCircuitMode("oscillator")}
-            className={`px-3 py-1 text-xs font-mono rounded border transition-colors ${
+            onClick={() => {
+              setActiveCircuitMode("oscillator");
+              soundEngine.playSwitchClick();
+            }}
+            className={`px-3 py-1 text-xs font-mono rounded-lg border transition-colors ${
               activeCircuitMode === "oscillator"
-                ? "bg-purple-950/80 text-purple-300 border-purple-500"
-                : "bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200"
+                ? "bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border-purple-400 dark:border-purple-500"
+                : "bg-parchment-100 dark:bg-slate-900 text-ink-700 dark:text-slate-400 border-parchment-300 dark:border-slate-700 hover:text-ink-900 dark:hover:text-slate-200"
             }`}
           >
             Phase-Shift Oscillator (Fig. 11)
@@ -366,8 +413,11 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
         {activeCircuitMode === "flipflop" && (
           <button
             type="button"
-            onClick={() => setClockState((prev) => !prev)}
-            className="px-3 py-1 text-xs font-mono rounded bg-emerald-950 text-emerald-300 border border-emerald-500 hover:bg-emerald-900 transition-colors"
+            onClick={() => {
+              setClockState((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className="px-3 py-1 text-xs font-mono rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500 hover:bg-emerald-200 dark:hover:bg-emerald-900 transition-colors"
           >
             Trigger Flip-Flop (Toggle Q)
           </button>

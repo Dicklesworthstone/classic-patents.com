@@ -1,14 +1,17 @@
 "use client";
 
-import { Rocket } from "lucide-react";
+import { Rocket, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
 import { goddardNozzleMatch } from "@/physics/thermochem";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GoddardRocketSim() {
-  const { params, updateParam } = usePatentPhysics("us-1102653-goddard-rocket");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-1102653-goddard-rocket");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [activeStage, setActiveStage] = useState<1 | 2 | 3>(1);
   const combustionPressurePsi = params.chamberPressure ?? 350;
   const nozzleExpansionRatio = params.expansionRatio ?? 3.5;
@@ -35,12 +38,12 @@ export function GoddardRocketSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
             <Rocket className="w-6 h-6 text-red-500 animate-pulse" />
             <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Robert H. Goddard&apos;s Multi-Stage Rocket Simulator (US 1,155,986)
+              Robert H. Goddard&apos;s Multi-Stage Rocket Simulator (US 1,102,653)
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
@@ -49,10 +52,35 @@ export function GoddardRocketSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="px-3.5 py-1.5 rounded-xl bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-300 text-xs sm:text-sm font-mono font-bold border border-red-300 dark:border-red-800 shadow-2xs">
-            Stage {activeStage} Active · Exhaust: {exhaustVelocityMs} m/s
+            Stage {activeStage} Active · {exhaustVelocityMs} m/s
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setActiveStage(1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

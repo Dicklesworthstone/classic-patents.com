@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Cpu,
-  Monitor,
-  Pause,
-  Play,
-  RotateCcw,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Cpu, Monitor, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";

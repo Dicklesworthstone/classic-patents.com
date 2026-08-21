@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
@@ -25,7 +26,7 @@ describe("grammeDynamoArchivalEdition", () => {
     ).toEqual([1, 2, 3]);
   });
 
-  test("preserves the four source sheets and gives every cited figure its own checked source crop", () => {
+  test("preserves the four source sheets and gives every cited figure its own checked source crop", async () => {
     const sheets = grammeDynamoArchivalEdition.blocks.filter(
       (block) => block.kind === "figure-sheet",
     );
@@ -73,6 +74,59 @@ describe("grammeDynamoArchivalEdition", () => {
         expect(preview.src).toStartWith("/patents/figures/us-120057-gramme-dynamo/fig-");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
+    }
+
+    const acceptedCropProof = [
+      [
+        "fig-1-source-crop-v3.png",
+        315,
+        435,
+        "833c51a8bd14b98018483346bfa0c6410605760b53abfe9c3fee3f3d2c165ac9",
+      ],
+      [
+        "fig-2-source-crop-v3.png",
+        225,
+        450,
+        "3ea81d59b9d4a959dc9b1f53bd6abc3de4654860920cebfdde2572be3a44773e",
+      ],
+      [
+        "fig-5-source-crop-v3.png",
+        1220,
+        385,
+        "a21bf1960c8007c94d494026c7dd752de4d911877e9a0de249ea1dbeb2874b3c",
+      ],
+      [
+        "fig-8-source-crop-v3.png",
+        945,
+        440,
+        "07c45fc62e6e4747ea3cfff29c517fcfdf27c861b0965006c0fec3e4f3b47c1a",
+      ],
+      [
+        "fig-10-source-crop-v3.png",
+        320,
+        600,
+        "c447d92e8c711e3c607dd114859faebc6408ec871a5a0eb3603c4e6fd63a695d",
+      ],
+      [
+        "fig-11-source-crop-v3.png",
+        450,
+        450,
+        "7866ed1c0d216575176f617b1b3645b9d469ae55e04af510bbae7ad4f82b45e7",
+      ],
+    ] as const;
+    for (const [filename, width, height, sha256] of acceptedCropProof) {
+      const preview = figureReferences
+        .flatMap((reference) => reference.figurePreviews ?? [])
+        .find((candidate) => candidate.src.endsWith(filename));
+      expect(preview).toMatchObject({
+        src: `/patents/figures/us-120057-gramme-dynamo/${filename}`,
+        width,
+        height,
+      });
+      const bytes = new Uint8Array(
+        await Bun.file(resolve(process.cwd(), "public", preview?.src.slice(1) ?? "")).arrayBuffer(),
+      );
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(sha256);
     }
 
     const figure14Previews = figureReferences

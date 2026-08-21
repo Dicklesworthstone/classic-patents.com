@@ -61,7 +61,7 @@ export default function HomePage() {
             <Compass className="w-4 h-4 text-amber-600" />
             <span>
               Interactive Timeline ({allPatents[0]?.grantDate.slice(0, 4) ?? "1769"}–
-              {allPatents[allPatents.length - 1]?.grantDate.slice(0, 4) ?? "1979"})
+              {allPatents[allPatents.length - 1]?.grantDate.slice(0, 4) ?? "2009"})
             </span>
           </Link>
         </div>

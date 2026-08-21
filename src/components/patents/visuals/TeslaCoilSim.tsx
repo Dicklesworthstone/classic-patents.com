@@ -1,13 +1,16 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { FrankenSimEngine } from "@/physics/engine";
 import { teslaCoilWindingSvg } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function TeslaCoilSim() {
-  const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-593138-tesla-coil");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const primaryCapacitanceNf = params.primaryCap ?? 45;
   const inputKv = params.inputVoltageKv ?? 15;
   const sparkGap = params.sparkGapDistanceMm ?? 12;
@@ -32,7 +35,7 @@ export function TeslaCoilSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
             <Zap className="w-6 h-6 text-purple-500 animate-pulse" />
@@ -41,15 +44,39 @@ export function TeslaCoilSim() {
             </h3>
           </div>
           <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            An interpretive high-potential winding model. It illustrates voltage grading and is not
-            a reconstruction of the 1897 apparatus while its manual source edition is pending.
+            High-frequency resonant air-core transformer: conical secondary winding, distributed
+            capacitance voltage grading, and quarter-wave standing resonance.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <div className="px-3.5 py-1.5 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-300 text-xs sm:text-sm font-mono font-bold border border-purple-300 dark:border-purple-800 shadow-2xs">
             {secondaryVoltageKv} kV Peak Potential
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

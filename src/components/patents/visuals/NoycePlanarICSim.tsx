@@ -1,6 +1,5 @@
 "use client";
 
-import { Cpu } from "lucide-react";
 import { useState } from "react";
 import { stepNoyceIC } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -34,7 +33,8 @@ const STEPS = [
 ];
 
 export function NoycePlanarICSim() {
-  const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2981877-noyce-ic");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const oxideThickness = params.oxideThickness ?? 0.5;
   const reverseBias = params.reverseBias ?? 5.0;
   const noyce = stepNoyceIC({
@@ -47,7 +47,7 @@ export function NoycePlanarICSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Cpu className="w-5 h-5 text-blue-500" />
@@ -61,22 +61,53 @@ export function NoycePlanarICSim() {
           </p>
         </div>
 
-        {/* Manufacturing Step Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
-          {STEPS.map((s) => (
-            <button
-              key={s.step}
-              type="button"
-              onClick={() => setActiveLayerStep(s.step)}
-              className={`px-2.5 py-1 rounded-lg transition-colors ${
-                activeLayerStep === s.step
-                  ? "bg-blue-600 text-white font-bold shadow-sm"
-                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-              }`}
-            >
-              Layer {s.step + 1}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          {/* Manufacturing Step Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+            {STEPS.map((s) => (
+              <button
+                key={s.step}
+                type="button"
+                onClick={() => {
+                  setActiveLayerStep(s.step);
+                  soundEngine.playSwitchClick();
+                }}
+                className={`px-2.5 py-1 rounded-lg transition-colors ${
+                  activeLayerStep === s.step
+                    ? "bg-blue-600 text-white font-bold shadow-sm"
+                    : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+                }`}
+              >
+                Layer {s.step + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setActiveLayerStep(4);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

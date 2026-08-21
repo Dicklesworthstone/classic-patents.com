@@ -29,9 +29,9 @@ canonical text.
 
 | PDF locator | Reviewed content | Published treatment |
 | --- | --- | --- |
-| p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; separately reviewed local crops `fig-1.png`, `fig-2.png`, `fig-3-source-crop-v2.png`, `fig-4-source-crop-v2.png`, `fig-5.png`, and `fig-6-source-crop-v2.png`; Fig. 1–6 references |
-| p. 2 | Drawing sheet 2, Figs. 7–9 | Figure-sheet block; separately reviewed local crops `fig-7-source-crop.png`, `fig-8.png`, and `fig-9.png`; Fig. 7–9 references |
-| p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; separately reviewed local crops `fig-10.png`, `fig-11.png`, `fig-12-source-crop-v3.png`, and `fig-13-source-crop-v3.png`; Fig. 10–13 references |
+| p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; versioned upright crops `fig-1-source-crop-v3.png`, `fig-2-source-crop-v3.png`, `fig-3-source-crop-v2.png`, `fig-4-source-crop-v2.png`, `fig-5-source-crop-v3.png`, and `fig-6-source-crop-v2.png`; Fig. 1–6 references |
+| p. 2 | Drawing sheet 2, Figs. 7–9 | Figure-sheet block; Fig. 8 uses `fig-8-source-crop-v3.png`; Fig. 7 and Fig. 9 remain on preserved legacy assets pending isolated upright replacements; Fig. 7–9 references |
+| p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; versioned upright crops `fig-10-source-crop-v3.png`, `fig-11-source-crop-v3.png`, `fig-12-source-crop-v3.png`, and `fig-13-source-crop-v3.png`; Fig. 10–13 references |
 | p. 4 | Drawing sheet 4, Fig. 14 | Figure-sheet block; upright apparatus crop `fig-14-source-crop-v5.png` with the complete printed figure label and no witness block, plus separate label crop `fig-14-label-source-crop-v4.png`; Fig. 14 references |
 | p. 5 | Masthead, co-inventors, introduction, endless-bobbin principle | Manual edition masthead and opening paragraphs |
 | p. 6 | Figs. 1–6 constructions and continuous-current explanation | Manual edition blocks with Figs. 1–6 references |
@@ -59,10 +59,25 @@ an unregistered citation at module construction time. The original four
 drawing sheets remain preserved in the facsimile PDF; the crop is a reader
 aid, not a replacement source.
 
-Figure 7 and Figure 9 overlap physically on drawing sheet 2. The complete
-Figure 7 crop therefore retains the upper Figure 9 detail exactly as printed,
-rather than erasing or redrawing either figure to make an artificial isolated
-image. Figure 14's earlier rotated and witness-contaminated derivatives remain
+The following versioned candidates are the accepted upright crops currently
+bound by the edition. Their byte digests and dimensions are asserted in
+`grammeDynamoEdition.test.ts` so a future replacement cannot silently drift:
+
+| Figure | Asset | Pixels | SHA-256 |
+| --- | --- | ---: | --- |
+| Fig. 1 | `fig-1-source-crop-v3.png` | 315 × 435 | `833c51a8bd14b98018483346bfa0c6410605760b53abfe9c3fee3f3d2c165ac9` |
+| Fig. 2 | `fig-2-source-crop-v3.png` | 225 × 450 | `3ea81d59b9d4a959dc9b1f53bd6abc3de4654860920cebfdde2572be3a44773e` |
+| Fig. 5 | `fig-5-source-crop-v3.png` | 1220 × 385 | `a21bf1960c8007c94d494026c7dd752de4d911877e9a0de249ea1dbeb2874b3c` |
+| Fig. 8 | `fig-8-source-crop-v3.png` | 945 × 440 | `07c45fc62e6e4747ea3cfff29c517fcfdf27c861b0965006c0fec3e4f3b47c1a` |
+| Fig. 10 | `fig-10-source-crop-v3.png` | 320 × 600 | `c447d92e8c711e3c607dd114859faebc6408ec871a5a0eb3603c4e6fd63a695d` |
+| Fig. 11 | `fig-11-source-crop-v3.png` | 450 × 450 | `7866ed1c0d216575176f617b1b3645b9d469ae55e04af510bbae7ad4f82b45e7` |
+
+Figure 7 and Figure 9 overlap physically on drawing sheet 2. The legacy
+`fig-7-source-crop.png` retains the upper Figure 9 detail and witness material,
+while legacy `fig-9.png` is only the upper strip of Fig. 9. Those assets remain
+preserved as repair evidence, but are not acceptable final source crops; the
+two printed citations stay blocked until isolated upright derivatives are
+produced from drawing sheet 2. Figure 14's earlier rotated and witness-contaminated derivatives remain
 preserved, but the edition uses the versioned `fig-14-source-crop-v5.png`, an
 upright crop with the complete `FIG. 14.` label and no witness block; the
 separate `fig-14-label-source-crop-v4.png` remains available for the tiny label

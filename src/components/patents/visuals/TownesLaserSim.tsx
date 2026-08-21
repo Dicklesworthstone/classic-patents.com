@@ -1,8 +1,11 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface TownesLaserSimProps {
   initialPumpPowerWatts?: number;
@@ -19,7 +22,8 @@ export function TownesLaserSim({
 }: TownesLaserSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-2929922-townes-laser");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2929922-townes-laser");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const pumpPowerWatts = params.pumpPowerWatts ?? initialPumpPowerWatts;
   const cavityLengthCm = params.cavityLengthCm ?? initialCavityLengthCm;
   const mirror2ReflectivityPct = params.mirror2ReflectivityPct ?? initialMirror2ReflectivityPct;
@@ -403,19 +407,61 @@ export function TownesLaserSim({
   }, [pumpPowerWatts, mirror2ReflectivityPct, beamDiameterMm, activeMedium, physics]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Townes & Schawlow Optical Maser / Laser (US 2,929,922)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Fabry-Pérot resonant cavity, optical pumping threshold, and stimulated emission mode
+            selection.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setActiveMedium("potassium_vapor");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Interactive Control Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
         {/* Optical Pump Power */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-yellow-400">Pump Flash Power</span>
-            <span className="font-mono text-yellow-300">{pumpPowerWatts} W</span>
+            <span className="text-amber-600 dark:text-yellow-400">Pump Flash Power</span>
+            <span className="font-mono text-amber-700 dark:text-yellow-300">
+              {pumpPowerWatts} W
+            </span>
           </div>
           <input
             type="range"
@@ -424,16 +470,16 @@ export function TownesLaserSim({
             step={25}
             value={pumpPowerWatts}
             onChange={(e) => updateParam("pumpPowerWatts", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
           />
-          <span className="text-[10px] text-slate-400">Threshold ~120 W</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">Threshold ~120 W</span>
         </div>
 
         {/* Cavity Length */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-400">Cavity Length (L)</span>
-            <span className="font-mono text-cyan-300">{cavityLengthCm} cm</span>
+            <span className="text-cyan-600 dark:text-cyan-400">Cavity Length (L)</span>
+            <span className="font-mono text-cyan-700 dark:text-cyan-300">{cavityLengthCm} cm</span>
           </div>
           <input
             type="range"
@@ -442,16 +488,20 @@ export function TownesLaserSim({
             step={5}
             value={cavityLengthCm}
             onChange={(e) => updateParam("cavityLengthCm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-slate-400">End mirror separation</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            End mirror separation
+          </span>
         </div>
 
         {/* Output Mirror Reflectivity */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-emerald-400">Output Coupler R2</span>
-            <span className="font-mono text-emerald-300">{mirror2ReflectivityPct}%</span>
+            <span className="text-emerald-600 dark:text-emerald-400">Output Coupler R2</span>
+            <span className="font-mono text-emerald-700 dark:text-emerald-300">
+              {mirror2ReflectivityPct}%
+            </span>
           </div>
           <input
             type="range"
@@ -460,16 +510,20 @@ export function TownesLaserSim({
             step={0.5}
             value={mirror2ReflectivityPct}
             onChange={(e) => updateParam("mirror2ReflectivityPct", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600 dark:accent-emerald-500"
           />
-          <span className="text-[10px] text-slate-400">Front mirror reflection</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Front mirror reflection
+          </span>
         </div>
 
         {/* Beam Diameter */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-purple-400">Aperture Diameter</span>
-            <span className="font-mono text-purple-300">{beamDiameterMm} mm</span>
+            <span className="text-purple-600 dark:text-purple-400">Aperture Diameter</span>
+            <span className="font-mono text-purple-700 dark:text-purple-300">
+              {beamDiameterMm} mm
+            </span>
           </div>
           <input
             type="range"
@@ -478,28 +532,35 @@ export function TownesLaserSim({
             step={1}
             value={beamDiameterMm}
             onChange={(e) => updateParam("beamDiameterMm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600 dark:accent-purple-500"
           />
-          <span className="text-[10px] text-slate-400">Diffraction divergence limit</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Diffraction divergence limit
+          </span>
         </div>
 
         {/* Active Medium Selection */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="active-medium-select" className="text-xs font-semibold text-rose-400">
+          <label
+            htmlFor="active-medium-select"
+            className="text-xs font-semibold text-rose-600 dark:text-rose-400"
+          >
             Active Medium
           </label>
           <select
             id="active-medium-select"
             value={activeMedium}
             onChange={(e) => setActiveMedium(e.target.value as any)}
-            className="w-full py-1 px-2 text-xs bg-slate-800 text-slate-200 rounded border border-slate-700"
+            className="w-full py-1 px-2 text-xs bg-parchment-100 dark:bg-slate-800 text-ink-900 dark:text-slate-200 rounded border border-parchment-300 dark:border-slate-700"
           >
             <option value="potassium_vapor">Potassium (3.14 µm)</option>
             <option value="ruby_solid">Ruby Rod (694.3 nm)</option>
             <option value="he_ne_gas">He-Ne Gas (632.8 nm)</option>
             <option value="nd_yag">Nd:YAG (1064 nm)</option>
           </select>
-          <span className="text-[10px] text-slate-400">Laser transition media</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Laser transition media
+          </span>
         </div>
       </div>
     </div>
