@@ -47,6 +47,29 @@ claims and 17 numbered figures. PDF text layers, OCR, and machine drafts are
 research aids only; they are not the public source edition or evidence of its
 completeness.
 
+## Bounded source-ledger reconciliation — 2026-08-21
+
+This checkpoint covers PDF pages 1–9 only. The reviewed ledger already carries
+the complete page-marked chunk for this boundary and remains the byte-preserved
+comparison artifact for pages 10–17.
+
+- **Drawing sheets (pages 1–6):** the literal sheet headers, patent title and
+  number, printer line, signature matter, and figure sequence are recorded as
+  Sheet 1 / Fig. 1; Sheet 2 / Figs. 2 and 4; Sheet 3 / Figs. 3 and 5–7;
+  Sheet 4 / Figs. 8–9; Sheet 5 / Figs. 10–13; and Sheet 6 / Figs. 14–17.
+- **Specification opening (pages 7–9):** the ledger records the Patent Office
+  masthead and identity, the prior-application and figure-reference paragraphs,
+  the continuous-strip and separate-card method, the Baltimore card spaces
+  3–16, the definitions of index-points and record-card, and the bed-plate /
+  platen / yielding-pin / mercury-cup mechanism through the Fig. 15
+  equivalent-contact reference.
+- **Source method and boundary:** this reconciliation used the authoritative
+  online Google Patents record for US395781A together with the existing
+  page-marked ledger and typed edition blocks. No local OCR, page rendering,
+  test, build, publication binding, or shared-registry edit was performed.
+  Figure-crop visual acceptance and the untouched pages 10–17 remain for the
+  independent root review gate.
+
 ## Root figure QA hold
 
 The edition is visitor-withheld pending a complete rebuild of its 17 local
