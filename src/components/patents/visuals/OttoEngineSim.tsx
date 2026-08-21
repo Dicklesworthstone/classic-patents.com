@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Flame, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   ottoConnectingRod,
@@ -9,6 +9,7 @@ import {
   stepOttoEngine,
 } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function OttoEngineSim() {
@@ -73,44 +74,46 @@ export function OttoEngineSim() {
     otto.pistonStrokePx,
     otto.crankCx,
     otto.crankCy,
-    otto.rodOriginX,
+    otto.rodOriginY0,
   );
 
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Otto Four-Stroke Internal Combustion Engine (US 194,047)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Thermodynamic Model — 4-Stroke Sequence (720° Cycle), 2:1 Camshaft Valve
-            Timing, and Pre-Compression Power
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Nicolaus Otto Four-Stroke Internal Combustion Engine (US 194,047)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            4-stroke thermodynamic sequence (720° cycle), 2:1 camshaft valve timing, and
+            pre-compression.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            <Play className={`w-4 h-4 ${isPlaying ? "text-amber-600" : ""}`} />
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"
             onClick={() => {
-              resetParams();
-              setCrankAngleDeg(0);
+              toggleSound();
+              soundEngine.playSwitchClick();
             }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
             aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -119,6 +122,18 @@ export function OttoEngineSim() {
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setCrankAngleDeg(0);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
