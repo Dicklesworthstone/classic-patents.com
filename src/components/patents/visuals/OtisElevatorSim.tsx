@@ -1,13 +1,15 @@
 "use client";
 
-import { RotateCcw, Scissors, ShieldCheck, Sparkles } from "lucide-react";
+import { RotateCcw, Scissors, ShieldCheck, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function OtisElevatorSim() {
-  const { params, updateParam } = usePatentPhysics("us-31128-otis-elevator");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-31128-otis-elevator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const cabPayloadKg = params.cabPayload ?? 650;
   const [isCableCut, setIsCableCut] = useState<boolean>(false);
   const [cabY, setCabY] = useState<number>(100); // 40 to 220 px
@@ -37,7 +39,9 @@ export function OtisElevatorSim() {
     setIsCableCut(true);
     updateParam("cableTension", 0);
 
-    soundEngine.playElastomerSnap(1.5);
+    if (!isAudioMuted) {
+      soundEngine.playElastomerSnap(1.5);
+    }
 
     const snapped = stepOtisElevator({ cabPayloadKg, cableTensionPct: 0 });
     setCabY((prev) => prev + snapped.cabFallPx);
@@ -45,7 +49,9 @@ export function OtisElevatorSim() {
     timerRef.current = window.setTimeout(
       () => {
         setIsArrested(true);
-        soundEngine.playLockstitchClack();
+        if (!isAudioMuted) {
+          soundEngine.playLockstitchClack();
+        }
       },
       Math.max(16, snapped.pawlEngagementMs),
     );
@@ -55,29 +61,27 @@ export function OtisElevatorSim() {
     setIsCableCut(false);
     setIsArrested(false);
     setCabY(100);
-    updateParam("cableTension", 100);
+    resetParams();
     soundEngine.playSwitchClick();
   };
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-500 animate-pulse" />
             <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Otis Inverted Fail-Safe Safety Catch (US 31,128)
+              Elisha Otis Fail-Safe Elevator Safety Catch (US 31,128)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Simulate Elisha Otis&apos;s 1854 Crystal Palace demonstration: cut the hoisting cable to
-            observe the transverse leaf spring snap flat and thrust safety pawls into the guide
-            racks.
+            Transverse leaf spring snapping flat to thrust ratchet safety pawls into guide racks.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
           {!isCableCut ? (
             <button
               type="button"
@@ -85,7 +89,7 @@ export function OtisElevatorSim() {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-red-600 hover:bg-red-700 text-white shadow-md transition-colors active:scale-95"
             >
               <Scissors className="w-3.5 h-3.5" />
-              <span>Sever Hoisting Rope (Demonstration)</span>
+              <span>Sever Cable</span>
             </button>
           ) : (
             <button
@@ -94,9 +98,30 @@ export function OtisElevatorSim() {
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono font-bold text-ink-800 dark:text-parchment-200 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             >
               <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Restore Hoisting Rope</span>
+              <span>Restore Cable</span>
             </button>
           )}
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={handleResetCable}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
