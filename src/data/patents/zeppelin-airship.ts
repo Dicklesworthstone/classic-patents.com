@@ -22,15 +22,6 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
-  archivalEdition: zeppelinArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
-    pageCount: 7,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
-    sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
-  },
   // The immutable supplied grant cites Figs. 11 and 12 but contains only
   // Figs. 1–10. Preserve the source materials for remediation, but do not
   // bind a partial source face or label its ledger as publishable.

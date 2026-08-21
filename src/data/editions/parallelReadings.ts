@@ -37,6 +37,7 @@ import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
 import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
@@ -70,7 +71,6 @@ import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-eng
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 import { yaleLockParallelReadings } from "./yaleLockEdition";
-import { zeppelinParallelReadings } from "./zeppelinEdition";
 
 export type ArchivalParallelReading = readonly string[];
 
@@ -112,13 +112,13 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
+  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-400766-hall-aluminium": HALL_ALUMINIUM_PARALLEL_READINGS,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
   "us-586193-marconi-radio": marconiRadioParallelReadings,
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
-  "us-621195-zeppelin-airship": zeppelinParallelReadings,
   "us-682690-hewitt-mercury-lamp": hewittMercuryLampParallelReadings,
   "us-706737-fessenden-wireless": fessendenWirelessParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
