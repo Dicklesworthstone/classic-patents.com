@@ -13,6 +13,15 @@ type WaveFn = (n: number, frames: number, stepsPerFrame: number) => Float64Array
 type FluidFn = (n: number, frames: number) => Float64Array;
 type CyclicFn = (n: number, stiffness: number) => Float64Array;
 type ModesFn = (n: number, k: number) => Float64Array;
+type PoissonFn = (n: number) => Float64Array;
+type GrayScottFn = (n: number, frames: number, feed: number, kill: number) => Float64Array;
+type FftFn = (n: number, seed: number) => Float64Array;
+type AutodiffFn = (xmin: number, xmax: number, samples: number) => Float64Array;
+type HodgeFn = (shape: number) => Float64Array;
+type NsCavityFn = (cells: number, frames: number, re: number, spf: number) => Float64Array;
+type TrussPathFn = (nx: number, ny: number, gapTol: number) => Float64Array;
+type FlowcertFn = (steps: number, tol: number) => Float64Array;
+type RunFrameFn = (seed: number) => Float64Array;
 
 let gaFn: GaFn | null = null;
 let heatFn: HeatFn | null = null;
@@ -22,6 +31,44 @@ let cyclicFn: CyclicFn | null = null;
 let modesFn: ModesFn | null = null;
 let loadAttempted = false;
 let source: GenericKernelSource = "unloaded";
+
+/**
+ * Optional P7 exports. Bound only when a slim `/wasm/fs-generic/` artifact
+ * actually instantiates. The 4.9 MB kitchen-sink `fs-wasm` pkg is never copied.
+ */
+export const extraWasmFns: {
+  poisson2d: PoissonFn | null;
+  grayScottFrames: GrayScottFn | null;
+  fftPowerSpectrum: FftFn | null;
+  autodiffDerivatives: AutodiffFn | null;
+  hodgeDecomposition: HodgeFn | null;
+  navierStokesCavity: NsCavityFn | null;
+  trussPath: TrussPathFn | null;
+  flowcert: FlowcertFn | null;
+  runFrame: RunFrameFn | null;
+} = {
+  poisson2d: null,
+  grayScottFrames: null,
+  fftPowerSpectrum: null,
+  autodiffDerivatives: null,
+  hodgeDecomposition: null,
+  navierStokesCavity: null,
+  trussPath: null,
+  flowcert: null,
+  runFrame: null,
+};
+
+function clearExtraWasmFns() {
+  extraWasmFns.poisson2d = null;
+  extraWasmFns.grayScottFrames = null;
+  extraWasmFns.fftPowerSpectrum = null;
+  extraWasmFns.autodiffDerivatives = null;
+  extraWasmFns.hodgeDecomposition = null;
+  extraWasmFns.navierStokesCavity = null;
+  extraWasmFns.trussPath = null;
+  extraWasmFns.flowcert = null;
+  extraWasmFns.runFrame = null;
+}
 
 const orbitCache = new Map<string, Float64Array>();
 const heatCache = new Map<string, Float64Array>();
@@ -58,6 +105,15 @@ export async function ensureGenericWasm(): Promise<GenericKernelSource> {
         fluid_frames?: FluidFn;
         cyclic_symmetry?: CyclicFn;
         laplacian_modes?: ModesFn;
+        poisson2d?: PoissonFn;
+        gray_scott_frames?: GrayScottFn;
+        fft_power_spectrum?: FftFn;
+        autodiff_derivatives?: AutodiffFn;
+        hodge_decomposition?: HodgeFn;
+        navier_stokes_cavity?: NsCavityFn;
+        trusspath?: TrussPathFn;
+        flowcert?: FlowcertFn;
+        run_frame?: RunFrameFn;
         engine?: () => string;
       };
       await mod.default({ module_or_path: wasmUrl });
@@ -70,6 +126,20 @@ export async function ensureGenericWasm(): Promise<GenericKernelSource> {
       fluidFn = typeof mod.fluid_frames === "function" ? mod.fluid_frames : null;
       cyclicFn = typeof mod.cyclic_symmetry === "function" ? mod.cyclic_symmetry : null;
       modesFn = typeof mod.laplacian_modes === "function" ? mod.laplacian_modes : null;
+      extraWasmFns.poisson2d = typeof mod.poisson2d === "function" ? mod.poisson2d : null;
+      extraWasmFns.grayScottFrames =
+        typeof mod.gray_scott_frames === "function" ? mod.gray_scott_frames : null;
+      extraWasmFns.fftPowerSpectrum =
+        typeof mod.fft_power_spectrum === "function" ? mod.fft_power_spectrum : null;
+      extraWasmFns.autodiffDerivatives =
+        typeof mod.autodiff_derivatives === "function" ? mod.autodiff_derivatives : null;
+      extraWasmFns.hodgeDecomposition =
+        typeof mod.hodge_decomposition === "function" ? mod.hodge_decomposition : null;
+      extraWasmFns.navierStokesCavity =
+        typeof mod.navier_stokes_cavity === "function" ? mod.navier_stokes_cavity : null;
+      extraWasmFns.trussPath = typeof mod.trusspath === "function" ? mod.trusspath : null;
+      extraWasmFns.flowcert = typeof mod.flowcert === "function" ? mod.flowcert : null;
+      extraWasmFns.runFrame = typeof mod.run_frame === "function" ? mod.run_frame : null;
       source = "wasm";
     } finally {
       URL.revokeObjectURL(blobUrl);
@@ -81,6 +151,7 @@ export async function ensureGenericWasm(): Promise<GenericKernelSource> {
     fluidFn = null;
     cyclicFn = null;
     modesFn = null;
+    clearExtraWasmFns();
     source = "ts-fallback";
   }
   return source;
