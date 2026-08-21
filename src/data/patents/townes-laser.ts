@@ -235,150 +235,140 @@ export const townesLaserPatent: Patent = {
       isIndependent: true,
       originalText: manualTownesClaimText(1),
       plainEnglish:
-        "The master apparatus claim for the optical maser: an active medium with quantum energy states, pumping means establishing population inversion, and an optical cavity resonator bounded by spaced reflecting surfaces whose dimensions are large compared to the light wavelength, with non-reflecting side boundaries to suppress unwanted modes.",
+        "An optical communications system comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source, and a detector, wherein each maser chamber has reflective parallel end members and transparent side members allowing optical pumping of the negative-temperature active medium.",
       keyInnovations: [
-        "Open Fabry-Pérot optical resonator geometry for optical frequencies",
-        "Suppression of off-axis modes via non-reflecting side boundaries",
-        "Optical pumping establishing population inversion in active medium",
+        "Optical communications architecture with maser generator and amplifier",
+        "Chamber with parallel reflective ends and transparent pumped side members",
       ],
       legalSignificance:
-        "The historic master patent claim establishing legal protection for all open-cavity lasers.",
+        "The master system apparatus claim covering optical communications using coherent maser generation, amplification, and detection.",
     },
     {
       number: 2,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(2),
       plainEnglish:
-        "An optical maser in which the spaced reflecting surfaces are planar and parallel to each other.",
+        "An optical communications system where the maser generator and amplifier have elongated chambers with length substantially greater than transverse dimension, partially reflective parallel end members, nonreflective side members, a three-level inverted medium, and optical mode extraction means.",
       keyInnovations: [
-        "Planar parallel end mirror cavity architecture",
-        "Axial plane-wave mode selection",
+        "Elongated open cavity geometry with nonreflective side walls",
+        "Three-level quantum population inversion with mode selection",
       ],
       legalSignificance:
-        "Specifically covers the classic Fabry-Pérot parallel mirror configuration used in original lasers.",
+        "Defines the elongated open-resonator geometry providing high mode discrimination for optical communication channels.",
     },
     {
       number: 3,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(3),
       plainEnglish:
-        "An optical maser according to claim 2, in which at least one reflecting surface is partially transmitting to allow extraction of a portion of the coherent optical radiation.",
+        "An optical communications system where the maser amplifier includes an axial magnetic field coupled to a modulating source, modulating the output beam via magnetic spectral line splitting (Zeeman effect) prior to detection.",
       keyInnovations: [
-        "Partially transmitting output mirror (output coupler)",
-        "Extraction of collimated coherent optical beam",
+        "Longitudinal magnetic field Zeeman modulation",
+        "Direct magnetic signal modulation of optical maser amplifier",
       ],
       legalSignificance:
-        "Universal claim for laser beam extraction via partially reflective mirrors.",
+        "Fundamental claim for magneto-optical modulation of coherent optical carrier waves.",
     },
     {
       number: 4,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(4),
-      plainEnglish: "An optical maser in which the active medium comprises an atomic vapor.",
-      keyInnovations: ["Atomic and molecular gas vapor laser gain media"],
+      plainEnglish:
+        "A maser generator comprising a chamber with parallel reflective end members and side members that are transparent to external pumping energy while absorptive or transparent to emitted optical radiation to prevent parasitic off-axis modes.",
+      keyInnovations: [
+        "Maser generator chamber with parallel reflective ends and transparent/absorptive side boundaries",
+        "Selective confinement of axial modes and dissipation of transverse modes",
+      ],
       legalSignificance:
-        "Foundational claim covering gas lasers such as Helium-Neon, Argon-ion, and alkali vapor lasers.",
+        "Core apparatus claim for the open-sided optical maser generator / laser cavity.",
     },
     {
       number: 5,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(5),
       plainEnglish:
-        "An optical maser according to claim 4, in which the atomic vapor comprises potassium vapor and the pumping means comprises optical radiation of a frequency exciting ground-state potassium.",
-      keyInnovations: ["Potassium vapor optical pumping system"],
-      legalSignificance: "Specific claim for alkali vapor optical masers.",
+        "An optical maser generator with an elongated chamber (length >> transverse dimension), partially reflective parallel end members, nonreflective side members, a three-energy-level inverted medium, and mode selection optics directing a selected mode to an amplifier.",
+      keyInnovations: [
+        "Elongated three-level open resonator maser generator",
+        "Focal plane mode selector isolating single transverse modes",
+      ],
+      legalSignificance:
+        "Foundational claim for three-level laser oscillators with diffraction-based spatial mode filtering.",
     },
     {
       number: 6,
       isIndependent: false,
+      dependsOn: [5],
       originalText: manualTownesClaimText(6),
       plainEnglish:
-        "An optical maser in which the active medium comprises a solid-state host lattice containing paramagnetic activator ions.",
+        "A maser generator according to claim 5 where the mode selector comprises an aperture in an absorptive mask placed in the focal plane of an end-window focusing lens to filter out off-axis spontaneous emission.",
       keyInnovations: [
-        "Solid-state crystal/glass laser gain media doped with transition/rare-earth ions",
+        "Focal-plane aperture spatial filter for pure transverse mode isolation",
       ],
       legalSignificance:
-        "Covers all solid-state lasers, including ruby, Nd:YAG, Ti:Sapphire, and fiber lasers.",
+        "Covers spatial filtering pinholes in laser resonator beamlines.",
     },
     {
       number: 7,
-      isIndependent: true,
+      isIndependent: false,
+      dependsOn: [5],
       originalText: manualTownesClaimText(7),
       plainEnglish:
-        "An optical maser amplifier comprising an elongated active medium with an inverted population distribution, optical pumping means, optical input means for introducing an optical signal wave, and optical output means for extracting an amplified optical signal wave.",
+        "A maser generator according to claim 5 where the active negative-temperature medium is potassium vapor and the pump comprises an assembly of optical potassium discharge lamps.",
       keyInnovations: [
-        "Traveling-wave optical amplifier without resonant cavity feedback",
-        "Single-pass coherent optical signal amplification",
+        "Potassium vapor active medium pumped by matching resonant optical discharge lamps",
       ],
       legalSignificance:
-        "Foundational patent claim for optical pre-amplifiers and modern Erbium-Doped Fiber Amplifiers (EDFA) powering the internet.",
+        "Specific implementation claim for optically pumped alkali metal vapor lasers.",
     },
     {
       number: 8,
       isIndependent: true,
       originalText: manualTownesClaimText(8),
       plainEnglish:
-        "An optical communication system comprising an optical maser generator for producing a coherent optical carrier wave, modulating means for impressing information signals upon the carrier wave, optical transmission means for directing the modulated carrier toward a distant receiver, and optical detector means at the receiver.",
+        "A maser amplifier comprising an elongated chamber with parallel reflective end members, side members transparent to pumping energy and nonreflective of other radiation, and optical couplers for introducing an input wave at one end and abstracting an amplified output wave at the other.",
       keyInnovations: [
-        "Complete coherent optical carrier communications architecture",
-        "Modulation and detection of optical laser carrier waves",
+        "Single-pass / resonant traveling-wave optical amplifier",
+        "Open-sided pumped chamber with input and output end couplers",
       ],
       legalSignificance:
-        "The master architecture claim for modern fiber-optic and free-space laser communications systems.",
+        "Foundational claim for optical pre-amplifiers, power amplifiers, and optical repeaters.",
     },
     {
       number: 9,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(9),
       plainEnglish:
-        "An optical maser in which the reflecting surfaces have lateral dimension d and spacing L such that the Fresnel number d^2 / (L * lambda) is greater than unity.",
+        "An optical maser amplifier with an elongated chamber, partially reflective parallel end members, nonreflective sides, a three-level inverted medium, and mode abstracting optics directing amplified energy to a detector.",
       keyInnovations: [
-        "Mathematical Fresnel number criterion defining low-loss optical cavity mode regimes",
+        "Three-level optical maser amplifier with spatial mode selection",
       ],
       legalSignificance:
-        "Pins the physical dimensional constraint for stable optical cavity mode formation.",
+        "Establishes patent protection for low-noise optical pre-amplifiers in optical receivers.",
     },
     {
       number: 10,
       isIndependent: false,
+      dependsOn: [9],
       originalText: manualTownesClaimText(10),
       plainEnglish:
-        "An optical maser in which the reflectivity of each reflecting surface is at least 90 percent at the characteristic optical frequency.",
-      keyInnovations: ["High-reflectivity dielectric mirror requirement (>90% reflectivity)"],
-      legalSignificance:
-        "Defines the low-loss cavity Q-factor threshold necessary for low-gain laser media.",
+        "A maser amplifier according to claim 9 where the negative-temperature medium is potassium vapor pumped by an array of potassium discharge lamps.",
+      keyInnovations: [
+        "Potassium vapor optical amplifier with resonant lamp pumping",
+      ],
+      legalSignificance: "Covers alkali vapor optical amplifier stages.",
     },
     {
       number: 11,
-      isIndependent: false,
+      isIndependent: true,
       originalText: manualTownesClaimText(11),
       plainEnglish:
-        "An optical maser according to claim 1, in which the side boundaries of the resonator comprise an absorbing medium for suppressing off-axis optical modes.",
-      keyInnovations: ["Absorbing side boundaries for off-axis mode suppression"],
-      legalSignificance:
-        "Covers optical cavities with absorptive side cladding for enhanced mode discrimination.",
-    },
-    {
-      number: 12,
-      isIndependent: true,
-      originalText: manualTownesClaimText(12),
-      plainEnglish:
-        "The method of generating coherent optical radiation comprising establishing a population inversion between two atomic energy states of an active medium in an open optical resonator bounded by parallel reflecting surfaces and non-reflecting sides, and sustaining stimulated emission oscillations along the axis between the end surfaces.",
+        "A modulated maser amplifier comprising an elongated chamber with parallel reflective end members, a negative-temperature medium, optical pumping means, and a modulation coil generating a controlled longitudinal magnetic field for Zeeman signal modulation of the abstracted beam.",
       keyInnovations: [
-        "Fundamental method of laser oscillation via population inversion and open optical resonator feedback",
+        "Direct Zeeman magneto-optic modulation within an optical amplifier cavity",
       ],
       legalSignificance:
-        "Master method claim for laser generation cited in thousands of subsequent quantum optics patents.",
-    },
-    {
-      number: 13,
-      isIndependent: false,
-      originalText: manualTownesClaimText(13),
-      plainEnglish:
-        "The method according to claim 12, further comprising extracting a portion of the coherent optical radiation through one of the reflecting end surfaces as a diffraction-limited optical beam.",
-      keyInnovations: ["Diffraction-limited coherent laser beam extraction method"],
-      legalSignificance:
-        "Covers the physical extraction of diffraction-limited optical beams from laser oscillators.",
+        "Covers active intra-amplifier magneto-optical modulation.",
     },
   ],
   historicalContext: {
@@ -409,7 +399,7 @@ export const townesLaserPatent: Patent = {
       "Charles Townes conceived the idea for the optical maser while sitting on a park bench in Franklin Square, Washington D.C., early on a spring morning in 1951 before attending an American Physical Society meeting, jotting the initial equations on a torn envelope.",
   },
   stats: {
-    totalClaims: 13,
-    independentClaims: 4,
+    totalClaims: 11,
+    independentClaims: 8,
   },
 };

@@ -8,6 +8,7 @@ import { kilbyIntegratedCircuitPatent } from "../patents/kilby-integrated-circui
 import {
   kilbyIntegratedCircuitArchivalEdition,
   kilbyIntegratedCircuitParallelReadings,
+  kilbyIntegratedCircuitSourcePreviewPlan,
   manualKilbyClaimText,
 } from "./kilbyIntegratedCircuitEdition";
 
@@ -69,20 +70,65 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
 
   test("verifies all referenced source figure crops exist on disk", () => {
     for (const block of kilbyIntegratedCircuitArchivalEdition.blocks) {
-      if (block.kind === "paragraph" || block.kind === "claim") {
-        for (const inline of block.inlines) {
-          if (inline.kind === "reference" && inline.figurePreviews) {
-            for (const prev of inline.figurePreviews) {
-              const cropPath = join(rootDir, "public", prev.src.replace(/^\//, ""));
-              expect(existsSync(cropPath)).toBe(true);
-            }
+      const inlines =
+        block.kind === "figure-sheet"
+          ? block.description
+          : "inlines" in block
+            ? block.inlines
+            : [];
+      for (const inline of inlines) {
+        if (inline.kind === "reference" && inline.figurePreviews) {
+          for (const prev of inline.figurePreviews) {
+            const cropPath = join(rootDir, "public", prev.src.replace(/^\//, ""));
+            expect(existsSync(cropPath)).toBe(true);
           }
         }
       }
     }
   });
 
-  test("binds Figs. 1 and 2 to distinct, tightly framed source crops", () => {
+  test("requires every printed figure occurrence to be an authored reference", () => {
+    for (const block of kilbyIntegratedCircuitArchivalEdition.blocks) {
+      const inlines =
+        block.kind === "figure-sheet"
+          ? block.description
+          : "inlines" in block
+            ? block.inlines
+            : [];
+      for (const inline of inlines) {
+        if (/\bFIGURES?\s+\d|\bFig\.\s+\d/i.test(inline.text)) {
+          expect(inline.kind).toBe("reference");
+          if (inline.kind === "reference") {
+            expect(inline.referenceType).toBe("figure");
+          }
+        }
+      }
+    }
+  });
+
+  test("keeps grouped research crops out of the source face and records an upright isolated cloud plan", () => {
+    const serializedEdition = JSON.stringify(kilbyIntegratedCircuitArchivalEdition);
+    for (const groupedCrop of ["page-1.png", "page-2.png", "page-3.png"]) {
+      expect(serializedEdition).not.toContain(groupedCrop);
+    }
+    expect(kilbyIntegratedCircuitSourcePreviewPlan).toHaveLength(14);
+    expect(
+      kilbyIntegratedCircuitSourcePreviewPlan
+        .filter((entry) => entry.figure.startsWith("Fig. 8"))
+        .map((entry) => entry.figure),
+    ).toEqual(["Fig. 8a", "Fig. 8b", "Fig. 8c"]);
+    expect(
+      kilbyIntegratedCircuitSourcePreviewPlan.every(
+        (entry) => entry.orientation === "upright" && entry.isolated,
+      ),
+    ).toBe(true);
+    for (const entry of kilbyIntegratedCircuitSourcePreviewPlan) {
+      expect(entry.targetSrc).toContain("fig-");
+      expect(entry.targetSrc).not.toContain("page-");
+    }
+  });
+
+  test("binds every authored Fig. 1 and Fig. 2 occurrence to the distinct source crops", () => {
     const references = kilbyIntegratedCircuitArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
@@ -94,14 +140,19 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
           )
         : [],
     );
+    expect(references).toHaveLength(7);
     expect(
-      references.map((reference) =>
-        reference.kind === "reference" ? reference.figurePreviews?.[0]?.src : undefined,
+      new Set(
+        references.map((reference) =>
+          reference.kind === "reference" ? reference.figurePreviews?.[0]?.src : undefined,
+        ),
       ),
-    ).toEqual([
-      "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
-      "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
-    ]);
+    ).toEqual(
+      new Set([
+        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
+        "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
+      ]),
+    );
   });
 
   test("exposes all 25 printed claims via dynamic single-source lookup", () => {
@@ -109,6 +160,26 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       const textVal = manualKilbyClaimText(c);
       expect(textVal).toBeDefined();
       expect(textVal.length).toBeGreaterThan(20);
+    }
+  });
+
+  test("keeps every catalogue decoder and dependency tied to the exact edition claim node", () => {
+    const claimNumbers = new Set(
+      kilbyIntegratedCircuitArchivalEdition.blocks
+        .filter((block) => block.kind === "claim")
+        .map((block) => block.number),
+    );
+    expect(kilbyIntegratedCircuitPatent.claims).toHaveLength(25);
+    for (const claim of kilbyIntegratedCircuitPatent.claims) {
+      expect(claim.originalText).toBe(manualKilbyClaimText(claim.number));
+      expect(claim.plainEnglish.length).toBeGreaterThan(180);
+      expect(claim.keyInnovations.length).toBeGreaterThanOrEqual(3);
+      for (const dependency of claim.dependsOn ?? []) {
+        expect(claimNumbers.has(dependency)).toBe(true);
+      }
+      if (claim.isIndependent) {
+        expect(claim.dependsOn).toBeUndefined();
+      }
     }
   });
 

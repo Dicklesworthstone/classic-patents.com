@@ -26,9 +26,9 @@ export const carlsonElectrophotographyPatent: Patent = {
   category: "materials",
   categoryLabel: "Photoconductivity, Electrostatics & Xerography",
   summary:
-    "Chester Carlson's historic 1942 patent for Electrophotography—the foundational breakthrough that created Xerox, the modern office copier, and laser printing. By charging a photoconductive insulating layer (sulfur, anthracene, or selenium) on a metal base, exposing it to light to dissipate charge in bright areas, dusting the remaining latent electrostatic pattern with resin powder, and transferring and fusing the powder to paper with heat, Carlson invented the first completely dry, instantaneous document reproduction technology in human history.",
+    "Chester F. Carlson's 1942 patent describes electrophotographic reproduction by charging a photoconductive insulating layer on a conductive backing, exposing it to a light image so illuminated areas discharge, developing the retained electrostatic image with fine powder, and transferring or fixing the resulting image on a receiving surface.",
   heroQuote:
-    "According to the present invention, a layer of photo-conductive insulating material is supported on an electrically conductive backing... charged in the dark... exposed to a light image whereby to effect selective dissipation of said charge in illuminated areas, and applying a finely-divided powder to adhere electrostatically to the charged areas... fixed by heat.",
+    "A feature of the present invention resides in the use of photoelectric or photoconductive materials for photographic purposes.",
   originalPdfUrl: "/patents/pdfs/us-2297691-carlson-electrophotography.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2297691A/en",
   usptoClassification: "399/1",
@@ -38,6 +38,9 @@ export const carlsonElectrophotographyPatent: Patent = {
     url: "/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
+    reviewedBy:
+      "Classic Patents editorial agents (SunnyCitadel cloud-text pass; SilverTern source repair; Luna visual acceptance pending)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
     pageAnchors: [
       {
@@ -54,49 +57,97 @@ export const carlsonElectrophotographyPatent: Patent = {
           "Patented Oct. 6, 1942. UNITED STATES PATENT OFFICE. 2,297,691. ELECTROPHOTOGRAPHY.",
       },
       {
+        page: 3,
+        sourceRelationship:
+          "Printed specification page 2: latent-image principle, plate construction, candidate photoconductive materials, and coating methods.",
+        exactSourceText:
+          "In carrying out the invention the photoconductive insulating material is used to control electric charges",
+      },
+      {
+        page: 4,
+        sourceRelationship:
+          "Printed specification page 3: semiconductor distinction, spectral response, layer thickness, charging, and camera exposure.",
+        exactSourceText:
+          "The photoconductive insulating materials are to be distinguished from the semi-conductors",
+      },
+      {
+        page: 5,
+        sourceRelationship:
+          "Printed specification page 4: contact and projected exposure, development, transfer, fixing, and modified charging.",
+        exactSourceText: "Figure 2a illustrates another method of exposure",
+      },
+      {
+        page: 6,
+        sourceRelationship:
+          "Printed specification page 5: lithographic, typographical, hectographic, half-tone, paper-layer, and color variants.",
+        exactSourceText:
+          "My process may also be adapted to the production of masters for the making of multiple copies",
+      },
+      {
         page: 7,
         sourceRelationship:
           "Printed specification page 6: conclusion and opening claims; exact claim boundaries pending Luna review.",
         exactSourceText: "What is claimed is:",
       },
       {
+        page: 8,
+        sourceRelationship: "Printed specification page 7: Claims 4–12.",
+        exactSourceText: "4. The method of producing an electrostatic latent image",
+      },
+      {
+        page: 9,
+        sourceRelationship: "Printed specification page 8: Claims 13–23.",
+        exactSourceText: "13. A device for reproducing images",
+      },
+      {
         page: 10,
         sourceRelationship:
-          "Claims 20–27, Formal witness attestation, and Signature of Chester F. Carlson",
+          "Printed specification page 9: Claims 24–27, formal witness attestation, and signature of Chester F. Carlson",
         exactSourceText:
           "IN TESTIMONY WHEREOF, I have hereunto subscribed my name this 3rd day of April, 1939. CHESTER F. CARLSON.",
       },
     ],
   },
   originalText:
-    "To all whom it may concern: Be it known that I, CHESTER F. CARLSON, a citizen of the United States, residing at Jackson Heights, in the county of Queens and State of New York, have invented certain new and useful Improvements in Electrophotography, of which the following is a specification.\n\nThis invention relates to photography, and more particularly to a method and apparatus for producing photographic images utilizing the photoelectric properties of certain materials. An object of the invention is to improve methods of photography and to provide a simple, rapid and economical method of taking and reproducing pictures and documents without requiring wet chemical developing and fixing baths...\n\nAccording to the present invention, a layer of photo-conductive insulating material, such as sulfur, anthracene, or amorphous selenium, is supported on an electrically conductive backing plate, such as metal foil or plate. In darkness or subdued light, a uniform electrostatic charge is applied to the outer surface of the photo-conductive insulating layer, as by rubbing with an appropriate insulating cloth, or by electrostatic spraying from a high-voltage corona discharge... The charged layer is then exposed to an optical light pattern or projected image... The resulting visible powder image is then transferred from the photo-conductive layer to a permanent carrier sheet, such as paper or cardboard, by pressing the sheet against the powdered surface... permanently fixed by applying heat to melt and fuse the resinous powder particles into the fibers of the paper.",
+    "This invention relates to photography. An object of the invention is to improve methods of photography and to provide improved means and devices for use in photography. Other objects of the invention will be apparent from the following description and accompanying drawing taken in connection with the appended claims.\n\nThe invention comprises the features of construction, combination of elements, arrangement of parts, and methods of manufacture and operation referred to above or which will be brought out and exemplified in the disclosure hereinafter set forth, including the illustration in the drawing.\n\nA feature of the present invention resides in the use of photoelectric or photoconductive materials for photographic purposes. In its preferred form the invention involves materials which are insulators in the dark but become partial conductors when illuminated. These materials respond to light, being slightly conductive whenever illuminated and again becoming insulating when the light is cut off. They can be called photoconductive insulating materials.",
+  // All twelve source figures are inventoried. Coordinates for labels beyond
+  // the provisional Fig. 1 text labels remain withheld until Luna confirms
+  // the upright v2 crops; see the provenance crop contract.
   drawings: [
     {
       figureNumber: "Figure 1",
       title: "Photoconductive Insulating Layer and Conductive Backing Plate",
       caption:
-        "Cross-sectional view of the electrophotographic plate showing the thin photo-conductive semiconductor layer (10) bonded to the grounded metal base plate (11).",
+        "Cross-sectional view of the photographic plate showing thin photoconductive insulating layer 21 bonded to metal plate 22; the drawing also shows handkerchief 23 used to charge the surface.",
       svgType: "carlson-electrophotography",
       callouts: [
         {
           id: "callout-photoconductor",
           figureRef: "Fig. 1",
-          label: "10",
-          element: "10",
+          label: "21",
+          element: "21",
           description:
-            "High-resistivity photo-conductive insulating layer (sulfur, anthracene, or amorphous selenium).",
+            "Thin photoconductive insulating layer on the metal backing.",
           x: 50,
           y: 35,
         },
         {
           id: "callout-backing",
           figureRef: "Fig. 1",
-          label: "11",
-          element: "11",
-          description:
-            "Conductive metal backing plate providing ground return for dissipated electrons.",
+          label: "22",
+          element: "22",
+          description: "Metal plate bonded to the photoconductive layer.",
           x: 50,
           y: 70,
+        },
+        {
+          id: "callout-handkerchief",
+          figureRef: "Fig. 1",
+          label: "23",
+          element: "23",
+          description: "Soft handkerchief used to rub and charge the layer surface.",
+          x: 20,
+          y: 25,
         },
       ],
     },
@@ -106,18 +157,7 @@ export const carlsonElectrophotographyPatent: Patent = {
       caption:
         "Uniform electrostatic surface charging of the photoconductor in the dark using a friction rubbing pad or high-voltage corona wire.",
       svgType: "carlson-electrophotography-charging",
-      callouts: [
-        {
-          id: "callout-charging-pad",
-          figureRef: "Fig. 2",
-          label: "12",
-          element: "12",
-          description:
-            "Frictional cloth/fur charging pad or high-voltage corona wire spraying uniform electrostatic charge.",
-          x: 45,
-          y: 25,
-        },
-      ],
+      callouts: [],
     },
     {
       figureNumber: "Figure 2a",
@@ -133,6 +173,46 @@ export const carlsonElectrophotographyPatent: Patent = {
       caption:
         "Alternative exposure arrangement in which a projector projects a microfilm or motion-picture image onto the photoconductive layer.",
       svgType: "carlson-electrophotography-exposure-projection",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 3",
+      title: "Powder Dusting of the Latent Image",
+      caption:
+        "The exposed plate is dusted with fine powder 31 from can 32 through cloth or fine-wire screen 33.",
+      svgType: "carlson-electrophotography-development-dusting",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 4",
+      title: "Removal of Loose Powder",
+      caption:
+        "A gentle draft from blower 34 removes powder not held by electrostatic attraction, leaving visible picture 35.",
+      svgType: "carlson-electrophotography-development-blowing",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 5",
+      title: "Pressure Transfer to a Receiving Sheet",
+      caption:
+        "Sheet 36 is pressed against the dust image on layer 21 by block 37 and felt or sponge-rubber pad 38.",
+      svgType: "carlson-electrophotography-transfer",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 6",
+      title: "Heat Fixing",
+      caption:
+        "Heat-radiating electric resistance element 39 melts resin or wax powder on sheet 36 to fix the image.",
+      svgType: "carlson-electrophotography-fixing-heat",
+      callouts: [],
+    },
+    {
+      figureNumber: "Figure 7",
+      title: "Lacquer Fixing",
+      caption:
+        "Atomizer 40 sprays a fixative lacquer over the dust image on sheet 36.",
+      svgType: "carlson-electrophotography-fixing-lacquer",
       callouts: [],
     },
     {
@@ -246,8 +326,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     },
     {
       number: 2,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText: manualCarlsonClaimText(2),
       plainEnglish:
         "The electrophotographic process of Claim 1 further comprising transferring the developed electrostatic dust image from the photoconductor surface to a receiving sheet of plain paper by pressure contact.",
@@ -260,8 +339,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     },
     {
       number: 3,
-      isIndependent: false,
-      dependsOn: [1],
+      isIndependent: true,
       originalText: manualCarlsonClaimText(3),
       plainEnglish:
         "Direct-positive reproduction method including simultaneous backing contact during exposure, dark powder dusting, air stream cleaning, pressure transfer to paper, and permanent fixing of the dust to the paper.",
@@ -300,8 +378,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     },
     {
       number: 6,
-      isIndependent: false,
-      dependsOn: [5],
+      isIndependent: true,
       originalText: manualCarlsonClaimText(6),
       plainEnglish:
         "Electrophotographic method maintaining continuous conductive backing contact throughout charging and exposure to establish a defined electrostatic ground return during powder development.",
@@ -470,8 +547,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     },
     {
       number: 19,
-      isIndependent: false,
-      dependsOn: [17],
+      isIndependent: true,
       originalText: manualCarlsonClaimText(19),
       plainEnglish:
         "The method of Claim 17 further comprising developing the entrapped latent electrostatic charge image by depositing finely divided powder material onto the stored charge pattern.",
@@ -535,8 +611,7 @@ export const carlsonElectrophotographyPatent: Patent = {
     },
     {
       number: 24,
-      isIndependent: false,
-      dependsOn: [23],
+      isIndependent: true,
       originalText: manualCarlsonClaimText(24),
       plainEnglish:
         "The method of Claim 23 further comprising permanently affixing the transferred powder design to the adhesive-bearing second surface.",
@@ -597,18 +672,10 @@ export const carlsonElectrophotographyPatent: Patent = {
     ],
     breakthroughInsight:
       "Combining electrostatics with photoconductivity allowed an image to be recorded as an invisible charge pattern on an insulating semiconductor, dusted with dry resin powder, and fused onto plain paper with heat, achieving 100% dry reproduction in seconds without wet chemistry.",
-    patentWars: [
-      {
-        rivalName: "Battelle Memorial Institute & Haloid Company (Xerox)",
-        rivalClaim: "Commercial Development & Trademarking of 'Xerography'",
-        conflictDetails:
-          "Carlson spent six years pitching his invention to over 20 major corporations, including IBM, RCA, General Electric, and Kodak—all of whom rejected it. In 1944, Battelle Memorial Institute agreed to sponsor development, and in 1947 licensed it to a tiny photographic paper company in Rochester, NY called The Haloid Company, led by Joseph C. Wilson.",
-        resolution:
-          "Haloid renamed the process 'Xerography' (from Greek xeros = dry, graphos = writing) and introduced the Xerox 914 in 1959, the first automatic plain-paper office copier, which became one of the most successful commercial products in history.",
-        legalOutcome:
-          "Carlson received over $150 million in royalties and Haloid became Xerox Corporation. Carlson donated more than $100 million to charitable and educational institutions before his death in 1968.",
-      },
-    ],
+    // No supported patent-war record is established for this grant. The
+    // Battelle/Haloid commercial-development history belongs in aftermath,
+    // not in a rival-claim field.
+    patentWars: [],
     civilizationalImpact:
       "Carlson's electrophotography created the modern office workflow and information economy. It enabled instant document copying, xerographic microfilming, and directly fathered the computer laser printer (invented by Gary Starkweather at Xerox PARC in 1971 by replacing the light bulb with a laser beam). Today, trillions of pages of documents, books, architectural drawings, and financial reports are printed annually using Carlson's fundamental 5-step xerographic cycle.",
     funFact:
@@ -616,6 +683,6 @@ export const carlsonElectrophotographyPatent: Patent = {
   },
   stats: {
     totalClaims: 27,
-    independentClaims: 22,
+    independentClaims: 27,
   },
 };

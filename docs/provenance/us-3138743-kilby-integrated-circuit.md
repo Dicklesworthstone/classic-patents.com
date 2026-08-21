@@ -37,8 +37,8 @@
 ## Preservation Boundaries
 
 1. **Source Face**: Hand-annotated React source face in `src/data/editions/kilbyIntegratedCircuitEdition.ts`.
-2. **Reviewed Ledger**: Page-marked candidate transcription in `public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt`; drawing-sheet inventories are explicitly withheld WIP and are not a public facsimile transcription.
-3. **Figure Crops**: Stored under `public/patents/figures/us-3138743-kilby-integrated-circuit/`.
+2. **Reviewed Ledger**: Page-marked candidate transcription in `public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt`; pages 1–4 preserve the printed drawing-sheet labels and pages 5–9 preserve the specification, all 25 printed claims, cited references, and signature matter. Publication remains withheld pending independent facsimile acceptance.
+3. **Figure Crops**: Existing `fig-*-source-crop-*` files and grouped `page-1.png`–`page-3.png` research assets are preserved under `public/patents/figures/us-3138743-kilby-integrated-circuit/`. Grouped page assets are not bound to the source face.
 4. **Claim Count**: Exactly 25 claims are printed on pages 8–9 of the original grant.
 
 ## Root publication hold — 2026-08-21
@@ -52,3 +52,14 @@ edition now preserves the full specification sequence and exact claim literals
 as a candidate, but it is not attached to the record until the page-marked
 ledger, every semantic figure reference, and source-approved crops receive an
 independent facsimile acceptance pass.
+
+## Cloud source-preview contract (publication remains withheld)
+
+The source-face candidate exports an upright isolated-preview plan for all 14
+printed figures: 1, 1a, 2, 2a, 3, 4, 5, 5a, 6a, 6b, 7, 8a, 8b, and 8c.
+Only the existing isolated v2 crops for Figures 1 and 2 are currently bound;
+the other targets, including all three Figure 8 panels, remain unbound until a
+GPT-5.6 Luna worker supplies and independently checks the source-pixel crops.
+The grouped page PNGs are retained as research evidence and cannot satisfy
+this contract. The canonical record therefore remains fail-closed with
+`archivalEdition` and `originalTextAsset` detached.

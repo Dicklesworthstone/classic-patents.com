@@ -94,7 +94,8 @@ export const yaleLockPatent: Patent = {
         principle: "Shear-Line Boundary Kinematics & Geometric Tolerances",
         explanation:
           "The plug can turn only when the division between each pair of tumbler pieces is brought into the same line at the plug's periphery. The patent states the alignment condition but supplies no numerical machining tolerance.",
-        formula: "y_{\\mathrm{division},i} = y_{\\mathrm{shear\\ line}}\\quad\\text{for every tumbler }i",
+        formula:
+          "y_{\\mathrm{division},i} = y_{\\mathrm{shear\\ line}}\\quad\\text{for every tumbler }i",
       },
       {
         principle: "Hooke's Law Spring Restoration & Shear Binding Torque",
@@ -457,21 +458,24 @@ export const yaleLockPatent: Patent = {
     {
       figureNumber: "Fig. 5",
       title: "Bolt and Bolt-Retaining Contrivance",
-      caption: "The patent groups Fig. 5 with Figs. 7 and 8 as an elevation of the bolt and the contrivance for securing it.",
+      caption:
+        "The patent groups Fig. 5 with Figs. 7 and 8 as an elevation of the bolt and the contrivance for securing it.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 7",
       title: "Bolt Talon Range",
-      caption: "The patent groups Fig. 7 with Figs. 5 and 8 in its description of the bolt and the contrivance for securing it.",
+      caption:
+        "The patent groups Fig. 7 with Figs. 5 and 8 in its description of the bolt and the contrivance for securing it.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 8",
       title: "Bolt-Retaining Plate in Its Raised Position",
-      caption: "The patent refers to Fig. 8 when describing the elastic plate tending to spring upward.",
+      caption:
+        "The patent refers to Fig. 8 when describing the elastic plate tending to spring upward.",
       svgType: "yale-lock",
       callouts: [],
     },
@@ -499,42 +503,48 @@ export const yaleLockPatent: Patent = {
     {
       figureNumber: "Fig. 13",
       title: "Cylinder Section at the Key-Hole",
-      caption: "The patent groups Fig. 13 with Figs. 12 and 14 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
+      caption:
+        "The patent groups Fig. 13 with Figs. 12 and 14 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 14",
       title: "Cylinder Section at the Key-Hole",
-      caption: "The patent groups Fig. 14 with Figs. 12 and 13 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
+      caption:
+        "The patent groups Fig. 14 with Figs. 12 and 13 as sections through the cylinder and later calls it out when discussing the supported tumbler recess.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 15",
       title: "Cylinder and Lazy-Arm Section",
-      caption: "The patent groups Fig. 15 with Fig. 16 as sections through the cylinder and lazy-arm.",
+      caption:
+        "The patent groups Fig. 15 with Fig. 16 as sections through the cylinder and lazy-arm.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 16",
       title: "Cylinder and Lazy-Arm Section",
-      caption: "The patent groups Fig. 16 with Fig. 15 as sections through the cylinder and lazy-arm.",
+      caption:
+        "The patent groups Fig. 16 with Fig. 15 as sections through the cylinder and lazy-arm.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 18",
       title: "Elevation of the Tumblers and Key",
-      caption: "The patent groups Fig. 18 with Fig. 17 as a plan and elevation of one section of the tumblers and the key.",
+      caption:
+        "The patent groups Fig. 18 with Fig. 17 as a plan and elevation of one section of the tumblers and the key.",
       svgType: "yale-lock",
       callouts: [],
     },
     {
       figureNumber: "Fig. 20",
       title: "Tumbler-Case and Lazy-Arm from Inside",
-      caption: "The patent identifies Fig. 20 as a plan of the tumbler-case, lazy-arm, and related parts from inside the lock.",
+      caption:
+        "The patent identifies Fig. 20 as a plan of the tumbler-case, lazy-arm, and related parts from inside the lock.",
       svgType: "yale-lock",
       callouts: [],
     },

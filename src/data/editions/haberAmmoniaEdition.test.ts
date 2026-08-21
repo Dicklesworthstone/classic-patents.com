@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { haberAmmoniaPatent } from "../patents/haber-ammonia";
 import {
   haberAmmoniaArchivalEdition,
   haberAmmoniaParallelReadings,
   manualHaberClaimText,
 } from "./haberAmmoniaEdition";
-import { haberAmmoniaPatent } from "../patents/haber-ammonia";
 
 describe("US 971,501 Fritz Haber Production of Ammonia Archival Edition Publication Contract", () => {
   const rootDir = process.cwd();

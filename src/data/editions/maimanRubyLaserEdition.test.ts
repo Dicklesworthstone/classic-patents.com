@@ -10,7 +10,7 @@ import {
   manualMaimanClaimText,
 } from "./maimanRubyLaserEdition";
 
-const FIGURE_PREVIEW_EXPECTATIONS = [
+const _FIGURE_PREVIEW_EXPECTATIONS = [
   {
     text: "FIG. 1",
     href: "#figure-1",
@@ -94,7 +94,7 @@ const FIGURE_PREVIEW_EXPECTATIONS = [
   },
 ] as const;
 
-function readPngDimensions(bytes: Buffer): { width: number; height: number } {
+function _readPngDimensions(bytes: Buffer): { width: number; height: number } {
   return {
     width: bytes.readUInt32BE(16),
     height: bytes.readUInt32BE(20),

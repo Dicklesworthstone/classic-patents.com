@@ -107,7 +107,8 @@ export const deForestAudionPatent: Patent = {
           figureRef: "Fig. 1",
           label: "b",
           element: "b",
-          description: "Second electrode b, identified in the specification as possibly a platinum plate.",
+          description:
+            "Second electrode b, identified in the specification as possibly a platinum plate.",
           x: 60,
           y: 40,
         },
@@ -145,8 +146,7 @@ export const deForestAudionPatent: Patent = {
           figureRef: "Fig. 1",
           label: "T",
           element: "T",
-          description:
-            "Telephone receiver T serving as the patent's signal-indicating device.",
+          description: "Telephone receiver T serving as the patent's signal-indicating device.",
           x: 85,
           y: 50,
         },

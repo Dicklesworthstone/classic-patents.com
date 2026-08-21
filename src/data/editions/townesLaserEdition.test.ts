@@ -57,8 +57,8 @@ describe("US 2,929,922 Townes & Schawlow Optical Maser / Laser Archival Edition 
     }
   });
 
-  test("exposes all 13 printed claims via dynamic single-source lookup", () => {
-    for (let c = 1; c <= 13; c++) {
+  test("exposes all 11 printed claims via dynamic single-source lookup", () => {
+    for (let c = 1; c <= 11; c++) {
       const textVal = manualTownesClaimText(c);
       expect(textVal).toBeDefined();
       expect(textVal.length).toBeGreaterThan(30);

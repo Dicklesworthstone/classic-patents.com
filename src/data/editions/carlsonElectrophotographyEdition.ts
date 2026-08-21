@@ -7,10 +7,10 @@
  * Transcribed, annotated, and pinned against the 10-page authentic facsimile PDF
  * at public/patents/pdfs/us-2297691-carlson-electrophotography.pdf (SHA-256: 5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422).
  *
- * WIP / WITHHELD: the existing candidate is not a publication edition. The
- * page-complete literal reading, Luna visual comparison, source-pixel crops,
- * and paragraph companions still require completion. Keep the attestation
- * false until those source-led gates are complete.
+ * WIP / WITHHELD: the literal pages and claim blocks are retained as a
+ * source-text repair packet. The drawing-sheet pixel comparison, upright
+ * isolated source crops, and independent Luna acceptance still remain open.
+ * Keep the attestation false until those source-led gates are complete.
  */
 
 import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/types/patent";
@@ -35,52 +35,52 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
   "/patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v2.png": {
-    width: 488,
-    height: 188,
+    width: 297,
+    height: 166,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png": {
-    width: 487,
-    height: 188,
+    width: 427,
+    height: 241,
   },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png": {
-    width: 600,
-    height: 400,
+  "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png": {
+    width: 349,
+    height: 178,
   },
-  "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png": {
-    width: 600,
-    height: 400,
+  "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png": {
+    width: 218,
+    height: 225,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-3-source-crop-v2.png": {
-    width: 488,
-    height: 306,
+    width: 195,
+    height: 190,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-4-source-crop-v2.png": {
-    width: 487,
-    height: 306,
+    width: 340,
+    height: 189,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-5-source-crop-v2.png": {
-    width: 488,
-    height: 290,
+    width: 330,
+    height: 135,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-6-source-crop-v2.png": {
-    width: 487,
-    height: 290,
+    width: 325,
+    height: 110,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-7-source-crop-v2.png": {
-    width: 488,
-    height: 256,
+    width: 288,
+    height: 195,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-8-source-crop-v2.png": {
-    width: 487,
-    height: 256,
+    width: 260,
+    height: 270,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-9-source-crop-v2.png": {
-    width: 975,
-    height: 648,
+    width: 285,
+    height: 145,
   },
   "/patents/figures/us-2297691-carlson-electrophotography/fig-10-source-crop-v2.png": {
-    width: 975,
-    height: 681,
+    width: 300,
+    height: 300,
   },
 };
 
@@ -104,8 +104,12 @@ const ref = (
     figurePreviews:
       previewSources.length > 0
         ? previewSources.map((src) => {
-            const dims = FIGURE_DIMENSIONS[src] ?? { width: 800, height: 600 };
-            return { src, alt: targetLabel, width: dims.width, height: dims.height };
+            // v1 files are preserved poisoned evidence. Normalize every
+            // authored occurrence to the reserved v2 source-crop target so
+            // the visitor face can never serve a v1 crop by accident.
+            const canonicalSrc = src.replace(/source-crop-v1\.png$/, "source-crop-v2.png");
+            const dims = FIGURE_DIMENSIONS[canonicalSrc] ?? { width: 800, height: 600 };
+            return { src: canonicalSrc, alt: targetLabel, width: dims.width, height: dims.height };
           })
         : undefined,
   };
@@ -370,7 +374,8 @@ export const carlsonElectrophotographyParallelReadings: Readonly<
 export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotographyWipEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
-  preparedBy: "Classic Patents editorial agent (SunnyCitadel; WIP only)",
+  preparedBy:
+    "Classic Patents editorial agents (SunnyCitadel cloud-text pass; SilverTern repair; Luna visual acceptance pending)",
   preparedAt: "2026-08-21",
   // WIP: a Luna visual pass and source-pixel crops are still outstanding.
   completeFacsimileReviewed: false,
@@ -413,7 +418,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       ),
     ),
     p(
-      text("In the drawing, "),
+      text("In the drawing: "),
       ref(
         "Figure 1",
         "#fig-1",
@@ -425,8 +430,8 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       ),
       ref("Figures 2, 2a and 2b", "#fig-2a-2b", "Three exposure methods", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ]),
       text(" illustrate three methods of photographically exposing the plate. "),
       ref("Figures 3 and 4", "#fig-3-4", "Electrostatic latent-image development", [
@@ -497,8 +502,14 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       text(". The electrostatic latent image is then developed to make a visible picture."),
     ),
     p(
+      ref(
+        "Figure 1",
+        "#fig-1",
+        "Photographic plate cross-section",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v2.png",
+      ),
       text(
-        "The cross-section shows a photographic plate according to the invention comprising a thin layer 21 of photoconductive insulating material bonded to a metal plate 22.",
+        " shows a cross-section of a photographic plate according to the invention comprising a thin layer 21 of photoconductive insulating material bonded to a metal plate 22.",
       ),
     ),
     p(
@@ -581,11 +592,20 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       ),
       ref("Figures 2, 2a and 2b", "#fig-2a-2b", "Alternative exposure methods", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ]),
       text(
-        " show three alternative methods of exposure. According to the camera method, for example, the plate 20 is secured in position in the back of camera 24 whereby the image of the original 25 is focussed on the layer 21. The exposure may require from a few seconds to two or three minutes depending on the sensitivity of the layer used and the intensity of illumination. Original 25 may be a sheet of paper carrying printed or typewritten matter, or a drawing, for example, although other things may be photographed such as three-dimensional objects.",
+        " show three alternative methods of exposure. According to ",
+      ),
+      ref(
+        "Figure 2",
+        "#fig-2",
+        "Camera exposure",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
+      ),
+      text(
+        ", for example, the plate 20 is secured in position in the back of camera 24 whereby the image of the original 25 is focussed on the layer 21. The exposure may require from a few seconds to two or three minutes depending on the sensitivity of the layer used and the intensity of illumination. Original 25 may be a sheet of paper carrying printed or typewritten matter, or a drawing, for example, although other things may be photographed such as three-dimensional objects.",
       ),
     ),
     p(
@@ -598,7 +618,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "Figure 2a",
         "#fig-2a",
         "Contact exposure through original 27",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
       ),
       text(
         " illustrates another method of exposure suitable for use where the original is a transparency such as an ordinary photographic film, or a translucent material such as tracing paper or ordinary paper carrying an image in the form of opaque or semi-opaque lines or areas. The original 27 carrying the image 28 on its surface is placed against the surface of layer 21 and the assembly exposed to light from source 26. Exposure for a fraction of a second up to a few seconds will ordinarily be sufficient.",
@@ -609,7 +629,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "Figure 2b",
         "#fig-2b",
         "Projected film exposure",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ),
       text(
         " shows a method for use where the original is recorded on a small film or lantern slide 30, e.g. microfilm or motion-picture film. In this case the original is placed in a projector 29 which projects the image on layer 21.",
@@ -629,8 +649,8 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       text("Having exposed the plate in one of the manners shown in "),
       ref("Figures 2, 2a and 2b", "#fig-2a-2b", "Exposure preceding development", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
       ]),
       text(
         " so as to produce an electrostatic latent image, the image may be developed or made visible as shown in ",
@@ -748,7 +768,7 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
         "Figure 2a",
         "#fig-2a",
         "Contact exposure",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
       ),
       text("."),
     ),
@@ -814,8 +834,8 @@ export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotography
       ref("Figures 1 to 4", "#fig-1-4", "Plate charging and development", [
         "/patents/figures/us-2297691-carlson-electrophotography/fig-1-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-2-source-crop-v2.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v1.png",
-        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v1.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2a-source-crop-v2.png",
+        "/patents/figures/us-2297691-carlson-electrophotography/fig-2b-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-3-source-crop-v2.png",
         "/patents/figures/us-2297691-carlson-electrophotography/fig-4-source-crop-v2.png",
       ]),

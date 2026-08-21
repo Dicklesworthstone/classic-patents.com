@@ -70,6 +70,7 @@ import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
 import { teslaTeleautomatonParallelReadings } from "./teslaTeleautomatonEdition";
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
+import { townesLaserParallelReadings } from "./townesLaserEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
@@ -142,6 +143,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
   "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
+  "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,

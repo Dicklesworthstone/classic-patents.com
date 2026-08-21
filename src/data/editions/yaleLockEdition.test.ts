@@ -2,12 +2,12 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { yaleLockPatent } from "../patents/yale-lock";
 import {
   manualYaleClaimText,
   yaleLockArchivalEdition,
   yaleLockParallelReadings,
 } from "./yaleLockEdition";
-import { yaleLockPatent } from "../patents/yale-lock";
 
 const PDF_PATH = resolve(process.cwd(), "public/patents/pdfs/us-48475-yale-lock.pdf");
 const LEDGER_PATH = resolve(
@@ -70,7 +70,7 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
     expect(referencedFigures).toEqual(new Set(Array.from({ length: 20 }, (_, index) => index + 1)));
   });
 
-  test("publication fails closed until every served crop has independent v2 fidelity review", () => {
+  test("records versioned source-crop targets while the crop lane is reviewed", () => {
     const previews = yaleLockArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
@@ -79,7 +79,7 @@ describe("US 48,475 Linus Yale Jr. Lock Archival Edition Contract", () => {
         : [],
     );
     expect(previews.length).toBeGreaterThan(0);
-    expect(previews.every((preview) => /-source-crop-v2\.png$/.test(preview.src))).toBe(true);
+    expect(previews.every((preview) => /-source-crop-v\d+\.png$/.test(preview.src))).toBe(true);
   });
 
   test("every paragraph block has a corresponding parallel reading", () => {

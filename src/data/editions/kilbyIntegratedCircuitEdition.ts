@@ -485,7 +485,7 @@ const legacyKilbyIntegratedCircuitArchivalEdition: CuratedSpecificationEdition =
   ],
 };
 
-function legacyManualKilbyClaimText(claimNumber: number): string {
+function _legacyManualKilbyClaimText(claimNumber: number): string {
   const block = legacyKilbyIntegratedCircuitArchivalEdition.blocks.find(
     (b) => b.kind === "claim" && b.number === claimNumber,
   );
@@ -504,17 +504,150 @@ const sourceTerm = (termText: string, definition: string): CuratedSpecificationI
   text: termText,
   definition,
 });
+type KilbySourcePreviewPlanEntry = {
+  figure: string;
+  page: 1 | 2 | 3 | 4;
+  targetSrc: string;
+  orientation: "upright";
+  isolated: true;
+};
+
+/**
+ * Cloud-Luna handoff contract for the source-face previews. The existing
+ * page-1/page-2/page-3 PNGs remain grouped research crops and are deliberately
+ * not eligible as archival previews. The missing targets stay unbound until
+ * an upright, isolated crop is supplied and independently checked.
+ */
+export const kilbyIntegratedCircuitSourcePreviewPlan: readonly KilbySourcePreviewPlanEntry[] = [
+  {
+    figure: "Fig. 1",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 1a",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1a-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 2",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 2a",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2a-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 3",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-3-source-crop-v2.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 4",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-4-source-crop-v2.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 5",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-5-source-crop-v2.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 5a",
+    page: 1,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-5a-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 6a",
+    page: 2,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-6a-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 6b",
+    page: 2,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-6b-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 7",
+    page: 3,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-7-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 8a",
+    page: 4,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8a-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 8b",
+    page: 4,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8b-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+  {
+    figure: "Fig. 8c",
+    page: 4,
+    targetSrc: "/patents/figures/us-3138743-kilby-integrated-circuit/fig-8c-source-crop-v1.png",
+    orientation: "upright",
+    isolated: true,
+  },
+] as const;
+
+const sourcePreviewForLabel = (label: string): string | undefined => {
+  if (/^FIGURES\b/i.test(label)) return undefined;
+  const normalized = label.replace(/^FIGURE\s+/i, "Fig. ");
+  if (normalized === "Fig. 1") {
+    return "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png";
+  }
+  if (normalized === "Fig. 2") {
+    return "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png";
+  }
+  return undefined;
+};
+
 const sourceReference = (label: string, src?: string): CuratedSpecificationInline => {
+  const previewSrc = src ?? sourcePreviewForLabel(label);
   return {
     kind: "reference",
     text: label,
     href: `#figure-${label.toLowerCase().replace(/[^0-9a-z]+/g, "-")}`,
     referenceType: "figure",
     label: `Primary-facsimile ${label}`,
-    ...(src
+    ...(previewSrc
       ? {
           figurePreviews: [
-            { src, alt: `Primary-facsimile crop of ${label}`, width: 760, height: 560 },
+            {
+              src: previewSrc,
+              alt: `Upright isolated primary-facsimile crop of ${label}`,
+              width: previewSrc.endsWith("fig-2-source-crop-v2.png") ? 780 : 760,
+              height: previewSrc.endsWith("fig-2-source-crop-v2.png") ? 620 : 560,
+            },
           ],
         }
       : {}),
@@ -554,8 +687,24 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       figureLabel: "Figures 1, 1a, 2, 2a, 3, 4, 5, and 5a",
       title: "4 Sheets—Sheet 1",
       description: [
+        sourceText("The first drawing sheet visibly labels "),
+        sourceReference("Fig. 1"),
+        sourceText(", "),
+        sourceReference("Fig. 1a"),
+        sourceText(", "),
+        sourceReference("Fig. 2"),
+        sourceText(", "),
+        sourceReference("Fig. 2a"),
+        sourceText(", "),
+        sourceReference("Fig. 3"),
+        sourceText(", "),
+        sourceReference("Fig. 4"),
+        sourceText(", "),
+        sourceReference("Fig. 5"),
+        sourceText(", and "),
+        sourceReference("Fig. 5a"),
         sourceText(
-          "The first drawing sheet visibly labels Fig. 1, Fig. 1a, Fig. 2, Fig. 2a, Fig. 3, Fig. 4, Fig. 5, and Fig. 5a. Its reference numerals include 10, 10a, 10b, 11, 11a, 12, 12a, 13, 15, 15a, 16, 17, 17a, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 35, 36, 37, and 38, with N, P, and N OR P labels.",
+          ". Its reference numerals include 10, 10a, 10b, 11, 11a, 12, 12a, 13, 15, 15a, 16, 17, 17a, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 35, 36, 37, and 38, with N, P, and N OR P labels.",
         ),
       ],
     },
@@ -564,8 +713,12 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       figureLabel: "Figures 6a and 6b",
       title: "4 Sheets—Sheet 2",
       description: [
+        sourceText("The second drawing sheet visibly labels "),
+        sourceReference("Fig. 6a"),
+        sourceText(" and "),
+        sourceReference("Fig. 6b"),
         sourceText(
-          "The second drawing sheet visibly labels Fig. 6a and Fig. 6b, with T1, T2, R1 through R8, C1 through C4, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND., and contact and lead numerals 50, 51, 52, 53, 54, 56, 60, and 70.",
+          ", with T1, T2, R1 through R8, C1 through C4, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, GND., and contact and lead numerals 50, 51, 52, 53, 54, 56, 60, and 70.",
         ),
       ],
     },
@@ -574,8 +727,10 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       figureLabel: "Figure 7",
       title: "4 Sheets—Sheet 3",
       description: [
+        sourceText("The third drawing sheet visibly labels "),
+        sourceReference("Fig. 7"),
         sourceText(
-          "The third drawing sheet visibly labels Fig. 7, the conventional multivibrator wiring diagram, including T1, T2, R1 through R8, C1, C2, 400-ohm and 1.8K resistor values, 50 microfarads, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, and GND.",
+          ", the conventional multivibrator wiring diagram, including T1, T2, R1 through R8, C1, C2, 400-ohm and 1.8K resistor values, 50 microfarads, INPUT-1, INPUT-2, OUTPUT-1, OUTPUT-2, +V, -V, and GND.",
         ),
       ],
     },
@@ -584,8 +739,14 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       figureLabel: "Figures 8a, 8b, and 8c",
       title: "4 Sheets—Sheet 4",
       description: [
+        sourceText("The fourth drawing sheet visibly labels "),
+        sourceReference("Fig. 8a"),
+        sourceText(", "),
+        sourceReference("Fig. 8b"),
+        sourceText(", and "),
+        sourceReference("Fig. 8c"),
         sourceText(
-          "The fourth drawing sheet visibly labels Fig. 8a, Fig. 8b, and Fig. 8c, the phase-shift oscillator embodiment and its two corresponding wiring presentations. No later Figures 9 through 20 are printed in this grant.",
+          ", the phase-shift oscillator embodiment and its two corresponding wiring presentations. No later numbered drawings are printed in this grant.",
         ),
       ],
     },
@@ -705,8 +866,9 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
     ),
     sourceParagraph(
+      sourceReference("FIGURES 1-5"),
       sourceText(
-        "FIGURES 1-5 inclusive illustrate in detail circuit elements formed in accordance with the principles of this invention which can be integrated into a body of semiconductor material. It is noted at this point that the body of semiconductor material is of single crystal structure, and can be composed of any suitable semiconductor material. There may be mentioned as examples of suitable materials germanium, silicon, intermetallic alloys such as gallium arsenide, aluminum antimonide, indium antimonide, as well as others.",
+        " inclusive illustrate in detail circuit elements formed in accordance with the principles of this invention which can be integrated into a body of semiconductor material. It is noted at this point that the body of semiconductor material is of single crystal structure, and can be composed of any suitable semiconductor material. There may be mentioned as examples of suitable materials germanium, silicon, intermetallic alloys such as gallium arsenide, aluminum antimonide, indium antimonide, as well as others.",
       ),
     ),
     sourceParagraph(
@@ -716,7 +878,11 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
         "/patents/figures/us-3138743-kilby-integrated-circuit/fig-1-source-crop-v2.png",
       ),
       sourceText(
-        ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in FIGURE 1, the design contemplates utilizing the ",
+        ", there is shown a typical design for a resistor which may be embodied or integrated into a body of single crystal semiconductor material. As noted in ",
+      ),
+      sourceReference("FIGURE 1"),
+      sourceText(
+        ", the design contemplates utilizing the ",
       ),
       sourceTerm(
         "bulk resistance",
@@ -728,24 +894,40 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     ),
     sourceParagraph(
       sourceText(
-        "In addition to the resistor shown in FIGURE 1, a resistor may be provided as shown in ",
+        "In addition to the resistor shown in ",
+      ),
+      sourceReference("FIGURE 1"),
+      sourceText(", a resistor may be provided as shown in "),
+      sourceReference("FIGURE 1a"),
+      sourceText(
+        " for integration into and as forming a part of a body of semiconductor material. In ",
       ),
       sourceReference("FIGURE 1a"),
       sourceText(
-        " for integration into and as forming a part of a body of semiconductor material. In FIGURE 1a, there is shown a body 10a of p-type semiconductor material with an n-type region 10b formed therein. Of course, between the body 10a and region 10b there is a p-n junction which is designated by the numeral 13. Contacts 11a and 12a are made to one surface of the region 10b, spaced apart from each other in order to achieve a desired resistance. As in FIGURE 1, the contacts 11a and 12a are ohmic contacts to the region 10b. A resistor formed in the manner of FIGURE 1a has several important advantages. First, the p-n junction 13 provides a barrier to current flow from the n-type region 10b into the p-type body 10a and, thus, the current flow is confined to a path in the n-type region 10b between the contacts thereto. The second advantage is that the total resistance value thereof can be controlled to a large degree. The total resistance value may be controlled by etching very lightly over the entire surface to remove the uppermost portion of the n-type region 10b, being very careful to not etch through the p-n junction, and as well by selectively etching to or through the p-n junction 13 thereby effectively to increase the length of the path traveled by the current between the contacts. The third, and perhaps major, advantage in forming a resistor according to FIGURE 1a is in that, by controlling the doping level or impurity concentration in the n-type region 10b, lower and more nearly constant temperature coefficients may be provided for the resistor. The above description has been in terms of a p-type body 10a and an n-type region 10b but it is obvious that the body 10a could be equally as well of n-type conductivity and the region 10b of p-type conductivity. Resistors according to FIGURE 1a may be formed as separate circuit elements or components.",
+        ", there is shown a body 10a of p-type semiconductor material with an n-type region 10b formed therein. Of course, between the body 10a and region 10b there is a p-n junction which is designated by the numeral 13. Contacts 11a and 12a are made to one surface of the region 10b, spaced apart from each other in order to achieve a desired resistance. As in ",
       ),
+      sourceReference("FIGURE 1"),
+      sourceText(
+        ", the contacts 11a and 12a are ohmic contacts to the region 10b. A resistor formed in the manner of ",
+      ),
+      sourceReference("FIGURE 1a"),
+      sourceText(
+        " has several important advantages. First, the p-n junction 13 provides a barrier to current flow from the n-type region 10b into the p-type body 10a and, thus, the current flow is confined to a path in the n-type region 10b between the contacts thereto. The second advantage is that the total resistance value thereof can be controlled to a large degree. The total resistance value may be controlled by etching very lightly over the entire surface to remove the uppermost portion of the n-type region 10b, being very careful to not etch through the p-n junction, and as well by selectively etching to or through the p-n junction 13 thereby effectively to increase the length of the path traveled by the current between the contacts. The third, and perhaps major, advantage in forming a resistor according to ",
+      ),
+      sourceReference("FIGURE 1a"),
+      sourceText(
+        " is in that, by controlling the doping level or impurity concentration in the n-type region 10b, lower and more nearly constant temperature coefficients may be provided for the resistor. The above description has been in terms of a p-type body 10a and an n-type region 10b but it is obvious that the body 10a could be equally as well of n-type conductivity and the region 10b of p-type conductivity. Resistors according to ",
+      ),
+      sourceReference("FIGURE 1a"),
+      sourceText(" may be formed as separate circuit elements or components."),
     ),
     sourceParagraph(
-      sourceText(
-        "Capacitor designs may be obtained by utilizing the capacitance of a ",
-      ),
+      sourceText("Capacitor designs may be obtained by utilizing the capacitance of a "),
       sourceTerm(
         "p-n junction",
         "The interface between regions of opposite semiconductor conductivity; under reverse bias its depleted charge region stores electric energy and supplies transition capacitance.",
       ),
-      sourceText(
-        ", as shown in ",
-      ),
+      sourceText(", as shown in "),
       sourceReference(
         "FIGURE 2",
         "/patents/figures/us-3138743-kilby-integrated-circuit/fig-2-source-crop-v2.png",
@@ -756,16 +938,32 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
     ),
     sourceParagraph(
       sourceText(
-        "Instead of the capacitor of FIGURE 2, capacitance in a body of single crystal semiconductor material may be provided as shown and described in connection with ",
+        "Instead of the capacitor of ",
+      ),
+      sourceReference("FIGURE 2"),
+      sourceText(
+        ", capacitance in a body of single crystal semiconductor material may be provided as shown and described in connection with ",
       ),
       sourceReference("FIGURE 2a"),
       sourceText(
-        ". FIGURE 2a shows a body 15a of semiconductor material, of either n- or p-type conductivity, which constitutes one plate of the capacitor. Evaporated onto the body 15a is a layer 18 providing a dielectric layer for the capacitor. It is necessary that the layer 18 have a suitable dielectric constant and be inert when in contact with the semiconductor body 15a. Silicon oxide has been found to be a suitable material for dielectric layer 18 and may be applied by evaporation or thermal oxidation techniques onto body 15a. Plate 19 forms the other plate of the capacitor and is provided by evaporating a conductive material onto layer 18. Gold and aluminum have been found to be satisfactory materials for the plate 19. Ohmic contact 17a is made to the body of semiconductor material 15a and contact to plate 19 may be made by any suitable electrical contact (not shown). Capacitors formed in the manner described in connection with FIGURE 2a have been found to exhibit much more stable characteristics than pure junction capacitors, that is, p-n junction capacitors, and, of course, may be fabricated as separate elements or components.",
+        ". ",
+      ),
+      sourceReference("FIGURE 2a"),
+      sourceText(
+        " shows a body 15a of semiconductor material, of either n- or p-type conductivity, which constitutes one plate of the capacitor. Evaporated onto the body 15a is a layer 18 providing a dielectric layer for the capacitor. It is necessary that the layer 18 have a suitable dielectric constant and be inert when in contact with the semiconductor body 15a. Silicon oxide has been found to be a suitable material for dielectric layer 18 and may be applied by evaporation or thermal oxidation techniques onto body 15a. Plate 19 forms the other plate of the capacitor and is provided by evaporating a conductive material onto layer 18. Gold and aluminum have been found to be satisfactory materials for the plate 19. Ohmic contact 17a is made to the body of semiconductor material 15a and contact to plate 19 may be made by any suitable electrical contact (not shown). Capacitors formed in the manner described in connection with ",
+      ),
+      sourceReference("FIGURE 2a"),
+      sourceText(
+        " have been found to exhibit much more stable characteristics than pure junction capacitors, that is, p-n junction capacitors, and, of course, may be fabricated as separate elements or components.",
       ),
     ),
     sourceParagraph(
       sourceText(
-        "Capacitors produced in the manner of FIGURE 2 are also diodes, and must therefore be properly polarized in the circuit. Non-polar capacitors may be made by connecting two such areas back-to-back. Although junction capacitors have a marked voltage dependence, such dependence is present to a lesser degree for low voltages in the non-polar configuration.",
+        "Capacitors produced in the manner of ",
+      ),
+      sourceReference("FIGURE 2"),
+      sourceText(
+        " are also diodes, and must therefore be properly polarized in the circuit. Non-polar capacitors may be made by connecting two such areas back-to-back. Although junction capacitors have a marked voltage dependence, such dependence is present to a lesser degree for low voltages in the non-polar configuration.",
       ),
     ),
     sourceParagraph(
@@ -789,9 +987,7 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
         "mesa",
         "A raised, etched semiconductor plateau whose small cross-section confines the active junction layers and exposes contacts at the wafer surface.",
       ),
-      sourceText(
-        " of small cross section.",
-      ),
+      sourceText(" of small cross section."),
     ),
     sourceParagraph(
       sourceText("A diode of similar design is shown in "),
@@ -824,12 +1020,16 @@ export const kilbyIntegratedCircuitArchivalEdition: WithheldKilbyEdition = {
       ),
       sourceReference("FIGURE 6b"),
       sourceText(
-        " shows a wiring diagram of the various circuit functions in the relationship which they occupy in the wafer of FIGURE 6a. A more conventionally drawn circuit diagram is shown in ",
+        " shows a wiring diagram of the various circuit functions in the relationship which they occupy in the wafer of ",
       ),
+      sourceReference("FIGURE 6a"),
+      sourceText(". A more conventionally drawn circuit diagram is shown in "),
       sourceReference("FIGURE 7"),
       sourceText(
-        " with the circuit values actually used. The multivibrator circuit shown in FIGURES 6a, 6b and 7 will be described as illustrative of the processing techniques employed.",
+        " with the circuit values actually used. The multivibrator circuit shown in ",
       ),
+      sourceReference("FIGURES 6a, 6b and 7"),
+      sourceText(" will be described as illustrative of the processing techniques employed."),
     ),
     sourceParagraph(
       sourceText(

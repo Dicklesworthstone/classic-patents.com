@@ -224,243 +224,367 @@ export const kilbyIntegratedCircuitPatent: Patent = {
       isIndependent: true,
       originalText: manualKilbyClaimText(1),
       plainEnglish:
-        "The master patent claim for the integrated circuit: a single-crystal semiconductor wafer containing multiple active components (with p-n junctions extending to the surface) and passive components (in discrete spaced regions), interconnected by conductors into a functional circuit.",
+        "A single-crystal semiconductor wafer carries several junction transistors and several thin, elongated semiconductor regions that serve as resistors. Each transistor has opposite-conductivity base and emitter layers over a collector, with both junctions reaching one major face; selected resistor regions are spaced from the transistors and conductively connected to them.",
       keyInnovations: [
-        "Monolithic single-crystal integration of active and passive components",
-        "Co-planar surface termination of p-n junctions",
-        "Interconnected complete functional electronic circuit",
+        "Single-crystal junction-transistor array",
+        "Thin elongated semiconductor resistors",
+        "Major-face junction termination and conductive selection",
       ],
       legalSignificance:
-        "The broad foundational patent claim establishing legal priority for all monolithic integrated circuits.",
+        "This independent claim combines multiple junction transistors, spaced semiconductor resistors, surface-reaching junctions, and selected conductive connections in one wafer structure.",
     },
     {
       number: 2,
       isIndependent: true,
       originalText: manualKilbyClaimText(2),
       plainEnglish:
-        "In a single-crystal semiconductor wafer, an active component having thin layers with junctions extending to a major face, a passive component spaced away on the same face, and electrical connections between them.",
-      keyInnovations: ["Co-planar integration of active and passive semiconductor devices"],
+        "A single-crystal wafer contains one junction transistor and one resistor on the same major face. The transistor's opposite-conductivity layers overlie one another, both emitter-base and base-collector junctions reach that face, and the resistor is a separate elongated semiconductor region spaced away from the transistor.",
+      keyInnovations: [
+        "Single-crystal transistor-resistor pair",
+        "Surface-reaching emitter-base and base-collector junctions",
+        "Spaced elongated resistor region",
+      ],
       legalSignificance:
-        "Covers the co-planar layout of active transistors and passive components on a single major face.",
+        "This independent claim defines the basic co-planar transistor and elongated-resistor arrangement without requiring the broader multi-component circuit of claim 1.",
     },
     {
       number: 3,
       isIndependent: true,
       originalText: manualKilbyClaimText(3),
       plainEnglish:
-        "An integrated circuit comprising a semiconductor wafer containing an active component with thin layers extending to one major face, and a passive component in a discrete spaced region of the wafer.",
-      keyInnovations: ["Semiconductor wafer integrating active and passive elements"],
-      legalSignificance: "Broad apparatus claim for semiconductor integrated circuits.",
+        "An integrated circuit uses a semiconductor wafer with at least one active component and one passive component. The active component has opposite-conductivity thin layers whose junctions reach one major face; the passive component occupies a discrete region spaced from those layers, with substantial impedance through the material between them.",
+      keyInnovations: [
+        "Active/passive wafer integration",
+        "Opposite-conductivity thin layers",
+        "Through-wafer impedance isolation",
+      ],
+      legalSignificance:
+        "This independent claim sets the generic active/passive relationship and impedance separation that later claims specialize into transistor, resistor, surface-layer, and capacitor forms.",
     },
     {
       number: 4,
       isIndependent: false,
+      dependsOn: [3],
       originalText: manualKilbyClaimText(4),
       plainEnglish:
-        "An integrated circuit where the passive component is an elongated resistor region, and the underlying material defines the collector region of a junction transistor.",
-      keyInnovations: ["Shared substrate functioning as collector and resistor body"],
+        "Claim 4 narrows claim 3 to a junction transistor paired with an elongated resistor region. The semiconductor material immediately beneath the transistor's thin layers is also the transistor's collector region, so the shared wafer body supplies both the active collector and the passive resistor arrangement.",
+      keyInnovations: [
+        "Junction-transistor collector substrate",
+        "Elongated semiconductor resistor region",
+        "Shared active/passive wafer body",
+      ],
       legalSignificance:
-        "Covers structural sharing of the common semiconductor substrate across components.",
+        "The dependent limitation ties the passive elongated resistor and the transistor collector to the same underlying semiconductor material.",
     },
     {
       number: 5,
       isIndependent: false,
+      dependsOn: [3],
       originalText: manualKilbyClaimText(5),
       plainEnglish:
-        "An integrated circuit having multiple active components with junctions extending to the surface, and multiple passive components in discrete spaced regions.",
-      keyInnovations: ["Multi-transistor multi-passive component monolithic array"],
-      legalSignificance: "Protects multi-component integrated logic circuits.",
+        "Claim 5 adds a second active component and a second passive component to claim 3's wafer. The additional active component has opposite-conductivity layers and surface-reaching p-n junctions, while the additional passive component is a discrete region spaced from those active layers on the same major face.",
+      keyInnovations: [
+        "Multiple active wafer components",
+        "Multiple spaced passive regions",
+        "Repeated major-face p-n junction termination",
+      ],
+      legalSignificance:
+        "This dependent claim requires a repeated active/passive population rather than a single pair of components, preserving the same wafer-level separation principle.",
     },
     {
       number: 6,
       isIndependent: false,
+      dependsOn: [5],
       originalText: manualKilbyClaimText(6),
       plainEnglish:
-        "An integrated circuit wherein the discrete passive component regions include thin surface-adjacent diffused regions.",
-      keyInnovations: ["Surface-diffused passive component regions"],
-      legalSignificance: "Covers diffused resistor and capacitor regions near the wafer surface.",
+        "Claim 6 limits the multiple passive regions of claim 5 to thin regions adjacent to the wafer's one major face. The passive elements therefore occupy shallow, surface-near semiconductor material while retaining the multiple active components and spaced layout required by the parent claim.",
+      keyInnovations: [
+        "Surface-adjacent passive regions",
+        "Shallow wafer fabrication geometry",
+        "Multiple-component co-planar integration",
+      ],
+      legalSignificance:
+        "The limitation locates the passive regions at the wafer surface, where the specification's shaping and diffusion operations can define them alongside the active regions.",
     },
     {
       number: 7,
       isIndependent: false,
+      dependsOn: [3],
       originalText: manualKilbyClaimText(7),
       plainEnglish:
-        "An integrated circuit where the passive component is a capacitor defined by a p-n junction within the wafer.",
-      keyInnovations: ["P-N junction depletion layer capacitor integration"],
-      legalSignificance: "Master claim for p-n junction semiconductor capacitors in microchips.",
+        "Claim 7 narrows claim 3 by requiring the discrete passive component to include a thin layer of semiconductor material immediately adjacent to the wafer's major face. It does not require that layer to be a capacitor or resistor; the defining limitation is the surface-adjacent passive-region construction.",
+      keyInnovations: [
+        "Surface-adjacent passive semiconductor layer",
+        "Discrete passive region in the integrated wafer",
+        "Major-face component definition",
+      ],
+      legalSignificance:
+        "This dependent claim captures the shallow passive-layer embodiment while retaining claim 3's active component, spacing, and through-material impedance relationship.",
     },
     {
       number: 8,
       isIndependent: false,
+      dependsOn: [7],
       originalText: manualKilbyClaimText(8),
       plainEnglish:
-        "An integrated circuit where the capacitor includes an insulating layer on the wafer surface and an overlying conductive layer.",
-      keyInnovations: ["Metal-Insulator-Semiconductor (MOS) integrated capacitor structure"],
-      legalSignificance: "Foundational claim covering thin-oxide dielectric MOS capacitors.",
+        "Claim 8 further specifies claim 7's surface-adjacent passive layer as a resistor. The result is an integrated circuit in which the passive component is a resistor formed in the shallow region at the wafer face, while the parent claim's active component and spacing remain required.",
+      keyInnovations: [
+        "Surface-adjacent semiconductor resistor",
+        "Shaped passive layer at the major face",
+        "Active/passive spacing in one wafer",
+      ],
+      legalSignificance:
+        "The claim selects the resistor embodiment from the broader surface-adjacent passive-layer category of claim 7.",
     },
     {
       number: 9,
       isIndependent: false,
+      dependsOn: [3],
       originalText: manualKilbyClaimText(9),
-      plainEnglish: "An integrated circuit where the active component is a mesa transistor.",
-      keyInnovations: ["Mesa-etched isolated integrated bipolar transistor"],
-      legalSignificance: "Covers mesa-isolated bipolar junction transistors.",
+      plainEnglish:
+        "Claim 9 adds a surface dielectric and conductive overlayer to at least one component in claim 3. The dielectric lies over the wafer's major face, and the thin conductive layer lies over that dielectric, defining a face-level insulated conductor or capacitor-like structure within the integrated circuit.",
+      keyInnovations: [
+        "Major-face dielectric layer",
+        "Overlying conductive film",
+        "Insulated surface component structure",
+      ],
+      legalSignificance:
+        "This dependent claim reaches a dielectric-and-conductor stack on the integrated wafer surface, without changing claim 3's active/passive component relationship.",
     },
     {
       number: 10,
       isIndependent: true,
       originalText: manualKilbyClaimText(10),
       plainEnglish:
-        "A semiconductor device comprising a semiconductor body, a transistor with base, emitter, and collector regions, an elongated bulk resistor formed in the body, and conductive connections between them.",
+        "An independent semiconductor-device claim requires a single-crystal body, an active component made from thin regions of differing conductivity whose interfaces reach one major face, and a spaced passive component made from a discrete body portion. Substantial impedance must exist through the body between the active thin regions and the passive portion.",
       keyInnovations: [
-        "Direct integration of transistor and bulk resistor in one semiconductor body",
+        "Single-crystal semiconductor body",
+        "Surface-reaching differing-conductivity regions",
+        "Through-body active/passive impedance",
       ],
-      legalSignificance: "Key claim for solid-state transistor-resistor logic integration.",
+      legalSignificance:
+        "This independent device claim recites the material-body and impedance relationship without naming a particular transistor or resistor geometry.",
     },
     {
       number: 11,
       isIndependent: false,
+      dependsOn: [10],
       originalText: manualKilbyClaimText(11),
       plainEnglish:
-        "A semiconductor device according to claim 10 wherein the body consists of single-crystal silicon.",
-      keyInnovations: ["Silicon monolithic integrated circuit material specification"],
-      legalSignificance: "Explicitly claims single-crystal silicon as the monolithic substrate.",
+        "Claim 11 narrows claim 10 by specifying how part of the required substantial impedance is produced: at least one p-n junction lies within the wafer. The junction therefore contributes the electrical separation between the active thin regions and the discrete passive portion.",
+      keyInnovations: [
+        "Internal p-n junction impedance",
+        "Wafer-level electrical isolation",
+        "Active/passive body separation",
+      ],
+      legalSignificance:
+        "The limitation identifies a p-n junction as at least part of the impedance required by the independent semiconductor-device claim.",
     },
     {
       number: 12,
       isIndependent: true,
       originalText: manualKilbyClaimText(12),
       plainEnglish:
-        "An integrated circuit comprising a single-crystal semiconductor wafer, multiple active and passive components within the wafer, and conductive leads extending over the wafer to interconnect them into a functional circuit.",
+        "An integrated circuit has a single-crystal wafer with an active component made from opposite-conductivity thin regions and a semiconductor resistor made from a discrete elongated wafer region. Both active junctions reach one major face, the resistor is spaced from the active component on that face, and a conductive lead connects one end of the resistor to an active thin region.",
       keyInnovations: [
-        "Over-wafer conductive interconnection leads",
-        "Complete functional circuit execution",
+        "Single-crystal active/resistor circuit",
+        "Discrete elongated resistor region",
+        "Conductive lead from resistor to active region",
       ],
-      legalSignificance: "Critical claim for surface interconnections over a monolithic wafer.",
+      legalSignificance:
+        "This independent claim focuses on a resistor lead connection to an active semiconductor region, with the surface-reaching junction and spaced geometry expressly recited.",
     },
     {
       number: 13,
       isIndependent: true,
       originalText: manualKilbyClaimText(13),
       plainEnglish:
-        "In an integrated circuit: a single-crystal wafer, multiple transistors, multiple passive components, and metallic conductors interconnecting them into an operative circuit.",
-      keyInnovations: ["Metallic conductor interconnect network on semiconductor chip"],
+        "An integrated circuit contains a pair of junction transistors in one single-crystal wafer, each with surface-reaching base-emitter and collector-base junctions. One elongated semiconductor region supplies load resistance to both transistors, with separate collector connections, bias contacts, and separate base contacts for applying inputs.",
+      keyInnovations: [
+        "Paired junction transistors",
+        "Shared elongated load-resistor means",
+        "Separate collector, bias, and input contacts",
+      ],
       legalSignificance:
-        "Broad system-level apparatus claim for metallic-interconnected microchips.",
+        "This independent claim defines the paired-transistor load-resistor circuit topology and its distinct operating-bias and input contacts.",
     },
     {
       number: 14,
       isIndependent: false,
+      dependsOn: [13],
       originalText: manualKilbyClaimText(14),
       plainEnglish:
-        "An integrated circuit having first and second elongated semiconductor regions defining load resistors for the transistors.",
-      keyInnovations: ["Integrated semiconductor collector load resistors"],
+        "Claim 14 adds two separate elongated semiconductor regions to claim 13. Each region exhibits substantial resistance as a base resistor, and a conductive connection runs from one end of each region to the corresponding transistor's base region.",
+      keyInnovations: [
+        "Paired semiconductor base resistors",
+        "Separate base-region connections",
+        "Elongated resistive wafer regions",
+      ],
       legalSignificance:
-        "Covers matched collector load resistor pairs for differential and push-pull circuits.",
+        "The dependent limitation adds individually connected base resistors to the paired-transistor circuit of claim 13.",
     },
     {
       number: 15,
       isIndependent: true,
       originalText: manualKilbyClaimText(15),
       plainEnglish:
-        "An integrated circuit with multiple components in a single wafer, where at least one is a transistor and at least one is a distributed resistance-capacitance network.",
-      keyInnovations: ["Distributed RC semiconductor network integration"],
+        "An independent integrated-circuit claim requires active and passive components in a single-crystal wafer, with opposite-conductivity active layers and a spaced discrete passive region separated by substantial impedance through the wafer. Interconnections must let the powered structure perform the electrical function of a multi-element network.",
+      keyInnovations: [
+        "Single-crystal active/passive network",
+        "Spaced discrete passive region",
+        "Powered equivalent of a plural-element network",
+      ],
       legalSignificance:
-        "Claims distributed parameter RC filtering and phase-shift structures in ICs.",
+        "This independent claim expressly links the integrated component arrangement to execution of an electrical function equivalent to a plural-element network.",
     },
     {
       number: 16,
       isIndependent: true,
       originalText: manualKilbyClaimText(16),
       plainEnglish:
-        "An integrated circuit comprising a single-crystal wafer, two mesa transistors, four bulk resistors, and conductors interconnecting them into a multivibrator circuit.",
-      keyInnovations: ["Monolithic semiconductor bistable multivibrator (flip-flop) microchip"],
+        "An independent integrated circuit uses a single-crystal wafer containing active and passive components. The active component has at least two opposite-conductivity thin wafer regions reaching one major face, the passive component is a discrete region spaced from them on that face, and non-common active and passive regions are interconnected as part of an electrical circuit.",
+      keyInnovations: [
+        "Opposite-conductivity wafer regions",
+        "Spaced discrete passive component",
+        "Non-common active/passive interconnection",
+      ],
       legalSignificance:
-        "The historic master patent claim for the first integrated digital logic flip-flop.",
+        "This independent claim recites the non-common-region interconnection relationship directly, without limiting the circuit to the paired-transistor embodiment of claim 13.",
     },
     {
       number: 17,
       isIndependent: false,
+      dependsOn: [2],
       originalText: manualKilbyClaimText(17),
       plainEnglish:
-        "A semiconductor device according to claim 2, wherein the wafer consists of germanium.",
-      keyInnovations: ["Germanium monolithic integrated circuit material"],
+        "Claim 17 narrows claim 2's single-crystal wafer transistor and spaced elongated resistor by requiring the transistor's thin layers to be portions of a raised mesa-shaped part of the wafer's major face. The mesa is the claimed geometric form, not a change to the material or circuit pairing.",
+      keyInnovations: [
+        "Raised mesa-shaped transistor region",
+        "Surface transistor-resistor pair",
+        "Mesa geometry for thin junction layers",
+      ],
       legalSignificance:
-        "Protects the original germanium embodiment demonstrated by Kilby in 1958.",
+        "The dependent claim selects the raised mesa embodiment for the transistor already defined by claim 2.",
     },
     {
       number: 18,
       isIndependent: false,
+      dependsOn: [3],
       originalText: manualKilbyClaimText(18),
       plainEnglish:
-        "An integrated circuit where the active component is a field-effect transistor.",
-      keyInnovations: ["Field-Effect Transistor (FET) monolithic integration"],
+        "Claim 18 narrows claim 3 to a junction transistor whose two thin layers are specifically the base and emitter. The emitter is substantially smaller than the base on the wafer's major face, and a base contact is placed on the base region with spacing from the emitter.",
+      keyInnovations: [
+        "Base/emitter junction-transistor layers",
+        "Smaller emitter footprint",
+        "Spaced base contact",
+      ],
       legalSignificance:
-        "Early prophetic claim anticipating the rise of CMOS and field-effect integrated circuits.",
+        "This dependent claim fixes the active component's layer roles and contact geometry while retaining claim 3's passive component and impedance relationship.",
     },
     {
       number: 19,
       isIndependent: false,
+      dependsOn: [18],
       originalText: manualKilbyClaimText(19),
       plainEnglish:
-        "An integrated circuit where the discrete semiconductor region defines a bias resistor for the field-effect transistor.",
-      keyInnovations: ["FET integrated bias resistor network"],
-      legalSignificance: "Covers integrated biasing of field-effect transistors.",
+        "Claim 19 adds a surface-adjacent passive layer of opposite conductivity to the subjacent semiconductor in claim 18. That layer has an ohmic contact, and a conductive lead connects the passive-layer contact to the transistor's spaced base contact.",
+      keyInnovations: [
+        "Opposite-conductivity passive surface layer",
+        "Ohmic passive-layer contact",
+        "Conductive lead to transistor base contact",
+      ],
+      legalSignificance:
+        "The dependent claim couples the specified transistor contact geometry to a contacted, opposite-conductivity passive layer.",
     },
     {
       number: 20,
       isIndependent: false,
+      dependsOn: [10],
       originalText: manualKilbyClaimText(20),
       plainEnglish:
-        "A semiconductor device where the interconnecting means comprises gold bonding wires.",
-      keyInnovations: ["Gold thermal compression wire bonding interconnects"],
-      legalSignificance: "Protects gold wire bonding for chip component interconnection.",
+        "Claim 20 narrows claim 10's semiconductor device by requiring the passive component's discrete body portion to include a thin portion adjacent to the body's major face. That thin portion must have a conductivity different from the semiconductor immediately beneath it.",
+      keyInnovations: [
+        "Surface-adjacent passive portion",
+        "Conductivity-contrasting shallow layer",
+        "Single-body active/passive device",
+      ],
+      legalSignificance:
+        "The limitation identifies a shallow conductivity-contrast layer as the passive portion of the device otherwise defined by claim 10.",
     },
     {
       number: 21,
       isIndependent: false,
+      dependsOn: [20],
       originalText: manualKilbyClaimText(21),
       plainEnglish:
-        "A semiconductor device where the interconnecting means comprises evaporated metal film strips.",
-      keyInnovations: ["Evaporated thin-film metal interconnect strips"],
+        "Claim 21 adds contacts on at least two active thin regions and a contact on claim 20's surface-adjacent passive portion, all on the same major face. Conductive means then connects the passive contact to one of the active-region contacts.",
+      keyInnovations: [
+        "Multiple active-region face contacts",
+        "Passive surface-layer contact",
+        "Face-level active/passive conductive connection",
+      ],
       legalSignificance:
-        "Covers thin-film evaporated metal interconnects over the semiconductor substrate.",
+        "The dependent claim specifies the contact pattern and face-level connection that electrically joins the shallow passive portion to the active component.",
     },
     {
       number: 22,
       isIndependent: false,
+      dependsOn: [13],
       originalText: manualKilbyClaimText(22),
-      plainEnglish: "An integrated circuit being a bistable multivibrator.",
-      keyInnovations: ["Integrated bistable multivibrator logic element"],
-      legalSignificance: "Universal claim for integrated flip-flop memory and counter cells.",
+      plainEnglish:
+        "Claim 22 narrows the paired-transistor circuit of claim 13 to one elongated semiconductor load-resistor region. The first and second conductive means connect to opposite ends of that single region, while the operating-bias connection reaches a centrally located portion.",
+      keyInnovations: [
+        "Single elongated load-resistor region",
+        "Opposite-end collector connections",
+        "Central operating-bias connection",
+      ],
+      legalSignificance:
+        "This dependent claim fixes the load resistor as one continuous region with opposed transistor connections and a center bias point.",
     },
     {
       number: 23,
       isIndependent: false,
+      dependsOn: [13],
       originalText: manualKilbyClaimText(23),
-      plainEnglish: "An integrated circuit being a phase-shift oscillator.",
-      keyInnovations: ["Integrated phase-shift analog oscillator circuit"],
+      plainEnglish:
+        "Claim 23 narrows claim 13's input arrangement by requiring separate coupling means from the first collector conductive means to the first transistor's base contact and from the second collector conductive means to the other transistor's base contact. Each transistor therefore receives its input through its own coupling path.",
+      keyInnovations: [
+        "Separate transistor input couplings",
+        "Collector-to-base feedback paths",
+        "Paired-transistor input isolation",
+      ],
       legalSignificance:
-        "Covers the historic first working circuit demonstrated on September 12, 1958.",
+        "The dependent claim specifies the two separate coupling paths used to apply inputs in the paired-transistor circuit.",
     },
     {
       number: 24,
       isIndependent: false,
+      dependsOn: [16],
       originalText: manualKilbyClaimText(24),
       plainEnglish:
-        "An integrated circuit wherein the wafer is hermetically sealed within a protective package.",
-      keyInnovations: ["Hermetic package encapsulation for integrated circuits"],
-      legalSignificance: "Foundational claim for ceramic/metal hermetic IC packaging.",
+        "Claim 24 narrows claim 16 by requiring its discrete passive region to include a thin surface-adjacent region whose conductivity type is opposite to that of the semiconductor immediately beneath it. The claim remains about the integrated wafer and its non-common active/passive interconnection.",
+      keyInnovations: [
+        "Opposite-conductivity passive surface region",
+        "Thin subjacent-contrast layer",
+        "Non-common active/passive circuit regions",
+      ],
+      legalSignificance:
+        "This dependent claim selects the opposite-conductivity surface-region embodiment within claim 16's integrated active/passive circuit.",
     },
     {
       number: 25,
       isIndependent: false,
+      dependsOn: [24],
       originalText: manualKilbyClaimText(25),
       plainEnglish:
-        "An integrated circuit wherein external terminal leads extend through the protective package for connection to external circuitry.",
-      keyInnovations: ["Packaged integrated circuit dual-inline/flatpack leadframe interface"],
+        "Claim 25 further limits claim 24 by identifying the passive component as a P-N junction capacitor. Thus the integrated circuit retains claim 16's active/passive arrangement and claim 24's opposite-conductivity surface region, with that passive component serving as the junction capacitor.",
+      keyInnovations: [
+        "P-N junction capacitor",
+        "Opposite-conductivity passive surface region",
+        "Integrated active/passive circuit interconnection",
+      ],
       legalSignificance:
-        "Covers through-package leadframe interconnects for circuit board assembly.",
+        "This final dependent claim identifies the claim 24 passive region as a P-N junction capacitor, the narrowest printed embodiment in the claim set.",
     },
   ],
   historicalContext: {

@@ -63,7 +63,8 @@ CLAIMS
       },
       {
         title: "Active Matrix Addressing",
-        summary: "Electrodes address the encapsulated contrast medium from the top, bottom, or in-plane.",
+        summary:
+          "Electrodes address the encapsulated contrast medium from the top, bottom, or in-plane.",
         technicalDetails:
           "The source labels top and bottom electrodes 100 and 110 for one embodiment and in-plane electrodes 270 and 280 for another; it does not prescribe the later product’s TFT stack or drive voltage.",
       },

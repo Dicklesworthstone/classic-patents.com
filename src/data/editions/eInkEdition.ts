@@ -164,7 +164,6 @@ export const einkArchivalEdition: CuratedSpecificationEdition = {
     },
     p(
       "A large number of techniques are known in the literature for microencapsulating one material inside another material. Such techniques are generally used in the paper or pharmaceutical industry and do not generally produce a microcapsule which embodies simultaneously the properties of optical clarity, high dielectric strength, impermeability and resistance to pressure. With proper modification however these techniques may be made amenable to microencapsulating systems with electronic properties.",
-      "",
     ),
     p(
       "Referring to FIG. 3B a microcapsule 120 may contain positively charged particles of one color 210 and negatively charged particles of another color 220 such that application of an electric field to said electrodes causes a migration of the one color or the other color, depending on the polarity of the field, toward the surface of said microcapsule and thus effecting a perceived color change. Such a system constitutes a microencapsulated electrophoretic system.",

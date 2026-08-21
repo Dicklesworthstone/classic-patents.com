@@ -16,8 +16,7 @@ export const baekelandBakelitePatent: Patent = {
   patentNumber: "US 942,699",
   title: "Method of Making Insoluble Products of Phenol and Formaldehyde",
   shortTitle: "Phenol-Formaldehyde Insoluble Condensation Product",
-  subtitle:
-    "Water Separation, Forming, and Heat-and-Pressure Hardening",
+  subtitle: "Water Separation, Forming, and Heat-and-Pressure Hardening",
   inventors: ["Leo Hendrik Baekeland"],
   inventorLocation: "Yonkers, New York",
   grantDate: "1909-12-07",
@@ -128,7 +127,7 @@ export const baekelandBakelitePatent: Patent = {
       },
     ],
     whyItMattersToday:
-    "The process is an early documented route to an insoluble phenolic condensation material. Later phenolic molding compounds and other thermosets use related ideas of staged forming, fillers, heat, and pressure, but the patent itself does not establish a direct lineage to every modern thermoset named here.",
+      "The process is an early documented route to an insoluble phenolic condensation material. Later phenolic molding compounds and other thermosets use related ideas of staged forming, fillers, heat, and pressure, but the patent itself does not establish a direct lineage to every modern thermoset named here.",
   },
   claims: [
     {
@@ -184,8 +183,7 @@ export const baekelandBakelitePatent: Patent = {
         "Forming a filled article before heat-and-pressure hardening",
         "Applying a compounding step described by the specification",
       ],
-      legalSignificance:
-        "Adds a filling-material limitation to the article-making method.",
+      legalSignificance: "Adds a filling-material limitation to the article-making method.",
     },
     {
       number: 5,

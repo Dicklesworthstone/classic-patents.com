@@ -74,7 +74,9 @@ describe("US 879,532 Lee de Forest Audion Triode Archival Edition Publication Co
     const transcript = readFileSync(transcriptPath, "utf-8");
     expect(transcript).not.toMatch(/\bFig\.\s*[3-6]\b/i);
     expect(deForestAudionPatent.summary).toContain("oscillation detector");
-    expect(deForestAudionPatent.summary).toContain("no general voltage, current, pressure, or gain rating");
+    expect(deForestAudionPatent.summary).toContain(
+      "no general voltage, current, pressure, or gain rating",
+    );
     expect(deForestAudionPatent.plainEnglishExplanation.coreMechanism).toContain(
       "illustrative modern model parameters",
     );
