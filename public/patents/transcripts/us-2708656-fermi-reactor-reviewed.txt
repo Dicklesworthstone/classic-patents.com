@@ -2791,35 +2791,61 @@ After all neutron losses except exterior leakage have been evaluated, the reacto
 
 --- REVIEWED TRANSCRIPTION PAGE 51 OF 58 ---
 
-Sheet 51 of 58
+2,708,656
+
+The critical size of a reactor may be obtained from the measured relaxation distance or exponential constant A. For a sphere, parallelepiped, or cylinder, the corresponding leakage relation gives the critical radius, side lengths, or height and radius. Where the migration length M is known, K may be obtained from the relation involving (K - 1)/M and A. These relations permit critical and operating sizes to be determined without first assigning exact values to every nuclear constant.
+
+The delayed neutrons emitted by fission fragments are of special importance in controlling the reaction. Approximately one per cent of fission neutrons may be delayed, with a mean delay of about five seconds; about half are emitted within six seconds and about ninety per cent within forty-five seconds. At a reproduction ratio r = 1.001, a neutron population may increase by a factor of 2.75 in about 28.5 seconds, or double in roughly twenty seconds. At r = 1.01 the doubling time is a fraction of a second, and at r = 1.02 or 1.03 the population can increase by factors of approximately 1,100 or 700,000 per second. A maximum safe operating ratio is therefore about 1.005, depending on the reactor and control system.
+
+For a homogeneous reactor, critical dimensions follow from the neutron diffusion equations. The critical radius of a sphere, the critical side of a rectangular parallelepiped, and the critical height and radius of a cylinder are expressed in terms of the material buckling and the migration length. Figure 30 gives representative critical-size relations for D2O-moderated uranium-rod reactors.
 
 --- REVIEWED TRANSCRIPTION PAGE 52 OF 58 ---
 
-Sheet 52 of 58
+2,708,656
+
+The critical-size relations may be corrected for a reflector. A reflector returns some neutrons that would otherwise escape, increasing the effective size of the reactor. The calculated relations are approximations because neutrons of all energies between fission and thermal energy enter the reflector, but they are sufficiently accurate for designing and operating reactors with reflectors.
+
+Control is obtained by varying neutron losses in or from the reactor. In a D2O reactor, changing the amount of heavy water wetting the uranium changes the leakage factor: a reactor may be brought to unity reproduction by removing part of the D2O after the desired neutron density is reached. In other reactors, cadmium or boron control rods absorb neutrons between the uranium bodies. Low-power reactors are generally built so that the maximum reproduction ratio with the rods removed is less than 1.01. A rod may be fully inserted to stop the reaction, partly inserted at unity reproduction, or fully withdrawn at the permitted maximum. The intermediate unity setting is the critical position.
+
+Ionization chambers and indicators monitor neutron density. With the control rod fully inserted, the density may be about one hundred times the natural uranium background; withdrawing the rod makes the chains divergent and the density rises with a doubling time determined by delayed neutrons. When the desired density is reached, the rod is inserted to the unity position and later moved inward or outward to reduce or restore the selected density.
 
 --- REVIEWED TRANSCRIPTION PAGE 53 OF 58 ---
 
-Sheet 53 of 58
+2,708,656
+
+Control rods are preferably driven by reversible electric motors, but safety rods are provided for accidents such as a drive motor running the rod completely out or a power-line failure. Safety rods are normally held out and are released manually or automatically at a predetermined neutron density so that gravity inserts them rapidly. This is why the operating reproduction ratio must not greatly exceed 1.01: at r = 1.01 the density may double in about one-third of a second, while safety rods need several seconds to enter.
+
+Temperature and atmospheric-pressure changes normally alter K only slightly and can be compensated by short rod movements. During high-power operation, however, fission products can change K substantially. U235 depletion and conversion of U238 to U239 tend to increase K, while stable fission products and radioactive absorbers tend to reduce it. The important fission-product chain is tellurium-135 to iodine-135 to xenon-135 and then cesium and barium; the parenthetical times in the specification are half-lives.
+
+Xenon-135 has an exceptionally large neutron-capture cross section. It is formed from iodine during operation, absorbs neutrons and reduces K, and is converted by neutron absorption or decay into isotopes of smaller capture cross section. In a high-power reactor the rod must be withdrawn as xenon builds up, and the reactor must be sized with the xenon reduction included in the final K. A reactor can otherwise become dangerous before xenon appears and can later shut down or restart as xenon forms and decays.
 
 --- REVIEWED TRANSCRIPTION PAGE 54 OF 58 ---
 
-Sheet 54 of 58
+2,708,656
+
+At equilibrium, xenon-135 may reduce K by about 0.03 in a high-power reactor. The reduction depends on power: representative reductions are about 0.0012 at 10,000 kilowatts, 0.009 at 100,000 kilowatts, and larger values at still higher outputs. Shim rods can compensate for the xenon effect while preserving a maximum reproduction ratio below 1.01 with the main control rod withdrawn. At shutdown, all control, shim, and safety rods should be fully inserted so that the reaction does not restart when xenon decays.
+
+Low-power reactors operated intermittently are less affected by xenon poisoning because xenon does not become important for several hours. Such a reactor may reach a high density for a short period, wait for xenon to decay, and then be operated again. A control rod can be calibrated in a conventional inch or in a corrected unit called a cinch, which gives the same reproduction-ratio effect at different rod depths. The reactor period is the time required for neutron intensity to increase by e = 2.718; this is the inhour calibration. Atmospheric pressure is corrected at 0.323 inhour per millimeter of mercury from 760 millimeters.
+
+USES OF NEUTRONIC REACTORS
+
+Neutronic reactors are powerful neutron and gamma-ray sources. Materials placed in or near the reactor can be made radioactive, and the larger leakage of a D2O reactor permits a large external neutron flux. Thorium-232 can be converted by slow-neutron exposure to thorium-233, then protactinium-233, and finally uranium-233, a fissionable material comparable in action to U235 and U239. Neutrons reacting with nitrogen can produce radioactive carbon-14 for medical and physiological tracer work.
 
 --- REVIEWED TRANSCRIPTION PAGE 55 OF 58 ---
 
-Sheet 55 of 58
+2,708,656
+
+Neutrons escaping from the reactor can be used for transmutation and isotope production. A graphite-filled shaft can form a thermal-neutron column. Internal shafts and tubes reaching the reactor center collimate fast neutrons into an external beam for nuclear research. Gamma rays can be used for radiographs of large castings; neutron screens and a bismuth filter can separate the desired radiation components.
+
+The reactor is also useful for testing neutron absorbers and neutron producers. A removable stringer containing uranium bodies of known constants can be balanced at a fixed neutron density, replaced by test bodies, and returned to the reactor. The corrected control-rod position shows whether the new bodies are better or worse, and similar tests can measure the effects of size, impurities, coatings, and temperature. The method of determining these effects is not itself claimed.
+
+At least part of the uranium bodies can be removed after irradiation so that U239 and fission products may be recovered. With suitable modifications, D2O reactors can produce steam under pressure, enriched-uranium/light-water systems can provide heat, gas-cooled reactors can heat helium for steam generation, and diphenyl-cooled reactors can transfer heat in exchangers. The theory is based on the best experimental evidence then available and is not intended to exclude later experimental modification.
 
 --- REVIEWED TRANSCRIPTION PAGE 56 OF 58 ---
 
-Sheet 56 of 58
+2,708,656
 
---- REVIEWED TRANSCRIPTION PAGE 57 OF 58 ---
-
-Sheet 57 of 58
-
---- REVIEWED TRANSCRIPTION PAGE 58 OF 58 ---
-
-What is claimed is:
+The following are the claims of the patent:
 
 1. A neutronic reactor which comprises a moderator of graphite and natural uranium rods disposed in a geometric pattern therein, the size of the rods and the volume ratio of moderator to uranium being within the area encompassed by the k = 1.00 curve of Figure 3, the purity of the graphite and the uranium and the total mass thereof being sufficient to sustain a chain reaction.
 
@@ -2829,6 +2855,10 @@ What is claimed is:
 
 4. A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of spheres disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k = 1.00 curve of Figure 4, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.
 
+--- REVIEWED TRANSCRIPTION PAGE 57 OF 58 ---
+
+2,708,656
+
 5. A neutronic reactor which comprises a moderator of graphite and bodies of natural uranium oxide in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium oxide being within the area encompassed by the k = 1.00 curve of Figure 5, the purity of the moderator and the uranium oxide and the total mass thereof being sufficient to sustain a chain reaction.
 
 6. A neutronic reactor which comprises a moderator of heavy water and bodies of natural uranium in the form of rods disposed in a geometric pattern therein, each body being surrounded by moderator and the moderator being in a substantially continuous phase, the radius of the bodies and the volume ratio of moderator to uranium being within the area encompassed by the k = 1.00 curve of Figure 6, the purity of the moderator and the uranium and the total mass thereof being sufficient to sustain a chain reaction.
@@ -2836,3 +2866,42 @@ What is claimed is:
 7. In a neutronic reactor having an active portion comprising a moderator of graphite having dispersed therein uranium containing U235 and U238, the improved construction wherein the uranium is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than U238, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the uranium, the size and spacing of the bodies of uranium in the moderator, and the total mass of uranium and moderator being sufficient to sustain a chain reaction.
 
 8. In a neutronic reactor having an active portion comprising a mass of moderator selected from the group consisting of graphite and heavy water, having dispersed therein a thermal neutron fissionable material containing a thermal neutron fissionable isotope and an isotope having a resonance absorption for neutrons, the improved construction wherein the thermal neutron fissionable material is aggregated in the form of bodies substantially free of moderator and of neutron absorbers other than said latter isotope, said bodies being in the moderator, geometrically spaced therein, and surrounded by the moderator, the moderator being in a substantially continuous phase, said bodies having all dimensions thereof at least 0.5 centimeter, the purity of the moderator and the thermal neutron fissionable material, the size and spacing of the bodies of fissionable material in the moderator, and the total mass of fissionable material and moderator being sufficient to sustain a chain reaction.
+
+References Cited in the file of this patent
+
+UNITED STATES PATENTS
+
+2,206,634 — Fermi et al. — July 2, 1940
+
+FOREIGN PATENTS
+
+14,150 — Australia — May 2, 1940
+14,151 — Australia — May 3, 1940
+233,011 — Switzerland — October 2, 1944
+861,390 — France — October 28, 1940
+648,293 — Great Britain — January 3, 1951
+
+OTHER REFERENCES
+
+Power, July 1940, page 58. Copy in 204-154.2.
+Kelly et al., Physical Review 73, 1135–1139 (1948). Copy in Patent Office Library (204/154.2).
+Flügge, Naturwissenschaften, volume 27, pages 402–410 (1939). Copy in Patent Office Library (204/154.2).
+
+--- REVIEWED TRANSCRIPTION PAGE 58 OF 58 ---
+
+UNITED STATES PATENT OFFICE
+CERTIFICATE OF CORRECTION
+Patent No. 2,708,656 May 17, 1955
+Enrico Fermi et al.,
+
+It is hereby certified that error appears in the printed specification of the above numbered patent requiring correction and that the said Letters Patent should read as corrected below.
+
+Column 4, line 51, both occurrences, and line 53, both occurrences, for "BT" read -- A --; column 5, line 31, for "friction" read -- fraction --; column 6, line 46, strike out "thermal neutron" and insert the same before "fissionable" in line 47; column 19, line 52, for "represensation" read -- representation --; column 23, line 52, for "945" read -- 1945 --; column 25, line 45, for "l'9" read -- 11.9 --; line 64, for "protectting" read -- protecting --; column 34, line 23, for "either-water" read -- ether-water --; column 38, line 16, for "...lib" read -- .015 --; column 45, line 75, for "K" read -- K --; column 48, line 56, for formula portion "K=1.0052" read -- K-1.005... --; column 51, line 35, for "and" read -- as --; column 53, line 72, for "CC" read -- CS --.
+
+Signed and sealed this 26th day of July, 1955.
+
+(SEAL)
+
+Attest:
+E. J. MURRY, Attesting Officer
+ROBERT C. WATSON, Commissioner of Patents

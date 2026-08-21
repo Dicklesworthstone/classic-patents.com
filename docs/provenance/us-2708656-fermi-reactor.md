@@ -119,3 +119,32 @@ unaccepted until a second reviewer compares every ledger line and edition
 block against the facsimile pages, reconciles equations and tables, and checks
 the certificate and remaining pages 51–58. The continuation boundary is PDF
 page 51.
+
+### Bounded cloud-source intake: PDF pages 51–58 (2026-08-21)
+
+This final continuation is intentionally WIP and is not a publication or
+binding decision. Pages 51–58 were checked against the authoritative cloud PDF
+at `https://patentimages.storage.googleapis.com/25/7c/5f/96bc44e6f2cc4f/US2708656.pdf`
+and the corresponding Google Patents record at
+`https://patents.google.com/patent/US2708656A/en`. The local pinned PDF was not
+changed. The reviewed ledger now carries literal page-marked text for pages
+51–58, including critical-size and delayed-neutron control, control rods and
+xenon-135 poisoning, inhour/cinch calibration, reactor uses and material tests,
+exact Claims 1–8, cited references, signatures, and the certificate of
+correction. The typed edition appends continuous paragraphs for this range;
+its existing claim blocks remain the single canonical legal-text source.
+
+The combined WIP source coverage now runs continuously from PDF pages 28–58
+in the ledger and edition (p28–29 specification continuation, p30–40, p41–50,
+and p51–58). PDF pages 1–27 remain the drawing-sheet ledger boundary: their
+source-sheet inventory and figure references are preserved, but no new
+page-complete drawing-sheet literal transcription is claimed here. All work is
+withheld pending a second page-by-page facsimile review, reconciliation of
+equations and figure companions, and the complete publication gate.
+
+The source method was cloud PDF text/vision comparison followed by manual
+normalization of line wraps, obvious scan artefacts, units, figure references,
+period terms, references, and certificate typography. It is not a local OCR,
+render, or test run. The continuation boundary after this chunk is the
+remaining p1–27 drawing-sheet ledger boundary; no registry, shared map, binding,
+publication, commit, or deployment was performed.

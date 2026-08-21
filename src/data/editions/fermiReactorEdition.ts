@@ -406,6 +406,107 @@ const fermiPages41To50Blocks: readonly CuratedSpecificationBlock[] = [
   ]),
 ];
 
+// Final bounded WIP intake for PDF pages 51–58. The exact claim nodes remain
+// the canonical claim source above; these paragraphs carry the remaining
+// specification, references, signatures, and correction certificate without
+// introducing a second claim transcription.
+const fermiPages51To58Blocks: readonly CuratedSpecificationBlock[] = [
+  {
+    kind: "heading",
+    level: 2,
+    text: "Specification source chunk, PDF pages 51–58 (final WIP range)",
+  },
+  paragraph([
+    text(
+      "Critical dimensions may be obtained from an exponential pile's relaxation distance or exponential constant A. The corresponding diffusion relations give the critical radius of a sphere, the side lengths of a rectangular parallelepiped, or the height and radius of a cylinder. Where the migration length M is known, K follows from the relation involving (K − 1)/M and A. The critical-size relations and representative D2O curves are shown in ",
+    ),
+    figure(30, "Fig. 30"),
+    text(
+      ". A reflector increases effective size by returning some neutrons that would otherwise escape, although the reflector calculation remains an approximation because neutrons of many energies enter it.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "Delayed neutrons are essential to practical control. About one per cent of fission neutrons may be delayed, with a mean delay near five seconds; roughly half are emitted within six seconds and ninety per cent within forty-five seconds. At a reproduction ratio r = 1.001, the population can increase by a factor of 2.75 in about 28.5 seconds, whereas r = 1.01 gives a doubling in a fraction of a second. Ratios of 1.02 and 1.03 can increase the population by approximately 1,100 and 700,000 per second, so a maximum safe ratio is about 1.005.",
+    ),
+    term(
+      "delayed neutrons",
+      "Neutrons emitted seconds or minutes after fission as radioactive precursor fragments beta-decay; their slower time scale makes mechanical reactor control possible.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "Control varies neutron losses in or from the reactor. Changing D2O leakage can return a heavy-water system to unity reproduction; cadmium or boron rods absorb neutrons between the uranium bodies. A rod is fully inserted for shutdown, partly inserted at unity, and withdrawn to the permitted maximum. Neutron density is monitored with ionization chambers, and the critical position is adjusted as density, temperature, pressure, or absorber products change. Emergency safety rods are shown in ",
+    ),
+    figure(1, "Fig. 1"),
+    text(", "),
+    figure(25, "Fig. 25"),
+    text(", "),
+    figure(31, "Fig. 31"),
+    text(", and "),
+    figure(38, "Fig. 38"),
+    text("."),
+  ]),
+  paragraph([
+    text(
+      "Fission products can change K during operation. The tellurium–iodine–xenon chain produces radioactive xenon-135, whose neutron-capture cross section is exceptionally large. Xenon formation reduces K and requires withdrawal of absorbers; xenon decay or neutron absorption later removes that poison. The effect must be included in the final operating K for high-power reactors, and shutdown requires full insertion of the control, shim, and safety rods so that decay of xenon cannot restart the reaction. Shim rods for xenon compensation are illustrated in ",
+    ),
+    figure(7, "Fig. 7"),
+    text(", "),
+    figure(25, "Fig. 25"),
+    text(", "),
+    figure(31, "Fig. 31"),
+    text(", and "),
+    figure(37, "Fig. 37"),
+    text("."),
+    term(
+      "xenon-135 poisoning",
+      "Operation-dependent neutron absorption by xenon-135 formed from fission-product decay, which lowers the reproduction factor and changes the required control position.",
+    ),
+  ]),
+  paragraph([
+    text("The control rod may be calibrated in a corrected unit called a "),
+    term(
+      "cinch",
+      "A rod-travel unit selected so that one unit has the same reproduction-ratio effect at different depths, compensating for the neutron-density gradient.",
+    ),
+    text(
+      ". The reactor period is the time required for neutron intensity to increase by e = 2.718, and is used for the so-called ",
+    ),
+    term(
+      "inhour calibration",
+      "A control calibration expressed through reactor period, with atmospheric-pressure correction; one inhour is tied to the e-fold neutron-intensity rise.",
+    ),
+    text(
+      ". The pressure correction stated is 0.323 inhour for each millimeter of mercury from the standard 760-millimeter pressure.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "The reactors provide intense neutron and gamma-ray sources for isotope production, transmutation, radiography, and nuclear research. Thorium-232 may be converted through thorium-233 and protactinium-233 to uranium-233; nitrogen irradiation can produce carbon-14. A graphite-filled shaft can act as a thermal-neutron column, while internal shafts and tube 109b collimate fast neutrons and gamma rays into external beams. Neutron screens and a bismuth filter separate the desired radiation components.",
+    ),
+    term(
+      "thermal-neutron column",
+      "A graphite-filled extension that uses the reactor's escaping and moderated neutrons as an intense external thermal-neutron source.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "Removable stringer 36a and tube 109b permit testing of neutron absorbers, neutron producers, impurities, coatings, dimensions, and temperature. Known uranium bodies are replaced by test bodies at balanced neutron density; after pressure and temperature corrections, the change in control-rod position measures the change in neutron economy. Irradiated bodies can be removed for recovery of U239 and fission products. With suitable modifications, D2O, light-water, gas-cooled, and diphenyl-cooled reactors can transfer heat to steam. The stated chain-reaction theory is based on the best experimental evidence then available and is not intended to exclude later data.",
+    ),
+  ]),
+  {
+    kind: "heading",
+    level: 2,
+    text: "Formal claims, references, and certificate of correction",
+  },
+  paragraph([
+    text(
+      "The exact printed Claims 1–8 are represented by the claim blocks above and are repeated in the reviewed ledger on PDF pages 56–57. The cited prior patent is Fermi et al., U.S. Patent 2,206,634 (July 2, 1940). Foreign references are Australia 14,150 and 14,151, Switzerland 233,011, France 861,390, and Great Britain 648,293. Other references are Power (July 1940, page 58), Kelly et al., Physical Review 73, 1135–1139 (1948), and Flügge, Naturwissenschaften 27, 402–410 (1939). The signed correction certificate dated July 26, 1955 corrects the printed specification's entries for A, fraction, thermal-neutron placement, representation, 1945, 11.9, protecting, ether-water, .015, K, K − 1.005..., as, and CS; it is retained verbatim in the p58 ledger boundary.",
+    ),
+  ]),
+];
+
 export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
@@ -609,6 +710,7 @@ export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
     },
     ...fermiPages30To40Blocks,
     ...fermiPages41To50Blocks,
+    ...fermiPages51To58Blocks,
   ],
 };
 
@@ -693,5 +795,29 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
   ],
   44: [
     "Figure 40 weights concentric lattice zones by neutron density, allowing average K and critical dimensions to be calculated from zone factors, migration lengths, and an exponential-pile relaxation constant.",
+  ],
+  46: [
+    "Pages 51-52 derive critical dimensions from measured exponential-pile constants, reflector corrections, migration length, and the D2O size relations shown in Figure 30.",
+  ],
+  47: [
+    "Delayed neutrons slow the reactor response from fractions of a second to many seconds, explaining why a reproduction ratio near 1.005 is a practical safety limit.",
+  ],
+  48: [
+    "D2O leakage control and cadmium or boron rods vary neutron losses; chambers measure density while Figures 1, 25, 31, and 38 show the safety-rod embodiments.",
+  ],
+  49: [
+    "Fission-product xenon-135 absorbs neutrons and depresses K, so high-power reactors include its equilibrium effect and use shim rods shown in Figures 7, 25, 31, and 37.",
+  ],
+  50: [
+    "Cinch travel and inhour period calibrations make control-rod response comparable across the neutron-density gradient, with a stated atmospheric-pressure correction.",
+  ],
+  51: [
+    "Neutron and gamma sources support isotope production, thorium-to-U233 transmutation, carbon-14 tracing, thermal-neutron columns, radiography, and collimated research beams.",
+  ],
+  52: [
+    "Removable stringers and tubes test materials and reactor changes; irradiated fuel can be processed, and modified moderator/coolant systems can transfer reactor heat to steam.",
+  ],
+  54: [
+    "Claims 1-8, the cited patent and literature, signatures, and the correction certificate are preserved in the reviewed ledger pages 56-58 while the claim blocks remain the edition's canonical legal text.",
   ],
 };

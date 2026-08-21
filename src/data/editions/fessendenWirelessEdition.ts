@@ -12,7 +12,7 @@ import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/
 
 const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
 
-const term = (termText: string, definition: string): CuratedSpecificationInline => ({
+const _term = (termText: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
   text: termText,
   definition,
