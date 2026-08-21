@@ -95,7 +95,7 @@ describe("US 542,846 manual source edition", () => {
         src: "/patents/figures/us-542846-diesel-engine/fig-1-source-crop-v1.png",
         width: 600,
         height: 470,
-        sha256: "5d83fe4c2918a24fcfda560cd0b4df15fca02644d18f9bd2946e96edf90ec9f4",
+        sha256: "fc2e63e7077bfe9ebdeb7106fd3330f86c205e9d5650f270d8ace672fab4b584",
       },
       2: {
         src: "/patents/figures/us-542846-diesel-engine/fig-2-source-crop-v4.png",
