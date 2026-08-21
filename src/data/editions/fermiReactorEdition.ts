@@ -833,4 +833,7 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
   55: [
     "The edition preserves the printed reference list, correction certificate, date, attesting officer, and Commissioner of Patents as source-face matter; the reviewed ledger supplies the page-marked comparison boundary.",
   ],
+  56: [
+    "The final typed paragraph records each certificate correction and the July 26, 1955 attestation, including E. J. Murry and Commissioner Robert C. Watson, without changing the separate legal claim blocks.",
+  ],
 };
