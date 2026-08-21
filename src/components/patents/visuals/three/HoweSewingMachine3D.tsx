@@ -160,7 +160,7 @@ export function HoweSewingMachine3D() {
         if (virtualTime - lastStitchTickTime > 1 / Math.max(1, p.stitchFrequencyHz)) {
           lastStitchTickTime = virtualTime;
           if (!p.isAudioMuted) {
-            soundEngine.playMechanicalClick();
+            soundEngine.playSwitchClick();
           }
         }
       }
