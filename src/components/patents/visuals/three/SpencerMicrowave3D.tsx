@@ -15,6 +15,7 @@ import {
 } from "./spencerMicrowaveModel";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset =
   | "iso"
@@ -52,7 +53,7 @@ export function SpencerMicrowave3D() {
   const [showWaterDipoles, _setShowWaterDipoles] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   // RF Cavity Physics Calculations (FrankenSim Hull Cutoff & Microwave Emission)
@@ -96,7 +97,7 @@ export function SpencerMicrowave3D() {
     showSpokeWheel,
     showWaterDipoles,
     isCutaway,
-    isPlayingAudio,
+    isAudioMuted,
     rfPowerWatts,
     spokeDisplayOmegaRadPerS: rfPhysics.spokeDisplayOmegaRadPerS,
   });
@@ -147,7 +148,7 @@ export function SpencerMicrowave3D() {
         p.isCutaway,
       );
 
-      if (p.isPlayingAudio && p.isOscillating) {
+      if (!p.isAudioMuted && p.isOscillating) {
         audioTick += 1;
         if (audioTick % 30 === 0) {
           soundEngine.playSparkDischarge(0.15);
