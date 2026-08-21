@@ -46,7 +46,7 @@ const FIGURE_CROP_VERSION: Readonly<Record<number, number>> = {
 };
 
 const FIGURE_CROP_DIMENSIONS: Readonly<Record<number, readonly [number, number]>> = {
-  1: [1856, 2385],
+  1: [600, 470],
   2: [635, 760],
   3: [785, 720],
   7: [1450, 2200],
