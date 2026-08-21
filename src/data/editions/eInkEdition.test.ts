@@ -35,8 +35,10 @@ describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
 
     for (let i = 1; i <= 18; i++) {
       const claim = claims.find((c) => c.number === i);
-      expect(claim).toBeDefined();
-      expect(manualClaimText(i)).toBe(claim?.inlines.map((inline) => inline.text).join(""));
+      if (!claim) {
+        throw new Error(`eInk manual edition is missing printed claim ${i}.`);
+      }
+      expect(manualClaimText(i)).toBe(claim.inlines.map((inline) => inline.text).join(""));
     }
   });
 
