@@ -368,6 +368,32 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Previous electrostatic and magnetic needle telegraphs failed beyond a few miles due to Ohmic voltage drop.",
     },
   ],
+  "us-x9430-colt-revolver": [
+    {
+      claimNumber: 1,
+      patentId: "us-x9430-colt-revolver",
+      claimTitle: "Mechanical Lifter Hand Pawl & Ratchet Indexing",
+      activeDescription:
+        "Claim 1 indexes the cylinder exactly one chamber pitch (72°) as the hammer is cocked, locking positive chamber-to-bore alignment.",
+      invertedDescription:
+        "Manual cylinder indexing: shooter must rotate cylinder by hand between shots, causing out-of-battery bore misalignment and chamber shaving.",
+      failureModeName: "Manual Cylinder Misalignment & Lead Shaving",
+      historicalPriorArt:
+        "Collier and Pepperbox revolvers required manual hand rotation, leading to frequent off-center strikes and misaligned bore discharge.",
+    },
+    {
+      claimNumber: 2,
+      patentId: "us-x9430-colt-revolver",
+      claimTitle: "Radial Flash-Isolating Partition Walls Between Nipples",
+      activeDescription:
+        "Claim 2 interposes solid steel partition walls between percussion nipples to prevent cap flashover.",
+      invertedDescription:
+        "Unshielded shared nipple wells: ignition flame from fired percussion cap enters adjacent chambers, causing simultaneous catastrophic multi-cylinder discharge.",
+      failureModeName: "Catastrophic Multi-Chamber Chain Fire",
+      historicalPriorArt:
+        "Early multi-chamber pistols suffered frequent chain fires that ruptured cylinders and injured shooters' hands.",
+    },
+  ],
   "us-124404-westinghouse-air-brake": [
     {
       claimNumber: 1,
@@ -492,6 +518,90 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Conductive Thermal Surface Scorching",
       historicalPriorArt:
         "Conventional ovens relied exclusively on external hot air convection and radiative conduction from vessel walls.",
+    },
+  ],
+  "us-194047-otto-engine": [
+    {
+      claimNumber: 1,
+      patentId: "us-194047-otto-engine",
+      claimTitle: "Four-Stroke Stratified Charge Compression & Power Cycle",
+      activeDescription:
+        "Claim 1 separates intake, compression, power expansion, and positive exhaust scavenging into four distinct piston strokes over two crankshaft revolutions.",
+      invertedDescription:
+        "Two-stroke uncompressed scavenging: fresh fuel charge mixes with burning residual exhaust gases, causing intake backfire and thermal efficiency collapse.",
+      failureModeName: "Scavenging Charge Loss & Intake Backfire",
+      historicalPriorArt:
+        "Lenoir and atmospheric gas engines ignited uncompressed charge at mid-stroke with poor thermal efficiency (<4%).",
+    },
+  ],
+  "us-235199-bell-photophone": [
+    {
+      claimNumber: 1,
+      patentId: "us-235199-bell-photophone",
+      claimTitle: "Acoustic Diaphragm Optical Beam Modulation & Selenium Reception",
+      activeDescription:
+        "Claim 1 modulates a projected sunlight beam via vocal acoustic vibrations of a mirror diaphragm, detecting the fluctuating flux with a parabolic selenium cell.",
+      invertedDescription:
+        "Static unmodulated optical transmission: without flexible mirror curvature modulation, optical flux is constant and selenium photocurrent produces zero acoustic signal.",
+      failureModeName: "Optical Modulation Collapse & Silent Reception",
+      historicalPriorArt:
+        "Telephony was restricted entirely to metallic conductor wires, with no atmospheric optical wireless transmission.",
+    },
+  ],
+  "us-200521-edison-phonograph": [
+    {
+      claimNumber: 1,
+      patentId: "us-200521-edison-phonograph",
+      claimTitle: "Grooved Cylinder Tinfoil Acoustic Indentation & Reproduction",
+      activeDescription:
+        "Claim 1 indents acoustic wave traces into a pliable metal foil cylinder via an acoustic diaphragm stylus, reproducing sound by retracing indentations.",
+      invertedDescription:
+        "Rigid non-indentable cylinder: stylus scratches or tears recording medium without depth modulation, destroying acoustic groove topography.",
+      failureModeName: "Tinfoil Groove Tearing & Reproduction Loss",
+      historicalPriorArt:
+        "Scott's phonautograph produced visual squiggles on lampblack glass but had no mechanical means of acoustic playback.",
+    },
+  ],
+  "us-247804-delaval-separator": [
+    {
+      claimNumber: 1,
+      patentId: "us-247804-delaval-separator",
+      claimTitle: "Continuous Centrifugal Liquid Density Separation",
+      activeDescription:
+        "Claim 1 subjects continuous milk flow to high centrifugal acceleration (>4,000 G), separating lighter butterfat cream inward and heavier skim milk outward.",
+      invertedDescription:
+        "Gravitational settling: without high-speed centrifugal acceleration, Stokes buoyancy separation takes 24–36 hours, risking spoilage.",
+      failureModeName: "Gravity Settling Stagnation & Emulsion Retention",
+      historicalPriorArt:
+        "Dairy creaming required shallow pans sitting for days in cold water tanks with high butterfat loss.",
+    },
+  ],
+  "us-361931-daimler-engine": [
+    {
+      claimNumber: 1,
+      patentId: "us-361931-daimler-engine",
+      claimTitle: "Enclosed Crankcase High-Speed Hot-Tube Ignition Engine",
+      activeDescription:
+        "Claim 1 encloses twin counter-rotating flywheels within an oil-tight crankcase and employs glow-tube ignition to achieve high rotational speeds (>800 RPM).",
+      invertedDescription:
+        "Heavy open-flame slide valve: slow ignition flame propagation caps engine speed to 150 RPM, yielding excessive weight unsuitable for vehicles.",
+      failureModeName: "Slide-Valve Flame Quench & Low Power-to-Weight",
+      historicalPriorArt:
+        "Stationary gas engines weighed several hundred pounds per horsepower and operated under 200 RPM.",
+    },
+  ],
+  "us-233692-pelton-water-wheel": [
+    {
+      claimNumber: 1,
+      patentId: "us-233692-pelton-water-wheel",
+      claimTitle: "Split Crescent Bucket 180° Impulse Flow Reversal",
+      activeDescription:
+        "Claim 1 divides incoming high-pressure water jet with a central knife-edge wedge, smoothly reversing stream direction through 180° to extract >85% kinetic energy.",
+      invertedDescription:
+        "Flat impact bucket: jet strikes flat surface at 90°, retaining 50% residual kinetic energy and causing severe back-splash against oncoming buckets.",
+      failureModeName: "Flat Bucket Back-Splashing & Kinetic Loss",
+      historicalPriorArt:
+        "Traditional water wheels and flat impulse paddles suffered from turbulence and back-splash drag with <40% efficiency.",
     },
   ],
 };
@@ -800,6 +910,91 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "THERMAL PENETRATION FAILURE: Without volumetric microwave dielectric heating, thermal conduction rate caps cooking speed.";
+      }
+      break;
+    }
+
+    case "us-194047-otto-engine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.compressionRatio = 1.2; // Uncompressed atmospheric charge
+        modified.thermalEfficiencyPct = 3.5; // Collapsed from 24% to 3.5%
+        modified.indicatedPowerHp = 0.4;
+        activeFailures.push(
+          "Intake Backfire & Residual Exhaust Contamination: Fresh gas charge ignites prematurely in intake tract",
+        );
+        refusalWarning =
+          "FOUR-STROKE CYCLE COLLAPSE: Without distinct 4-stroke induction and scavenging, engine suffers backfire.";
+      }
+      break;
+    }
+
+    case "us-235199-bell-photophone": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.mirrorModulationDepthPct = 0.0; // Rigid unvibrating mirror
+        modified.photocellSignalMv = 0.0; // Zero alternating photocurrent
+        activeFailures.push(
+          "Optical Modulation Collapse: Unmodulated optical beam produces static DC current with zero acoustic reception",
+        );
+        refusalWarning =
+          "OPTICAL MODULATION LOSS: Flexible mirror diaphragm vibration required to modulate radiant energy.";
+      }
+      break;
+    }
+
+    case "us-200521-edison-phonograph": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.grooveDepthUm = 0.0; // Rigid stylus tears foil without indentation
+        modified.playbackAcousticDb = 0.0;
+        activeFailures.push(
+          "Tinfoil Tear & Groove Destruction: Non-indentable stylus shears foil, obliterating sound wave topography",
+        );
+        refusalWarning =
+          "INDENTATION FAILURE: Pliable foil medium must be vertically embossed without tearing to store acoustic waves.";
+      }
+      break;
+    }
+
+    case "us-247804-delaval-separator": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.centrifugalRpm = 100.0; // Sub-critical rotation (<10 G)
+        modified.separationEfficiencyPct = 8.0; // Heavy emulsion retention
+        activeFailures.push(
+          "Centrifugal Boundary Turbulence: Low acceleration fails to overcome Stokes viscous drag on fat globules",
+        );
+        refusalWarning =
+          "CENTRIFUGAL FIELD COLLAPSE: High angular velocity (>4,000 RPM) required for continuous liquid density partitioning.";
+      }
+      break;
+    }
+
+    case "us-361931-daimler-engine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.engineRpm = 120.0; // Slow slide-valve speed ceiling
+        modified.powerToWeightHpKg = 0.015; // Heavy stationary engine ratio
+        activeFailures.push(
+          "Slide-Valve Flame Quench: Slow flame travel limits crank speed to 150 RPM, preventing vehicular power density",
+        );
+        refusalWarning =
+          "SPEED CEILING: Unenclosed low-speed slide valve produces insufficient power-to-weight ratio for locomotion.";
+      }
+      break;
+    }
+
+    case "us-233692-pelton-water-wheel": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.deflectionAngleDeg = 90.0; // Flat impact paddle
+        modified.hydraulicEfficiencyPct = 38.0; // Collapsed from 88% to 38%
+        activeFailures.push(
+          "Flat Impact Back-Splashing: 90° jet deflection retains 50% residual kinetic energy and impinges oncoming buckets",
+        );
+        refusalWarning =
+          "IMPULSE SPLITTER LOSS: Knife-edge wedge required to divide and reverse water jet through 180°.";
       }
       break;
     }

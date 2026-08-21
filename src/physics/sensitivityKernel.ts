@@ -521,6 +521,7 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-233692-pelton-water-wheel":
     case "us-233692-pelton-wheel": {
       if (controlKey === "waterHeadM" || controlKey === "head") {
         const flowLps = params.flowRateLps ?? 45.0;
@@ -636,6 +637,61 @@ export function computeParameterSensitivity(
           derivativeValue: Number((slopeEfficiency * 1000).toFixed(1)),
           derivativeUnit: "mW / W",
           interpretation: "Stimulated emission quantum yield beyond lasing threshold.",
+        };
+      }
+      break;
+    }
+
+    case "us-235199-bell-photophone": {
+      if (controlKey === "beamPowerWatts" || controlKey === "beamPower") {
+        return {
+          metricName: "Selenium Photocell Responsivity",
+          derivativeSymbol: "∂I_photo / ∂Φ",
+          derivativeValue: 4.5,
+          derivativeUnit: "µA / W",
+          interpretation:
+            "Photo-conductive modulation current generated across parabolic selenium receiver.",
+        };
+      }
+      break;
+    }
+
+    case "us-200521-edison-phonograph": {
+      if (controlKey === "grooveDepthUm" || controlKey === "stylusDepth") {
+        return {
+          metricName: "Acoustic Playback Amplitude",
+          derivativeSymbol: "∂SPL / ∂d_groove",
+          derivativeValue: 1.2,
+          derivativeUnit: "dB / µm",
+          interpretation:
+            "Mica diaphragm acoustic sound pressure level scaling with tinfoil indentation depth.",
+        };
+      }
+      break;
+    }
+
+    case "us-247804-delaval-separator": {
+      if (controlKey === "bowlRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Centrifugal Separation Force",
+          derivativeSymbol: "∂G / ∂RPM",
+          derivativeValue: 2.1,
+          derivativeUnit: "G / RPM",
+          interpretation:
+            "Stokes creaming separation acceleration gradient per bowl rotation speed.",
+        };
+      }
+      break;
+    }
+
+    case "us-361931-daimler-engine": {
+      if (controlKey === "engineRpm" || controlKey === "rpm") {
+        return {
+          metricName: "High-Speed Shaft Power",
+          derivativeSymbol: "∂P / ∂RPM",
+          derivativeValue: 1.4,
+          derivativeUnit: "W / RPM",
+          interpretation: "Power scaling achieved by enclosed crankcase high rotational velocity.",
         };
       }
       break;

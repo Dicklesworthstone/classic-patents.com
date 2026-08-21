@@ -300,6 +300,7 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-233692-pelton-water-wheel":
     case "us-233692-pelton-wheel": {
       const headM = params.waterHeadM ?? 150.0;
       const flowLps = params.flowRateLps ?? 45.0;
@@ -311,6 +312,54 @@ export function computePortHamiltonianEnergy(
       kinetic = 0.5 * 18.5 * omega * omega; // Runner flywheel kinetic energy
       potential = 1000.0 * (flowLps / 1000.0) * 9.80665 * 2.0; // Tailrace discharge head
       dissipated = powerIn * 0.12; // Fluid splash & bearing friction (88% efficiency)
+      break;
+    }
+
+
+
+    case "us-235199-bell-photophone": {
+      const beamWatts = params.beamPowerWatts ?? 2.5; // Concentrated sunlight optical beam
+      const modulation = params.modulationDepth ?? 0.35;
+      powerIn = beamWatts; // Solar optical radiant power flux
+      em = (beamWatts / 3e8) * 100.0; // Stored optical photon beam radiation in transit
+      dissipated = beamWatts * (1.0 - 0.08 * modulation); // Mirror absorption & selenium ohmic heating
+      thermal = 0.015 * 320.0 * 25.0; // Selenium cell thermal mass
+      break;
+    }
+
+    case "us-200521-edison-phonograph": {
+      const crankRpm = params.cylinderRpm ?? 60.0;
+      const omega = (crankRpm * 2 * Math.PI) / 60.0;
+      const cylinderInertia = 0.12; // Heavy lead/brass grooved cylinder
+      kinetic = 0.5 * cylinderInertia * omega * omega;
+      potential = 0.5 * 450.0 * 25e-6 ** 2; // Stylus spring and mica diaphragm elastic strain energy
+      powerIn = 1.8; // Hand crank input mechanical power (Watts)
+      dissipated = powerIn * 0.95; // Tinfoil indentation plastic deformation + screw friction
+      thermal = 0.85 * 380.0 * 25.0; // Brass mandrel heat capacity
+      break;
+    }
+
+    case "us-247804-delaval-separator": {
+      const rpm = params.bowlRpm ?? 6000.0;
+      const feedLph = params.feedRateLph ?? 250.0;
+      const omega = (rpm * 2 * Math.PI) / 60.0;
+      const bowlInertia = 0.085; // Forged steel centrifuge bowl
+      kinetic = 0.5 * bowlInertia * omega * omega;
+      powerIn = 350.0; // Belt drive electric motor input power (Watts)
+      dissipated = powerIn * 0.82; // High-speed bearing friction + milk viscous shear
+      potential = 0.5 * 1030.0 * (omega * 0.12) ** 2 * 0.001; // Centrifugal liquid head potential
+      thermal = 2.5 * 460.0 * 25.0; // Bowl thermal mass
+      break;
+    }
+
+    case "us-361931-daimler-engine": {
+      const rpm = params.engineRpm ?? 800.0;
+      const omega = (rpm * 2 * Math.PI) / 60.0;
+      const twinFlywheelsInertia = 0.85; // Twin enclosed crankcase flywheels
+      kinetic = 0.5 * twinFlywheelsInertia * omega * omega;
+      powerIn = 1.1 * 745.7; // 1.1 Brake Horsepower gasoline combustion rate
+      thermal = 18000.0; // Enclosed aluminium/iron crankcase thermal mass
+      dissipated = powerIn * 0.80; // Cylinder cooling air + exhaust enthalpy
       break;
     }
 
@@ -443,6 +492,19 @@ export function computePortHamiltonianEnergy(
       const _dramDynPower = dramBytes * 1.5e-13 * 5.0 * 5.0 * (clockMhz * 1e6);
       dissipated = powerIn; // Motherboard and logic TTL chip Joule heat
       thermal = 0.85 * 840.0 * 25.0; // FR-4 PCB and ceramic IC heat capacity
+      break;
+    }
+
+    case "us-x9430-colt-revolver": {
+      const pChamberMpa = params.chamberPressure ?? 85.0;
+      const vMuzzleMps = Math.round(180 + Math.sqrt(pChamberMpa) * 13.5);
+      const bulletMassKg = 0.0052; // .36 caliber round lead ball (~80 grains / 5.2 grams)
+      kinetic = 0.5 * bulletMassKg * vMuzzleMps * vMuzzleMps; // Projectile kinetic muzzle energy (~240 J)
+      const powderGrains = (pChamberMpa - 40) / 1.5 + 15;
+      const powderGrams = powderGrains * 0.0648;
+      powerIn = powderGrams * 3000.0; // Total chemical deflagration enthalpy (Joules)
+      dissipated = powerIn - kinetic; // Gas expansion blast and barrel wall heating
+      thermal = 1.1 * 460.0 * 25.0; // Steel barrel and cylinder thermal capacity
       break;
     }
 
