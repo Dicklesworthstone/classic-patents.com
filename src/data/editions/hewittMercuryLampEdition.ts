@@ -71,8 +71,8 @@ export const hewittMercuryLampParallelReadings: Readonly<Record<number, readonly
   8: [
     "Formal transition to the enumerated claims establishing exclusive patent rights over the combination of vapor conduction, inductive starting, and automatic cutout mechanisms.",
   ],
-  17: [
-    "Formal execution and subscription of the patent specification signed by Peter Cooper Hewitt in the presence of subscribing witnesses Henry Noel Potter and Wm. H. Capel.",
+  42: [
+    "Formal execution and subscription of the patent specification signed by Peter Cooper Hewitt on March 21, 1900 in the presence of subscribing witnesses Henry Noel Potter and Wm. H. Capel.",
   ],
 };
 
@@ -215,7 +215,7 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 1,
       inlines: [
         text(
-          "1. A lamp for producing light by electric energy consisting of an inclosing chamber, a gas or vapor contained therein capable under the influence of electric currents of emitting light, electrodes for the chamber, and a cooling or condensing chamber for the gas or vapor.",
+          "1. A lamp for producing light by electric energy consisting of an inclosing chamber, a gas or vapor contained therein capable, under proper conditions, of conducting currents of considerable quantity under the influence of moderate difference of potential, and a starting material also contained within the chamber and serving to convey a starting-current under the influence of a higher difference of potential.",
         ),
       ],
     },
@@ -224,7 +224,7 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 2,
       inlines: [
         text(
-          "2. The combination with a lamp for producing light by the conduction of electric currents through a gas or vapor, of an inclosing chamber, electrodes, a cooling or condensing chamber, and means for preventing condensation in the path of the current.",
+          "2. In a gas or vapor lamp, the combination with a conducting vapor or gas constituting the sole path for the current while the lamp is in operation, of a starting material serving to permit the initial passage of the electric current through the lamp.",
         ),
       ],
     },
@@ -233,7 +233,7 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 3,
       inlines: [
         text(
-          "3. The combination with a lamp for producing light by the conduction of electric currents through a gas or vapor, of an inclosing chamber, electrodes, a cooling or condensing chamber, and means for returning the condensed vapor to the cathode.",
+          "3. An electric lamp consisting of a hermetically-sealed inclosing chamber, electrodes within the same, means for securing electrical connection therewith, respectively, through the walls of the chamber, a vapor or gas contained within the chamber having, when traversed by an electric current, a resistance so varying with increments of current as to render it substantially self-regulating, and a steadying resistance in series with the lamp.",
         ),
       ],
     },
@@ -242,7 +242,7 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 4,
       inlines: [
         text(
-          "4. An electric lamp comprising an exhausted transparent tube, a liquid electrode contained in one end of the tube, a solid electrode at the other end, and an enlarged condensing chamber communicating with the tube for maintaining the vapor density at an operative value.",
+          "4. In an electric vapor or gas lamp, the combination of two electrodes located at or near the respective ends of the lamp, a conducting medium between the electrodes consisting of a vapor or gas which is light-emitting under the influence of electric currents of moderate potential, means for applying a preliminary higher difference of potential to the terminals of the lamp for creating a condition on the part of the conducting-vapor which will permit it to conduct currents of moderate potential, and means for thereafter operating the lamp by the currents of moderate potential.",
         ),
       ],
     },
@@ -251,7 +251,7 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 5,
       inlines: [
         text(
-          "5. The method of starting an electric lamp having a vapor path between its electrodes, which consists in applying a momentary electromotive force higher than the normal operating voltage to break down the initial cold resistance, and subsequently maintaining the discharge with a lower operating potential.",
+          "5. In an electric lamp, the combination of an inclosing chamber, two electrodes, a conducting medium between the electrodes consisting of a vapor or gas which is light-emitting under the influence of electric currents of moderate potential, means for applying a higher difference of potential to the terminals of the lamp for producing a condition on the part of the vapor or gas which will render it conductive for currents of considerable quantity and moderate potential, and means for relieving the static charge at or near one of the electrodes caused by the action of the higher difference of potential.",
         ),
       ],
     },
@@ -260,7 +260,232 @@ export const hewittMercuryLampArchivalEdition: CuratedSpecificationEdition = {
       number: 6,
       inlines: [
         text(
-          "6. The combination with an electric lamp operating by vapor conduction, of a supply circuit of moderate potential, a transformer having its secondary connected in series with the lamp, means for interrupting current in the primary of the transformer to produce a high-potential starting impulse, and an automatic cutout for interrupting the primary circuit upon the passage of operating current through the lamp.",
+          "6. In an electric lamp, the combination of an inclosing chamber, two electrodes, a conducting medium between the electrodes consisting of a vapor or gas which is light-emitting under the influence of electric currents of moderate potential, means for applying a higher difference of potential to the terminals of the lamp for producing a condition on the part of the vapor or gas which will render it conductive for currents of considerable quantity and moderate potential, and means for relieving the static charge at or near one of the electrodes caused by the action of the higher difference of potential consisting of a band of conducting material located near, but out of contact with, that electrode, and electrically connected with the other electrode.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 7,
+      inlines: [
+        text(
+          "7. A lamp for producing light by means of electric energy consisting of an inclosing chamber, a gas or vapor contained therein capable, under the proper conditions, of conducting currents of considerable quantity and moderate electromotive force, a starting material within the chamber facilitating the passage of current therethrough under the influence of higher differences of potential, a conducting-band surrounding the inclosing chamber near one of the electrodes of the lamp, and electric connections for leading off the electric charge produced therein under the influence of the electric currents of high differences of potential.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 8,
+      inlines: [
+        text(
+          "8. An electric lamp consisting of a transparent tube, a gas or vapor column contained therein, an electrode at the lower end thereof consisting wholly or in part of liquid, a metallic electrode at or near the upper end of said tube, a cooling and impurity-containing chamber surrounding the upper electrode, and means for securing electric connections with the respective electrodes through the wall of the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 9,
+      inlines: [
+        text(
+          "9. An electric lamp consisting of a transparent inclosing chamber, an electrode at or near one end of the chamber consisting wholly or in part of mercury, an electrode at or near the other end of the chamber consisting of a body of iron, and means for forming electrical connections with said electrodes through the wall of said chamber.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 10,
+      inlines: [
+        text(
+          "10. An electric lamp consisting of an inclosing chamber, electrodes within said chamber connected with each other through an intervening gas or vapor column, and a static charge dissipator located near one of the electrodes but insulated therefrom and electrically connected with the other electrode.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 11,
+      inlines: [
+        text(
+          "11. An electric lamp consisting of an inclosing chamber and two electrodes at or near the respective ends of said chamber, one of said electrodes consisting of a solid body of not readily vaporizable material free from carbon and other materials liable to be given off thereby in injurious quantities by the operation of the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 12,
+      inlines: [
+        text(
+          "12. An electrode for electric lamps employing a vapor or gas as a conducting medium consisting of a quantity of mercury and a non-conducting wall constricting the path of the electric current between said vapor or gas and said mercury.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 13,
+      inlines: [
+        text(
+          "13. The combination with an electric lamp wherein light is produced by the passage of electric energy through a hermetically-inclosed gas or vapor, a source of electric currents of moderate difference of potential, connections from said source with the terminals of the lamp, a potential-raising device also connected with said source of electric currents, and means for applying the higher difference of potential produced by said device to the terminals of the lamp while the moderate potential is also applied.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 14,
+      inlines: [
+        text(
+          "14. The combination with an electric lamp in which light is produced by electric energy traversing a hermetically-inclosed vapor or gas, a source of electric currents of moderate electromotive force, electric connections therefrom to the terminals of the lamp, and a potential-raising transformer having its secondary coil connected in the circuit leading to the lamp and its primary coil connected with the source of currents of moderate difference of potential, substantially as and for the purpose described.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 15,
+      inlines: [
+        text(
+          "15. The combination of an electric vapor or gas lamp having a gas or vapor path adapted to be rendered luminous by the passage of an electric current, said vapor path having a resistance so varying with increments of currents employed for its operation as to render it substantially self-regulating, a circuit of low potential for the normal operation of the lamp, and a local circuit of higher potential part of which local circuit forms part of the circuit of low potential, the vapor path forming a part of both circuits.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 16,
+      inlines: [
+        text(
+          "16. The combination with an electric lamp in which light is produced by electric energy acting on a hermetically-inclosed vapor or gas, a source of electric currents of moderate electromotive force, electric connections therefrom to the terminals of the lamp, and a potential-raising transformer having its secondary coil connected in the circuit leading to the lamp and its primary coil connected with the source of currents of moderate difference of potential, with means on starting for shifting from the higher potential to the lower potential circuit, substantially as and for the purpose described.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 17,
+      inlines: [
+        text(
+          "17. The combination in an electric lamp in which light is produced by electric energy acting on a vapor or gas, a source of electric currents of moderate electromotive force, electric connections therefrom to the terminals of the lamp, a potential-raising transformer having its secondary coil connected in the circuit leading to the lamp and its primary coil connected with the source of currents of moderate potential, and an automatic circuit-interrupter for opening the circuit of the primary coil when currents of considerable quantity traverse the lamp under the influence of the normal electromotive force from said source.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 18,
+      inlines: [
+        text(
+          "18. The combination with an electric lamp in which light is produced by electric energy acting on a vapor or gas column, a source of electric currents of moderate electromotive force, electric connections therefrom to the terminals of the lamp, a potential-raising transformer having its secondary coil connected in the circuit leading to the lamp and its primary coil connected with the source of currents of moderate difference of potential, and means for producing rapid variations of current in the primary coil, thereby superposing a higher electromotive force upon the moderate electromotive force applied to the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 19,
+      inlines: [
+        text(
+          "19. The combination with an electric lamp in which light is produced by the conduction of currents through a path of vapor or gas, of a source of electric currents, connections therefrom with the terminals of the lamp, a converter having its secondary coil connected in said circuit with the lamp and having its primary coil connected with said source, means for rapidly magnetizing and demagnetizing the core of said transformer, a resistance shunt-circuit around the secondary coil of the transformer, and means for closing the connections of said shunt-circuit when the lamp is in operation.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 20,
+      inlines: [
+        text(
+          "20. The combination with an electric lamp in which light is produced by the conduction of currents through a path of vapor or gas, of a source of electric currents, connections therefrom with the terminals of the lamp, a converter having its secondary coil connected in circuit with the lamp, and having its primary coil connected with said source, means for rapidly magnetizing and demagnetizing the core of said transformer, a resistance shunt-circuit around the secondary coil of the transformer, means for closing the connections of said shunt-circuit when the lamp is in operation, and means for simultaneously interrupting the connections of the primary circuit.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 21,
+      inlines: [
+        text(
+          "21. The combination in an electric lamp in which a starting-current of higher electromotive force is required, of a transformer for producing such higher electromotive force having its secondary coil connected with the terminals of the lamp and its primary coil connected with a source of electric currents, connections from said source through the secondary coil, and a circuit-interrupting device for the primary coil operated by the magnetization of the core of the converter under the influence of operating-currents traversing the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 22,
+      inlines: [
+        text(
+          "22. The combination with a lamp for producing light by the conduction of electric currents through a hermetically-inclosed vapor or gas path, of a source of high difference of potential and a source of moderate difference of potential, means for connecting the lamp with the source of high difference of potential for starting the lamp and with the source of moderate difference of potential for operating the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 23,
+      inlines: [
+        text(
+          "23. The combination with an electric lamp, two sources of electromotive force, means for connecting said sources in series for starting the lamp, and means for connecting the lamp with one of said sources for operating it when started.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 24,
+      inlines: [
+        text(
+          "24. The combination with an electric lamp having a light-emitting material consisting of a hermetically-inclosed vapor or gas capable of emitting light under the influence of currents of moderate potential, a source of electric currents, means for connecting the lamp with said source, means for creating from the moderate potential currents of higher potential, means for applying the higher potential to the lamp for starting it, and means for discontinuing the high potential when the lamp is started.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 25,
+      inlines: [
+        text(
+          "25. The combination with an electric lamp comprising an inclosing chamber and a vapor or gas forming a path for the current between the electrodes of the lamp, of a transformer, means for causing independent variations in the current traversing the primary coil of the transformer, and circuit connections through the secondary coil of the transformer with a source of electric currents.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 26,
+      inlines: [
+        text(
+          "26. The combination with an electric lamp comprising an inclosing chamber and a vapor or gas forming a path for the current between the electrodes of the lamp, of a transformer, means for causing independent variations in the current traversing the primary coil of the transformer, connections through the secondary coil of the transformer with a source of electric currents, and means for interrupting the flow of currents through the primary coil.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 27,
+      inlines: [
+        text(
+          "27. The combination with an electric lamp having a hermetically-inclosed gas or vapor path, of a circuit leading to the terminals thereof, a transformer the secondary coil of which is included in said circuit, means for causing a rapidly-varying current to traverse the primary of the transformer, and means for interrupting the circuit of said primary coil, by the action of current flowing through the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 28,
+      inlines: [
+        text(
+          "28. The combination with an electric lamp of the character described, of a circuit leading to the terminals thereof, a transformer the secondary coil of which is included in said circuit, means for causing a varying current to traverse the primary of the transformer, means for interrupting the circuit of said primary coil by the action of currents of lower potential flowing through the lamp, and means for cutting the secondary coil out of circuit when the lamp is operating.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 29,
+      inlines: [
+        text(
+          "29. The combination with a lamp of the character described, of a permanent source of electric current connected to the terminals of the said lamp through the secondary of a transformer, a second circuit from the said source, including the primary of the said transformer, and means for varying the current in the said primary and afterward cutting out the circuit of the primary by the action of the current passing through the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 30,
+      inlines: [
+        text(
+          "30. The combination with an electric lamp, of a main supply-circuit, connections therefrom through the secondary coil of a transformer with the terminals of the lamp, a primary coil for the transformer, a circuit-interrupter, means for connecting said primary coil and circuit-interrupter with the supply-circuit, and means for interrupting the primary-coil circuit by the action of currents supplying the lamp.",
+        ),
+      ],
+    },
+    {
+      kind: "claim",
+      number: 31,
+      inlines: [
+        text(
+          "31. The combination of a translating device, a source of current, a transformer having one coil connected in series with the translating device and with the source of current, means for creating independent time variations in the supply-current traversing the other coil, whereby the electromotive force of the current in the first-named coil is modified, and a device for automatically cutting out the means for creating the independent time variations, through the instrumentality of currents passing through the translating device.",
         ),
       ],
     },
