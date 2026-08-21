@@ -32,15 +32,25 @@ const figure = (num: number, label: string): CuratedSpecificationInline => ({
   href: `#mergenthaler-fig-${num}`,
   referenceType: "figure",
   label: `Preview ${label} of US 313,224`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${num}-source-crop-v1.png`,
-      alt: `US 313,224 ${label}`,
-      width: linotypeFigDims[num]?.width ?? 1150,
-      height: linotypeFigDims[num]?.height ?? 2100,
-    },
-  ],
+  ...(linotypeFigDims[num]
+    ? {
+        figurePreviews: [
+          {
+            src: `/patents/figures/us-313224-mergenthaler-linotype/fig-${num}-source-crop-v1.png`,
+            alt: `US 313,224 ${label}`,
+            width: linotypeFigDims[num].width,
+            height: linotypeFigDims[num].height,
+          },
+        ],
+      }
+    : {}),
 });
+
+const figureList = (numbers: number[]): CuratedSpecificationInline[] =>
+  numbers.flatMap((number, index) => [
+    ...(index > 0 ? [text(index === numbers.length - 1 ? " and " : ", ")] : []),
+    figure(number, `Fig. ${number}`),
+  ]);
 
 export const mergenthalerLinotypeClaims: PatentClaim[] = [
   {
@@ -682,8 +692,8 @@ export const mergenthalerLinotypeClaims: PatentClaim[] = [
 export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "d85530ab4302e8be7e4c0ac280d438756f1dd21dabc844f2c5b2e76861d7444a",
-  preparedBy: "Classic Patents editorial agent (SteelNeedle)",
-  preparedAt: "2026-08-18",
+  preparedBy: "Classic Patents editorial agent (CobaltDuck)",
+  preparedAt: "2026-08-21",
   completeFacsimileReviewed: true,
   blocks: [
     {
