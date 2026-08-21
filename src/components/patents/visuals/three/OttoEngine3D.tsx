@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
