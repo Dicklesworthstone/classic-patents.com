@@ -532,6 +532,15 @@ export const hollerithTabulatingPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US395781A/en",
   usptoClassification:
     "Statistical card-processing apparatus; source classification review pending",
+  archivalEdition: hollerithTabulatingArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-395781-hollerith-tabulating-reviewed.txt",
+    pageCount: 17,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-20",
+    sourcePdfSha256: hollerithTabulatingArchivalEdition.sourcePdfSha256,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 HERMAN HOLLERITH, OF NEW YORK, N. Y.
 
