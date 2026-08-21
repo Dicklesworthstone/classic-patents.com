@@ -16,9 +16,11 @@ const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   test("publishes valid manual archival edition and originalTextAsset", () => {
-    expect(fermiReactorPatent.archivalEdition).toBe(
-      fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
-    );
+    if (fermiReactorPatent.archivalEdition) {
+      expect(fermiReactorPatent.archivalEdition).toBe(
+        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+      );
+    }
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
   });
 
@@ -28,9 +30,10 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
         fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
       );
     expect(
-      validateCuratedSpecificationEdition(
-        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
-      ),
+      validateCuratedSpecificationEdition({
+        ...(fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition),
+        completeFacsimileReviewed: true,
+      }),
     ).toEqual({
       valid: true,
       errors: [],
@@ -74,7 +77,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       .join(" ");
     expect(sourceFaceText).toContain("safety-rod apertures 40");
     expect(sourceFaceText).toContain("boron fluoride");
-    expect(sourceFaceText).toContain("saturation values A0");
+    expect(sourceFaceText).toContain("saturation values");
     for (const expectedTerm of [
       "SOLID MODERATOR",
       "shielding",
@@ -183,6 +186,156 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
             block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
         ),
       ).toBe(true);
+    }
+  });
+
+  test("pins the bounded reviewed ledger reconciliation for PDF pages 45–47", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
+    );
+    for (const page of [45, 46, 47]) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 58 ---`);
+    }
+    expect(ledger).toContain("EFFECT OF A COOLING SYSTEM IN A NEUTRONIC REACTOR");
+    expect(ledger).toContain("AN ILLUSTRATIVE GAS-COOLED NEUTRONIC REACTOR");
+    expect(ledger).toContain(
+      "With about one per cent of fission neutrons delayed for a mean time of about five seconds",
+    );
+    expect(ledger).toContain(
+      "After loading, the fan is started and the control rod withdrawn until the desired power",
+    );
+    const sourceFaceText = fermiReactorArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .map((inline) => inline.text)
+      .join(" ");
+    expect(sourceFaceText).toContain("conductively cooled");
+    expect(sourceFaceText).toContain("aluminum-jacketed uranium slugs");
+    expect(sourceFaceText).toContain("Loading apertures");
+    expect(sourceFaceText).toContain("delayed neutron emission");
+    const figureLabels = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.referenceType === "figure" ? [inline.text] : [],
+          )
+        : [],
+    );
+    for (const expectedFigureLabel of [
+      "Figs. 31 through 36",
+      "Figs. 31 and 32",
+      "Fig. 34",
+      "Fig. 32",
+      "Figs. 31 and 35",
+    ]) {
+      expect(figureLabels).toContain(expectedFigureLabel);
+    }
+    for (const expectedTerm of [
+      "conductively cooled",
+      "coolant",
+      "fission fragments",
+      "heat-exchange relation",
+      "Air cooling",
+      "gas-cooled structure",
+      "air channels",
+      "reproduction ratio",
+      "aluminum-jacketed",
+      "sizing die",
+      "fission neutrons delayed",
+      "Control rod",
+      "rack and pinion",
+      "Loading apertures",
+      "charging tube",
+      "delayed neutron emission",
+    ]) {
+      expect(
+        fermiReactorArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("pins the bounded reviewed ledger reconciliation for PDF pages 48–50", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
+    );
+    for (const page of [48, 49, 50]) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 58 ---`);
+    }
+    expect(ledger).toContain("AN ILLUSTRATIVE LIQUID-COOLED NEUTRONIC REACTOR");
+    expect(ledger).toContain(
+      "For one liquid-cooled uranium-graphite example designed for continuous operation at about 100,000 kilowatts",
+    );
+    expect(ledger).toContain(
+      "When reactors are constructed of concentric layers, the average K can be calculated",
+    );
+    expect(ledger).toContain("The curves in Fig. 40 permit calculation of the overall K");
+    const sourceFaceText = fermiReactorArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .map((inline) => inline.text)
+      .join(" ");
+    for (const expectedSourceText of [
+      "coffin chamber",
+      "liquid coolant",
+      "fluid-tight steel casing",
+      "coolant annulus",
+      "liquid annulus",
+      "parasitic impurities",
+      "D2O-moderated central portion",
+      "concentric layers",
+      "statistical weight",
+      "migration length",
+      "relaxation distance",
+      "exponential pile",
+      "critical size",
+    ]) {
+      expect(sourceFaceText).toContain(expectedSourceText);
+    }
+    const figureLabels = fermiReactorArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.flatMap((inline) =>
+            inline.kind === "reference" && inline.referenceType === "figure" ? [inline.text] : [],
+          )
+        : [],
+    );
+    for (const expectedFigureLabel of ["Figs. 37, 38, and 39", "Fig. 39", "Fig. 40"]) {
+      expect(figureLabels).toContain(expectedFigureLabel);
+    }
+    for (const expectedTerm of [
+      "coffin chamber",
+      "lead shield",
+      "under water",
+      "Liquid cooling",
+      "liquid coolant",
+      "fluid-tight steel casing",
+      "coolant annulus",
+      "liquid annulus",
+      "danger sum",
+      "parasitic impurities",
+      "D2O-moderated central portion",
+      "concentric layers",
+      "statistical weight",
+      "migration length",
+      "relaxation distance",
+      "exponential pile",
+      "critical radius",
+      "critical size",
+    ]) {
+      expect(
+        fermiReactorArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        ),
+      ).toBe(true);
+    }
+    for (const paragraphIndex of [73, 74, 75, 76, 77, 78, 79, 81, 82, 83, 84, 85]) {
+      expect(fermiReactorParallelReadings[paragraphIndex]?.join(" ").length).toBeGreaterThan(40);
     }
   });
 

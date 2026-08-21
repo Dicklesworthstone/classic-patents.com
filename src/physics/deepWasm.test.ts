@@ -228,7 +228,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "OttoEngine3D.tsx",
       "FermiReactor3D.tsx",
       "GatlingGun3D.tsx",
-      "DieselEngine3D.tsx",
+      "MarconiRadio3D.tsx",
       "WozniakApple3D.tsx",
       "MergenthalerLinotype3D.tsx",
       "WattRotaryEngine3D.tsx",

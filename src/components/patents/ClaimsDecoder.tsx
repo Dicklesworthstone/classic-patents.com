@@ -14,7 +14,7 @@ interface ClaimsDecoderProps {
   claimStatus?: CuratedSpecificationEdition["claimStatus"];
 }
 
-function claimLiveState(
+export function claimLiveState(
   patentId: string | undefined,
   claimNum: number,
   params: Record<string, number>,
@@ -132,9 +132,10 @@ function claimLiveState(
   if (patentId.includes("gramme") && claimNum === 1) {
     return (params.shaftRpm ?? 1200) >= 300 ? "held" : "broken";
   }
-  if (patentId.includes("pasteur") && claimNum === 1) {
-    const t = params.wortTempC ?? 16;
-    return t >= 8 && t <= 35 ? "held" : "broken";
+  if (patentId === "us-135245-pasteur-fermentation" && claimNum === 1) {
+    const co2SweepPct = params.co2SweepPct ?? 100;
+    const sprayCoveragePct = params.sprayCoveragePct ?? 100;
+    return co2SweepPct > 0 && sprayCoveragePct > 0 ? "held" : "broken";
   }
   if (patentId.includes("glidden") && claimNum === 1) {
     return (params.twistsPerFoot ?? 4) >= 2 ? "held" : "broken";

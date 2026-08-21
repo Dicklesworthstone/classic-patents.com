@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
-import { ClaimsDecoder } from "./ClaimsDecoder";
+import { ClaimsDecoder, claimLiveState } from "./ClaimsDecoder";
 
 describe("ClaimsDecoder component", () => {
   test("renders claim tabs, original legal text, and plain-English translation cards for Wright Flyer", () => {
@@ -51,5 +51,45 @@ describe("ClaimsDecoder component", () => {
       "This reviewed historical facsimile contains no separately numbered formal claims.",
     );
     expect(html).toContain("Historical patent description without formal claims.");
+  });
+
+  test("evaluates Pasteur Claim 1 from the claimed air-expulsion and cooling sequence", () => {
+    const patentId = "us-135245-pasteur-fermentation";
+
+    expect(
+      claimLiveState(patentId, 1, {
+        co2SweepPct: 100,
+        sprayCoveragePct: 100,
+        wortTempC: 21.25,
+      }),
+    ).toBe("held");
+    expect(
+      claimLiveState(patentId, 1, {
+        co2SweepPct: 0,
+        sprayCoveragePct: 100,
+        wortTempC: 21.25,
+      }),
+    ).toBe("broken");
+    expect(
+      claimLiveState(patentId, 1, {
+        co2SweepPct: 100,
+        sprayCoveragePct: 0,
+        wortTempC: 21.25,
+      }),
+    ).toBe("broken");
+    expect(
+      claimLiveState(patentId, 1, {
+        co2SweepPct: 40,
+        sprayCoveragePct: 60,
+        wortTempC: 21.25,
+      }),
+    ).toBe("held");
+    expect(
+      claimLiveState(patentId, 1, {
+        co2SweepPct: 100,
+        sprayCoveragePct: 100,
+        wortTempC: 80,
+      }),
+    ).toBe("held");
   });
 });

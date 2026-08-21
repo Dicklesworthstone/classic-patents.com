@@ -101,7 +101,7 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
   test("exposes all printed claims via dynamic single-source lookup", () => {
     const claim1 = manualHallClaimText(1);
     expect(claim1).toContain(
-      "1. The process of reducing aluminium by electrolysis, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and a metal more electro-positive than aluminium",
+      "1. As an improvement in the art of manufacturing aluminium, the herein-described process, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and a metal more electro-positive than aluminium",
     );
 
     const claim2 = manualHallClaimText(2);

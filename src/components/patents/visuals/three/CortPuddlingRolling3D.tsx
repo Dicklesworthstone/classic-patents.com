@@ -6,6 +6,8 @@ import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
@@ -34,6 +36,7 @@ export function CortPuddlingRolling3D() {
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
@@ -343,6 +346,21 @@ export function CortPuddlingRolling3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="gb-1420-cort-puddling-rolling"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="gb-1420-cort-puddling-rolling"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

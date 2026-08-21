@@ -5,6 +5,8 @@ import { memo, useEffect, useRef, useState } from "react";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
@@ -40,6 +42,7 @@ export const PasteurFermentation3D = memo(() => {
   const wortTempC = params.wortTempC ?? 21.25;
   const process = stepPasteurFermentation({ co2SweepPct, sprayCoveragePct, wortTempC });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const live = useLiveSimParams({ co2SweepPct, sprayCoveragePct, isCutaway });
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -240,6 +243,21 @@ export const PasteurFermentation3D = memo(() => {
             </label>
           ))}
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-135245-pasteur-fermentation"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-135245-pasteur-fermentation"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

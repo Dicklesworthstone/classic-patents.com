@@ -15,6 +15,13 @@
 
 import type { CuratedSpecificationEdition, CuratedSpecificationInline } from "@/types/patent";
 
+type CarlsonElectrophotographyWipEdition = Omit<
+  CuratedSpecificationEdition,
+  "completeFacsimileReviewed"
+> & {
+  completeFacsimileReviewed: false;
+};
+
 const text = (value: string): CuratedSpecificationInline => ({
   kind: "text",
   text: value,
@@ -360,13 +367,13 @@ export const carlsonElectrophotographyParallelReadings: Readonly<
   ],
 };
 
-export const carlsonElectrophotographyArchivalEdition: CuratedSpecificationEdition = {
+export const carlsonElectrophotographyArchivalEdition: CarlsonElectrophotographyWipEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
   preparedBy: "Classic Patents editorial agent (SunnyCitadel; WIP only)",
   preparedAt: "2026-08-21",
   // WIP: a Luna visual pass and source-pixel crops are still outstanding.
-  completeFacsimileReviewed: false as unknown as true,
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",

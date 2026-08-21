@@ -2805,7 +2805,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     equationName: "Record position and receiver matching",
     governingEquation:
       "r_tx(t) = r_rx(t),\\quad r_tx \\in \\{A, B, C, D, E, F, G\\},\\quad r_rx \\in \\{D, E, F, G\\}",
-    engineMethod: "source-controlled Lamarr record model",
+    engineMethod: "stepLamarrFrequencyHopping (source-controlled Lamarr record model)",
     controls: [
       {
         id: "recordPosition",
@@ -4498,34 +4498,44 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         reheatTempC: p.reheatTempC,
         airflowCfm: p.airflowCfm,
       });
+      const c = carrier as {
+        dewPointInC?: number;
+        moistureRemovedGPerKg?: number;
+        finalRhPct?: number;
+        coolingWatts?: number;
+      };
+      const dewPoint = c.dewPointInC ?? 15.0;
+      const moistureRemoved = c.moistureRemovedGPerKg ?? 0;
+      const finalRh = c.finalRhPct ?? 50;
+      const coolingWatts = c.coolingWatts ?? 0;
       return [
         {
           label: "Inlet dew point",
-          value: carrier.dewPointInC.toFixed(1),
+          value: dewPoint.toFixed(1),
           unit: "°C",
           badgeColor: "cyan",
-          progressPct: clampProgress((carrier.dewPointInC / 30) * 100),
+          progressPct: clampProgress((dewPoint / 30) * 100),
         },
         {
           label: "Moisture extracted",
-          value: carrier.moistureRemovedGPerKg.toFixed(1),
+          value: moistureRemoved.toFixed(1),
           unit: "g/kg",
           badgeColor: "amber",
-          progressPct: clampProgress((carrier.moistureRemovedGPerKg / 20) * 100),
+          progressPct: clampProgress((moistureRemoved / 20) * 100),
         },
         {
           label: "Leaving RH",
-          value: `${carrier.finalRhPct}`,
+          value: `${finalRh}`,
           unit: "%",
           badgeColor: "emerald",
-          progressPct: carrier.finalRhPct,
+          progressPct: finalRh,
         },
         {
           label: "Latent sink",
-          value: carrier.coolingWatts.toLocaleString(),
+          value: coolingWatts.toLocaleString(),
           unit: "W",
           badgeColor: "indigo",
-          progressPct: clampProgress((carrier.coolingWatts / 200000) * 100),
+          progressPct: clampProgress((coolingWatts / 200000) * 100),
         },
       ];
     },

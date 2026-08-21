@@ -37,7 +37,7 @@ export const carlsonElectrophotographyPatent: Patent = {
   originalTextAsset: {
     url: "/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
     pageCount: 10,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
     sourcePdfSha256: "5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422",
     pageAnchors: [
       {

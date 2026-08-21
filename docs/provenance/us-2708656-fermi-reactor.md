@@ -229,6 +229,36 @@ detector-foil test. Pages 45–58 were not advanced in this pass. The unresolved
 p39 power-formula marker and Fig. 1 C/D/E/B middle-crop visual blocker remain
 unchanged; no unreadable formula glyphs were fabricated.
 
+The next bounded continuation pass re-audited only PDF pages 45–47. Page 45
+covers conductive versus circulated cooling, the fission heat-energy account,
+coolant and pipe heat exchange, uranium containment, and the air-cooled
+3,000-kilowatt construction in Figs. 31–36. Page 46 covers the gas-cooled
+graphite cube, air channels, reproduction-ratio loading, aluminum-jacketed
+uranium slugs, and the Fig. 34 sizing-die and jacket construction. Page 47
+covers delayed-neutron timing, control and safety rods in Fig. 32, loading
+apertures and charging equipment in Figs. 31 and 35, and controlled startup,
+radioactive exhaust, U239 production, and shutdown. Every printed Fig./Figs.
+occurrence in these pages is represented by an authored semantic reference in
+the continuous edition. Pages 48–58 were not advanced in this pass. The
+unresolved p39 power-formula marker and Fig. 1 C/D/E/B middle-crop visual
+blocker remain unchanged; no unreadable formula glyphs were fabricated.
+
+The next bounded continuation pass re-audited only PDF pages 48–50. Page 48
+covers underwater cooling and aging during unloading, the air/helium jacket
+losses, and the liquid-cooled reactor in Figs. 37–39, including its graphite
+core, reflector, casing, shielding, coolant tubes, fuel slugs, and Fig. 39
+coolant annulus. Page 49 records the 100,000-kilowatt design dimensions and K
+reductions, diphenyl's coolant tradeoffs, parasitic-impurity accounting, and
+the use of different lattice zones and moderators. Page 50 introduces
+concentric lattice layers and the statistical-weight curves in Fig. 40, then
+uses migration length and exponential-pile relaxation measurements to obtain
+critical and operating sizes. Every printed Fig./Figs. occurrence in these
+pages is represented by an authored semantic reference in the continuous
+edition. Pages 51–58 were not advanced in this pass. The unresolved p39
+power-formula marker, Fig. 1 C/D/E/B middle-crop blocker, and incomplete
+Figs. 10–42 crop coverage remain explicit; no unreadable formula glyphs were
+fabricated.
+
 The ledger carries page-marked WIP text for pages 28–58, including claims,
 references, signatures, and the certificate. The bounded edition packet adds
 source-ordered authored blocks for pages 30–35, including the printed Figure

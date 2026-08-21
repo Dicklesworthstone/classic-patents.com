@@ -33,7 +33,7 @@
 | 9–12 | Opening specification | Patent masthead, objects, complete Figure 1–24 description, preferred film, liquid-retaining alternatives, positive-transfer chemistry, and first Figure 1–8 embodiments. | Cloud-raster visual literal pass completed for the ledger and edition source blocks; WIP only, not publication accepted |
 | 13–16 | Opening specification continuation | Figure 9 cell member and Figure 10 filling method; Figure 11 camera metering/cutting; Figure 12 optical reversal; Figure 13 corrugated release rolls; Figures 14–17 viscous pod film, reagent examples, and processing sequence. | Clean cloud-grounded WIP ledger body; unresolved glyphs are disclosed rather than guessed |
 | 17–20 | Opening specification continuation and formal preamble | Figures 18–24 container constructions, multilayer units, diazonium/ferric alternatives, definitions, continuation applications, and “What is claimed is:”. | Clean source-grounded WIP ledger and continuous-edition blocks; not publication accepted |
-| 21–24 | Claims and formal matter | Individual claims 1–20, with page markers preserved in the ledger and no generated claim arrays in the edition. | Source-grounded WIP claim nodes; exact glyph/ligature review remains open |
+| 21–24 | Claims and formal matter | Individual claims 1–20, with page markers preserved in the ledger and explicit edition claim nodes. | Cloud-raster literal pass complete for claims 1–20; held WIP pending the remaining facsimile and publication gates |
 | 25–32 | Claims and formal matter | Claims 21–116, inventor signature, and the United States/foreign references cited on the final sheet. | Cloud-primary reconciliation recorded; image-level acceptance and earlier-claim cleanup remain open |
 
 ## 3. Editorial and Preservation Boundaries
@@ -232,14 +232,16 @@ continuation applications, and the formal preamble. The ledger retains the
 physical PDF page markers, including the exact cross-page continuation at the
 page-17/page-18 boundary. The edition carries the same material as continuous
 hand-authored paragraphs with explicit Figure references and non-lossy
-companions; it does not expose scan-page boundaries. No claim block, claim
-mapper, parser, or generated decoder was changed in this checkpoint.
+companions; it does not expose scan-page boundaries. Claims 1–20 were checked
+against the cloud rasters for pages 21–24, including the page-21 continuation
+and the claim-3 punctuation correction; no claim mapper, parser, or generated
+decoder was introduced.
 
 This checkpoint is still held: pages 1–8 contain authored drawing summaries
 rather than literal sheet matter (and the first four sheets require correction
 to the confirmed Serial No. 64,870), small claim glyphs remain unresolved, and
-pages 21–24 require a fresh artifact pass; the pages 25–32 checkpoint is held
-pending image-level acceptance. Every sampled Land v2 figure crop is rejected
+pages 21–24 now have a cloud-raster claim pass covering printed claims 1–20;
+the pages 25–32 checkpoint is held pending image-level acceptance. Every sampled Land v2 figure crop is rejected
 for the isolation/completeness failures recorded in §4, so no crop is mapped by
 the edition. No source PDF bytes, figure assets, registry, test, or build
 artifacts were changed. The edition remains unbound with
@@ -263,12 +265,26 @@ claim 116 retains “one long edge thereof” and “being adhesively secured.�
 This is a cloud-primary text reconciliation, not an image-level acceptance.
 The edition remains `completeFacsimileReviewed: false` and unbound. Remaining
 blockers are: literal drawing-sheet review and crop correction for pages 1–8;
-a fresh artifact pass over claims 1–20 and pages 21–24 (the earlier WIP contains
-known OCR-like substitutions such as `form inz`, `through he`, and
-`sheetiike`); and independent visual confirmation of any small glyph or
-ligature not resolved by the remote primary record. No witness or certificate
+the pages 29–32 claim continuation; and independent visual confirmation of any
+small glyph or ligature not resolved by the remote primary record. No witness or certificate
 is printed after the inventor signature on the final sheet. No uncertainty was
 silently filled, and no publication gate was changed.
+
+### Pages 25–28 cloud claim checkpoint
+
+PDF pages 25–28 were visually reconciled from the cloud page rasters
+`US2543181-24.png` through `US2543181-27.png`. The page-marked ledger now
+preserves the physical boundaries: page 25 carries claims 21–26 and the start
+of claim 27; page 26 carries the continuation of claim 27 through claim 47's
+page-end continuation; page 27 begins that claim 47 continuation and carries
+claims 48–64 plus the start of claim 65; and page 28 begins claim 65's
+continuation and carries claims 66–77 plus the start of claim 78. The edition
+already contains explicit claim nodes for claims 21–78; claim 66's duplicated
+line-wrap residue was removed from both literal layers. The next physical page
+still requires its own reconciliation: the pre-existing page-29 WIP begins at
+claim 75 and therefore must be treated as an unresolved overlap until the next
+lane rewrites pages 29–32. No claim was marked complete, and the edition
+remains unbound with `completeFacsimileReviewed: false`.
 
 The punctuation parity pass then checked all 116 claim nodes and their ledger
 counterparts against the remote primary claim text. Every printed claim now has

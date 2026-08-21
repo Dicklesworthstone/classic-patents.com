@@ -7,6 +7,8 @@ import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildMergenthalerLinotypeModel,
   updateMergenthalerLinotypeKinematics,
@@ -41,6 +43,7 @@ export function MergenthalerLinotype3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Linotype Mechanical Composing Parameters
   const { params, updateParam } = usePatentPhysics("us-313224-mergenthaler-linotype");
@@ -326,6 +329,21 @@ export function MergenthalerLinotype3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-313224-mergenthaler-linotype"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-313224-mergenthaler-linotype"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

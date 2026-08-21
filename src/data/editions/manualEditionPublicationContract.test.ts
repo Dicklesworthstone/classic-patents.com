@@ -11,7 +11,10 @@ import {
   validateReviewedTranscriptionLiteralCoverage,
   validateReviewedTranscriptionPageAnchors,
 } from "@/data/patents/sourceTextValidation";
-import { archivalEditionForPublication } from "./publicationApproval";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
 
 const publicPath = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
@@ -76,6 +79,14 @@ function literalSectionsFromEdition(patent: (typeof allPatents)[number]): readon
  * source PDF.
  */
 describe("manual-edition publication contract", () => {
+  test("keeps Pasteur fail-closed until its repaired source face passes final acceptance", () => {
+    const pasteur = allPatents.find((patent) => patent.id === "us-135245-pasteur-fermentation");
+
+    expect(pasteur).toBeDefined();
+    expect(isArchivalEditionExplicitlyWithheld("us-135245-pasteur-fermentation")).toBe(true);
+    expect(pasteur && archivalEditionForPublication(pasteur)).toBeUndefined();
+  });
+
   test("keeps withheld source editions type-safe without publication-state casts", () => {
     const editionDirectory = join(process.cwd(), "src", "data", "editions");
     const violations = readdirSync(editionDirectory)

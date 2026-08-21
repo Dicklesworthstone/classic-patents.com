@@ -25,7 +25,7 @@
 | **Page 3** | Specification | Cage or cylinder construction, ground lead, low-frequency alternating-current dynamo, and source/conductor conditions. |
 | **Page 4** | Specification | Fifth dynamo condition, transformer-secondary relation, source/radiator frequency comparison, poor-radiator example, low-frequency ground absorption, and Fig. 1/Fig. 2 receiving material. |
 | **Page 5** | Specification ending; Claims 1–5 boundary | Fig. 5 enlargement/multiple periodicities, distributed-capacity sine-wave discussion, source definitions, resonance equation and loss examples, low-frequency source advantages, uniform conductor observation, and the first five printed claims. |
-| **Page 6** | Claims 1–12 continuation | Claim 5 continuation and Claims 6–12. The source text of the claims is preserved but remains outside this bounded pages-4–5 authoring pass. |
+| **Page 6** | Claims 5–12 continuation | Claim 5 continuation and Claims 6–12. The source text of the claims is preserved in the reviewed ledger and edition. |
 | **Page 7** | Claims 13–21 and signatures | Claims 13–21, Fessenden's signature, and witnesses W. B. Fearing and S. C. Gray. |
 
 ---
@@ -72,6 +72,14 @@ Every printed figure citation in the continuous edition is an authored `referenc
 
 The inventory is source-facing evidence, not publication approval: every legacy preview remains preserved, the current versioned crops remain held candidates, and the Fig. 2 v10 clipping rejection and detail remediation remain explicitly open for independent acceptance.
 
+### Bounded Luna figure/reference completion
+
+The cloud-visible drawing sheet at the [primary Google-hosted drawing image](https://patentimages.storage.googleapis.com/aa/32/37/1f8cfd525461bc/US706737-drawings-page-1.png) confirms the true printed figure set is exactly Figures 1–5: Figure 1 is the diagrammatic apparatus; Figure 2 is the modified receiving apparatus; Figure 3 is a sectional elevation of one conductor; Figure 4 is the top plan of that conductor; and Figure 5 is the elevation of the continuous-wall modification. No figure citation occurs in Claims 1–21 or the signatures.
+
+The continuous edition has 13 authored figure-reference occurrences in source order: `Figure 1`, `Fig. 2`, `Fig. 3`, `Fig. 4`, `Fig. 5` in the opening drawing sentence; `Fig. 3`, `Fig. 5` in the conductor construction; `Fig. 1` in the dynamo paragraph; `Fig. 1` and `Figs. 3 and 5` in the transmitting/receiving apparatus paragraph; `Fig. 2` in the fine-wire receiver; `Fig. 5` in the enlarged-surface paragraph; and `Fig. 3` in the closing uniform-conductor paragraph. No bare figure label remains in a plain text inline.
+
+The cloud comparison retains the current versioned source-pixel set and its honest multi-preview groups. Figure 2's v10 main frame is clipped at the lower ground lead, so every Fig. 2 occurrence carries both `fig-2-source-crop-v10.png` and the preserved `fig-2-source-crop-v10-detail-v2.png`; Figure 3 similarly carries its v4 main crop plus the v4-detail-v2 lower detail. Figures 1, 4, and 5 use their current upright v4 crops. These existing detail candidates are the versioned remediation for the clipped geometry; no old asset was replaced or deleted, and no new crop was fabricated while the host load gate remained above 10. The exact served paths, dimensions, and SHA-256 values remain pinned in the crop table above and in the patent-local regression assertions.
+
 ### Bounded Luna source completion: PDF pages 1–3
 
 This handoff covers only the first three physical PDF pages. Page 1 now records the printed patent number/date, inventor title, and the five drawing labels. The continuous edition and reviewed ledger restore the page-2/page-3 source matter for the terms `sending-conductor`, `receiving-conductor`, and `radiating portion`, the coil-2 self-induction adjustment, the capacity-adjustment alternatives including application No. 62,303, and the Fig. 3 cage construction (parallel wires 4, supporting-rings 5, central sockets 6, bamboo or other light non-conducting supporting-rods 7). The Fig. 5 continuous-wall cylinder and wire-8 ground/self-induction description remain explicitly referenced.
@@ -86,7 +94,15 @@ This bounded pass reconciles the specification printed on PDF pages 4 and 5 agai
 
 Page 5 now preserves the printed Fig. 5 `swell or enlargement 17`, the distributed-capacity sine-wave comparison, the source definitions of `large capacity` and `uniformly distributed`, the localized-capacity/piano-wire analogy, the electromagnetic-wave/grounded-conductor/tuned/resonant definitions, and the following resonance discussion through the uniform-conductor observation. The ledger page boundary was moved so the duplicated candidate page-6 specification is not emitted twice; claim text remains unchanged and later claims remain outside this bounded source-authoring decision.
 
-The current edition remains a withheld WIP (`completeFacsimileReviewed: false`), and the canonical Fessenden record remains unbound. Independent visual acceptance of the full facsimile, all figure pixels, and all claim blocks is still required. The unresolved next boundary is PDF page 6 continuation/claims, then PDF page 7 and final acceptance.
+The current edition remains a withheld WIP (`completeFacsimileReviewed: false`), and the canonical Fessenden record remains unbound. Independent visual acceptance of the full facsimile, all figure pixels, and all claim blocks is still required. At the close of the pages-4–5 pass, the unresolved next boundary was PDF page 6 continuation/claims, then PDF page 7 and final acceptance; the bounded pages-6–7 completion below addresses that source interval without granting publication approval.
+
+### Bounded Luna source completion: PDF pages 6–7
+
+This final bounded source lane reconciles the claims and attestation pages against the cloud-visible primary facsimile. The reviewed ledger now places the continuation of Claim 5 and Claims 6–12 under PDF page 6, then places Claims 13–21, the printed claim endings, Fessenden's attestation, signature, and witnesses W. B. Fearing and S. C. Gray under PDF page 7. The 21 claim blocks in the continuous edition remain individually numbered and are the sole source for the canonical claim text lookup.
+
+The edition adds occurrence-specific term annotations inside Claims 12, 14, 17, and 18 for the source phrases `constant or independently-varying magnetic field`, `ether-wave`, `self-induction`, and `persistent oscillation`; joining the authored inline text remains byte-for-byte claim text. No printed figure citation occurs on these two claim/signature pages, so no synthetic figure reference was added. The closing signature paragraph has a non-lossy companion reading and the edition retains the exact attestation and witness names.
+
+The artifact remains a withheld WIP (`completeFacsimileReviewed: false`) with `fessendenWirelessPatent.archivalEdition` unbound. Full-facsimile independent acceptance, crop acceptance, and final claims verification remain required before publication.
 
 ## Publication Approval & Verification
 

@@ -187,7 +187,7 @@ export const dieselEnginePatent: Patent = {
       isIndependent: true,
       originalText: dieselManualClaimText(3),
       plainEnglish:
-        "An internal combustion engine combining a combustion cylinder with gradual fuel admission to cut-off, an air compressor, a connected reservoir, and an expansion chamber for the exhaust gases.",
+        "An internal combustion engine system combining a dedicated combustion cylinder with regulated gradual fuel admission up to cut-off, an integrated air compressor and connected pressure reservoir, and an expansion chamber that extracts residual expansion work from the exhausting combustion gases.",
       keyInnovations: [
         "Combustion-cylinder cut-off",
         "Air compressor and reservoir",

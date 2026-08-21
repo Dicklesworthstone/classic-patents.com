@@ -128,6 +128,50 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     }
   });
 
+  test("maps every printed figure occurrence to a semantic preview group without bare citations", () => {
+    const figureRefs = fessendenWirelessArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter(
+            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
+              inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    expect(figureRefs.map((reference) => reference.text)).toEqual([
+      "Figure 1",
+      "Fig. 2",
+      "Fig. 3",
+      "Fig. 4",
+      "Fig. 5",
+      "Fig. 3",
+      "Fig. 5",
+      "Fig. 1",
+      "Fig. 1",
+      "Figs. 3 and 5",
+      "Fig. 2",
+      "Fig. 5",
+      "Fig. 3",
+    ]);
+    for (const reference of figureRefs) {
+      expect(reference.label?.length).toBeGreaterThan(20);
+      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      for (const preview of reference.figurePreviews ?? []) {
+        expect(existsSync(resolve(root, "public", preview.src.slice(1)))).toBe(true);
+        expect(preview.width).toBeGreaterThan(0);
+        expect(preview.height).toBeGreaterThan(0);
+      }
+    }
+
+    const bareFigureCitations = fessendenWirelessArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter(
+            (inline) => inline.kind === "text" && /\bFig(?:ure)?s?\.?\s*\d/.test(inline.text),
+          )
+        : [],
+    );
+    expect(bareFigureCitations).toEqual([]);
+  });
+
   test("confirms reviewed transcript ledger exists and contains all 7 page markers", () => {
     expect(existsSync(ledgerPath)).toBe(true);
     const content = readFileSync(ledgerPath, "utf-8");
@@ -212,7 +256,7 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(page2).toContain("The terms sending-conductor and receiving-conductor");
     expect(page2).toContain("transformer-coils, armature-windings, &c.");
     expect(page2).toContain("application No. 62,303, filed May 29, 1901");
-    expect(page3).toContain("supporting-rings 5, provided with hubs or central sockets 6");
+    expect(page2).toContain("supporting-rings 5, provided with hubs or central sockets 6");
     expect(page3).toContain("wire 8, in which coils or turns may be formed");
     expect(page2).not.toContain("rapidly-damped wave-train");
     expect(page3).not.toContain("side elevation of an antenna");
@@ -267,12 +311,54 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     const figureRefs = fessendenWirelessArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
-            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
+              inline.kind === "reference" && inline.referenceType === "figure",
           )
         : [],
     );
     const preferredForms = figureRefs.find((reference) => reference.text === "Figs. 3 and 5");
     expect(preferredForms?.figurePreviews?.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test("keeps bounded pages 6-7 claim-complete and attested", () => {
+    const ledger = readFileSync(ledgerPath, "utf-8");
+    const page6 = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 6 OF 7 ---")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---")[0];
+    const page7 = ledger.split("--- REVIEWED TRANSCRIPTION PAGE 7 OF 7 ---")[1];
+
+    expect(page6).toContain("5. In a system for transmission of energy by electromagnetic waves");
+    expect(page6).toContain("12. A system for signaling by electromagnetic waves");
+    expect(page7).toContain("13. A sending-conductor for electromagnetic waves");
+    expect(page7).toContain("21. A system for transmission of energy by electromagnetic waves");
+    expect(page7).toContain("In testimony whereof I have hereunto set my hand.");
+    expect(page7).toContain("REGINALD A. FESSENDEN.");
+    expect(page7).toContain("W. B. FEARING,");
+    expect(page7).toContain("S. C. GRAY.");
+
+    const ledgerClaims = ledger
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => /^\d+\.\s/.test(line));
+    expect(ledgerClaims).toHaveLength(21);
+    expect(ledgerClaims.map((claim) => Number(claim.match(/^(\d+)\./)?.[1]))).toEqual(
+      Array.from({ length: 21 }, (_, index) => index + 1),
+    );
+    for (const claim of ledgerClaims) {
+      const number = Number(claim.match(/^(\d+)\./)?.[1]);
+      expect(manualFessendenClaimText(number)).toBe(claim);
+    }
+
+    const annotatedClaimNumbers = [12, 14, 17, 18];
+    for (const number of annotatedClaimNumbers) {
+      const block = fessendenWirelessArchivalEdition.blocks.find(
+        (candidate) => candidate.kind === "claim" && candidate.number === number,
+      );
+      expect(block?.kind).toBe("claim");
+      expect(
+        block?.kind === "claim" && block.inlines.some((inline) => inline.kind === "term"),
+      ).toBe(true);
+    }
   });
 
   test("validates parallel readings map covers the archival paragraph blocks", () => {

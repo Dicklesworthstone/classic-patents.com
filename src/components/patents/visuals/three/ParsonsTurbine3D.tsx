@@ -4,8 +4,10 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "
 import { memo, useEffect, useRef, useState } from "react";
 import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildParsonsTurbineModel, updateParsonsTurbineKinematics } from "./parsonsTurbineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -41,6 +43,7 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
     2: false,
     3: false,
   });
+  const { params } = usePatentPhysics("us-608969-parsons-turbine");
   const [routing, setRouting] = useState<ParsonsRoutingMode>("series");
   const [reversing, setReversing] = useState(false);
   const marine = stepParsonsMarine({ routing, reversing });
@@ -290,6 +293,21 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             Figure 2 X / Y reversing turbines (astern)
           </label>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-608969-parsons-turbine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-608969-parsons-turbine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

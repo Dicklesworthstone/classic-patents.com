@@ -5,6 +5,8 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -45,6 +47,7 @@ export function YaleLock3D({
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -293,6 +296,21 @@ export function YaleLock3D({
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-48475-yale-lock"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-48475-yale-lock"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

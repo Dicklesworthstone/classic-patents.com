@@ -157,7 +157,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       qty: "T_dp",
       unit: "°C",
     });
-    expect(probe?.note).toContain("g/kg");
+    expect(probe?.note).toContain("g/kg extracted");
     expect(
       intervalGhosts("us-808897-carrier-air-conditioner", {
         inletTempC: 35,
@@ -172,7 +172,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
       unit: "%",
     });
     expect(datedScenarios("us-808897-carrier-air-conditioner")[0]?.writes).toMatchObject({
-      sprayWaterTempC: 8,
+      sprayRatePct: 60,
       airflowCfm: 15000,
     });
   });
@@ -268,7 +268,7 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(coupleLinks("us-319596-maxim-machine-gun", {})[0]?.from).toBe("powder");
     expect(coupleLinks("us-588-ericsson-propeller", {})[0]?.from).toBe("thrust · v");
     expect(coupleLinks("us-586193-marconi-radio", {})[0]?.from).toBe("spark");
-    expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("spray");
+    expect(coupleLinks("us-808897-carrier-air-conditioner", {})[0]?.from).toBe("fan");
     expect(coupleLinks("us-2708656-fermi-reactor", {})[0]?.from).toBe("fission");
     expect(coupleLinks("us-608969-parsons-turbine", {})[0]?.from).toBe("steam");
     expect(coupleLinks("us-400766-hall-aluminium", {})[0]?.from).toBe("bus");

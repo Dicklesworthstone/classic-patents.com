@@ -16,6 +16,8 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -53,6 +55,7 @@ export function WattRotaryEngine3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;
@@ -368,6 +371,21 @@ export function WattRotaryEngine3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="gb-1306-watt-rotary-engine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="gb-1306-watt-rotary-engine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

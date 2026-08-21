@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -37,6 +39,7 @@ export function ZeppelinAirship3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Aerostatic & Aerodynamic Parameters
   const { params, updateParam } = usePatentPhysics("us-621195-zeppelin-airship");
@@ -345,6 +348,21 @@ export function ZeppelinAirship3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-621195-zeppelin-airship"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-621195-zeppelin-airship"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

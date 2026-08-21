@@ -12,7 +12,7 @@ import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEngelbartMouseModel, updateEngelbartMouseKinematics } from "./engelbartMouseModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -34,7 +34,7 @@ const CAMERA_PRESETS: Record<
 export const EngelbartMouse3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isXRayMode, setIsXRayMode] = useState<boolean>(false);
   const [isClicking, setIsClicking] = useState<boolean>(false);
 

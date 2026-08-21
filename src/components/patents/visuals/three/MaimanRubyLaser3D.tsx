@@ -330,6 +330,15 @@ export function MaimanRubyLaser3D() {
           />
         </div>
 
+        <ClaimConstraintToggle
+          patentId="us-3353115-maiman-ruby-laser"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
         <PortHamiltonianEnergyStrip
           patentId="us-3353115-maiman-ruby-laser"
           params={params}

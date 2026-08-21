@@ -14,6 +14,7 @@ import {
   stepDeLavalSeparator,
   stepEdisonBulb,
   stepEdisonIndicator,
+  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
@@ -326,10 +327,30 @@ export function materialProbe(
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
       sprayRatePct: params.sprayRatePct,
       separatorFaces: params.separatorFaces,
     });
+    const c = carrier as {
+      dewPointInC?: number;
+      moistureRemovedGPerKg?: number;
+      finalRhPct?: number;
+      coolingWatts?: number;
+    };
+    if (typeof c.dewPointInC === "number") {
+      return {
+        part: calloutLabel,
+        material: "Wet sinuous plates, spray, and rear gutters",
+        qty: "T_dp",
+        value: c.dewPointInC.toFixed(1),
+        unit: "°C",
+        note: `${c.moistureRemovedGPerKg ?? 0} g/kg extracted · ${c.finalRhPct ?? 50}% leaving RH · ${c.coolingWatts ?? 0} W latent sink.`,
+      };
+    }
     return {
       part: calloutLabel,
       material: "Wet sinuous plates, spray, and rear gutters",
@@ -337,6 +358,17 @@ export function materialProbe(
       value: carrier.particleCapturePct.toFixed(1),
       unit: "%",
       note: `${carrier.wetFilmCoveragePct}% wet-film coverage · ${carrier.dropletSeparationPct}% droplet separation · ${carrier.pressureDropPa} Pa modeled resistance.`,
+    };
+  }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    const _phono = stepEdisonPhonograph({ mandrelRpm: params.mandrelRpm ?? 60 });
+    return {
+      part: calloutLabel,
+      material: "Tinfoil-wrapped grooved brass cylinder and stylus",
+      qty: "groove",
+      value: "0.25",
+      unit: "mm",
+      note: `Grooved cylinder rotating at ${params.mandrelRpm ?? 60} RPM with steel stylus tracking acoustic indentations.`,
     };
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -1082,10 +1114,24 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
       sprayRatePct: params.sprayRatePct,
       separatorFaces: params.separatorFaces,
     });
+    const c = carrier as {
+      dewPointInC?: number;
+      moistureRemovedGPerKg?: number;
+    };
+    if (typeof c.dewPointInC === "number") {
+      return [
+        { label: "T_dp", min: 0, max: 35, live: c.dewPointInC, unit: "°C" },
+        { label: "Δω", min: 0, max: 20, live: c.moistureRemovedGPerKg ?? 0, unit: "g/kg" },
+      ];
+    }
     return [
       { label: "Wet film", min: 0, max: 100, live: carrier.wetFilmCoveragePct, unit: "%" },
       { label: "Dust capture", min: 0, max: 99, live: carrier.particleCapturePct, unit: "%" },
@@ -1112,6 +1158,9 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       carMassTonnes: params.carMass ?? 35,
     });
     return [{ label: "Stop", min: 50, max: 1200, live: wh.stoppingDistanceM, unit: "m" }];
+  }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    return [{ label: "Groove", min: 0.1, max: 0.5, live: 0.25, unit: "mm" }];
   }
   if (patentId.includes("lamarr") || patentId.includes("2292387")) {
     const fh = FrankenSimEngine.stepLamarrFrequencyHopping(
@@ -1772,6 +1821,16 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
+  if (patentId.includes("phonograph") || patentId.includes("200521")) {
+    return [
+      {
+        id: "menlo-1877",
+        date: "1877-12-06",
+        name: "Menlo Park laboratory first acoustic tinfoil recording",
+        writes: { mandrelRpm: 60, voiceVolumeDb: 75 },
+      },
+    ];
+  }
   if (patentId.includes("pasteur") || patentId.includes("135245")) {
     return [
       {
@@ -1987,6 +2046,10 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
+      inletTempC: params.inletTempC,
+      inletRhPct: params.inletRhPct,
+      sprayWaterTempC: params.sprayWaterTempC,
+      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
       sprayRatePct: params.sprayRatePct,
       separatorFaces: params.separatorFaces,

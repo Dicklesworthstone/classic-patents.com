@@ -1,8 +1,5 @@
 import type { Patent } from "@/types/patent";
-import {
-  hallAluminiumArchivalEdition,
-  manualHallClaimText,
-} from "../editions/hallAluminiumEdition";
+import { manualHallClaimText } from "../editions/hallAluminiumEdition";
 
 const _hallSourceDrawingCrops = [
   ["Fig. 1", "Sectional elevation of a form of apparatus"],

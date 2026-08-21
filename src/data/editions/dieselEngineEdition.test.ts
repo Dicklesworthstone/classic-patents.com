@@ -84,7 +84,7 @@ describe("US 542,846 manual source edition", () => {
       expect.arrayContaining([
         "P is a plunger",
         "hopper B",
-        "admission-plug D",
+        "valve or plug D",
         "cut-off",
         "air reservoir L",
         "air-vessel",

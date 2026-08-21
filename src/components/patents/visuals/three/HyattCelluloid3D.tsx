@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildHyattCelluloidModel, updateHyattCelluloidKinematics } from "./hyattCelluloidModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -51,6 +53,7 @@ export const HyattCelluloid3D = memo(() => {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const hyatt = stepHyattCelluloid({
     steamTempC,
@@ -337,6 +340,21 @@ export const HyattCelluloid3D = memo(() => {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-105338-hyatt-celluloid"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-105338-hyatt-celluloid"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

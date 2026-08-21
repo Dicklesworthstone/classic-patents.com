@@ -66,7 +66,7 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-4136359-wozniak-apple", // Figs. 1 and 3 include sheet headers; Fig. 1 also clips the lower diagram.
   "us-157124-glidden-barbed-wire", // All three served figure previews are rotated sideways.
   "us-x1-hopkins-potash", // Record invents an apparatus drawing/callouts and precise process numbers absent from the one-page grant.
-  "us-135245-pasteur-fermentation", // Reviewed ledger embeds a raw source-text page marker inside a continuous specification paragraph.
+  "us-135245-pasteur-fermentation", // Source repair awaits executable and independent visitor acceptance.
   "us-4750-howe-sewing-machine", // Claims 2–5 have lossy sub-30-word decoders.
   "us-200521-edison-phonograph", // Claim 3 decoder is materially too short.
   "us-307031-edison-indicator", // Claims 3–8 have lossy sub-30-word decoders.

@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -36,6 +38,7 @@ export function McCormickReaper3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.draftSpeedMph ?? params.forwardSpeedMph ?? 2.5;
@@ -299,6 +302,21 @@ export function McCormickReaper3D() {
             </div>
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-x8277-mccormick-reaper"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-x8277-mccormick-reaper"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

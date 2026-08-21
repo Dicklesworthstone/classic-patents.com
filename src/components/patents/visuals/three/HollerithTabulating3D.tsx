@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildHollerithTabulatingModel,
   updateHollerithTabulatingKinematics,
@@ -50,6 +52,7 @@ export function HollerithTabulating3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const live = useLiveSimParams({
     cardsPerMin,
@@ -331,6 +334,21 @@ export function HollerithTabulating3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-395781-hollerith-tabulating"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-395781-hollerith-tabulating"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -202,6 +202,9 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
   22: [
     "The final source paragraph ties uniform capacity to a conductor uniform in figure, reports that upper portions have practically the same capacity as lower portions, and says capacity depends mainly on size and shape when the conductor is not close to ground.",
   ],
+  23: [
+    "The specification transitions to the twenty-one formal claims defining the antenna structures, dynamo excitation, and electro-magnetic signal receiver.",
+  ],
   47: [
     "The closing paragraph records Fessenden's attestation and the two printed witnesses, W. B. Fearing and S. C. Gray.",
   ],
@@ -596,7 +599,14 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       number: 12,
       inlines: [
         text(
-          "12. A system for signaling by electromagnetic waves having in combination a conductor adapted to radiate waves of low frequency, and a receiver dependent for its action upon a constant or independently-varying magnetic field and adapted to respond to currents produced by said waves, substantially as set forth.",
+          "12. A system for signaling by electromagnetic waves having in combination a conductor adapted to radiate waves of low frequency, and a receiver dependent for its action upon a ",
+        ),
+        _term(
+          "constant or independently-varying magnetic field",
+          "This claim preserves the source's receiving-field condition: the receiver acts through a magnetic field that is constant or varies independently of the induced current from the radiated waves.",
+        ),
+        text(
+          " and adapted to respond to currents produced by said waves, substantially as set forth.",
         ),
       ],
     },
@@ -614,7 +624,14 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       number: 14,
       inlines: [
         text(
-          "14. A sending-conductor for electromagnetic waves having a natural period of vibration much lower than the period of an ether-wave four times its length, whereby its radiating portion may be a relatively large fraction of the total length of said sending-conductor.",
+          "14. A sending-conductor for electromagnetic waves having a natural period of vibration much lower than the period of an ",
+        ),
+        _term(
+          "ether-wave",
+          "The specification's ether-wave is the historical comparison wave in the surrounding medium; the claim uses four times its length as the reference period, not as a modern wireless-band label.",
+        ),
+        text(
+          " four times its length, whereby its radiating portion may be a relatively large fraction of the total length of said sending-conductor.",
         ),
       ],
     },
@@ -640,9 +657,12 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       kind: "claim",
       number: 17,
       inlines: [
-        text(
-          "17. A sending-conductor for electromagnetic waves having low resistance, small self-induction and great capacity, substantially as and for the purpose set forth.",
+        text("17. A sending-conductor for electromagnetic waves having low resistance, small "),
+        _term(
+          "self-induction",
+          "Self-induction is the conductor's opposition to a changing current caused by its own magnetic field; the claim requires it to remain small while capacity is made great.",
         ),
+        text(" and great capacity, substantially as and for the purpose set forth."),
       ],
     },
     {
@@ -650,8 +670,18 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       number: 18,
       inlines: [
         text(
-          "18. A sending-conductor for electromagnetic waves having low resistance, small self-induction and great capacity so correlated as to support persistent oscillation of a frequency much less than that of an ether-wave of a length four times that of said sending-conductor.",
+          "18. A sending-conductor for electromagnetic waves having low resistance, small self-induction and great capacity so correlated as to support ",
         ),
+        _term(
+          "persistent oscillation",
+          "Persistent oscillation means that the low-loss tuned circuit continues its alternating motion long enough to bridge successive excitations rather than dying immediately after each spark.",
+        ),
+        text(" of a frequency much less than that of an "),
+        _term(
+          "ether-wave",
+          "Here the ether-wave remains the historical wavelength comparison used to express how much lower the sending-conductor's natural frequency is.",
+        ),
+        text(" of a length four times that of said sending-conductor."),
       ],
     },
     {

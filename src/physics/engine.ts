@@ -641,7 +641,7 @@ export const FrankenSimEngine = {
     );
   },
 
-  stepLamarrFrequencyHopping(channelsCount: number = 7, hopRateHopsPerSec: number = 0) {
+  stepLamarrFrequencyHopping(channelsCount: number = 7, _hopRateHopsPerSec: number = 0) {
     const illustratedChannels = Math.max(1, Math.min(7, Math.round(channelsCount)));
     return {
       channelsCount: illustratedChannels,
@@ -1052,6 +1052,28 @@ export const FrankenSimEngine = {
       (0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2),
     );
     const airMovementWatts = Number((pressureDropPa * airflowCfm * 0.00047194745).toFixed(2));
+
+    const hasThermal =
+      params.inletTempC !== undefined ||
+      params.inletRhPct !== undefined ||
+      params.sprayWaterTempC !== undefined ||
+      params.reheatTempC !== undefined;
+
+    if (!hasThermal) {
+      return {
+        sprayRatePct,
+        separatorFaces,
+        airCurrentMps,
+        wetFilmCoveragePct,
+        particleCapturePct,
+        dropletSeparationPct,
+        pressureDropPa,
+        airMovementWatts,
+        airflowCfm,
+        modelBoundary:
+          "The source gives no thermal setpoint, secondary heating stage, or measured efficiency; those quantities are intentionally not modeled.",
+      };
+    }
 
     // Psychrometric Magnus dew point and latent extraction
     const tIn = params.inletTempC ?? 35;

@@ -7,6 +7,8 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -44,6 +46,7 @@ export function LincolnBuoy3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [_crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const lincoln = stepLincolnBuoy({
     inflationPct: bellowsInflationPct,
@@ -320,6 +323,21 @@ export function LincolnBuoy3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6469-lincoln-buoy"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-6469-lincoln-buoy"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

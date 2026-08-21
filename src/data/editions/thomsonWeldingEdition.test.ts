@@ -70,9 +70,11 @@ describe("thomsonWeldingArchivalEdition", () => {
             `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v${
               [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(figureNumber)
                 ? 5
-                : [4, 10].includes(figureNumber)
-                  ? 2
-                  : 1
+                : [11, 14].includes(figureNumber)
+                  ? 4
+                  : [4, 10].includes(figureNumber)
+                    ? 2
+                    : 1
             }.png`,
         ),
       );
@@ -94,9 +96,11 @@ describe("thomsonWeldingArchivalEdition", () => {
           `/patents/figures/us-347140-thomson-welding/figure-${index + 1}-source-crop-v${
             [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(index + 1)
               ? 5
-              : [4, 10].includes(index + 1)
-                ? 2
-                : 1
+              : [11, 14].includes(index + 1)
+                ? 4
+                : [4, 10].includes(index + 1)
+                  ? 2
+                  : 1
           }.png`,
       ).filter((_, index) => ![1, 3, 5, 6, 8, 9].includes(index + 1)),
     );

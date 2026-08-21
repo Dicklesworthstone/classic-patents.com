@@ -361,7 +361,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         text: ", and placed in communication with the cylinder. A disk-valve k closes the discharge end of the hopper and below the same is located a turning ",
       },
       sourceTerm(
-        "admission-plug D",
+        "valve or plug D",
         "The turning fuel plug below hopper B. Its radial chamber is charged in one position and discharges the fuel into the cylinder when turned to the other position.",
       ),
       {

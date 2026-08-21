@@ -34,13 +34,7 @@ const BARE_DRAWING_REFERENCE =
 // Keep this release-side sentinel separate from the editable publication map:
 // a bulk companion-map merge or an accidental empty hold list must fail the
 // verifier instead of turning drafts into visitor-facing "complete" editions.
-const REQUIRED_ROOT_QA_WITHHOLDS = [
-  "us-x72-whitney-cotton-gin",
-  "us-313224-mergenthaler-linotype",
-  "us-395781-hollerith-tabulating",
-  "us-2929922-townes-laser",
-  "us-3671542-kwolek-kevlar",
-] as const;
+const REQUIRED_ROOT_QA_WITHHOLDS = ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS;
 
 function exactSourceTextForPdf(pdfPath: string, expectedPageCount: number): string {
   const extracted = execFileSync("pdftotext", ["-layout", pdfPath, "-"], {

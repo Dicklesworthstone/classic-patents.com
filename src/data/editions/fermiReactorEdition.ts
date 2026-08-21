@@ -1,13 +1,8 @@
 import type {
   CuratedSpecificationBlock,
-  CuratedSpecificationEdition,
   CuratedSpecificationInline,
   CuratedSpecificationInlines,
 } from "@/types/patent";
-
-type FermiReactorWipEdition = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
-  completeFacsimileReviewed: false;
-};
 
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
@@ -251,13 +246,14 @@ const figure = (
     return [...cropPreviews, ...supplementalPreviews];
   });
   const firstSheet = figureSheets[num] ?? 1;
+  const flatPreviews = previews.flat();
   return {
     kind: "reference",
     text: label,
     href: `#fermi-fig-${num}`,
     referenceType: "figure",
     label: `Preview ${label} on Sheet ${firstSheet} of US 2,708,656`,
-    figurePreviews: previews.flat(),
+    ...(flatPreviews.length > 0 ? { figurePreviews: flatPreviews } : {}),
   };
 };
 
@@ -1133,7 +1129,7 @@ const fermiPages36To42ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ]),
   {
     kind: "table",
-    headers: [[text("")], [text("U sphere")], [text("U rod")], [text("Slab")]],
+    headers: [[text("Geometry / Constant")], [text("U sphere")], [text("U rod")], [text("Slab")]],
     rows: [
       [
         [text("Radius of uranium bodies")],
@@ -1148,8 +1144,8 @@ const fermiPages36To42ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
         [text("79 x 343.8 cm.")],
       ],
       [[text("Amount of beryllium")], [text("515 tons")], [text("48.9 tons")], [text("63 tons")]],
-      [[text("Amount of uranium")], [text("")], [text("47.3 tons")], [text("69.2 tons")]],
-      [[text("K constant")], [text("")], [text("1.0982")], [text(".842")]],
+      [[text("Amount of uranium")], [text("—")], [text("47.3 tons")], [text("69.2 tons")]],
+      [[text("K constant")], [text("—")], [text("1.0982")], [text(".842")]],
     ],
   },
   paragraph([
@@ -1316,11 +1312,12 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
     text(
       "Uranium carbide, uranium tetrafluoride, and uranium hexafluoride will also support a chain reaction with a proper moderator and allowance for bulk-density changes. To determine the efficiency of purification, an exponential pile with the same geometry and moderator can compare compositions directly in terms of K. A simpler ",
     ),
+    text("“"),
     term(
-      "“shotgun test”",
+      "shotgun test",
       "A comparative neutron-absorption test in which impurities removed from a known uranium sample replace a standard boron absorber near a detector foil.",
     ),
-    text(" places a thin "),
+    text("” places a thin "),
     term(
       "neutron detector",
       "A foil or other absorber whose induced radioactivity reports the local thermal-neutron density for comparing impurity capture.",
@@ -1358,23 +1355,58 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ]),
   { kind: "heading", level: 2, text: "EFFECT OF A COOLING SYSTEM IN A NEUTRONIC REACTOR" },
   paragraph([
+    text("Reactors "),
+    term(
+      "conductively cooled",
+      "A cooling arrangement that carries reaction heat through the reactor structure to its exterior rather than circulating a fluid through the active region.",
+    ),
     text(
-      "Reactors conductively cooled by dissipating reaction heat through their exterior can operate continuously only at low power, or at high power for short periods. A coolant may be circulated for continuous high-power operation, but its neutron absorption and that of any coolant pipes must be included in the neutronic design.",
+      " by dissipating reaction heat through their exterior can operate continuously only at low power, or at high power for short periods. A ",
+    ),
+    term(
+      "coolant",
+      "A circulating fluid that removes heat from the reactor while introducing its own neutron absorption and the absorption of its containing pipes.",
+    ),
+    text(
+      " may be circulated for continuous high-power operation, but its neutron absorption and that of any coolant pipes must be included in the neutronic design.",
     ),
   ]),
   paragraph([
     text(
-      "In a uranium-graphite reactor, the approximate heat sources are: gamma radiation, 23 million electron volts per fission (11 per cent); beta radiation, 11 (6 per cent); kinetic energy of fission fragments, 159 (79 per cent); and kinetic energy of neutrons, 7, for a total of 200 million electron volts per fission. About 184 MeV, or 92 per cent, is generated in uranium, 12 MeV, or 6 per cent, in graphite, and 4 MeV, or 2 per cent, outside the pile. Coolant and pipes may be arranged in heat-exchange relation to the moderator, the uranium bodies, or both.",
+      "In a uranium-graphite reactor, the approximate heat sources are: gamma radiation, 23 million electron volts per fission (11 per cent); beta radiation, 11 (6 per cent); kinetic energy of ",
     ),
+    term(
+      "fission fragments",
+      "The two heavy charged nuclei produced when uranium fissions; their kinetic energy is deposited chiefly in the uranium and becomes reactor heat.",
+    ),
+    text(
+      ", 159 (79 per cent); and kinetic energy of neutrons, 7, for a total of 200 million electron volts per fission. About 184 MeV, or 92 per cent, is generated in uranium, 12 MeV, or 6 per cent, in graphite, and 4 MeV, or 2 per cent, outside the pile. Coolant and pipes may be arranged in ",
+    ),
+    term(
+      "heat-exchange relation",
+      "A thermal arrangement in which coolant passages exchange heat with the moderator, uranium bodies, or both while preserving the stated neutronic accounting.",
+    ),
+    text(" to the moderator, the uranium bodies, or both."),
   ]),
   paragraph([
     text(
-      "Aluminum tubes carrying water through the moderator provide one simple cooling system, but moderator cooling alone is limited to about 1,000 kilowatts because most moderators conduct heat poorly. Direct cooling of uranium is useful at higher powers, although uranium must be protected from chemical reaction with the coolant and radioactive fission fragments must be kept out of the coolant stream. Otherwise the external piping and circulating machinery would require heavy shielding and could remain inaccessible after shutdown.",
+      "Aluminum tubes carrying water through the moderator provide one simple cooling system, but moderator cooling alone is limited to about 1,000 kilowatts because most moderators conduct heat poorly. Direct cooling of uranium is useful at higher powers, although uranium must be protected from chemical reaction with the coolant and radioactive ",
+    ),
+    term(
+      "fission fragments",
+      "The radioactive products of fission that must remain contained so a circulating coolant does not carry activity into external piping and machinery.",
+    ),
+    text(
+      " must be kept out of the coolant stream. Otherwise the external piping and circulating machinery would require heavy shielding and could remain inaccessible after shutdown.",
     ),
   ]),
   paragraph([
+    term(
+      "Air cooling",
+      "A reactor heat-removal arrangement that drives air through moderator channels and over protected uranium jackets for continuous operation.",
+    ),
     text(
-      "Air cooling has been used for a uranium-graphite reactor operating continuously up to 3,000 kilowatts, in the construction shown in ",
+      " has been used for a uranium-graphite reactor operating continuously up to 3,000 kilowatts, in the construction shown in ",
     ),
     figure(31, "Figs. 31 through 36", [32, 33, 34, 35, 36]),
     text(
@@ -1383,68 +1415,163 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ]),
   { kind: "heading", level: 2, text: "AN ILLUSTRATIVE GAS-COOLED NEUTRONIC REACTOR" },
   paragraph([
-    text(
-      "A gas-cooled structure comprises closely stacked graphite blocks 209 forming a cube 210, as shown in ",
+    text("A "),
+    term(
+      "gas-cooled structure",
+      "The illustrated reactor body: a shielded graphite-block cube with forced-gas channels, uranium bodies, and controlled outlet flow.",
     ),
+    text(" comprises closely stacked graphite blocks 209 forming a cube 210, as shown in "),
     figure(31, "Figs. 31 and 32", [32]),
     text(
-      ". The cube may be 24 to 26 feet on a side on concrete foundation 211. Horizontal square air channels 212, with one diagonal vertical, pass from inlet face 214 to outlet face 215; about 2,000 channels may be provided, and unused channels may be plugged. A concrete inlet duct 216, air filter 220, and electrically driven fan 221 supply air to the inlet chamber 225. Concrete top shield 226 and side shields 228 enclose the cube. Outlet shield 230, outlet chamber 231, and stack 234 carry air above ground; the concrete shields, five to twenty feet thick, reduce escaping neutrons and gamma radiation.",
+      ". The cube may be 24 to 26 feet on a side on concrete foundation 211. Horizontal square ",
+    ),
+    term(
+      "air channels",
+      "Square passages through the graphite moderator that distribute forced cooling air from the inlet face to the outlet face while unused passages may be plugged.",
+    ),
+    text(
+      " 212, with one diagonal vertical, pass from inlet face 214 to outlet face 215; about 2,000 channels may be provided, and unused channels may be plugged. A concrete inlet duct 216, air filter 220, and electrically driven fan 221 supply air to the inlet chamber 225. Concrete top shield 226 and side shields 228 enclose the cube. Outlet shield 230, outlet chamber 231, and stack 234 carry air above ground; the concrete shields, five to twenty feet thick, reduce escaping neutrons and gamma radiation.",
     ),
   ]),
   paragraph([
+    text("Uranium bodies are placed in the channels so that the "),
+    term(
+      "reproduction ratio",
+      "The neutron-economy ratio comparing successive generations; unity is the critical condition, while a value above unity makes neutron density rise.",
+    ),
     text(
-      "Uranium bodies are placed in the channels so that the reproduction ratio is slightly above unity, after accounting for internal and exterior losses. About 700 channels, each loaded with 68 aluminum-jacketed uranium slugs 235 end to end at seven-inch spacing, give a reproduction ratio of unity for a roughly cylindrical active portion. Graphite and uranium should have the highest available purity. To obtain a rise in neutron density, about 1,000 channels may be loaded, giving an operating ratio near 1.005; neutron-absorbing material is then inserted to hold the ratio at unity. Unloaded channels may be plugged with graphite, while peripheral channels may remain open for cooling.",
+      " is slightly above unity, after accounting for internal and exterior losses. About 700 channels, each loaded with 68 ",
+    ),
+    term(
+      "aluminum-jacketed",
+      "Enclosed in an aluminum sheath that transfers heat to the cooling stream, resists air corrosion, and retains radioactive fission fragments.",
+    ),
+    text(
+      " uranium slugs 235 end to end at seven-inch spacing, give a reproduction ratio of unity for a roughly cylindrical active portion. Graphite and uranium should have the highest available purity. To obtain a rise in neutron density, about 1,000 channels may be loaded, giving an operating ratio near 1.005; neutron-absorbing material is then inserted to hold the ratio at unity. Unloaded channels may be plugged with graphite, while peripheral channels may remain open for cooling.",
     ),
   ]),
   paragraph([
     text("The preferred slug construction is shown in "),
     figure(34, "Fig. 34"),
     text(
-      ". Each uranium slug 235 is 1.1 inches in diameter and 4 inches long in an aluminum jacket about 20 mils thick. The uranium portion 236 is machined and cleaned, inserted into a jacket can 237, drawn through a sizing die for thermal contact, and sealed with cap 238 and seam weld 240. The jacket prevents air corrosion and keeps fission fragments from entering the air stream.",
+      ". Each uranium slug 235 is 1.1 inches in diameter and 4 inches long in an aluminum jacket about 20 mils thick. The uranium portion 236 is machined and cleaned, inserted into a jacket can 237, drawn through a ",
+    ),
+    term(
+      "sizing die",
+      "A forming tool that draws the jacketed slug to a controlled dimension, improving thermal contact between uranium and its aluminum sheath.",
+    ),
+    text(
+      " for thermal contact, and sealed with cap 238 and seam weld 240. The jacket prevents air corrosion and keeps fission fragments from entering the air stream.",
     ),
   ]),
   paragraph([
     text(
-      "The active portion of the air-cooled reactor is loaded above critical size, for example at a reproduction ratio of about 1.005 with absorbers withdrawn. At seven-inch slug spacing the volume ratio is about 47 carbon to 1 uranium and the rod-lattice K is about 1.06. With about one per cent of fission neutrons delayed for a mean time of about five seconds, neutron density doubles every eight to fifteen seconds. Partial insertion of absorbers slows the rise; near the critical rod position a single doubling may take several hours. When the desired density is reached, inserted absorbers reduce the ratio to unity.",
+      "The active portion of the air-cooled reactor is loaded above critical size, for example at a reproduction ratio of about 1.005 with absorbers withdrawn. At seven-inch slug spacing the volume ratio is about 47 carbon to 1 uranium and the rod-lattice K is about 1.06. With about one per cent of ",
+    ),
+    term(
+      "fission neutrons delayed",
+      "Neutrons emitted after the immediate fission event by radioactive decay of fission products, slowing the power rise enough for mechanical control.",
+    ),
+    text(
+      " for a mean time of about five seconds, neutron density doubles every eight to fifteen seconds. Partial insertion of absorbers slows the rise; near the critical rod position a single doubling may take several hours. When the desired density is reached, inserted absorbers reduce the ratio to unity.",
     ),
   ]),
   paragraph([
-    text("Control rod 241, shown diagrammatically in "),
+    term(
+      "Control rod",
+      "A movable cadmium or boron absorber whose insertion changes the reproduction ratio and holds neutron density at the selected operating level.",
+    ),
+    text(" 241, shown diagrammatically in "),
     figure(32, "Fig. 32"),
+    text(", slides in a graphite channel and is moved by "),
+    term(
+      "rack and pinion",
+      "A toothed mechanical drive that converts actuator rotation into controlled linear insertion or withdrawal of the reactor absorber rod.",
+    ),
     text(
-      ", slides in a graphite channel and is moved by rack and pinion 242. It contains cadmium or boron; shim and safety rods 241a and 241b are also provided. Heat is generated chiefly in the uranium. Aluminum jackets melt at 658 C., and uranium melts at about 1,100 C.; stable temperature must therefore remain below these limits. Atmospheric air passed through the graphite channels and directly over the aluminum jackets permits continuous operation at 250 kilowatts with 32,000 cubic feet per minute and at 500 kilowatts with about 50,000 cubic feet per minute. Increasing fan capacity has permitted continuous operation at 3,000 kilowatts.",
+      " 242. It contains cadmium or boron; shim and safety rods 241a and 241b are also provided. Heat is generated chiefly in the uranium. Aluminum jackets melt at 658 C., and uranium melts at about 1,100 C.; stable temperature must therefore remain below these limits. Atmospheric air passed through the graphite channels and directly over the aluminum jackets permits continuous operation at 250 kilowatts with 32,000 cubic feet per minute and at 500 kilowatts with about 50,000 cubic feet per minute. Increasing fan capacity has permitted continuous operation at 3,000 kilowatts.",
     ),
   ]),
   paragraph([
-    text("Loading apertures 245 in the inlet shield, shown in "),
+    term(
+      "Loading apertures",
+      "Shielded openings aligned with fuel channels so slugs can be charged into the reactor while the cooling system continues circulating air.",
+    ),
+    text(" 245 in the inlet shield, shown in "),
     figure(31, "Figs. 31 and 35", [35]),
+    text(", align with the slug channels. Lead plugs 246 normally close the apertures. A "),
+    term(
+      "charging tube",
+      "A guided loading passage and plunger path that pushes uranium slugs into a channel without interrupting the reactor's continuing air circulation.",
+    ),
     text(
-      ", align with the slug channels. Lead plugs 246 normally close the apertures. A charging tube 247 and plunger mechanism 251 push slugs into a channel while air continues to circulate. The loading mechanism is carried by elevator platform 256 and frame 257 alongside supply car 261. Initial loading starts with central channels and proceeds outward while neutron activity is checked. The control rod is inserted as critical size is approached; removal of the rod and measurement of neutron-density doubling time gives the reproduction ratio. The active core may contain 34 to 50 tons of uranium, and graphite plugs fill unused channels.",
+      " 247 and plunger mechanism 251 push slugs into a channel while air continues to circulate. The loading mechanism is carried by elevator platform 256 and frame 257 alongside supply car 261. Initial loading starts with central channels and proceeds outward while neutron activity is checked. The control rod is inserted as critical size is approached; removal of the rod and measurement of neutron-density doubling time gives the reproduction ratio. The active core may contain 34 to 50 tons of uranium, and graphite plugs fill unused channels.",
     ),
   ]),
   paragraph([
     text(
-      "After loading, the fan is started and the control rod withdrawn until the desired power and stable temperature are reached, then advanced until the reproduction ratio is unity. Air passing through the reactor becomes radioactive and is exhausted from a stack, for example 200 feet above ground. After a run sufficient to produce U239, such as 100 days at 500 kilowatts, the reactor is shut down by fully inserting the control rod and waiting about one-half hour for delayed neutron emission and short-lived activity to subside.",
+      "After loading, the fan is started and the control rod withdrawn until the desired power and stable temperature are reached, then advanced until the reproduction ratio is unity. Air passing through the reactor becomes radioactive and is exhausted from a stack, for example 200 feet above ground. After a run sufficient to produce U239, such as 100 days at 500 kilowatts, the reactor is shut down by fully inserting the control rod and waiting about one-half hour for ",
     ),
+    term(
+      "delayed neutron emission",
+      "The post-fission release of delayed neutrons from radioactive fission products, which continues briefly after shutdown and must subside before the reactor is treated as quiet.",
+    ),
+    text(" and short-lived activity to subside."),
   ]),
   { kind: "heading", level: 2, text: "AN ILLUSTRATIVE LIQUID-COOLED NEUTRONIC REACTOR" },
   paragraph([
     text(
-      "Unloading may be performed by pushing slugs out of the channels, or by inserting fresh slugs so that they push irradiated slugs out. The slugs fall from outlet face 215 into outlet chamber 231 and onto angular pad plates 290, then roll into outlet pipe 291 with valves 292 and 294. The pipe opens into coffin chamber 295 and tunnel 296, where coffin car 299 carries slug coffins 301. Rods 302 and 304 operate the valves behind lead shield 305; crane 306 places caps on filled coffins. Water fills the upper pipe while air circulation is maintained at about one-quarter operating flow. The slugs are cooled in water, then aged under water for about thirty days before chemical treatment.",
+      "Unloading may be performed by pushing slugs out of the channels, or by inserting fresh slugs so that they push irradiated slugs out. The slugs fall from outlet face 215 into outlet chamber 231 and onto angular pad plates 290, then roll into outlet pipe 291 with valves 292 and 294. The pipe opens into ",
     ),
+    term(
+      "coffin chamber",
+      "A shielded receiving space where irradiated uranium slugs are enclosed in coffins before removal, cooling, aging, and later chemical treatment.",
+    ),
+    text(
+      " 295 and tunnel 296, where coffin car 299 carries slug coffins 301. Rods 302 and 304 operate the valves behind ",
+    ),
+    term(
+      "lead shield",
+      "Dense shielding placed around the unloading valves to attenuate the gamma radiation from recently irradiated fuel during remote handling.",
+    ),
+    text(
+      " 305; crane 306 places caps on filled coffins. Water fills the upper pipe while air circulation is maintained at about one-quarter operating flow. The slugs are cooled in water, then aged ",
+    ),
+    term(
+      "under water",
+      "Submerged storage that removes decay heat and provides shielding while short-lived activity decreases before chemical processing begins.",
+    ),
+    text(" for about thirty days before chemical treatment."),
   ]),
   paragraph([
     text(
-      "The additional losses in this air- or helium-cooled system are principally absorption in the aluminum jackets, with a small loss from moderator removed to form the air channels. The K reduction can be about 0.005. Liquid cooling requires pipes to keep the coolant out of the moderator; both the coolant and its pipes can have substantial neutron absorption.",
+      "The additional losses in this air- or helium-cooled system are principally absorption in the aluminum jackets, with a small loss from moderator removed to form the air channels. The K reduction can be about 0.005. ",
+    ),
+    term(
+      "Liquid cooling",
+      "A heat-removal arrangement in which a circulating fluid passes through containing pipes around the fuel while its neutron absorption is included in K.",
+    ),
+    text(
+      " requires pipes to keep the coolant out of the moderator; both the coolant and its pipes can have substantial neutron absorption.",
     ),
   ]),
   paragraph([
+    text("For powers above 1,000 to 3,000 kilowatts, water or diphenyl may be used as a "),
+    term(
+      "liquid coolant",
+      "A water or diphenyl working fluid that carries heat from jacketed fuel through pipes, with its absorption and recirculation properties included in design.",
+    ),
     text(
-      "For powers above 1,000 to 3,000 kilowatts, water or diphenyl may be used as a liquid coolant. Jacketed uranium slugs or rods are placed in pipes so the coolant flows around them. A representative reactor for outputs up to 100,000 kilowatts is shown in ",
+      ". Jacketed uranium slugs or rods are placed in pipes so the coolant flows around them. A representative reactor for outputs up to 100,000 kilowatts is shown in ",
     ),
     figure(37, "Figs. 37, 38, and 39", [38, 39]),
+    text(". Graphite-block reactor 350 is surrounded by graphite reflector 351 and enclosed in "),
+    term(
+      "fluid-tight steel casing",
+      "A sealed structural enclosure that contains the reactor and coolant boundary while supporting shielding and preventing the liquid system from escaping.",
+    ),
     text(
-      ". Graphite-block reactor 350 is surrounded by graphite reflector 351 and enclosed in fluid-tight steel casing 352, supported by I-beams 354 in concrete tank 355. Water 356 shields neutrons and gamma radiation; charging face 357 has shield tank 358 filled with lead shot and water. Aluminum coolant tubes 359 pass through the concrete wall, shield tank, graphite moderator, and casing outlet face 362. Water enters through manifolds, discharges into tank 355, and leaves through outlet pipe 365.",
+      " 352, supported by I-beams 354 in concrete tank 355. Water 356 shields neutrons and gamma radiation; charging face 357 has shield tank 358 filled with lead shot and water. Aluminum coolant tubes 359 pass through the concrete wall, shield tank, graphite moderator, and casing outlet face 362. Water enters through manifolds, discharges into tank 355, and leaves through outlet pipe 365.",
     ),
   ]),
   paragraph([
@@ -1452,29 +1579,56 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
       "The tubes are loaded with aluminum-jacketed uranium slugs 372 in end-to-end relation. Water may pass once through the reactor or be cooled and recirculated; diphenyl requires a closed system. Loading and unloading use the gas-cooled mechanisms. Control rod 370, ionization chamber 371, and shim and safety rods 370a and 370b provide control and monitoring. In ",
     ),
     figure(39, "Fig. 39"),
-    text(
-      " the slugs rest on projections 373 inside coolant tubes 359, providing a uniform coolant annulus.",
+    text(" the slugs rest on projections 373 inside coolant tubes 359, providing a uniform "),
+    term(
+      "coolant annulus",
+      "The controlled ring-shaped passage around each jacketed slug through which liquid coolant flows uniformly to remove heat.",
     ),
+    text("."),
   ]),
   paragraph([
     text(
-      "For one liquid-cooled uranium-graphite example designed for continuous operation at about 100,000 kilowatts, uranium rods in near-optimum graphite geometry give K about 1.07. Aluminum jackets and pipes reduce K by 0.013, coolant reduces K by 0.023, and the total reduction is 0.036, leaving K about 1.034. The principal dimensions are: active-cylinder axial length 7 meters; radius 4.94 meters; uranium-metal weight 200 metric tons; graphite weight 850 metric tons; uranium-rod radius 1.7 centimeters; aluminum jacket thickness 0.5 millimeter; aluminum-pipe thickness 1.5 millimeters; liquid annulus 2.2 millimeters with water or 4 millimeters with diphenyl; 1,695 rods; aluminum weight 8.7 metric tons; and square-array rod spacing 21.3 centimeters.",
+      "For one liquid-cooled uranium-graphite example designed for continuous operation at about 100,000 kilowatts, uranium rods in near-optimum graphite geometry give K about 1.07. Aluminum jackets and pipes reduce K by 0.013, coolant reduces K by 0.023, and the total reduction is 0.036, leaving K about 1.034. The principal dimensions are: active-cylinder axial length 7 meters; radius 4.94 meters; uranium-metal weight 200 metric tons; graphite weight 850 metric tons; uranium-rod radius 1.7 centimeters; aluminum jacket thickness 0.5 millimeter; aluminum-pipe thickness 1.5 millimeters; ",
+    ),
+    term(
+      "liquid annulus",
+      "The specified coolant gap between a fuel jacket and its surrounding pipe, whose thickness controls heat transfer and neutron absorption.",
+    ),
+    text(
+      " 2.2 millimeters with water or 4 millimeters with diphenyl; 1,695 rods; aluminum weight 8.7 metric tons; and square-array rod spacing 21.3 centimeters.",
     ),
   ]),
   paragraph([
+    text("Diphenyl permits a thicker coolant annulus because its "),
+    term(
+      "danger sum",
+      "The aggregate neutron-absorption penalty of impurities, expressed as a dimensionless reduction that can be subtracted from the ideal K value.",
+    ),
     text(
-      "Diphenyl permits a thicker coolant annulus because its danger sum is smaller for a given volume and its boiling temperature is higher. Against this advantage are the need for closed circulation and possible polymerization, which requires make-up fluid. Liquid coolants are suited to outputs up to 500,000 kilowatts. Since K minus 1 for uranium-graphite reactors is only about 0.1, coolant quantity must be limited. D2O uranium-rod reactors can tolerate a larger impurity fraction because K minus 1 can approach 0.3. D2O can itself be used as coolant, reducing parasitic absorption.",
+      " is smaller for a given volume and its boiling temperature is higher. Against this advantage are the need for closed circulation and possible polymerization, which requires make-up fluid. Liquid coolants are suited to outputs up to 500,000 kilowatts. Since K minus 1 for uranium-graphite reactors is only about 0.1, coolant quantity must be limited. D2O uranium-rod reactors can tolerate a larger impurity fraction because K minus 1 can approach 0.3. D2O can itself be used as coolant, reducing parasitic absorption.",
     ),
   ]),
   paragraph([
+    text("By treating coolant and structural elements as "),
+    term(
+      "parasitic impurities",
+      "Non-fuel materials whose neutron absorption lowers the reproduction factor, even though they are required for cooling, support, shielding, or containment.",
+    ),
     text(
-      "By treating coolant and structural elements as parasitic impurities, evaluating their K reduction, and using the resulting K to determine critical and operating sizes, reactors for desired powers can be designed.",
+      ", evaluating their K reduction, and using the resulting K to determine critical and operating sizes, reactors for desired powers can be designed.",
     ),
   ]),
   { kind: "heading", level: 2, text: "USE OF DIFFERENT LATTICES IN THE SAME NEUTRONIC REACTOR" },
   paragraph([
     text(
-      "The first uranium-graphite reactor used two lattice zones with different uranium forms. Other reactors may have zones with different K values and wholly different moderators. A D2O-moderated central portion can raise the average K of a composite reactor; a uranium-H2O lattice can be used around a uranium-D2O center. Such arrangements permit a practical operating size even when one lattice has a low K.",
+      "The first uranium-graphite reactor used two lattice zones with different uranium forms. Other reactors may have zones with different K values and wholly different moderators. A ",
+    ),
+    term(
+      "D2O-moderated central portion",
+      "A heavy-water-rich inner zone whose higher neutron economy can raise the average K of a composite reactor with lower-K surrounding lattices.",
+    ),
+    text(
+      " can raise the average K of a composite reactor; a uranium-H2O lattice can be used around a uranium-D2O center. Such arrangements permit a practical operating size even when one lattice has a low K.",
     ),
   ]),
 ];
@@ -1921,17 +2075,30 @@ const fermiPages51To58Blocks: readonly CuratedSpecificationBlock[] = [
 // certificate in source order. Drawing sheets 1–27 remain outside this packet.
 const fermiPages50To58ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   paragraph([
-    text(
-      "When reactors are constructed of concentric layers, the average K can be calculated. Curves in ",
+    text("When reactors are constructed of "),
+    term(
+      "concentric layers",
+      "Nested reactor zones arranged around a common center, allowing different lattices to contribute according to their neutron-density position.",
     ),
+    text(" the average K can be calculated. Curves in "),
     figure(40, "Fig. 40"),
+    text(" give the "),
+    term(
+      "statistical weight",
+      "A position-dependent value assigned to lattice mass; material near the high-density center contributes more to average neutron economy than equal mass near the edge.",
+    ),
     text(
-      " give the statistical weight w of a sub-side or sub-radius of a zone having a specified lattice, plotted against S/R, where R is the side or radius of the entire active portion and S is the extent of the zone. Statistical weight is the value of a mass of lattice weighted by its position: a mass near the center is worth more than the same mass near the edge because neutron density is higher at the center. The effectiveness of a lattice varies approximately with the square of the average neutron density to which it is exposed.",
+      " w of a sub-side or sub-radius of a zone having a specified lattice, plotted against S/R, where R is the side or radius of the entire active portion and S is the extent of the zone. Statistical weight is the value of a mass of lattice weighted by its position: a mass near the center is worth more than the same mass near the edge because neutron density is higher at the center. The effectiveness of a lattice varies approximately with the square of the average neutron density to which it is exposed.",
     ),
   ]),
   paragraph([
+    text("For a cylindrical active portion of radius R, a central lattice with K1 and "),
+    term(
+      "migration length",
+      "The characteristic distance combining neutron slowing and diffusion from birth as a fast neutron to eventual thermal absorption.",
+    ),
     text(
-      "For a cylindrical active portion of radius R, a central lattice with K1 and migration length M1 may extend to radius S1, a second lattice with K2 and M2 to radius S2, and a third lattice with K3 and M3 to the outer radius R. The curves in ",
+      " M1 may extend to radius S1, a second lattice with K2 and M2 to radius S2, and a third lattice with K3 and M3 to the outer radius R. The curves in ",
     ),
     figure(40, "Fig. 40"),
     text(
@@ -1949,7 +2116,31 @@ const fermiPages50To58ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ]),
   paragraph([
     text(
-      "After all neutron losses except exterior leakage have been evaluated, the reactor size for operation must be determined. A satisfactory method, especially for low-power reactors, is to measure the relaxation distance or exponential constant A in an exponential pile similar in every respect to the proposed reactor. For a sphere the critical radius is obtained from A; for a rectangular parallelepiped the critical side lengths are obtained from the corresponding relation; and for a cylinder the critical height and radius follow from the cylindrical relation containing 2.405/R. Thus critical size can be obtained directly from measured A without first determining a numerical K. If migration length M is known, K can be determined from the relation involving (K - 1)/M and A, and the result can be used for critical and operating sizes at any power.",
+      "After all neutron losses except exterior leakage have been evaluated, the reactor size for operation must be determined. A satisfactory method, especially for low-power reactors, is to measure the ",
+    ),
+    term(
+      "relaxation distance",
+      "The distance over which the neutron flux falls by a specified exponential factor, used with an exponential pile to infer critical dimensions and K.",
+    ),
+    text(" or exponential constant A in an "),
+    term(
+      "exponential pile",
+      "A geometrically comparable subcritical assembly whose measured neutron falloff supplies the relaxation constant used to size the proposed reactor.",
+    ),
+    text(" similar in every respect to the proposed reactor. For a sphere the "),
+    term(
+      "critical radius",
+      "The radius at which neutron production balances leakage and absorption, marking the spherical reactor's unity reproduction threshold.",
+    ),
+    text(
+      " is obtained from A; for a rectangular parallelepiped the critical side lengths are obtained from the corresponding relation; and for a cylinder the critical height and radius follow from the cylindrical relation containing 2.405/R. Thus ",
+    ),
+    term(
+      "critical size",
+      "The geometry at which the reactor reaches unity reproduction after its material losses and neutron leakage have been accounted for.",
+    ),
+    text(
+      " can be obtained directly from measured A without first determining a numerical K. If migration length M is known, K can be determined from the relation involving (K - 1)/M and A, and the result can be used for critical and operating sizes at any power.",
     ),
   ]),
   { kind: "heading", level: 2, text: "CRITICAL AND OPERATING SIZES OF NEUTRONIC REACTORS" },
@@ -2107,12 +2298,12 @@ const fermiPages50To58ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ),
 ];
 
-export const fermiReactorArchivalEdition: FermiReactorWipEdition = {
+export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   preparedBy: "Classic Patents editorial agent (SteelNeedle)",
   preparedAt: "2026-08-18",
-  completeFacsimileReviewed: false,
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",

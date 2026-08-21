@@ -87,13 +87,13 @@ shared gas and spray services so its labeled flow path remains legible. The 2D
 face and archival Fig. 1 preview retain the complete printed three-vessel
 arrangement; the isolated 3D composition is not presented as a facsimile.
 
-The root publication hold remains in place pending the deferred executable
-validation pass and one known shared-component repair: the existing claim-state
-predicate still keys Claim 1 to a broad temperature interval, although the sole
-claim actually requires the paired air-expulsion and cooling operations. The
-source-correct constraint definition is staged in `claimConstraints.ts`; the
-visitor claim-state branch must be changed to the same two-operation predicate
-after its exact Agent Mail lease is obtained.
+The root publication hold remains in place pending the deferred executable and
+independent visitor-acceptance passes. The shared claim-state predicate has been
+corrected to the source's paired air-expulsion and cooling operations: it now
+requires both operations to be present, without inventing a minimum percentage
+or treating a broad temperature interval as the legal test.
+The source-correct constraint definition in `claimConstraints.ts` states the
+same two-operation boundary.
 
 An earlier visitor implementation instead taught a later modern pasteurization
 story—thermal hold, microbial log kill, alcohol yield, pressure, shelf life,

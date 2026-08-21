@@ -1,8 +1,9 @@
 import {
   FERMI_REACTOR_FIGURE_CAPTIONS,
+  fermiReactorArchivalEdition,
   fermiReactorManualClaimText,
 } from "@/data/editions/fermiReactorEdition";
-import type { Patent } from "@/types/patent";
+import type { CuratedSpecificationEdition, Patent } from "@/types/patent";
 
 const FERMI_REACTOR_CALLOUTS_MAP: Record<
   string,
@@ -626,10 +627,14 @@ export const fermiReactorPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
   originalTextAsset: {
-    url: "/patents/source-text/us-2708656-fermi-reactor.txt",
+    url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
     pageCount: 58,
-    kind: "source-pdf-text-layer",
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents Editorial Team",
+    reviewedAt: "2026-03-24",
+    sourcePdfSha256: fermiReactorArchivalEdition.sourcePdfSha256,
   },
+  archivalEdition: fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656
 Patented May 17, 1955

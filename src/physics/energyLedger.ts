@@ -272,7 +272,7 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-706737-fessenden-wireless": {
-      const carrierFreqKhz = params.carrierFreqKhz ?? 50.0;
+      const _carrierFreqKhz = params.carrierFreqKhz ?? 50.0;
       const rfCurrentAmps = params.rfCurrentAmps ?? 18.0;
       const antennaRadiationOhms = 4.2;
       const alternatorRpm = 10000.0;
@@ -795,7 +795,7 @@ export function computePortHamiltonianEnergy(
     case "us-120057-gramme-dynamo": {
       const driveRpm = params.driveRpm ?? 900.0;
       const fieldCurrentA = params.fieldCurrentA ?? 8.5;
-      const outputVoltageV = params.outputVoltageV ?? 110.0;
+      const _outputVoltageV = params.outputVoltageV ?? 110.0;
       const ringCoreMassKg = 14.0;
       const omega = (driveRpm * 2 * Math.PI) / 60.0;
       kinetic = 0.5 * (0.5 * ringCoreMassKg * 0.12 * 0.12) * omega * omega;
@@ -839,11 +839,149 @@ export function computePortHamiltonianEnergy(
     case "us-2543181-land-polaroid": {
       const rollerPressureN = params.rollerPressureN ?? 85.0;
       const rollerSpeedMps = 0.05;
-      const podVolumeMl = 2.5;
+      const _podVolumeMl = 2.5;
       powerIn = rollerPressureN * rollerSpeedMps; // Manual roller crank mechanical work
       potential = 0.5 * 1200.0 * 0.002 ** 2; // Rupturable pod pouch burst spring strain
       dissipated = 0.85 * powerIn + 1.2; // Viscous hydro-shear dissipation of reagent paste
       thermal = 45.0; // Exothermic chemical reduction enthalpy
+      break;
+    }
+
+    case "us-31128-otis-elevator": {
+      const carMassKg = params.carMassKg ?? 800.0;
+      const velocityMps = params.velocityMps ?? 1.2;
+      const heightM = params.heightM ?? 15.0;
+      kinetic = 0.5 * carMassKg * velocityMps ** 2; // Elevator car & counterweight kinetic energy
+      potential = carMassKg * 9.80665 * heightM; // Gravitational potential energy
+      powerIn = carMassKg * 9.80665 * velocityMps; // Hoisting cable power
+      dissipated = 450.0; // Guide rail and safety ratchet friction
+      break;
+    }
+
+    case "us-x72-whitney-cotton-gin": {
+      const crankRpm = params.crankRpm ?? 60.0;
+      const omega = (crankRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * 2.5 * omega ** 2 + 0.5 * 1.2 * (omega * 3.0) ** 2; // Saw disk & brush cylinder inertia
+      potential = 15.0;
+      powerIn = 120.0; // Hand crank input power (120 W human effort)
+      dissipated = 115.0; // Cotton fiber tearing & gridded wire friction
+      break;
+    }
+
+    case "us-x8277-mccormick-reaper": {
+      const horseSpeedMps = params.speedMps ?? 1.5;
+      const bladeSpeedMps = horseSpeedMps * 2.4;
+      kinetic = 0.5 * 350.0 * horseSpeedMps ** 2 + 0.5 * 8.0 * bladeSpeedMps ** 2; // Reaper chassis & sickle bar kinetic energy
+      potential = 25.0;
+      powerIn = 746.0 * 2.0; // Two draught horses (~1500 W mechanical drawbar power)
+      dissipated = 1420.0; // Cutter bar reciprocating friction and grain stem shear
+      break;
+    }
+
+    case "us-621195-zeppelin-airship": {
+      const airshipSpeedMps = params.speedMps ?? 8.0;
+      const airshipMassKg = 12000.0;
+      const gasVolumeM3 = 11300.0;
+      kinetic = 0.5 * airshipMassKg * airshipSpeedMps ** 2; // Rigid dirigible kinetic energy
+      potential = (1.225 - 0.089) * gasVolumeM3 * 9.80665 * 100.0; // Hydrogen aerostat buoyancy potential
+      powerIn = 2.0 * 16.0 * 735.5; // Twin Daimler internal-combustion engines (2 x 16 HP)
+      dissipated = 0.5 * 1.225 * airshipSpeedMps ** 3 * 0.08 * 140.0; // Aerodynamic drag dissipation
+      break;
+    }
+
+    case "us-388850-eastman-kodak": {
+      const _shutterTensionN = 12.0;
+      potential = 0.5 * 450.0 * 0.008 ** 2; // Sector shutter spring elastic strain energy
+      kinetic = 0.02; // Spool inertia
+      powerIn = 0.5; // Manual film winding key rotation
+      dissipated = 0.48; // Roll film friction and ratchet escapement loss
+      break;
+    }
+
+    case "us-6469-lincoln-buoy": {
+      const displacementM3 = params.displacementM3 ?? 12.0;
+      potential = 1000.0 * 9.80665 * displacementM3 * 0.8; // Riverboat buoyancy lift potential
+      kinetic = 15.0;
+      powerIn = 1800.0; // Main steam engine air pump shaft work
+      dissipated = 1750.0; // Bellows expansion aerodynamic drag and river current friction
+      break;
+    }
+
+    case "us-3237-rillieux-evaporator":
+    case "us-4879-rillieux-evaporator": {
+      const steamRateKgPerS = 0.25;
+      const latentHeatJPerKg = 2.257e6;
+      thermal = 1500.0 * 4184.0 * (100.0 - 55.0); // Cane juice multiple-effect latent & sensible heat
+      powerIn = steamRateKgPerS * latentHeatJPerKg; // Boiler exhaust steam enthalpy flux (~564 kW)
+      dissipated = 0.96 * powerIn; // Triple-effect vapor condensation & vacuum heat rejection
+      break;
+    }
+
+    case "us-105338-hyatt-celluloid": {
+      const pressForceN = params.pressForceN ?? 45000.0;
+      const moldTempC = params.moldTempC ?? 125.0;
+      potential = 0.5 * (pressForceN ** 2 / 1.5e7); // Hydraulic mold plunger strain energy
+      thermal = 2.5 * 1400.0 * (moldTempC - 20.0); // Celluloid pyroxyline billet thermal content
+      powerIn = 2200.0; // Steam heating jacket & ram work
+      dissipated = 2100.0; // Thermal dissipation and plastic viscous shear
+      break;
+    }
+
+    case "us-395781-hollerith-tabulating": {
+      const solenoidCount = 40;
+      const currentA = 0.8;
+      const inductanceH = 0.05;
+      em = 0.5 * solenoidCount * inductanceH * currentA ** 2; // Mercury cup pin-contact magnetic energy
+      kinetic = 0.5 * solenoidCount * 0.015 * 0.2 ** 2; // Dial register escapement ratchet kinetic energy
+      powerIn = 12.0 * (solenoidCount * currentA * 0.25); // 12V battery power
+      dissipated = 0.95 * powerIn; // Coil Joule heating and friction
+      break;
+    }
+
+    case "us-588-ericsson-propeller": {
+      const shaftRpm = params.shaftRpm ?? 120.0;
+      const omega = (shaftRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * 85.0 * omega ** 2 * 2.0; // Contra-rotating twin coaxial screw propeller kinetic energy
+      powerIn = 45000.0; // Marine steam engine shaft power (60 HP)
+      dissipated = 0.35 * powerIn; // Hydrodynamic vortex swirl and skin friction dissipation
+      break;
+    }
+
+    case "gb-931-arkwright-water-frame": {
+      const waterHeadM = 2.5;
+      const flowRateKgPerS = 80.0;
+      const flyerRpm = 1800.0;
+      const omega = (flyerRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * (64 * 0.0008) * omega ** 2; // 64 spinning flyers rotational kinetic energy
+      powerIn = flowRateKgPerS * 9.80665 * waterHeadM * 0.65; // Mill race water wheel power
+      dissipated = 0.92 * powerIn; // Roller drafting friction and flyer bearing drag
+      break;
+    }
+
+    case "us-135245-pasteur-fermentation": {
+      const wortVolumeLiters = 500.0;
+      const wortTempC = params.wortTempC ?? 18.0;
+      thermal = wortVolumeLiters * 4184.0 * (wortTempC - 4.0); // Fermentation wort enthalpy
+      powerIn = 350.0; // Yeast anaerobic glycolysis metabolic heat generation
+      dissipated = 340.0; // Attemperator cooling coil thermal dissipation
+      break;
+    }
+
+    case "gb-1420-cort-puddling-rolling": {
+      const furnaceTempC = params.furnaceTempC ?? 1400.0;
+      const chargeKg = 250.0;
+      thermal = chargeKg * 650.0 * furnaceTempC; // Molten pig iron decarburization thermal energy
+      powerIn = 45000.0; // Coal reverberatory flame input power
+      dissipated = 42000.0; // Radiative furnace flue gas dissipation
+      break;
+    }
+
+    case "us-48475-yale-lock": {
+      const pinCount = 5;
+      potential = pinCount * 0.5 * 180.0 * 0.003 ** 2; // 5 pin-tumbler phosphor bronze spring potential
+      kinetic = 0.005; // Plug shear line rotation
+      powerIn = 0.8; // Key insertion mechanical work
+      dissipated = 0.78; // Key bitting friction
       break;
     }
 
