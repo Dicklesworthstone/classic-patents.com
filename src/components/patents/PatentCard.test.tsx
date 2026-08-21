@@ -19,7 +19,7 @@ describe("PatentCard component", () => {
     expect(html).toContain("US 821,393");
     expect(html).toContain("Wright Flyer");
     expect(html).toContain("Orville Wright, Wilbur Wright");
-    expect(html).toContain("1906-05-22");
+    expect(html).toContain("May 22, 1906");
     expect(html).toContain("/patents/us-821393-wright-flyer");
     expect(html).toContain("Explore");
   });
