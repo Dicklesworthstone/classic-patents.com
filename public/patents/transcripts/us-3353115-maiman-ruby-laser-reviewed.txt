@@ -466,9 +466,9 @@ high energy state corresponding to E; which is actually a
 broadband of energy levels rather than a discrete energy
 level. The atoms, or ions, as the case may be, are excited
 or pumped from the level 1 to the region 3 by means of
-an optical pumping source having the energies or fre-
-quencics vs, corresponding to the difference between the
-encrgy of level 1 and those of the levels throughout region
+an optical pumping source having energies corresponding
+to the difference between the energy of level 1 and those
+of the levels throughout region 3.
 
 10
 
