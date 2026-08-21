@@ -49,7 +49,7 @@ const fig = (text: string, numbers: readonly number[]): CuratedSpecificationInli
   label: `Facsimile preview for ${text}`,
   figurePreviews: numbers.map((number) => ({
     src: figureAssetPath(number),
-    alt: `Source drawing ${number}`,
+    alt: `Fig. ${number} from US 235,199`,
     width: FIGURE_DIMS[number].width,
     height: FIGURE_DIMS[number].height,
   })),
