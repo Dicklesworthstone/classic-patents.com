@@ -35,12 +35,16 @@
   *,
   ::before,
   ::after {
+    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
     animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
     animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
     transition-duration: 0.01ms !important;
   }
 
   html {
+    /* biome-ignore lint/complexity/noImportantStyles: must override the no-preference smooth-scroll rule above */
     scroll-behavior: auto !important;
   }
 }
