@@ -69,7 +69,8 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
     const figureReferences = bellPhotophoneArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter(
-            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
+              inline.kind === "reference" && inline.referenceType === "figure",
           )
         : [],
     );
@@ -82,15 +83,17 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
           width: 360,
           height: 560,
         }),
-        ...([
-          [18, 500, 510],
-          [19, 310, 480],
-          [20, 280, 480],
-          [21, 320, 480],
-          [22, 260, 340],
-          [23, 200, 340],
-          [24, 230, 470],
-        ] as const).map(([number, width, height]) =>
+        ...(
+          [
+            [18, 500, 510],
+            [19, 310, 480],
+            [20, 280, 480],
+            [21, 320, 480],
+            [22, 260, 340],
+            [23, 200, 340],
+            [24, 230, 470],
+          ] as const
+        ).map(([number, width, height]) =>
           expect.objectContaining({
             src: `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`,
             width,
