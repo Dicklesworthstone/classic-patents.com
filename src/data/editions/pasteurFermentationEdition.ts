@@ -6,21 +6,24 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 
-const figure = (number: 1 | 2): CuratedSpecificationInline => ({
+const figure = (
+  number: 1 | 2,
+  sourceText: "Figure 1" | "Fig. 1" | "Fig. 2" = `Fig. ${number}`,
+): CuratedSpecificationInline => ({
   kind: "reference",
-  text: `Fig. ${number}`,
+  text: sourceText,
   href: `#fig-${number}`,
   referenceType: "figure",
   label: `Open the source-faithful Fig. ${number} crop from US 135,245`,
   figurePreviews: [
     {
-      src: `/patents/figures/us-135245-pasteur-fermentation/figure-${number}${number === 1 ? "-v2" : ""}.png`,
+      src: `/patents/figures/us-135245-pasteur-fermentation/figure-${number}-v3.png`,
       alt:
         number === 1
           ? "Fig. 1 from US 135,245: three wort vessels, water-spray piping, carbonic-acid generator, and drainage."
           : "Fig. 2 from US 135,245: a modified vessel with removable top and water-spray cooling.",
-      width: number === 1 ? 1250 : 700,
-      height: number === 1 ? 920 : 720,
+      width: number === 1 ? 1750 : 900,
+      height: number === 1 ? 1150 : 750,
     },
   ],
 });
@@ -29,8 +32,8 @@ const figure = (number: 1 | 2): CuratedSpecificationInline => ({
 export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "7c9145e813b652e9da76472a8e6d0b2fa3088aeb1cea34b5ae3163f4d673a649",
-  preparedBy: "CopperLotus, manual facsimile review",
-  preparedAt: "2026-08-17",
+  preparedBy: "CopperLotus; GoldStone full facsimile repair review",
+  preparedAt: "2026-08-20",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -96,13 +99,11 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: "To enable those skilled in the art to fully understand and practice my improved process for the manufacture of beer, I will proceed to more fully describe it, referring at the same time by letters to the accompanying drawing, in which I have shown an apparatus adapted to carry on my said improved process. At ",
         },
-        figure(1),
+        figure(1, "Figure 1"),
         {
           kind: "text",
           text: ", A A A represent three casks or tanks, which may be made of galvanized iron, wood, or other suitable material, and which are supported on suitable stands b, as represented. Above the series of cylinders or vessels A is arranged a water-supply pipe, E, from which depend branch pipes, (one over each of the vessels A,) provided with cocks r, and having attached to their lower ends flexible tubes or hoses, which in turn carry at their lower extremities spray-nozzles P. ",
         },
-        figure(1),
-        { kind: "text", text: " shows the three vessels and the spray arrangement." },
       ],
     },
     {
@@ -129,7 +130,7 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The escape of the gas is permitted through exit or escape tubes at a′, which extend siphon-like into water cups or chambers v from whence the gas may be collected in a ",
+          text: "The escape of the gas is permitted through exit or escape tubes at x, which extend siphon-like into water cups or chambers v from whence the gas may be collected in a ",
         },
         {
           kind: "term",
@@ -189,7 +190,7 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
         },
         {
           kind: "term",
-          text: "Réaumur",
+          text: "Reaumur",
           definition:
             "A temperature scale on which 0° is water’s freezing point and 80° is its boiling point; 16°–18° Réaumur is 20°–22.5 °C.",
           label: "Temperature scale",
@@ -262,7 +263,11 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
         { kind: "text", text: "." },
       ],
     },
-    { kind: "heading", level: 2, text: "Claim" },
+    {
+      kind: "heading",
+      level: 2,
+      text: "What I claim as new in the process of brewing or in the manufacture of beer is—",
+    },
     {
       kind: "claim",
       number: 1,
