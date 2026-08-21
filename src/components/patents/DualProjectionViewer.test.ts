@@ -1,11 +1,27 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
 import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
-import { archivalEditionForPublication, viewModeFromSearch } from "./DualProjectionViewer";
+import {
+  applyPatentViewToUrl,
+  archivalEditionForPublication,
+  viewModeFromSearch,
+} from "./DualProjectionViewer";
+
+const VIEWER_SOURCE = readFileSync(
+  join(process.cwd(), "src/components/patents/DualProjectionViewer.tsx"),
+  "utf8",
+);
+const PATENT_PAGE_SOURCE = readFileSync(
+  join(process.cwd(), "src/app/patents/[id]/page.tsx"),
+  "utf8",
+);
+const E2E_AUDIT_SOURCE = readFileSync(join(process.cwd(), "scripts/e2e-visual-audit.ts"), "utf8");
 
 describe("patent view URL state", () => {
   test("accepts each documented face and ignores unrecognized query values", () => {
@@ -17,6 +33,42 @@ describe("patent view URL state", () => {
     expect(viewModeFromSearch("?view=split-view")).toBe("split-view");
     expect(viewModeFromSearch("?view=unknown")).toBeUndefined();
     expect(viewModeFromSearch("")).toBeUndefined();
+  });
+
+  test("writes ?view= on face change, preserves other query keys, and no-ops when already set", () => {
+    expect(
+      applyPatentViewToUrl(
+        "https://classic-patents.com/patents/us-821393-wright-flyer",
+        "interactive-sim",
+      ),
+    ).toBe("/patents/us-821393-wright-flyer?view=interactive-sim");
+    expect(
+      applyPatentViewToUrl(
+        "https://classic-patents.com/patents/us-821393-wright-flyer?theme=blueprint#claim-1",
+        "original-spec",
+      ),
+    ).toBe("/patents/us-821393-wright-flyer?theme=blueprint&view=original-spec#claim-1");
+    expect(
+      applyPatentViewToUrl(
+        "https://classic-patents.com/patents/us-821393-wright-flyer?view=interactive-sim",
+        "interactive-sim",
+      ),
+    ).toBeNull();
+  });
+
+  test("keeps client history sync and does not reintroduce the live-checkout state-only setter", () => {
+    expect(VIEWER_SOURCE).toContain("applyPatentViewToUrl");
+    expect(VIEWER_SOURCE).toContain("window.history.pushState");
+    expect(VIEWER_SOURCE).toContain('addEventListener("popstate"');
+    expect(VIEWER_SOURCE).toContain("viewModeFromSearch");
+    expect(VIEWER_SOURCE).toContain("syncFromLocation");
+    expect(VIEWER_SOURCE).not.toMatch(
+      /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
+    );
+    expect(PATENT_PAGE_SOURCE).toContain("<DualProjectionViewer patent={patent} />");
+    expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
+    expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
+    expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');
   });
 });
 

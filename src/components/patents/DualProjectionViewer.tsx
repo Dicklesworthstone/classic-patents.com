@@ -78,6 +78,23 @@ export function viewModeFromSearch(search: string): PatentViewMode | undefined {
   return isPatentViewMode(candidate) ? candidate : undefined;
 }
 
+/**
+ * Next href after a face click. Returns null when `view` is already `mode`
+ * so history is not double-pushed. Preserves other query keys and the hash.
+ *
+ * Face selection stays a client query param. Do not lift `searchParams` into
+ * the RSC patent page (that makes every `/patents/[id]` route dynamic). Do not
+ * drop pushState/popstate either: a `.classic-patents-live-*` checkout once
+ * mutated React state only, so `?view=` deep-links stopped updating and Back
+ * left the old face on screen.
+ */
+export function applyPatentViewToUrl(href: string, mode: PatentViewMode): string | null {
+  const url = new URL(href, "https://classic-patents.com");
+  if (url.searchParams.get("view") === mode) return null;
+  url.searchParams.set("view", mode);
+  return `${url.pathname}${url.search}${url.hash}`;
+}
+
 export { archivalEditionForPublication };
 
 function viewModeFromLocation(): PatentViewMode | undefined {
@@ -164,10 +181,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
 
   const setViewMode = useCallback((mode: PatentViewMode) => {
     setViewModeState(mode);
-    const url = new URL(window.location.href);
-    if (url.searchParams.get("view") === mode) return;
-    url.searchParams.set("view", mode);
-    window.history.pushState({ patentView: mode }, "", url);
+    const next = applyPatentViewToUrl(window.location.href, mode);
+    if (!next) return;
+    window.history.pushState({ patentView: mode }, "", next);
   }, []);
 
   // Quick keyboard shortcuts: 1-6 for instant face switching
