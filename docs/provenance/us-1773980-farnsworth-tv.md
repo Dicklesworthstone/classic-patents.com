@@ -50,3 +50,17 @@ single-tube/magnetic-raster account that the former record mixed into this
 catalogue entry. Its stated system uses a photo-electric plate, fixed
 electrical shutter, differently timed electrical potentials, radio link,
 light rotator, and quartz oscillographs.
+
+## Current candidate boundary (2026-08-21)
+
+The current text candidate preserves the complete ordered 13-page ledger and
+all eighteen printed claims, and its continuous edition now carries authored
+multi-preview references for the grouped citations “Figures 4 and 5” and
+“Figures 15, 16 and 17.” The v2 figure PNGs remain preserved source-derived
+assets, but they are not independently accepted by this receipt: the reported
+Fig. 1 header/signature contamination, Fig. 2 inclusion of Fig. 3, and Fig. 3
+signature contamination require a fresh cloud Luna visual comparison against
+the pinned drawing sheets. PNG existence and IHDR dimension checks establish
+neither crop boundaries nor figure identity. Until that comparison and any
+needed versioned crops are independently reviewed, this record is a candidate
+only and must remain withheld from publication.
