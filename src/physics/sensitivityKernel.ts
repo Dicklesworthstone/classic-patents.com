@@ -180,6 +180,24 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-2495429-spencer-microwave": {
+      if (controlKey === "anodeVoltage" || controlKey === "anodeVoltageVolts") {
+        const va = params.anodeVoltage ?? params.anodeVoltageVolts ?? 2200.0;
+        // Hull cutoff field sensitivity: B_c ~ sqrt(V_a) -> dBc/dVa = B_c / (2 * V_a)
+        const bc = 1350.0 * Math.sqrt(va / 2200.0);
+        const dBc_dva = bc / (2 * va);
+        return {
+          metricName: "Hull Cutoff Field",
+          derivativeSymbol: "∂B_c / ∂V_a",
+          derivativeValue: Number(dBc_dva.toFixed(3)),
+          derivativeUnit: "Gauss / V",
+          interpretation:
+            "Magnetic field threshold required to maintain magnetron electron wheel cutoff.",
+        };
+      }
+      break;
+    }
+
     case "us-2981877-noyce-ic":
     case "us-3138743-kilby-integrated-circuit": {
       if (controlKey === "reverseBiasVoltageV" || controlKey === "reverseBias") {

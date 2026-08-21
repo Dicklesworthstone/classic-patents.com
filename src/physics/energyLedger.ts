@@ -111,6 +111,18 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-2495429-spencer-microwave": {
+      const powerW = params.rfPowerWatts ?? 800.0;
+      const anodeV = params.anodeVoltage ?? 2200.0;
+      // Stored cavity EM resonant field energy
+      em = (powerW / (2 * Math.PI * 2.45e9)) * 50.0; // Q-factor scaled
+      const anodeCurrentA = powerW / (anodeV * 0.62); // 62% magnetron efficiency
+      powerIn = anodeV * anodeCurrentA; // DC anode electrical input
+      dissipated = powerW; // Dielectric heating in food load
+      thermal = 0.5 * 4184.0 * 25.0; // 500g water thermal capacity
+      break;
+    }
+
     default: {
       kinetic = 100.0;
       potential = 50.0;

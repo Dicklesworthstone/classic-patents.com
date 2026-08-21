@@ -22,6 +22,9 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 });
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-1-01.png": { width: 2320, height: 3408 },
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png": { width: 2320, height: 3408 },
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png": { width: 2320, height: 3408 },
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png": {
     width: 1600,
     height: 1100,
@@ -61,6 +64,12 @@ const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
 };
 
 const FIGURE_PREVIEW_ALTS: Readonly<Record<string, string>> = {
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-1-01.png":
+    "Source drawing sheet 1 containing Figures 1 through 3.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png":
+    "Source drawing sheet 2 containing Figures 4 through 7.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png":
+    "Source drawing sheet 3 containing Figures 8 through 11.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png":
     "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png":
@@ -116,22 +125,22 @@ export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly s
     "Preamble and inventor declaration by Theodore H. Maiman of Pacific Palisades, California, assigning his landmark solid-state ruby laser invention to Hughes Aircraft Company under Application Serial No. 102,698 filed April 13, 1961.",
   ],
   4: [
-    "Apparatus disclosure: a synthetic ruby cylinder directly coupled to a high-intensity helical xenon flash tube and resonant optical cavity mirrors as illustrated in Figure 1.",
+    "Apparatus disclosure: a synthetic ruby cylinder is placed coaxially within a helical gas-filled flash tube, with reflective end plating and an output opening as described for Figure 4.",
   ],
   5: [
-    "Quantum mechanical three-level architecture: optical excitation from 4A2 ground state to broad 4F1/4F2 pump bands, followed by sub-picosecond non-radiative phonon relaxation to the metastable 2E level as illustrated in Figure 2.",
+    "The energy-level discussion explains pumping from level 1 to a broad region 3, followed by a radiationless transition to level 2 and stimulated emission back to level 1, as drawn in Figure 1.",
   ],
   6: [
-    "Achievement of three-level population inversion (N2 > N1): when optical pumping transfers more than 50% of chromium ions into the metastable state, stimulated emission overcomes resonant ground-state absorption at 694.3 nm.",
+    "The specification describes the inverted condition in which the upper-state population exceeds the lower-state population, allowing the radiating wave to be amplified rather than attenuated.",
   ],
   7: [
-    "Fabry-Perot resonator fabrication: precision polished, parallel end facets on the ruby rod with opaque silver rear mirror and partial-transmission front output coupler as shown in Figure 4.",
+    "The rod ends provide repeated reflections, and an opening in one end plating couples the coherent beam out, as shown in Figure 4.",
   ],
   8: [
-    "Liquid-cooled cavity housing architecture: circulating coolant jacket surrounding the ruby rod to maintain low-temperature crystal stability during high-joule flash discharges as shown in Figure 7.",
+    "Figure 7 is the energy-level diagram for the fluorescein-separated optical-pumping embodiment described with Figure 6.",
   ],
   9: [
-    "Colidar laser radar system: the earliest LIDAR ranging instrument combining pulsed ruby laser transmitter and photoelectric receiver for time-of-flight distance measurement as shown in Figure 18.",
+    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
   ],
   11: [
     "Official statutory claims defining the legal scope of the ruby laser system and solid-state optical maser apparatus.",
@@ -141,8 +150,8 @@ export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly s
 export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
-  preparedBy: "Classic Patents editorial agent (Antigravity)",
-  preparedAt: "2026-08-20",
+  preparedBy: "Classic Patents editorial agent (GPT-5.6 Luna)",
+  preparedAt: "2026-08-21",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -167,6 +176,135 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       level: 3,
       text: "Detailed Description of the Invention",
     },
+    p(
+      text("The accompanying drawings are described as follows: "),
+      ref(
+        "FIG. 1",
+        "#figure-1",
+        "Figure 1",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png",
+      ),
+      text(" is an energy-level diagram; "),
+      ref(
+        "FIG. 2",
+        "#figure-2",
+        "Figure 2",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png",
+      ),
+      text(" illustrates optical pumping; "),
+      ref(
+        "FIG. 3",
+        "#figure-3",
+        "Figure 3",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-1-01.png",
+      ),
+      text(" shows optical pumping with sunlight; "),
+      ref(
+        "FIG. 4",
+        "#figure-4",
+        "Figure 4",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png",
+      ),
+      text(" shows a helical gas-filled flash tube; "),
+      ref(
+        "FIG. 5",
+        "#figure-5",
+        "Figure 5",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
+      ),
+      text(" an alternative hollow gas-filled cylinder; "),
+      ref(
+        "FIG. 6",
+        "#figure-6",
+        "Figure 6",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
+      ),
+      text(" a hollow optical pump separated by fluorescent material; "),
+      ref(
+        "FIG. 7",
+        "#figure-7",
+        "Figure 7",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
+      ),
+      text(" its energy-level operation; "),
+      ref(
+        "FIG. 8",
+        "#figure-8",
+        "Figure 8",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" a hollow active laser cylinder and coolant; "),
+      ref(
+        "FIG. 9",
+        "#figure-9",
+        "Figure 9",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" a refrigerated laser material; "),
+      ref(
+        "FIG. 10",
+        "#figure-10",
+        "Figure 10",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" an uncoated segment; "),
+      ref(
+        "FIG. 11",
+        "#figure-11",
+        "Figure 11",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" a coated segment; "),
+      ref(
+        "FIG. 12",
+        "#figure-12",
+        "Figure 12",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" a segment surrounded by high-index coolant; "),
+      ref(
+        "FIG. 13",
+        "#figure-13",
+        "Figure 13",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" an interferometer system; "),
+      ref(
+        "FIG. 14",
+        "#figure-14",
+        "Figure 14",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" and "),
+      ref(
+        "FIG. 15",
+        "#figure-15",
+        "Figure 15",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" additional interferometers; "),
+      ref(
+        "FIG. 16",
+        "#figure-16",
+        "Figure 16",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" and "),
+      ref(
+        "FIG. 17",
+        "#figure-17",
+        "Figure 17",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(" laser systems using an exploding-wire optical pump; and "),
+      ref(
+        "FIG. 18",
+        "#figure-18",
+        "Figure 18",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png",
+      ),
+      text(" a practical colidar system using a laser."),
+    ),
     p(
       text("This invention relates to "),
       term(
@@ -193,7 +331,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ),
       term(
         "ruby element",
-        "A cylindrical rod or shaped crystal of pink ruby containing approximately 0.05% Cr2O3 by weight in an Al2O3 crystal host lattice.",
+        "A cylindrical rod or shaped crystal of ruby serving as the active solid-state laser material.",
       ),
       text(" having optical reflecting faces at its ends forming an "),
       term(
@@ -207,10 +345,10 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ),
       text(" as illustrated in "),
       ref(
-        "FIG. 1",
-        "#figure-1",
-        "Figure 1",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png",
+        "FIG. 4",
+        "#figure-4",
+        "Figure 4",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png",
       ),
       text("."),
     ),
@@ -222,28 +360,28 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ),
       text(" are illustrated in "),
       ref(
-        "FIG. 2",
-        "#figure-2",
-        "Figure 2",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png",
+        "FIG. 1",
+        "#figure-1",
+        "Figure 1",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png",
       ),
       text(
-        ". Chromium atoms in the ruby crystal initially reside in the ground state (Level 1). High-intensity broadband optical pumping light in the green (560 nm) and violet (410 nm) absorption bands excites the chromium ions to the broad third energy levels (Level 3). From these levels, the excited ions undergo an extremely rapid ",
+        ". Chromium atoms in the ruby crystal initially reside in the ground state (Level 1). Broadband optical pumping light excites the chromium ions to the broad third energy region (Level 3). From this region, the excited ions undergo a ",
       ),
       term(
         "radiationless transition",
-        "A fast sub-microsecond non-radiative phonon relaxation wherein ions lose excess vibrational energy to the sapphire crystal lattice without emitting photons.",
+        "A non-radiative transition in which excited ions lose energy to the crystal lattice without emitting light.",
       ),
       text(" to the discrete "),
       term(
         "metastable second energy level",
-        "The long-lived 2E doublet state of Cr3+ with a spontaneous fluorescence lifetime of approximately 3.0 to 4.3 milliseconds at room temperature.",
+        "The discrete upper state in which excited ions remain until stimulated or spontaneous emission returns them toward the ground state.",
       ),
       text(" (Level 2)."),
     ),
     p(
       text(
-        "Because the lifetime of the metastable level 2 ($3.0\\text{--}4.3\\text{ ms}$) is several orders of magnitude longer than the relaxation time from level 3, intense optical pumping populates level 2 faster than spontaneous decay occurs. When more than half of the total chromium ion population is transferred from level 1 to level 2, a true ",
+        "Because the relaxation into level 2 is favored over direct return to the ground state, optical pumping can establish a population inversion. When the population of level 2 exceeds that of level 1, a true ",
       ),
       term(
         "population inversion",
@@ -257,13 +395,8 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "The quantum process predicted by Einstein where an incoming photon induces an excited atom to emit an identical second photon of the exact same frequency, phase, polarization, and direction.",
       ),
       text(
-        " rather than absorption, producing net optical amplification at the deep-red wavelength of ",
+        " rather than absorption, producing net optical amplification at the transition frequency.",
       ),
-      term(
-        "694.3 nanometers",
-        "The exact R1 fluorescence line emission wavelength of ruby at room temperature (vacuum wavenumber 14,400 cm^-1).",
-      ),
-      text(" ($6943\\ \\text{\\AA}$)."),
     ),
     p(
       text(
@@ -276,22 +409,18 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png",
       ),
       text(
-        ". One end face is coated with an opaque silver reflecting layer ($R_1 \\approx 99.9\\%$) while the opposite end face is coated with a partially transmitting silver layer or provided with a central transmission aperture ($R_2 \\approx 90\\%\\text{--}98\\%$) to permit extraction of the output beam.",
+        ". One end face is coated to reflect light while the opposite end face is coated to transmit part of the light or provided with a central transmission aperture to permit extraction of the output beam.",
       ),
     ),
     p(
-      text(
-        "For high repetition rates or continuous operation, the ruby rod and flash tube are enclosed within a cooled optical cavity structure as shown in ",
-      ),
+      text("An embodiment using a cooled optical cavity structure is shown in "),
       ref("FIG. 7", "#figure-7", "Figure 7", [
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png",
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png",
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png",
       ]),
-      text(
-        ", utilizing circulating liquid or forced nitrogen coolant to maintain crystal thermal stability during intense excitation discharges.",
-      ),
+      text("."),
     ),
     p(
       text(
@@ -299,7 +428,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ),
       term(
         "Colidar",
-        "Coherent Light Detection and Ranging (the earliest form of modern LIDAR), transmitting microsecond laser pulses and measuring echo time-of-flight with picosecond-scale optical resolution.",
+        "Coherent Light Ranging, a laser transmitter and photoelectric receiver arranged to compare the times of transmitted and received pulses.",
       ),
       text(", as illustrated in "),
       ref("FIG. 18", "#figure-18", "Figure 18", [
@@ -307,7 +436,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png",
       ]),
       text(
-        ". The narrow beam divergence and extreme monochromaticity of the pulsed ruby laser beam permit pinpoint ranging over tens of miles with complete immunity to conventional electromagnetic jamming.",
+        ". The specification explains that the narrow beam and short wavelength permit long-distance propagation and high resolution; range is read from the time difference between the transmitter and receiver pulses.",
       ),
     ),
     {
