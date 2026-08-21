@@ -168,13 +168,24 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(simSource).toContain("whiteParticleNormY");
       expect(simSource).toContain("blackParticleNormY");
       expect(simSource).toContain("particleChargeCoupled");
+      expect(simSource).toContain("brownianJitterOmegaYRadPerS");
+      expect(simSource).not.toContain("timeSec * 2.3");
+      expect(simSource).not.toContain("timeSec * 1.7");
+    });
+
+    test("Stokes-Einstein thermal jitter slows in thicker fluid", () => {
+      const thin = stepEInk({ electrodeVoltageVolts: 15, fluidViscosityCp: 1.0 }, 0);
+      const thick = stepEInk({ electrodeVoltageVolts: 15, fluidViscosityCp: 4.0 }, 0);
+      expect(thin.brownianJitterOmegaYRadPerS).toBeCloseTo(4.6, 3);
+      expect(thick.brownianJitterOmegaYRadPerS).toBeCloseTo(1.15, 3);
+      expect(thin.brownianJitterOmegaXRadPerS).toBeCloseTo(3.4, 3);
     });
 
     test("builds transparent microcapsule, particle arrays, and ITO electrode plates", () => {
       const model = buildEInkModel();
       expect(model.root).toBeDefined();
-      expect(model.whiteParticleMeshes.length).toBe(36);
-      expect(model.blackParticleMeshes.length).toBe(36);
+      expect(model.whiteParticleMeshes.length).toBe(48);
+      expect(model.blackParticleMeshes.length).toBe(48);
       expect(model.eFieldArrows.length).toBe(4);
       expect(() => model.dispose()).not.toThrow();
     });

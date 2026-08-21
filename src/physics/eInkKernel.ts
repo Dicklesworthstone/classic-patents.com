@@ -11,12 +11,18 @@ export interface EInkState {
   driftVelocityMms: number; // Particle drift speed in mm/s
   surfaceReflectancePercent: number; // Optical contrast [5% to 75%]
   contrastRatio: string;
+  /** Stokes-Einstein thermal jitter ω. Leftover 2.3 / 1.7 at 2.0 cP; scales as 1/η. */
+  brownianJitterOmegaYRadPerS: number;
+  brownianJitterOmegaXRadPerS: number;
 }
 
 export function stepEInk(c: EInkControls, dtSec: number, prevState?: EInkState): EInkState {
   const voltage = Math.max(-15, Math.min(15, c.electrodeVoltageVolts ?? 15));
-  const viscosity = Math.max(0.5, c.fluidViscosityCp ?? 2.0) * 1e-3;
+  const viscosityCp = Math.max(0.5, c.fluidViscosityCp ?? 2.0);
+  const viscosity = viscosityCp * 1e-3;
   const chargeMult = Math.max(0.2, c.particleChargeCoupled ?? 1.0);
+  const brownianJitterOmegaYRadPerS = Number(((2.0 / viscosityCp) * 2.3).toFixed(4));
+  const brownianJitterOmegaXRadPerS = Number(((2.0 / viscosityCp) * 1.7).toFixed(4));
 
   const gapM = 50e-6;
   const electricFieldVperM = voltage / gapM;
@@ -50,5 +56,7 @@ export function stepEInk(c: EInkControls, dtSec: number, prevState?: EInkState):
     driftVelocityMms: Math.abs(velocityMps) * 1000,
     surfaceReflectancePercent: Number(surfaceReflectance.toFixed(1)),
     contrastRatio: contrast,
+    brownianJitterOmegaYRadPerS,
+    brownianJitterOmegaXRadPerS,
   };
 }
