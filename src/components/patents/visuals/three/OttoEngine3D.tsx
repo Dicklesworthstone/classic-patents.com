@@ -3,9 +3,11 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildOttoEngineModel,
   type OttoEngineModelResult,
@@ -297,24 +299,26 @@ export function OttoEngine3D() {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Compression Ratio</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {compressionRatio.toFixed(1)}:1
-              </span>
-            </div>
-            <input
-              type="range"
-              min="3"
-              max="7"
-              step="0.5"
-              value={compressionRatio}
-              onChange={(e) => updateParam("compressionRatio", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="compressionRatio"
+            patentId="us-194047-otto-engine"
+            paramKey="compressionRatio"
+            label="Compression Ratio"
+            value={compressionRatio}
+            min={3}
+            max={7}
+            step={0.5}
+            unit=":1"
+            onChange={(val) => updateParam("compressionRatio", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-194047-otto-engine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

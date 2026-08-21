@@ -101,7 +101,7 @@ Nov. 14, 1967 “+t. H. MAIMAN 3,353,115
 RUBY LASER SYSTEMS
 
 : Sheet 4
-Original Filed April 15, 1961 5 Sheets-—Shee
+Original Filed April 13, 1961 5 Sheets—Sheet 4
 
 7 _—
 ° Pa | LEE: 12.
@@ -968,8 +968,26 @@ discriminate not only against deliberate jamming but also
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 10 ---
 
+against the minute amount of optical noise at the operating frequency.
+
+There has thus been disclosed a laser system in which the active laser substance is solid state and which provides coherent monochromatic amplification and generation of electromagnetic wave energy in the optical or visible spectrum. The invention is effectively an efficient device which is mechanically stable and which may be operated at room temperature without complex vacuum or vapor pressure techniques. The invention as disclosed also is capable of tuning over a 5X10^11 cycles per second range and may handle high powers for practical optical radar and communications utilization. In addition, because it provides light which can be focused extremely precisely, the laser opens new possibilities in the investigation of basic properties of matter, as well as in medicine where objects or very minute portions thereof can be selectively sterilized or vaporized.
+
 What is claimed is:
 
 1. A three energy level laser comprising: a ruby having atoms exhibiting a first energy level corresponding to a ground atomic state, a substantially discrete second energy level above said ground state and third energy levels defining a relatively broadband absorption third region extending above said second level; a pumping source of broadband light energy optically coupled to said ruby for illuminating it and exciting atoms thereof to exhibit excitation at said third energy levels from whence they decay without substantial radiation loss to said discrete second energy level so as to establish a population inversion between said discrete second energy level and said ground state; interferometer means optically coupled to said ruby and tuned to the frequency corresponding to that of the energy difference between said second energy level and said first energy level for reflecting light energy of said frequency repeatedly through portions of said ruby to generate a coherent light beam; and coupling means for extracting the monochromatic coherent light beam from said ruby.
 
 2. A three energy level ruby laser system, comprising: a ruby having atoms exhibiting a first energy level corresponding to a ground atomic state, a substantially discrete second energy level above said ground state and third energy levels defining a relatively broadband absorption third region extending above said second level; broadband optical pumping means directly coupled to said ruby for exciting atoms of said ruby from said first energy level to said third energy levels from which radiationless energy transition of said atoms takes place to said second energy level to establish a population inversion between said second energy level and said ground state; and light-resonating means coupled to and forming a regenerative optical path through said ruby to stimulate radiant energy transitions of said atoms from said second energy level toward said ground state to produce a coherent monochromatic light beam having a frequency substantially corresponding to the energy difference between said ground state and said second energy level.
+
+References Cited
+
+UNITED STATES PATENTS
+
+2,929,922  Schawlow et al.  3/1960  331-94.5
+
+OTHER REFERENCES
+
+Townes et al.: “Infrared and Optical Masers,” Physical Review, vol. 112, No. 6, Dec. 15, 1958, pp. 1940–1949.
+Wieder: “Solid State, High-Intensity Monochromatic Light Sources,” The Review of Scientific Instruments, vol. 30, No. 1, November 1959, pp. 995–996.
+
+JEWELL H. PEDERSEN, Primary Examiner.
+RONALD L. WILBERT, Examiner.

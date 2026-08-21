@@ -177,6 +177,23 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-1102653-goddard-rocket": {
+      const mDotKgs = params.fuelFlowRateKgs ?? 1.8;
+      const pcPsi = params.chamberPressure ?? 350.0;
+      const vExhaustMps = 1800.0 + pcPsi * 1.2; // 2220 m/s isentropic exhaust velocity
+      const rocketMassKg = 45.0; // Vehicle dry + residual mass
+      const vehicleVelMps = 650.0;
+      const altitudeM = 18000.0;
+
+      kinetic = 0.5 * rocketMassKg * vehicleVelMps * vehicleVelMps; // Stored vehicle kinetic energy
+      potential = rocketMassKg * 9.81 * altitudeM; // Stored gravitational potential energy
+      powerIn = mDotKgs * 4.4e7; // Liquid oxygen / gasoline chemical combustion power (44 MJ/kg)
+      const jetPower = 0.5 * mDotKgs * vExhaustMps * vExhaustMps; // Supersonic nozzle exhaust power
+      dissipated = jetPower; // Kinetic energy carried away by exhaust plume
+      thermal = 8.5e5; // Combustion chamber wall heat content
+      break;
+    }
+
     case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
       const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
@@ -249,20 +266,6 @@ export function computePortHamiltonianEnergy(
       powerIn = pumpWatts; // Flashlamp / optical pump input
       dissipated = pumpWatts * 0.985; // Non-radiative lattice phonon relaxation (1.5% wall-plug)
       thermal = 450.0; // Ruby crystal / laser medium heat
-      break;
-    }
-
-    case "us-1102653-goddard-rocket": {
-      const thrustN = params.thrustNewtons ?? 450.0;
-      const altM = params.altitudeMeters ?? 120.0;
-      const massKg = params.dryMassKg ?? 15.0;
-      const velocityMps = params.flightVelocityMps ?? 45.0;
-
-      kinetic = 0.5 * massKg * velocityMps * velocityMps;
-      potential = massKg * 9.80665 * altM;
-      powerIn = thrustN * velocityMps; // Mechanical thrust power
-      dissipated = 0.5 * 1.2 * velocityMps ** 3 * 0.05 + 1500.0; // Aerodynamic drag + nozzle thermal waste
-      thermal = 12000.0; // Combustion chamber heat
       break;
     }
 

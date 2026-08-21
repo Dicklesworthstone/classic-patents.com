@@ -1,17 +1,15 @@
-"use client";
-
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGoddardRocketModel, updateGoddardRocketKinematics } from "./goddardRocketModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
-
 import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset =
@@ -54,6 +52,7 @@ export function GoddardRocket3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Rocket Propulsion Physics (FrankenSim de Laval Isentropic Expansion)
   const rocketPhysics = FrankenSimEngine.stepGoddardRocket(
@@ -65,7 +64,7 @@ export function GoddardRocket3D() {
 
   useFrankenSimPhysics("us-1102653-goddard-rocket", {
     domain: "thermodynamics_transport",
-    timestampMs: Date.now(),
+    timestampMs: 0,
     timeStepDt: 0.016,
     refusal: { isRefused: false },
     thermo: {
@@ -170,7 +169,14 @@ export function GoddardRocket3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Robert H. Goddard Rocket Apparatus 3D</div>
+      <PortHamiltonianEnergyStrip
+        patentId="us-1102653-goddard-rocket"
+        params={{
+          fuelFlowRateKgs,
+          chamberPressure: chamberPressurePsi,
+        }}
+      />
+      <div className="sr-only">Robert H. Goddard Rocket Apparatus 3D Simulation</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -207,7 +213,15 @@ export function GoddardRocket3D() {
         )}
 
         {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-1102653-goddard-rocket"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("chamberPressure", active ? 350 : 80);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -310,41 +324,33 @@ export function GoddardRocket3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Chamber Pressure</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {chamberPressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="800"
-              step="25"
-              value={chamberPressurePsi}
-              onChange={(e) => updateParam("chamberPressure", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="chamberPressure"
+            patentId="us-1102653-goddard-rocket"
+            paramKey="chamberPressure"
+            label="Chamber Pressure"
+            value={chamberPressurePsi}
+            min={100}
+            max={800}
+            step={25}
+            unit="psi"
+            onChange={(val) => updateParam("chamberPressure", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Fuel Flow Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {fuelFlowRateKgs.toFixed(1)} kg/s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.5"
-              max="5.0"
-              step="0.1"
-              value={fuelFlowRateKgs}
-              onChange={(e) => updateParam("fuelFlowRateKgs", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="fuelFlowRate"
+            patentId="us-1102653-goddard-rocket"
+            paramKey="fuelFlowRateKgs"
+            label="Fuel Flow Rate"
+            value={fuelFlowRateKgs}
+            min={0.5}
+            max={5.0}
+            step={0.1}
+            unit="kg/s"
+            onChange={(val) => updateParam("fuelFlowRateKgs", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -366,6 +372,12 @@ export function GoddardRocket3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-1102653-goddard-rocket"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

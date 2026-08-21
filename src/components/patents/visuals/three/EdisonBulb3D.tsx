@@ -74,6 +74,7 @@ export const EdisonBulb3D = memo(() => {
     thermalJitterPerS: bulb.thermalJitterPerS,
     filamentEmissiveScale: bulb.filamentEmissiveScale,
     bulbLightScale: bulb.bulbLightScale,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -140,14 +141,17 @@ export const EdisonBulb3D = memo(() => {
       reqId = requestAnimationFrame(animate);
       const delta = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
       lastMs = now;
-      sched.pump(now / 1000, () => {
-        timeSec += 1 / 60;
-      });
       const p = live.current;
+      const refused = (p.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        sched.pump(now / 1000, () => {
+          timeSec += 1 / 60;
+        });
+      }
 
       updateEdisonBulbKinematics(
         model,
-        delta,
+        refused ? 0 : delta,
         timeSec,
         p.incandescenceIntensity,
         p.filamentTempKelvin,

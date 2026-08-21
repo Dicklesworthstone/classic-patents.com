@@ -2,9 +2,11 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -275,23 +277,19 @@ export function MaimanRubyLaser3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Xenon Flash Energy</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {pumpEnergyJoules} J
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="500"
-              step="10"
-              value={pumpEnergyJoules}
-              onChange={(e) => updateParam("pumpEnergyJoules", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="pumpEnergy"
+            patentId="us-3353115-maiman-laser"
+            paramKey="pumpPowerWatts"
+            label="Xenon Flash Energy"
+            value={pumpEnergyJoules}
+            min={50}
+            max={500}
+            step={10}
+            unit="J"
+            onChange={(val) => updateParam("pumpEnergyJoules", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -337,6 +335,12 @@ export function MaimanRubyLaser3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-3353115-maiman-laser"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

@@ -129,6 +129,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Conventional melt-spun aliphatic polyamides (nylon 6,6) exhibited flexible chain folding and moderate tensile strength.",
     },
   ],
+  "us-1102653-goddard-rocket": [
+    {
+      claimNumber: 1,
+      patentId: "us-1102653-goddard-rocket",
+      claimTitle: "Step-Down Multi-Stage Chamber Jettisoning",
+      activeDescription:
+        "Claim 1 combines successive combustion chambers, jettisoning spent primary casings to maximize final velocity.",
+      invertedDescription:
+        "Single-stage deadweight: carrying empty combustion chamber mass to apogee slashes mass ratio ln(m₀/mf).",
+      failureModeName: "Single-Stage Deadweight Apogee Ceiling",
+      historicalPriorArt:
+        "Nineteenth-century gunpowder black powder rockets carried all structural casings throughout the trajectory.",
+    },
+  ],
 };
 
 /**
@@ -232,6 +246,21 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "LIQUID-CRYSTAL LOSS: Loss of nematic liquid-crystalline orientation prevents ballistic energy dispersion.";
+      }
+      break;
+    }
+
+    case "us-1102653-goddard-rocket": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.activeStage = 1; // Locked single stage
+        modified.chamberPressure = 80.0; // Reduced chamber pressure from deadweight backpressure
+        modified.fuelFlowRateKgs = 0.5; // Stagnating burn rate
+        activeFailures.push(
+          "Single-Stage Inertial Drag: Retained structural deadweight caps terminal altitude at 5.8 km",
+        );
+        refusalWarning =
+          "PROPULSION REFUSAL: Tsiolkovsky mass ratio insufficient to overcome gravity drag without staging.";
       }
       break;
     }

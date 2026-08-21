@@ -2,9 +2,11 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -259,25 +261,19 @@ export function WattSeparateCondenser3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Boiler Steam Pressure
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {boilerPressurePsi.toFixed(1)} PSI
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="30"
-              step="0.5"
-              value={boilerPressurePsi}
-              onChange={(e) => updateParam("boilerPressurePsi", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="boilerPressure"
+            patentId={EXHIBIT_ID}
+            paramKey="boilerPressurePsi"
+            label="Boiler Steam Pressure"
+            value={boilerPressurePsi}
+            min={5}
+            max={30}
+            step={0.5}
+            unit="PSI"
+            onChange={(val) => updateParam("boilerPressurePsi", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -317,6 +313,8 @@ export function WattSeparateCondenser3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip patentId={EXHIBIT_ID} params={params} className="mt-3" />
       </div>
     </div>
   );

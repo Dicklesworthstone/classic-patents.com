@@ -145,7 +145,10 @@ export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly s
   10: [
     "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
   ],
-  12: [
+  11: [
+    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
+  ],
+  13: [
     "Official statutory claims defining the legal scope of the three-level ruby laser system and solid-state optical maser apparatus.",
   ],
 };
@@ -440,6 +443,11 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       ]),
       text(
         ". The specification explains that the narrow beam and short wavelength permit long-distance propagation and high resolution; range is read from the time difference between the transmitter and receiver pulses.",
+      ),
+    ),
+    p(
+      text(
+        "There has thus been disclosed a laser system in which the active laser substance is solid state and which provides coherent monochromatic amplification and generation of electromagnetic wave energy in the optical or visible spectrum. The invention is effectively an efficient device which is mechanically stable and which may be operated at room temperature without complex vacuum or vapor pressure techniques. The invention as disclosed also is capable of tuning over a 5X10^11 cycles per second range and may handle high powers for practical optical radar and communications utilization. In addition, because it provides light which can be focused extremely precisely, the laser opens new possibilities in the investigation of basic properties of matter, as well as in medicine where objects or very minute portions thereof can be selectively sterilized or vaporized.",
       ),
     ),
     {

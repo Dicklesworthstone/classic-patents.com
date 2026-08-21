@@ -13,9 +13,12 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildKwolekKevlarModel, updateKwolekKevlarKinematics } from "./kwolekKevlarModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -52,6 +55,7 @@ export function KwolekKevlar3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const kevlar = stepKevlarContinuum(
     drawRatio,
@@ -158,6 +162,13 @@ export function KwolekKevlar3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-3671542-kwolek-kevlar"
+        params={{
+          impactVelocity: params.impactVelocity ?? 450,
+          drawRatio,
+        }}
+      />
       <div className="sr-only">Stephanie Kwolek Poly-p-Phenylene Terephthalamide Kevlar 3D</div>
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
@@ -213,7 +224,15 @@ export function KwolekKevlar3D() {
         )}
 
         {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-3671542-kwolek-kevlar"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("drawRatio", active ? 6.5 : 1.2);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -316,65 +335,47 @@ export function KwolekKevlar3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Polymer Dope Concentration
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {polymerConcentrationPct}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="25"
-              step="0.5"
-              value={polymerConcentrationPct}
-              onChange={(e) =>
-                updateParam("polymerConcentrationPct", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="polymerConc"
+            patentId="us-3671542-kwolek-kevlar"
+            paramKey="polymerConcentrationPct"
+            label="Polymer Dope Concentration"
+            value={polymerConcentrationPct}
+            min={5}
+            max={25}
+            step={0.5}
+            unit="%"
+            onChange={(val) => updateParam("polymerConcentrationPct", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Mechanical Draw Ratio
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {drawRatio.toFixed(1)}×
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="12"
-              step="0.5"
-              value={drawRatio}
-              onChange={(e) => updateParam("drawRatio", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="drawRatio"
+            patentId="us-3671542-kwolek-kevlar"
+            paramKey="drawRatio"
+            label="Mechanical Draw Ratio"
+            value={drawRatio}
+            min={1}
+            max={12}
+            step={0.5}
+            unit="×"
+            onChange={(val) => updateParam("drawRatio", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Spinning Dope Temp</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {temperatureCelsius} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="20"
-              max="120"
-              step="5"
-              value={temperatureCelsius}
-              onChange={(e) => updateParam("temperatureCelsius", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="dopeTemp"
+            patentId="us-3671542-kwolek-kevlar"
+            paramKey="temperatureCelsius"
+            label="Spinning Dope Temp"
+            value={temperatureCelsius}
+            min={20}
+            max={120}
+            step={5}
+            unit="°C"
+            onChange={(val) => updateParam("temperatureCelsius", val)}
+            allParams={params}
+          />
         </div>
       </div>
 

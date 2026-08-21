@@ -2,10 +2,12 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -300,25 +302,19 @@ export function PeltonWheel3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Hydraulic Water Head
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {headMeters} m
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="600"
-              step="25"
-              value={headMeters}
-              onChange={(e) => updateParam("headMeters", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="waterHead"
+            patentId="us-233692-pelton-wheel"
+            paramKey="waterHeadM"
+            label="Hydraulic Water Head"
+            value={headMeters}
+            min={50}
+            max={600}
+            step={25}
+            unit="m"
+            onChange={(val) => updateParam("headMeters", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -340,6 +336,12 @@ export function PeltonWheel3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-233692-pelton-wheel"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

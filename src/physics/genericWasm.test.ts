@@ -9,6 +9,7 @@ import {
   eastmanSprocketCrate,
   edisonHeatCrate,
   engelbartXyCrate,
+  extraWasmFns,
   fluidFrames,
   gaMotorFrameIndex,
   gaMotorOrbit,
@@ -78,6 +79,9 @@ describe("generic FrankenSim crate composition", () => {
 
   test("SSR / bun tests stay on the host fallback until a browser loads fs-wasm", () => {
     expect(genericKernelSource()).toBe("unloaded");
+    expect(extraWasmFns.trussPath).toBeNull();
+    expect(extraWasmFns.hodgeDecomposition).toBeNull();
+    expect(extraWasmFns.poisson2d).toBeNull();
   });
 
   test("cyclicSymmetry writes [n, first_row, rhs, sol, harmonics] and loads sector 0", () => {

@@ -185,7 +185,7 @@ export function TeslaMotor3D() {
 
       updateTeslaMotorKinematics(
         fig9Model,
-        delta,
+        refused ? 0 : delta,
         p.fieldDisplayOmegaRadPerS,
         bFieldAngle,
         p.showMagneticFlux && fig9Available,

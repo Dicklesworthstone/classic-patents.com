@@ -253,6 +253,63 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3671542-kwolek-kevlar": {
+      if (controlKey === "drawRatio") {
+        const _draw = params.drawRatio ?? 6.5;
+        const dE_dDraw = 17.0; // GPa / draw ratio
+        return {
+          metricName: "Tensile Modulus Sensitivity",
+          derivativeSymbol: "∂E / ∂(Draw)",
+          derivativeValue: Number(dE_dDraw.toFixed(1)),
+          derivativeUnit: "GPa / draw",
+          interpretation:
+            "Linear stiffening rate as PPTA nematic domains align along the fiber spin axis.",
+        };
+      }
+      if (controlKey === "impactVelocity") {
+        const v = params.impactVelocity ?? 450.0;
+        const bulletMassKg = 0.008;
+        const dEk_dv = bulletMassKg * v; // 3.6 J / (m/s)
+        return {
+          metricName: "Impact Energy Momentum Rate",
+          derivativeSymbol: "∂E_k / ∂v",
+          derivativeValue: Number(dEk_dv.toFixed(2)),
+          derivativeUnit: "J / (m/s)",
+          interpretation:
+            "Rate of kinetic energy transfer into the woven PPTA armor panel upon bullet impact.",
+        };
+      }
+      break;
+    }
+
+    case "us-1102653-goddard-rocket": {
+      if (controlKey === "chamberPressure") {
+        const _pc = params.chamberPressure ?? 350.0;
+        const dF_dPc = 5.8; // N / psi
+        return {
+          metricName: "Chamber Pressure Thrust Sensitivity",
+          derivativeSymbol: "∂F_thrust / ∂P_c",
+          derivativeValue: Number(dF_dPc.toFixed(1)),
+          derivativeUnit: "N / psi",
+          interpretation:
+            "Linear nozzle chamber pressure gain driving supersonic momentum expansion.",
+        };
+      }
+      if (controlKey === "fuelFlowRateKgs") {
+        const pc = params.chamberPressure ?? 350.0;
+        const vExhaust = 1800.0 + pc * 1.2; // 2220 m/s
+        return {
+          metricName: "Mass Flow Thrust Coupling",
+          derivativeSymbol: "∂F_thrust / ∂ṁ",
+          derivativeValue: Number(vExhaust.toFixed(0)),
+          derivativeUnit: "N / (kg/s)",
+          interpretation:
+            "Specific impulse exhaust velocity determining thrust generated per unit propellant mass flow.",
+        };
+      }
+      break;
+    }
+
     case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
       if (controlKey === "boilerPressurePsi" || controlKey === "boilerPressure") {
@@ -318,23 +375,6 @@ export function computeParameterSensitivity(
           derivativeValue: Number((slopeEfficiency * 1000).toFixed(1)),
           derivativeUnit: "mW / W",
           interpretation: "Stimulated emission quantum yield beyond lasing threshold.",
-        };
-      }
-      break;
-    }
-
-    case "us-1102653-goddard-rocket": {
-      if (controlKey === "chamberPressurePsi" || controlKey === "chamberPressure") {
-        const throatAreaSqIn = 0.785;
-        const cf = 1.45; // Thrust coefficient
-        // F = Cf * At * Pc -> dF/dPc = Cf * At
-        const dF_dPc = cf * throatAreaSqIn * 4.44822; // N / PSI
-        return {
-          metricName: "Rocket Thrust",
-          derivativeSymbol: "∂F_thrust / ∂P_c",
-          derivativeValue: Number(dF_dPc.toFixed(2)),
-          derivativeUnit: "N / PSI",
-          interpretation: "De Laval supersonic nozzle momentum thrust growth rate.",
         };
       }
       break;
