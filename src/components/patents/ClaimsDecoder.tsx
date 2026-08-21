@@ -160,6 +160,13 @@ export function claimLiveState(
 
 export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderProps) {
   const [activeClaimNum, setActiveClaimNum] = useState<number>(claims[0]?.number || 1);
+  const [showAllClaims, setShowAllClaims] = useState(false);
+  // High-claim patents (Wright prints 18) wrap into a ~9-row selector wall on
+  // phones, pushing the actual decoder content below the fold. Collapse the
+  // wall behind an explicit toggle once it stops fitting; small claim sets
+  // render exactly as before.
+  const shouldCollapseClaims = claims.length > 6;
+  const claimsCollapsed = shouldCollapseClaims && !showAllClaims;
   const [copied, setCopied] = useState<boolean>(false);
   const { params } = usePatentPhysics(patentId || "");
 
@@ -233,7 +240,14 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
       </div>
 
       {/* Claim Selector Pills */}
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={`relative flex flex-wrap gap-2 ${
+          claimsCollapsed
+            ? "max-h-[8.25rem] overflow-hidden [mask-image:linear-gradient(to_bottom,black_65%,transparent)]"
+            : ""
+        }`}
+        inert={claimsCollapsed}
+      >
         {claims.map((c) => {
           const live = claimLiveState(patentId, c.number, params);
           const isSelected = activeClaimNum === c.number;
@@ -262,6 +276,16 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
           );
         })}
       </div>
+      {shouldCollapseClaims && (
+        <button
+          type="button"
+          onClick={() => setShowAllClaims(!showAllClaims)}
+          aria-expanded={showAllClaims}
+          className="mt-1 inline-flex items-center gap-1 self-start px-2 py-1 rounded-lg text-xs font-sans font-semibold text-amber-800 dark:text-amber-300 bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/25 hover:bg-amber-500/20 dark:hover:bg-amber-400/20 transition-colors cursor-pointer"
+        >
+          {showAllClaims ? "Show fewer claims" : `Show all ${claims.length} claims`}
+        </button>
+      )}
 
       {/* Selected Claim Deep Dive Card */}
       {claim && (
