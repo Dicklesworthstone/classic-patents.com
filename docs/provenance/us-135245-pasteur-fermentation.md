@@ -112,3 +112,21 @@ heating band, a duration, or a separate pure-culture claim. “Réaumur” in th
 operating description is converted for explanation only: 16°–18° Réaumur equals
 20°–22.5 °C. The conversion and heat-transfer statements in the Plain English
 face are modern explanatory context, not quoted patent language.
+
+## Independent visitor audit and repair (2026-08-21)
+
+An independent read-only pass accepted the PDF identity, three-page ledger,
+continuous edition, sole dynamically sourced claim, all three authored figure
+citations, and both v3 crops. It rejected publication because the then-active
+Three.js studio mounted a generic energy strip backed by invented values (500
+litres of wort, 350 watts of heat generation, 340 watts of cooling, and a 4 °C
+datum), and because the Three.js and schematic captions said to boil the wort
+inside vessel A. The grant instead says the separately prepared wort is
+introduced into the closed vessels while boiling hot.
+
+The energy-ledger case now refuses to invent a quantified balance and the
+unsupported strip is absent from the Pasteur studio. Both public sequence
+captions now say to introduce boiling-hot wort into vessel A before the gas
+sweep and exterior spray cooling. The root publication hold remains in place
+until these exact repairs receive executable verification and a fresh
+independent visitor re-acceptance pass.

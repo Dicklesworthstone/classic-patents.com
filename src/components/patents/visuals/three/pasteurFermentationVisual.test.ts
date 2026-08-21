@@ -8,6 +8,7 @@ import {
 } from "./pasteurFermentationModel";
 
 const VISUALS_DIRECTORY = join(process.cwd(), "src/components/patents/visuals");
+const PHYSICS_DIRECTORY = join(process.cwd(), "src/physics");
 
 describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
   test("uses pure procedural Three.js WebGL architecture without external GLTF/GLB models", () => {
@@ -136,5 +137,23 @@ describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
     ]) {
       expect(sources).not.toContain(unsupported);
     }
+  });
+
+  test("does not invent a quantified energy ledger or boil the wort inside vessel A", () => {
+    const threeSource = readFileSync(
+      join(VISUALS_DIRECTORY, "three", "PasteurFermentation3D.tsx"),
+      "utf8",
+    );
+    const ledgerSource = readFileSync(join(PHYSICS_DIRECTORY, "energyLedger.ts"), "utf8");
+    const pasteurLedgerCase = ledgerSource.slice(
+      ledgerSource.indexOf('case "us-135245-pasteur-fermentation"'),
+      ledgerSource.indexOf('case "gb-1420-cort-puddling-rolling"'),
+    );
+
+    expect(threeSource).toContain("Introduce boiling-hot wort into closed vessel A");
+    expect(threeSource).not.toContain("Boil wort in closed vessel A");
+    expect(threeSource).not.toContain("PortHamiltonianEnergyStrip");
+    for (const unsupported of ["500.0", "350.0", "340.0", "wortVolumeLiters"])
+      expect(pasteurLedgerCase).not.toContain(unsupported);
   });
 });

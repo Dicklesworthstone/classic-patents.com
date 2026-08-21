@@ -69,6 +69,7 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-135245-pasteur-fermentation", // Source repair awaits executable and independent visitor acceptance.
   "us-4750-howe-sewing-machine", // Claims 2–5 have lossy sub-30-word decoders.
   "us-200521-edison-phonograph", // Claim 3 decoder is materially too short.
+  "us-2495429-spencer-microwave", // Public visuals model a later countertop oven instead of the patented dual-magnetron conveyor apparatus.
   "us-307031-edison-indicator", // Claims 3–8 have lossy sub-30-word decoders.
   "us-361931-daimler-engine", // Claims 2–10 have lossy sub-30-word decoders.
   "us-879532-de-forest-audion", // Multiple claim decoders fail the non-lossy length floor.

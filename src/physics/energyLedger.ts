@@ -959,11 +959,11 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-135245-pasteur-fermentation": {
-      const wortVolumeLiters = 500.0;
-      const wortTempC = params.wortTempC ?? 18.0;
-      thermal = wortVolumeLiters * 4184.0 * (wortTempC - 4.0); // Fermentation wort enthalpy
-      powerIn = 350.0; // Yeast anaerobic glycolysis metabolic heat generation
-      dissipated = 340.0; // Attemperator cooling coil thermal dissipation
+      // US 135,245 specifies the process sequence and the 16-18 degree
+      // Reaumur yeast-addition band, but it gives no wort volume, heat load,
+      // cooling rate, or datum from which a closed energy ledger can be built.
+      // Leave every ledger channel at its initialized zero rather than present
+      // modern illustrative quantities as measurements from the grant.
       break;
     }
 

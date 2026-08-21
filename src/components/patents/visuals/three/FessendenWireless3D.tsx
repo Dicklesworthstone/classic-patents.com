@@ -144,7 +144,7 @@ export function FessendenWireless3D() {
 
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-      nodes.materials.forEach((m) => {
+      nodes.materials.forEach((m: THREE.Material) => {
         m.dispose();
       });
       studio.cleanup();

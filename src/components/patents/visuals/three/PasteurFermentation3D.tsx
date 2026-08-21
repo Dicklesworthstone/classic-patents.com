@@ -6,7 +6,6 @@ import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
-import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildPasteurFermentationModel,
   updatePasteurFermentationKinematics,
@@ -165,7 +164,7 @@ export const PasteurFermentation3D = memo(() => {
         {showUiOverlay && (
           <div className="pointer-events-none absolute bottom-3 left-3 z-10 max-w-xs rounded-xl border border-parchment-300 bg-parchment-50/95 p-3 font-mono text-xs text-ink-900 shadow-md backdrop-blur-md dark:border-ink-800 dark:bg-ink-950/95 dark:text-parchment-100 sm:bottom-4 sm:left-4">
             <p className="mb-2 font-sans font-semibold">US 135,245 source sequence</p>
-            <p>1. Boil wort in closed vessel A.</p>
+            <p>1. Introduce boiling-hot wort into closed vessel A.</p>
             <p>2. Sweep air out with carbonic-acid gas.</p>
             <p>3. Cool by spraying the vessel exterior.</p>
             <p>4. Add yeast at 20–22.5 °C.</p>
@@ -253,11 +252,6 @@ export const PasteurFermentation3D = memo(() => {
           className="mt-2"
         />
 
-        <PortHamiltonianEnergyStrip
-          patentId="us-135245-pasteur-fermentation"
-          params={params}
-          className="mt-3"
-        />
       </div>
     </div>
   );

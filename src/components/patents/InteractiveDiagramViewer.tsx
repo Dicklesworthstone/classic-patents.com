@@ -4629,7 +4629,8 @@ function _renderHistoricalSchematic(
             v
           </text>
           <text x="200" y="274" fill="#cbd5e1" fontSize="8" textAnchor="middle">
-            Boil closed → sweep air with CO₂ → spray-cool exterior → add yeast at 20–22.5 °C
+            Introduce boiling-hot wort → sweep air with CO₂ → spray-cool exterior → add yeast at
+            20–22.5 °C
           </text>
         </g>
       );
