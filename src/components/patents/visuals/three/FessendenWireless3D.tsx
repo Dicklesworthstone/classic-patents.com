@@ -161,7 +161,7 @@ export function FessendenWireless3D() {
 
         {/* Top-Left Camera Preset Toolbar & Claim Constraint Toggle */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-2 max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-28rem)] pointer-events-auto">
             <ClaimConstraintToggle
               patentId="us-706737-fessenden-wireless"
               claimStates={claimStates}

@@ -85,7 +85,7 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
           className={`flex items-center justify-between px-2 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-[10px] font-mono text-amber-800 dark:text-amber-300 transition-all ${
             showDetail
               ? "opacity-100 scale-100"
-              : "opacity-0 group-hover:opacity-100 pointer-coarse:opacity-100 scale-95 group-hover:scale-100 pointer-coarse:scale-100 pointer-events-none group-hover:pointer-events-auto pointer-coarse:pointer-events-auto"
+              : "opacity-0 group-hover:opacity-100 [@media(pointer:coarse)]:opacity-100 scale-95 group-hover:scale-100 [@media(pointer:coarse)]:scale-100 pointer-events-none group-hover:pointer-events-auto [@media(pointer:coarse)]:pointer-events-auto"
           }`}
           title={sensitivity.interpretation}
         >
