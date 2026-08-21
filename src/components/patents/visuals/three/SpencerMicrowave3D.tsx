@@ -1,4 +1,4 @@
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
@@ -8,11 +8,11 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   buildSpencerMicrowaveModel,
   updateSpencerMicrowaveKinematics,
 } from "./spencerMicrowaveModel";
-import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -171,6 +171,13 @@ export function SpencerMicrowave3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-2495429-spencer-microwave"
+        params={{
+          rfPowerWatts,
+          anodeVoltage: anodeVoltageVolts,
+        }}
+      />
       <div className="sr-only">Percy L. Spencer Microwave Cavity Magnetron 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -320,64 +327,54 @@ export function SpencerMicrowave3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Anode Potential</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {anodeVoltageVolts} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1000"
-              max="4000"
-              step="50"
-              value={anodeVoltageVolts}
-              onChange={(e) => updateParam("anodeVoltage", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="anodeVoltage"
+            patentId="us-2495429-spencer-microwave"
+            paramKey="anodeVoltage"
+            label="Anode Potential"
+            value={anodeVoltageVolts}
+            min={1000}
+            max={4000}
+            step={50}
+            unit="V"
+            onChange={(val) => updateParam("anodeVoltage", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Axial Magnetic Field
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {magneticFieldGauss} G
-              </span>
-            </div>
-            <input
-              type="range"
-              min="800"
-              max="2500"
-              step="25"
-              value={magneticFieldGauss}
-              onChange={(e) =>
-                updateParam("magneticFieldGauss", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="magneticField"
+            patentId="us-2495429-spencer-microwave"
+            paramKey="magneticFieldGauss"
+            label="Axial Magnetic Field"
+            value={magneticFieldGauss}
+            min={800}
+            max={2500}
+            step={25}
+            unit="G"
+            onChange={(val) => updateParam("magneticFieldGauss", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">RF Power Rating</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {rfPowerWatts} W
-              </span>
-            </div>
-            <input
-              type="range"
-              min="200"
-              max="1500"
-              step="50"
-              value={rfPowerWatts}
-              onChange={(e) => updateParam("rfPowerSetting", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="rfPower"
+            patentId="us-2495429-spencer-microwave"
+            paramKey="rfPowerSetting"
+            label="RF Power Rating"
+            value={rfPowerWatts}
+            min={200}
+            max={1500}
+            step={50}
+            unit="W"
+            onChange={(val) => updateParam("rfPowerSetting", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2495429-spencer-microwave"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips
