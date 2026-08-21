@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -280,6 +281,41 @@ export function WozniakApple3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="APPLE II DUAL-PHASE TIMING GENERATOR"
+        chips={[
+          {
+            label: "Master Crystal",
+            value: `${clockFrequencyMhz.toFixed(4)}`,
+            unit: "MHz",
+          },
+          {
+            label: "CPU Clock (Φ2)",
+            value: `${apple.cpuClockMhz.toFixed(3)}`,
+            unit: "MHz",
+          },
+          { label: "NTSC Subcarrier", value: "3.5795", unit: "MHz" },
+          {
+            label: "DRAM Window",
+            value: `${phi1VideoAccessWindowNs.toFixed(0)}`,
+            unit: "ns (Φ1)",
+          },
+          {
+            label: "CPU Duty",
+            value: `${effectiveCpuThroughputPct.toFixed(0)}%`,
+            unit: "Zero Wait States",
+          },
+          {
+            label: "RAM Capacity",
+            value: `${ramCapacityKb}`,
+            unit: "KB Dynamic RAM",
+          },
+          { label: "Contention", value: "0% Interleaved Shared Bus" },
+        ]}
+      />
     </div>
   );
 }

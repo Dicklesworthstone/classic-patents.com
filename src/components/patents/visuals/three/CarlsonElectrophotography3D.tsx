@@ -9,6 +9,7 @@ import {
   buildCarlsonElectrophotographyModel,
   type CarlsonElectrophotographyModelNodes,
 } from "./carlsonElectrophotographyModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -326,6 +327,21 @@ export function CarlsonElectrophotography3D({
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="ELECTROPHOTOGRAPHY PROCESS KINETICS"
+        chips={[
+          { label: "V_corona", value: `${coronaVoltageKv.toFixed(1)}`, unit: "kV" },
+          { label: "V_contrast", value: `${sim.contrastPotentialV}`, unit: "V" },
+          { label: "Optical Density", value: `${sim.opticalDensity.toFixed(2)}`, unit: "OD" },
+          { label: "T_fuser", value: `${fuserTemperatureC}`, unit: "°C" },
+          { label: "Exposure", value: `${exposureLuxSec}`, unit: "lux·s" },
+          { label: "Photoconductor", value: "Amorphous Selenium (a-Se)" },
+          { label: "Process", value: "Dry Triboelectric Xerography" },
+        ]}
+      />
     </div>
   );
 }

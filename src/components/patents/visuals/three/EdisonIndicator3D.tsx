@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { buildEdisonIndicatorModel } from "./edisonIndicatorModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -266,6 +267,37 @@ export default function EdisonIndicator3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="EDISON EFFECT THERMIONIC EMISSION"
+        chips={[
+          { label: "V_mains", value: `${mainsVoltage.toFixed(0)}`, unit: "V" },
+          { label: "T_filament", value: `${sim.filamentTemperatureK.toFixed(0)}`, unit: "K" },
+          {
+            label: "I_emission",
+            value: `${sim.emissionCurrentMicroAmps.toFixed(2)}`,
+            unit: "µA",
+          },
+          {
+            label: "Galvo Deflection",
+            value: `${sim.galvoDeflectionDeg.toFixed(1)}°`,
+            unit: "deg",
+          },
+          {
+            label: "Regulator",
+            value:
+              sim.regulatorState === "nominal"
+                ? "Balanced Normal"
+                : sim.regulatorState === "high_voltage_trip"
+                  ? "Over-Voltage Trip"
+                  : "Low-Voltage Warning",
+            tone: sim.regulatorState === "nominal" ? "ok" : "warn",
+          },
+          { label: "Physics", value: "Richardson-Dushman Thermionic Flow" },
+        ]}
+      />
     </div>
   );
 }

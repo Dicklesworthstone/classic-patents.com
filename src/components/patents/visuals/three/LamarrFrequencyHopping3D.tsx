@@ -11,6 +11,7 @@ import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
 } from "./lamarrFrequencyHoppingModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -361,6 +362,37 @@ export function LamarrFrequencyHopping3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="FREQUENCY HOPPING SPREAD SPECTRUM"
+        chips={[
+          {
+            label: "Channel",
+            value: `${currentChannel} / ${carrierChannelsCount}`,
+            unit: "slots",
+          },
+          { label: "RF Frequency", value: `${carrierFrequencyMhz.toFixed(2)}`, unit: "MHz" },
+          { label: "Hop Rate", value: `${hopRateHopsPerSec.toFixed(1)}`, unit: "hops/s" },
+          {
+            label: "Processing Gain",
+            value: `${fhPhysics.processingGainDb.toFixed(1)}`,
+            unit: "dB",
+          },
+          {
+            label: "Anti-Jam Margin",
+            value: `${fhPhysics.antiJammingMarginDb.toFixed(1)}`,
+            unit: "dB",
+          },
+          { label: "Synchronization", value: "Slotted Player-Piano Tape" },
+          {
+            label: "Jam Resistance",
+            value: isJammingActive ? "Frequency Agile Evading" : "Clear Channel",
+            tone: isJammingActive ? "warn" : "ok",
+          },
+        ]}
+      />
     </div>
   );
 }

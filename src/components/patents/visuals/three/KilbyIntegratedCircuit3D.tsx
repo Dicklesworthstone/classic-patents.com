@@ -5,6 +5,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createKilbyIntegratedCircuitModel, type KilbyModel } from "./kilbyIntegratedCircuitModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -245,6 +246,20 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="GERMANIUM MONOLITHIC SOLID CIRCUIT"
+        chips={[
+          { label: "V_cc", value: `${supplyVoltageV.toFixed(1)}`, unit: "V" },
+          { label: "I_base", value: `${baseDriveCurrentUa.toFixed(0)}`, unit: "µA" },
+          { label: "V_bias", value: `${reverseBiasVoltageV.toFixed(1)}`, unit: "V" },
+          { label: "Substrate", value: "Germanium (Ge)", unit: "single-crystal" },
+          { label: "Topology", value: "Phase-Shift Oscillator" },
+          { label: "Interconnect", value: "Au Flying Wires" },
+        ]}
+      />
     </div>
   );
 };

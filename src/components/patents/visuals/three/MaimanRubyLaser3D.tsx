@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -299,6 +300,25 @@ export function MaimanRubyLaser3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="RUBY LASER QUANTUM OPTICS"
+        chips={[
+          { label: "Wavelength", value: "694.3", unit: "nm" },
+          { label: "P_peak", value: metrics.laserPeakPowerKw.toFixed(1), unit: "kW" },
+          { label: "E_pulse", value: metrics.laserPulseEnergyJoules.toFixed(2), unit: "J" },
+          { label: "E_thresh", value: metrics.thresholdPumpEnergyJoules.toFixed(0), unit: "J" },
+          { label: "R_out", value: (outputMirrorReflectivity * 100).toFixed(0), unit: "%" },
+          { label: "T_crystal", value: String(crystalTemperatureKelvin), unit: "K" },
+          {
+            label: "State",
+            value: metrics.isLasing ? "Lasing Cascade" : "Spontaneous Decay",
+            tone: metrics.isLasing ? "hot" : "ok",
+          },
+        ]}
+      />
     </div>
   );
 }

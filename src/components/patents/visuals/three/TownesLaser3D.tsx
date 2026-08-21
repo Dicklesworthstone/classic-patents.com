@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import {
   articulateTownesLaserModel,
@@ -311,6 +312,25 @@ export function TownesLaser3D({
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="OPTICAL MASER QUANTUM CAVITY"
+        chips={[
+          { label: "P_out", value: String(sim.laserOutputPowerWatts), unit: "W" },
+          { label: "P_intra", value: String(sim.intraCavityPowerWatts), unit: "W" },
+          { label: "g_th", value: String(sim.thresholdGainPerCm), unit: "cm⁻¹" },
+          { label: "θ_div", value: String(sim.beamDivergenceMrad), unit: "mrad" },
+          { label: "L_cavity", value: String(cavityLengthCm), unit: "cm" },
+          { label: "R_2", value: String(mirror2ReflectivityPct), unit: "%" },
+          {
+            label: "State",
+            value: sim.isLasing ? "Coherent Resonance" : "Sub-Threshold",
+            tone: sim.isLasing ? "hot" : "ok",
+          },
+        ]}
+      />
     </div>
   );
 }

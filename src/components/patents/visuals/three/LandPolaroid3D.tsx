@@ -5,6 +5,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -233,6 +234,24 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="DIFFUSION-TRANSFER INSTANT CHEMISTRY"
+        chips={[
+          { label: "t_dev", value: `${developmentTimeSec.toFixed(0)}`, unit: "s" },
+          { label: "Roller Gap", value: `${rollerGapUm.toFixed(0)}`, unit: "µm" },
+          {
+            label: "Viscosity",
+            value: `${reagentViscosityCp.toLocaleString()}`,
+            unit: "cP",
+          },
+          { label: "Alkali pH", value: `${alkaliPh.toFixed(1)}`, unit: "pH" },
+          { label: "Exposure", value: `${(exposureFraction * 100).toFixed(0)}%` },
+          { label: "Process", value: "One-Step Rupturable Pod Diffusion" },
+        ]}
+      />
     </div>
   );
 };

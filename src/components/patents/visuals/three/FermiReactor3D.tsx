@@ -7,6 +7,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildFermiReactorModel, updateFermiReactorKinematics } from "./fermiReactorModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -360,6 +361,47 @@ export function FermiReactor3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="CP-1 FOUR-FACTOR KINETICS"
+        chips={[
+          {
+            label: "k_eff",
+            value: String(kEff),
+            tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
+          },
+          {
+            label: "Thermal Power",
+            value:
+              reactorPowerWatts >= 1000
+                ? `${(reactorPowerWatts / 1000).toFixed(1)} kW`
+                : `${reactorPowerWatts.toFixed(0)} W`,
+          },
+          { label: "Reactivity ($)", value: reactivityDollars, unit: "$" },
+          {
+            label: "Rod Position",
+            value: `${controlRodWithdrawalPct.toFixed(1)}%`,
+            unit: "withdrawn",
+          },
+          { label: "Moderator", value: `${moderatorPurityPct.toFixed(1)}%`, unit: "purity" },
+          {
+            label: "Neutron Flux",
+            value: reactorKinetics.thermalNeutronFluxNPerCm2S.toExponential(2),
+            unit: "n/cm²s",
+          },
+          {
+            label: "Regime",
+            value: isSupercritical
+              ? "Supercritical"
+              : isCritical
+                ? "Critical Steady"
+                : "Subcritical Dampened",
+            tone: isSupercritical ? "hot" : isCritical ? "ok" : "warn",
+          },
+        ]}
+      />
     </div>
   );
 }

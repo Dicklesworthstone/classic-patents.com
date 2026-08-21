@@ -9,6 +9,7 @@ import {
   buildHewittMercuryLampModel,
   type HewittMercuryLampModelNodes,
 } from "./hewittMercuryLampModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -311,6 +312,44 @@ export function HewittMercuryLamp3D({
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="MERCURY VAPOR PLASMA DISCHARGE"
+        chips={[
+          {
+            label: "Arc Current",
+            value: `${sim.arcCurrentAmperes.toFixed(2)}`,
+            unit: "A",
+          },
+          {
+            label: "Operating Voltage",
+            value: `${sim.arcOperatingVoltageV.toFixed(1)}`,
+            unit: "V",
+          },
+          {
+            label: "Luminous Efficacy",
+            value: `${sim.luminousEfficacyLmPerWatt.toFixed(1)}`,
+            unit: "lm/W",
+          },
+          {
+            label: "Vapor Pressure",
+            value: `${sim.mercuryVaporPressureMmHg.toFixed(3)}`,
+            unit: "mmHg",
+          },
+          {
+            label: "Ballast",
+            value: `${ballastResistanceOhms.toFixed(0)}`,
+            unit: "Ω",
+          },
+          {
+            label: "State",
+            value: sim.arcOperatingVoltageV > 0 ? "Plasma Conduction" : "Extinguished",
+            tone: sim.arcOperatingVoltageV > 0 ? "ok" : "warn",
+          },
+        ]}
+      />
     </div>
   );
 }
