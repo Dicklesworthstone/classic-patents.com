@@ -174,7 +174,7 @@ export function PasteurFermentationSim() {
                     cy={142 + phase}
                     r="2.4"
                     fill="#0891b2"
-                    opacity={0.15 + 0.0085 * process.sprayCoveragePct}
+                    opacity={0.01 * process.sprayCoveragePct}
                   />
                 );
               })}
@@ -186,7 +186,7 @@ export function PasteurFermentationSim() {
                   cy={244 - ((timerSeconds * 14 + markerIndex * 19) % 80)}
                   r="3"
                   fill="#2563eb"
-                  opacity={0.12 + 0.008 * process.co2SweepPct}
+                  opacity={0.0092 * process.co2SweepPct}
                 />
               ))}
             </g>

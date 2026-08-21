@@ -127,6 +127,10 @@ introduced into the closed vessels while boiling hot.
 The energy-ledger case now refuses to invent a quantified balance and the
 unsupported strip is absent from the Pasteur studio. Both public sequence
 captions now say to introduce boiling-hot wort into vessel A before the gas
-sweep and exterior spray cooling. The root publication hold remains in place
-until these exact repairs receive executable verification and a fresh
-independent visitor re-acceptance pass.
+sweep and exterior spray cooling. A first re-audit then found that the 2D face
+left faint gas and spray particles visible at zero percent, contrary to the 3D
+face and the shared control meaning. Their opacities are now directly
+proportional to their respective control values and reach exactly zero when
+disabled. The root publication hold remains in place until these exact repairs
+receive executable verification and a fresh independent visitor re-acceptance
+pass.

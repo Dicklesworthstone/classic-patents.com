@@ -156,4 +156,16 @@ describe("US 135,245 Pasteur closed-vessel process visual boundary", () => {
     for (const unsupported of ["500.0", "350.0", "340.0", "wortVolumeLiters"])
       expect(pasteurLedgerCase).not.toContain(unsupported);
   });
+
+  test("makes zero-valued gas and spray controls visually inactive in the 2D face", () => {
+    const twoDimensionalSource = readFileSync(
+      join(VISUALS_DIRECTORY, "PasteurFermentationSim.tsx"),
+      "utf8",
+    );
+
+    expect(twoDimensionalSource).toContain("opacity={0.01 * process.sprayCoveragePct}");
+    expect(twoDimensionalSource).toContain("opacity={0.0092 * process.co2SweepPct}");
+    expect(twoDimensionalSource).not.toContain("0.15 + 0.0085 * process.sprayCoveragePct");
+    expect(twoDimensionalSource).not.toContain("0.12 + 0.008 * process.co2SweepPct");
+  });
 });

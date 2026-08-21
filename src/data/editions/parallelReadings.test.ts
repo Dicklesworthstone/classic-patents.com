@@ -66,6 +66,7 @@ const EXPECTED_ROOT_QA_WITHHOLDS = [
   "us-135245-pasteur-fermentation",
   "us-4750-howe-sewing-machine",
   "us-200521-edison-phonograph",
+  "us-2495429-spencer-microwave",
   "us-307031-edison-indicator",
   "us-361931-daimler-engine",
   "us-879532-de-forest-audion",
