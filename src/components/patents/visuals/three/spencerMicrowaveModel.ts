@@ -1,20 +1,15 @@
 /**
  * spencerMicrowaveModel.ts
  *
- * Museum-Grade Procedural Three.js Model Builder for US 2,495,429
- * Percy L. Spencer — Method of Treating Foodstuffs (Microwave Oven, 1950)
+ * Source-bounded procedural Three.js model for US 2,495,429.
+ * Percy L. Spencer — Method of Treating Foodstuffs (1950).
  *
- * Implements the authentic Raytheon resonant multi-cavity magnetron, waveguide, & heating cavity:
- * 1. Solid oxygen-free high-conductivity (OFHC) copper cylindrical anode block with machined concentric grooves.
- * 2. 8 radial hole-and-slot resonant LC cavities (Claim 1) with capacitive slots and inductive bores.
- * 3. Upper and lower double pi-mode copper strapping rings preventing mode jumping.
- * 4. Central barium-oxide-coated indirectly heated thermionic cathode emitting electron cloud.
- * 5. Radial aluminum radiator cooling fin array with perforated air-duct shroud.
- * 6. High-voltage ceramic vacuum insulator feedthrough bushings and Kovar lead pins.
- * 7. Twin Alnico V permanent magnet pole shoes & heavy return yoke establishing axial B-field.
- * 8. Coaxial output coupling loop launching microwave power into rectangular WR-284 waveguide (Claim 2).
- * 9. Motorized RF mode-stirrer fan and resonant foodstuff heating chamber with pyrex shelf.
- * 10. Rotating 4-spoke electron hub space-charge cloud interacting with RF electric fields.
+ * The patent drawing names two magnetron oscillators (10, 11), transformer 18,
+ * power lines 19, a common wave guide 23, coaxial lines 24/25, coupling loops
+ * 26/27, and a conveyor system 28. Internal magnetron materials, cavity
+ * counts, operating frequency, ratings, and a household oven are not asserted
+ * here. The geometry below is deliberately an explanatory abstraction of the
+ * numbered path, not a reconstruction of an unstated commercial tube.
  */
 
 import * as THREE from "three";
@@ -34,7 +29,7 @@ export interface SpencerMicrowaveModel {
   materials: {
     copperAnodeMat: THREE.MeshStandardMaterial;
     cathodeMat: THREE.MeshStandardMaterial;
-    alnicoMagnetMat: THREE.MeshStandardMaterial;
+    sourceMetalMat: THREE.MeshStandardMaterial;
     darkCavityMat: THREE.MeshStandardMaterial;
     boreMat: THREE.MeshStandardMaterial;
     steelMat: THREE.MeshStandardMaterial;
@@ -97,9 +92,9 @@ function createMachinedCopperTexture(): THREE.CanvasTexture | undefined {
 }
 
 /**
- * Procedural Cast Alnico Magnet Texture
+ * Neutral source-apparatus metal texture; no unstated material grade is implied.
  */
-function createAlnicoTexture(): THREE.CanvasTexture | undefined {
+function createSourceMetalTexture(): THREE.CanvasTexture | undefined {
   if (typeof document === "undefined") return undefined;
   const canvas = document.createElement("canvas");
   canvas.width = 512;
@@ -136,8 +131,8 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const copperTex = createMachinedCopperTexture();
   if (copperTex) disposables.push(copperTex);
 
-  const alnicoTex = createAlnicoTexture();
-  if (alnicoTex) disposables.push(alnicoTex);
+  const sourceMetalTex = createSourceMetalTexture();
+  if (sourceMetalTex) disposables.push(sourceMetalTex);
 
   // --- AUTHENTIC MATERIALS ---
   const copperAnodeMat = new THREE.MeshStandardMaterial({
@@ -159,15 +154,15 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   });
   disposables.push(cathodeMat);
 
-  const alnicoMagnetMat = new THREE.MeshStandardMaterial({
-    map: alnicoTex || undefined,
+  const sourceMetalMat = new THREE.MeshStandardMaterial({
+    map: sourceMetalTex || undefined,
     transparent: true,
     opacity: 1.0,
     color: 0x334155,
     roughness: 0.38,
     metalness: 0.85,
   });
-  disposables.push(alnicoMagnetMat);
+  disposables.push(sourceMetalMat);
 
   const darkCavityMat = new THREE.MeshStandardMaterial({
     color: 0x0f172a,
@@ -213,7 +208,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   disposables.push(pyrexGlass);
 
   // ==========================================
-  // CAVITY MAGNETRON CORE ASSEMBLY (CLAIM 1)
+  // SOURCE-NUMBERED OSCILLATOR ABSTRACTION (10 / 11)
   // ==========================================
   const magnetronGroup = new THREE.Group();
   root.add(magnetronGroup);
@@ -226,7 +221,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   anodeOuter.receiveShadow = true;
   magnetronGroup.add(anodeOuter);
 
-  // Radial Aluminum Extruded Heat Radiator Cooling Fins
+  // Neutral outer geometry; internal construction is not specified by the source.
   const finCount = 24;
   const finGeo = new THREE.BoxGeometry(1.4, 3.2, 0.08);
   disposables.push(finGeo);
@@ -239,7 +234,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     magnetronGroup.add(fin);
   }
 
-  // Perforated Outer Air-Duct Cooling Shroud
+  // Outer envelope for the named oscillator.
   const shroudGeo = new THREE.CylinderGeometry(5.75, 5.75, 3.2, 36, 1, true);
   disposables.push(shroudGeo);
   const shroud = new THREE.Mesh(shroudGeo, steelMat);
@@ -252,8 +247,8 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   const boreMesh = new THREE.Mesh(boreGeo, boreMat);
   magnetronGroup.add(boreMesh);
 
-  // 8 Resonant LC Cavity Holes and Slot Necks (Claim 1)
-  const numCavities = 8;
+  // Two visual slots mark the two source paths; this is not a cavity count.
+  const numCavities = 2;
   for (let c = 0; c < numCavities; c++) {
     const angle = (c / numCavities) * Math.PI * 2;
     const rCavity = 2.75;
@@ -276,7 +271,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     magnetronGroup.add(slotMesh);
   }
 
-  // Upper and Lower Pi-Mode Copper Strapping Rings
+  // Neutral coupling bands; no mode-strapping claim is made.
   [-1.75, 1.75].forEach((yRing) => {
     const strapGeo = new THREE.TorusGeometry(2.35, 0.08, 12, 48);
     disposables.push(strapGeo);
@@ -286,14 +281,14 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     magnetronGroup.add(strapMesh);
   });
 
-  // Central Thermionic Barium Oxide Cathode Emitter
+  // Central interaction marker; the source does not specify emitter construction.
   const cathodeGeo = new THREE.CylinderGeometry(0.42, 0.42, 4.4, 24);
   disposables.push(cathodeGeo);
   const cathodeMesh = new THREE.Mesh(cathodeGeo, cathodeMat);
   cathodeMesh.castShadow = true;
   magnetronGroup.add(cathodeMesh);
 
-  // Ceramic High-Voltage Insulator Bushings at tube ends
+  // End markers for the oscillator abstraction.
   [-2.4, 2.4].forEach((iy) => {
     const insGeo = new THREE.CylinderGeometry(0.85, 0.85, 0.65, 20);
     disposables.push(insGeo);
@@ -303,7 +298,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     magnetronGroup.add(insulator);
   });
 
-  // Output Waveguide Coupling Loop & Rectangular Horn (Claim 2)
+  // Coupling loop and common wave-guide path (26/27 -> 23).
   const waveguideGroup = new THREE.Group();
   waveguideGroup.position.set(3.8, 0, 0);
 
@@ -342,11 +337,11 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   }
   magnetronGroup.add(modeStirrer);
 
-  // Permanent Alnico Magnet Pole Shoes & Outer Magnetic Return Yoke
+  // Permanent Magnet Pole Shoes & Outer Magnetic Return Yoke
   [-2.8, 2.8].forEach((yMag) => {
     const poleGeo = new THREE.CylinderGeometry(4.6, 4.6, 1.2, 36);
     disposables.push(poleGeo);
-    const poleShoe = new THREE.Mesh(poleGeo, alnicoMagnetMat);
+    const poleShoe = new THREE.Mesh(poleGeo, sourceMetalMat);
     poleShoe.position.y = yMag;
     poleShoe.castShadow = true;
     magnetronGroup.add(poleShoe);
@@ -355,7 +350,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
   // Heavy steel C-clamp magnetic return yoke bridge
   const yokeGeo = new THREE.BoxGeometry(1.2, 6.8, 2.2);
   disposables.push(yokeGeo);
-  const yoke = new THREE.Mesh(yokeGeo, alnicoMagnetMat);
+  const yoke = new THREE.Mesh(yokeGeo, sourceMetalMat);
   yoke.position.set(-4.8, 0, 0);
   yoke.castShadow = true;
   magnetronGroup.add(yoke);
@@ -433,7 +428,7 @@ export function buildSpencerMicrowaveModel(): SpencerMicrowaveModel {
     materials: {
       copperAnodeMat,
       cathodeMat,
-      alnicoMagnetMat,
+      sourceMetalMat,
       darkCavityMat,
       boreMat,
       steelMat,
@@ -478,6 +473,6 @@ export function updateSpencerMicrowaveKinematics(
   // Cutaway mode: make copper anode block and magnet pole shoes translucent
   model.materials.copperAnodeMat.opacity = isCutaway ? 0.35 : 1.0;
   model.materials.copperAnodeMat.transparent = isCutaway;
-  model.materials.alnicoMagnetMat.opacity = isCutaway ? 0.35 : 1.0;
-  model.materials.alnicoMagnetMat.transparent = isCutaway;
+  model.materials.sourceMetalMat.opacity = isCutaway ? 0.35 : 1.0;
+  model.materials.sourceMetalMat.transparent = isCutaway;
 }
