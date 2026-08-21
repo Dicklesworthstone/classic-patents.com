@@ -113,6 +113,8 @@ export function PageRank3D() {
         });
       }
 
+      model.setCutaway?.(p.isCutaway ?? false);
+
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
@@ -182,6 +184,20 @@ export function PageRank3D() {
 
           <button
             type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Graph Nodes" : "Transparent Nodes & Links Cutaway"}
+            aria-label={isCutaway ? "Solid Graph Nodes" : "Transparent Nodes & Links Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showUiOverlay
@@ -200,7 +216,7 @@ export function PageRank3D() {
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
