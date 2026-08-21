@@ -13,7 +13,7 @@
 - **PDF SHA-256 Digest**: `924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85`
 - **PDF Page Count**: 13 pages
 - **Retrieval Date**: August 19, 2026
-- **Full-Facsimile Review Status**: Withheld. On August 21, 2026, the 13 pages were re-inspected against the pinned PDF and the existing ledger/edition were confirmed not to be a literal, page-complete transcription.
+- **Full-Facsimile Review Status**: Candidate complete. On August 21, 2026, all 13 pinned-PDF pages were re-read; pages 4–13 were transcribed into the reviewed ledger and converted into the continuous typed edition. Publication remains reserved for root independent acceptance.
 - **Rights Basis**: Public domain United States Government patent grant (1880).
 
 ---
@@ -40,9 +40,9 @@
 
 ## Editorial & Preservation Boundaries
 
-### Root figure-QA hold (2026-08-20)
+### Candidate-completion boundary (2026-08-21)
 
-The public source face remains withheld pending a complete literal source-text repair. Direct review corrected the drawing inventory: page 1 prints Figs. 1–6; page 2 prints Figs. 3–17; page 3 repeats Fig. 10 and prints Figs. 18–24. The edition points Figs. 16–17 to one clean, upright source crop because those two views touch on the sheet, and Figs. 18–24 to individually reviewed upright crops. Earlier clipped, sideways, and misnumbered assets remain preserved as evidence and are not used by the edition. The reviewed ledger still contains extensive OCR corruption in the specification body, and the present edition contains editorial paraphrase rather than the complete literal prose. Neither is publication-ready. The current edition type cannot express an interim review state, so the enforceable fail-closed boundary is that the catalogue record intentionally remains unbound from both source artifacts.
+Direct review corrected the drawing inventory: page 1 prints Figs. 1–6; page 2 prints Figs. 3–17; page 3 repeats Fig. 10 and prints Figs. 18–24. The edition points Figs. 16–17 to one clean, upright source crop because those two views touch on the sheet, and Figs. 18–24 to individually reviewed upright crops. Earlier clipped, sideways, and misnumbered assets remain preserved as evidence and are not used by the edition. The reviewed ledger and edition now carry the complete source prose, printed claims, and formal signatures. This is a candidate only: root independent acceptance controls publication.
 
 - **Visitor Source Face**: `src/data/editions/bellPhotophoneEdition.ts`
 - **Reviewed Ledger**: `public/patents/transcripts/us-235199-bell-photophone-reviewed.txt`
