@@ -138,17 +138,16 @@ export function HoweSewingMachine3D() {
 
         // Kinematic 4-bar linkage drive
         const theta = (mainCrankAngleDeg * Math.PI) / 180;
-        model.flywheelMesh.rotation.x = -theta;
-        model.driveShaft.rotation.x = -theta;
+        model.flywheelGroup.rotation.x = -theta;
 
         // Needle Rocking Lever Arc
         const needleAngle = Math.sin(theta) * 0.35;
-        model.needleArm.rotation.z = needleAngle;
+        model.needleArmGroup.rotation.z = needleAngle;
 
         // Curved Eye-Pointed Needle Kinematic Position
         model.curvedNeedle.position.y = -0.15 + Math.sin(theta) * 0.45;
         model.curvedNeedle.position.z = Math.cos(theta) * 0.12;
-        model.curvedNeedle.rotation.z = Math.PI + (stitchState as any).needleStudioRotZ(theta);
+        model.curvedNeedle.rotation.z = Math.PI + Math.sin(theta) * 0.15;
 
         // Shuttle Box Linear Reciprocation
         model.shuttleMesh.position.x = -0.3 + Math.cos(theta - Math.PI / 4) * 0.65;
@@ -157,11 +156,11 @@ export function HoweSewingMachine3D() {
         const clothShift =
           (virtualTime * p.clothStudioAdvancePerS) % Math.max(0.1, p.clothStudioWrap);
         model.clothMesh.position.x = 0.5 - clothShift;
-        model.basterPlate.position.x = 0.5 - clothShift;
+        model.basterPlateGroup.position.x = 0.5 - clothShift;
 
         // Thread Tension Line Deflection
         const threadSag = Math.abs(Math.sin(theta)) * 0.15;
-        model.threadLine.scale.set(1, 1 + threadSag, 1);
+        model.upperThreadLine.scale.set(1, 1 + threadSag, 1);
 
         // Periodic Click Audio Synthesis
         if (virtualTime - lastStitchTickTime > 1 / Math.max(1, p.stitchFrequencyHz)) {
