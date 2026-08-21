@@ -700,22 +700,21 @@ export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = 
       kind: "masthead",
       lines: [
         "UNITED STATES PATENT OFFICE",
-        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA",
         "MACHINE FOR PRODUCING PRINTING-BARS",
         "Specification forming part of Letters Patent No. 313,224, dated March 3, 1885",
-        "Application filed February 12, 1884. Serial No. 120,497. (No model.)",
-        "70 Claims. (Cl. 199—1)",
+        "Application filed August 30, 1884. (No model.)",
       ],
     },
-    { kind: "heading", level: 2, text: "Field of the Invention" },
+    { kind: "heading", level: 2, text: "Specification" },
     paragraph(
       literal(
-        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
+        "To all whom it may concern:",
       ),
     ),
     paragraph(
       literal(
-        "This invention relates to an automatic stereotyping apparatus and machine for casting solid printing slugs or type-bars directly from a justified line of matrices composed by an operator at a keyboard, eliminating manual hand-typesetting.",
+        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
       ),
     ),
     { kind: "heading", level: 2, text: "The Matrix-Bar System and Keyboard Assembly" },
