@@ -136,6 +136,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     <div
       className={`flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent ${className}`}
     >
+      <div className="sr-only">Norbert Rillieux Multiple-Effect Evaporator 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -152,7 +153,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
                 onClick={() => handlePresetChange(key)}
                 className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   cameraPreset === key
-                    ? "bg-amber-600 text-white shadow-xs"
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
@@ -177,6 +178,15 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
           >
             <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => handlePresetChange("overview")}
+            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            title="Reset Orbit Camera"
+          >
+            <Camera className="w-3.5 h-3.5 inline" />
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepPeltonWheel } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
