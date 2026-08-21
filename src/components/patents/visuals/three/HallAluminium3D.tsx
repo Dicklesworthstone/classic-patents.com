@@ -1,12 +1,11 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -32,6 +31,7 @@ export function HallAluminium3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-400766-hall-aluminium");
 
@@ -76,45 +76,49 @@ export function HallAluminium3D() {
     });
     studioRef.current = studio;
 
-    const model = createHallAluminiumModel();
-    studio.scene.add(model.root);
+    const { scene, camera, renderer, controls } = studio;
 
-    let rafId = 0;
-    let virtualTime = 0;
+    const model = createHallAluminiumModel();
+    scene.add(model.rootGroup);
+
+    let reqId: number;
 
     const animate = () => {
-      rafId = requestAnimationFrame(animate);
-      virtualTime += 1 / 60;
-      const currentSim = stepHallAluminium(live.current);
+      reqId = requestAnimationFrame(animate);
+      const dt = 1 / 60;
+      const p = live.current;
 
-      model.setCutaway?.(live.current.isCutaway ?? false);
+      updateHallAluminiumVisual(model, dt, {
+        currentAmperes: p.currentAmperes,
+        bathTemperatureCelsius: p.bathTemperatureCelsius,
+        aluminaConcentrationPct: p.aluminaConcentrationPct,
+        isCutaway: p.isCutaway,
+      });
 
-      updateHallAluminiumVisual(
-        model,
-        {
-          currentAmperes: currentSim.currentAmperes,
-          bathTemperatureCelsius: currentSim.bathTemperatureCelsius,
-          totalCellVoltage: currentSim.totalCellVoltage,
-          aluminiumProductionRateKgPerHour: currentSim.aluminiumProductionRateKgPerHour,
-        },
-        virtualTime,
-      );
-
-      studio.controls.update();
-      studio.renderer.render(studio.scene, studio.camera);
+      controls.update();
+      renderer.render(scene, camera);
     };
-    rafId = requestAnimationFrame(animate);
+
+    animate();
 
     return () => {
-      cancelAnimationFrame(rafId);
-      studio.dispose();
+      cancelAnimationFrame(reqId);
+      model.dispose();
+      studio.cleanup();
       studioRef.current = null;
     };
   }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Charles Martin Hall Aluminium Reduction 3D</div>
+      <PortHamiltonianEnergyStrip
+        patentId="us-400766-hall-aluminium"
+        params={{
+          currentAmperes,
+          bathTemperatureCelsius,
+        }}
+      />
+      <div className="sr-only">Charles Martin Hall Aluminium Reduction 3D Simulation</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -144,7 +148,15 @@ export function HallAluminium3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-400766-hall-aluminium"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("currentAmperes", active ? 300000 : 15000);
+            }}
+          />
           <button
             type="button"
             onClick={() => {
@@ -246,43 +258,33 @@ export function HallAluminium3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Cell DC Current</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {(currentAmperes / 1000).toFixed(0)} kA
-              </span>
-            </div>
-            <input
-              type="range"
-              min="100000"
-              max="500000"
-              step="10000"
-              value={currentAmperes}
-              onChange={(e) => updateParam("currentAmperes", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="cellCurrent"
+            patentId="us-400766-hall-aluminium"
+            paramKey="currentAmperes"
+            label="Cell DC Current"
+            value={currentAmperes}
+            min={100000}
+            max={500000}
+            step={10000}
+            unit="A"
+            onChange={(val) => updateParam("currentAmperes", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Cryolite Bath Temp</span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
-                {bathTemperatureCelsius} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="920"
-              max="1020"
-              step="5"
-              value={bathTemperatureCelsius}
-              onChange={(e) =>
-                updateParam("bathTemperatureCelsius", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-rose-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="bathTemp"
+            patentId="us-400766-hall-aluminium"
+            paramKey="bathTemperatureCelsius"
+            label="Cryolite Bath Temp"
+            value={bathTemperatureCelsius}
+            min={920}
+            max={1020}
+            step={5}
+            unit="°C"
+            onChange={(val) => updateParam("bathTemperatureCelsius", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -306,6 +308,12 @@ export function HallAluminium3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-400766-hall-aluminium"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

@@ -217,7 +217,7 @@ a gating in phase with each other. Thus, as at radio or
 microwave frequencies, a great deal of energy could be
 concentrated at or extremely near to a single frequency
 and be utilized in methods analogous to those at radio
-frequencics,
+frequencies,
 
 Ordinary techniques of generating or amplifying elec-
 tromagnetic waves, including microwave maser tech-
@@ -308,9 +308,9 @@ parameters.
 
 It is another object to provide a laser which does not
 require critical vacuum or vapor pressure techniques and
-which operates in a medium of high diclectric constant.
+which operates in a medium of high dielectric constant.
 
-It is another object to provide a Jaser capable of much
+It is another object to provide a laser capable of much
 higher power handling.
 
 It is another object to provide a laser which is tun-
@@ -344,7 +344,7 @@ This effect causes the output to be an extremely parallel
 beam so that it propagates immense distances without
 spreading. Inherent in the regeneration process is the
 coherent amplification of an extremely narrow band of
-frequencies, thus providing a menochromatic output.
+frequencies, thus providing a monochromatic output.
 Additional discussion of principles of operation, of fur-
 ther objects and advantages, including uses, and of other
 examples will be presented below in connection with a
@@ -412,7 +412,7 @@ which the optical pump utilizes an exploding wire; and
 FIG. 18 is a schematic diagram of a practical colidar
 system utilizing a laser.
 
-The laser to be hercin below described utilizes the
+The laser to be herein below described utilizes the
 interaction of electromagnetic radiation with a material
 having an appropriate set of discrete energy levels, Con-
 sider, for example, a pair of such levels with energies E;
@@ -577,7 +577,7 @@ Referring to FIG. 4, an embodiment of the invention
 is shown in which an active laser rod 26 is disposed
 coaxially within a helical gas-filled flash tube 28. The ends
 of the rod 26 may be suitably plated as by a partial coat-
-ing of silver in order to provide the reptitive reflections
+ing of silver in order to provide the repetitive reflections
 of the monochromatic emitted light. The system of stimu-
 lation is so efficient that a plating 26-which will provide
 approximately 10 percent reflection is adequate. One end
@@ -828,7 +828,7 @@ by an appropriate discontinuity in the reflective face of
 the prism 140.
 
 FIG. 14 illustrates another type of interferometer in
-which the active Jaser segment 160 does not have reflec-
+which the active laser segment 160 does not have reflec-
 tive ends. Instead, mutually parallel plates 162 and 164
 are disposed perpendicularly to the axis of the segment
 160 which is the desired direction of propagation. The
@@ -931,7 +931,7 @@ the laser 200 transmits a beam 210 of monochromatic
 coherent light toward a target 212, the range to which
 is to be determined. The synchronizer trigger also trig-
 gers the horizontal sweeps of a pair of oscillographs 214
-and 216. A sample of the lascr output is determined by a
+and 216. A sample of the laser output is determined by a
 photoelectric cell 218 which is coupled to the oscillograph
 214 and presented on the face thereof as a “transmitter”
 pulse 220 to indicate the time at which the laser output

@@ -282,6 +282,18 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-400766-hall-aluminium": {
+      const currentAmperes = params.currentAmperes ?? 300000.0;
+      const bathTempC = params.bathTemperatureCelsius ?? 960.0;
+      const cellVoltage = 4.2; // ~4.2 V per cell
+      powerIn = currentAmperes * cellVoltage; // Electrical input power in Watts (~1.26 MW)
+      const enthalpyDeltaH = 1.18 * currentAmperes; // Thermodynamic Gibbs chemical work for Al2O3 -> 2Al + 3/2 O2
+      thermal = 2.5e6 * ((bathTempC + 273.15) / 1233.15); // Molten cryolite enthalpy
+      potential = enthalpyDeltaH * 3600.0; // Chemical bond potential energy stored in reduced Al metal
+      dissipated = powerIn - enthalpyDeltaH; // Joule heating dissipated through bath and busbars
+      break;
+    }
+
     default: {
       kinetic = 100.0;
       potential = 50.0;
