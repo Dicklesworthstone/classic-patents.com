@@ -38,10 +38,10 @@ const FIGURE_CROPS = {
   12: crop(12, 940, 720, "Fig. 12"),
   13: crop(13, 500, 720, "Fig. 13"),
   14: {
-    src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v4.png",
-    alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057; the separate label preview preserves the printed figure label without including the witness block.",
-    width: 1320,
-    height: 975,
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v5.png",
+    alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057, with the complete printed figure label and no witness block.",
+    width: 1500,
+    height: 930,
   },
 } as const;
 
