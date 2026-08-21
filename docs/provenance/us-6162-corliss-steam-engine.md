@@ -20,7 +20,7 @@
 | 1 | Drawing sheet 1: Fig. 1, side elevation | `FIG. 1` sheet record and locally derived Figure 1 crop |
 | 2 | Drawing sheet 2: Fig. 2, longitudinal vertical section | `FIG. 2` sheet record and locally derived Figure 2 crop |
 | 3 | Drawing sheet 3: Figs. 3, 6, and 7 | individual sheet record and Figure 3, 6, and 7 crops |
-| 4 | Drawing sheet 4: Figs. 4, 5, 8, and 9 | individual sheet record and source-sheet previews designated for Figures 4, 5, 8, and 9 |
+| 4 | Drawing sheet 4: Figs. 4, 5, 8, and 9 | source sheet checked; figure-specific crops remain withheld pending fresh visual crop review |
 | 5 | Masthead, reissue notice, opening, figure key, frame and valve-motion description | authored masthead and continuous paragraphs |
 | 6 | Continuation of frame construction; exhaust and admission valve linkage | continuous paragraphs |
 | 7 | Catch, weighted closing lever, air-cylinder cushion, governor cams, claim 1 opening | continuous paragraphs and Claim 1 node |
@@ -33,6 +33,15 @@ an explicit typed node sequence prepared from direct visual comparison of all
 eight PDF pages. `public/patents/source-text/us-6162-corliss-steam-engine.txt`
 is retained only as a non-authoritative OCR comparison artifact. It was not
 used as public edition input or as completeness proof.
+
+The figure-preview bindings are not yet accepted as source-faithful. A fresh
+visual audit found that the retained previews for Figures 4, 5, 8, and 9 are
+byte-identical copies of the full Sheet 4 image, the retained Figure 2 preview
+includes masthead material, and the earlier Figure 3/7 mapping conflicts with
+the printed sheet labels. These assets remain preserved; no source PDF is
+changed or discarded. The Corliss record must remain under editorial hold until
+new, upright, figure-specific crops are made from the pinned facsimile and
+every authored reference is rebound to the verified crop.
 
 `public/patents/transcripts/us-6162-corliss-steam-engine-reviewed.txt` is the
 reviewed eight-page ledger. It preserves each drawing-sheet header and every

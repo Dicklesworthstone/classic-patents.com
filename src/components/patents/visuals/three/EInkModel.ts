@@ -10,6 +10,7 @@ export interface EInkModel {
   topPlate: THREE.Mesh;
   bottomPlate: THREE.Mesh;
   updateElectrophoresis: (voltage: number, timeSec: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -217,6 +218,20 @@ export function buildEInkModel(): EInkModel {
     });
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    if (cutaway) {
+      topPlate.position.y = 2.4;
+      bottomPlate.position.y = -2.4;
+      capsuleShellMat.opacity = 0.12;
+      fluidMat.opacity = 0.08;
+    } else {
+      topPlate.position.y = 1.45;
+      bottomPlate.position.y = -1.45;
+      capsuleShellMat.opacity = 0.35;
+      fluidMat.opacity = 0.15;
+    }
+  };
+
   return {
     root,
     mainGroup,
@@ -226,6 +241,7 @@ export function buildEInkModel(): EInkModel {
     topPlate,
     bottomPlate,
     updateElectrophoresis,
+    setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();
       for (const m of materialsToDispose) m.dispose();

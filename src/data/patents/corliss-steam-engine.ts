@@ -54,7 +54,7 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
   archivalEdition: corlissSteamEngineArchivalEdition,
   plainEnglishExplanation: {
     overview:
-      "Before George Corliss, steam engines were throttled: a governor opened or choked a narrow neck valve in the steam pipe, wasting immense energy in friction and lowering steam pressure before it even entered the cylinder. Corliss realized that the only thermodynamic way to run an engine efficiently was to admit steam at full boiler pressure and temperature, then snap the valve shut partway through the stroke, letting the trapped steam expand adiabatically like a compressed spring to push the piston.",
+      "Corliss presents three linked engineering problems in a beam engine: a frame that yields under changing loads, paired slide valves that waste motion while one remains closed under steam pressure, and a cut-off that must respond to engine speed. His proposed answers are a tension-braced frame, phase-offset arms on one rock shaft, and governor-controlled catches that release the steam valves so the charge can expand after admission.",
     coreMechanism:
       "The specification describes paired steam and exhaust slide valves, each driven from a common rock shaft by a separate arm or crank wrist. The wrists are phased so the valve that is opening or closing receives the greatest longitudinal motion while the valve that remains closed moves near its dead point, reducing the work needed to move a pressure-loaded valve. For cut-off, a centrifugal governor raises a sliding rod carrying cams; those cams meet projections on the valve rods sooner at higher speed, release catches, and allow weights to close the steam valves so the trapped steam expands for the rest of the stroke. A small air cylinder and piston cushions the closing motion.",
     mechanicalBreakdown: [
@@ -116,11 +116,10 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
           "The source's cut-off arrangement admits steam and then closes the valve so the trapped charge can continue the stroke by expansion. The formula is a modern engineering description of the boundary work; the patent does not claim a measured efficiency increase or a particular percentage.",
       },
       {
-        principle: "Wall Condensation Irreversibility & Heat Transfer Barrier",
-        formula:
-          "\\dot{Q}_{\\text{loss}} = h_{\\text{film}} A_{\\text{wall}} (T_{\\text{steam}} - T_{\\text{wall}}), \\quad m_{\\text{condensed}} = \\frac{\\dot{Q}_{\\text{loss}} \\Delta t}{h_{fg}}",
+        principle: "Preload and frame stiffness",
+        formula: "F = E A \\varepsilon",
         explanation:
-          "The patent describes separate steam and exhaust valves above and below the cylinder and focuses its claims on their motion and cut-off linkage. It does not provide a measured condensation percentage, so this card stays at the level of the source's mechanical arrangement.",
+          "The diagonal rods are tightened before the engine is loaded. This modern relation explains why a tensile member's force rises with its stiffness, area, and imposed strain; the source describes the preload and load path but does not give material constants or measured deflection.",
       },
     ],
     whyItMattersToday:
@@ -155,48 +154,11 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Side Elevation of Corliss Steam Cylinder & Valve Gear",
+      title: "Side elevation of the improved beam engine",
       caption:
-        "Side view showing central oscillating wrist-plate, four corner valve stems, catch-hooks, governor linkage rods, and base dashpots.",
+        "The source identifies Fig. 1 as a side elevation of an engine on Corliss's improved plan. The figure-sheet crop, rather than a reconstructed diagram, is the authority for its lettered parts.",
       svgType: "corliss-steam-engine",
-      callouts: [
-        {
-          id: "ce-1",
-          figureRef: "Fig. 1",
-          label: "A",
-          element: "Central Oscillating Wrist-Plate",
-          description: "Rocking disk driven by crankshaft eccentric to operate valve rods.",
-          x: 50,
-          y: 50,
-        },
-        {
-          id: "ce-2",
-          figureRef: "Fig. 1",
-          label: "B",
-          element: "Top Steam Admission Valves & Catch-Hooks",
-          description: "Oscillating rotary valves opened by hooks and tripped by governor cams.",
-          x: 50,
-          y: 20,
-        },
-        {
-          id: "ce-3",
-          figureRef: "Fig. 1",
-          label: "C",
-          element: "Bottom Exhaust Valves",
-          description: "Separate bottom rotary valves providing unrestricted exhaust.",
-          x: 50,
-          y: 80,
-        },
-        {
-          id: "ce-4",
-          figureRef: "Fig. 1",
-          label: "D",
-          element: "Pneumatic Air-Cushion Dashpots",
-          description: "Vacuum cylinders pulling released valves closed in milliseconds.",
-          x: 25,
-          y: 85,
-        },
-      ],
+      callouts: [],
     },
   ],
   historicalContext: {

@@ -11,6 +11,7 @@ export interface RoombaModel {
   dustPoints: THREE.Points;
   updateTrail: (x: number, z: number) => void;
   updateKinematics: (delta: number, speedMPerS: number, x: number, z: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 

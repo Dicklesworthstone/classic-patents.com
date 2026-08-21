@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -32,6 +32,7 @@ const CAMERA_PRESETS: Record<
 export function MultiTouch3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
     mode: "Pinch-to-Zoom",
@@ -47,6 +48,7 @@ export function MultiTouch3D() {
   const live = useLiveSimParams({
     fingerSeparationMm,
     fingerCount,
+    isCutaway,
     touchPressureGrams: params.touchPressureGrams ?? 80,
     gestureVelocityMmS: params.gestureVelocityMmS ?? 15,
   });
@@ -136,6 +138,8 @@ export function MultiTouch3D() {
         }
       }
 
+      model.setExplodedView?.(p.isCutaway ?? false);
+
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
@@ -201,6 +205,20 @@ export function MultiTouch3D() {
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers"}
+            aria-label={isCutaway ? "Collapse Stack Layers" : "Explode Capacitive Stack Layers"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button

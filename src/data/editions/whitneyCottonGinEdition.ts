@@ -33,8 +33,34 @@ const dims: Record<string, [number, number]> = {
   "14": [1000, 778],
 };
 
+const sourceCropOverrides: Record<
+  string,
+  { src: string; width: number; height: number; note: string }
+> = {
+  "fig. 3": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-3-source-crop-v3.png",
+    width: 1180,
+    height: 680,
+    note: "This versioned crop keeps the printed Fig. 3 label and complete belt-and-whirl assembly without the neighboring Fig. 5 edge.",
+  },
+  "fig. 12": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-12-source-crop-v2.png",
+    width: 800,
+    height: 650,
+    note: "This versioned crop keeps the printed Fig. 12 breastwork section and removes neighboring sheet furniture.",
+  },
+  "fig. 14": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-14-source-crop-v4.png",
+    width: 430,
+    height: 305,
+    note: "This versioned crop keeps the printed Fig. 14 alternate breastwork detail and removes the neighboring Fig. 7 fragment.",
+  },
+};
 const preview = (number: number | string, label: string): CuratedSpecificationInline => {
-  const [w, h] = dims[number.toString()] || [1078, 1600];
+  const override = sourceCropOverrides[label.toLowerCase()];
+  const [w, h] = override
+    ? [override.width, override.height]
+    : dims[number.toString()] || [1078, 1600];
   const assetSuffix = number.toString() === "10" ? "-preview-v2" : "-preview";
   return {
     kind: "reference",
@@ -44,8 +70,10 @@ const preview = (number: number | string, label: string): CuratedSpecificationIn
     label: `Open the source-derived Whitney cotton-gin drawing crop ${number}`,
     figurePreviews: [
       {
-        src: `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}${assetSuffix}.png`,
-        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.${number.toString() === "10" ? " This crop is framed to retain the printed Figure 10 label and curved breastwork drawing." : ""}`,
+        src:
+          override?.src ??
+          `/patents/figures/us-x72-whitney-cotton-gin-fig-${number}${assetSuffix}.png`,
+        alt: `Source-derived crop ${number} from the Whitney cotton-gin facsimile drawing sheets.${override?.note ?? (number.toString() === "10" ? " This crop is framed to retain the printed Figure 10 label and curved breastwork drawing." : "")}`,
         width: w,
         height: h,
       },

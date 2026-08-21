@@ -13,6 +13,7 @@ export interface MultiTouchModel {
     t2: { x: number; y: number },
     active: boolean,
   ) => void;
+  setExplodedView?: (exploded: boolean) => void;
   dispose: () => void;
 }
 
@@ -206,6 +207,26 @@ export function buildMultiTouchModel(): MultiTouchModel {
     touch2Ring.visible = active;
   };
 
+  const setExplodedView = (exploded: boolean) => {
+    if (exploded) {
+      glass.position.z = 0.65;
+      speaker.position.z = 0.67;
+      homeBtn.position.z = 0.67;
+      grid.position.z = 0.32;
+      docGroup.position.z = 0.05;
+      screenBack.position.z = -0.15;
+      chassis.position.z = -0.45;
+    } else {
+      glass.position.z = 0.01;
+      speaker.position.z = -0.035;
+      homeBtn.position.z = -0.035;
+      grid.position.z = -0.015;
+      docGroup.position.z = -0.035;
+      screenBack.position.z = -0.045;
+      chassis.position.z = -0.16;
+    }
+  };
+
   return {
     root,
     mainGroup,
@@ -215,6 +236,7 @@ export function buildMultiTouchModel(): MultiTouchModel {
     touch1Ring,
     touch2Ring,
     updateTouchContacts,
+    setExplodedView,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();
       for (const m of materialsToDispose) m.dispose();

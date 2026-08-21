@@ -54,6 +54,11 @@ const term = (
  * A continuous edition made directly from the eight-page local facsimile.
  * Drawing-sheet order and printed page furniture remain in the PDF; this
  * reader preserves the legal argument without scan-page reconstruction.
+ *
+ * Figure preview bindings are intentionally retained as versioned evidence
+ * until a fresh cloud visual review produces figure-specific crops for the
+ * known-bad Sheet 4 and masthead-contaminated assets. This edition must not be
+ * promoted by publication approval while that crop audit is open.
  */
 export const corlissSteamEngineArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
