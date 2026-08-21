@@ -13,6 +13,7 @@ import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset =
   | "iso"

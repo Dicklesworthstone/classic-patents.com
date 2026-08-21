@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { CuratedSpecificationEdition } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { fermiReactorPatent } from "../patents/fermi-reactor";

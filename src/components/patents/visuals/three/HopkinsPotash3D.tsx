@@ -4,12 +4,14 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { animateHopkinsPotashModel, buildHopkinsPotashModel } from "./hopkinsPotashModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+import { soundEngine } from "@/utils/soundEngine";
 
 type CameraPreset = "iso" | "furnace" | "leaching" | "crystallizer" | "ingot" | "top";
 
@@ -32,6 +34,7 @@ export function HopkinsPotash3D() {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-x1-hopkins-potash");
   const roastTempC = (params.roastTempC as number) ?? 750;
@@ -366,6 +369,21 @@ export function HopkinsPotash3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-x1-hopkins-potash"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-1-hopkins-potash"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

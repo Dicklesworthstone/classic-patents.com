@@ -372,6 +372,15 @@ export function GoddardRocket3D() {
           />
         </div>
 
+        <ClaimConstraintToggle
+          patentId="us-1102653-goddard-rocket"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
         <PortHamiltonianEnergyStrip
           patentId="us-1102653-goddard-rocket"
           params={params}

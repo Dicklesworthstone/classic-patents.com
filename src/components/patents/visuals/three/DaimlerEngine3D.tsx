@@ -284,43 +284,31 @@ export function DaimlerEngine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {engineRpm} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="200"
-              max="1200"
-              step="50"
-              value={engineRpm}
-              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="daimlerEngineRpm"
+            patentId="us-361931-daimler-engine"
+            paramKey="engineRpm"
+            label="Engine Speed"
+            value={engineRpm}
+            min={200}
+            max={1200}
+            step={50}
+            onChange={(val) => updateParam("engineRpm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Hot-Tube Igniter Temp
-              </span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
-                {hotTubeTempC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="600"
-              max="1100"
-              step="25"
-              value={hotTubeTempC}
-              onChange={(e) => updateParam("hotTubeTemp", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-rose-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="daimlerHotTubeTemp"
+            patentId="us-361931-daimler-engine"
+            paramKey="hotTubeTemp"
+            label="Hot-Tube Igniter Temp"
+            value={hotTubeTempC}
+            min={600}
+            max={1100}
+            step={25}
+            onChange={(val) => updateParam("hotTubeTemp", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -343,20 +331,20 @@ export function DaimlerEngine3D() {
           </div>
         </div>
 
-        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800">
-          <SensitivitySlider
-            id="us-361931-daimler-engine-enginerpm"
-            patentId="us-361931-daimler-engine"
-            paramKey="engineRpm"
-            label="Engine Speed"
-            value={engineRpm}
-            unit="RPM"
-            min={200}
-            max={1200}
-            step={25}
-            onChange={(val) => updateParam("engineRpm", Math.round(val))}
-          />
-        </div>
+        <ClaimConstraintToggle
+          patentId="us-361931-daimler-engine"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-361931-daimler-engine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -31,6 +33,7 @@ export function BellPhotophone3D() {
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -193,6 +196,21 @@ export function BellPhotophone3D() {
           source-described chain: transmitter motion changes a beam, optics direct it, and a sensitive
           receiver can produce a corresponding acoustic or electrical effect.
         </p>
+
+        <ClaimConstraintToggle
+          patentId="us-235199-bell-photophone"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-235199-bell-photophone"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

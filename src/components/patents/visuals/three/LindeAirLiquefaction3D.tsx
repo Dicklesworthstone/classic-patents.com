@@ -6,6 +6,8 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLindeLiquefactionModel,
   type LindeLiquefactionModelResult,
@@ -44,8 +46,9 @@ export function LindeAirLiquefaction3D() {
   const [cutawayMode, setCutawayMode] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
-  usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const linde = FrankenSimEngine.stepLindeAirLiquefaction();
   const highPressureAtm = linde.highPressureAtm;
   const lowPressureAtm = linde.lowPressureAtm;
@@ -266,6 +269,21 @@ export function LindeAirLiquefaction3D() {
             <div className="mt-1 font-bold text-sky-700 dark:text-sky-400">about 100 m</div>
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-727650-linde-air-liquefaction"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-727650-linde-air-liquefaction"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

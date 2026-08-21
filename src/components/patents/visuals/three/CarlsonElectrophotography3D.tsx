@@ -368,6 +368,15 @@ export function CarlsonElectrophotography3D({
           />
         </div>
 
+        <ClaimConstraintToggle
+          patentId="us-2297691-carlson-electrophotography"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
         <PortHamiltonianEnergyStrip
           patentId="us-2297691-carlson-electrophotography"
           params={params}

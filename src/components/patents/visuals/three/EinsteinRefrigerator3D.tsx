@@ -13,7 +13,7 @@ import {
   buildEinsteinRefrigeratorModel,
   updateEinsteinRefrigeratorKinematics,
 } from "./einsteinRefrigeratorModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -37,7 +37,7 @@ export function EinsteinRefrigerator3D() {
 
   // Absorption Thermodynamics State Controls
   const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15;
