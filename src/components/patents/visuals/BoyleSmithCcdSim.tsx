@@ -290,17 +290,79 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
   }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics]);
 
   return (
-    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Charge-Coupled Device (CCD) Imager (US 3,858,232)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            3-phase MOS potential well charge transfer, optical photon integration, and
+            bucket-brigade serial readout.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRunning(!isRunning);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRunning ? "Pause Clock" : "Run 3-Phase Clock"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isRunning ? "Pause Clock" : "Run 3-Phase Clock"}
+          >
+            {isRunning ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Canvas */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-slate-800 bg-slate-950">
         <canvas ref={canvasRef} width={800} height={420} className="h-full w-full object-contain" />
       </div>
 
       {interactive && (
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-slate-800/80 bg-parchment-100/80 dark:bg-slate-900/50 p-4">
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex flex-col gap-1">
-              <label htmlFor="gateVoltage" className="text-xs font-mono text-slate-400">
-                Gate Voltage: {gateVoltage} V
+              <label
+                htmlFor="gateVoltage"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Gate Voltage:{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {gateVoltage} V
+                </span>
               </label>
               <input
                 id="gateVoltage"
@@ -310,13 +372,17 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
                 step="0.5"
                 value={gateVoltage}
                 onChange={(e) => updateParam("gateVoltageV", Number(e.target.value))}
-                className="h-1.5 w-32 accent-sky-500"
+                className="h-1.5 w-32 accent-amber-600 dark:accent-sky-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="clockFreq" className="text-xs font-mono text-slate-400">
-                Clock Freq: {clockFreq} MHz
+              <label
+                htmlFor="clockFreq"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Clock Freq:{" "}
+                <span className="font-bold text-cyan-600 dark:text-cyan-400">{clockFreq} MHz</span>
               </label>
               <input
                 id="clockFreq"
@@ -326,13 +392,19 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
                 step="0.5"
                 value={clockFreq}
                 onChange={(e) => updateParam("clockFrequencyMhz", Number(e.target.value))}
-                className="h-1.5 w-32 accent-sky-500"
+                className="h-1.5 w-32 accent-cyan-600 dark:accent-sky-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="incidentLux" className="text-xs font-mono text-slate-400">
-                Incident Light: {incidentLux} lux
+              <label
+                htmlFor="incidentLux"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Incident Light:{" "}
+                <span className="font-bold text-amber-600 dark:text-amber-400">
+                  {incidentLux} lux
+                </span>
               </label>
               <input
                 id="incidentLux"
@@ -342,13 +414,19 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
                 step="10"
                 value={incidentLux}
                 onChange={(e) => updateParam("incidentLux", Number(e.target.value))}
-                className="h-1.5 w-32 accent-sky-500"
+                className="h-1.5 w-32 accent-amber-600 dark:accent-sky-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="temperature" className="text-xs font-mono text-slate-400">
-                Temp: {temperature} K
+              <label
+                htmlFor="temperature"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Temp:{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {temperature} K
+                </span>
               </label>
               <input
                 id="temperature"
@@ -358,18 +436,10 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
                 step="5"
                 value={temperature}
                 onChange={(e) => updateParam("temperatureKelvin", Number(e.target.value))}
-                className="h-1.5 w-28 accent-sky-500"
+                className="h-1.5 w-28 accent-emerald-600 dark:accent-sky-500"
               />
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={() => setIsRunning(!isRunning)}
-            className="flex items-center gap-2 rounded-md bg-sky-600 px-5 py-2 font-mono text-xs font-bold text-white shadow-lg shadow-sky-600/30 transition hover:bg-sky-500 active:scale-95"
-          >
-            {isRunning ? "⏸ PAUSE CLOCK" : "▶ RUN 3-PHASE CLOCK"}
-          </button>
         </div>
       )}
     </div>
