@@ -2533,7 +2533,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "Norbert Rillieux's multiple-effect evaporator connected sealed boiling pans in a cascading vacuum series so that the latent heat of vapor boiled off from the first pan was reused to boil subsequent juice at reduced pressure, evaporating nearly three times as much water per pound of fuel and creating the foundation of modern chemical engineering thermodynamics.",
+      "Norbert Rillieux's 1843 specification connects a pressure evaporator to a vacuum pan so vapor from the first pan supplies heat to the second, and uses a differential thermometer to regulate syrup concentration. The host SI model exposes mass balance and latent-heat reuse as a modern teaching model; its feed, Brix, and effect-count values are not measurements printed in the grant.",
   },
   "us-3633-goodyear-rubber": {
     domain: "continuum_elasticity",

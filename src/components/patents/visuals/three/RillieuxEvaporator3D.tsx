@@ -335,6 +335,12 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
           </div>
         </div>
 
+        <p className="mt-3 text-[11px] leading-relaxed text-ink-500 dark:text-ink-400">
+          Modern SI teaching controls: the 1843 grant specifies the steam path, two-pan/vacuum
+          relationships, and differential thermometer, but does not print these feed-rate or Brix
+          setpoints. Values below are model assumptions, not archival measurements.
+        </p>
+
         <ClaimConstraintToggle
           patentId="us-3237-rillieux-evaporator"
           claimStates={claimStates}

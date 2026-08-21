@@ -17,29 +17,6 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
   definition,
 });
 
-export const baekelandBakeliteClaims = [
-  {
-    number: 1,
-    text: "The method of producing a hard, compact, insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting upon a phenolic body with formaldehyde, and then converting the product into a hard, insoluble and infusible body by the combined action of heat and pressure.",
-  },
-  {
-    number: 2,
-    text: "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, forming the article from said reaction product, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
-  },
-  {
-    number: 3,
-    text: "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, separating water from the resulting product, forming the article from said reaction product, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
-  },
-  {
-    number: 4,
-    text: "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, forming the article from said reaction product compounded with a filling material, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
-  },
-  {
-    number: 5,
-    text: "In a method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, the step which consists in causing the water to separate from the mixture of a phenolic body and an aqueous solution of formaldehyde by adding to said mixture a metallic salt soluble in water and adapted to cause such separation.",
-  },
-] as const;
-
 export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
@@ -118,14 +95,9 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
         " body, which is resistant to oils, water, alcohols and other solvents and chemical reagents.",
       ),
     ]),
-    {
-      kind: "heading",
-      level: 2,
-      text: "Two-Phase Reaction & Dehydration Control",
-    },
     paragraph(
       literal(
-        "I have found that by carrying out the operation in two distinct phases, or in other words by eliminating the water from the initial condensation or dehydration product before transforming the same into the final hard and insoluble product, important advantages are attained and improved results are secured. In the first place, the elimination of water from the initial product is readily accomplished, and this product is easily manipulated, molded, pressed or otherwise formed into any desired shape, or compounded with other materials; in the second place, the final transformation into the hard and insoluble body is accomplished without the evolution of any considerable quantity of water, wherefore the product is compact, homogeneous, and free from cracks or fissures; and in the third place the reaction is under complete control, and the properties of the final product may be varied as desired.",
+        "In practicing the invention I react upon a phenolic body with formaldehyde to obtain a reaction product which is capable of transformation by heat into an insoluble and infusible body, and then convert this reaction product, either alone or compounded with a suitable filling material, into such insoluble and infusible body by the combined action of heat and pressure. Preferably the water produced during the reaction or added with the reacting bodies is separated before hardening the reaction product. By proceeding in this manner a more complete control of the reaction is secured and other important advantages are attained as hereinafter set forth.",
       ),
     ),
     paragraph([
@@ -142,21 +114,16 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
     ]),
     paragraph([
       text(
-        "The condensation product having either the oily or semi-plastic character may be subjected to heat, or to the combined action of heat and pressure, in order to convert it into the final hard, insoluble and infusible product, which is not affected by water, alcohol, acetone or other ordinary reagents. This product is found to be suitable for many purposes, and may be employed either alone or in admixture with other solid, semi-liquid or liquid materials, as for instance ",
+        "The condensation product having either the oily or semi-plastic character may be subjected to further treatment as hereinafter described. By heating the said condensation product it is found to be transformed into a hard body, unaffected by moisture, insoluble in alcohol and acetone, infusible, and resistant to acids, alkalies and almost all ordinary reagents. This product is found to be suitable for many purposes, and may be employed either alone or in admixture with other solid, semi-liquid or liquid materials, as for instance ",
       ),
       term(
         "asbestos fiber",
         "Fibrous mineral filler adding extreme thermal and electrical arc resistance to molded phenolic components.",
       ),
       text(
-        ", wood fiber, other fibrous or cellular materials, rubber, casein, lampblack, mica, mineral powders as zinc oxid, barium sulfate, pigments, dyes, nitrocellulose, abrasive materials, lime, sulfate of calcium, graphite, powdered horn or bone, pumice stone, talcum, starch, colophonium, resins or gums, slate dust, etc., in accordance with the particular uses for which it is intended, and in much the same manner as india rubber is compounded with the above-named and other materials to yield various valuable products. In compounding the condensation or dehydration product in this manner the desired materials are mixed with the same before submitting it to the final hardening operation below described.",
+        ", wood fiber, other fibrous or cellular materials, rubber, casein, lampblack, mica, mineral powders as zinc oxid, barium sulfate, cement, etc., pigments, dyes, nitrocellulose, abrasive materials, lime, sulfate of calcium, graphite, powdered horn or bone, pumice stone, talcum, starch, colophonium, resins or gums, slate dust, etc., in accordance with the particular uses for which it is intended, and in much the same manner as india rubber is compounded with the above-named and other materials to yield various valuable products. In compounding the condensation or dehydration product in this manner the desired materials are mixed with the same before submitting it to the final hardening operation below described.",
       ),
     ]),
-    {
-      kind: "heading",
-      level: 2,
-      text: "Curing Conditions & Autoclave Pressure Containment",
-    },
     paragraph(
       literal(
         "In order to convert the condensation or dehydration product into the final product above-described I may subject it to a temperature which will depend upon the specific results sought. If it be desired to mold the material directly the condensation product is poured or pressed into a suitable mold and is submitted therein while maintaining appropriate pressure to a suitable temperature, say about 110-140° C.; under these conditions there is obtained in from one to two hours or less a hard, compact, perfectly homogeneous mass similar in its properties to hard rubber or to ivory, insoluble in alcohol, acetone, and resistant to heat or infusible, and resistant to moisture and most chemical reagents as above described. In case the product be first mixed with asbestos fiber, rubber, powdered substances or other materials as above described, and heat be thereafter applied a compound is obtained in the form of hard masses containing the insoluble condensation product described. Such masses may be produced directly in any desired form by the use of a suitable mold, or they may be produced in a block or irregular mass which may be cut, sawed, turned or otherwise manipulated to any suitable form or size.",
@@ -183,7 +150,7 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
       ),
       term(
         "closed vessel in case the temperature exceed 90°-100° C.",
-        "The pressurized autoclave apparatus ('Bakelizer') where super-atmospheric air or steam pressure (50–100 psi) suppresses the boiling of volatile water and formaldehyde, preventing foam and porosity.",
+        "A closed vessel under pressure, as the patent states, keeps volatile vapors from escaping during heating above approximately 90–100 °C; the patent does not specify an apparatus name or pressure range.",
       ),
       text(
         "; without this precaution vapors of formaldehyde and the like escape causing foam and air bubbles; furthermore the loss of the reagents and the disturbance of the proportions between them prevents obtaining a product of maximum hardness and uniform texture. In a closed vessel under pressure the operation proceeds with precision, and a uniform result may be always obtained.",
@@ -199,84 +166,86 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
         "The initial oily, viscous or semi-plastic condensation product, may be obtained in various ways, as for instance by digesting a suitable mixture of phenol and formaldehyde in an autoclave, or merely by boiling a mixture of the same in an open vessel provided with a return condenser in order to avoid loss and variation of proportions. A very small proportion of mineral or organic acid, or of zinc chlorid, calcium chlorid, or other salt or agent favoring condensation may be added to the mixture, the proportion being in all cases so small as to avoid such energetic reaction as will not permit the intermediate oily, viscous or semi-plastic condensation product to be obtained. Or I may add a solid salt as for instance calcium chlorid to the mixture of phenol and formaldehyde in which case the calcium chlorid immediately absorbs water and forms two distinct layers, the lower one being formed by a very dense aqueous solution of calcium chlorid, the upper one by the dehydrated mixture.",
       ),
     ),
-    {
-      kind: "heading",
-      level: 2,
-      text: "Claims",
-    },
     paragraph(literal("I claim:")),
     {
       kind: "claim",
       number: 1,
-      inlines: literal(baekelandBakeliteClaims[0].text),
+      inlines: literal(
+        "The method of producing a hard, compact, insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting upon a phenolic body with formaldehyde, and then converting the product into a hard, insoluble and infusible body by the combined action of heat and pressure.",
+      ),
     },
     {
       kind: "claim",
       number: 2,
-      inlines: literal(baekelandBakeliteClaims[1].text),
+      inlines: literal(
+        "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, forming the article from said reaction product, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
+      ),
     },
     {
       kind: "claim",
       number: 3,
-      inlines: literal(baekelandBakeliteClaims[2].text),
+      inlines: literal(
+        "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, separating water from the resulting product, forming the article from said reaction product, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
+      ),
     },
     {
       kind: "claim",
       number: 4,
-      inlines: literal(baekelandBakeliteClaims[3].text),
+      inlines: literal(
+        "The method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, which consists in reacting on a phenolic body with formaldehyde, producing thereby a reaction product capable of transformation by heat into an insoluble and infusible body, forming the article from said reaction product compounded with a filling material, and rendering the article hard, insoluble and infusible by application of heat and pressure.",
+      ),
     },
     {
       kind: "claim",
       number: 5,
-      inlines: literal(baekelandBakeliteClaims[4].text),
+      inlines: literal(
+        "In a method of making articles containing an insoluble and infusible condensation product of phenols and formaldehyde, the step which consists in causing the water to separate from the mixture of a phenolic body and an aqueous solution of formaldehyde by adding to said mixture a metallic salt soluble in water and adapted to cause such separation.",
+      ),
     },
   ],
 };
 
 export const baekelandBakeliteParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
-    "Leo H. Baekeland of Yonkers, New York introduces his master chemical invention: the synthesis and controlled pressure-curing of phenol-formaldehyde condensation products to create the first fully synthetic thermosetting plastic (Bakelite).",
+    "Baekeland identifies himself as the inventor, gives his Yonkers residence, and states that the specification concerns methods for making insoluble condensation products from phenols and formaldehyde.",
   ],
   3: [
-    "Baekeland references his prior patent application (Serial No. 358,156) for indurating cellular wood or paper, noting that the condensation reaction produces substantial quantities of water that must be removed.",
+    "He distinguishes the earlier application for treating fibrous or cellular material with phenolic material and formaldehyde, where the reaction produced substantial water that had to be expelled by drying.",
   ],
   4: [
-    "The primary objective is the production of a hard, completely insoluble, and infusible (thermoset) synthetic solid from reacting carbolic acid (phenol) with methanal (formaldehyde).",
+    "The stated subject is the production of hard, insoluble, and infusible condensation products of phenols and formaldehyde.",
   ],
   5: [
-    "The core process reacts phenolic bodies with formaldehyde, separates the water byproduct to isolate the intermediate prepolymer, and cures the resin under elevated heat and catalysts into a solvent-resistant thermoset mass.",
+    "The claimed practice reacts a phenolic body with formaldehyde, obtains a product that can later become insoluble and infusible under heat, optionally compounds it with filler, and preferably separates water before hardening under heat and pressure.",
+  ],
+  6: [
+    "Heating phenol or its homologues with formaldehyde or its polymers yields two liquids that stratify: an aqueous supernatant and a heavier oily or viscous layer containing the first condensation or dehydration products; the layers can be separated and the oily liquid thickened by gentle heating.",
   ],
   7: [
-    "Separating the synthesis into two controlled phases provides three crucial advantages: easy mechanical molding of the dehydrated prepolymer, bubble-free and crack-free final curing without trapped steam, and exact chemical control over material properties.",
+    "The oily or semi-plastic condensation product can be heated into a hard body unaffected by moisture, insoluble in alcohol and acetone, infusible, and resistant to acids, alkalies, and almost all ordinary reagents; the patent lists possible fillers and compounds.",
   ],
   8: [
-    "Reacting equal volumes of phenol and formaldehyde generates two distinct liquid phases: a supernatant aqueous layer carrying excess water, and a dense, viscous lower layer of fusible A-stage resole resin soluble in alcohol and acetone.",
+    "For direct molding, the product is placed in a mold under appropriate pressure and heated, with the patent giving about 110–140 degrees Celsius and one to two hours or less as a practical example; filler compounds may be molded or machined.",
   ],
   9: [
-    "The intermediate prepolymer resin can be compounded with reinforcing fillers like asbestos fiber, wood flour, mica, graphite, or pigments, mimicking the compounding of natural rubber but yielding a rigid, non-flammable structural composite.",
+    "Small proportions of solvent may be added to the initial condensation product to make compounding or mixing easier before the mixture undergoes final baking or hardening.",
+  ],
+  10: [
+    "The patent says higher temperatures shorten hardening time, while 100 degrees Celsius or lower can require days; small proportions of zinc chloride, other metallic chlorides, acids, or salts can accelerate hardening at lower temperatures.",
   ],
   11: [
-    "The prepolymer resin or compounded molding compound is pressed into precision steel molds and cured at 110–140 °C under pressure for 1–2 hours, transforming into a dense, ivory-like, chemically inert solid.",
+    "The process can treat wood at its surface or throughout its mass, and the condensation product may be warmed or mixed with a small amount of solvent to improve penetration before the treated material is heated.",
   ],
   12: [
-    "Small quantities of volatile solvents may be introduced into the initial resin to adjust fluidity and improve blending with finely divided fibrous fillers before final baking.",
+    "Above about 90–100 degrees Celsius, the final heating should occur in a closed vessel so formaldehyde vapors and similar vapors do not escape and create foam or air bubbles; pressure gives a more uniform result.",
   ],
   13: [
-    "Curing temperatures of 110–140 °C provide rapid curing, while lower temperatures require several days; the curing rate is accelerated by acidic or basic condensing catalysts like zinc chloride or metallic salts.",
+    "Cresol and other phenolic bodies, anhydrous formaldehyde solutions in phenol, or a polymer that releases anhydrous formaldehyde on heating may be substituted in the process.",
   ],
   14: [
-    "The resin may be impregnated into the cellular pores of timber, fiberboard, or electrical insulation, where subsequent heating solidifies the plastic directly inside the structural matrix.",
+    "The initial oily, viscous, or semi-plastic product may be made in an autoclave or by boiling under a return condenser; small amounts of acids, zinc chloride, calcium chloride, or another salt may aid condensation, and calcium chloride can absorb water and form two layers.",
   ],
   15: [
-    "Crucially, curing above 90–100 °C must occur inside a sealed, pressurized autoclave ('Bakelizer'); external pressure (50–100 psi) counteracts the vapor pressure of water and formaldehyde, preventing catastrophic foaming, porosity, and warping.",
-  ],
-  16: [
-    "The invention encompasses homologous phenolic compounds such as cresols and xylenols, as well as anhydrous formaldehyde solutions or paraformaldehyde polymers.",
-  ],
-  17: [
-    "The initial intermediate resin can be prepared in an autoclave or reflux condenser, and dehydration can be driven by adding hygroscopic salts like calcium chloride to rapidly salt out and separate the organic phase.",
-  ],
-  19: [
-    "Formal statement transitioning from the descriptive chemical specification into the legally defining enumerated method claims.",
+    "The specification then introduces five numbered claims defining the methods and the metallic-salt water-separation step.",
   ],
 };

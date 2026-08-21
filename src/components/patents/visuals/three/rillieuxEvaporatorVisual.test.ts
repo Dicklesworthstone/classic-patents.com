@@ -20,6 +20,8 @@ describe("Norbert Rillieux Multiple-Effect Evaporator 3D Visual & Thermodynamics
     expect(threeSource).not.toContain("US 4,879");
     expect(threeSource).toContain("juiceFeedRateKgPerH: p.juiceFeedRateKgPerH");
     expect(simSource).not.toContain("setJuiceFeedRateKgPerH");
+    expect(threeSource).toContain("Modern SI teaching controls");
+    expect(simSource).toContain("Modern SI teaching controls");
     const modelSource = readFileSync(
       join(process.cwd(), "src/components/patents/visuals/three/rillieuxEvaporatorModel.ts"),
       "utf8",

@@ -502,6 +502,10 @@ export function RillieuxEvaporatorSim({
           <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
             Chemical Process Controllers
           </h4>
+          <p className="text-[11px] leading-relaxed text-neutral-500">
+            Modern SI teaching controls: the 1843 grant specifies the relationships between
+            pressure, steam, pans, and syrup, but does not print these feed-rate or Brix setpoints.
+          </p>
 
           {/* Juice Feed Rate Slider */}
           <div className="flex flex-col gap-1.5">

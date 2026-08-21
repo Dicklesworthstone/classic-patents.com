@@ -12,9 +12,10 @@ export const rillieuxEvaporatorPatent: Patent = {
   subtitle:
     "Latent Heat Cascading, Multi-Effect Vacuum Evaporation, Submerged Horizontal Tube Bundles, and Differential Thermometer Process Control",
   inventors: ["Norbert Rillieux"],
-  inventorLocation: "New Orleans, Louisiana",
+  inventorLocation: "New Orleans, in the parish of Orleans and State of Louisiana",
   grantDate: "1843-08-26",
-  filingDate: "1843-01-01",
+  // The 1843 grant does not print an application/filing day; do not invent one.
+  filingDate: null,
   era: "Early Industrial & Machine Age (1790–1869)",
   category: "materials",
   categoryLabel: "Chemical Engineering & Thermodynamics",
@@ -24,7 +25,7 @@ export const rillieuxEvaporatorPatent: Patent = {
     "The primary object of my invention is to economize this enormous waste of heat and fuel by employing the vapor generated from the evaporation of the saccharine juice in a first closed pan to heat and evaporate the juice in a second closed pan, and so on through a series of pans...",
   originalPdfUrl: "/patents/pdfs/us-3237-rillieux-evaporator.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3237A/en",
-  usptoClassification: "159/17.1",
+  usptoClassification: "B01D1/26; C13B25/02",
 
   originalTextAsset: {
     url: "/patents/transcripts/us-3237-rillieux-evaporator-reviewed.txt",
