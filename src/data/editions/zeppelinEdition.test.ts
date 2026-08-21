@@ -3,11 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import {
-  ZEPPELIN_FIGURE_DIMS,
-  zeppelinArchivalEdition,
-  zeppelinParallelReadings,
-} from "@/data/editions/zeppelinEdition";
+import { zeppelinArchivalEdition } from "@/data/editions/zeppelinEdition";
 import { zeppelinAirshipPatent } from "@/data/patents/zeppelin-airship";
 
 const PINNED_SHA256 = "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429";

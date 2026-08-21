@@ -15,8 +15,8 @@ import { carlsonElectrophotographyParallelReadings } from "./carlsonElectrophoto
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
-import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { davinciParallelReadings } from "./daVinciEdition";
+import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { deForestAudionParallelReadings } from "./deForestAudionEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
 import { dieselEngineParallelReadings } from "./dieselEngineEdition";

@@ -4,7 +4,7 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const term = (
+const _term = (
   surfaceText: string,
   key: string,
   definition: string,

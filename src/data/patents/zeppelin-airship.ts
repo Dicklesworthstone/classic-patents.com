@@ -133,45 +133,6 @@ This invention relates to a navigable balloon which is characterized essentially
     whyItMattersToday:
       "The source itself shows a late-nineteenth-century design problem: manage gas volume, trim, propulsion, steering, and connected load craft in one written system. This edition does not use this single facsimile to claim later passenger-service records, material choices, performance figures, or legal outcomes.",
   },
-  claims: [
-    {
-      number: 1,
-      isIndependent: true,
-      originalText:
-        "In a balloon, the combination of a framework divided into separate compartments, with a main gas-bag in each compartment, adapted to expand and fill the same when permitted, and auxiliary gas-bags in the compartments for maneuvering, to permit the main gas-bags to retain their full quantity of gas unaffected by the admission of air, substantially as set forth.",
-      plainEnglish:
-        "Claims the rigid compartmentalized hull enclosing primary lift-gas bags alongside auxiliary maneuvering bags, ensuring the primary lift cells remain sealed against atmospheric air intrusion during altitude changes.",
-      keyInnovations: ["Compartmentalized gas cells", "Auxiliary maneuvering bags"],
-    },
-    {
-      number: 2,
-      isIndependent: true,
-      originalText:
-        "The combination of a balloon, with a running-weight suspended beneath the same, rotary drums provided with fusees, and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
-      plainEnglish:
-        "Claims a suspended running-weight adjusted via a fusee-and-drum rigging system to maintain continuous tension and actively trim the airship's pitch.",
-      keyInnovations: ["Running-weight pitch trim", "Fusee tension rigging"],
-    },
-    {
-      number: 3,
-      isIndependent: false,
-      dependsOn: [2],
-      originalText:
-        "The combination of a balloon, with a weight suspended beneath the same, and adjustable in height, a movable carriage supporting the weight, rotary drums to which the carriage is connected and which are provided with fusees and a rope stretched from the weight to and around each fusee, substantially as and for the purpose set forth.",
-      plainEnglish:
-        "Expands on the running-weight trim system, claiming a movable carriage that allows the suspended weight to be both horizontally traversed along the hull and vertically hoisted when landing.",
-      keyInnovations: ["Winch-adjustable trim weight"],
-    },
-    {
-      number: 4,
-      isIndependent: true,
-      originalText:
-        "An air-craft comprising a series of balloons coupled together and provided with rigid casings, the foremost of said balloons being provided with driving mechanism, and the remainder adapted to carry the load or freight, and extensible covers secured to the rigid casings and covering the intermediate spaces between two adjacent balloons.",
-      plainEnglish:
-        "Claims the modular concept of linking multiple rigid airships into an articulated aerial train, using a powered locomotive section pulling unpowered cargo sections, connected by aerodynamic extensible fairings.",
-      keyInnovations: ["Articulated airship train", "Aerodynamic inter-module fairings"],
-    },
-  ],
   drawings: [
     {
       figureNumber: "Fig. 1",
