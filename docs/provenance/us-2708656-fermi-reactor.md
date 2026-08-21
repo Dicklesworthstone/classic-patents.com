@@ -71,3 +71,23 @@ the edition compresses the printed specification into a small editorial
 overview. The canonical record is therefore unbound again. The WIP edition,
 claims, source-sheet inventory, and summary ledger remain preserved for future
 manual authoring, but none is publication evidence.
+
+### Bounded cloud-source intake: PDF pages 30–40 (2026-08-21)
+
+This continuation is intentionally WIP and is not a publication or binding
+decision. Pages 30–40 were checked against the authoritative cloud PDF at
+`https://patentimages.storage.googleapis.com/25/7c/5f/96bc44e6f2cc4f/US2708656.pdf`
+and the corresponding Google Patents record at
+`https://patents.google.com/patent/US2708656A/en`. The local pinned PDF was
+not changed. The ledger retains the reviewed-transcription marker sequence
+and the five-page boundary for this chunk; the typed edition adds the same
+bounded source material after the existing claims as an explicitly labelled
+WIP section. Pages 28–29 and the 27-sheet, 42-figure inventory are preserved
+unchanged.
+
+The source method for this chunk was cloud PDF text/vision comparison followed
+by manual normalization of line wraps, obvious scan artefacts, units, figure
+references, and period terms. It is not a local OCR run. The p30–40 text is
+not independently accepted and must be compared once more against the page
+images before any archival publication gate is opened. The continuation
+boundary is PDF page 41, beginning the next specification chunk.

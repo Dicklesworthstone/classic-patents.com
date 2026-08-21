@@ -2580,23 +2580,63 @@ described.
 
 --- REVIEWED TRANSCRIPTION PAGE 36 OF 58 ---
 
-Sheet 36 of 58
+2,708,656
+
+One side of the reactor side wall 11 is pierced by a pair of spaced safety-rod apertures 40 through which two safety rods 41 can be horizontally inserted into the reactor from safety-rod platform 42. Just below the safety-rod apertures is an ionization-chamber channel 43. This completes the description of the exterior of the reactor.
+
+The basic construction unit used to fill vault space 14 is a graphite block 4 3/4 inches by 4 3/4 inches in cross section, used in a number of lengths. The blocks are carefully planed by woodworking machinery to have smooth rectangular sides and end faces, so that they may be readily piled or stacked to fill the vault space 14 without substantial air spaces. Such construction has led the device to be termed a “pile,” but the more generic term “reactor” is preferred.
+
+Two main types of graphite blocks are used as shown in Figs. 11–15. Certain blocks 50 are drilled with cylindrical holes spaced 8 1/4 inches center to center to receive the uranium bodies and are termed live graphite. Other blocks 51, as shown in Fig. 15, contain no uranium and may be termed dead graphite. The uranium bodies are cast uranium-metal cylinders 52 and uranium-oxide pseudospheres 54, with a few U3O8 cylinders; the oxides are compressed to a density of about 6 grams/cm.³.
+
+The uranium bodies are placed in holes in blocks 50. These live graphite blocks, together with dead graphite blocks 51, build a uranium-lump lattice of substantially cubical form surrounded by several layers of dead graphite acting as a reflector 17. Three bottom layers of dead graphite are laid on the foundation, and alternate layers may have their blocks crossed at right angles for more uniform distribution of weight.
 
 --- REVIEWED TRANSCRIPTION PAGE 37 OF 58 ---
 
-Sheet 37 of 58
+2,708,656
+
+The uranium-bearing rows are spaced by rows of dead graphite, with the uranium bodies aligned across and in depth in vault space 14. The uranium-bearing rows do not begin until 12 inches of dead graphite is laid next to the concrete walls and open front, and three sides have 16 inches of dead graphite. The uranium-bearing portion of the layer is about 17.2 feet wide by 19 1/2 feet deep.
+
+A layer of dead graphite is laid over the first uranium-bearing layer, and the next uranium-bearing layer is laid with the uranium bodies substantially aligned vertically. Thus the uranium lumps form a cubic lattice aligned with the rectangular coordinates of vault space 14. A central portion of metal lumps is positioned in stepped relation between the sixteenth and forty-eighth layers. Removable stringers, indicated at 36a in Figs. 9 and 10, permit rows near a central diameter to be removed for test purposes. A horizontal removable section 56 extends from front to rear through the central portion containing metal and is eight rows wide and eight rows high.
+
+As the reactor is built, matching blocks bored with a vertical 2 3/8-inch hole provide continuity of shaft 26. Ionization chamber 60 is installed in channel 43 just inside wall 11; wire line 61 is connected to the monitoring circuit of Fig. 16. The sealed chamber casing 62 contains approximately 18 liters of boron fluoride at one atmosphere and a central electrode 63. A battery of about 450 volts and galvanometer 70 measure alpha-ray ionization caused by neutron absorption in the boron.
+
+Slots 71 and 72 are provided for the shim and regulating rods, and safety-rod slots 73 are provided at right angles in a higher dead-graphite layer. Construction is continued with the shim rod, control rod, and safety rods fully inserted.
 
 --- REVIEWED TRANSCRIPTION PAGE 38 OF 58 ---
 
-Sheet 38 of 58
+2,708,656
+
+At least from the halfway point of construction, the natural neutron density in the pile is monitored as layers are added. Until critical size is reached, the short chains are convergent. By plotting neutron density within the pile against the layers, a prediction can be made in advance of the size at which the chain reaction will become self-sustaining. In Fig. 17 the results of indium-foil measurements are plotted against the number of layers.
+
+The indium foils are exposed near the approximate center of the structure for a predetermined period, then removed and allowed to stand exactly three minutes so short-lived radioactivity decays substantially to zero. A standardized Geiger counter counts the beta rays. The results are converted to saturation values A0. The foils are preferably 4 cm. x 6.4 cm. and have a thickness corresponding to 0.094 grams/cm.².
+
+As critical size is approached, the steady-state values of A0 approach infinity. The curve therefore indicates in advance the layer at which the system will become chain reacting. The described reactor reached critical size slightly above the fiftieth layer. Four additional dead-graphite layers completed the reflector across the top and gave an effective operating size; the reported doubling times were 90 seconds at layer 51, 32.9 seconds at layer 52, 9.0 seconds at layer 53, and 12.5 seconds at layer 54.
+
+The concrete walls serve as the main shield against gamma radiation. The water in the concrete slows and absorbs escaping neutrons. The control rod 32 in Fig. 20 is a boron-steel composite moved by rack 82, pinion 83, motors 85 and 86, and a selsyn indicator 86a. The shim or limiting rod 30 in Fig. 19 is a cadmium sheet on fiber backing. The safety rods 41 in Fig. 18 are cadmium sheets held out by a solenoid latch; interruption of current releases the latch and gravity inserts the rods.
 
 --- REVIEWED TRANSCRIPTION PAGE 39 OF 58 ---
 
-Sheet 39 of 58
+2,708,656
+
+The reactor is capable of operation at an output as high as 10,000 kilowatts for short periods. Since it is conductively cooled, only small powers can be continuously maintained without appreciable internal temperature rise. It is useful for manufacture of radioactive elements, as an intense source of neutrons through well 21 and shaft 26, as a generator of high-energy gamma rays, and for testing materials with removable stringers.
+
+The power at a measurement location can be calculated from standard indium-foil saturation activity A0. Assuming the total energy produced per fission is 200 million electron volts, equivalent to 3.2 x 10^-4 ergs, the specification gives the power relation in its printed formula. Indium-foil measurements can calibrate galvanometer 70 in terms of watts.
+
+A prototype operated at about 200 watts and was then dismantled for incorporation in the larger reactor. Its active portion was a flattened rotational ellipsoid with a polar semi-axis of 309 centimeters, an equatorial semi-axis of 388 centimeters, an effective radius of about 355 centimeters, and an average K constant of about 1.054. It was surrounded by about 12 inches of graphite.
+
+The changing shape during construction is represented by an effective radius R_eff calculated from the sides a, b, and c of a rectangular parallelepiped fitted to the structure. Values of R_eff are plotted against A0 and layers to predict the critical layer in Fig. 21. This reactor became chain reacting after the fifty-seventh layer.
 
 --- REVIEWED TRANSCRIPTION PAGE 40 OF 58 ---
 
-Sheet 40 of 58
+2,708,656
+
+The neutron-density distribution in a spherical reactor is shown in Fig. 24. The maximum density occurs at the center and falls toward the periphery approximately as a cosine curve. Rod geometries can also be used: in Fig. 22 the uranium rods 75 are horizontal in bores 76 in live graphite blocks 77, while in Fig. 23 the rods and blocks are stacked vertically to form a cylindrical active portion.
+
+A chain reaction can also be maintained in a uranium-D2O reactor. Tank 101 is cylindrical and is made of a material relatively non-corrosive at low temperatures and relatively non-absorbent to neutrons, such as aluminum or stainless steel. One suitable tank is 6 feet in diameter and 7 feet 4 inches high. It contains 136 uranium-metal rods 102, each 1.1 inches in diameter and sheathed by aluminum about .035 inch thick.
+
+The critical size is predicted by raising the level of D2O and plotting reciprocal neutron densities against the overall size of the filled portion. In the described reactor criticality occurred at a D2O level of 122.4 centimeters; an operating size with a neutron-density doubling time of 37.6 seconds was obtained at 123.1 centimeters, and at 124.7 centimeters the doubling time was 6.52 seconds. Graphite reflector 104 surrounds tank 101, and concrete shield 105 prevents neutron and gamma radiation from escaping.
+
+The liquid-moderator structure further includes a cooled lead-cadmium shield 107, cover plate 108, iron and Masonite shield 109a, and a central irradiation well 109b. Helium is circulated above the D2O to remove gases formed by decomposition. Rod 102 in Fig. 26 is sealed in aluminum tubing and can be evacuated and leak-tested; Fig. 27 shows a gasket seal, Fig. 28 an attachment used during fabrication, and Fig. 29 hollow cadmium control and safety rods. The described uranium-D2O reactor was operated continuously at 250 kilowatts when filled to higher levels and properly shimmed.
 
 --- REVIEWED TRANSCRIPTION PAGE 41 OF 58 ---
 
