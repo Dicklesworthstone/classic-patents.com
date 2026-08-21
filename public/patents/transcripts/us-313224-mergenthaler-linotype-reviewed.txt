@@ -223,7 +223,7 @@ At one end the reciprocating bar carries a pivoted arm or dog, f′, which encir
 
 Knowing the last-mentioned space and the number of bars designated for spacing purposes, the operator has only to depress the treadle and depress repeatedly that spacing-key representing the space which, multiplied into the number of spacing-bars, will give the required aggregate space.
 
-BOUNDARY: Pages 18–25 are transcribed here against the pinned facsimile and the authoritative US313224A source. The next authored continuation begins at PDF page 26; pages 26–30 remain an independent continuation slice and are not represented by this bounded edit.
+BOUNDARY: Pages 18–30 are transcribed here against the pinned facsimile and authoritative US313224A/source-text comparison. The next authored continuation begins at PDF page 31 with the formal claims; pages 31–35 retain the complete claims and signature sequence. Pages 1–17 remain the independent drawing-sheet/crop boundary.
 
 --- REVIEWED TRANSCRIPTION PAGE 26 OF 35 ---
 This operation is exceedingly simple, and may with slight practice be rapidly performed. After the completion of the line, the indicator is automatically unlocked and is returned to the left by a spiral spring, k, inclosed in a tube, into which one end of the rod slides. The unlocking of the indicator is accomplished by devices connecting with the alarm mechanism, now to be described.

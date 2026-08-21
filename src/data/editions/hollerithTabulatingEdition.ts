@@ -933,9 +933,10 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
   {
     kind: "paragraph",
     inlines: [
+      figureReference("Fig. 14", ...hollerithTabulatingFigureCrops["Fig. 14"]),
       {
         kind: "text",
-        text: "Fig. 14 illustrates a form of record-card or strip wherein, instead of punching a hole for each item occurring in the record of an individual or unit, the entire series of items is represented by perforations and the designated items by wafers, strips, or other form of impediment, h, which engage and prevent the passage of the points corresponding to the items so designated. ",
+        text: " illustrates a form of record-card or strip wherein, instead of punching a hole for each item occurring in the record of an individual or unit, the entire series of items is represented by perforations and the designated items by wafers, strips, or other form of impediment, h, which engage and prevent the passage of the points corresponding to the items so designated. ",
       },
       figureReference("Fig. 15", ...hollerithTabulatingFigureCrops["Fig. 15"]),
       {
@@ -947,9 +948,10 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
   {
     kind: "paragraph",
     inlines: [
+      figureReference("Fig. 16", ...hollerithTabulatingFigureCrops["Fig. 16"]),
       {
         kind: "text",
-        text: "Fig. 16 illustrates an arrangement such as is adapted to either an open or a closed-circuit system. The pins c are insulated from each other, as by mounting them in plates c¹ c² of non-conducting material, and each pin is connected with a circuit-wire. The conducting-collars c³ rest normally in contact with a metallic plate, j, also connected in circuit, so that the several circuits are closed through the series of pins and the plate. If the closed-circuit system is to be employed, a card or record-strip of the character indicated in ",
+        text: " illustrates an arrangement such as is adapted to either an open or a closed-circuit system. The pins c are insulated from each other, as by mounting them in plates c¹ c² of non-conducting material, and each pin is connected with a circuit-wire. The conducting-collars c³ rest normally in contact with a metallic plate, j, also connected in circuit, so that the several circuits are closed through the series of pins and the plate. If the closed-circuit system is to be employed, a card or record-strip of the character indicated in ",
       },
       figureReference("Fig. 14", ...hollerithTabulatingFigureCrops["Fig. 14"]),
       {
@@ -961,9 +963,10 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
   {
     kind: "paragraph",
     inlines: [
+      figureReference("Fig. 17", ...hollerithTabulatingFigureCrops["Fig. 17"]),
       {
         kind: "text",
-        text: "Fig. 17 illustrates another application of the closed-circuit system as adapted for use in connection with the perforated record-strips, the contacts being removed from but actuated by the pins c. In this instance the plate B is furnished with a conducting-plate, k¹, against which contacts k are held in elastic contact by means of springs. Plate k¹ is connected to the ground or return wire, and each contact k to one of the series of circuit-wires. The record-card or strip being interposed between the points c and plate k¹ and the press operated, those points which register with and pass through the perforations in the record-card will press into the corresponding contacts k away from the plate k¹, thereby opening the circuits including said contacts, while all the other circuits remain closed. In using a closed-circuit system in connection with the several circuit arrangements shown involving the employment of relays, it is necessary that the contacts of the relays should be reversed, as indicated in ",
+        text: " illustrates another application of the closed-circuit system as adapted for use in connection with the perforated record-strips, the contacts being removed from but actuated by the pins c. In this instance the plate B is furnished with a conducting-plate, k¹, against which contacts k are held in elastic contact by means of springs. Plate k¹ is connected to the ground or return wire, and each contact k to one of the series of circuit-wires. The record-card or strip being interposed between the points c and plate k¹ and the press operated, those points which register with and pass through the perforations in the record-card will press into the corresponding contacts k away from the plate k¹, thereby opening the circuits including said contacts, while all the other circuits remain closed. In using a closed-circuit system in connection with the several circuit arrangements shown involving the employment of relays, it is necessary that the contacts of the relays should be reversed, as indicated in ",
       },
       figureReference("Fig. 17", ...hollerithTabulatingFigureCrops["Fig. 17"]),
       {
@@ -1045,21 +1048,27 @@ export const hollerithTabulatingPages10To14ParallelReadings: Readonly<
     "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method.",
   ],
   40: [
-    "Figure 12 uses one direct and one relay branch for each pair of four index-points, so every two-item combination closes its operating magnet through two contacts.",
+    "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method.",
   ],
   41: [
-    "The sorting pass is successive: white and colored first, native and foreign next, then male and female, while counters may register each intermediate or final division.",
+    "Figure 12 uses one direct and one relay branch for each pair of four index-points, so every two-item combination closes its operating magnet through two contacts.",
   ],
   42: [
-    "Figures 14 through 17 add representative record-media and contact arrangements, including impediment wafers and both open-circuit and closed-circuit forms.",
+    "Proper resistance proportions prevent working circuits from short-circuiting relays when closed, and the circuitry easily adapts to closed-circuit or mixed relay systems.",
   ],
   43: [
-    "Figure 14 uses perforations plus impediments to represent selected items, while Figure 15 puts the circuit-closing contacts on spring-mounted pins separate from the card-sensing pins.",
+    "The sorting pass is successive: white and colored first, native and foreign next, then male and female, while counters may register each intermediate or final division.",
   ],
   44: [
-    "Figure 16 insulates the sensing pins and uses conducting collars for either open or closed circuits, with the Figure 14 interceptors breaking selected paths.",
+    "Figures 14 through 17 add representative record-media and contact arrangements, including impediment wafers and both open-circuit and closed-circuit forms.",
   ],
   45: [
+    "Figure 14 uses perforations plus impediments to represent selected items, while Figure 15 puts the circuit-closing contacts on spring-mounted pins separate from the card-sensing pins.",
+  ],
+  46: [
+    "Figure 16 insulates the sensing pins and uses conducting collars for either open or closed circuits, with the Figure 14 interceptors breaking selected paths.",
+  ],
+  47: [
     "Figure 17 moves the closed-circuit contacts below the card; perforations press them away from a common plate, and relay contacts reverse their normal open-circuit action.",
   ],
 };
