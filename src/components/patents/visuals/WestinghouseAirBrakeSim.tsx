@@ -948,9 +948,9 @@ export function WestinghouseAirBrakeSim() {
             </span>
             <p className="leading-relaxed text-ink-700 dark:text-ink-300">
               Unlike a single-pipe line, US 124,404 provides redundant pipe paths and automatic
-              accident trip valves. If a train uncouples or a truck derails, cock e instantly
-              dumps the local auxiliary receiver&apos;s stored charge into cylinder C by
-              Boyle&apos;s law expansion.
+              accident trip valves. If a train uncouples or a truck derails, cock e instantly dumps
+              the local auxiliary receiver&apos;s stored charge into cylinder C by Boyle&apos;s law
+              expansion.
             </p>
           </div>
         </div>
