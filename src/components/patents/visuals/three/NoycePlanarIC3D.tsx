@@ -10,6 +10,7 @@ import { buildNoycePlanarIcModel, updateNoycePlanarIcKinematics } from "./noyceP
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset =
   | "iso"
@@ -36,7 +37,7 @@ export const NoycePlanarIC3D = memo(() => {
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   // Semiconductor Microfabrication Parameters
   const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
@@ -67,12 +68,8 @@ export const NoycePlanarIC3D = memo(() => {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
-  const toggleSound = () => {
-    setIsPlayingAudio(!isPlayingAudio);
-  };
-
   useEffect(() => {
-    if (isPlayingAudio) {
+    if (!isAudioMuted) {
       soundEngine.playContinuousTone(noyce.toneHz, "square", 0.02);
     } else {
       soundEngine.stopContinuousTone();
@@ -80,7 +77,7 @@ export const NoycePlanarIC3D = memo(() => {
     return () => {
       soundEngine.stopContinuousTone();
     };
-  }, [isPlayingAudio, noyce.toneHz]);
+  }, [isAudioMuted, noyce.toneHz]);
 
   useEffect(() => {
     void ensureGenericWasm().then((next) => setCrateSource(next));
