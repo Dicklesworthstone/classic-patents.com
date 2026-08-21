@@ -8,9 +8,7 @@
  * at public/patents/pdfs/us-2297691-carlson-electrophotography.pdf (SHA-256: 5b521a7f4b7fad3c258cc3b5bbbae2d593a28f03641e78938ec73e3fdbab8422).
  */
 
-import {
-  manualCarlsonClaimText,
-} from "@/data/editions/carlsonElectrophotographyEdition";
+import { manualCarlsonClaimText } from "@/data/editions/carlsonElectrophotographyEdition";
 import type { Patent } from "@/types/patent";
 
 export const carlsonElectrophotographyPatent: Patent = {
@@ -59,8 +57,7 @@ export const carlsonElectrophotographyPatent: Patent = {
         page: 7,
         sourceRelationship:
           "Printed specification page 6: conclusion and opening claims; exact claim boundaries pending Luna review.",
-        exactSourceText:
-          "What is claimed is:",
+        exactSourceText: "What is claimed is:",
       },
       {
         page: 10,

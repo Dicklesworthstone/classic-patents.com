@@ -30,7 +30,7 @@ const baseNoyceIcPatent = {
   originalTextAsset: {
     url: "/patents/transcripts/us-2981877-noyce-ic-reviewed.txt",
     pageCount: 8,
-    kind: "reviewed-transcription",
+    kind: "reviewed-transcription" as const,
     reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
     reviewedAt: "2026-08-18",
     sourcePdfSha256: "c6efa2efedcfdec092a8f5aff7354fc067f3b287bbfad6749e1235cee77a2d59",

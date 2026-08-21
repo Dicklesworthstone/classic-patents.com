@@ -7,6 +7,4 @@
  * transistor grant. Keep this filename for downstream imports, but expose only
  * the canonical, source-reviewed US 2,524,035 record.
  */
-export {
-  bardeenTransistor2524035Patent as bardeenTransistorPatent,
-} from "./bardeen-transistor-2524035";
+export { bardeenTransistor2524035Patent as bardeenTransistorPatent } from "./bardeen-transistor-2524035";

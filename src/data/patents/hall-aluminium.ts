@@ -27,8 +27,7 @@ const hallFigureCallouts: Record<
       figureRef: "Fig. 1",
       label: "Metal Crucible or Melting-Pot A",
       element: "A",
-      description:
-        "The iron or steel crucible or melting-pot that holds the fused materials.",
+      description: "The iron or steel crucible or melting-pot that holds the fused materials.",
       x: 52,
       y: 58,
     },

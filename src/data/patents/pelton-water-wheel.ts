@@ -1,9 +1,19 @@
-import {
-  peltonWaterWheelRecordCorrections,
-} from "@/data/editions/peltonWaterWheelEdition";
+import { peltonWaterWheelRecordCorrections } from "@/data/editions/peltonWaterWheelEdition";
 import type { Patent } from "@/types/patent";
 
-const peltonWaterWheelSourceRecord: Pick<Patent, "id" | "patentNumber" | "title" | "grantDate" | "filingDate" | "era" | "category" | "categoryLabel" | "originalPdfUrl" | "googlePatentsUrl"> = {
+const peltonWaterWheelSourceRecord: Pick<
+  Patent,
+  | "id"
+  | "patentNumber"
+  | "title"
+  | "grantDate"
+  | "filingDate"
+  | "era"
+  | "category"
+  | "categoryLabel"
+  | "originalPdfUrl"
+  | "googlePatentsUrl"
+> = {
   id: "us-233692-pelton-water-wheel",
   patentNumber: "US 233,692",
   title: "Water Wheel",

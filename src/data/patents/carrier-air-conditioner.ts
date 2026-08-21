@@ -221,7 +221,8 @@ export const carrierAirConditionerPatent: Patent = {
           figureRef: "Fig. 2",
           label: "b",
           element: "Projecting flange and gutter",
-          description: "Flange b, with corresponding flange c, arrests liquid film travel across successive faces.",
+          description:
+            "Flange b, with corresponding flange c, arrests liquid film travel across successive faces.",
           x: 70,
           y: 55,
         },
@@ -238,7 +239,8 @@ export const carrierAirConditionerPatent: Patent = {
           figureRef: "Fig. 3",
           label: "f",
           element: "Rear oblique face",
-          description: "Rear face f, with face g, carries the projecting flanges that obstruct liquid flow.",
+          description:
+            "Rear face f, with face g, carries the projecting flanges that obstruct liquid flow.",
           x: 50,
           y: 50,
         },

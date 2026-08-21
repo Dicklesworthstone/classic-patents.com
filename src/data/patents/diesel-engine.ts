@@ -30,7 +30,8 @@ export const dieselEnginePatent: Patent = {
     mechanicalBreakdown: [
       {
         title: "Single-acting cylinder and plunger",
-        summary: "The coal-fuel example names a cylinder C and plunger P for the compression and working strokes.",
+        summary:
+          "The coal-fuel example names a cylinder C and plunger P for the compression and working strokes.",
         technicalDetails:
           "The source names cylinder C, plunger P, connecting-rod b, crank c, shaft d, and plunger guides a. It does not give a bore, stroke, fabrication specification, wall thickness, or stress rating for this construction.",
         archaicTerm: "Working-cylinder with plunger",
@@ -38,7 +39,8 @@ export const dieselEnginePatent: Patent = {
       },
       {
         title: "Gradual fuel-admission device",
-        summary: "The liquid-fuel form uses a nozzle and needle to admit fuel gradually during the prescribed part of the stroke.",
+        summary:
+          "The liquid-fuel form uses a nozzle and needle to admit fuel gradually during the prescribed part of the stroke.",
         technicalDetails:
           "The source says that a feed-pump keeps liquid fuel in the nozzle and that distributing gear opens needle n near the highest compression. It does not establish an auxiliary atomization system, fuel-dispersion measurement, pressure value, or timing measurement.",
         archaicTerm: "Fuel-admission valve and nozzle",
@@ -54,7 +56,8 @@ export const dieselEnginePatent: Patent = {
       },
       {
         title: "Admission and exhaust valve train",
-        summary: "The described valves admit air, admit fuel, and exhaust gases in the several constructions.",
+        summary:
+          "The described valves admit air, admit fuel, and exhaust gases in the several constructions.",
         technicalDetails:
           "The source describes valve A, hopper valve k, fuel plug D, and later valve W, operated by cams, levers, rods, and springs. It does not specify a later valve-train architecture or a scavenging performance.",
         archaicTerm: "Air-admission and exhaust valves",
@@ -115,7 +118,8 @@ export const dieselEnginePatent: Patent = {
     {
       figureNumber: "Fig. 2",
       title: "Diesel theoretical cycle diagram",
-      caption: "The source identifies Fig. 2 as a theoretical diagram of the cycle according to the invention.",
+      caption:
+        "The source identifies Fig. 2 as a theoretical diagram of the cycle according to the invention.",
       svgType: "diesel",
       callouts: [
         {
@@ -141,7 +145,8 @@ export const dieselEnginePatent: Patent = {
     {
       figureNumber: "Fig. 3",
       title: "Cooled-compression theoretical cycle diagram",
-      caption: "The source identifies Fig. 3 as the variant with cooling during the first part of compression.",
+      caption:
+        "The source identifies Fig. 3 as the variant with cooling during the first part of compression.",
       svgType: "diesel",
       callouts: [
         {
@@ -175,11 +180,7 @@ export const dieselEnginePatent: Patent = {
       originalText: dieselManualClaimText(2),
       plainEnglish:
         "An internal combustion engine with a cylinder and piston, a valved suction inlet for air or neutral gas, a valved fuel feed that discharges gradually, and operating means that opens the feed at the working stroke and closes it at a predetermined part of that stroke.",
-      keyInnovations: [
-        "Valved suction inlet",
-        "Gradual fuel feed",
-        "Regulated cut-off valve",
-      ],
+      keyInnovations: ["Valved suction inlet", "Gradual fuel feed", "Regulated cut-off valve"],
     },
     {
       number: 3,

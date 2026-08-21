@@ -1,122 +1,587 @@
 import { manualLandClaimText } from "@/data/editions/landPolaroidEdition";
 import type { Patent, PatentClaim } from "@/types/patent";
+
 const LAND_CLAIM_ANNOTATIONS: Record<number, readonly [string, readonly string[], string]> = {
-  1: ["Claim 1 combines attached photosensitive and transfer-image base layers with a rupturable liquid-solvent container, heavy-metal-salt latent imaging, developer transport, and differential substance disposition that produces the transferred image across the superposed layers.",["attached composite; heavy-metal salt; differential transfer"],"Foundational combination claim covering the attached product, liquid release, development, and transfer mechanism as printed."],
-  2: ["Claim 2 retains claim 1's attached superposed product and heavy-metal-salt process, but narrows where processing material is located: at least part of the developer is already in the container liquid for transport after rupture.",["container-held developer; superposed layers; liquid transport"],"Narrows the master product by requiring container liquid to carry at least part of the processing material."],
-  3: ["Claim 3 specifies silver-halide emulsion and positive-image base layers, while the released solvent transports developer to develop the latent image and causes differential disposition that supplies the base with a positive image by transfer.",["silver-halide emulsion; positive transfer base; solvent development"],"Claims the silver-halide positive-transfer embodiment with the specification's source punctuation preserved in the archival text."],
-  4: ["Claim 4 follows the silver-halide and positive-image architecture of claim 3, expressly placing at least part of the processing material in the container liquid while retaining development and positive transfer through the superposed layers.",["container-liquid reagent; silver-halide emulsion; positive image"],"Source-specific narrowing requiring the processing material to be carried at least partly in the released container liquid."],
-  5: ["Claim 5 replaces the broad processing material with a developer plus a silver-halide-complex-forming substance, so transport develops the latent image and forms soluble silver complex that supplies the positive base image by transfer.",["developer and complex former; soluble silver complex; transfer base"],"Protects the paired developer and complex-forming chemistry, without adding concentrations or unsupported formulation values."],
-  6: ["Claim 6 expressly requires the rupturable container to hold a liquid solution containing both silver-halide developer and silver-halide solvent, with that solution transported between layers to develop and create soluble complex for transfer.",["container solution; developer; silver-halide solvent"],"Claims the source's all-in-container solution embodiment and its linked development and soluble-complex transfer operation."],
-  7: ["Claim 7 identifies hydroquinone and sodium thiosulfate as the processing material: released liquid transports them, hydroquinone develops the latent image, and thiosulfate complexes undeveloped silver halide for positive transfer. Hydroquinone performs development; thiosulfate carries undeveloped silver as soluble complex toward the positive receiving base.",["hydroquinone; sodium thiosulfate; silver complex"],"A chemistry-specific source claim requiring the named developer and solvent roles, while retaining the attached rupturable product geometry."],
-  8: ["Claim 8 keeps the heavy-metal-salt photosensitive layer and fixing-solvent solubility, but places at least part of processing material outside the container in solid form, where released liquid dissolves it before development and transfer.",["solid external reagent; heavy-metal salt; dissolving release liquid"],"Distinguishes dry processing material positioned outside the pod from claim 2's container-held material, while retaining the same transfer sequence."],
-  9: ["Claim 9 applies the external-solid placement to silver-halide chemistry and requires both developer and soluble-silver-complex substance, with release liquid dissolving them before development and transfer. The solid materials wait outside the pod until solvent release dissolves them, preserving the claim's staged transport sequence.",["external solid developer; complex former; silver-halide transfer"],"Source-bounded chemistry narrowing for solid-outside-container developer and complex former transported into the emulsion."],
-  10: ["Claim 10 uses a heavy-metal-salt photosensitive layer and a processing material containing developer plus a reactant that converts development products into dye, yielding a transferred dye image rather than merely silver transfer.",["dye-forming reactant; heavy-metal salt; dye transfer"],"Claims the dye-image variant and its reaction with development products, without importing any unprinted color chemistry."],
-  11: ["Claim 11 narrows the dye-transfer product to a silver-halide emulsion and requires developer plus a dye-forming reactant, with the attached container releasing liquid that develops the layer and provides a transferred dye image.",["silver-halide dye transfer; developer; dye reactant"],"Source-bounded silver-halide version of the dye-transfer combination, including the liquid-release and base-image relationship."],
-  12: ["Claim 12 substitutes a solarized silver-halide emulsion for the ordinary emulsion while retaining developer, dye-forming reaction, attached rupturable container, and transfer of the resulting dye image to the base layer. Solarization is the photosensitive-state limitation, while dye formation remains tied to developer action and transfer into the base.",["solarized emulsion; dye formation; transfer base"],"Protects the solarized-emulsion dye-transfer embodiment, a distinct photosensitive state expressly named in the claim."],
-  13: ["Claim 13 combines the heavy-metal-salt positive-transfer product with developer transport and differential disposition, then adds a readily strippable attachment between base and photosensitive layers after the positive image forms. Stripping occurs only after the positive image forms, so the claim joins temporary lamination with later layer separation.",["strippable layer attachment; heavy-metal salt; positive transfer"],"Narrows the product to post-development separation of the two image-bearing layers, preserving the source's attached-before-processing arrangement."],
-  14: ["Claim 14 recasts the product as a sheetlike lamination: container portions lie between outer strata, mechanical stress separates those portions, and released contents reach a predetermined superposed region for development and transfer.",["sheetlike lamination; mechanically separable pod; predetermined processing area"],"Protects the integrated laminate geometry and mechanically opened internal container, not a detached packet or unsupported roller dimension."],
-  15: ["Claim 15 retains claim 14's sheetlike lamination and stress-separated container portions, but requires at least part of processing material, including developer, to be held in the released container liquid. The liquid location matters because developer travels with the released contents through the stress-opened laminate.",["laminated pod; container-held developer; positive transfer"],"Claims the sheetlike stress-release construction with processing material carried in the pod liquid."],
-  16: ["Claim 16 keeps claim 14's laminated, mechanically separable container and limits the processing material to developer plus soluble-silver-complex substance, tying the liquid release to silver transfer. The complex-forming substance is coupled to the laminated release path, not merely listed as an optional photographic additive.",["laminated complex chemistry; mechanical rupture; silver transfer"],"Source-specific chemistry narrowing for the laminated container architecture and soluble silver complex pathway."],
-  17: ["Claim 17 combines a solarized silver-halide emulsion with attached stress-releasable container and a developer-plus-dye-reactant material that provides a dye image by transfer. Solarized emulsion, mechanical release, and dye reaction operate together as the claimed product combination.",["solarized emulsion; stress-releasable pod; dye reactant"],"Protects the solarized dye-transfer combination in the sheet-attached mechanically rupturable product."],
-  18: ["Claim 18 uses a solarized emulsion and attached mechanically rupturable container, but requires a developer whose oxidation product couples with itself to form the dye transferred as the latent-image representation. Self-coupling oxidation supplies the dye, distinguishing this chemical route from a separately supplied dye-forming reactant.",["self-coupling oxidation product; solarized emulsion; dye transfer"],"Distinguishes self-coupling dye formation from the separate dye-reactant alternative, while retaining the claimed solarized product."],
-  19: ["Claim 19 requires the solarized emulsion, positive base, stress-releasable container, developer and dye-forming substance, specifically placing the developer in the container liquid before release and transfer. Placing developer inside the liquid container is the narrowing that controls when the solarized dye process begins.",["container-held developer; solarized emulsion; positive dye"],"Narrows claim 17's chemistry by locating the developer in the pod liquid, as the printed claim states."],
-  20: ["Claim 20 specifies a supporting layer carrying silver-halide emulsion, a transfer-positive base, and a rupturable solvent container whose released liquid permeates superposed portions while developer causes differential silver disposition. The support carries the emulsion while released solvent reaches superposed portions and causes differential disposition for transfer.",["supporting layer; silver-halide emulsion; differential disposition"],"Claims the support-mounted emulsion product and its released-liquid differential transfer mechanism."],
-  21: ["Claim 21 follows the support-and-emulsion architecture but requires the rupturable container solution to contain developer and silver-halide solvent, linking solution release directly to latent-image development and transfer. Developer and solvent share one released solution, making the support-mounted emulsion process a single liquid-mediated sequence.",["developer-solvent solution; support-mounted emulsion; transfer base"],"Chemically narrows claim 20 to a container solution containing both named processing functions."],
-  22: ["Claim 22 introduces multiple liquid-containing portions adjacent to laterally spaced photosensitive areas, each independently rupturable so one longitudinal film segment can be processed without processing its neighbor. Independent rupture of laterally spaced portions lets one film segment receive processing without wetting the adjacent segment.",["individually rupturable cells; laterally spaced areas; segment processing"],"Protects selective segment-by-segment processing through separately rupturable portions of one composite film structure."],
-  23: ["Claim 23 retains the laterally spaced independently rupturable portions but requires container-held developing agent and soluble-complex substance, so each released segment develops and transfers a positive image. Each separated segment receives both developing and complex-forming functions from its own releasable liquid portion.",["multi-cell processing; developer; soluble silver complex"],"Chemically narrows the segmented product to the developer-and-complex-former embodiment."],
-  24: ["Claim 24 requires a water-absorptive strippable base, silver-halide layer, and pod-held solvent, with developer positioned inside the product and liquid withheld from both layers until the container releases between outer unit surfaces.",["water-absorptive strippable base; dry-before-release; outer-surface release"],"Claims the strippable, nonwetting-before-release multilayer arrangement and its external-surface liquid release."],
-  25: ["Claim 25 keeps the silver-halide layer and rupturable container solution but omits the water-absorptive limitation, requiring attached layers that superpose while the pod holds liquid away until release between them. The pod isolates its solution during storage and releases it only after the attached layers are brought into superposition.",["pod-held developer solution; superposed layers; nonwetting storage"],"Source-specific product claim for attached superposition and liquid isolation before rupture."],
-  26: ["Claim 26 combines heavy-metal-salt photosensitivity, fixing-solvent solubility, water-absorptive strippable base, and attached rupturable pod, with released developer producing the transferred image. The strippable receiving base and heavy-metal-salt emulsion remain coupled until processing creates the transferable image.",["heavy-metal salt; strippable absorptive base; transfer development"],"Claims the heavy-metal-salt variant of the strippable base and isolated processing-liquid structure."],
-  27: ["Claim 27 defines liquid-confining layers around a photosensitive silver-halide portion and rupturable liquid container, attached for superposition while the liquid remains isolated until release. Liquid-confining layers define the storage boundary, while rupture opens the path to the superposed photosensitive region.",["liquid-confining strata; silver-halide portion; isolated pod"],"Protects the general confining-layer architecture without adding dimensions or materials absent from the source claim."],
-  28: ["Claim 28 narrows the confining-layer product to a heavy-metal-salt photosensitive portion soluble in fixing solvent, retaining superposition, isolated liquid, and developer-driven visible-image formation. Fixing-solvent solubility is the chemical narrowing added to the otherwise general confining-layer arrangement.",["heavy-metal salt; confining layers; fixing-solvent solubility"],"Claims the heavy-metal-salt chemical limitation within the liquid-confining product family."],
-  29: ["Claim 29 depends on claim 1 and specifies a sheetlike container superposed over the photosensitive layer in its releasing position, directing liquid depthwise through the layer rather than laterally. Depthwise release sends liquid through the sheetlike pod's overlying area instead of spreading from an edge.",["sheetlike pod; depthwise release; photosensitive layer"],"Geometrically narrows claim 1 to coextensive sheet-container release through the photosensitive thickness."],
-  30: ["Claim 30 depends on claim 1 and changes the pod geometry to an elongated rupturable container positioned so released liquid spreads between layer portions on one side of that container. The elongated pod establishes a one-sided spreading direction, with the processing zone located beside rather than beneath it.",["elongated pod; one-sided spreading; attached layers"],"Claims lateral one-sided spreading from an elongated container as the selected claim 1 geometry."],
-  31: ["Claim 31 depends on claim 1 and specifies a sac-like container with rupturable seal near an edge, placed beside the processing zone so the adjacent seal releases liquid between layers. The edge-adjacent seal is the rupture site, positioning the sac for release directly beside the layer region.",["sac-like container; edge seal; adjacent processing zone"],"Protects the edge-sealed sac arrangement and its placement beside the layer region to be processed."],
-  32: ["Claim 32 depends on claim 6 and specifies a sheetlike container superposed over the silver-halide layer, releasing liquid depthwise across an area coextensive with the container. Coextensive area is the geometric relationship: the sheet pod covers the emulsion area it is intended to permeate.",["sheet pod; depthwise permeation; coextensive emulsion area"],"Adds the sheet-container depthwise geometry to claim 6's developer-and-solvent solution embodiment."],
-  33: ["Claim 33 depends on claim 6 and requires an elongated rupturable container positioned so its liquid spreads between layer portions to one side, preserving the claimed solution chemistry. The elongated claim preserves claim 6's solution chemistry while changing the release geometry to lateral one-sided spreading.",["elongated solution pod; one-sided spread; silver complex"],"Adds a one-sided elongated-container geometry to the claim 6 liquid-solution product."],
-  34: ["Claim 34 depends on claim 6 and specifies an elongated collapsible sac with edge seal, one-sided release, and film-forming plastic in solution to support spreading between layers. The collapsible sac adds a long-edge seal and dissolved film former to the claim 6 solution pathway.",["collapsible sac; edge seal; film-forming plastic"],"Claims the sac geometry plus dissolved film-forming plastic, without inventing viscosity or concentration values."],
-  35: ["Claim 35 depends on claim 25 and specifies a sheetlike container superposed on the photosensitive layer, releasing its liquid depthwise through the layer while the base and pod remain part of the product.",["sheetlike claim-25 pod; depthwise release; isolated liquid"],"Narrows claim 25's nonwetting storage arrangement to the sheet-container depthwise-release embodiment."],
-  36: ["Claim 36 depends on claim 25 and requires an elongated rupturable container positioned to release liquid to one side, where it spreads between the attached layer portions. The claim's one-sided release geometry determines where the elongated claim 25 container deposits its processing liquid.",["elongated claim-25 container; one-sided liquid release; layer spread"],"Claims the lateral spreading geometry of the claim 25 pod-held solution product."],
-  37: ["Claim 37 depends on claim 25 and specifies a sac-like, elongated, collapsible container with a rupturable long-edge seal releasing liquid between layers located to one side. A collapsible sac and long-edge seal supply the claimed controlled opening before liquid moves into the layer gap.",["collapsible elongated sac; long-edge seal; one-sided layer processing"],"Protects the particular collapsible sac and long-edge seal geometry added to claim 25."],
-  38: ["Claim 38 depends on claim 37 and requires thickening agent in the pod liquid, increasing viscosity enough to facilitate spreading between the separated layer portions after the sac seal ruptures. Thickener is claimed for spreading function, not a guessed numerical value, so the liquid can bridge the layer interval.",["thickening agent; viscous spreading; collapsible sac"],"Narrows claim 37 by the functional thickening-agent requirement, not a fabricated numerical viscosity."],
-  39: ["Claim 39 depends on claim 38 and specifies that the thickening agent is a plastic forming a solid plastic film between the layers after the processed liquid spreads and dries. Drying converts the spread plastic-containing liquid into the claimed solid film between the processed layers.",["plastic film residue; thickened liquid; layer interface"],"Claims the dried plastic-film residue produced by the thickener in the claim 38 spreading process."],
-  40: ["Claim 40 depends on claim 25 and requires the sac-like container liquid to include silver-halide solvent, alkali, and film-forming plastic dissolved together for processing and spreading. Solvent, alkali, and film former are the three expressly named liquid constituents in this sac-based embodiment.",["silver-halide solvent; alkali; dissolved film-former"],"Claims the three named functional liquid constituents within the sac-like claim 25 product, without unstated quantities."],
-  41: ["Claim 41 defines a product containing enough image-transforming reagent, a liquid-confining layer with photosensitive portion, and another confining layer, attached so the layers can superpose and the reagent can transform the image.",["image-transforming reagent; confining layers; attached superposition"],"Independent reagent and liquid-confinement product claim."],
-  42: ["Claim 42 depends on claim 4 and places a sheet container coextensively over the exposed photosensitive portion, releasing liquid depthwise so reagent permeates that exposed area. Coextensive placement makes the sheet container cover the exposed portion whose depth is permeated by released liquid.",["coextensive sheet container; depthwise release; exposed portion"],"Narrows claim 4 to the coextensive sheet-container embodiment."],
-  43: ["Claim 43 depends on claim 42 and divides the sheet container into liquid-confining cells, with the other liquid-confining layer integral with a wall of that sheet container. Cell walls partition the sheet reservoir, while the integral opposing wall completes the confining structure.",["cellular sheet pod; integral wall; liquid confinement"],"Claims the cellular sheet-container relationship."],
-  44: ["Claim 44 depends on claim 41 and attaches the liquid-confining layers adjacent their ends with a hinge, controlling their superposition during image transformation. The hinge fixes the relative ends of the layers and guides their repeated superposed processing position.",["hinged layers; end attachment; superposition"],"Protects the end-hinged confining-layer arrangement."],
-  45: ["Claim 45 depends on claim 41 and makes both layers opaque, creating a superposed barrier that prevents visible actinic light from reaching the photosensitive portion. Opacity serves as the claimed light barrier, preventing actinic exposure while the layers remain superposed.",["opaque layers; actinic-light barrier; superposition"],"Claims the daylight-protective opaque barrier."],
-  46: ["Claim 46 depends on claim 41 and identifies the image-transforming reagent as a developer for the photosensitive portion, retaining the liquid-confining product structure. Developer is the operative reagent in this branch, rather than an unspecified material merely capable of transforming an image.",["developer reagent; photosensitive portion; confinement"],"Narrows the transformation reagent to developer."],
-  47: ["Claim 47 depends on claim 41 and requires a silver-halide emulsion photosensitive portion plus developer capable of providing the other confining layer with a transfer image. The other confining layer receives a transfer image produced from the silver-halide emulsion by the transported developer.",["silver-halide emulsion; developer; transfer image"],"Claims the silver-halide transfer-image embodiment."],
-  48: ["Claim 48 depends on claim 41 and retains silver-halide emulsion and developer, but requires the resulting transfer image on the other confining layer to be a dye image. The receiving layer obtains dye rather than a silver-comprising transfer, preserving the claim's chemical distinction.",["silver-halide dye transfer; developer; receiving layer"],"Source-specific dye-transfer narrowing."],
-  49: ["Claim 49 depends on claim 41 and requires silver-halide developer to provide a transfer image comprising silver, distinguishing metallic-silver transfer from dye transfer. Silver is the claimed transfer constituent, so the source does not authorize replacing it with dye.",["silver-halide developer; silver transfer; receiving layer"],"Claims the silver-comprising transfer image."],
-  50: ["Claim 50 defines a photographic photosensitive portion in a liquid-confining layer, another confining layer, and sufficient reagent to transform an image while attached layers superpose for processing. The photographic confining layers and sufficient reagent define the product before any narrower developer, thickener, or paper limitation.",["photographic photosensitive portion; reagent sufficiency; confining strata"],"Independent photographic transformation claim."],
-  51: ["Claim 51 depends on claim 50 and requires thickening agent in the liquid in sufficient quantity to facilitate uniform spreading between layers, while reagent is developer. Uniform spreading is the functional result required of the thickener as developer moves between the attached layers.",["uniform-spreading thickener; developer; confining layers"],"Adds the functional uniform-spreading thickener."],
-  52: ["Claim 52 depends on claim 51 and specifies a plastic thickener whose residue forms a film after liquid spreads between layers and dries. The plastic remains as a film after drying, making residue part of the claimed processing architecture.",["plastic thickener; dried film; layer spread"],"Claims the plastic-film residue."],
-  53: ["Claim 53 depends on claim 52 and places developer in the container liquid, combining container-held reagent with plastic thickener and drying film. Container location of developer is added to the plastic-film embodiment, tying chemistry to the release event.",["container-held developer; plastic film; thickened liquid"],"Further narrows the claim 52 liquid location."],
-  54: ["Claim 54 depends on claim 50 and specifies silver-halide emulsion, paper as the other confining layer, and liquid containing developing agent plus sodium carboxymethyl cellulose. Paper is the receiving confining layer, and sodium carboxymethyl cellulose is named in the liquid alongside developing agent.",["silver-halide emulsion; paper receiver; carboxymethyl cellulose"],"Claims the named paper and processing-liquid embodiment."],
-  55: ["Claim 55 depends on claim 54 and adds silver-halide solvent and alkali to liquid already containing developing agent and sodium carboxymethyl cellulose. The added solvent and alkali complete the source's specified paper-based processing liquid without invented proportions.",["silver-halide solvent; alkali; carboxymethyl cellulose"],"Protects the fuller named processing-liquid combination."],
-  56: ["Claim 56 depends on claim 50 and requires deformable container walls impervious to oxygen and vapor of contained liquid, preserving confinement before release. Oxygen and liquid-vapor impermeability protect the contained reagent while deformability still permits externally applied release pressure.",["deformable walls; oxygen barrier; vapor barrier"],"Claims the stated material barrier functions."],
-  57: ["Claim 57 defines a photographic photosensitive element with photosensitive portion and liquid-containing stratum, plus reagent sufficient to transform the image when liquid reaches it. The liquid-containing stratum supplies reagent to the photographic element while the product remains an attached layered article.",["photosensitive element; liquid stratum; transformation reagent"],"Independent stratum-and-distribution claim."],
-  58: ["Claim 58 depends on claim 57 and specifies heavy-metal-salt photosensitive material capable of latent-image formation and visible development, with solubility in fixing solvent. The heavy-metal salt provides latent-image formation and fixing-solvent solubility, both expressly retained by this dependent limitation.",["heavy-metal salt; latent image; fixing solubility"],"Claims the named heavy-metal-salt limitation."],
-  59: ["Claim 59 depends on claim 57 and narrows the photosensitive portion to a silver-halide emulsion while retaining liquid-containing stratum and transforming reagent. Silver-halide emulsion replaces the broader photosensitive portion, keeping the stratum and transforming reagent otherwise unchanged.",["silver-halide emulsion; liquid stratum; transformation"],"Silver-halide narrowing."],
-  60: ["Claim 60 depends on claim 57 and locates photographic reagent in the liquid of the liquid-containing stratum so liquid transports it toward the photosensitive portion. Reagent is carried within the stratum liquid, so its position is structural rather than merely a statement of intended use.",["reagent-in-liquid stratum; transport; photosensitive element"],"Claims reagent placement inside the stratum."],
-  61: ["Claim 61 depends on claim 57 and specifies a porous sheet as liquid-containing stratum, with liquid held in its pores beside the photosensitive element. Porous-sheet pores act as the liquid reservoir, distinguishing this embodiment from a sealed continuous pod.",["porous sheet; liquid-filled pores; photosensitive element"],"Protects the porous-sheet reservoir."],
-  62: ["Claim 62 depends on claim 57 and specifies multiple liquid-receiving recesses, each closed by rupturable confining stratum and isolated by impermeable cell walls. Impermeable cell walls isolate the recesses and rupturable closures open them individually when processing is selected.",["recess cells; rupturable walls; impermeable separation"],"Claims discrete isolated liquid cells."],
-  63: ["Claim 63 depends on claim 57 and adds a permeable distributing layer between rupturable liquid stratum and photosensitive element, distributing liquid uniformly across image area. The permeable distributor lies between reservoir and emulsion, converting release into a more uniform liquid delivery path.",["permeable distributor; uniform spreading; interposed layer"],"Protects the explicit distribution layer."],
-  64: ["Claim 64 depends on claim 63 and puts part of reagent in solid form inside permeable layer, where traveling liquid dissolves it before reaching photosensitive portion. Solid reagent in that distributor dissolves during travel, adding staged activation to the distribution layer.",["solid reagent; dissolution during travel; permeable layer"],"Claims in-layer dry-reagent activation."],
-  65: ["Claim 65 depends on claim 57 and specifies a solarized silver-halide emulsion as photosensitive portion, retaining liquid stratum and transformation reagent. Solarized silver halide is the expressly claimed photosensitive state within this liquid-stratum construction.",["solarized emulsion; liquid stratum; transformation"],"Claims the solarized-emulsion variant."],
-  66: ["Claim 66 defines rupturable liquid container with dispersed thickener mounted on sheet support, whose other portion provides spreading surface and adjacent receiving area. The sheet support carries both the mounted container and a neighboring receiving surface, so rupture and spreading share one article.",["mounted pod; dispersed thickener; spreading surface"],"Independent spreader geometry claim."],
-  67: ["Claim 67 depends on claim 66 and requires reducing agent contained in mounted container liquid, linking release and spreading to development chemistry. Reducing agent is not merely available elsewhere; the claim locates it in the mounted container liquid.",["container-held reducing agent; mounted pod; spreader"],"Narrows claim 66 by reagent location."],
-  68: ["Claim 68 depends on claim 66 and specifies organic film-forming colloid dissolved in liquid, leaving colloid film after spreading and drying on support. The organic colloid is dissolved before spreading and remains as a film after the liquid dries on the support.",["organic colloid; dissolved film former; dried residue"],"Claims the colloid-film residue."],
-  69: ["Claim 69 depends on claim 68 and requires water in liquid and plastic as film-forming colloid, retaining support-mounted container and spreader surface. Water and plastic jointly define the colloid liquid in this dependent embodiment, without an inferred polymer identity.",["water; plastic colloid; support spreader"],"Adds the named water-and-plastic relationship."],
-  70: ["Claim 70 depends on claim 66 and imposes printed viscosity condition: thickener quantity gives liquid viscosity exceeding one thousand centipoises at twenty-four degrees Celsius. The viscosity threshold is explicitly measured at the stated temperature and is retained as a functional spreading limitation.",["viscosity threshold; thickener; spreading surface"],"Claims the stated viscosity and temperature."],
-  71: ["Claim 71 depends on claim 66 and requires reducing agent dissolved in container liquid, specifically identifying it as a silver-halide developer for spreading. Silver-halide developer supplies the reducing function while remaining dissolved in the container used for spreading.",["dissolved developer; reducing agent; mounted pod"],"Narrows reducing agent to developer."],
-  72: ["Claim 72 defines mounted rupturable container, thickened liquid, sheet support, spreading surface, and adjacent receiving area, preserving direct liquid spreading onto support. The claim repeats the complete mounted-pod spreader relationship, including support surface and adjacent receiving area.",["mounted container; thickened liquid; receiving area"],"Independent complete spreader claim."],
-  73: ["Claim 73 depends on claim 66 and requires photographic processing agent dissolved in container liquid to be a silver-halide fixer rather than developer. Fixer, rather than developer, is the expressly named dissolved processing agent in this branch.",["dissolved fixer; thickened liquid; mounted pod"],"Claims the fixer embodiment."],
-  74: ["Claim 74 requires thickener, silver-halide developer and solvent, viscosity above printed threshold, and receiving area larger than container carrying continuous film for transfer printing. The larger receiving area must accept a continuous film sufficient to contact the superposed emulsion for transfer printing.",["developer and solvent; high viscosity; oversized receiving area"],"Independent high-viscosity transfer-print claim."],
-  75: ["Claim 75 arranges multiple lengthwise-spaced rupturable containers on sheet support, each beside receiving area and carrying enough reducing reagent for its corresponding image area. Each pod and receiving area is paired, making reagent quantity and image-processing capacity local to each segment.",["multiple pods; individual receiving areas; segment reagent"],"Independent repeated-container sheet claim."],
-  76: ["Claim 76 depends on claim 75 and requires elongated containers with parallel long axes extending transversely across sheet support, specifying array orientation. Parallel transverse containers define the repeated array's orientation across the sheet support.",["parallel elongated pods; transverse axes; sheet support"],"Claims multi-pod orientation."],
-  77: ["Claim 77 depends on claim 75 and adds silver-halide developer as reducing agent plus cooperating material that forms transfer image when each pod spreads. Cooperating material joins the developer to form the transfer image as each container is spread.",["developer; cooperating transfer material; multi-pod array"],"Chemically narrows repeated-container transfer."],
-  78: ["Claim 78 defines spaced multi-container sheet with each area carrying silver-halide developer or fixer sufficient to process corresponding photosensitive segment. The array accepts either developer or fixer, but each associated area must contain enough agent to process its segment.",["developer or fixer; repeated areas; spaced containers"],"Claims the broader processing-agent class."],
-  79: ["Claim 79 places thickened liquid pod on support carrying photosensitive layer coextensive with receiving area, using ferric, diazonium, or heavy-metal salts and transformation reagent. The thickened liquid is spreading across the receiving area, placing the selected reagent against that coextensive photosensitive support.",["coextensive photosensitive support; ferric or diazonium salt; direct spread"],"Independent direct-spread support claim; spreading the contents across the receiving area places the reagent against the coextensive photosensitive layer."],
-  80: ["Claim 80 depends on claim 79 and identifies image-transforming reagent as developer for photosensitive layer, retaining direct spreading over coextensive receiving area. Developer is the image-transforming reagent that acts after the thickened liquid covers the support area.",["developer; coextensive layer; direct spread"],"Narrows transformation reagent to developer."],
-  81: ["Claim 81 depends on claim 79 and specifies photosensitive layer as silver-halide emulsion, retaining thickened pod liquid and coextensive support receiving area. Silver-halide emulsion supplies the specified photosensitive layer while the direct-spread support geometry remains.",["silver-halide emulsion; thickened liquid; coextensive area"],"Silver-halide narrowing."],
-  82: ["Claim 82 depends on claim 79, specifies silver-halide emulsion, and limits image-transforming reagent to silver-halide developer or fixer in direct-spread product. The processing-agent class is limited to silver-halide developer or fixer, not an unbounded transforming reagent.",["silver-halide emulsion; developer or fixer; direct spread"],"Claims the printed processing-agent class."],
-  83: ["Claim 83 defines a thickened liquid pod and support receiving area larger than the pod, with silver-halide emulsion coextensive with that area and enough developer to develop the covered latent image.",["oversized receiving area; silver-halide emulsion; developer spread"],"Independent direct-developer spreader claim."],
-  84: ["Claim 84 requires reducing agent for a heavy-metal-salt photosensitive element, an elongated pod with film-forming colloid, uniformly weaker longitudinal dispensing portion, flexible walls, and perpendicular spreading surface. Pressure ruptures the weaker longitudinal passage, and the perpendicular support surface receives a colloid film over a larger area.",["heavy-metal salt; longitudinal rupture passage; perpendicular spreader"],"Independent pressure-spreading architecture."],
-  85: ["Claim 85 depends on claim 84 and specifies colloid in solution with reducing agent inside the container, combining liquid formulation and reagent location with longitudinal dispensing structure. Solution status and container location connect the reducing agent to the same pressure-opened elongated pod.",["colloid solution; container reducing agent; longitudinal pod"],"Claims the solution and location narrowing."],
-  86: ["Claim 86 applies claim 84's elongated weaker dispensing passage, flexible pressure-transmitting walls, and perpendicular spreading surface to a silver-halide developer or fixer processing agent. The same pressure-opened passage now dispenses the broader developer-or-fixer class for corresponding silver-halide processing.",["developer or fixer; longitudinal passage; perpendicular spreader"],"Independent processing-agent version."],
-  87: ["Claim 87 requires silver-halide developer, elongated rupturable pod, aqueous organic film-forming colloid, face-to-face wall seal forming long dispensing lip, and support spreading surface where developer becomes effective. A stronger wall material and weaker long lip create the pressure-responsive opening that exposes the aqueous colloid.",["aqueous organic colloid; long dispensing lip; support spreader"],"Independent sealed-lip developer claim."],
-  88: ["Claim 88 narrows the lip product to a flat multi-sided container, with lip along one side, flexible walls stronger than lip seal, and aqueous colloid spread onto support. Flat multi-sided geometry changes the lip's placement to one side while preserving deformable pressure transmission.",["flat multi-sided pod; side lip; flexible walls"],"Claims flat container and side lip geometry."],
-  89: ["Claim 89 retains claim 88's flat multi-sided rupturable lip but specifies liquid dispersion of film-forming colloid, preserving pressure opening and solid colloid-film formation on support. The rupturable flat container retains a film-forming colloid dispersion whose spread leaves the claimed solid film.",["flat rupturable pod; colloid dispersion; solid film"],"Claims dispersion variant of flat lip product."],
-  90: ["Claim 90 uses elongated lip-sealed pod with film-forming colloid to deliver reducing agent for a heavy-metal-salt photosensitive element, spreading over area larger than container. Reducing agent reaches the heavy-metal-salt element after the elongated lip opens and the colloid dispersion spreads.",["heavy-metal salt; elongated lip; reducing-agent spread"],"Claims heavy-metal-salt processing version."],
-  91: ["Claim 91 depends on claim 88 and adds silver-halide layer coextensive with receiving area, so spreading flat pod contents renders developer effective across that layer portion. Coextensive emulsion and receiving area make developer activation coincide with the portion covered by the flat pod contents.",["coextensive emulsion; flat lip pod; developer activation"],"Narrows claim 88 to coextensive development."],
-  92: ["Claim 92 depends on claim 87 and specifies organic film-forming colloid in aqueous dispersion is a plastic solution, retaining sealed lip and support spreader. Plastic is the colloid form selected from claim 87's broader organic film-forming material.",["plastic solution; organic colloid; sealed lip"],"Claims plastic-solution formulation."],
-  93: ["Claim 93 depends on claim 92 and identifies plastic specifically as sodium carboxymethyl cellulose, retaining aqueous dispersion and long dispensing lip. Sodium carboxymethyl cellulose is the precise plastic identity, not a generic thickening-agent substitute.",["sodium carboxymethyl cellulose; plastic solution; long lip"],"Claims named plastic thickener."],
-  94: ["Claim 94 depends on claim 87 and requires organic colloid to be plastic and silver-halide developer to be in container, coupling formulation with reagent location. The plastic colloid and container-held developer are simultaneous limitations on claim 87's sealed-lip product.",["plastic colloid; container developer; sealed lip"],"Claims container-held developer narrowing."],
-  95: ["Claim 95 depends on claim 94 and adds silver-halide solvent to container already holding plastic colloid and developer, retaining flexible long-lip structure. Silver-halide solvent joins the developer inside the same plastic-containing container.",["silver-halide solvent; developer; plastic colloid"],"Adds solvent to claim 94 chemistry."],
-  96: ["Claim 96 depends on claim 95 and requires baryta paper as sheet support, combining that receiver with plastic colloid, developer, solvent, and long dispensing lip. Baryta paper is the source-specific support added after developer, solvent, plastic colloid, and lip limitations.",["baryta paper; developer and solvent; sealed lip"],"Claims source-named baryta-paper support."],
-  97: ["Claim 97 depends on claim 87 and makes container flat and substantially rectangular, with support no wider than container length and long axis extending widthwise. The long axis runs widthwise, and the support-width relationship constrains the flat pod's mounting geometry.",["rectangular flat pod; widthwise axis; support proportion"],"Claims stated orientation and proportion without invented measurements."],
-  98: ["Claim 98 depends on claim 97 and forms every container wall from one deformable flexible multi-ply sheet, preserving flat rectangular pod and widthwise mounting. One flexible multi-ply sheet forms every wall, replacing separate wall pieces within the rectangular container.",["single multi-ply sheet; flexible walls; rectangular pod"],"Claims one-sheet wall construction."],
-  99: ["Claim 99 defines disposable single-application pod dispensing reducing reagent directly to exposed silver-halide element, with elongated multi-sided deformable walls and long-edge lip opened by pressure. The single-application quantity and long-edge lip make direct reagent delivery a disposable pressure-operated operation.",["single-use reducing reagent; multi-sided pod; long-edge lip"],"Independent direct-dispensing developer claim."],
-  100: ["Claim 100 parallels claim 99 but broadens liquid to silver-halide developer or fixer, retaining disposable elongated deformable walls, face-to-face long-edge seal, and pressure-opened lip. The claim broadens the direct liquid to either developer or fixer while retaining the same deformable lip construction.",["developer or fixer; disposable pod; pressure-opened lip"],"Independent processing-agent class claim."],
-  101: ["Claim 101 dispenses developer and silver-halide solvent between emulsion and print-receiving layer, using elongated pod with uniformly weaker longitudinal portions forming passage and treating area at least its size. The liquid amount must treat at least the pod's maximum area, linking passage length to transfer-print coverage.",["developer and solvent; longitudinal passage; transfer area"],"Independent transfer-print dispensing architecture."],
-  102: ["Claim 102 depends on claim 101 and adds organic film-forming colloid to the liquid dispersion, retaining elongated rupturable passage and transfer-print treatment area. Organic film-forming colloid is added to the developer-and-solvent dispersion rather than left as a separate coating.",["organic film-forming colloid; developer and solvent; transfer pod"],"Adds colloid to transfer liquid."],
-  103: ["Claim 103 depends on claim 102 and specifies aqueous alkaline solution with plastic dissolved in it, retaining viscosity in alkali and printed 1,000-to-200,000-centipoise range at 24 degrees Celsius. The alkaline solution must retain colloid viscosity across the printed range, preserving spreadability during transfer processing.",["alkaline aqueous plastic solution; viscosity range; transfer pod"],"Claims explicit viscosity range and alkaline behavior."],
-  104: ["Claim 104 depends on claim 103 and identifies dissolved plastic as sodium carboxymethyl cellulose, preserving alkaline solution, viscosity range, developer, solvent, and rupturable pod. The named cellulose plastic is the formulation identity added to claim 103's alkaline viscosity-controlled dispersion.",["sodium carboxymethyl cellulose; alkaline solution; viscosity range"],"Claims named plastic in claim 103."],
-  105: ["Claim 105 depends on claim 104 and adds hydroquinone, sodium thiosulfate, and sodium hydroxide to the sodium-carboxymethyl-cellulose processing solution in elongated container. Hydroquinone, thiosulfate, and hydroxide specify the processing solution's printed chemical combination.",["hydroquinone; sodium thiosulfate; sodium hydroxide"],"Claims three named added constituents."],
-  106: ["Claim 106 defines disposable elongated rupturable container dispensing at least one silver-halide developer or fixer, with weaker longitudinal portions forming passage under pressure from flexible walls. The claim stops at the disposable pressure-open dispensing passage and the developer-or-fixer class, without requiring a receiving layer.",["developer or fixer; disposable elongated pod; pressure rupture"],"Independent processing-agent passage claim."],
-  107: ["Claim 107 dispenses silver-halide developer directly to emulsion using elongated pod containing film-forming colloid, with long face-to-face lip seal opened because walls exceed seal strength. The long dispensing lip is weaker than the walls, so applied pressure opens the seal while the colloid-bearing developer exits.",["silver-halide developer; film-forming colloid; long lip seal"],"Independent direct-developer lip claim."],
-  108: ["Claim 108 depends on claim 107 and specifies alkaline aqueous solution with plastic colloid dissolved in it, retaining long lip and pressure opening. Alkaline aqueous solution and dissolved plastic are the formulation limits attached to the direct-developer lip.",["alkaline aqueous solution; dissolved plastic; developer lip"],"Claims alkaline plastic formulation."],
-  109: ["Claim 109 depends on claim 108 and requires substantially flat multi-sided oxygen-impervious container whose lip spans substantially the entire long side. Oxygen-impervious flat walls preserve the processing liquid, while the lip spans the long side for release.",["flat multi-sided pod; oxygen-impervious walls; full-length lip"],"Claims flat oxygen barrier and full-side lip."],
-  110: ["Claim 110 defines single-use rupturable disposable container holding enough processing liquid for one application, with image-transforming reagent and direct dispensing between sheet materials by pressure members. The product is sized for one application and dispenses reagent between sheet materials when pressure members squeeze it.",["single-use processing pod; pressure members; image transformation"],"Independent direct-dispensing product claim."],
-  111: ["Claim 111 depends on claim 110 and requires processing liquid to be aqueous alkaline solution whose viscosity exceeds one thousand centipoises at twenty-four degrees Celsius. The alkaline liquid's measured viscosity supplies the high-viscosity narrowing within the single-use container.",["alkaline aqueous liquid; viscosity threshold; single-use pod"],"Adds printed viscosity and temperature limitation."],
-  112: ["Claim 112 depends on claim 111 and specifies soluble carboxymethyl cellulose salt as thickening agent in high-viscosity alkaline processing liquid. Soluble carboxymethyl cellulose salt is the expressly named thickener in that alkaline processing liquid.",["soluble carboxymethyl cellulose salt; alkaline liquid; thickener"],"Claims named thickener class."],
-  113: ["Claim 113 depends on claim 110 and limits reagent to at least one silver-halide developer or fixer, retaining single-use pressure-dispensing container. At least one silver-halide developer or fixer supplies the reagent class while claim 110's disposable pressure container remains.",["silver-halide developer or fixer; disposable pod; pressure dispensing"],"Claims processing-agent class."],
-  114: ["Claim 114 independently requires substantially flat multi-sided elongated disposable single-use pod containing aqueous hydroquinone, sodium thiosulfate, sodium hydroxide, and sodium carboxymethyl cellulose solution for transfer prints. The four named ingredients are required together in aqueous solution for the transfer-print product; the source gives no separate commercial designation.",["flat elongated pod; four named ingredients; transfer prints"],"Independent source-specific formulation claim."],
-  115: ["Claim 115 independently requires externally dry rupturable disposable container with single-application reducing-agent liquid for direct development of exposed photosensitive element, preserving pressure dispensing. External dryness describes the container condition before use, while the reducing-agent liquid is released for direct element development.",["externally dry pod; single-application reducing agent; direct development"],"Independent externally dry container claim."],
-  116: ["Claim 116 depends on claim 115 and makes container flat and substantially rectangular, formed from one folded sheet whose opposite margins are adhesively secured face-to-face to form dispensing lip. The folded sheet supplies one long edge and adhesive face-to-face margins, which together form the dispensing lip.",["folded single sheet; rectangular pod; adhesive dispensing lip"],"Claims final folded-sheet adhesive-lip geometry."],
+  1: [
+    "Claim 1 combines attached photosensitive and transfer-image base layers with a rupturable liquid-solvent container, heavy-metal-salt latent imaging, developer transport, and differential substance disposition that produces the transferred image across the superposed layers.",
+    ["attached composite; heavy-metal salt; differential transfer"],
+    "Foundational combination claim covering the attached product, liquid release, development, and transfer mechanism as printed.",
+  ],
+  2: [
+    "Claim 2 retains claim 1's attached superposed product and heavy-metal-salt process, but narrows where processing material is located: at least part of the developer is already in the container liquid for transport after rupture.",
+    ["container-held developer; superposed layers; liquid transport"],
+    "Narrows the master product by requiring container liquid to carry at least part of the processing material.",
+  ],
+  3: [
+    "Claim 3 specifies silver-halide emulsion and positive-image base layers, while the released solvent transports developer to develop the latent image and causes differential disposition that supplies the base with a positive image by transfer.",
+    ["silver-halide emulsion; positive transfer base; solvent development"],
+    "Claims the silver-halide positive-transfer embodiment with the specification's source punctuation preserved in the archival text.",
+  ],
+  4: [
+    "Claim 4 follows the silver-halide and positive-image architecture of claim 3, expressly placing at least part of the processing material in the container liquid while retaining development and positive transfer through the superposed layers.",
+    ["container-liquid reagent; silver-halide emulsion; positive image"],
+    "Source-specific narrowing requiring the processing material to be carried at least partly in the released container liquid.",
+  ],
+  5: [
+    "Claim 5 replaces the broad processing material with a developer plus a silver-halide-complex-forming substance, so transport develops the latent image and forms soluble silver complex that supplies the positive base image by transfer.",
+    ["developer and complex former; soluble silver complex; transfer base"],
+    "Protects the paired developer and complex-forming chemistry, without adding concentrations or unsupported formulation values.",
+  ],
+  6: [
+    "Claim 6 expressly requires the rupturable container to hold a liquid solution containing both silver-halide developer and silver-halide solvent, with that solution transported between layers to develop and create soluble complex for transfer.",
+    ["container solution; developer; silver-halide solvent"],
+    "Claims the source's all-in-container solution embodiment and its linked development and soluble-complex transfer operation.",
+  ],
+  7: [
+    "Claim 7 identifies hydroquinone and sodium thiosulfate as the processing material: released liquid transports them, hydroquinone develops the latent image, and thiosulfate complexes undeveloped silver halide for positive transfer. Hydroquinone performs development; thiosulfate carries undeveloped silver as soluble complex toward the positive receiving base.",
+    ["hydroquinone; sodium thiosulfate; silver complex"],
+    "A chemistry-specific source claim requiring the named developer and solvent roles, while retaining the attached rupturable product geometry.",
+  ],
+  8: [
+    "Claim 8 keeps the heavy-metal-salt photosensitive layer and fixing-solvent solubility, but places at least part of processing material outside the container in solid form, where released liquid dissolves it before development and transfer.",
+    ["solid external reagent; heavy-metal salt; dissolving release liquid"],
+    "Distinguishes dry processing material positioned outside the pod from claim 2's container-held material, while retaining the same transfer sequence.",
+  ],
+  9: [
+    "Claim 9 applies the external-solid placement to silver-halide chemistry and requires both developer and soluble-silver-complex substance, with release liquid dissolving them before development and transfer. The solid materials wait outside the pod until solvent release dissolves them, preserving the claim's staged transport sequence.",
+    ["external solid developer; complex former; silver-halide transfer"],
+    "Source-bounded chemistry narrowing for solid-outside-container developer and complex former transported into the emulsion.",
+  ],
+  10: [
+    "Claim 10 uses a heavy-metal-salt photosensitive layer and a processing material containing developer plus a reactant that converts development products into dye, yielding a transferred dye image rather than merely silver transfer.",
+    ["dye-forming reactant; heavy-metal salt; dye transfer"],
+    "Claims the dye-image variant and its reaction with development products, without importing any unprinted color chemistry.",
+  ],
+  11: [
+    "Claim 11 narrows the dye-transfer product to a silver-halide emulsion and requires developer plus a dye-forming reactant, with the attached container releasing liquid that develops the layer and provides a transferred dye image.",
+    ["silver-halide dye transfer; developer; dye reactant"],
+    "Source-bounded silver-halide version of the dye-transfer combination, including the liquid-release and base-image relationship.",
+  ],
+  12: [
+    "Claim 12 substitutes a solarized silver-halide emulsion for the ordinary emulsion while retaining developer, dye-forming reaction, attached rupturable container, and transfer of the resulting dye image to the base layer. Solarization is the photosensitive-state limitation, while dye formation remains tied to developer action and transfer into the base.",
+    ["solarized emulsion; dye formation; transfer base"],
+    "Protects the solarized-emulsion dye-transfer embodiment, a distinct photosensitive state expressly named in the claim.",
+  ],
+  13: [
+    "Claim 13 combines the heavy-metal-salt positive-transfer product with developer transport and differential disposition, then adds a readily strippable attachment between base and photosensitive layers after the positive image forms. Stripping occurs only after the positive image forms, so the claim joins temporary lamination with later layer separation.",
+    ["strippable layer attachment; heavy-metal salt; positive transfer"],
+    "Narrows the product to post-development separation of the two image-bearing layers, preserving the source's attached-before-processing arrangement.",
+  ],
+  14: [
+    "Claim 14 recasts the product as a sheetlike lamination: container portions lie between outer strata, mechanical stress separates those portions, and released contents reach a predetermined superposed region for development and transfer.",
+    ["sheetlike lamination; mechanically separable pod; predetermined processing area"],
+    "Protects the integrated laminate geometry and mechanically opened internal container, not a detached packet or unsupported roller dimension.",
+  ],
+  15: [
+    "Claim 15 retains claim 14's sheetlike lamination and stress-separated container portions, but requires at least part of processing material, including developer, to be held in the released container liquid. The liquid location matters because developer travels with the released contents through the stress-opened laminate.",
+    ["laminated pod; container-held developer; positive transfer"],
+    "Claims the sheetlike stress-release construction with processing material carried in the pod liquid.",
+  ],
+  16: [
+    "Claim 16 keeps claim 14's laminated, mechanically separable container and limits the processing material to developer plus soluble-silver-complex substance, tying the liquid release to silver transfer. The complex-forming substance is coupled to the laminated release path, not merely listed as an optional photographic additive.",
+    ["laminated complex chemistry; mechanical rupture; silver transfer"],
+    "Source-specific chemistry narrowing for the laminated container architecture and soluble silver complex pathway.",
+  ],
+  17: [
+    "Claim 17 combines a solarized silver-halide emulsion with attached stress-releasable container and a developer-plus-dye-reactant material that provides a dye image by transfer. Solarized emulsion, mechanical release, and dye reaction operate together as the claimed product combination.",
+    ["solarized emulsion; stress-releasable pod; dye reactant"],
+    "Protects the solarized dye-transfer combination in the sheet-attached mechanically rupturable product.",
+  ],
+  18: [
+    "Claim 18 uses a solarized emulsion and attached mechanically rupturable container, but requires a developer whose oxidation product couples with itself to form the dye transferred as the latent-image representation. Self-coupling oxidation supplies the dye, distinguishing this chemical route from a separately supplied dye-forming reactant.",
+    ["self-coupling oxidation product; solarized emulsion; dye transfer"],
+    "Distinguishes self-coupling dye formation from the separate dye-reactant alternative, while retaining the claimed solarized product.",
+  ],
+  19: [
+    "Claim 19 requires the solarized emulsion, positive base, stress-releasable container, developer and dye-forming substance, specifically placing the developer in the container liquid before release and transfer. Placing developer inside the liquid container is the narrowing that controls when the solarized dye process begins.",
+    ["container-held developer; solarized emulsion; positive dye"],
+    "Narrows claim 17's chemistry by locating the developer in the pod liquid, as the printed claim states.",
+  ],
+  20: [
+    "Claim 20 specifies a supporting layer carrying silver-halide emulsion, a transfer-positive base, and a rupturable solvent container whose released liquid permeates superposed portions while developer causes differential silver disposition. The support carries the emulsion while released solvent reaches superposed portions and causes differential disposition for transfer.",
+    ["supporting layer; silver-halide emulsion; differential disposition"],
+    "Claims the support-mounted emulsion product and its released-liquid differential transfer mechanism.",
+  ],
+  21: [
+    "Claim 21 follows the support-and-emulsion architecture but requires the rupturable container solution to contain developer and silver-halide solvent, linking solution release directly to latent-image development and transfer. Developer and solvent share one released solution, making the support-mounted emulsion process a single liquid-mediated sequence.",
+    ["developer-solvent solution; support-mounted emulsion; transfer base"],
+    "Chemically narrows claim 20 to a container solution containing both named processing functions.",
+  ],
+  22: [
+    "Claim 22 introduces multiple liquid-containing portions adjacent to laterally spaced photosensitive areas, each independently rupturable so one longitudinal film segment can be processed without processing its neighbor. Independent rupture of laterally spaced portions lets one film segment receive processing without wetting the adjacent segment.",
+    ["individually rupturable cells; laterally spaced areas; segment processing"],
+    "Protects selective segment-by-segment processing through separately rupturable portions of one composite film structure.",
+  ],
+  23: [
+    "Claim 23 retains the laterally spaced independently rupturable portions but requires container-held developing agent and soluble-complex substance, so each released segment develops and transfers a positive image. Each separated segment receives both developing and complex-forming functions from its own releasable liquid portion.",
+    ["multi-cell processing; developer; soluble silver complex"],
+    "Chemically narrows the segmented product to the developer-and-complex-former embodiment.",
+  ],
+  24: [
+    "Claim 24 requires a water-absorptive strippable base, silver-halide layer, and pod-held solvent, with developer positioned inside the product and liquid withheld from both layers until the container releases between outer unit surfaces.",
+    ["water-absorptive strippable base; dry-before-release; outer-surface release"],
+    "Claims the strippable, nonwetting-before-release multilayer arrangement and its external-surface liquid release.",
+  ],
+  25: [
+    "Claim 25 keeps the silver-halide layer and rupturable container solution but omits the water-absorptive limitation, requiring attached layers that superpose while the pod holds liquid away until release between them. The pod isolates its solution during storage and releases it only after the attached layers are brought into superposition.",
+    ["pod-held developer solution; superposed layers; nonwetting storage"],
+    "Source-specific product claim for attached superposition and liquid isolation before rupture.",
+  ],
+  26: [
+    "Claim 26 combines heavy-metal-salt photosensitivity, fixing-solvent solubility, water-absorptive strippable base, and attached rupturable pod, with released developer producing the transferred image. The strippable receiving base and heavy-metal-salt emulsion remain coupled until processing creates the transferable image.",
+    ["heavy-metal salt; strippable absorptive base; transfer development"],
+    "Claims the heavy-metal-salt variant of the strippable base and isolated processing-liquid structure.",
+  ],
+  27: [
+    "Claim 27 defines liquid-confining layers around a photosensitive silver-halide portion and rupturable liquid container, attached for superposition while the liquid remains isolated until release. Liquid-confining layers define the storage boundary, while rupture opens the path to the superposed photosensitive region.",
+    ["liquid-confining strata; silver-halide portion; isolated pod"],
+    "Protects the general confining-layer architecture without adding dimensions or materials absent from the source claim.",
+  ],
+  28: [
+    "Claim 28 narrows the confining-layer product to a heavy-metal-salt photosensitive portion soluble in fixing solvent, retaining superposition, isolated liquid, and developer-driven visible-image formation. Fixing-solvent solubility is the chemical narrowing added to the otherwise general confining-layer arrangement.",
+    ["heavy-metal salt; confining layers; fixing-solvent solubility"],
+    "Claims the heavy-metal-salt chemical limitation within the liquid-confining product family.",
+  ],
+  29: [
+    "Claim 29 depends on claim 1 and specifies a sheetlike container superposed over the photosensitive layer in its releasing position, directing liquid depthwise through the layer rather than laterally. Depthwise release sends liquid through the sheetlike pod's overlying area instead of spreading from an edge.",
+    ["sheetlike pod; depthwise release; photosensitive layer"],
+    "Geometrically narrows claim 1 to coextensive sheet-container release through the photosensitive thickness.",
+  ],
+  30: [
+    "Claim 30 depends on claim 1 and changes the pod geometry to an elongated rupturable container positioned so released liquid spreads between layer portions on one side of that container. The elongated pod establishes a one-sided spreading direction, with the processing zone located beside rather than beneath it.",
+    ["elongated pod; one-sided spreading; attached layers"],
+    "Claims lateral one-sided spreading from an elongated container as the selected claim 1 geometry.",
+  ],
+  31: [
+    "Claim 31 depends on claim 1 and specifies a sac-like container with rupturable seal near an edge, placed beside the processing zone so the adjacent seal releases liquid between layers. The edge-adjacent seal is the rupture site, positioning the sac for release directly beside the layer region.",
+    ["sac-like container; edge seal; adjacent processing zone"],
+    "Protects the edge-sealed sac arrangement and its placement beside the layer region to be processed.",
+  ],
+  32: [
+    "Claim 32 depends on claim 6 and specifies a sheetlike container superposed over the silver-halide layer, releasing liquid depthwise across an area coextensive with the container. Coextensive area is the geometric relationship: the sheet pod covers the emulsion area it is intended to permeate.",
+    ["sheet pod; depthwise permeation; coextensive emulsion area"],
+    "Adds the sheet-container depthwise geometry to claim 6's developer-and-solvent solution embodiment.",
+  ],
+  33: [
+    "Claim 33 depends on claim 6 and requires an elongated rupturable container positioned so its liquid spreads between layer portions to one side, preserving the claimed solution chemistry. The elongated claim preserves claim 6's solution chemistry while changing the release geometry to lateral one-sided spreading.",
+    ["elongated solution pod; one-sided spread; silver complex"],
+    "Adds a one-sided elongated-container geometry to the claim 6 liquid-solution product.",
+  ],
+  34: [
+    "Claim 34 depends on claim 6 and specifies an elongated collapsible sac with edge seal, one-sided release, and film-forming plastic in solution to support spreading between layers. The collapsible sac adds a long-edge seal and dissolved film former to the claim 6 solution pathway.",
+    ["collapsible sac; edge seal; film-forming plastic"],
+    "Claims the sac geometry plus dissolved film-forming plastic, without inventing viscosity or concentration values.",
+  ],
+  35: [
+    "Claim 35 depends on claim 25 and specifies a sheetlike container superposed on the photosensitive layer, releasing its liquid depthwise through the layer while the base and pod remain part of the product.",
+    ["sheetlike claim-25 pod; depthwise release; isolated liquid"],
+    "Narrows claim 25's nonwetting storage arrangement to the sheet-container depthwise-release embodiment.",
+  ],
+  36: [
+    "Claim 36 depends on claim 25 and requires an elongated rupturable container positioned to release liquid to one side, where it spreads between the attached layer portions. The claim's one-sided release geometry determines where the elongated claim 25 container deposits its processing liquid.",
+    ["elongated claim-25 container; one-sided liquid release; layer spread"],
+    "Claims the lateral spreading geometry of the claim 25 pod-held solution product.",
+  ],
+  37: [
+    "Claim 37 depends on claim 25 and specifies a sac-like, elongated, collapsible container with a rupturable long-edge seal releasing liquid between layers located to one side. A collapsible sac and long-edge seal supply the claimed controlled opening before liquid moves into the layer gap.",
+    ["collapsible elongated sac; long-edge seal; one-sided layer processing"],
+    "Protects the particular collapsible sac and long-edge seal geometry added to claim 25.",
+  ],
+  38: [
+    "Claim 38 depends on claim 37 and requires thickening agent in the pod liquid, increasing viscosity enough to facilitate spreading between the separated layer portions after the sac seal ruptures. Thickener is claimed for spreading function, not a guessed numerical value, so the liquid can bridge the layer interval.",
+    ["thickening agent; viscous spreading; collapsible sac"],
+    "Narrows claim 37 by the functional thickening-agent requirement, not a fabricated numerical viscosity.",
+  ],
+  39: [
+    "Claim 39 depends on claim 38 and specifies that the thickening agent is a plastic forming a solid plastic film between the layers after the processed liquid spreads and dries. Drying converts the spread plastic-containing liquid into the claimed solid film between the processed layers.",
+    ["plastic film residue; thickened liquid; layer interface"],
+    "Claims the dried plastic-film residue produced by the thickener in the claim 38 spreading process.",
+  ],
+  40: [
+    "Claim 40 depends on claim 25 and requires the sac-like container liquid to include silver-halide solvent, alkali, and film-forming plastic dissolved together for processing and spreading. Solvent, alkali, and film former are the three expressly named liquid constituents in this sac-based embodiment.",
+    ["silver-halide solvent; alkali; dissolved film-former"],
+    "Claims the three named functional liquid constituents within the sac-like claim 25 product, without unstated quantities.",
+  ],
+  41: [
+    "Claim 41 defines a product containing enough image-transforming reagent, a liquid-confining layer with photosensitive portion, and another confining layer, attached so the layers can superpose and the reagent can transform the image.",
+    ["image-transforming reagent; confining layers; attached superposition"],
+    "Independent reagent and liquid-confinement product claim.",
+  ],
+  42: [
+    "Claim 42 depends on claim 4 and places a sheet container coextensively over the exposed photosensitive portion, releasing liquid depthwise so reagent permeates that exposed area. Coextensive placement makes the sheet container cover the exposed portion whose depth is permeated by released liquid.",
+    ["coextensive sheet container; depthwise release; exposed portion"],
+    "Narrows claim 4 to the coextensive sheet-container embodiment.",
+  ],
+  43: [
+    "Claim 43 depends on claim 42 and divides the sheet container into liquid-confining cells, with the other liquid-confining layer integral with a wall of that sheet container. Cell walls partition the sheet reservoir, while the integral opposing wall completes the confining structure.",
+    ["cellular sheet pod; integral wall; liquid confinement"],
+    "Claims the cellular sheet-container relationship.",
+  ],
+  44: [
+    "Claim 44 depends on claim 41 and attaches the liquid-confining layers adjacent their ends with a hinge, controlling their superposition during image transformation. The hinge fixes the relative ends of the layers and guides their repeated superposed processing position.",
+    ["hinged layers; end attachment; superposition"],
+    "Protects the end-hinged confining-layer arrangement.",
+  ],
+  45: [
+    "Claim 45 depends on claim 41 and makes both layers opaque, creating a superposed barrier that prevents visible actinic light from reaching the photosensitive portion. Opacity serves as the claimed light barrier, preventing actinic exposure while the layers remain superposed.",
+    ["opaque layers; actinic-light barrier; superposition"],
+    "Claims the daylight-protective opaque barrier.",
+  ],
+  46: [
+    "Claim 46 depends on claim 41 and identifies the image-transforming reagent as a developer for the photosensitive portion, retaining the liquid-confining product structure. Developer is the operative reagent in this branch, rather than an unspecified material merely capable of transforming an image.",
+    ["developer reagent; photosensitive portion; confinement"],
+    "Narrows the transformation reagent to developer.",
+  ],
+  47: [
+    "Claim 47 depends on claim 41 and requires a silver-halide emulsion photosensitive portion plus developer capable of providing the other confining layer with a transfer image. The other confining layer receives a transfer image produced from the silver-halide emulsion by the transported developer.",
+    ["silver-halide emulsion; developer; transfer image"],
+    "Claims the silver-halide transfer-image embodiment.",
+  ],
+  48: [
+    "Claim 48 depends on claim 41 and retains silver-halide emulsion and developer, but requires the resulting transfer image on the other confining layer to be a dye image. The receiving layer obtains dye rather than a silver-comprising transfer, preserving the claim's chemical distinction.",
+    ["silver-halide dye transfer; developer; receiving layer"],
+    "Source-specific dye-transfer narrowing.",
+  ],
+  49: [
+    "Claim 49 depends on claim 41 and requires silver-halide developer to provide a transfer image comprising silver, distinguishing metallic-silver transfer from dye transfer. Silver is the claimed transfer constituent, so the source does not authorize replacing it with dye.",
+    ["silver-halide developer; silver transfer; receiving layer"],
+    "Claims the silver-comprising transfer image.",
+  ],
+  50: [
+    "Claim 50 defines a photographic photosensitive portion in a liquid-confining layer, another confining layer, and sufficient reagent to transform an image while attached layers superpose for processing. The photographic confining layers and sufficient reagent define the product before any narrower developer, thickener, or paper limitation.",
+    ["photographic photosensitive portion; reagent sufficiency; confining strata"],
+    "Independent photographic transformation claim.",
+  ],
+  51: [
+    "Claim 51 depends on claim 50 and requires thickening agent in the liquid in sufficient quantity to facilitate uniform spreading between layers, while reagent is developer. Uniform spreading is the functional result required of the thickener as developer moves between the attached layers.",
+    ["uniform-spreading thickener; developer; confining layers"],
+    "Adds the functional uniform-spreading thickener.",
+  ],
+  52: [
+    "Claim 52 depends on claim 51 and specifies a plastic thickener whose residue forms a film after liquid spreads between layers and dries. The plastic remains as a film after drying, making residue part of the claimed processing architecture.",
+    ["plastic thickener; dried film; layer spread"],
+    "Claims the plastic-film residue.",
+  ],
+  53: [
+    "Claim 53 depends on claim 52 and places developer in the container liquid, combining container-held reagent with plastic thickener and drying film. Container location of developer is added to the plastic-film embodiment, tying chemistry to the release event.",
+    ["container-held developer; plastic film; thickened liquid"],
+    "Further narrows the claim 52 liquid location.",
+  ],
+  54: [
+    "Claim 54 depends on claim 50 and specifies silver-halide emulsion, paper as the other confining layer, and liquid containing developing agent plus sodium carboxymethyl cellulose. Paper is the receiving confining layer, and sodium carboxymethyl cellulose is named in the liquid alongside developing agent.",
+    ["silver-halide emulsion; paper receiver; carboxymethyl cellulose"],
+    "Claims the named paper and processing-liquid embodiment.",
+  ],
+  55: [
+    "Claim 55 depends on claim 54 and adds silver-halide solvent and alkali to liquid already containing developing agent and sodium carboxymethyl cellulose. The added solvent and alkali complete the source's specified paper-based processing liquid without invented proportions.",
+    ["silver-halide solvent; alkali; carboxymethyl cellulose"],
+    "Protects the fuller named processing-liquid combination.",
+  ],
+  56: [
+    "Claim 56 depends on claim 50 and requires deformable container walls impervious to oxygen and vapor of contained liquid, preserving confinement before release. Oxygen and liquid-vapor impermeability protect the contained reagent while deformability still permits externally applied release pressure.",
+    ["deformable walls; oxygen barrier; vapor barrier"],
+    "Claims the stated material barrier functions.",
+  ],
+  57: [
+    "Claim 57 defines a photographic photosensitive element with photosensitive portion and liquid-containing stratum, plus reagent sufficient to transform the image when liquid reaches it. The liquid-containing stratum supplies reagent to the photographic element while the product remains an attached layered article.",
+    ["photosensitive element; liquid stratum; transformation reagent"],
+    "Independent stratum-and-distribution claim.",
+  ],
+  58: [
+    "Claim 58 depends on claim 57 and specifies heavy-metal-salt photosensitive material capable of latent-image formation and visible development, with solubility in fixing solvent. The heavy-metal salt provides latent-image formation and fixing-solvent solubility, both expressly retained by this dependent limitation.",
+    ["heavy-metal salt; latent image; fixing solubility"],
+    "Claims the named heavy-metal-salt limitation.",
+  ],
+  59: [
+    "Claim 59 depends on claim 57 and narrows the photosensitive portion to a silver-halide emulsion while retaining liquid-containing stratum and transforming reagent. Silver-halide emulsion replaces the broader photosensitive portion, keeping the stratum and transforming reagent otherwise unchanged.",
+    ["silver-halide emulsion; liquid stratum; transformation"],
+    "Silver-halide narrowing.",
+  ],
+  60: [
+    "Claim 60 depends on claim 57 and locates photographic reagent in the liquid of the liquid-containing stratum so liquid transports it toward the photosensitive portion. Reagent is carried within the stratum liquid, so its position is structural rather than merely a statement of intended use.",
+    ["reagent-in-liquid stratum; transport; photosensitive element"],
+    "Claims reagent placement inside the stratum.",
+  ],
+  61: [
+    "Claim 61 depends on claim 57 and specifies a porous sheet as liquid-containing stratum, with liquid held in its pores beside the photosensitive element. Porous-sheet pores act as the liquid reservoir, distinguishing this embodiment from a sealed continuous pod.",
+    ["porous sheet; liquid-filled pores; photosensitive element"],
+    "Protects the porous-sheet reservoir.",
+  ],
+  62: [
+    "Claim 62 depends on claim 57 and specifies multiple liquid-receiving recesses, each closed by rupturable confining stratum and isolated by impermeable cell walls. Impermeable cell walls isolate the recesses and rupturable closures open them individually when processing is selected.",
+    ["recess cells; rupturable walls; impermeable separation"],
+    "Claims discrete isolated liquid cells.",
+  ],
+  63: [
+    "Claim 63 depends on claim 57 and adds a permeable distributing layer between rupturable liquid stratum and photosensitive element, distributing liquid uniformly across image area. The permeable distributor lies between reservoir and emulsion, converting release into a more uniform liquid delivery path.",
+    ["permeable distributor; uniform spreading; interposed layer"],
+    "Protects the explicit distribution layer.",
+  ],
+  64: [
+    "Claim 64 depends on claim 63 and puts part of reagent in solid form inside permeable layer, where traveling liquid dissolves it before reaching photosensitive portion. Solid reagent in that distributor dissolves during travel, adding staged activation to the distribution layer.",
+    ["solid reagent; dissolution during travel; permeable layer"],
+    "Claims in-layer dry-reagent activation.",
+  ],
+  65: [
+    "Claim 65 depends on claim 57 and specifies a solarized silver-halide emulsion as photosensitive portion, retaining liquid stratum and transformation reagent. Solarized silver halide is the expressly claimed photosensitive state within this liquid-stratum construction.",
+    ["solarized emulsion; liquid stratum; transformation"],
+    "Claims the solarized-emulsion variant.",
+  ],
+  66: [
+    "Claim 66 defines rupturable liquid container with dispersed thickener mounted on sheet support, whose other portion provides spreading surface and adjacent receiving area. The sheet support carries both the mounted container and a neighboring receiving surface, so rupture and spreading share one article.",
+    ["mounted pod; dispersed thickener; spreading surface"],
+    "Independent spreader geometry claim.",
+  ],
+  67: [
+    "Claim 67 depends on claim 66 and requires reducing agent contained in mounted container liquid, linking release and spreading to development chemistry. Reducing agent is not merely available elsewhere; the claim locates it in the mounted container liquid.",
+    ["container-held reducing agent; mounted pod; spreader"],
+    "Narrows claim 66 by reagent location.",
+  ],
+  68: [
+    "Claim 68 depends on claim 66 and specifies organic film-forming colloid dissolved in liquid, leaving colloid film after spreading and drying on support. The organic colloid is dissolved before spreading and remains as a film after the liquid dries on the support.",
+    ["organic colloid; dissolved film former; dried residue"],
+    "Claims the colloid-film residue.",
+  ],
+  69: [
+    "Claim 69 depends on claim 68 and requires water in liquid and plastic as film-forming colloid, retaining support-mounted container and spreader surface. Water and plastic jointly define the colloid liquid in this dependent embodiment, without an inferred polymer identity.",
+    ["water; plastic colloid; support spreader"],
+    "Adds the named water-and-plastic relationship.",
+  ],
+  70: [
+    "Claim 70 depends on claim 66 and imposes printed viscosity condition: thickener quantity gives liquid viscosity exceeding one thousand centipoises at twenty-four degrees Celsius. The viscosity threshold is explicitly measured at the stated temperature and is retained as a functional spreading limitation.",
+    ["viscosity threshold; thickener; spreading surface"],
+    "Claims the stated viscosity and temperature.",
+  ],
+  71: [
+    "Claim 71 depends on claim 66 and requires reducing agent dissolved in container liquid, specifically identifying it as a silver-halide developer for spreading. Silver-halide developer supplies the reducing function while remaining dissolved in the container used for spreading.",
+    ["dissolved developer; reducing agent; mounted pod"],
+    "Narrows reducing agent to developer.",
+  ],
+  72: [
+    "Claim 72 defines mounted rupturable container, thickened liquid, sheet support, spreading surface, and adjacent receiving area, preserving direct liquid spreading onto support. The claim repeats the complete mounted-pod spreader relationship, including support surface and adjacent receiving area.",
+    ["mounted container; thickened liquid; receiving area"],
+    "Independent complete spreader claim.",
+  ],
+  73: [
+    "Claim 73 depends on claim 66 and requires photographic processing agent dissolved in container liquid to be a silver-halide fixer rather than developer. Fixer, rather than developer, is the expressly named dissolved processing agent in this branch.",
+    ["dissolved fixer; thickened liquid; mounted pod"],
+    "Claims the fixer embodiment.",
+  ],
+  74: [
+    "Claim 74 requires thickener, silver-halide developer and solvent, viscosity above printed threshold, and receiving area larger than container carrying continuous film for transfer printing. The larger receiving area must accept a continuous film sufficient to contact the superposed emulsion for transfer printing.",
+    ["developer and solvent; high viscosity; oversized receiving area"],
+    "Independent high-viscosity transfer-print claim.",
+  ],
+  75: [
+    "Claim 75 arranges multiple lengthwise-spaced rupturable containers on sheet support, each beside receiving area and carrying enough reducing reagent for its corresponding image area. Each pod and receiving area is paired, making reagent quantity and image-processing capacity local to each segment.",
+    ["multiple pods; individual receiving areas; segment reagent"],
+    "Independent repeated-container sheet claim.",
+  ],
+  76: [
+    "Claim 76 depends on claim 75 and requires elongated containers with parallel long axes extending transversely across sheet support, specifying array orientation. Parallel transverse containers define the repeated array's orientation across the sheet support.",
+    ["parallel elongated pods; transverse axes; sheet support"],
+    "Claims multi-pod orientation.",
+  ],
+  77: [
+    "Claim 77 depends on claim 75 and adds silver-halide developer as reducing agent plus cooperating material that forms transfer image when each pod spreads. Cooperating material joins the developer to form the transfer image as each container is spread.",
+    ["developer; cooperating transfer material; multi-pod array"],
+    "Chemically narrows repeated-container transfer.",
+  ],
+  78: [
+    "Claim 78 defines spaced multi-container sheet with each area carrying silver-halide developer or fixer sufficient to process corresponding photosensitive segment. The array accepts either developer or fixer, but each associated area must contain enough agent to process its segment.",
+    ["developer or fixer; repeated areas; spaced containers"],
+    "Claims the broader processing-agent class.",
+  ],
+  79: [
+    "Claim 79 places thickened liquid pod on support carrying photosensitive layer coextensive with receiving area, using ferric, diazonium, or heavy-metal salts and transformation reagent. The thickened liquid is spreading across the receiving area, placing the selected reagent against that coextensive photosensitive support.",
+    ["coextensive photosensitive support; ferric or diazonium salt; direct spread"],
+    "Independent direct-spread support claim; spreading the contents across the receiving area places the reagent against the coextensive photosensitive layer.",
+  ],
+  80: [
+    "Claim 80 depends on claim 79 and identifies image-transforming reagent as developer for photosensitive layer, retaining direct spreading over coextensive receiving area. Developer is the image-transforming reagent that acts after the thickened liquid covers the support area.",
+    ["developer; coextensive layer; direct spread"],
+    "Narrows transformation reagent to developer.",
+  ],
+  81: [
+    "Claim 81 depends on claim 79 and specifies photosensitive layer as silver-halide emulsion, retaining thickened pod liquid and coextensive support receiving area. Silver-halide emulsion supplies the specified photosensitive layer while the direct-spread support geometry remains.",
+    ["silver-halide emulsion; thickened liquid; coextensive area"],
+    "Silver-halide narrowing.",
+  ],
+  82: [
+    "Claim 82 depends on claim 79, specifies silver-halide emulsion, and limits image-transforming reagent to silver-halide developer or fixer in direct-spread product. The processing-agent class is limited to silver-halide developer or fixer, not an unbounded transforming reagent.",
+    ["silver-halide emulsion; developer or fixer; direct spread"],
+    "Claims the printed processing-agent class.",
+  ],
+  83: [
+    "Claim 83 defines a thickened liquid pod and support receiving area larger than the pod, with silver-halide emulsion coextensive with that area and enough developer to develop the covered latent image.",
+    ["oversized receiving area; silver-halide emulsion; developer spread"],
+    "Independent direct-developer spreader claim.",
+  ],
+  84: [
+    "Claim 84 requires reducing agent for a heavy-metal-salt photosensitive element, an elongated pod with film-forming colloid, uniformly weaker longitudinal dispensing portion, flexible walls, and perpendicular spreading surface. Pressure ruptures the weaker longitudinal passage, and the perpendicular support surface receives a colloid film over a larger area.",
+    ["heavy-metal salt; longitudinal rupture passage; perpendicular spreader"],
+    "Independent pressure-spreading architecture.",
+  ],
+  85: [
+    "Claim 85 depends on claim 84 and specifies colloid in solution with reducing agent inside the container, combining liquid formulation and reagent location with longitudinal dispensing structure. Solution status and container location connect the reducing agent to the same pressure-opened elongated pod.",
+    ["colloid solution; container reducing agent; longitudinal pod"],
+    "Claims the solution and location narrowing.",
+  ],
+  86: [
+    "Claim 86 applies claim 84's elongated weaker dispensing passage, flexible pressure-transmitting walls, and perpendicular spreading surface to a silver-halide developer or fixer processing agent. The same pressure-opened passage now dispenses the broader developer-or-fixer class for corresponding silver-halide processing.",
+    ["developer or fixer; longitudinal passage; perpendicular spreader"],
+    "Independent processing-agent version.",
+  ],
+  87: [
+    "Claim 87 requires silver-halide developer, elongated rupturable pod, aqueous organic film-forming colloid, face-to-face wall seal forming long dispensing lip, and support spreading surface where developer becomes effective. A stronger wall material and weaker long lip create the pressure-responsive opening that exposes the aqueous colloid.",
+    ["aqueous organic colloid; long dispensing lip; support spreader"],
+    "Independent sealed-lip developer claim.",
+  ],
+  88: [
+    "Claim 88 narrows the lip product to a flat multi-sided container, with lip along one side, flexible walls stronger than lip seal, and aqueous colloid spread onto support. Flat multi-sided geometry changes the lip's placement to one side while preserving deformable pressure transmission.",
+    ["flat multi-sided pod; side lip; flexible walls"],
+    "Claims flat container and side lip geometry.",
+  ],
+  89: [
+    "Claim 89 retains claim 88's flat multi-sided rupturable lip but specifies liquid dispersion of film-forming colloid, preserving pressure opening and solid colloid-film formation on support. The rupturable flat container retains a film-forming colloid dispersion whose spread leaves the claimed solid film.",
+    ["flat rupturable pod; colloid dispersion; solid film"],
+    "Claims dispersion variant of flat lip product.",
+  ],
+  90: [
+    "Claim 90 uses elongated lip-sealed pod with film-forming colloid to deliver reducing agent for a heavy-metal-salt photosensitive element, spreading over area larger than container. Reducing agent reaches the heavy-metal-salt element after the elongated lip opens and the colloid dispersion spreads.",
+    ["heavy-metal salt; elongated lip; reducing-agent spread"],
+    "Claims heavy-metal-salt processing version.",
+  ],
+  91: [
+    "Claim 91 depends on claim 88 and adds silver-halide layer coextensive with receiving area, so spreading flat pod contents renders developer effective across that layer portion. Coextensive emulsion and receiving area make developer activation coincide with the portion covered by the flat pod contents.",
+    ["coextensive emulsion; flat lip pod; developer activation"],
+    "Narrows claim 88 to coextensive development.",
+  ],
+  92: [
+    "Claim 92 depends on claim 87 and specifies organic film-forming colloid in aqueous dispersion is a plastic solution, retaining sealed lip and support spreader. Plastic is the colloid form selected from claim 87's broader organic film-forming material.",
+    ["plastic solution; organic colloid; sealed lip"],
+    "Claims plastic-solution formulation.",
+  ],
+  93: [
+    "Claim 93 depends on claim 92 and identifies plastic specifically as sodium carboxymethyl cellulose, retaining aqueous dispersion and long dispensing lip. Sodium carboxymethyl cellulose is the precise plastic identity, not a generic thickening-agent substitute.",
+    ["sodium carboxymethyl cellulose; plastic solution; long lip"],
+    "Claims named plastic thickener.",
+  ],
+  94: [
+    "Claim 94 depends on claim 87 and requires organic colloid to be plastic and silver-halide developer to be in container, coupling formulation with reagent location. The plastic colloid and container-held developer are simultaneous limitations on claim 87's sealed-lip product.",
+    ["plastic colloid; container developer; sealed lip"],
+    "Claims container-held developer narrowing.",
+  ],
+  95: [
+    "Claim 95 depends on claim 94 and adds silver-halide solvent to container already holding plastic colloid and developer, retaining flexible long-lip structure. Silver-halide solvent joins the developer inside the same plastic-containing container.",
+    ["silver-halide solvent; developer; plastic colloid"],
+    "Adds solvent to claim 94 chemistry.",
+  ],
+  96: [
+    "Claim 96 depends on claim 95 and requires baryta paper as sheet support, combining that receiver with plastic colloid, developer, solvent, and long dispensing lip. Baryta paper is the source-specific support added after developer, solvent, plastic colloid, and lip limitations.",
+    ["baryta paper; developer and solvent; sealed lip"],
+    "Claims source-named baryta-paper support.",
+  ],
+  97: [
+    "Claim 97 depends on claim 87 and makes container flat and substantially rectangular, with support no wider than container length and long axis extending widthwise. The long axis runs widthwise, and the support-width relationship constrains the flat pod's mounting geometry.",
+    ["rectangular flat pod; widthwise axis; support proportion"],
+    "Claims stated orientation and proportion without invented measurements.",
+  ],
+  98: [
+    "Claim 98 depends on claim 97 and forms every container wall from one deformable flexible multi-ply sheet, preserving flat rectangular pod and widthwise mounting. One flexible multi-ply sheet forms every wall, replacing separate wall pieces within the rectangular container.",
+    ["single multi-ply sheet; flexible walls; rectangular pod"],
+    "Claims one-sheet wall construction.",
+  ],
+  99: [
+    "Claim 99 defines disposable single-application pod dispensing reducing reagent directly to exposed silver-halide element, with elongated multi-sided deformable walls and long-edge lip opened by pressure. The single-application quantity and long-edge lip make direct reagent delivery a disposable pressure-operated operation.",
+    ["single-use reducing reagent; multi-sided pod; long-edge lip"],
+    "Independent direct-dispensing developer claim.",
+  ],
+  100: [
+    "Claim 100 parallels claim 99 but broadens liquid to silver-halide developer or fixer, retaining disposable elongated deformable walls, face-to-face long-edge seal, and pressure-opened lip. The claim broadens the direct liquid to either developer or fixer while retaining the same deformable lip construction.",
+    ["developer or fixer; disposable pod; pressure-opened lip"],
+    "Independent processing-agent class claim.",
+  ],
+  101: [
+    "Claim 101 dispenses developer and silver-halide solvent between emulsion and print-receiving layer, using elongated pod with uniformly weaker longitudinal portions forming passage and treating area at least its size. The liquid amount must treat at least the pod's maximum area, linking passage length to transfer-print coverage.",
+    ["developer and solvent; longitudinal passage; transfer area"],
+    "Independent transfer-print dispensing architecture.",
+  ],
+  102: [
+    "Claim 102 depends on claim 101 and adds organic film-forming colloid to the liquid dispersion, retaining elongated rupturable passage and transfer-print treatment area. Organic film-forming colloid is added to the developer-and-solvent dispersion rather than left as a separate coating.",
+    ["organic film-forming colloid; developer and solvent; transfer pod"],
+    "Adds colloid to transfer liquid.",
+  ],
+  103: [
+    "Claim 103 depends on claim 102 and specifies aqueous alkaline solution with plastic dissolved in it, retaining viscosity in alkali and printed 1,000-to-200,000-centipoise range at 24 degrees Celsius. The alkaline solution must retain colloid viscosity across the printed range, preserving spreadability during transfer processing.",
+    ["alkaline aqueous plastic solution; viscosity range; transfer pod"],
+    "Claims explicit viscosity range and alkaline behavior.",
+  ],
+  104: [
+    "Claim 104 depends on claim 103 and identifies dissolved plastic as sodium carboxymethyl cellulose, preserving alkaline solution, viscosity range, developer, solvent, and rupturable pod. The named cellulose plastic is the formulation identity added to claim 103's alkaline viscosity-controlled dispersion.",
+    ["sodium carboxymethyl cellulose; alkaline solution; viscosity range"],
+    "Claims named plastic in claim 103.",
+  ],
+  105: [
+    "Claim 105 depends on claim 104 and adds hydroquinone, sodium thiosulfate, and sodium hydroxide to the sodium-carboxymethyl-cellulose processing solution in elongated container. Hydroquinone, thiosulfate, and hydroxide specify the processing solution's printed chemical combination.",
+    ["hydroquinone; sodium thiosulfate; sodium hydroxide"],
+    "Claims three named added constituents.",
+  ],
+  106: [
+    "Claim 106 defines disposable elongated rupturable container dispensing at least one silver-halide developer or fixer, with weaker longitudinal portions forming passage under pressure from flexible walls. The claim stops at the disposable pressure-open dispensing passage and the developer-or-fixer class, without requiring a receiving layer.",
+    ["developer or fixer; disposable elongated pod; pressure rupture"],
+    "Independent processing-agent passage claim.",
+  ],
+  107: [
+    "Claim 107 dispenses silver-halide developer directly to emulsion using elongated pod containing film-forming colloid, with long face-to-face lip seal opened because walls exceed seal strength. The long dispensing lip is weaker than the walls, so applied pressure opens the seal while the colloid-bearing developer exits.",
+    ["silver-halide developer; film-forming colloid; long lip seal"],
+    "Independent direct-developer lip claim.",
+  ],
+  108: [
+    "Claim 108 depends on claim 107 and specifies alkaline aqueous solution with plastic colloid dissolved in it, retaining long lip and pressure opening. Alkaline aqueous solution and dissolved plastic are the formulation limits attached to the direct-developer lip.",
+    ["alkaline aqueous solution; dissolved plastic; developer lip"],
+    "Claims alkaline plastic formulation.",
+  ],
+  109: [
+    "Claim 109 depends on claim 108 and requires substantially flat multi-sided oxygen-impervious container whose lip spans substantially the entire long side. Oxygen-impervious flat walls preserve the processing liquid, while the lip spans the long side for release.",
+    ["flat multi-sided pod; oxygen-impervious walls; full-length lip"],
+    "Claims flat oxygen barrier and full-side lip.",
+  ],
+  110: [
+    "Claim 110 defines single-use rupturable disposable container holding enough processing liquid for one application, with image-transforming reagent and direct dispensing between sheet materials by pressure members. The product is sized for one application and dispenses reagent between sheet materials when pressure members squeeze it.",
+    ["single-use processing pod; pressure members; image transformation"],
+    "Independent direct-dispensing product claim.",
+  ],
+  111: [
+    "Claim 111 depends on claim 110 and requires processing liquid to be aqueous alkaline solution whose viscosity exceeds one thousand centipoises at twenty-four degrees Celsius. The alkaline liquid's measured viscosity supplies the high-viscosity narrowing within the single-use container.",
+    ["alkaline aqueous liquid; viscosity threshold; single-use pod"],
+    "Adds printed viscosity and temperature limitation.",
+  ],
+  112: [
+    "Claim 112 depends on claim 111 and specifies soluble carboxymethyl cellulose salt as thickening agent in high-viscosity alkaline processing liquid. Soluble carboxymethyl cellulose salt is the expressly named thickener in that alkaline processing liquid.",
+    ["soluble carboxymethyl cellulose salt; alkaline liquid; thickener"],
+    "Claims named thickener class.",
+  ],
+  113: [
+    "Claim 113 depends on claim 110 and limits reagent to at least one silver-halide developer or fixer, retaining single-use pressure-dispensing container. At least one silver-halide developer or fixer supplies the reagent class while claim 110's disposable pressure container remains.",
+    ["silver-halide developer or fixer; disposable pod; pressure dispensing"],
+    "Claims processing-agent class.",
+  ],
+  114: [
+    "Claim 114 independently requires substantially flat multi-sided elongated disposable single-use pod containing aqueous hydroquinone, sodium thiosulfate, sodium hydroxide, and sodium carboxymethyl cellulose solution for transfer prints. The four named ingredients are required together in aqueous solution for the transfer-print product; the source gives no separate commercial designation.",
+    ["flat elongated pod; four named ingredients; transfer prints"],
+    "Independent source-specific formulation claim.",
+  ],
+  115: [
+    "Claim 115 independently requires externally dry rupturable disposable container with single-application reducing-agent liquid for direct development of exposed photosensitive element, preserving pressure dispensing. External dryness describes the container condition before use, while the reducing-agent liquid is released for direct element development.",
+    ["externally dry pod; single-application reducing agent; direct development"],
+    "Independent externally dry container claim.",
+  ],
+  116: [
+    "Claim 116 depends on claim 115 and makes container flat and substantially rectangular, formed from one folded sheet whose opposite margins are adhesively secured face-to-face to form dispensing lip. The folded sheet supplies one long edge and adhesive face-to-face margins, which together form the dispensing lip.",
+    ["folded single sheet; rectangular pod; adhesive dispensing lip"],
+    "Claims final folded-sheet adhesive-lip geometry.",
+  ],
 };
 
 function landClaimAnnotation(number: number) {
@@ -124,7 +589,6 @@ function landClaimAnnotation(number: number) {
   if (!annotation) throw new Error(`Land manual edition is missing claim annotation ${number}.`);
   return annotation;
 }
-
 
 const claims: PatentClaim[] = [
   {
@@ -1062,9 +1526,8 @@ const claims: PatentClaim[] = [
 // catalogue decoder tied to the corresponding claim without duplicating it.
 for (const claim of claims) {
   const [plainEnglish, keyInnovations, legalSignificance] = landClaimAnnotation(claim.number);
-  const dependencies = Array.from(
-    claim.originalText.matchAll(/\bclaims?\s+(\d+)/gi),
-    (match) => Number(match[1]),
+  const dependencies = Array.from(claim.originalText.matchAll(/\bclaims?\s+(\d+)/gi), (match) =>
+    Number(match[1]),
   ).filter((number, index, all) => all.indexOf(number) === index);
   claim.dependsOn = dependencies.length > 0 ? dependencies : undefined;
   claim.isIndependent = dependencies.length === 0;
@@ -1113,7 +1576,7 @@ export const landPolaroidPatent: Patent = {
         summary:
           "The specification discloses containers and multilayer sheets that retain processing liquid until applied stress opens a deliberately weaker wall, seal, membrane, or tube.",
         technicalDetails:
-          "The governing relation is a release threshold: applied stress must fracture or separate the retaining portion while the remaining layers continue to hold the product together, $\sigma_{applied} > \sigma_{release}$ and $\sigma_{applied} < \sigma_{support}$. The exact wall, seal, and liquid composition vary by disclosed embodiment.",
+          "The governing relation is a release threshold: applied stress must fracture or separate the retaining portion while the remaining layers continue to hold the product together, $sigma_{applied} > sigma_{release}$ and $sigma_{applied} < sigma_{support}$. The exact wall, seal, and liquid composition vary by disclosed embodiment.",
         archaicTerm: "Frangible fluid container",
         modernEquivalent: "Hermetic Rupturable Reagent Pod",
       },
@@ -1122,7 +1585,7 @@ export const landPolaroidPatent: Patent = {
         summary:
           "Pressure-applying, squeegee, wringer, friction, or applicator-roll arrangements can compress the attached layers and distribute released liquid over the intended photosensitive area.",
         technicalDetails:
-          "The source-bound requirement is substantially uniform coverage, not a particular roller diameter, nip force, gap, or film thickness. A simple conservation statement is $V_{released} \approx A_{treated} t_{effective}$; the patent does not establish one universal value for either quantity.",
+          "The source-bound requirement is substantially uniform coverage, not a particular roller diameter, nip force, gap, or film thickness. A simple conservation statement is $V_{released} approx A_{treated} t_{effective}$; the patent does not establish one universal value for either quantity.",
         archaicTerm: "Pressure-applying rollers",
         modernEquivalent: "Source-described pressure-applying spreader",
       },
@@ -1146,8 +1609,7 @@ export const landPolaroidPatent: Patent = {
       },
       {
         principle: "Competitive Redox Kinetics & Silver Thiosulfate Complexation",
-        formula:
-          "silver halide + fixing solvent \\rightleftharpoons soluble silver complex",
+        formula: "silver halide + fixing solvent \\rightleftharpoons soluble silver complex",
         explanation:
           "Some claims and examples identify a developer and a silver-halide solvent. The exact named reagents and proportions are source-local limitations; this principle describes the disclosed competition between development and complex formation without inventing a universal recipe.",
       },

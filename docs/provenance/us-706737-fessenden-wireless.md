@@ -23,10 +23,10 @@
 | **Page 1** | Drawing sheet (Figs. 1–5) | Figure 1 diagrammatic apparatus; Figure 2 modified apparatus; Figure 3 sectional elevation of one form of conductor; Figure 4 top plan of the same; Figure 5 elevation of a conductor modification. The receiving apparatus is the fine-wire/microphonic-contact form. |
 | **Page 2** | Masthead and opening specification | Preamble, objects, figure descriptions, spark-gap comparison, continuous uniform waves, and distributed capacity/self-induction. |
 | **Page 3** | Specification | Cage or cylinder construction, ground lead, low-frequency alternating-current dynamo, and source/conductor conditions. |
-| **Page 4** | Specification | Transformer relation, source/radiator natural-period adjustment, Fig. 1 telephone receiver, and Fig. 2 fine-wire receiver. |
-| **Page 5** | Specification | Fine-wire microphonic contact and relay, Fig. 5 enlargement/multiple periodicities, distributed-capacity sine-wave discussion, and definition of low frequency. |
-| **Page 6** | Specification ending; Claims 1–5 | Reduced losses, shorter sending-conductor, dynamo in place of induction-coil and spark-gap, persistent oscillation, and Claims 1–5. |
-| **Page 7** | Claims 6–21 and signatures | Claims 6–21, Fessenden's signature, and witnesses W. B. Fearing and S. C. Gray. |
+| **Page 4** | Specification | Fifth dynamo condition, transformer-secondary relation, source/radiator frequency comparison, poor-radiator example, low-frequency ground absorption, and Fig. 1/Fig. 2 receiving material. |
+| **Page 5** | Specification ending; Claims 1–5 boundary | Fig. 5 enlargement/multiple periodicities, distributed-capacity sine-wave discussion, source definitions, resonance equation and loss examples, low-frequency source advantages, uniform conductor observation, and the first five printed claims. |
+| **Page 6** | Claims 1–12 continuation | Claim 5 continuation and Claims 6–12. The source text of the claims is preserved but remains outside this bounded pages-4–5 authoring pass. |
+| **Page 7** | Claims 13–21 and signatures | Claims 13–21, Fessenden's signature, and witnesses W. B. Fearing and S. C. Gray. |
 
 ---
 
@@ -78,7 +78,15 @@ This handoff covers only the first three physical PDF pages. Page 1 now records 
 
 The bounded correction removes a misplaced spark-gap summary from the opening-page ledger/edition; the grant's spark-gap comparison begins later in the specification and remains outside this worker's page-1–3 edit boundary. The source-facing `Fig. 3` occurrence is now a semantic reference with the existing candidate crop. No claim blocks, pages 4–7, shared maps, registries, or canonical publication binding were changed. `completeFacsimileReviewed` remains `false`, and `fessendenWirelessPatent.archivalEdition` remains detached pending independent full-facsimile acceptance.
 
-The unresolved next boundary is PDF page 4 (the transformer continuation and source-frequency/receiver material), followed by pages 5–7 and the 21 printed claims. This worker did not accept or revalidate those later pages.
+At the close of the earlier pages-1–3 pass, the unresolved next boundary was PDF page 4 (the transformer continuation and source-frequency/receiver material), followed by pages 5–7 and the 21 printed claims. The bounded pages-4–5 pass below addresses only that next source interval; it does not accept the later claims or publication state.
+
+### Bounded Luna source completion: PDF pages 4–5
+
+This bounded pass reconciles the specification printed on PDF pages 4 and 5 against the cloud-visible primary facsimile. Page 4 now carries the printed Fifth dynamo condition, including the no-iron fixed armature, long air-gap, shaped revolving pole-pieces, nickel-steel, steam-turbine, transformer-secondary relation, the source-frequency comparison, the poor-radiator five-foot/five-hundred-foot example, reduced ground absorption, and the Fig. 1 transmitting/telephone apparatus. The `Figs. 3 and 5` occurrence is authored in the continuous edition as one semantic reference with both existing local source previews; the Fig. 2 fine-wire and microphonic-contact text remains an occurrence-specific reference.
+
+Page 5 now preserves the printed Fig. 5 `swell or enlargement 17`, the distributed-capacity sine-wave comparison, the source definitions of `large capacity` and `uniformly distributed`, the localized-capacity/piano-wire analogy, the electromagnetic-wave/grounded-conductor/tuned/resonant definitions, and the following resonance discussion through the uniform-conductor observation. The ledger page boundary was moved so the duplicated candidate page-6 specification is not emitted twice; claim text remains unchanged and later claims remain outside this bounded source-authoring decision.
+
+The current edition remains a withheld WIP (`completeFacsimileReviewed: false`), and the canonical Fessenden record remains unbound. Independent visual acceptance of the full facsimile, all figure pixels, and all claim blocks is still required. The unresolved next boundary is PDF page 6 continuation/claims, then PDF page 7 and final acceptance.
 
 ## Publication Approval & Verification
 

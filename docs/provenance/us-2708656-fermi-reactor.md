@@ -219,6 +219,16 @@ not advanced in this pass. The p39 printed power formula remains explicitly
 unresolved; no glyphs were fabricated, and the Fig. 1 middle visual blocker is
 unchanged.
 
+The next bounded continuation pass re-audited only PDF pages 42–44. Page 42
+records the metallic and oxide geometry thresholds and K contours for Figs. 2–6.
+Page 43 begins the impurity-loss section, defining neutronic purity and the
+ether/water uranyl-nitrate purification sequence. Page 44 continues the
+purification account and records the exponential-pile and shotgun comparisons,
+equivalent-boron absorption, the ten-kilogram absorption ratio, and the
+detector-foil test. Pages 45–58 were not advanced in this pass. The unresolved
+p39 power-formula marker and Fig. 1 C/D/E/B middle-crop visual blocker remain
+unchanged; no unreadable formula glyphs were fabricated.
+
 The ledger carries page-marked WIP text for pages 28–58, including claims,
 references, signatures, and the certificate. The bounded edition packet adds
 source-ordered authored blocks for pages 30–35, including the printed Figure

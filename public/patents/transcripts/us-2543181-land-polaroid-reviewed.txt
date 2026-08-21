@@ -503,7 +503,7 @@ This is in part a continuation of copending applications Serial No. 539,550, fil
 23
 
 --- REVIEWED TRANSCRIPTION PAGE 21 OF 32 ---
-2,548,181
+2,543,181
 
 25
 
@@ -525,11 +525,11 @@ medium viscosity sodium carboxymethyl cellulose,
 
 The diazonium photosensitive layer may also
 be obtained by dipping a sheet of paper in a solution of Du Pont Naphthanil Diazo Black B, and
-the developing solution. in container 300 may
+the developing solution in container 300 may
 comprise 1500 parts by weight of a 5% water solution of sodium carboxymethyl cellulose, 10 parts
 of resorcinol and 1 part of sodium hydroxide.
 
-It is also well known that certain ferric salts of organic acids, for example the oxalates, tartrates, and citrates, are reduced to ferrous salts when exposed to light. (L. P. Clerc, “Photography Theory and Practice,” second edition, published 1937 by Pitman Publishing Company, page 402, paragraph 621 et seq.; Crowley Patents Nos. 2,093,421, 2,113,423, 2,130,070, 2,130,071, 2,137-015.) A considerable number of photographic processes depend for their functioning on this
+It is also well known that certain ferric salts of organic acids, for example the oxalates, tartrates, and citrates, are reduced to ferrous salts when exposed to light. (L. P. Clerc, “Photography Theory and Practice,” second edition, published 1937 by Pitman Publishing Company, page 402, paragraph 621 et seq.; Crowley Patents Nos. 2,093,421, 2,113,423, 2,130,070, 2,130,071, 2,137,015.) A considerable number of photographic processes depend for their functioning on this
 photochemical phenomenon. It is known in connection with these iron salts that any reagent that
 will differentiate between ferric and ferrous salts
 can be used to develop the barely visible image
@@ -579,7 +579,7 @@ photosensitive material for the purpose of rendering an image formed therein by 
 visible or more visible.
 
 The term “exposed solarized silver halide” is
-to be understood to means silver halide which,
+to be understood to mean silver halide which,
 subsequent to solarization, is exposed, for example, in a camera, and by “nonexposed solarized
 Silver halide” is meant silver halide which is not
 exposed subsequent to solarization. Solarization
@@ -591,17 +591,17 @@ understood as covering a solution.
 
 This is in part a continuation of copending applications Serial No. 539,550, filed June 9, 1944,
 for Photographic Product, and Serial No.
-578,379, filed February ‘17, 1945, for Photographic
+578,379, filed February 17, 1945, for Photographic
 Product (both of which have been abandoned
 and replaced by the present application), Serial
 No. 594,892, filed May 21, 1945, for Photographic
 Product, Process and Apparatus, Serial No.
-652,612; filed March 7, 1946, for Fluid Containers,
-Serial No. 657,367, filed March 27, ‘1946, for a
+652,612, filed March 7, 1946, for Fluid Containers,
+Serial No. 657,367, filed March 27, 1946, for a
 Photographic Film Unit Having a Frangible Fluid
 Container Therein (now abandoned and replaced
 by application Serial No. 137,393, filed January
-7, 1950, Serial No. 728,983, filed.February 17, 1947,
+7, 1950, Serial No. 728,983, filed February 17, 1947,
 for Photographic Product and Composition, and
 Serial No. 729,578, filed February 19, 1947, for
 Photographic Process and Apparatus.
@@ -624,7 +624,7 @@ What is claimed is:
 
 --- REVIEWED TRANSCRIPTION PAGE 22 OF 32 ---
 
-3. A photographic product comprising at least two layers and including a photosensitive silver halide emulsion layer, a base layer for a positive image, and a container holding at least a liquid solvent for a photographic developer, said photosensitive layer, said base layer and said container being attached together to permit at least a portion of said base layer and said photosensitive layer to be superposed with said container so positioned as to be capable of being ruptured and without removal of its ruptured portion of releasing its liquid content between two layers of said product to at least partially permeate the superposed base layer and photosensitive layer, said product having positioned therein photographic processing material, including a photographic developer, transportable by said liquid to said photosensitive layer, said material being capable of developing a latent image in said photosensitive layer. and as a result of such development causing differential disposition throughout the photosensitive layer of a substance for providing said base layer with a positive image by transfer.
+3. A photographic product comprising at least two layers and including a photosensitive silver halide emulsion layer, a base layer for a positive image, and a container holding at least a liquid solvent for a photographic developer, said photosensitive layer, said base layer and said container being attached together to permit at least a portion of said base layer and said photosensitive layer to be superposed with said container so positioned as to be capable of being ruptured and without removal of its ruptured portion of releasing its liquid content between two layers of said product to at least partially permeate the superposed base layer and photosensitive layer, said product having positioned therein photographic processing material, including a photographic developer, transportable by said liquid to said photosensitive layer, said material being capable of developing a latent image in said photosensitive layer, and as a result of such development causing differential disposition throughout the photosensitive layer of a substance for providing said base layer with a positive image by transfer.
 
 
 4. A photographic product comprising at least two layers and including a photosensitive silver halide emulsion layer, a base layer for a positive image, and a container holding at least a liquid solvent for a photographic developer, said photosensitive layer, said base layer and said container being attached together to permit at least a portion of said base layer and said photosensitive layer to be superposed with said container so positioned as to be capable of being ruptured and without removal of its ruptured portion of releasing its liquid content between two layers of said product to at least partially permeate the superposed base layer and photosensitive layer, said product having positioned therein photographic processing material, including a photographic developer, transportable by said liquid to said photosensitive layer, said material being contained at least in part in said liquid in said container and being capable of developing a latent image in said photosensitive layer and as a result of such development causing differential disposition throughout the photosensitive layer of a substance for providing said base layer with a positive image by transfer.
