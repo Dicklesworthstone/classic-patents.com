@@ -3,7 +3,11 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { pagerankArchivalEdition } from "@/data/editions/pagerankEdition";
+import {
+  pagerankArchivalEdition,
+  pagerankManualClaimText,
+  pagerankParallelReadings,
+} from "@/data/editions/pagerankEdition";
 import { pagerankPatent } from "@/data/patents/pagerank";
 
 const PINNED_SHA256 = "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4";
@@ -40,7 +44,21 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     for (let i = 1; i <= 29; i++) {
       const claim = claims.find((c) => c.number === i);
       expect(claim).toBeDefined();
+      expect(pagerankManualClaimText(i)).toBe(
+        claim?.inlines ? claim.inlines.map((inline) => inline.text).join("") : "",
+      );
+      expect(pagerankPatent.claims.find((candidate) => candidate.number === i)?.originalText).toBe(
+        pagerankManualClaimText(i),
+      );
     }
+  });
+
+  test("every authored paragraph has a non-lossy companion reading", () => {
+    pagerankArchivalEdition.blocks.forEach((block, index) => {
+      if (block.kind !== "paragraph") return;
+      const reading = pagerankParallelReadings[index];
+      expect(reading?.join(" ").length ?? 0).toBeGreaterThan(40);
+    });
   });
 
   test("all figure preview assets exist on disk with exact pixel dimensions", () => {
@@ -84,5 +102,11 @@ describe("US 6,285,999 Google PageRank Archival Edition Contract", () => {
     const matches = content.match(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 12 ---/g);
     expect(matches).toBeDefined();
     expect(matches?.length).toBe(12);
+    expect(content).toContain("US 6,285,999 B1");
+    expect(content).toContain("29 Claims, 3 Drawing Sheets");
+    expect(content).toContain("CERTIFICATE OF CORRECTION");
+    expect(content).toContain(
+      "This invention was made with Government support under contract 9411306",
+    );
   });
 });

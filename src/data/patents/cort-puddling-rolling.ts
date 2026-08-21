@@ -1,30 +1,28 @@
-import { manualCortClaimText } from "@/data/editions/cortPuddlingRollingEdition";
 import type { Patent } from "@/types/patent";
 
 export const cortPuddlingRollingPatent: Patent = {
   id: "gb-1420-cort-puddling-rolling",
   patentNumber: "GB 1420",
   title:
-    "Method of Shingling, Welding, and Manufacturing Iron and Steel into Bars, Plates, and Rods of Purer Quality and in Larger Quantities by More Effectual and Expeditious Methods and with Fewer Fires Than Heretofore Used",
-  shortTitle: "Henry Cort Reverberatory Puddling Furnace & Grooved Rolling Mill",
-  subtitle:
-    "Continuous Reverberatory Coal-Decarburization and Multi-Pass Slag-Extruding Grooved Rolling",
+    "Shingling, Welding, and Manufacturing Iron and Steel into Bars, Plates, Rods, Etc.; by the Use of Fire and Machinery",
+  shortTitle: "Henry Cort Dry-Puddling Process",
+  subtitle: "Coal-Fired Reverberatory Refining Followed by Hot Shingling and Grooved Rolling",
   inventors: ["Henry Cort"],
-  inventorLocation: "Fontley, Southampton (Hampshire), England",
+  inventorLocation: "Fontley, Parish of Titchfield, County of Southampton, England",
   grantDate: "1784-02-13",
-  filingDate: "1784-02-13",
+  filingDate: null,
   era: "Pre-Industrial & Early Industrial (Pre-1800)",
   category: "materials",
   categoryLabel: "Materials Science & Metallurgy",
   summary:
-    "Henry Cort's monumental 1784 patent combining the reverberatory puddling furnace with the grooved rolling mill—the technological foundation of the Industrial Revolution in iron. By isolating pig iron from sulfurous coal fuel on a concave hearth and stirring the molten bath under radiant flame, Cort burned off carbon until the iron 'came to nature' as pasty pure metal crystals. Immediately transferring the red-hot sponge ball to grooved rolling cylinders exerted progressive hydrostatic compression that expelled liquid silicate slag and welded the iron into fibrous, ductile bars in a single heat, multiplying output fifteenfold and slashing production costs by 70%.",
+    "The 1784 English patent sealed to Henry Cort and enrolled on June 12 describes treating pig, cast, scrap, and waste iron in a coal-fired reverberatory or air furnace. The operator works the molten charge with shaped iron bars until it loses fusibility and is brought into nature, gathers the resulting loops, and brings them to welding heat for shingling under a hammer or for passage through grooved rollers. The surviving 1854 Patent Office abridgment records no separately numbered claims and explicitly says the printed specification has no drawings; the local PDF and earlier four-claim edition are therefore withheld research evidence.",
   heroQuote:
-    "The crude iron... is first introduced into a reverberatory furnace... where the intense flame is caused to reverberate down upon the hearth wholly secluded from direct contact with the solid sulfurous fuel... while grooved rollers express the liquid cinder and weld the crystals into fibrous bars in a single heat.",
+    "Pig or other cast iron is melted in a reverberatory or air furnace; the bottom of which is ‘dished out’ to contain the metal when melted.",
   originalPdfUrl: "/patents/pdfs/gb-1420-cort-puddling-rolling.pdf",
-  googlePatentsUrl: "https://patents.google.com/patent/GB178401420A/en",
+  googlePatentsUrl: "https://books.google.com/books?id=jV0WAAAAYAAJ&pg=PA21",
   usptoClassification: "C21B 11/00",
   originalText:
-    "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, HENRY CORT, of Fontley, in the Parish of Titchfield, in the County of Southampton, Esquire, send greeting:\\n\\nWHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Thirteenth day of February, in the twenty-fourth year of His reign, did give and grant unto me, the said Henry Cort, His especial licence, full power, sole privilege and authority, that I, the said Henry Cort, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented 'Method of Shingling, Welding, and Manufacturing Iron and Steel into Bars, Plates, and Rods of Purer Quality and in Larger Quantities by More Effectual and Expeditious Methods and with Fewer Fires Than Heretofore Used;' in which said Letters Patent there is contained a proviso obliging me, the said Henry Cort, by an instrument in writing under my hand and seal, to cause a particular description of the nature of my said Invention, and the manner in which the same is to be performed, to be inrolled in His Majesty's High Court of Chancery within one calendar month next and immediately after the date of the said Letters Patent...\\n\\nThe crude iron, commonly called pig iron or cast iron, is first introduced into a reverberatory or air furnace heated by pit coal or common coal. In this furnace the fuel burns in a separate combustion grate, and the intense flame and heated gases are caused to reverberate from the curved arched roof down upon the hearth, where the iron is placed upon a bed of sand and slag, wholly secluded from direct contact with the solid sulfurous fuel.",
+    "Pig or other cast iron is melted in a reverberatory or air furnace; the bottom of which is ‘dished out’ to contain the metal when melted. The molten metal is ‘worked and moved about’ by ‘iron bars and other instruments fitly shaped,’ conveniently introduced through holes in the bottoms of the doors. After a time, ‘an ebullition, effervescence, or such like intestine motion takes place,’ and a bluish flame is emitted by the metal. As the ‘raking, separating, stirring, and spreading’ is continued, it ‘loses its fusibility, and is flourished or brought into nature.’ Thereupon it is collected into lumps or loops and removed through the door. [Editorial excerpt from the 1854 Patent Office abridgment; not a complete facsimile transcription.]",
   plainEnglishExplanation: {
     overview:
       "In the late 18th century, Great Britain faced a severe national crisis in metallurgy. The country had depleted its timber forests, making traditional charcoal finery forges economically impossible. British ironmasters could produce crude cast pig iron in blast furnaces using coal-derived coke, but pig iron contained ~4% carbon—making it brittle, unforgeable, and useless for structural engineering or tools. Refining pig iron into ductile wrought iron required burning out the carbon, but attempting to melt pig iron over raw coal contaminated the iron with sulfur, causing 'hot shortness' where the iron shattered under the forge hammer. Furthermore, shaping hot iron with water-powered tilt hammers was painfully slow (~1 ton per week per forge) and produced internal cracks. Henry Cort solved both problems simultaneously with an integrated chemical and mechanical system: (1) Decarburizing pig iron in a reverberatory furnace where coal burned in a separate grate and only clean radiant flames swept over the concave hearth, and (2) Compressing the resulting red-hot spongy iron puddle ball through continuous grooved rollers that squeezed out liquid slag and rolled finished fibrous bars in a single heat.",
@@ -93,6 +91,10 @@ export const cortPuddlingRollingPatent: Patent = {
     whyItMattersToday:
       "Cort's combination of reverberatory decarburization and continuous grooved rolling created the modern steel and iron industry. Every continuous rolling mill, structural beam rolling train, and rail rolling mill operating in the world today is a direct descendant of Henry Cort's 1784 patent.",
   },
+  /* The former four numbered nodes were unsupported editorial inventions.
+   * GB 1420 has no separately enumerated claims in the checked Patent Office
+   * abridgment; retain the draft only in history, never in the record. */
+  /*
   claims: [
     {
       number: 1,
@@ -151,6 +153,13 @@ export const cortPuddlingRollingPatent: Patent = {
         "Established the commercial viability of mass-producing structural wrought iron bars for Victorian infrastructure.",
     },
   ],
+  ],
+  */
+  claims: [],
+  /* No drawing sheet is credited by the checked Patent Office abridgment.
+   * The former callouts pointed at a synthetic reconstruction and are kept
+   * commented for audit history, not as catalogue evidence. */
+  /*
   drawings: [
     {
       figureNumber: "1",
@@ -253,6 +262,12 @@ export const cortPuddlingRollingPatent: Patent = {
       ],
     },
   ],
+  ],
+  */
+  drawings: [],
+  /* Historical-context draft retained below for audit history; its numerical
+   * output and rivalry narrative were not source-supported. */
+  /*
   historicalContext: {
     problemStatement:
       "In 1780, Great Britain was severely resource-constrained in iron production due to nationwide deforestation of charcoal timber. British blast furnaces produced brittle cast pig iron using coal-coke, but refining pig iron into ductile wrought iron required burning out ~4% carbon. Attempting to melt pig iron over raw coal contaminated the iron with sulfur, causing 'hot shortness' where the iron shattered under the forge hammer. Britain was forced to import over 70% of its bar iron from Sweden and Russia at ruinous naval and commercial expense.",
@@ -280,9 +295,28 @@ export const cortPuddlingRollingPatent: Patent = {
     civilizationalImpact:
       "Cort's 1784 patent transformed Great Britain from an iron-importing nation into the 'Workshop of the World'. British wrought iron production surged from 68,000 tons in 1788 to 250,000 tons in 1806 and over 1.6 million tons by 1845. Cort's cheap, high-strength wrought iron enabled the global expansion of steam railways, iron steamships, suspension bridges, factory machinery, and the architectural structures of the 19th century.",
   },
+  },
+  */
+  historicalContext: {
+    problemStatement:
+      "The checked Patent Office abridgment presents GB 1420 as a process for working cast, scrap, and waste iron in a dished reverberatory or air furnace, then shingling the gathered loops. It does not establish a single national crisis, production total, or exclusive origin story for puddling.",
+    priorArtLimitations: [
+      "Charcoal finery practice imposed a fuel constraint on malleable-iron production.",
+      "The described air-furnace arrangement kept solid fuel separate from the charge.",
+      "Shingling under a forge hammer was laborious; grooved rollers are also described.",
+      "The abridgment allows charge and reheating variants rather than one fixed route.",
+    ],
+    breakthroughInsight:
+      "The defensible process insight is the combination of working the molten charge until it loses fusibility and is brought into nature, gathering the loops, and hot-shingling them under a hammer or through grooved rollers. Numerical pressure and output claims are not supported by the checked witness.",
+    patentWars: [],
+    civilizationalImpact:
+      "Cort's process became important in the later history of wrought iron, but this held record does not attribute national output totals, infrastructure, or legal priority to GB 1420 without a primary source packet.",
+    aftermath:
+      "The relationship between Cort's sealed patent, its June 1784 enrolment, Adam Jellicoe's finances, and later users requires archival legal and industrial records; it is not represented here as a patent war.",
+  },
   stats: {
-    totalClaims: 4,
-    independentClaims: 4,
+    totalClaims: 0,
+    independentClaims: 0,
   },
   tags: [
     "metallurgy",

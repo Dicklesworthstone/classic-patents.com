@@ -1,5 +1,43 @@
 import type { Patent } from "@/types/patent";
-import { pagerankArchivalEdition } from "../editions/pagerankEdition";
+import { pagerankArchivalEdition, pagerankManualClaimText } from "../editions/pagerankEdition";
+
+const PAGE_RANK_CLAIM_DECODERS: Record<number, string> = {
+  1: "This broad method claim scores a linked-document population from the scores of documents pointing to it, then uses those scores to process the documents; it requires the linked, linking, and dual-role graph relationships.",
+  2: "This dependent claim makes each source document's contribution depend on the number of links associated with that source, then adjusts the source contribution using that degree-based weighting factor.",
+  3: "This dependent claim permits a weighting factor based on an estimated probability that a linking document will be accessed, tying graph contribution to an access-probability estimate rather than only link count.",
+  4: "This dependent claim permits source-document weighting from URL, host, domain, author, institution, or last-update metadata, and applies that selected factor when adjusting the linking document's score.",
+  5: "This dependent claim permits weighting based on whether a linking document is a selected document or root, allowing a designated seed set to influence the score adjustment.",
+  6: "This dependent claim permits a source contribution to vary with the importance, visibility, or textual emphasis of links, so presentation prominence can affect the assigned weight.",
+  7: "This dependent claim permits a weighting factor based on a particular user's preferences, observed access rate, or document importance, adding personalized or usage-informed scoring to claim 1.",
+  8: "This independent method claim selects one document from a linked-document set and assigns its score from documents linking to it, then processes the linked set according to those scores.",
+  9: "This independent method claim initializes a rank estimate for every linked document, updates each estimate from linking-document ranks, and processes documents using the updated values.",
+  10: "This independent method claim uses automatic random traversal, selects a random link from the current document, counts each document's traversals as rank evidence, and processes the population by those counts.",
+  11: "This dependent random-traversal claim adds a predetermined probability that the next document is selected randomly from a distribution, rather than reached only through the current document's links.",
+  12: "This claim applies claim 1's link-based scores to a directory presentation, requiring the linked documents' links to be displayed as a directory listing.",
+  13: "This claim applies claim 1's scores to a display that includes annotations representing the score of each linked document alongside the displayed links.",
+  14: "This claim narrows the annotations of claim 13 to bars, icons, or text, covering concrete visual or textual forms for exposing destination scores.",
+  15: "This claim adds textual matching to the link-based processing of claim 1, combining graph-derived document scores with matching of document text.",
+  16: "This claim narrows textual matching to anchor text associated with links, using the descriptive words attached to hyperlinks as searchable evidence for destination documents.",
+  17: "This claim adds processing based on groupings of linked documents, covering rank-aware organization or handling of documents that have been grouped within the linked database.",
+  18: "This medium claim stores executable instructions for obtaining linked and linking documents, determining scores from linking-document scores, and processing linked documents according to those scores.",
+  19: "This medium claim stores processor-executable instructions for searching linked and linking documents, scoring them from linking-document scores, and providing the resulting documents.",
+  20: "This dependent scoring claim requires considering both how many linking documents point to a linked document and how important those linking documents are when determining score.",
+  21: "This claim makes the importance in claim 20 recursive: a linking document's importance depends on the number of documents that link to that linking document.",
+  22: "This claim associates backlinks with each linked document, assigns a weight to every backlink, and determines score from backlink count together with the assigned weights.",
+  23: "This claim requires the processing of claim 22 to organize linked documents according to their determined scores, turning weighted backlink evidence into an ordered result.",
+  24: "This claim permits different weights for at least some backlinks associated with one linked document, allowing edge-specific rather than uniform backlink influence.",
+  25: "This claim determines a linked document's score from the sum of weights assigned to its associated backlinks, preserving backlink-level weighting while specifying additive aggregation.",
+  26: "This claim removes dependence on the corresponding linking documents' text, requiring the claim 25 backlink weights to remain independent of that textual content.",
+  27: "This claim makes linking information the primary basis of the assigned score, emphasizing the graph structure rather than an unrelated document attribute.",
+  28: "This claim makes the assigned score substantially independent of user-query content, covering a query-independent score that can be computed before a particular search.",
+  29: "This claim requires iterative score determination, with document-linking information as the primary basis and substantial independence from the user's query content.",
+};
+
+function pagerankClaimDecoder(number: number): string {
+  const decoder = PAGE_RANK_CLAIM_DECODERS[number];
+  if (!decoder) throw new Error(`PageRank claim decoder missing for claim ${number}.`);
+  return decoder;
+}
 
 export const pagerankPatent: Patent = {
   id: "us-6285999-pagerank",
@@ -26,8 +64,8 @@ export const pagerankPatent: Patent = {
     url: "/patents/transcripts/us-6285999-pagerank-reviewed.txt",
     pageCount: 12,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
+    reviewedBy: "Classic Patents editorial agent (GPT-5 Codex)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "c2e024116b9411385aa9cb5d51d3eb34b99f59db190c2bb9298d9d6d6eeed2e4",
   },
   originalText: `UNITED STATES PATENT
@@ -35,49 +73,55 @@ US 6,285,999 B1
 Date of Patent: Sep. 4, 2001
 
 METHOD FOR NODE RANKING IN A LINKED DATABASE
-Inventor: Lawrence Page, Stanford, CA
-Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA
+Inventor: Lawrence Page, Stanford, CA (US)
+Assignee: The Board of Trustees of the Leland Stanford Junior University, Stanford, CA (US)
+Application No.: 09/004,827 · Filed: Jan. 9, 1998
 
 ABSTRACT
-A method assigns importance ranks to nodes in a linked database, such as the World Wide Web. The rank assigned to a document is calculated from the ranks of documents citing it, in combination with a constant representing random jump probability.
+A method assigns importance ranks to nodes in a linked database, such as the World Wide Web. The rank assigned to a document is calculated from the ranks of documents citing it. In addition, the rank of a document is calculated from a constant representing the probability that a browser through the database will randomly jump to the document. The method is particularly useful for enhancing the performance of search engines for text databases on the World Wide Web, whose documents have a large variation in quality and importance.
+
+CROSS-REFERENCES TO RELATED APPLICATIONS
+This application claims priority from U.S. provisional patent application Ser. No. 60/035,205 filed Jan. 10, 1997, which is incorporated herein by reference.
+
+FIELD OF THE INVENTION
+This invention relates generally to techniques for analyzing linked databases. More particularly, it relates to methods for assigning ranks to nodes in a linked database, such as any database of documents containing citations, the World Wide Web or any other hypermedia database.
 
 BACKGROUND OF THE INVENTION
-Traditional information retrieval systems rank documents based on the presence and frequency of search query keywords within the document text. However, in large distributed hypermedia databases like the World Wide Web, text matching alone fails because document quality varies widely and creators can manipulate keyword frequencies.
+Due to the developments in computer technology and its increase in popularity, large numbers of people have recently started to frequently search huge databases. Information retrieval systems are traditionally judged by their precision and recall, but large databases contain many low quality documents and search results can camouflage the few relevant ones. Search engines rank documents using variations of a vector space model, including recency and term position, but these results remain vulnerable to spamming techniques that artificially inflate relevance.
 
-SUMMARY OF THE INVENTION
-The present invention provides an objective, link-structure-based ranking architecture. Each document is assigned a rank determined by the number and rank of pages linking to it. The algorithm solves for the dominant eigenvector of the stochastic link transition matrix adjusted by a damping factor representing a random surfer model.
-
-CLAIMS
-1. A computer-implemented method of assigning an importance rank to nodes in a linked database, comprising: determining a plurality of citing nodes that contain links to a selected node; calculating an initial rank for each citing node; and updating the importance rank of the selected node by summing contributions from each citing node, wherein each contribution is proportional to the citing node's rank divided by its total number of outbound links, and scaled by a damping factor representing a transition probability.`,
+SUMMARY
+Various aspects of the present invention provide systems and methods for ranking documents in a linked database. The invention takes advantage of linked structure to assign a rank from extrinsic relationships: a document can be important because it is cited by other important documents.`,
   plainEnglishExplanation: {
     overview:
-      "PageRank evaluates the authority of web pages by analyzing the mathematical structure of the hyperlink citation graph across the Internet.",
+      "The patent assigns scores to linked documents from the extrinsic structure of their graph. It treats a hyperlink as a directed relation, then recursively weights a destination by the ranks of its backlink pages and by each source page's number of forward links.",
     coreMechanism:
-      "A Markov chain transition matrix models a random surfer clicking links with damping probability d = 0.85 and randomly jumping to any page with probability 1 - d.",
+      "The source uses alpha for the random-jump probability, typically around 0.1 to 0.15, and one minus alpha for normalized forward-link propagation. The resulting transition matrix is iterated from p0 toward a steady-state vector; this page does not substitute the later 0.85 convention for the patent's notation.",
     mechanicalBreakdown: [
       {
         title: "Hyperlink Citation Aggregation",
-        summary: "Inbound links act as weighted votes of confidence.",
+        summary:
+          "A destination receives weighted contributions from the documents that link to it.",
         technicalDetails:
-          "Each citing document distributes its current rank score equally among all outbound links.",
+          "For a source B, its rank is divided by |B|, the number of forward links, before its contribution is added to a destination; alpha/N supplies the random-jump term.",
       },
       {
         title: "Damping Factor & Random Surfer",
-        summary: "Prevents rank sink traps and disconnected graph loops.",
+        summary:
+          "A random-jump term limits concentration in link loops and supports a bounded iterative model.",
         technicalDetails:
-          "Ensures the transition matrix is irreducible and primitive, guaranteeing convergence to a unique stationary eigenvector.",
+          "The patent discusses childless pages, removing them during iteration and adding them back, and normalizing the vector. It does not promise a universal iteration count or claim that every graph is irreducible.",
       },
     ],
     scientificPrinciples: [
       {
         principle: "Perron-Frobenius Theorem & Stationary Eigenvectors",
-        formula: "\\mathbf{r} = d \\mathbf{M} \\mathbf{r} + \\frac{1-d}{N} \\mathbf{1}",
+        formula: "r(A) = \\frac{\\alpha}{N} + (1-\\alpha)\\sum_{i=1}^{n}\\frac{r(B_i)}{|B_i|}",
         explanation:
-          "Because the adjusted transition matrix is stochastic and irreducible, power iteration converges rapidly to the principal eigenvector representing steady-state visitation frequency.",
+          "The source defines alpha as the probability of a random jump, normalizes each backlink contribution by its forward-link count, and interprets the converged vector as a steady-state probability distribution. The implementation exposes the source-bounded recurrence rather than asserting an unproved runtime guarantee.",
       },
     ],
     whyItMattersToday:
-      "PageRank was the algorithmic engine that built Google, solving web search indexing at planetary scale and defining modern network centrality analysis.",
+      "The patent’s link-based score became a foundation for Web search and later graph-centrality work. Its enduring lesson is narrower than a claim that it alone built modern search: rank can be computed from a graph’s directed relationships, then combined with text, anchor context, titles, and user-specific starting distributions.",
   },
   historicalContext: {
     problemStatement:
@@ -89,20 +133,15 @@ CLAIMS
     ],
     breakthroughInsight:
       "Academic citation indexing (where citations indicate influence) could be adapted to recursive web hyperlink topologies.",
-    patentWars: [
-      {
-        rivalName: "Robin Li / RankDex",
-        rivalClaim: "Hypertext link analysis and search engine scoring (US Patent 5,920,859)",
-        conflictDetails:
-          "Robin Li filed RankDex in 1997 using outbound link anchor text; PageRank used global eigenvector centrality across all links.",
-        resolution:
-          "Both patents coexisted; Stanford University licensed PageRank exclusively to Google.",
-        legalOutcome:
-          "Stanford received 1.8 million Google shares in exchange for the patent license, yielding $336 million.",
-      },
-    ],
+    patentWars: [],
     civilizationalImpact:
-      "PageRank organized the world's information, transforming search from a clumsy directory lookup into an instantaneous global knowledge utility.",
+      "The source-bounded contribution is a scalable way to rank nodes from directed relationships, not a promise that rank equals truth or traffic. That graph perspective influenced Web search and subsequent network-analysis systems.",
+    aftermath:
+      "The patent was granted September 4, 2001, and the record identifies Stanford as assignee. Google Patents lists the patent as expired after its term; later family continuations are separate records and are not folded into this edition.",
+    sideNotes: [
+      "The specification acknowledges Sergey Brin, Scott Hassan, Rajeev Motwani, Alan Steremberg, and Terry Winograd for support in reducing the invention to practice.",
+      "The certificate of correction in the pinned twelve-page PDF replaces the government-support paragraph with a statement referring to contract 9411306 awarded by the National Science Foundation.",
+    ],
   },
   drawings: [
     {
@@ -150,10 +189,10 @@ CLAIMS
         {
           id: "pr-rank-prop",
           figureRef: "Fig. 2",
-          label: "R(u)",
-          element: "Rank Propagation Equation",
+          label: "0.4 / 0.2 / 0.4",
+          element: "A, B, C rank example",
           description:
-            "Recursive accumulation of backlink contributions weighted by outgoing degree.",
+            "The source example assigns A=0.4, B=0.2, and C=0.4 when the random-jump term is omitted, then gives the alpha=0.5 equations and 14/39, 10/39, 15/39 solution.",
           x: 50,
           y: 50,
         },
@@ -184,6 +223,15 @@ CLAIMS
           x: 50,
           y: 60,
         },
+        {
+          id: "pr-step-105",
+          figureRef: "Fig. 3",
+          label: "105",
+          element: "Rank extraction",
+          description: "Determining r[k] from the kth component of the approximating vector p_n.",
+          x: 50,
+          y: 80,
+        },
       ],
     },
   ],
@@ -191,10 +239,8 @@ CLAIMS
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A computer implemented method of scoring a plurality of linked documents, comprising: obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; assigning a score to each of the linked documents based on scores of the one or more linking documents and processing the linked documents according to their scores.",
-      plainEnglish:
-        "Foundational method for scoring linked documents based on scores of linking documents.",
+      originalText: pagerankManualClaimText(1),
+      plainEnglish: pagerankClaimDecoder(1),
       keyInnovations: [
         "Hyperlink citation graph modeling",
         "Recursive backlink propagation",
@@ -204,231 +250,222 @@ CLAIMS
     {
       number: 2,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on the number of links to the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish: "Weighting factors based on the total number of links to linking documents.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(2),
+      plainEnglish: pagerankClaimDecoder(2),
       keyInnovations: ["Degree-based link weighting", "Link dilution scaling"],
     },
     {
       number: 3,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on an 10 estimation of a probability that a linking document Will be accessed, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish: "Weighting factors based on estimated user access probabilities.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(3),
+      plainEnglish: pagerankClaimDecoder(3),
       keyInnovations: ["Usage probability scaling", "Traffic-aware link weighting"],
     },
     {
       number: 4,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on the URL, host, domain, author, institution, or last update time of the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish:
-        "Weighting factors based on URL domain, host, author, institution, or last update time.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(4),
+      plainEnglish: pagerankClaimDecoder(4),
       keyInnovations: ["Metadata link weighting", "Domain authority weighting"],
     },
     {
       number: 5,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on Whether the one or more linking documents are selected documents or roots, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish: "Weighting factors based on designated root or seed documents.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(5),
+      plainEnglish: pagerankClaimDecoder(5),
       keyInnovations: ["Root set personalization", "Topic-sensitive teleportation"],
     },
     {
       number: 6,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on the importance, visibility or textual emphasis of the links in the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish:
-        "Weighting factors based on visual prominence, font size, or textual emphasis of links.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(6),
+      plainEnglish: pagerankClaimDecoder(6),
       keyInnovations: ["Visual link prominence", "Rendered layout weighting"],
     },
     {
       number: 7,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning includes: identifying a Weighting factor for each of the linking documents, the Weighting factor being dependent on a particular user\u2019s preferences, the rate at Which users access the one or more linking documents, or the importance of the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identi?ed Weighting factor.",
-      plainEnglish:
-        "Weighting factors based on individual user browsing preferences or access rates.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(7),
+      plainEnglish: pagerankClaimDecoder(7),
       keyInnovations: ["Personalized PageRank", "User-specific search re-ranking"],
     },
     {
       number: 8,
       isIndependent: true,
-      originalText:
-        "A computer implemented method of determining a score for a plurality of linked documents, comprising: obtaining a plurality of linked documents; selecting one of the linked documents; assigning a score to the selected document that is dependent on scores of documents that link to the selected document; and processing the linked documents according to their scores.",
-      plainEnglish:
-        "Selecting a specific document and assigning a score dependent on scores of linking pages.",
+      originalText: pagerankManualClaimText(8),
+      plainEnglish: pagerankClaimDecoder(8),
       keyInnovations: ["Targeted document scoring", "Local backlink aggregation"],
     },
     {
       number: 9,
       isIndependent: true,
-      originalText:
-        "A computer implemented method of ranking a plurality of linked documents, comprising: obtaining a plurality of documents, at least some of the documents being linked documents and at least some of the documents being linking documents, at least some of the linking documents also being linked documents, each of the linked documents being pointed to by a link in one or more of the linking documents; generating an initial estimate of a rank for each of the linked documents; updating the estimate of the rank for each of the linked documents using ranks for the one or more linking documents; and processing the linked documents according to their updated ranks.",
-      plainEnglish:
-        "Generating initial rank estimates and iteratively updating scores using linking page ranks.",
+      originalText: pagerankManualClaimText(9),
+      plainEnglish: pagerankClaimDecoder(9),
       keyInnovations: ["Iterative rank updating", "Jacobi/Gauss-Seidel relaxation"],
     },
     {
       number: 10,
       isIndependent: true,
-      originalText:
-        "A computer implemented method of ranking a plurality of linked documents, comprising: automatically performing a random traversal of a plurality of linked documents, the random traversal including selecting a random link to traverse in a current linked document; for each linked document that is traversed, assigning a rank to the linked document that is dependent on the number of times the linked document has been traversed; and processing the plurality of linked documents according to their rank.",
-      plainEnglish: "Random walk traversal method where ranks reflect empirical visitation counts.",
+      originalText: pagerankManualClaimText(10),
+      plainEnglish: pagerankClaimDecoder(10),
       keyInnovations: ["Monte Carlo random surfer simulation", "Empirical visitation scoring"],
     },
     {
       number: 11,
       isIndependent: false,
-      originalText:
-        "The method of claim 10, Wherein there is a predetermined probability that the next linked document to be traversed Will be a random one according to a distribution of the plurality of linked documents.",
-      plainEnglish: "Random walk with predetermined random teleportation probability distribution.",
+      dependsOn: [10],
+      originalText: pagerankManualClaimText(11),
+      plainEnglish: pagerankClaimDecoder(11),
       keyInnovations: ["Stochastic jump distribution", "Teleportation restart probability"],
     },
     {
       number: 12,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the processing includes: displaying links to the linked documents as a directory listing.",
-      plainEnglish: "Displaying scored links in an automated hierarchical directory listing.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(12),
+      plainEnglish: pagerankClaimDecoder(12),
       keyInnovations: ["Directory ranking", "Hierarchical link ordering"],
     },
     {
       number: 13,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the processing includes: displaying links to the linked documents, and displaying annotations representing the score of each of the linked documents.",
-      plainEnglish: "Displaying visual annotation badges representing document rank.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(13),
+      plainEnglish: pagerankClaimDecoder(13),
       keyInnovations: ["Visual rank badges", "Link score annotations"],
     },
     {
       number: 14,
       isIndependent: false,
-      originalText: "The method of claim 13, Wherein the annotations are bars, icons, or text.",
-      plainEnglish: "Formatting visual annotations as score bars, icons, or numeric text.",
+      dependsOn: [13],
+      originalText: pagerankManualClaimText(14),
+      plainEnglish: pagerankClaimDecoder(14),
       keyInnovations: ["Bar score visualizations", "Icon-based link metrics"],
     },
     {
       number: 15,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, further comprising: processing the linked documents based on textual match ing.",
-      plainEnglish: "Combining hyperlink citation rank scoring with keyword textual matching.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(15),
+      plainEnglish: pagerankClaimDecoder(15),
       keyInnovations: ["Hybrid rank and keyword scoring", "Search engine result fusion"],
     },
     {
       number: 16,
       isIndependent: false,
-      originalText:
-        "The method of claim 15, Wherein the textual matching includes matching anchor text associated With the links.",
-      plainEnglish: "Textual matching using anchor text associated with incoming hyperlinks.",
+      dependsOn: [15],
+      originalText: pagerankManualClaimText(16),
+      plainEnglish: pagerankClaimDecoder(16),
       keyInnovations: ["Anchor text indexing", "Cross-document keyword association"],
     },
     {
       number: 17,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, further comprising: processing the linked documents based on groupings of the linked documents.",
-      plainEnglish: "Processing and ranking documents based on topical cluster groupings.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(17),
+      plainEnglish: pagerankClaimDecoder(17),
       keyInnovations: ["Document cluster ranking", "Category-based link aggregation"],
     },
     {
       number: 18,
       isIndependent: true,
-      originalText:
-        "A computer-readable medium that stores instructions executable by one or more processing devices to perform a method for determining scores for a plurality of linked documents, comprising: instructions for obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; instructions for determining a score for each of the linked documents based on scores for the one or more linking documents; and instructions for processing the linked documents accord ing to their scores.",
-      plainEnglish: "Computer-readable medium storing executable instructions for link scoring.",
+      originalText: pagerankManualClaimText(18),
+      plainEnglish: pagerankClaimDecoder(18),
       keyInnovations: ["Machine-executable rank instructions", "Memory-efficient graph scoring"],
     },
     {
       number: 19,
       isIndependent: true,
-      originalText:
-        "A computer-readable medium that stores instructions executable by one or more processors to perform a method for scoring documents, comprising: instructions for searching a plurality of documents, at least some of the documents being linked documents and at least some of the documents being linking documents, at least some of the linking documents also being linked documents, each of the linked documents being pointed to by a link in one or more of the linking documents; instructions for scoring each of the linked documents based on scores for the one or more linking documents; and instructions for providing the linked documents based on their scores.",
-      plainEnglish: "Computer-readable medium storing search engine ranking instructions.",
+      originalText: pagerankManualClaimText(19),
+      plainEnglish: pagerankClaimDecoder(19),
       keyInnovations: ["Search engine retrieval software", "Query-independent score storage"],
     },
     {
       number: 20,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: determining the score based on (1) a number of the linking documents that link to the linked document and (2) an importance of the linking documents.",
-      plainEnglish: "Scoring based on both count and importance of linking documents.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(20),
+      plainEnglish: pagerankClaimDecoder(20),
       keyInnovations: ["Dual-metric link aggregation", "Weighted in-degree scoring"],
     },
     {
       number: 21,
       isIndependent: false,
-      originalText:
-        "The method of claim 20, Wherein the importance of the linking documents is based on a number of documents that link to the linking documents.",
-      plainEnglish: "Recursive importance of linking documents based on their own backlinks.",
+      dependsOn: [20],
+      originalText: pagerankManualClaimText(21),
+      plainEnglish: pagerankClaimDecoder(21),
       keyInnovations: ["Multi-hop recursive citation authority", "Deep graph prestige propagation"],
     },
     {
       number: 22,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: associating one or more backlinks With each of the linked documents, each of the backlinks corresponding to one of the linking documents that links to the linked document, assigning a Weight to each of the backlinks, and determining a score for each of the linked documents based on a number of backlinks for the linked docu ment and the Weights assigned to the backlinks.",
-      plainEnglish: "Associating weighted backlinks with each linked document.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(22),
+      plainEnglish: pagerankClaimDecoder(22),
       keyInnovations: ["Per-backlink weighting", "Edge-specific graph weights"],
     },
     {
       number: 23,
       isIndependent: false,
-      originalText:
-        "The method of claim 22, Wherein the processing of the linked documents includes: organiZing the linked documents based on the determined scores.",
-      plainEnglish: "Organizing search results according to determined link scores.",
+      dependsOn: [22],
+      originalText: pagerankManualClaimText(23),
+      plainEnglish: pagerankClaimDecoder(23),
       keyInnovations: ["Search result reordering", "Global authority sorting"],
     },
     {
       number: 24,
       isIndependent: false,
-      originalText:
-        "The method of claim 22, Wherein the assigning a Weight includes: assigning different Weights to at least some of the back links associated With at least one of the linked docu ments.",
-      plainEnglish: "Assigning non-uniform weights to different backlink sources.",
+      dependsOn: [22],
+      originalText: pagerankManualClaimText(24),
+      plainEnglish: pagerankClaimDecoder(24),
       keyInnovations: ["Non-uniform backlink weighting", "Differentiated edge weights"],
     },
     {
       number: 25,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: associating one or more backlinks With each of the linked documents, each of the backlinks corresponding to one of the linking documents that links to the linked document, assigning a Weight to each of the backlinks, and determining a score for each of the linked documents based on a sum of the Weights assigned to the backlinks associated With the linked document.",
-      plainEnglish: "Scoring based on the sum of weights assigned to backlinks.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(25),
+      plainEnglish: pagerankClaimDecoder(25),
       keyInnovations: ["Linear sum backlink aggregation", "Normalized weight summation"],
     },
     {
       number: 26,
       isIndependent: false,
-      originalText:
-        "The method of claim 25, Wherein the Weights assigned to each of the backlinks are independent of teXt of the corresponding linking documents.",
-      plainEnglish: "Backlink weighting independent of the text content of linking pages.",
+      dependsOn: [25],
+      originalText: pagerankManualClaimText(26),
+      plainEnglish: pagerankClaimDecoder(26),
       keyInnovations: ["Query-independent topological scoring", "Text-agnostic link authority"],
     },
     {
       number: 27,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: determining the score primarily based on linking infor mation.",
-      plainEnglish: "Determining document score primarily based on link topology.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(27),
+      plainEnglish: pagerankClaimDecoder(27),
       keyInnovations: ["Topology-driven document prestige", "Structural web graph scoring"],
     },
     {
       number: 28,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: determining the score substantially independent of user query content.",
-      plainEnglish: "Determining score substantially independent of search query terms.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(28),
+      plainEnglish: pagerankClaimDecoder(28),
       keyInnovations: ["Query-independent global ranking", "Pre-computed static score caching"],
     },
     {
       number: 29,
       isIndependent: false,
-      originalText:
-        "The method of claim 1, Wherein the assigning a score includes: iteratively determining the score for a linked document, the score being primarily based on document-linking information and substantially independent of user query content.",
-      plainEnglish:
-        "Iterative scoring primarily based on link information and independent of user query content.",
+      dependsOn: [1],
+      originalText: pagerankManualClaimText(29),
+      plainEnglish: pagerankClaimDecoder(29),
       keyInnovations: ["Power iteration graph convergence", "Static rank precomputation"],
     },
   ],
+  stats: { totalClaims: 29, independentClaims: 6 },
 };

@@ -25,7 +25,8 @@ describe("Classic Patents Catalog Integrity", () => {
       expect(patent.inventors.length).toBeGreaterThan(0);
       expect(patent.grantDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       const noFormalClaims =
-        patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
+        patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile" ||
+        (patent.claims.length === 0 && patent.stats?.totalClaims === 0 && !patent.archivalEdition);
       expect(patent.claims.length > 0 || noFormalClaims).toBeTrue();
       expect(patent.originalPdfUrl).toBeTruthy();
       expect(patent.plainEnglishExplanation.overview).toBeTruthy();

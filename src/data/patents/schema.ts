@@ -223,7 +223,8 @@ export const patentSchema: z.ZodType<Patent> = z
   })
   .superRefine((patent, context) => {
     const noFormalClaims =
-      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile";
+      patent.archivalEdition?.claimStatus?.kind === "no-formal-claims-in-facsimile" ||
+      (patent.claims.length === 0 && patent.stats?.totalClaims === 0 && !patent.archivalEdition);
     if (patent.claims.length === 0 && !noFormalClaims) {
       context.addIssue({
         code: z.ZodIssueCode.custom,

@@ -9,35 +9,6 @@ const text = (value: string): CuratedSpecificationInline => ({
   text: value,
 });
 
-const term = (value: string, definition: string, label?: string): CuratedSpecificationInline => ({
-  kind: "term",
-  text: value,
-  definition,
-  label,
-});
-
-const FIGURES = {
-  "Fig. 1": {
-    src: "/patents/figures/gb-1420-cort-puddling-rolling/fig-1-source-crop-v1.png",
-    caption: "Source-facsimile crop of Sheet 1 from the Chancery enrollment of GB 1420.",
-    alt: "Engraved technical elevation and cross-section of the puddling furnace and grooved rolling mill.",
-    width: 2000,
-    height: 2000,
-  },
-} as const;
-
-const figure = (
-  label: keyof typeof FIGURES,
-  sourceText: string = label,
-): CuratedSpecificationInline => ({
-  kind: "reference",
-  text: sourceText,
-  href: "#",
-  referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in GB 1420`,
-  figurePreviews: [FIGURES[label]],
-});
-
 const p = (
   ...inlines: (string | CuratedSpecificationInline)[]
 ): {
@@ -51,34 +22,40 @@ const p = (
 export const CORT_PUDDLING_ROLLING_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> =
   {
     1: [
-      "Formal royal preamble of British Patent No. 1,420 granted by King George III to Henry Cort of Fontley, Hampshire on February 13, 1784.",
+      "The Patent Office index identifies the inventor and the 1784 patent number; this draft is not an accepted facsimile edition.",
     ],
     2: [
-      "Chancery enrollment proviso obliging Cort to file a full, reproducible written description of the reverberatory puddling and grooved rolling inventions within one calendar month.",
+      "The checked printed abridgment describes a dished reverberatory or air furnace and shaped iron bars used to work the molten charge.",
+    ],
+    3: [
+      "The abridgment records ebullition, a bluish flame, continued raking and stirring, and the charge being brought into nature.",
     ],
     4: [
-      "Puddling in a reverberatory furnace: melting high-carbon pig iron on a concave hearth using common coal fuel isolated in a separate fire-grate, preventing sulfur and ash contamination.",
-    ],
-    5: [
-      "Decarbonization and rabbling: stirring molten iron at 1300°C under radiant flame, oxidizing carbon into carbon monoxide vapor until the metal 'comes to nature' as pasty, decarburized iron grains.",
-    ],
-    6: [
-      "Puddle ball collection: gathering the pasty spongy iron crystals with the rabble into 60–80 lb loups at welding heat for immediate transfer to shingling rollers.",
-    ],
-    7: [
-      "Grooved roller shingling: passing the red-hot sponge ball through accelerating grooved rolls, hydrostatically expelling liquid silicate slag and welding iron crystals into solid fibrous bars in a single heat.",
-    ],
-    14: [
-      "Chancery enrollment certification signed and sealed by Henry Cort on February 13, 1784 before the High Court of Chancery.",
+      "Loops are removed, raised to welding heat, and shingled under a hammer or otherwise; grooved rollers are one described route.",
     ],
   };
 
-export const cortPuddlingRollingArchivalEdition: CuratedSpecificationEdition = {
+type CortResearchEdition = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
+  completeFacsimileReviewed: false;
+};
+
+export const cortPuddlingRollingArchivalEdition: CortResearchEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f",
-  preparedBy: "Classic Patents editorial agent (Antigravity)",
-  preparedAt: "2026-08-19",
-  completeFacsimileReviewed: true,
+  preparedBy: "Classic Patents source-audit draft (not a publication edition)",
+  preparedAt: "2026-08-21",
+  completeFacsimileReviewed: false,
+  claimStatus: {
+    kind: "no-formal-claims-in-facsimile",
+    evidence:
+      "The checked 1854 Patent Office abridgment for A.D. 1784, No. 1420 has no numbered claims and ends with '[Printed, 3d. No Drawings.]'. The local two-page PDF is a rejected reconstruction, not a facsimile.",
+  },
+  drawingStatus: {
+    kind: "no-drawings-in-facsimile",
+    evidence:
+      "The checked Patent Office abridgment explicitly says '[Printed, 3d. No Drawings.]'; no figure citation or crop is accepted for this record.",
+  },
+  /*
   blocks: [
     {
       kind: "masthead",
@@ -237,17 +214,44 @@ export const cortPuddlingRollingArchivalEdition: CuratedSpecificationEdition = {
     ),
   ],
 };
+  */
+  blocks: [
+    {
+      kind: "masthead",
+      lines: [
+        "A.D. 1784, February 13.—No. 1420.",
+        "CORT, HENRY.—Shingling, welding, and manufacturing iron and steel into bars, plates, rods, etc.; by the use of fire and machinery.",
+      ],
+    },
+    p(
+      text(
+        "Pig or other cast iron is melted in a reverberatory or air furnace; the bottom of which is ‘dished out’ to contain the metal when melted. The molten metal is ‘worked and moved about’ by ‘iron bars and other instruments fitly shaped,’ conveniently introduced through holes in the bottoms of the doors.",
+      ),
+    ),
+    p(
+      text(
+        "After a time, ‘an ebullition, effervescence, or such like intestine motion takes place,’ and a bluish flame is emitted by the metal. As the ‘raking, separating, stirring, and spreading’ is continued, it ‘loses its fusibility, and is flourished or brought into nature.’ Thereupon it is collected together into lumps or loops and removed through the door.",
+      ),
+    ),
+    p(
+      text(
+        "The loops may be stamped into plates, piled or broken and worked in an air furnace, or raised to a welding heat and shingled under a forge hammer or otherwise into half blooms, slabs, or other forms. Slabs shingled to the requisite size may be passed through grooved rollers, which may be used for working any sort of iron at a welding heat.",
+      ),
+    ),
+    p(
+      text(
+        "‘Iron and also steel, so prepared, made, wrought, and manufactured,’ will be freed from adhering impurities and of good quality. The whole process is conducted without using finery, charcoal, cokes, chaffery, hollow fire, blast, or fluxes. [Printed, 3d. No Drawings.]",
+      ),
+    ),
+  ],
+};
 
 /**
  * Dynamic runtime lookup of exact claim text from the archival edition blocks.
  * Enforces the Single Source of Truth architectural doctrine.
  */
 export function manualCortClaimText(claimNumber: number): string {
-  const block = cortPuddlingRollingArchivalEdition.blocks.find(
-    (b) => b.kind === "claim" && b.number === claimNumber,
+  throw new Error(
+    `GB 1420 has no separately enumerated claims; claim ${claimNumber} is not a source-backed node.`,
   );
-  if (block?.kind !== "claim") {
-    throw new Error(`Claim ${claimNumber} not found in cortPuddlingRollingArchivalEdition`);
-  }
-  return block.inlines.map((i) => i.text).join("");
 }

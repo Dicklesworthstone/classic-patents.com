@@ -126,7 +126,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
         ? block.inlines.flatMap((inline) =>
             inline.kind === "reference" &&
             inline.referenceType === "figure" &&
-            ["Fig. 1", "FIGURE 2"].includes(inline.text)
+            ["Fig. 1", "FIGURE 1", "Fig. 2", "FIGURE 2"].includes(inline.text)
               ? [inline]
               : [],
           )

@@ -8,7 +8,7 @@ import { daVinciPatent } from "@/data/patents/davinci";
 
 const PINNED_SHA256 = "ff8eef36d94ec5ec3ec01038b7145030caf617ea018fcde9f00df6380beb3d91";
 
-describe("US 6,331,181 Intuitive Surgical Da Vinci Archival Edition Contract", () => {
+describe("US 6,331,181 Surgical Robotic Tools Archival Edition Contract", () => {
   test("is a valid, complete manual edition of US 6,331,181", () => {
     const result = validateCuratedSpecificationEdition(davinciArchivalEdition);
     expect(result).toEqual({
@@ -34,6 +34,22 @@ describe("US 6,331,181 Intuitive Surgical Da Vinci Archival Edition Contract", (
     for (let i = 1; i <= 28; i++) {
       const claim = claims.find((c) => c.number === i);
       expect(claim).toBeDefined();
+    }
+
+    const recordClaims = daVinciPatent.claims;
+    expect(recordClaims).toHaveLength(28);
+    expect(
+      recordClaims.filter((claim) => claim.isIndependent).map((claim) => claim.number),
+    ).toEqual([1, 6, 17, 19]);
+    for (const recordClaim of recordClaims) {
+      const editionClaim = claims.find((claim) => claim.number === recordClaim.number);
+      expect(editionClaim?.inlines.map((inline) => inline.text).join("")).toBe(
+        recordClaim.originalText,
+      );
+      expect(recordClaim.plainEnglish.length).toBeGreaterThan(120);
+      for (const parent of recordClaim.dependsOn ?? []) {
+        expect(recordClaims.some((claim) => claim.number === parent)).toBe(true);
+      }
     }
   });
 

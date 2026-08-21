@@ -6,15 +6,10 @@ import { cortPuddlingRollingPatent } from "@/data/patents/cort-puddling-rolling"
 import {
   CORT_PUDDLING_ROLLING_PARALLEL_READINGS,
   cortPuddlingRollingArchivalEdition,
-  manualCortClaimText,
 } from "./cortPuddlingRollingEdition";
 
-describe("Henry Cort Puddling & Grooved Rolling source-identity hold", () => {
+describe("Henry Cort GB 1420 source-identity hold", () => {
   const pdfPath = join(process.cwd(), "public/patents/pdfs/gb-1420-cort-puddling-rolling.pdf");
-  const cropPath = join(
-    process.cwd(),
-    "public/patents/figures/gb-1420-cort-puddling-rolling/fig-1-source-crop-v1.png",
-  );
   const ledgerPath = join(
     process.cwd(),
     "public/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt",
@@ -26,36 +21,36 @@ describe("Henry Cort Puddling & Grooved Rolling source-identity hold", () => {
     const sha = createHash("sha256").update(buffer).digest("hex");
     expect(sha).toBe("b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f");
     expect(cortPuddlingRollingArchivalEdition.sourcePdfSha256).toBe(sha);
+    expect(cortPuddlingRollingArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(cortPuddlingRollingArchivalEdition.claimStatus?.kind).toBe(
+      "no-formal-claims-in-facsimile",
+    );
+    expect(cortPuddlingRollingArchivalEdition.drawingStatus?.kind).toBe("no-drawings-in-facsimile");
     expect(cortPuddlingRollingPatent.archivalEdition).toBeUndefined();
     expect(cortPuddlingRollingPatent.originalTextAsset).toBeUndefined();
   });
 
-  test("retains the reconstruction crop as non-public research evidence", () => {
-    expect(existsSync(cropPath)).toBe(true);
-    const stat = readFileSync(cropPath);
-    expect(stat.length).toBeGreaterThan(10000);
-  });
-
-  test("retains the staged transcript ledger and its page markers", () => {
+  test("retains the staged secondary witness and its page markers", () => {
     expect(existsSync(ledgerPath)).toBe(true);
     const content = readFileSync(ledgerPath, "utf-8");
     expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---");
     expect(content).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---");
     expect(content).toContain("HENRY CORT");
     expect(content).toContain("reverberatory or air furnace");
+    expect(content).toContain("[Printed, 3d. No Drawings.]");
+    expect(content).not.toContain("CLAIMS AND ENROLLED DRAWINGS");
+    expect(content).not.toContain("1. The method of converting");
   });
 
-  test("exposes all 4 staged claim nodes via dynamic single-source lookup", () => {
-    for (let c = 1; c <= 4; c++) {
-      const claimText = manualCortClaimText(c);
-      expect(claimText).toBeDefined();
-      expect(claimText.length).toBeGreaterThan(30);
-    }
+  test("exposes no unsupported claim nodes", () => {
+    expect(cortPuddlingRollingPatent.claims).toEqual([]);
+    expect(cortPuddlingRollingPatent.stats).toEqual({ totalClaims: 0, independentClaims: 0 });
+    expect(cortPuddlingRollingArchivalEdition.blocks.filter((b) => b.kind === "claim")).toEqual([]);
   });
 
   test("validates parallel readings map covers the archival blocks", () => {
     const keys = Object.keys(CORT_PUDDLING_ROLLING_PARALLEL_READINGS).map(Number);
-    expect(keys.length).toBeGreaterThanOrEqual(6);
+    expect(keys.length).toBeGreaterThanOrEqual(4);
     for (const key of keys) {
       const block = cortPuddlingRollingArchivalEdition.blocks[key];
       expect(block).toBeDefined();

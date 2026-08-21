@@ -38,7 +38,7 @@ function makePreview(
     label: altText,
     figurePreviews: figureNumbers.map((num) => ({
       src: figureAssetPath(num),
-      alt: `Figure ${num}: ${altText}`,
+      alt: `${surfaceText}: ${altText}`,
       width: DAVINCI_FIGURE_DIMS[num]?.width ?? 1200,
       height: DAVINCI_FIGURE_DIMS[num]?.height ?? 1600,
     })),
@@ -57,43 +57,43 @@ const p = (
 
 export const davinciParallelReadings: Readonly<Record<number, readonly string[]>> = {
   2: [
-    "Abstract: Robotic surgical system comprising master-slave manipulators, tool interface electronics, and memory for tool calibration offsets and compatibility identification.",
+    "The abstract describes a memory mounted on the robotic tool. It verifies compatibility, identifies the tool type, and carries calibration offsets or tool-life information to the manipulator.",
   ],
   4: [
-    "Field of the Invention: Minimally invasive robotic tele-surgery, articulated multi-axis surgical end effectors, and surgical instrument calibration memory systems.",
+    "This field statement places the invention in robotically assisted surgery and, more specifically, in tool, system, and method improvements for that setting.",
   ],
   6: [
-    "Background: Open surgery requires large traumatic incisions resulting in extended recovery times. Laparoscopic surgery reduces incision size but restricts surgeon dexterity to straight, unarticulated rigid instruments with inverted pivot kinematics.",
+    "The background explains that robotic surgery introduces its own challenges: many instruments may be needed, manipulators are limited by space and cost, and several tools may share one trocar sleeve.",
   ],
   7: [
-    "Limitations of conventional laparoscopy: Loss of hand-eye coordination, lack of wrist articulation inside the patient, surgeon fatigue, and magnified physiological hand tremor.",
+    "The specification says the system can reduce patient trauma by limiting simultaneous tools and entry ports, while still allowing different tools to be exchanged through a common sleeve.",
   ],
   9: [
-    "Summary: Master-slave telemanipulator system providing 7 degrees of freedom, intuitive natural hand-eye alignment, motion scaling, tremor filtering, and digital tool identification.",
+    "The first summary aspect is a tool with a probe, distal surgical end effector, releasable proximal interface, and circuitry that transmits a compatibility signal to the processor.",
   ],
   10: [
-    "Tool interface circuitry: Non-volatile memory on each detachable surgical instrument storing unique serial numbers, tool life counters, and factory calibration offsets for automated robot initialization.",
+    "The source says the compatibility signal may be a unique identifier, a value listed in a processor table, or an arbitrary compatibility string. It can also carry tool-type and tool-specific calibration or life data.",
   ],
   12: [
-    "Brief Description of Figures: FIG. 1 is an overview of the robotic surgical workstation and patient cart; FIG. 2 shows the articulated EndoWrist wrist joint; FIG. 3 shows the sterile tool interface mount.",
+    "The drawing list is source-specific: FIG. 1 shows a robotic procedure and tool change; FIG. 2 shows the arm cart; FIGS. 2A-C show the manipulator linkage and remote center; FIGS. 3-15 cover carts, tools, end effectors, interfaces, adapters, wiring, software, engagement logic, and compatibility verification.",
   ],
   14: [
-    "Detailed Description: The surgeon sits comfortably at an ergonomic master console viewing a 3D stereoscopic display aligned with hand master controllers.",
+    "In the detailed embodiment, the robotic system uses multiple arms. Arms may support articulated tools such as graspers, needle holders, or cautery probes, and may also support image-capture devices such as endoscopes.",
   ],
   15: [
-    "Master-slave kinematics: Digital servo controllers track surgeon hand motions at 1,000 Hz, applying customizable motion scaling (e.g., 3:1 or 5:1 reduction) and low-pass filtering to eliminate physiological tremor.",
+    "FIG. 1's master controller is a manual six-degree-of-freedom input device with an actuated handle, while the slave cart positions shafts through patient openings. The patent does not specify a sampling rate, motion-scaling ratio, or tremor-filter cutoff here.",
   ],
   16: [
-    "EndoWrist mechanism: A multi-cable pulleyless wrist assembly positioned at the distal end of an 8 mm shaft provides full internal pitch, yaw, and roll articulation inside the patient.",
+    "The FIG. 2A-C linkage uses rigid links and rotational joints in a parallelogram arrangement. Pitch and yaw axes intersect at a remote center aligned with the tool shaft; insertion along the shaft leaves that remote center fixed relative to the manipulator base.",
   ],
   17: [
-    "Tool interface & sterile drape: Driven rotary disks on the robotic slave arm engage mating driven elements on the detachable tool housing across a sterile plastic barrier.",
+    "Motors drive the linkage, tool rotation, distal wrist motion, and end-effector actuation. Flexible members may transfer motion to the tool, and a cannula supports rotation and axial movement for endoscopic procedures.",
   ],
   18: [
-    "Onboard EEPROM memory: The instrument housing includes electronic memory transmitting tool type, joint axis geometry, and precise measured calibration offsets directly to the central robot computer.",
+    "The tool interface includes driven elements coupled to distal degrees of motion. The specification describes memory on the tool, manipulator arm, or support structure for compatibility, tool type, calibration offsets, tool life, and coupling state.",
   ],
   19: [
-    "Safety interlocks: Automated tool life tracking prevents instrument wear and ensures single-procedure sterility compliance across complex surgical interventions.",
+    "The source also describes engagement structures and sensors, a sterile-drape adapter with movable bodies, and a magnet at the tool interface that can actuate circuitry in the holder. These are source mechanisms, not a claim that every commercial Da Vinci system uses the same implementation.",
   ],
 };
 
@@ -112,7 +112,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
         "Patent No.: US 6,331,181 B1",
         "Date of Patent: Dec. 18, 2001",
         "SURGICAL ROBOTIC TOOLS, DATA ARCHITECTURE, AND USE",
-        "Inventors: Michael J. Tierney, David J. Rosa, Stephen J. Blumenkranz, Gary S. Guthart",
+        "Inventors: Michael J. Tierney, Thomas G. Cooper, Chris A. Julian, Stephen J. Blumenkranz, Gary S. Guthart, Robert G. Younge",
         "Assignee: Intuitive Surgical, Inc., Mountain View, CA (US)",
         "Application No.: 09/418,726 · Filed: Oct. 15, 1999",
       ],
@@ -123,7 +123,13 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       text: "ABSTRACT",
     },
     p(
-      "Robotic surgical tools, systems, and methods for preparing for and performing robotic surgery include a robotic surgical component having a component body with an interface mountable to a component holder of a robotic surgical system. The component includes circuitry defining a signal for transmitting to the processor, indicating component compatibility, component type, and calibration offsets.",
+      "Robotic surgical tools, systems, and methods for preparing for and performing robotic surgery include a memory mounted on the tool. The memory can provide a compatibility signal, identify the tool type so the system can reconfigure its programming, and indicate tool-specific information such as calibration offsets or tool life data. The information may be stored in read-only or ",
+      term(
+        "nonvolatile memory",
+        "Nonvolatile tool memory",
+        "Memory that retains compatibility, tool-type, calibration, or use information when the detachable surgical tool is disconnected from the robotic controller.",
+      ),
+      ", and the invention further provides engagement structures for coupling tools with manipulators.",
     ),
     {
       kind: "heading",
@@ -131,7 +137,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       text: "FIELD OF THE INVENTION",
     },
     p(
-      "The present invention relates generally to robotic surgical devices, systems, and methods, and more particularly to articulated robotic surgical instruments, master-slave telemanipulation architectures, and data exchange interfaces between detachable surgical tools and robotic controllers.",
+      "This invention relates generally to robotically assisted surgery, and more particularly to surgical tools having improved mechanical and/or data-interface capabilities to enhance the safety, accuracy, and speed of minimally invasive and other robotically enhanced surgical procedures.",
     ),
     {
       kind: "heading",
@@ -139,10 +145,10 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       text: "BACKGROUND OF THE INVENTION",
     },
     p(
-      "Minimally invasive surgical techniques avoid open surgical incisions by introducing elongate surgical instruments and endoscopes through small puncture apertures (such as 5 to 12 mm trocars) in the patient’s body wall. While minimally invasive surgery significantly reduces patient trauma, postoperative pain, and recovery times, conventional manual laparoscopic instruments severely constrain surgeon dexterity.",
+      "A surgeon typically operates a master controller to remotely control surgical instruments at the surgical site. The controller may be across the operating room, in another room, or in another building, and may use joysticks, exoskeletal gloves, or master manipulators coupled by a servo mechanism to a slave supporting the tool.",
     ),
     p(
-      "Traditional manual laparoscopic instruments pivot about the entry incision fulcrum, causing inverted motion where moving the instrument handle to the left moves the tool tip to the right. Furthermore, rigid manual instruments lack wrist articulation inside the body cavity, severely limiting the surgeon’s ability to manipulate delicate tissue, perform precise dissection, and tie surgical sutures in deep anatomical spaces.",
+      "The specification identifies practical challenges: a procedure may use many different instruments, the number of independent manipulators may be limited by space and cost, and several instruments may be introduced through the same trocar sleeve. The invention addresses these tool-change and compatibility problems.",
     ),
     {
       kind: "heading",
@@ -150,16 +156,10 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       text: "SUMMARY OF THE INVENTION",
     },
     p(
-      "The present invention provides advanced robotic surgical tools and master-slave control architectures that restore intuitive human dexterity inside minimally invasive surgical sites. The robotic system includes a surgeon master console, a patient-side surgical cart with motorized robotic manipulator arms, and detachable articulated robotic instruments.",
+      "The invention provides improved robotic surgical devices, systems, and methods for preparing for and performing robotic surgery. The robotic tools often use a memory structure mounted on a tool, manipulator arm, or movable support structure.",
     ),
     p(
-      "Each robotic surgical instrument incorporates an ",
-      term(
-        "EndoWrist mechanism",
-        "Articulated EndoWrist Wrist Joint",
-        "A multi-cable distal wrist mechanism providing internal pitch, yaw, and rotation inside the patient with 7 degrees of freedom.",
-      ),
-      " providing pitch, yaw, and grip actuation inside the patient body, combined with onboard electronic memory that stores tool calibration offsets and tool-type identification for automatic calibration by the robot processor.",
+      "The memory can verify compatibility when a tool is loaded, identify whether it is a scalpel, needle grasper, jaws, scissors, clip applier, electrocautery blade, or another tool type, and provide measured calibration offsets or tool-life information. The information may be stored in one-time programmable EPROM, Flash EPROM, EEPROM, battery-backed SRAM, or another serial or random-access technology.",
     ),
     {
       kind: "heading",
@@ -174,18 +174,8 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
         "Perspective view of the master-slave robotic surgical workstation and patient cart",
       ),
       " is a perspective view of a robotic surgical workstation and patient cart;\n",
-      makePreview(
-        "FIG. 2",
-        [2],
-        "Perspective view of the distal articulated EndoWrist wrist joint and forceps end effector",
-      ),
-      " is a perspective view of an articulated distal wrist joint and forceps end effector; and\n",
-      makePreview(
-        "FIG. 3",
-        [3],
-        "Perspective view of the sterile tool interface housing showing driven engagement disks",
-      ),
-      " is a perspective view of the tool interface housing showing driven engagement elements.",
+      makePreview("FIG. 2", [2], "Perspective view of the robotic surgical arm cart system"),
+      " is a perspective view of a robotic surgical arm cart system; FIGS. 2A-C show a manipulator and its remote-center linkage; FIGS. 3 and 3A show exemplary cart structures; FIG. 4 shows an exemplary tool; FIGS. 4A-B show alternative drive systems; FIGS. 5A-H show different end-effectors; FIG. 6 shows the tool interface; FIGS. 7A-E and 7G-L show adapters, holders, drives, and contacts; FIG. 8 shows wiring; FIGS. 8A-B show the master console; FIGS. 9-10 show tool-change signal and software paths; FIGS. 11-13 show engagement state logic; FIGS. 14A-C show mounting; and FIG. 15 shows compatibility verification.",
     ),
     {
       kind: "heading",
@@ -194,27 +184,31 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
     },
     p(
       "Referring to ",
-      makePreview("FIG. 1", [1], "Robotic surgical workstation overview"),
-      ", a robotic surgical system 10 includes a surgeon console 12 and a patient-side cart 14 supporting a plurality of robotic manipulator arms 16. The surgeon sits at console 12 viewing a high-resolution 3D stereoscopic surgical field through viewer 18 while manipulating left and right master control grips 20.",
+      makePreview("FIG. 1", [1], "Robotic surgical procedure and tool-change view"),
+      ", robotic surgery generally involves multiple robotic arms supporting articulated or non-articulated surgical tools and an image-capture device such as an endoscope. In the illustrated embodiment a master controller 150 directs a slave cart 50 beside patient body P, with shafts entering an internal site through openings O.",
     ),
     p(
-      "A digital control system samples master grip positions at high frequency (1,000 Hz) and maps master movements to slave instrument motions using coordinate transformation matrices. The controller incorporates selectable motion scaling (such as 3:1 or 5:1 displacement reduction) and digital low-pass filtering to completely filter out physiological hand tremor, enabling microscopic surgical precision.",
-    ),
-    p(
-      "Referring to ",
-      makePreview("FIG. 2", [2], "Distal wrist and forceps"),
-      ", the distal end of tool shaft 30 includes a multi-axis wrist joint 32 supporting opposed forceps jaws 34. Actuation cables extending through the shaft couple driven disks at the proximal interface to the wrist pulleys and jaws, providing seven degrees of freedom matching human wrist and finger movement.",
+      "The master controllers are manual input devices that preferably move with six degrees of freedom and may include an actuated handle. The slave cart supports tools through manually articulatable set-up joints and a robotic manipulator. The patent does not state a 1,000 Hz sample rate, a fixed motion-scaling ratio, or an 8 Hz tremor filter in this grant.",
     ),
     p(
       "Referring to ",
-      makePreview("FIG. 3", [3], "Tool interface housing"),
-      ", tool housing 40 includes an interface 42 that releasably latches onto the robotic arm tool holder. A series of rotatable driven disks 44 engage motor output drive pins on the robot arm across a sterile drape barrier to transmit mechanical torque without breaking sterility.",
+      makePreview("FIG. 2A", [3], "Robotic manipulator linkage and remote center"),
+      ", linkage 62 uses rigid links and rotational joints in a parallelogram arrangement. Pitch and yaw axes intersect at ",
+      term(
+        "remote center",
+        "Remote center of rotation",
+        "The fixed point at which the manipulator's pitch and yaw axes intersect and around which the tool shaft pivots during minimally invasive positioning.",
+      ),
+      " 64, aligned with tool shaft 66. Insertion along axis 64c leaves the remote center fixed relative to manipulator base 68.",
     ),
     p(
-      "Tool housing 40 further houses an electronic memory chip (such as an EEPROM) electrically connected to interface pins. The memory stores a unique tool serial number, tool-type code, permitted procedure count, and high-precision factory calibration offsets measuring the angular deviation between nominal driven disk positions and actual jaw angles.",
+      "Motors 70 drive the linkage, rotate tool 54 about shaft axis 66, articulate a distal wrist, and actuate an end effector. Flexible members may transfer motion from the drive components to the tool, while cannula 72 supports rotation and axial movement in endoscopic procedures.",
     ),
     p(
-      "When the instrument is latched onto the robot arm, the central processor automatically reads the calibration data from memory, initializes kinematic transformation tables, and verifies tool compatibility and remaining procedure life before enabling master-slave motion.",
+      "The broader system uses a tool interface with driven elements and tool-drive systems coupled to distal degrees of motion. Calibration offsets can record the difference between nominal and measured relative positions, and a memory coupled to the interface can transmit those offsets to the processor.",
+    ),
+    p(
+      "The specification also describes tool-type data, tool-life and cumulative-use data, engagement sensors, sterile adapters, and an optional magnet that actuates circuitry in a holder. These examples support safe tool exchange; they do not establish a commercial product specification beyond the words of this grant.",
     ),
     {
       kind: "heading",
@@ -357,7 +351,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The tool of claim 6, wherein the signal further indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of cal- endar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.",
+          text: "The tool of claim 6, wherein the signal further indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of calendar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.",
         },
       ],
     },
@@ -407,7 +401,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
         },
       ],
     },

@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { roombaArchivalEdition } from "@/data/editions/roombaEdition";
-import { roombaPatent } from "@/data/patents/roomba";
+import { manualClaimText, roombaPatent } from "@/data/patents/roomba";
 
 const PINNED_SHA256 = "66133fab282d46a32c5e5228d9207bcce1d2b49db90d627325592964fe4d5a3e";
 
@@ -17,6 +17,8 @@ describe("US 6,594,844 iRobot Roomba Archival Edition Contract", () => {
     });
     expect(roombaPatent.archivalEdition).toBe(roombaArchivalEdition);
     expect(roombaPatent.originalTextAsset).toBeDefined();
+    expect(roombaPatent.inventors).toEqual(["Joseph L. Jones"]);
+    expect(roombaPatent.filingDate).toBe("2001-01-24");
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {
@@ -34,6 +36,9 @@ describe("US 6,594,844 iRobot Roomba Archival Edition Contract", () => {
     for (let i = 1; i <= 20; i++) {
       const claim = claims.find((c) => c.number === i);
       expect(claim).toBeDefined();
+      expect(roombaPatent.claims.find((candidate) => candidate.number === i)?.originalText).toBe(
+        manualClaimText(i),
+      );
     }
   });
 
