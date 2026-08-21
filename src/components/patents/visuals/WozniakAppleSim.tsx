@@ -1,6 +1,16 @@
 "use client";
 
-import { Cpu, Monitor, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import {
+  Cpu,
+  Monitor,
+  Pause,
+  Play,
+  RotateCcw,
+  Sparkles,
+  Volume2,
+  VolumeX,
+  Zap,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";
@@ -60,7 +70,7 @@ export function WozniakAppleSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Cpu className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
@@ -74,27 +84,61 @@ export function WozniakAppleSim() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsClockRunning(!isClockRunning)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-        >
-          <Zap className="w-3.5 h-3.5" />
-          <span>{isClockRunning ? "Pause Clock" : "Resume Clock"}</span>
-        </button>
-        <label className="flex items-center gap-2 text-[10px] font-mono text-ink-600 dark:text-ink-400">
-          Steal Φ2
-          <input
-            type="range"
-            min="0"
-            max="0.9"
-            step="0.05"
-            aria-label="Steal phase-two video cycles"
-            value={phi2Steal}
-            onChange={(e) => updateParam("phi2Steal", Number(e.target.value))}
-            className="w-24 accent-amber-600"
-          />
-        </label>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <label className="flex items-center gap-2 text-[10px] font-mono text-ink-600 dark:text-ink-400 mr-2">
+            Steal Φ2:
+            <input
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.05"
+              aria-label="Steal phase-two video cycles"
+              value={phi2Steal}
+              onChange={(e) => updateParam("phi2Steal", Number(e.target.value))}
+              className="w-20 accent-amber-600"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsClockRunning(!isClockRunning);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isClockRunning ? "Pause Clock" : "Resume Clock"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isClockRunning ? "Pause Clock" : "Resume Clock"}
+          >
+            {isClockRunning ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Grid: 2D Bus Architecture Flow + Waveform */}

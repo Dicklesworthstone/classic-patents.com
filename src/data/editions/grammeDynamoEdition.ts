@@ -13,9 +13,22 @@ const crop = (number: number, width: number, height: number, label: string) => (
   height,
 });
 
+const versionedCrop = (
+  number: number,
+  version: number,
+  width: number,
+  height: number,
+  description: string,
+) => ({
+  src: `/patents/figures/us-120057-gramme-dynamo/fig-${number}-source-crop-v${version}.png`,
+  alt: `${description} from US 120,057.`,
+  width,
+  height,
+});
+
 const FIGURE_CROPS = {
-  1: crop(1, 380, 500, "Fig. 1"),
-  2: crop(2, 320, 520, "Fig. 2"),
+  1: versionedCrop(1, 3, 315, 435, "Upright source-facsimile crop of Fig. 1"),
+  2: versionedCrop(2, 3, 225, 450, "Upright source-facsimile crop of Fig. 2"),
   3: {
     src: "/patents/figures/us-120057-gramme-dynamo/fig-3-source-crop-v2.png",
     alt: "Source-facsimile crop of Fig. 3 from US 120,057.",
@@ -28,7 +41,7 @@ const FIGURE_CROPS = {
     width: 1140,
     height: 525,
   },
-  5: crop(5, 1220, 580, "Fig. 5"),
+  5: versionedCrop(5, 3, 1220, 385, "Upright source-facsimile crop of Fig. 5"),
   6: {
     src: "/patents/figures/us-120057-gramme-dynamo/fig-6-source-crop-v2.png",
     alt: "Tight upright source-facsimile crop of Fig. 6 from US 120,057, excluding the sheet title above the figure.",
@@ -41,10 +54,10 @@ const FIGURE_CROPS = {
     width: 1300,
     height: 900,
   },
-  8: crop(8, 1100, 650, "Fig. 8"),
+  8: versionedCrop(8, 3, 945, 440, "Upright source-facsimile crop of Fig. 8"),
   9: crop(9, 1100, 340, "Fig. 9"),
-  10: crop(10, 620, 660, "Fig. 10"),
-  11: crop(11, 650, 560, "Fig. 11"),
+  10: versionedCrop(10, 3, 320, 600, "Upright source-facsimile crop of Fig. 10"),
+  11: versionedCrop(11, 3, 450, 450, "Upright source-facsimile crop of Fig. 11"),
   12: {
     src: "/patents/figures/us-120057-gramme-dynamo/fig-12-source-crop-v3.png",
     alt: "Tight upright source-facsimile crop of Fig. 12 from US 120,057, excluding the neighboring Fig. 13 and witness lines.",
