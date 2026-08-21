@@ -4,6 +4,7 @@ import { BookOpen, Calendar, Check, FileDown, MapPin, Share2, User } from "lucid
 import Link from "next/link";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { formatPatentDate } from "@/utils/patentDate";
 import type { Patent } from "@/types/patent";
 import { ArchaicGlossaryModal } from "./ArchaicGlossaryModal";
 
@@ -87,7 +88,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
           <span className="text-ink-500 text-xs block flex items-center gap-1 mb-0.5">
             <User className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Inventor(s)
           </span>
-          <span className="font-bold text-ink-950 dark:text-parchment-100 truncate block text-sm sm:text-base">
+          <span className="font-bold text-ink-950 dark:text-parchment-100 block text-sm sm:text-base">
             {patent.inventors.join(", ")}
           </span>
         </div>
@@ -97,7 +98,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
             <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Grant Date
           </span>
           <span className="font-bold text-ink-950 dark:text-parchment-100 text-sm sm:text-base">
-            {patent.grantDate}
+            {formatPatentDate(patent.grantDate)}
           </span>
         </div>
 
@@ -106,7 +107,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
             <Calendar className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Filing Date
           </span>
           <span className="font-bold text-ink-950 dark:text-parchment-100 text-sm sm:text-base">
-            {patent.filingDate ?? "Not recorded"}
+            {patent.filingDate ? formatPatentDate(patent.filingDate) : "Not recorded"}
           </span>
         </div>
 
@@ -114,7 +115,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
           <span className="text-ink-500 text-xs block flex items-center gap-1 mb-0.5">
             <MapPin className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" /> Location
           </span>
-          <span className="font-bold text-ink-950 dark:text-parchment-100 truncate block text-sm sm:text-base">
+          <span className="font-bold text-ink-950 dark:text-parchment-100 block text-sm sm:text-base">
             {patent.inventorLocation}
           </span>
         </div>

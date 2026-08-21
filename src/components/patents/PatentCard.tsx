@@ -1,6 +1,7 @@
 import { Activity, ArrowRight, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { formatPatentDate } from "@/utils/patentDate";
 import type { Patent } from "@/types/patent";
 
 interface PatentCardProps {
@@ -44,13 +45,15 @@ export function PatentCard({ patent }: PatentCardProps) {
 
         {/* Inventors & Meta */}
         <div className="pt-3 border-t border-parchment-200 dark:border-ink-800/80 space-y-2 text-xs sm:text-sm font-sans text-ink-700 dark:text-ink-300">
-          <div className="flex items-center gap-2 truncate">
-            <User className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
-            <span className="truncate font-semibold">{patent.inventors.join(", ")}</span>
+          <div className="flex items-start gap-2">
+            <User className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+            <span className="line-clamp-2 font-semibold" title={patent.inventors.join(", ")}>
+              {patent.inventors.join(", ")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
-            <span>Granted: {patent.grantDate}</span>
+            <span>Granted: {formatPatentDate(patent.grantDate)}</span>
           </div>
         </div>
       </div>

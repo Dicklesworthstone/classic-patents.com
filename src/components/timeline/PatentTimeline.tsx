@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { allPatents } from "@/data/patents";
+import { formatPatentDate } from "@/utils/patentDate";
 
 type EraGroup = "all" | "early" | "gilded" | "modern";
 
@@ -166,7 +167,7 @@ export function PatentTimeline() {
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-mono text-xs font-bold border border-amber-300 dark:border-amber-700">
-                {selectedPatent.grantDate}
+                {formatPatentDate(selectedPatent.grantDate)}
               </span>
               <span className="font-mono text-xs text-ink-500 font-semibold">
                 {selectedPatent.patentNumber}
