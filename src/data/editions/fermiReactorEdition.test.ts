@@ -4,10 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
-import type {
-  CuratedSpecificationBlock,
-  CuratedSpecificationEdition,
-} from "@/types/patent";
+import type { CuratedSpecificationBlock, CuratedSpecificationEdition } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
   fermiReactorArchivalEdition,
