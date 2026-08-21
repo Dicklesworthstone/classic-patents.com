@@ -10,6 +10,7 @@ export interface PageRankModel {
   surferParticles: THREE.Points;
   surferPositions: Float32Array;
   updateSurfers: (timeSec: number, omegaRadPerSec?: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -203,6 +204,16 @@ export function buildPageRankModel(): PageRankModel {
     surferGeo.attributes.position.needsUpdate = true;
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    nodeMats.forEach((m) => {
+      m.transparent = cutaway;
+      m.opacity = cutaway ? 0.35 : 1.0;
+      m.needsUpdate = true;
+    });
+    edgeMat.opacity = cutaway ? 0.2 : 0.75;
+    edgeMat.needsUpdate = true;
+  };
+
   return {
     root,
     mainGroup,
@@ -211,6 +222,7 @@ export function buildPageRankModel(): PageRankModel {
     surferParticles,
     surferPositions,
     updateSurfers,
+    setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();
       for (const m of materialsToDispose) m.dispose();
