@@ -310,6 +310,33 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-400766-hall-aluminium": {
+      if (controlKey === "currentAmperes") {
+        const _i = params.currentAmperes ?? 300000.0;
+        const dM_dI = 0.316; // kg / (kA · hr)
+        return {
+          metricName: "Faradaic Production Sensitivity",
+          derivativeSymbol: "∂ṁ_Al / ∂I",
+          derivativeValue: Number(dM_dI.toFixed(3)),
+          derivativeUnit: "kg / (kA·hr)",
+          interpretation:
+            "Faraday's law stoichiometric deposition rate at 94% cathodic current efficiency.",
+        };
+      }
+      if (controlKey === "bathTemperatureCelsius") {
+        const dSigma_dT = 0.0028; // S/cm / °C
+        return {
+          metricName: "Bath Conductivity Sensitivity",
+          derivativeSymbol: "∂σ_bath / ∂T",
+          derivativeValue: Number(dSigma_dT.toFixed(4)),
+          derivativeUnit: "S/cm · °C",
+          interpretation:
+            "Ionic mobility increase in molten cryolite-alumina electrolyte reducing cell ohmic drop.",
+        };
+      }
+      break;
+    }
+
     case "gb-913-watt-separate-condenser":
     case "gb-1306-watt-rotary-engine": {
       if (controlKey === "boilerPressurePsi" || controlKey === "boilerPressure") {
