@@ -319,64 +319,61 @@ export function MorseTelegraph3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Battery Potential</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {lineVoltageV} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="6"
-              max="48"
-              step="2"
-              value={lineVoltageV}
-              onChange={(e) => updateParam("lineVoltageV", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="morseLineVoltage"
+            patentId="us-1647-morse-telegraph"
+            paramKey="lineVoltage"
+            label="Battery Potential"
+            value={lineVoltageV}
+            min={6}
+            max={48}
+            step={2}
+            unit="V"
+            onChange={(val) => updateParam("lineVoltageV", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Telegraph Line Distance
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {lineLengthMiles} miles
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="150"
-              step="5"
-              value={lineLengthMiles}
-              onChange={(e) => updateParam("lineLengthMiles", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="morseLineDistance"
+            patentId="us-1647-morse-telegraph"
+            paramKey="lineResistance"
+            label="Telegraph Line Distance"
+            value={lineLengthMiles}
+            min={10}
+            max={150}
+            step={5}
+            unit="miles"
+            onChange={(val) => updateParam("lineLengthMiles", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Transmission Cadence
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {wpmSpeed} WPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="35"
-              step="1"
-              value={wpmSpeed}
-              onChange={(e) => updateParam("wpmSpeed", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="morseWpmSpeed"
+            patentId="us-1647-morse-telegraph"
+            paramKey="wpmSpeed"
+            label="Transmission Cadence"
+            value={wpmSpeed}
+            min={5}
+            max={35}
+            step={1}
+            unit="WPM"
+            onChange={(val) => updateParam("wpmSpeed", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-1647-morse-telegraph"
+          params={params}
+          onUpdateParam={updateParam}
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-1647-morse-telegraph"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

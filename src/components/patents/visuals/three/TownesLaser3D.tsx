@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import {
   articulateTownesLaserModel,
@@ -28,10 +28,10 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  isometric: { pos: [0, 2.5, 5.0], target: [0, 0, 0] },
-  opticalCavity: { pos: [-0.3, 0.8, 3.2], target: [-0.3, 0, 0] },
-  rearReflector: { pos: [-1.8, 0.6, 2.2], target: [-1.8, 0, 0] },
-  outputCoupler: { pos: [1.2, 0.6, 2.2], target: [1.2, 0, 0] },
+  isometric: { pos: [0, 3.5, 5.0], target: [0, 0, 0] },
+  opticalCavity: { pos: [0, 1.2, 3.2], target: [0, 0, 0] },
+  rearReflector: { pos: [-2.6, 0.6, 2.2], target: [-2.6, 0, 0] },
+  outputCoupler: { pos: [2.0, 0.6, 2.2], target: [2.0, 0, 0] },
   detector: { pos: [2.6, 0.6, 2.2], target: [2.6, 0, 0] },
 };
 
@@ -46,7 +46,7 @@ export function TownesLaser3D({
   const nodesRef = useRef<TownesLaserModelNodes | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 

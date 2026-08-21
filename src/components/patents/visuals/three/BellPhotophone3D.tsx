@@ -6,7 +6,7 @@ import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -41,7 +41,7 @@ export function BellPhotophone3D({
   const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
   const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");

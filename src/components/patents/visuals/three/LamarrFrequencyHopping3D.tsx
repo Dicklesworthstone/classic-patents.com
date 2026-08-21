@@ -11,7 +11,7 @@ import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
 } from "./lamarrFrequencyHoppingModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -36,7 +36,7 @@ export function LamarrFrequencyHopping3D() {
 
   // Spread Spectrum State Controls
   const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");

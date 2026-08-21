@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -40,6 +43,7 @@ export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Pneumatic Simulation Parameters from Shared Hook
   const { params, updateParam } = usePatentPhysics("us-124404-westinghouse-air-brake");
@@ -211,7 +215,15 @@ export function WestinghouseAirBrake3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-124404-westinghouse-air-brake"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("reservoirPipePressure", active ? 90 : 0);
+            }}
+          />
           <button
             type="button"
             onClick={toggleSound}
@@ -323,49 +335,34 @@ export function WestinghouseAirBrake3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Operating Pipe (Pipe B)
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {trainPipePressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="80"
-              step="5"
-              value={trainPipePressurePsi}
-              onChange={(e) =>
-                updateParam("trainPipePressure", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="westinghouseTrainPipe"
+            patentId="us-124404-westinghouse-air-brake"
+            paramKey="trainPipePressure"
+            paramKey="brakePipePressure"
+            label="Operating Pipe (Pipe B)"
+            value={trainPipePressurePsi}
+            min={0}
+            max={80}
+            step={5}
+            unit="psi"
+            onChange={(val) => updateParam("trainPipePressure", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Auxiliary Reservoir (Pipe B¹)
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {reservoirPipePressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="5"
-              value={reservoirPipePressurePsi}
-              onChange={(e) =>
-                updateParam("reservoirPipePressure", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="westinghouseReservoirPipe"
+            patentId="us-124404-westinghouse-air-brake"
+            paramKey="reservoirPressure"
+            label="Auxiliary Reservoir (Pipe B¹)"
+            value={reservoirPipePressurePsi}
+            min={0}
+            max={100}
+            step={5}
+            unit="psi"
+            onChange={(val) => updateParam("reservoirPipePressure", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -387,6 +384,19 @@ export function WestinghouseAirBrake3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-124404-westinghouse-air-brake"
+          params={params}
+          onUpdateParam={updateParam}
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-124404-westinghouse-air-brake"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );
