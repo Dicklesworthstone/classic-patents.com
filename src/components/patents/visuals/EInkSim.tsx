@@ -1,8 +1,11 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepEInk } from "@/physics/eInkKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface EInkSimProps {
   initialVoltage?: number;
@@ -14,7 +17,8 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
   const voltageId = useId();
   const viscosityId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-6120588-eink");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-6120588-eink");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const voltage = params.electrodeVoltageVolts ?? initialVoltage;
   const viscosity = params.fluidViscosityCp ?? initialViscosity;
   const chargeCoupled = params.particleChargeCoupled ?? 1.0;
