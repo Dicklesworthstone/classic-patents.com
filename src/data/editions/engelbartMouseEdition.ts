@@ -17,24 +17,39 @@ const mouseFigureAssets: Readonly<
   7: { width: 1300, height: 1450, version: "v1" },
 };
 
-const figure = (value: string, figureNumber: number) => {
-  const asset = mouseFigureAssets[figureNumber];
-  if (!asset) throw new Error(`US 3,541,541 is missing Figure ${figureNumber} crop metadata.`);
+const figure = (
+  value: string,
+  figureNumber: number,
+  options: {
+    previewFigures?: readonly number[];
+    label?: string;
+  } = {},
+) => {
+  const previewFigures = options.previewFigures ?? [figureNumber];
+  const previews = previewFigures.map((previewFigure) => {
+    const asset = mouseFigureAssets[previewFigure];
+    if (!asset)
+      throw new Error(`US 3,541,541 is missing Figure ${previewFigure} crop metadata.`);
+
+    const erratumContext =
+      figureNumber === 5 && previewFigure === 6
+        ? " (shown with FIG. 5 because the source sentence assigns disc 100 to FIG. 5 although disc 100 is drawn in FIG. 6)"
+        : "";
+    return {
+      src: `/patents/figures/us-3541541-engelbart-mouse/fig-${previewFigure}-source-crop-${asset.version}.png`,
+      alt: `US 3,541,541 source drawing FIG. ${previewFigure}${erratumContext}`,
+      width: asset.width,
+      height: asset.height,
+    };
+  });
 
   return {
     kind: "reference" as const,
     text: value,
     href: `#figure-${figureNumber}`,
     referenceType: "figure" as const,
-    label: `Source drawing ${value}`,
-    figurePreviews: [
-      {
-        src: `/patents/figures/us-3541541-engelbart-mouse/fig-${figureNumber}-source-crop-${asset.version}.png`,
-        alt: `US 3,541,541 source drawing ${value}`,
-        width: asset.width,
-        height: asset.height,
-      },
-    ],
+    label: options.label ?? `Source drawing ${value}`,
+    figurePreviews: previews,
   };
 };
 const term = (value: string, definition: string) => ({
@@ -268,7 +283,11 @@ export const engelbartMouseArchivalEdition: CuratedSpecificationEdition = {
       text(
         " illustrates still another position readout means, which possesses the advantage of digital output while requiring a minimum number of leads connecting the position indicator control to the computer. In the readout circuit of ",
       ),
-      figure("FIG. 5", 5),
+      figure("FIG. 5", 5, {
+        previewFigures: [5, 6],
+        label:
+          "Source wording reads FIG. 5 here; editorial source note: disc 100 belongs to the FIG. 6 incremental-encoder drawing, so both source previews are shown.",
+      }),
       text(
         ", a disc 100 is provided which has three rows of electrical contacts, designated 102, 104 and 106. The disc 100 has its axes fixed to the X wheel of the device shown in ",
       ),

@@ -1,9 +1,23 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   mccormickReaperArchivalEdition,
   mccormickReaperParallelReadings,
 } from "./mccormickReaperEdition";
+import { mccormickReaperPatent } from "../patents/mccormick-reaper";
+
+const servedFigureUrl = "/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png";
+const servedFigurePath = join(process.cwd(), "public", servedFigureUrl.replace(/^\//, ""));
+const servedFigureSha256 = "d149fb663fe501a72fc49521f7a1b6293e7fa982c014b24c37ef0c82ff3748ea";
+
+function pngDimensions(path: string): { width: number; height: number } {
+  const bytes = readFileSync(path);
+  expect(bytes.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+  return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+}
 
 describe("mccormickReaperArchivalEdition", () => {
   test("pins the entire three-sheet facsimile in a continuous manual edition", () => {
@@ -27,7 +41,13 @@ describe("mccormickReaperArchivalEdition", () => {
     expect(publicText).not.toContain("Application filed April 19");
   });
 
-  test("presents the unnumbered source drawing upright in landscape orientation", () => {
+  test("pins the served source drawing crop, dimensions, digest, and semantic mapping", () => {
+    expect(existsSync(servedFigurePath)).toBe(true);
+    expect(createHash("sha256").update(readFileSync(servedFigurePath)).digest("hex")).toBe(
+      servedFigureSha256,
+    );
+    expect(pngDimensions(servedFigurePath)).toEqual({ width: 3000, height: 1900 });
+
     const preview = mccormickReaperArchivalEdition.blocks.flatMap((block) => {
       if (block.kind === "figure-sheet") {
         const inlines = Array.isArray(block.description) ? block.description : [];
@@ -42,8 +62,39 @@ describe("mccormickReaperArchivalEdition", () => {
       }
       return [];
     })[0];
-    expect(preview?.src).toBe("/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png");
+    expect(preview).toMatchObject({
+      src: servedFigureUrl,
+      width: 3000,
+      height: 1900,
+    });
     expect(preview?.width).toBeGreaterThan(preview?.height ?? Number.POSITIVE_INFINITY);
+
+    const figureSheet = mccormickReaperArchivalEdition.blocks.find(
+      (block) => block.kind === "figure-sheet",
+    );
+    expect(figureSheet?.kind).toBe("figure-sheet");
+    if (figureSheet?.kind !== "figure-sheet") throw new Error("McCormick figure sheet is missing.");
+    const figureReference = figureSheet.description.find((inline) => inline.kind === "reference");
+    expect(figureReference).toMatchObject({
+      kind: "reference",
+      referenceType: "figure",
+      text: "The single drawing sheet",
+      figurePreviews: [{ src: servedFigureUrl }],
+    });
+
+    const drawing = mccormickReaperPatent.drawings.find(
+      (candidate) => candidate.figureNumber === "Unnumbered drawing sheet",
+    );
+    expect(drawing?.svgType).toBe("mccormick-reaper");
+    expect(drawing?.callouts.map((callout) => callout.label)).toEqual(["A", "B", "D", "L", "W", "T"]);
+    expect(drawing?.callouts.map((callout) => callout.element)).toEqual([
+      "Platform",
+      "Tongue",
+      "Cross-bar",
+      "Divider",
+      "Reel",
+      "Cutter",
+    ]);
   });
 
   test("provides a non-lossy companion reading for every rendered paragraph block only", () => {

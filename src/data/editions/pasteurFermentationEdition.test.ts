@@ -59,24 +59,32 @@ describe("pasteurFermentationArchivalEdition", () => {
       );
     }
     expect(paragraphIndexes).toEqual([
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22,
     ]);
-    expect(pasteurFermentationParallelReadings[20]?.join(" ")).toContain("execution sentence");
-    expect(pasteurFermentationParallelReadings[21]?.join(" ")).toContain(
+    expect(pasteurFermentationParallelReadings[21]?.join(" ")).toContain("execution sentence");
+    expect(pasteurFermentationParallelReadings[22]?.join(" ")).toContain(
       "signature and then identifies",
     );
   });
 
-  test("keeps the continuous apparatus paragraph and source exit label", () => {
-    const apparatus = pasteurFermentationArchivalEdition.blocks[5];
+  test("keeps source paragraph structure while removing only scan-page boundaries", () => {
+    const introduction = pasteurFermentationArchivalEdition.blocks[5];
+    expect(introduction?.kind).toBe("paragraph");
+    if (introduction?.kind !== "paragraph") {
+      throw new Error("Pasteur apparatus introduction moved unexpectedly.");
+    }
+    expect(introduction.inlines.map((inline) => inline.text).join("")).toEndWith(
+      "my said improved process.",
+    );
+    const apparatus = pasteurFermentationArchivalEdition.blocks[6];
     expect(apparatus?.kind).toBe("paragraph");
     if (apparatus?.kind !== "paragraph") {
       throw new Error("Pasteur apparatus paragraph moved unexpectedly.");
     }
     const apparatusText = apparatus.inlines.map((inline) => inline.text).join("");
+    expect(apparatusText).toStartWith("At Figure 1, A A A represent three casks or tanks");
     expect(apparatusText).toContain("spray-nozzles P. Upon a suitable stand");
-    expect(pasteurFermentationArchivalEdition.blocks[6]?.kind).toBe("paragraph");
-    const exitParagraph = pasteurFermentationArchivalEdition.blocks[6];
+    const exitParagraph = pasteurFermentationArchivalEdition.blocks[7];
     if (exitParagraph?.kind !== "paragraph") {
       throw new Error("Pasteur exit paragraph moved unexpectedly.");
     }
@@ -164,6 +172,9 @@ describe("pasteurFermentationArchivalEdition", () => {
     expect(ledger).toContain("exit or escape tubes at x");
     expect(ledger).not.toContain("exit or escape tubes at a′");
     expect(ledger).toContain("16° to 18° Reaumur");
+    expect(ledger).toContain("Printed reference characters: A (three vessels)");
+    expect(ledger).toContain("M M (carbonic-acid-gas generator)");
+    expect(ledger).toContain("Printed reference characters: B (modified removable-top vessel)");
     expect(JSON.stringify(pasteurFermentationArchivalEdition)).not.toContain(
       "shows the three vessels and the spray arrangement",
     );
@@ -178,6 +189,10 @@ describe("pasteurFermentationArchivalEdition", () => {
     });
     expect(pasteurFermentationPatent.stats).toMatchObject({ totalClaims: 1, independentClaims: 1 });
     expect(pasteurFermentationPatent.filingDate).toBeNull();
+    expect(pasteurFermentationPatent.drawings.map((drawing) => drawing.svgType)).toEqual([
+      "pasteur-fermentation",
+      "pasteur-fermentation-fig-2",
+    ]);
     expect(parsePatentCatalog([pasteurFermentationPatent])).toHaveLength(1);
   });
 

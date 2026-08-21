@@ -480,7 +480,7 @@ export const lamarrFrequencyHoppingParallelReadings: Readonly<Record<number, rea
     "The records are long perforated paper rolls, one at the transmitter and one at the receiver. Their corresponding longitudinal rows choose tuning states from time to time; without the matching rolls, an opponent cannot tell which carrier will carry a control impulse. The grant also says the rolls may be substantial in length and driven slowly or quickly, so they can last for a torpedo-control operation.",
   ],
   6: [
-    "Matching motor speed keeps the records in phase. The inventors also allow periodic radio synchronization, rather than requiring perfect free-running clocks for an entire mission.",
+    "The records may be driven by accurately calibrated constant-speed spring motors of the kind used in clocks and chronometers, keeping corresponding positions in phase. The inventors also allow the receiving record to be periodically corrected by synchronous impulses from the transmitter; they identify that phase-correction practice as well known in automatic telegraphy and television.",
   ],
   7: [
     "These are the seven figures the specification will use: transmitter, receiver, release circuit, punched strip, pneumatic selector, pin detail, and a torpedo-course example.",
@@ -549,7 +549,7 @@ export const lamarrFrequencyHoppingParallelReadings: Readonly<Record<number, rea
     "Before firing, the source places transmitter apparatus from Fig. 1 on the mother ship and receiver apparatus from Fig. 2 on the torpedo. Battery 105 energizes the two solenoids 103 in series through conductors 106 running between them, holding both strips at their starting holes. Launch breaks those conductors, interrupts the series circuit, and releases both strips at the same instant to begin their motion in phase.",
   ],
   24: [
-    "Three transmitter channels have no matching receiver channel. They are decoys: pulses sent there can be heard by an enemy but cannot move the torpedo. The lamp marks the moments when a real command would not be received.",
+    "In the illustrated arrangement the receiver is effective on channels D, E, F, and G, while it is ineffective on transmitter-only channels A, B, and C. A pulse sent while the transmitter is on A, B, or C is therefore a false impulse that cannot move the torpedo; lamp 43 indicates when the transmitter and receiver are not tuned alike.",
   ],
   25: [
     "Row H makes the lamp illuminate during changes between usable channels and throughout decoy channels. The operator can intentionally emit decoy pulses while knowing the lamp means they will not steer the torpedo.",

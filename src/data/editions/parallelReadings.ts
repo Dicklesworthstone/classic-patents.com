@@ -50,6 +50,7 @@ import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
+import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
 import { multiTouchParallelReadings } from "./multiTouchEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
@@ -139,6 +140,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2708656-fermi-reactor": fermiReactorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
+  "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,

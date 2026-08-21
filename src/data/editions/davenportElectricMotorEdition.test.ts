@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
@@ -7,7 +8,15 @@ import {
   davenportElectricMotorParallelReadings,
 } from "@/data/editions/davenportElectricMotorEdition";
 import { davenportElectricMotorPatent } from "@/data/patents/davenport-electric-motor";
-import { validateReviewedTranscriptionPageAnchors } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscriptionEditorialIntegrity,
+  validateReviewedTranscriptionPageAnchors,
+} from "@/data/patents/sourceTextValidation";
+
+function readPngDimensions(bytes: Buffer): { width: number; height: number } {
+  expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+  return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+}
 
 describe("davenportElectricMotorArchivalEdition", () => {
   test("is a complete manual edition pinned to the US 132 facsimile", () => {
@@ -27,7 +36,14 @@ describe("davenportElectricMotorArchivalEdition", () => {
     const publicText = JSON.stringify(davenportElectricMotorArchivalEdition.blocks);
     expect(publicText).not.toContain("--- SOURCE PDF PAGE");
     expect(publicText).not.toContain("PAGE 2 OF 3");
-    expect(publicText).toContain("drawing-sheet-preview.png");
+    expect(publicText).not.toContain("drawing-sheet-preview.png");
+    expect(davenportElectricMotorPatent.filingDate).toBeNull();
+    expect(davenportElectricMotorPatent.drawings[0]?.figureNumber).toBe("Unnumbered drawing sheet");
+    expect(
+      davenportElectricMotorPatent.drawings[0]?.callouts.map((callout) => callout.label),
+    ).toEqual(["A", "B, C", "D–I", "K, L", "M–P, Q", "R, V", "S, T"]);
+    expect(davenportElectricMotorPatent.stats?.patentWarYears).toBeUndefined();
+    expect(davenportElectricMotorPatent.stats?.impactScore).toBeUndefined();
   });
 
   test("keeps the sole printed claim and its local drawing evidence explicit", () => {
@@ -42,14 +58,46 @@ describe("davenportElectricMotorArchivalEdition", () => {
     expect(davenportElectricMotorPatent.claims[0]?.originalText).toBe(
       claim.inlines.map((inline) => inline.text).join(""),
     );
-    expect(
-      existsSync(
-        join(
-          process.cwd(),
-          "public/patents/figures/us-132-davenport-electric-motor/drawing-sheet-preview.png",
-        ),
-      ),
-    ).toBe(true);
+    const expectedPreviews = [
+      {
+        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-1-source-crop-v2.png",
+        width: 1080,
+        height: 560,
+        sha256: "c1e0f4d53c41e80b1e0b9ddd69007f3e92fded589313d7cf9d64aadcffceb86e",
+      },
+      {
+        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-2-source-crop-v2.png",
+        width: 730,
+        height: 500,
+        sha256: "ec1cb8b8f44380320e08ab84eb7f94dd09b4dd637e18400a4469c55a6063e2be",
+      },
+      {
+        src: "/patents/figures/us-132-davenport-electric-motor/drawing-view-3-source-crop-v2.png",
+        width: 630,
+        height: 500,
+        sha256: "a2bccbe0bcca8234fd10b67636552128d1d4cd2f9812d325a0bc72cb759bc7d9",
+      },
+    ] as const;
+    const drawingReference = davenportElectricMotorArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .find((inline) => inline.kind === "reference" && inline.referenceType === "figure");
+    expect(drawingReference?.kind).toBe("reference");
+    if (drawingReference?.kind !== "reference") {
+      throw new Error("US 132 is missing its authored drawing reference.");
+    }
+    expect(drawingReference.figurePreviews).toEqual(
+      expectedPreviews.map(({ sha256: _sha256, ...preview }) => expect.objectContaining(preview)),
+    );
+    for (const expected of expectedPreviews) {
+      const path = join(process.cwd(), "public", expected.src.slice(1));
+      expect(existsSync(path)).toBe(true);
+      const bytes = readFileSync(path);
+      expect(readPngDimensions(bytes)).toEqual({
+        width: expected.width,
+        height: expected.height,
+      });
+      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
+    }
     expect(
       readFileSync(
         join(process.cwd(), "docs/provenance/us-132-davenport-electric-motor.md"),
@@ -98,5 +146,9 @@ describe("davenportElectricMotorArchivalEdition", () => {
     expect(validateReviewedTranscriptionPageAnchors(ledger, 3, sourceAsset.pageAnchors)).toEqual({
       valid: true,
     });
+    expect(validateReviewedTranscriptionEditorialIntegrity(ledger, 3)).toEqual({ valid: true });
+    expect(ledger).not.toContain("Drawing sheet:");
+    expect(ledger).toContain("A, B, C, D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S, T, V");
+    expect(ledger).toContain("not confidently legible in the supplied scan");
   });
 });

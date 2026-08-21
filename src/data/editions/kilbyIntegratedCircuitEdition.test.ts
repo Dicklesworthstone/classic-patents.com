@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import type { CuratedSpecificationEdition } from "@/types/patent";
 import { kilbyIntegratedCircuitPatent } from "../patents/kilby-integrated-circuit";
 import {
   kilbyIntegratedCircuitArchivalEdition,
@@ -17,15 +18,26 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     rootDir,
     "public/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
   );
+  const editionPath = join(rootDir, "src/data/editions/kilbyIntegratedCircuitEdition.ts");
 
-  test("attaches the reviewed archival edition and source asset to the public record", () => {
-    expect(kilbyIntegratedCircuitPatent.archivalEdition).toBeDefined();
-    expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeDefined();
+  test("keeps the public record fail-closed while the candidate is withheld", () => {
+    expect(kilbyIntegratedCircuitPatent.archivalEdition).toBeUndefined();
+    expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeUndefined();
+    expect(kilbyIntegratedCircuitArchivalEdition.completeFacsimileReviewed).toBe(false);
   });
 
-  test("passes full curated specification validation suite with zero errors", () => {
-    const result = validateCuratedSpecificationEdition(kilbyIntegratedCircuitArchivalEdition);
-    expect(result).toEqual({ valid: true, errors: [] });
+  test("rejects the withheld candidate instead of treating it as publishable", () => {
+    const result = validateCuratedSpecificationEdition(
+      kilbyIntegratedCircuitArchivalEdition as unknown as CuratedSpecificationEdition,
+    );
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("The archival edition lacks an explicit full-facsimile review attestation.");
+  });
+
+  test("keeps claims as direct authored edition nodes without an indexed claim array", () => {
+    const editionSource = readFileSync(editionPath, "utf-8");
+    expect(editionSource).not.toContain("sourceClaimTexts");
+    expect(editionSource).not.toContain(".map((value, index)");
   });
 
   test("matches the cryptographic SHA-256 digest of the pinned 9-page USPTO facsimile PDF", () => {
@@ -46,6 +58,9 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
     for (let page = 1; page <= 9; page++) {
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 9 ---`);
     }
+    expect(
+      transcript.match(/STATUS: WITHHELD WIP — editorial drawing-label inventory only; not a public facsimile transcription\./g),
+    ).toHaveLength(4);
   });
 
   test("verifies all referenced source figure crops exist on disk", () => {
@@ -69,7 +84,7 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
         ? block.inlines.flatMap((inline) =>
             inline.kind === "reference" &&
             inline.referenceType === "figure" &&
-            ["Fig. 1", "Fig. 2"].includes(inline.text)
+            ["Fig. 1", "FIGURE 2"].includes(inline.text)
               ? [inline]
               : [],
           )

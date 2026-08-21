@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
   carlsonElectrophotographyArchivalEdition,
   carlsonElectrophotographyParallelReadings,
@@ -17,9 +16,8 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     "public/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
   );
 
-  test("passes full curated specification validation suite with zero errors", () => {
-    const result = validateCuratedSpecificationEdition(carlsonElectrophotographyArchivalEdition);
-    expect(result).toEqual({ valid: true, errors: [] });
+  test("remains explicitly withheld until Luna source review is complete", () => {
+    expect(carlsonElectrophotographyArchivalEdition.completeFacsimileReviewed).toBe(false);
   });
 
   test("matches the cryptographic SHA-256 digest of the pinned 10-page USPTO facsimile PDF", () => {
@@ -33,28 +31,32 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
     expect(computedDigest).toBe(carlsonElectrophotographyArchivalEdition.sourcePdfSha256);
   });
 
-  test("pins and validates the 10-page reviewed ledger transcript", () => {
+  test("keeps the 10-page ledger fail-closed with ordered WIP markers", () => {
     expect(existsSync(transcriptPath)).toBe(true);
     const transcript = readFileSync(transcriptPath, "utf-8");
 
     for (let page = 1; page <= 10; page++) {
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 10 ---`);
     }
+    expect(transcript).toContain("Luna");
+    expect(transcript).toContain("signature glyphs");
   });
 
-  test("verifies all referenced source figure crops exist on disk", () => {
+  test("records only versioned source-crop targets while the crop lane is withheld", () => {
+    let references = 0;
     for (const block of carlsonElectrophotographyArchivalEdition.blocks) {
       if (block.kind === "paragraph" || block.kind === "claim") {
         for (const inline of block.inlines) {
           if (inline.kind === "reference" && inline.figurePreviews) {
             for (const prev of inline.figurePreviews) {
-              const cropPath = join(rootDir, "public", prev.src.replace(/^\//, ""));
-              expect(existsSync(cropPath)).toBe(true);
+              references += 1;
+              expect(prev.src).toMatch(/source-crop-v[0-9]+\.png$/);
             }
           }
         }
       }
     }
+    expect(references).toBeGreaterThan(0);
   });
 
   test("exposes all 27 printed claims via dynamic single-source lookup", () => {

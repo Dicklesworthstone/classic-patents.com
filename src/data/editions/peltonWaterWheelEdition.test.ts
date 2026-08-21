@@ -1,10 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { peltonWaterWheelPatent } from "@/data/patents/pelton-water-wheel";
-import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import {
+  validateReviewedTranscription,
+  validateReviewedTranscriptionEditorialIntegrity,
+} from "@/data/patents/sourceTextValidation";
+import type { CuratedSpecificationEdition } from "@/types/patent";
 import {
   peltonWaterWheelArchivalEdition,
   peltonWaterWheelParallelReadings,
@@ -14,17 +17,22 @@ const normalized = (value: string) => value.replace(/\s+/g, " ").trim();
 
 describe("US 233,692 manual source edition", () => {
   test("pins the three-sheet facsimile and the source's one printed claim", () => {
-    expect(peltonWaterWheelPatent.archivalEdition).toBe(peltonWaterWheelArchivalEdition);
+    // Public binding is intentionally fail-closed until clean source-coordinate
+    // crops replace the neighboring-matter research artifacts.
+    expect(peltonWaterWheelPatent.archivalEdition).toBeUndefined();
     expect(peltonWaterWheelPatent.originalTextAsset).toMatchObject({
       url: "/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt",
       pageCount: 3,
       kind: "reviewed-transcription",
       sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
     });
-    expect(validateCuratedSpecificationEdition(peltonWaterWheelArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
-    });
+    const candidateValidation = validateCuratedSpecificationEdition(
+      peltonWaterWheelArchivalEdition as unknown as CuratedSpecificationEdition,
+    );
+    expect(candidateValidation.valid).toBeFalse();
+    expect(candidateValidation.errors).toContain(
+      "The archival edition lacks an explicit full-facsimile review attestation.",
+    );
     const pdf = readFileSync(
       `${process.cwd()}/public/patents/pdfs/us-233692-pelton-water-wheel.pdf`,
     );
@@ -40,6 +48,7 @@ describe("US 233,692 manual source edition", () => {
     if (!asset) throw new Error("US 233,692 is missing its reviewed source ledger.");
     const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
     expect(validateReviewedTranscription(ledger, 3)).toEqual({ valid: true });
+    expect(validateReviewedTranscriptionEditorialIntegrity(ledger, 3)).toEqual({ valid: true });
     const normalizedLedger = normalized(
       ledger.replace(/^--- REVIEWED TRANSCRIPTION PAGE \d+ OF \d+ ---$/gm, ""),
     );
@@ -55,7 +64,7 @@ describe("US 233,692 manual source edition", () => {
     }
   });
 
-  test("pairs every paragraph with a companion and every figure with a local crop", () => {
+  test("pairs every paragraph with a companion and every printed figure with a semantic ref", () => {
     const paragraphIndexes = peltonWaterWheelArchivalEdition.blocks.flatMap((block, index) =>
       block.kind === "paragraph" ? [index] : [],
     );
@@ -74,16 +83,14 @@ describe("US 233,692 manual source edition", () => {
     });
     for (const number of [1, 2, 3, 4]) {
       expect(
-        references.some((reference) =>
-          reference.figurePreviews?.some((preview) => preview.alt.includes(`Fig. ${number}`)),
+        references.some(
+          (reference) =>
+            reference.text.toLowerCase().includes(`fig. ${number}`) ||
+            reference.text.toLowerCase().includes(`figure ${number}`),
         ),
       ).toBe(true);
     }
-    for (const reference of references) {
-      for (const preview of reference.figurePreviews ?? []) {
-        expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
-      }
-    }
+    expect(references.every((reference) => !reference.figurePreviews)).toBe(true);
   });
 
   test("removes invented numeric turbine claims and the fabricated second claim", () => {

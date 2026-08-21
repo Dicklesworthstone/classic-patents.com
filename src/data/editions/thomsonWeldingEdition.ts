@@ -24,22 +24,22 @@ type FigurePreview = {
 
 const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
   1: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-1-source-crop-v5.png",
     alt: "US 347,140, Fig. 1: Thomson's pivoted electric-welding clamp and spring-pressure arrangement.",
-    width: 1150,
-    height: 1180,
+    width: 830,
+    height: 1050,
   },
   2: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-2-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-2-source-crop-v5.png",
     alt: "US 347,140, Fig. 2: side view of the electric-welding clamp.",
-    width: 600,
-    height: 1100,
+    width: 450,
+    height: 1050,
   },
   3: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-3-source-crop-v5.png",
     alt: "US 347,140, Fig. 3: wires in the clamps before abutment.",
-    width: 720,
-    height: 340,
+    width: 650,
+    height: 260,
   },
   4: {
     src: "/patents/figures/us-347140-thomson-welding/figure-4-source-crop-v2.png",
@@ -48,16 +48,16 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 300,
   },
   5: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-5-source-crop-v5.png",
     alt: "US 347,140, Fig. 5: removable clamp for a selected wire size.",
-    width: 360,
-    height: 520,
+    width: 340,
+    height: 400,
   },
   6: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-6-source-crop-v5.png",
     alt: "US 347,140, Fig. 6: compound clamp with three wire grooves.",
-    width: 360,
-    height: 520,
+    width: 270,
+    height: 380,
   },
   7: {
     src: "/patents/figures/us-347140-thomson-welding/figure-7-source-crop-v1.png",
@@ -66,16 +66,16 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 400,
   },
   8: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v2.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-8-source-crop-v5.png",
     alt: "US 347,140, Fig. 8: gravity-pressure arrangement with an adjustable weight.",
-    width: 750,
-    height: 285,
+    width: 780,
+    height: 310,
   },
   9: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-9-source-crop-v5.png",
     alt: "US 347,140, Fig. 9: modified pressure arrangement for the welding apparatus.",
-    width: 550,
-    height: 620,
+    width: 450,
+    height: 560,
   },
   10: {
     src: "/patents/figures/us-347140-thomson-welding/figure-10-source-crop-v2.png",
@@ -84,34 +84,34 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
     height: 260,
   },
   11: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-11-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-11-source-crop-v4.png",
     alt: "US 347,140, Fig. 11: a flanged work-piece joined to a bar.",
-    width: 500,
-    height: 500,
+    width: 620,
+    height: 320,
   },
   12: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-12-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-12-source-crop-v5.png",
     alt: "US 347,140, Fig. 12: a rectangular bar joined to a round bar.",
-    width: 600,
-    height: 300,
+    width: 360,
+    height: 220,
   },
   13: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-13-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-13-source-crop-v5.png",
     alt: "US 347,140, Fig. 13: an endless ring with its joint held between clamps.",
-    width: 550,
-    height: 630,
+    width: 410,
+    height: 500,
   },
   14: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-14-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-14-source-crop-v4.png",
     alt: "US 347,140, Fig. 14: an endless U-shaped bar.",
-    width: 600,
-    height: 780,
+    width: 850,
+    height: 800,
   },
   15: {
-    src: "/patents/figures/us-347140-thomson-welding/figure-15-source-crop-v1.png",
+    src: "/patents/figures/us-347140-thomson-welding/figure-15-source-crop-v5.png",
     alt: "US 347,140, Fig. 15: two smaller work-pieces joined to one larger piece.",
-    width: 680,
-    height: 520,
+    width: 520,
+    height: 360,
   },
   16: {
     src: "/patents/figures/us-347140-thomson-welding/figure-16-source-crop-v1.png",
@@ -135,6 +135,11 @@ const FIGURE_PREVIEWS: Readonly<Record<number, FigurePreview>> = {
 
 const SHEET_ONE = 1 as const;
 const SHEET_TWO = 2 as const;
+
+// Root visual QC rejected these candidate rectangles. Keep their files for
+// evidence, but fail closed by withholding them from authored references until
+// a source-aware replacement or explicit split preview is accepted.
+const WITHHELD_FIGURES = new Set([1, 3, 5, 6, 8, 9]);
 
 /** Each source label is manually bound to its own local crop(s); no prose is parsed. */
 const FIGURE_REFERENCE_PREVIEWS: Readonly<Record<string, readonly number[]>> = {
@@ -171,7 +176,9 @@ const figure = (
   href: "#",
   referenceType: "figure",
   label: `Preview the source drawing for ${text}`,
-  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text].map((number) => FIGURE_PREVIEWS[number]),
+  figurePreviews: FIGURE_REFERENCE_PREVIEWS[text]
+    .filter((number) => !WITHHELD_FIGURES.has(number))
+    .map((number) => FIGURE_PREVIEWS[number]),
 });
 
 const term = (text: string, definition: string): CuratedSpecificationInline => ({

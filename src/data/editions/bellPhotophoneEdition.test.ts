@@ -182,4 +182,37 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
       expect(content).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 13 ---`);
     }
   });
+
+  test("every authored source block is present in the reviewed ledger", () => {
+    const ledger = fs
+      .readFileSync(
+        path.join(
+          process.cwd(),
+          "public",
+          "patents",
+          "transcripts",
+          "us-235199-bell-photophone-reviewed.txt",
+        ),
+        "utf8",
+      )
+      .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 13 ---/g, "")
+      .replace(/\s+/g, " ");
+    const authoredBlocks = bellPhotophoneArchivalEdition.blocks.flatMap((block) => {
+      if (block.kind === "masthead") return block.lines;
+      if (block.kind === "paragraph" || block.kind === "claim") {
+        return [block.inlines.map((inline) => inline.text).join("")];
+      }
+      return [];
+    });
+    for (const sourceText of authoredBlocks) {
+      expect(ledger).toContain(sourceText.replace(/\s+/g, " ").trim());
+    }
+  });
+
+  test("parallel readings are authored companions rather than boilerplate echoes", () => {
+    for (const reading of Object.values(BELL_PHOTOPHONE_PARALLEL_READINGS)) {
+      expect(reading[0]).toBeDefined();
+      expect(reading[0]).not.toContain("This companion preserves the source proposition");
+    }
+  });
 });

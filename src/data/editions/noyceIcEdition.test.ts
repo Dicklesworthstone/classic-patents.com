@@ -6,7 +6,11 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { noyceIcPatent } from "@/data/patents/noyce-ic";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { CuratedSpecificationInline } from "@/types/patent";
-import { noyceIcArchivalEdition, noyceIcParallelReadings } from "./noyceIcEdition";
+import {
+  noyceIcArchivalEdition,
+  noyceIcOriginalTextExcerpt,
+  noyceIcParallelReadings,
+} from "./noyceIcEdition";
 
 describe("US 2,981,877 manual source edition", () => {
   test("pins the eight-page facsimile and all ten printed claims", () => {
@@ -129,6 +133,15 @@ describe("US 2,981,877 manual source edition", () => {
     ]) {
       expect(serializedEdition).toContain(`"text":"${term}"`);
     }
+    const shuntCapacitance = noyceIcArchivalEdition.blocks
+      .flatMap((block) => ("inlines" in block ? block.inlines : []))
+      .find((inline) => inline.kind === "term" && inline.text === "shunt capacitance");
+    expect(shuntCapacitance?.kind).toBe("term");
+    if (shuntCapacitance?.kind === "term") {
+      expect(shuntCapacitance.definition.length).toBeGreaterThan(80);
+      expect(shuntCapacitance.definition).toContain("lead");
+      expect(shuntCapacitance.definition).toContain("semiconductor body");
+    }
     expect(new Set(noyceIcPatent.claims.map((claim) => claim.plainEnglish)).size).toBe(10);
     for (const claim of noyceIcPatent.claims) {
       expect(claim.plainEnglish.length).toBeGreaterThan(180);
@@ -138,6 +151,55 @@ describe("US 2,981,877 manual source edition", () => {
     expect(noyceIcPatent.claims[5]?.plainEnglish).toContain("reverse-biases");
     expect(noyceIcPatent.claims[7]?.plainEnglish).toContain("C-shaped");
     expect(noyceIcPatent.claims[9]?.plainEnglish).toContain("parallel metal-strip");
+  });
+
+  test("derives the catalogue opening excerpt from the authored edition and removes the stale base claim copy", () => {
+    expect(noyceIcPatent.originalText).toBe(noyceIcOriginalTextExcerpt);
+    expect(noyceIcPatent.originalText).toContain(
+      "This invention relates to electrical circuit structures incorporating semiconductor devices.",
+    );
+    expect(noyceIcPatent.originalText).toContain("In brief, the present invention utilizes");
+    expect(noyceIcPatent.originalText).not.toContain("This catalogue excerpt is not the archival edition");
+    const patentSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/noyce-ic.ts"),
+      "utf8",
+    );
+    expect(patentSource).not.toMatch(/const baseNoyceIcPatent[\s\S]*?claims:\s*\[/);
+    expect(patentSource).not.toContain("A semiconductor device as defined in claim 1");
+  });
+
+  test("records the exact cloud recrop plan without binding uncreated replacement assets", () => {
+    const pendingPlan = [
+      {
+        figure: "Fig. 3",
+        page: 2,
+        rectangle: [430, 570, 1500, 800],
+        src: "/patents/figures/us-2981877-noyce-ic/fig-3-source-crop-v4.png",
+      },
+      {
+        figure: "Fig. 5 left source panel",
+        page: 2,
+        rectangle: [360, 2130, 860, 680],
+        src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v3-left.png",
+      },
+      {
+        figure: "Fig. 5 right source panel",
+        page: 2,
+        rectangle: [1250, 2130, 780, 680],
+        src: "/patents/figures/us-2981877-noyce-ic/fig-5-source-crop-v3-right.png",
+      },
+    ] as const;
+    const serializedEdition = JSON.stringify(noyceIcArchivalEdition);
+    for (const item of pendingPlan) {
+      expect(serializedEdition).not.toContain(item.src);
+      expect(existsSync(resolve(process.cwd(), "public", item.src.slice(1)))).toBe(false);
+      expect(item.rectangle.every((coordinate) => Number.isInteger(coordinate))).toBe(true);
+      expect(item.rectangle[2]).toBeGreaterThan(0);
+      expect(item.rectangle[3]).toBeGreaterThan(0);
+    }
+    expect(serializedEdition).toContain("fig-3-source-crop-v3.png");
+    expect(serializedEdition).toContain("fig-5-source-crop-v2-left.png");
+    expect(serializedEdition).toContain("fig-5-source-crop-v2-right.png");
   });
 
   test("pairs each source paragraph explicitly and maps every literal figure occurrence to pinned source crops", () => {

@@ -94,11 +94,14 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
     },
     {
       kind: "paragraph",
+      inlines: text(
+        "To enable those skilled in the art to fully understand and practice my improved process for the manufacture of beer, I will proceed to more fully describe it, referring at the same time by letters to the accompanying drawing, in which I have shown an apparatus adapted to carry on my said improved process.",
+      ),
+    },
+    {
+      kind: "paragraph",
       inlines: [
-        {
-          kind: "text",
-          text: "To enable those skilled in the art to fully understand and practice my improved process for the manufacture of beer, I will proceed to more fully describe it, referring at the same time by letters to the accompanying drawing, in which I have shown an apparatus adapted to carry on my said improved process. At ",
-        },
+        { kind: "text", text: "At " },
         figure(1, "Figure 1"),
         {
           kind: "text",

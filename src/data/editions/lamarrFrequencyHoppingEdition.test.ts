@@ -26,6 +26,26 @@ describe("US 2,292,387 manual source edition", () => {
     expect(
       lamarrPatent.claims.filter((claim) => claim.isIndependent).map((claim) => claim.number),
     ).toEqual([1, 4]);
+    expect(lamarrPatent.drawings.map((drawing) => drawing.figureNumber)).toEqual([
+      "Fig. 1",
+      "Fig. 2",
+      "Fig. 3",
+      "Fig. 4",
+      "Fig. 5",
+      "Fig. 6",
+      "Fig. 7",
+    ]);
+    expect(lamarrPatent.drawings.every((drawing) => drawing.callouts.length === 0)).toBe(true);
+  });
+
+  test("keeps the source distinctions in the two repaired companion readings", () => {
+    expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain(
+      "calibrated constant-speed spring motors",
+    );
+    expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain("clocks and chronometers");
+    expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain("automatic telegraphy and television");
+    expect(lamarrFrequencyHoppingParallelReadings[24]?.[0]).toContain("D, E, F, and G");
+    expect(lamarrFrequencyHoppingParallelReadings[24]?.[0]).toContain("A, B, and C");
   });
 
   test("derives the canonical claims from authored claim nodes", () => {

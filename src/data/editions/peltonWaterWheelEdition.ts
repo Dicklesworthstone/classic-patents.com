@@ -18,30 +18,18 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number, version = 2) => ({
-  src: `/patents/figures/us-233692-pelton-water-wheel/fig-${number}-source-crop-v${version}.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 233,692.`,
-  width,
-  height,
-});
-
-const FIGURES = {
-  "Fig. 1": crop(1, 1450, 1200),
-  "Fig. 2": crop(2, 2100, 1750, 3),
-  "Fig. 3": crop(3, 650, 800),
-  "Fig. 4": crop(4, 520, 620),
-} as const;
-
 const figure = (
-  label: keyof typeof FIGURES,
+  label: "Fig. 1" | "Fig. 2" | "Fig. 3" | "Fig. 4",
   sourceText: string = label,
 ): CuratedSpecificationInline => ({
   kind: "reference",
   text: sourceText,
-  href: "#",
+  href: `#figure-${label.replace("Fig. ", "")}`,
   referenceType: "figure",
-  label: `Open the source-facsimile crop for ${label} in US 233,692`,
-  figurePreviews: [FIGURES[label]],
+  label: `US 233,692 ${label}`,
+  // Existing crops are retained on disk but are not bound here: the current
+  // versions include neighboring drawing matter and are awaiting a fresh
+  // source-coordinate crop pass under a permitted load gate.
 });
 
 const claim = (number: number, value: string | CuratedSpecificationInlines) => ({
@@ -52,15 +40,19 @@ const claim = (number: number, value: string | CuratedSpecificationInlines) => (
 
 /**
  * A continuous, manually prepared edition of the complete three-sheet US
- * 233,692 facsimile. The drawing sheet is represented by direct crops, while
- * the source argument is kept as one natural reading rather than scan pages.
+ * 233,692 facsimile. The drawing sheet is represented by source-semantic
+ * references; figure-preview binding remains withheld until the existing
+ * neighboring-matter crops can be replaced under a permitted load gate.
  */
-export const peltonWaterWheelArchivalEdition: CuratedSpecificationEdition = {
+export const peltonWaterWheelArchivalEdition: Omit<
+  CuratedSpecificationEdition,
+  "completeFacsimileReviewed"
+> & { completeFacsimileReviewed: false } = {
   kind: "manual-react-edition",
   sourcePdfSha256: "b81019c0239af3ab932bd477970c1a414a91f765a68b28f9b22444e4f95c597c",
   preparedBy: "Classic Patents editorial agent (GPT-5.6)",
-  preparedAt: "2026-08-18",
-  completeFacsimileReviewed: true,
+  preparedAt: "2026-08-21",
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -76,15 +68,21 @@ export const peltonWaterWheelArchivalEdition: CuratedSpecificationEdition = {
       figureLabel: "FIGURES 1-4",
       title: "Wheel, water-distribution arrangement, bucket, and bucket section",
       description: [
-        { kind: "text", text: "The drawing sheet contains " },
+        {
+          kind: "text",
+          text: "No Model. L. A. Pelton. Water Wheel. No. 233,692. Patented Oct. 26, 1880. ",
+        },
         figure("Fig. 1"),
-        { kind: "text", text: ", " },
+        { kind: "text", text: ". A. B. F. G. " },
         figure("Fig. 2"),
-        { kind: "text", text: ", " },
+        { kind: "text", text: ". A. B. F. G. " },
         figure("Fig. 3"),
-        { kind: "text", text: ", and " },
+        { kind: "text", text: ". B. b. c. d. e. " },
         figure("Fig. 4"),
-        { kind: "text", text: ". Each preview is a direct crop from the pinned facsimile." },
+        {
+          kind: "text",
+          text: ". c. d. e. Witnesses: Frank A. Brooks. Geo. H. Strong. Inventor: Lester A. Pelton. N. Peters, Photo-Lithographer, Washington, D. C.",
+        },
       ],
     },
     p("To all whom it may concern:"),
@@ -200,6 +198,17 @@ export const peltonWaterWheelParallelReadings: Readonly<Record<number, readonly 
   15: ["S. H. Nourse and Frank A. Brooks are listed as witnesses to execution."],
 };
 
+/** Read the sole printed claim from the authored edition, never a duplicate literal. */
+export function peltonWaterWheelClaimText(number: number): string {
+  const block = peltonWaterWheelArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Pelton manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const peltonWaterWheelRecordCorrections: Pick<
   Patent,
   | "shortTitle"
@@ -305,8 +314,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "In a water-wheel, the buckets having the curved bottoms c, meeting at the apex d, and continued to form the inclined discharge sides e, in combination with the bucket-front b, standing at an incline with the wheel-face, so that the stream from the nozzle shall be received into the bucket without striking its face, substantially as herein described.",
+      originalText: peltonWaterWheelClaimText(1),
       plainEnglish:
         "The claim protects one complete bucket arrangement: two curved bottoms meeting at central apex d, those bottoms continuing into inclined discharge sides e, and a sloped front b. The front must let the nozzle stream enter the bucket without first hitting the bucket face.",
       keyInnovations: [

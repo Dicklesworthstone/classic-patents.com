@@ -76,6 +76,12 @@ describe("carrierAirConditionerArchivalEdition", () => {
       "Fig. 5",
       "Fig. 6",
     ]);
+    expect(new Set(carrierAirConditionerPatent.drawings.map((drawing) => drawing.svgType)).size).toBe(6);
+    for (const drawing of carrierAirConditionerPatent.drawings) {
+      for (const callout of drawing.callouts) {
+        expect(callout.label).toMatch(/^[a-z]?$|^[a-z]$/);
+      }
+    }
   });
 
   test("corrects the former unrelated humidity-control record", () => {
@@ -93,6 +99,8 @@ describe("carrierAirConditionerArchivalEdition", () => {
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("123,618");
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("dew-point regulator");
     expect(JSON.stringify(carrierAirConditionerPatent)).not.toContain("Sackett-Wilhelms");
+    expect(JSON.stringify(carrierAirConditionerPatent).toLowerCase()).not.toContain("dew-point");
+    expect(JSON.stringify(carrierAirConditionerPatent).toLowerCase()).not.toContain("reheat");
   });
 
   test("gives every printed claim a distinct, source-specific decoder and innovation set", () => {

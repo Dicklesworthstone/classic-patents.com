@@ -19,6 +19,8 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   text: value,
   definition,
 });
+const sourceTerm = (value: string, definition: string): CuratedSpecificationInline =>
+  term(value, definition);
 const firstClaim = {
   kind: "claim" as const,
   number: 1,
@@ -118,7 +120,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "RUDOLF DIESEL, OF BERLIN, GERMANY.",
         "METHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.",
-        "Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, No. 6,321; and in England April 14, 1892, No. 7,241.",
+        "Specification forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246. (No model.) Patented in Germany February 28, 1892, No. 67,207; in Switzerland April 2, 1892, [number unresolved pending cloud facsimile pixel review]; and in England April 14, 1892, No. 7,241.",
       ],
     },
     {
@@ -176,7 +178,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
     paragraph([
       {
         kind: "text",
-        text: "Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, (for which I have obtained Letters Patent in Great Britain, No. 7,241, dated April 14, 1892; in Switzerland, No. 6,321, dated April 2, 1892, and in Germany, No. 67,207, dated February 28, 1892,) of which the following is a specification.",
+        text: "Be it known that I, RUDOLF DIESEL, a subject of the King of Bavaria, residing at Berlin, in the Kingdom of Prussia, German Empire, have invented a new and useful Process for Obtaining Motive Power by the Combustion of Fuel of Any Kind, (for which I have obtained Letters Patent in Great Britain, No. 7,241, dated April 14, 1892; in Switzerland, number unresolved pending cloud facsimile pixel review, dated April 2, 1892, and in Germany, No. 67,207, dated February 28, 1892,) of which the following is a specification.",
       },
     ]),
     paragraph([
@@ -293,11 +295,17 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         text: ", from which it will be seen that it is not in the nature of an explosion, but rather takes place during a period of time corresponding to the portion of the stroke of the piston and determined by the point of cut-off.",
       },
     ]),
-    paragraph(
-      text(
-        "At the point of cut-off 3 the supply of fuel ceases and the expansion of the gases of combustion, without transfer of heat, continues according to curve 3 4. Since the pressure at point 2 of the diagram was very high and is still very high at point 3, the consequent expansion after cut-off (3 to 4) so cools the gases that in leaving the engine they carry away only an insignificant quantity of heat. It will thus be seen that the combustion of the gases is not left to itself after ignition, but is so regulated during its whole duration that pressure, temperature, and volume are in a prescribed proportion.",
+    paragraph([
+      { kind: "text", text: "At the point of " },
+      sourceTerm(
+        "cut-off",
+        "The point in the piston stroke at which fuel admission ends; Diesel uses it to delimit the subsequent expansion without further fuel supply.",
       ),
-    ),
+      {
+        kind: "text",
+        text: " 3 the supply of fuel ceases and the expansion of the gases of combustion, without transfer of heat, continues according to curve 3 4. Since the pressure at point 2 of the diagram was very high and is still very high at point 3, the consequent expansion after cut-off (3 to 4) so cools the gases that in leaving the engine they carry away only an insignificant quantity of heat. It will thus be seen that the combustion of the gases is not left to itself after ignition, but is so regulated during its whole duration that pressure, temperature, and volume are in a prescribed proportion.",
+      },
+    ]),
     paragraph(
       text(
         "If the air were allowed to expand without any supply of fuel, the curve 2 1 would be formed—that is, the expansion would do no work, but restore only the previous work of compression; but by gradually introducing fuel a difference of pressure p is formed between the curves 1 2 and 2 3, in consequence whereof a useful effect is produced. As with the other types of engines before mentioned, the diagram will assume more the nature of the diagram shown by broken lines.",
@@ -329,12 +337,36 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
       figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
-        text: " of the drawings, the letter C designates a single-acting cylinder especially constructed for the use of coal in a finely-divided condition. P is a plunger constructed for high pressures. b is the connecting-rod; c, the crank; d, the shaft, and a the guides for the plunger. E is the governor whose shaft g is connected to the shaft d by suitable gears at f. At the upper end of the cylinder is located a hopper B provided with a charging-opening m, ",
+        text: " of the drawings, the letter C designates a single-acting cylinder especially constructed for the use of coal in a finely-divided condition. ",
+      },
+      sourceTerm(
+        "P is a plunger",
+        "The reciprocating member identified by P; the specification says it compresses the charge and performs the working stroke in the single-acting construction.",
+      ),
+      {
+        kind: "text",
+        text: " constructed for high pressures. b is the connecting-rod; c, the crank; d, the shaft, and a the guides for the plunger. E is the governor whose shaft g is connected to the shaft d by suitable gears at f. At the upper end of the cylinder is located a ",
+      },
+      sourceTerm(
+        "hopper B",
+        "The upper receptacle named B, with charging opening m, receives the finely divided solid fuel before the admission mechanism feeds it onward.",
+      ),
+      {
+        kind: "text",
+        text: " provided with a charging-opening m, ",
       },
       figure(5),
       {
         kind: "text",
-        text: ", and placed in communication with the cylinder. A disk-valve k closes the discharge end of the hopper and below the same is located a turning valve or plug D by which the fuel is fed to the cylinder.",
+        text: ", and placed in communication with the cylinder. A disk-valve k closes the discharge end of the hopper and below the same is located a turning ",
+      },
+      sourceTerm(
+        "admission-plug D",
+        "The turning fuel plug below hopper B. Its radial chamber is charged in one position and discharges the fuel into the cylinder when turned to the other position.",
+      ),
+      {
+        kind: "text",
+        text: " by which the fuel is fed to the cylinder.",
       },
     ]),
     paragraph([
@@ -395,11 +427,25 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         text: ". These two cylinders C are connected by means of the controlled valves b to the two sides of a large central cylinder B, and by the two valves a, which are also controlled, the two combustion-cylinders are in communication with the air-reservoir L.",
       },
     ]),
-    paragraph(
-      text(
-        "The cranks of the two cylinders C are arranged in the same position and they form, with the crank of the central cylinder B, an angle of one hundred and eighty degrees. The operation of this engine is as follows: The piston Q of cylinder B draws in air during its upward stroke through valve d, compresses the latter in its down-stroke to a certain pressure, and then forces the air through valve g to the air reservoir L. The lower part of the central cylinder therefore only serves as an air-pump and effects the preparatory compression of the air for combustion. This preparatory compression should go only to such an extent that the heating of the air produced by this compression remains within moderate limits. Water-nozzles are arranged at g g, through which during the preparatory compression water at a low temperature may be injected. This water is then discharged again through the cock h of the air-vessel.",
+    paragraph([
+      {
+        kind: "text",
+        text: "The cranks of the two cylinders C are arranged in the same position and they form, with the crank of the central cylinder B, an angle of one hundred and eighty degrees. The operation of this engine is as follows: The piston Q of cylinder B draws in air during its upward stroke through valve d, compresses the latter in its down-stroke to a certain pressure, and then forces the air through valve g to the ",
+      },
+      sourceTerm(
+        "air reservoir L",
+        "The receiver named L stores the preparatorily compressed air before it is admitted to the combustion cylinders; the source also says it can supply starting air.",
       ),
-    ),
+      {
+        kind: "text",
+        text: ". The lower part of the central cylinder therefore only serves as an air-pump and effects the preparatory compression of the air for combustion. This preparatory compression should go only to such an extent that the heating of the air produced by this compression remains within moderate limits. Water-nozzles are arranged at g g, through which during the preparatory compression water at a low temperature may be injected. This water is then discharged again through the cock h of the ",
+      },
+      sourceTerm(
+        "air-vessel",
+        "The vessel connected with the preparatory air system; the specification identifies its cock as the outlet for injected cooling water.",
+      ),
+      { kind: "text", text: "." },
+    ]),
     paragraph([
       {
         kind: "text",
@@ -483,9 +529,14 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
     paragraph([
       { kind: "text", text: "In " },
       figure(8, "Figs. 8 and 10"),
+      { kind: "text", text: " there is formed round the nozzle D an " },
+      sourceTerm(
+        "annular space s",
+        "The ring-shaped space around nozzle D, open to the cylinder. Returning air helps divide the fuel jet and distribute combustion heat, while the source says the space is not essential.",
+      ),
       {
         kind: "text",
-        text: " there is formed round the nozzle D an annular space s, which is in free communication with the interior of the cylinder. When the piston moves backward under decreasing pressure, the air flows from this annular space back into the cylinder and serves in this way both for dividing the jet of fuel and for producing turbulent motion for distributing the combustion heat over the whole air volume. This annular space s is only of practical importance and is not essential for the process. There is, moreover, in ",
+        text: ", which is in free communication with the interior of the cylinder. When the piston moves backward under decreasing pressure, the air flows from this annular space back into the cylinder and serves in this way both for dividing the jet of fuel and for producing turbulent motion for distributing the combustion heat over the whole air volume. This annular space s is only of practical importance and is not essential for the process. There is, moreover, in ",
       },
       figure(8, "Figs. 8 and 10"),
       {

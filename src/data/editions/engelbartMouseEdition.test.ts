@@ -144,6 +144,78 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     });
   });
 
+  test("holds publication and discloses the page-five FIG. 5 / disc 100 source erratum", () => {
+    expect(engelbartMousePatent.archivalEdition).toBeUndefined();
+    expect(engelbartMousePatent.originalTextAsset).toBeUndefined();
+
+    const readoutParagraph = engelbartMouseArchivalEdition.blocks.find(
+      (block) =>
+        block.kind === "paragraph" &&
+        block.inlines.some(
+          (inline) =>
+            inline.kind === "text" && inline.text.includes("In the readout circuit of"),
+        ),
+    );
+    expect(readoutParagraph?.kind).toBe("paragraph");
+    if (readoutParagraph?.kind !== "paragraph") return;
+
+    const sourceErratumReference = readoutParagraph.inlines.find(
+      (inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure" && inline.text === "FIG. 5",
+    );
+    expect(sourceErratumReference?.kind).toBe("reference");
+    if (sourceErratumReference?.kind !== "reference") return;
+    expect(sourceErratumReference.label).toContain("disc 100 belongs to the FIG. 6");
+    expect(sourceErratumReference.figurePreviews?.map((preview) => preview.src)).toEqual([
+      "/patents/figures/us-3541541-engelbart-mouse/fig-5-source-crop-v2.png",
+      "/patents/figures/us-3541541-engelbart-mouse/fig-6-source-crop-v2.png",
+    ]);
+    expect(sourceErratumReference.figurePreviews?.[1]?.alt).toContain("disc 100");
+  });
+
+  test("records the rejected-crop repair gate without repointing legacy assets", () => {
+    const pendingRepairs = [
+      { figure: 1, sheetPage: 1, currentVersion: "v2", targetVersion: "v3" },
+      { figure: 3, sheetPage: 1, currentVersion: "v2", targetVersion: "v3" },
+      { figure: 4, sheetPage: 2, currentVersion: "v2", targetVersion: "v3" },
+      { figure: 6, sheetPage: 2, currentVersion: "v2", targetVersion: "v3" },
+      { figure: 7, sheetPage: 3, currentVersion: "v1", targetVersion: "v2" },
+    ] as const;
+
+    for (const repair of pendingRepairs) {
+      expect(repair.sheetPage).toBeGreaterThanOrEqual(1);
+      expect(repair.sheetPage).toBeLessThanOrEqual(3);
+      const reference = engelbartMouseArchivalEdition.blocks
+        .flatMap((block) =>
+          block.kind === "paragraph" || block.kind === "claim"
+            ? block.inlines
+            : block.kind === "figure-sheet"
+              ? block.description
+              : [],
+        )
+        .find(
+          (inline) =>
+            inline.kind === "reference" &&
+            inline.referenceType === "figure" &&
+            inline.href === `#figure-${repair.figure}`,
+        );
+      expect(reference?.kind).toBe("reference");
+      if (reference?.kind !== "reference") continue;
+      expect(reference.figurePreviews?.[0]?.src).toContain(
+        `fig-${repair.figure}-source-crop-${repair.currentVersion}.png`,
+      );
+      expect(
+        existsSync(
+          resolve(
+            process.cwd(),
+            "public/patents/figures/us-3541541-engelbart-mouse",
+            `fig-${repair.figure}-source-crop-${repair.targetVersion}.png`,
+          ),
+        ),
+      ).toBe(false);
+    }
+  });
+
   test("keeps every canonical claim literal dynamically sourced from the edition", () => {
     for (const claim of engelbartMousePatent.claims) {
       const editionClaim = engelbartMouseArchivalEdition.blocks.find(

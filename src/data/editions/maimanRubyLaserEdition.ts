@@ -120,57 +120,49 @@ const p = (...inlines: CuratedSpecificationInline[]) => ({
   inlines,
 });
 
-export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  3: [
-    "Overview of patent drawing Figures 1 through 18 illustrating the optical maser apparatus, three-level energy pumping schematics, cooling jackets, interferometer coatings, and practical optical radar ranging systems.",
-  ],
-  4: [
-    "Field of invention: solid-state optical masers and ruby lasers using synthetic single-crystal corundum doped with chromium ions to achieve coherent stimulated emission in the optical spectrum.",
-  ],
-  5: [
-    "Apparatus disclosure: a synthetic ruby cylinder is placed coaxially within a helical gas-filled flash tube, with reflective end plating and an output opening forming an optical resonant cavity.",
-  ],
-  6: [
-    "The energy-level discussion explains pumping from ground state level 1 to a broad absorption band 3, followed by radiationless decay to metastable level 2 and stimulated emission back to level 1.",
-  ],
-  7: [
-    "The specification describes the population inversion condition where level 2 atom population exceeds ground state level 1 (N2 > N1), enabling optical wave amplification rather than net absorption.",
-  ],
-  8: [
-    "The rod ends provide repeated reflections across optically flat, parallel faces, and an opening in one end plating couples the coherent beam out.",
-  ],
-  9: [
-    "An embodiment using a cooled optical cavity structure and energy-level operation is shown for Figure 7.",
-  ],
-  10: [
-    "Figures 8 and 9 show hollow and refrigerated laser arrangements: a coolant cylinder surrounds the active material, and a cooled rod is paired with a coaxial flash tube.",
-  ],
-  11: [
-    "Figures 10 through 12 explain how coatings and a high-index coolant suppress nonparallel rays and preserve a narrow, coherent output beam while controlling the active material's temperature.",
-  ],
-  12: [
-    "Figure 13 uses prisms, mirrors, and a Fabry-Perot interferometer to select the proper wavelength while rejecting nonparallel rays; Figures 14 and 15 use parallel reflective plates for the same discrimination.",
-  ],
-  13: [
-    "Figures 16 and 17 use parabolic and elliptical reflectors to transfer broadband pump light from a separated source through the active laser segment.",
-  ],
-  14: [
-    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
-  ],
-  15: [
-    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
-  ],
-  17: [
-    "Official statutory claims defining the legal scope of the three-level ruby laser system and solid-state optical maser apparatus.",
-  ],
+type MaimanRubyLaserWipEdition = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
+  completeFacsimileReviewed: false;
 };
 
-export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
+export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly string[]>> = {
+  8: ["The continuation statement identifies this grant as a continuation of the abandoned 1961 Laser Systems application."],
+  9: ["Maiman defines the invention as generation, amplification, and use of coherent electromagnetic waves in infrared, visible, and ultraviolet portions of the spectrum."],
+  10: ["The opening explains why coherent monochromatic light with waves propagating in phase would expand communications and metrology capabilities."],
+  11: ["The specification contrasts optical wavelengths with microwave cavities: oversized cavities support many modes, degrade coherence, and demand excessive pump power."],
+  12: ["Schawlow and Townes had proposed gaseous negative-temperature media, but the grant identifies the practical difficulty of operating such media."],
+  13: ["The gas-laser proposal is described as complex, impurity-sensitive, and not yet demonstrated to provide net optical generation or amplification."],
+  14: ["The listed objects call for a low-noise, mechanically stable, temperature-flexible, high-power laser and a laser-based optical radar system."],
+  15: ["The invention answers those objects with a solid-state negative-temperature medium."],
+  16: ["The representative ruby rod uses broadband pump light, reflecting end coatings, and an output opening so a resonating wave becomes a narrow monochromatic beam."],
+  17: ["The drawing list identifies the patent's eighteen printed figures and assigns each to its source-described optical pumping, resonator, filtering, or colidar function."],
+  18: ["The specification introduces the two-level absorption and emission model, where wave interaction depends on the difference between populations in the two levels."],
+  19: ["A third higher level permits pumping and, with suitable relaxation times, creates an inverted population so the optical wave is emitted and amplified."],
+  20: ["The model places the transition in the visible spectrum, allowing a material with suitable energy levels to amplify or generate visible light."],
+  21: ["Figure 1's level 1 is the ground state and region 3 is a broad higher-energy band from which the chromium-doped material is pumped."],
+  22: ["The preferred radiationless decay funnels broad pump energy into the narrow level 2, whose stimulated transition to level 1 emits coherent radiation."],
+  23: ["Figure 2 follows the pump sequence in ruby rod 10: broadband light excites the dopant, relaxation populates level 2, and repeated axial reflections produce beam 16."],
+  24: ["Figure 3 substitutes sunlight or another parallel white-light source, with lens 18 and mirror 24 concentrating and returning pump energy through active material 22."],
+  25: ["Figure 4 places active rod 26 inside helical flash tube 28, with silvered ends, opening 32, power supply 36, and reflecting outer cylinder 38."],
+  26: ["Figure 5 replaces the helical tube with hollow cylinder 50, flashing gas 52, electrodes 54 and 56, and a reflective pump interior around rod 40."],
+  27: ["Figure 6 adds fluorescein 64 between rod 60 and flash tube 62, converting broadband white pump light 66 into green light for the ruby, as represented by Figure 7."],
+  28: ["Figure 8 uses hollow active cylinder 70 around flash tube 72 and surrounds it with coolant cylinder 74 containing coolant 76."],
+  29: ["Figure 9 refrigerates rod 78 near liquid nitrogen 90, with conductive rod 88, Dewar flask 92, flash tube 94, electrodes 98, and coolant 102."],
+  30: ["Figure 10 distinguishes axial ray 106 from nonparallel rays 108 and 112 whose reflections lengthen the resonator and degrade frequency purity and beam coherence."],
+  32: ["The formal claims that follow the specification define the three-level ruby medium, broadband optical pumping, population inversion, regenerative resonant path, and monochromatic output as the protected combinations."],
+  36: ["The references cited identify Schawlow and Townes's United States patent and the two printed optical-maser publications, preserving the grant's research trail."],
+  37: ["The primary examiner attribution is reproduced as printed in the formal matter."],
+  38: ["The second examiner attribution is reproduced as printed in the formal matter."],
+  39: ["The inventor and attorney signature lines are retained as source-formal matter, without treating the typed ledger as a substitute for the facsimile pixels."],
+  40: ["The examiner names and cited works close the typed formal record while the pinned facsimile remains the authority for exact visual placement and signatures."],
+  41: ["The closing signature block preserves Theodore H. Maiman as inventor and Daniel T. Chubb as attorney, while its visual inscription remains tied to the facsimile."],
+};
+
+export const maimanRubyLaserArchivalEdition: MaimanRubyLaserWipEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
-  preparedBy: "Classic Patents editorial agent (GPT-5.6 Luna)",
+  preparedBy: "Classic Patents editorial agent (GPT-5.6 Luna; WIP source reconciliation)",
   preparedAt: "2026-08-21",
-  completeFacsimileReviewed: true,
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
@@ -190,159 +182,48 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       text: "SPECIFICATION",
     },
     {
-      kind: "heading",
-      level: 3,
-      text: "Detailed Description of the Invention",
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 1–3",
+      title: "5 Sheets—Sheet 1",
+      description: [text("Nov. 14, 1967. T. H. Maiman. 3,353,115. RUBY LASER SYSTEMS. Original Filed April 13, 1961. "), ref("FIG. 1", "#figure-1", "Figure 1"), text("; "), ref("FIG. 2", "#figure-2", "Figure 2"), text("; "), ref("FIG. 3", "#figure-3", "Figure 3"), text(". Inventor Theodore H. Maiman; attorney Daniel T. Chubb.")],
     },
-    p(
-      text("The accompanying drawings are described as follows: "),
-      ref(
-        "FIG. 1",
-        "#figure-1",
-        "Figure 1",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png",
-      ),
-      text(" is an energy-level diagram; "),
-      ref(
-        "FIG. 2",
-        "#figure-2",
-        "Figure 2",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png",
-      ),
-      text(" illustrates optical pumping; "),
-      ref(
-        "FIG. 3",
-        "#figure-3",
-        "Figure 3",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-1-01.png",
-      ),
-      text(" shows optical pumping with sunlight; "),
-      ref(
-        "FIG. 4",
-        "#figure-4",
-        "Figure 4",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png",
-      ),
-      text(" shows a helical gas-filled flash tube; "),
-      ref(
-        "FIG. 5",
-        "#figure-5",
-        "Figure 5",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
-      ),
-      text(" an alternative hollow gas-filled cylinder; "),
-      ref(
-        "FIG. 6",
-        "#figure-6",
-        "Figure 6",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
-      ),
-      text(" a hollow optical pump separated by fluorescent material; "),
-      ref(
-        "FIG. 7",
-        "#figure-7",
-        "Figure 7",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
-      ),
-      text(" its energy-level operation; "),
-      ref(
-        "FIG. 8",
-        "#figure-8",
-        "Figure 8",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" a hollow active laser cylinder and coolant; "),
-      ref(
-        "FIG. 9",
-        "#figure-9",
-        "Figure 9",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" a refrigerated laser material; "),
-      ref(
-        "FIG. 10",
-        "#figure-10",
-        "Figure 10",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" an uncoated segment; "),
-      ref(
-        "FIG. 11",
-        "#figure-11",
-        "Figure 11",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" a coated segment; "),
-      ref(
-        "FIG. 12",
-        "#figure-12",
-        "Figure 12",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" a segment surrounded by high-index coolant; "),
-      ref(
-        "FIG. 13",
-        "#figure-13",
-        "Figure 13",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" an interferometer system; "),
-      ref(
-        "FIG. 14",
-        "#figure-14",
-        "Figure 14",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" and "),
-      ref(
-        "FIG. 15",
-        "#figure-15",
-        "Figure 15",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" additional interferometers; "),
-      ref(
-        "FIG. 16",
-        "#figure-16",
-        "Figure 16",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" and "),
-      ref(
-        "FIG. 17",
-        "#figure-17",
-        "Figure 17",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
-      text(" laser systems using an exploding-wire optical pump; and "),
-      ref(
-        "FIG. 18",
-        "#figure-18",
-        "Figure 18",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png",
-      ),
-      text(" a practical colidar system using a laser."),
-    ),
-    p(
-      text("This invention relates to "),
-      term(
-        "solid-state optical masers",
-        "A quantum-electronic device using a synthetic solid crystal (such as chromium-doped sapphire ruby) to generate or amplify coherent optical electromagnetic radiation via stimulated emission.",
-      ),
-      text(" or "),
-      term(
-        "lasers",
-        "Light Amplification by Stimulated Emission of Radiation; optical counterpart of the microwave maser providing monochromatic, coherent, collimated light beams.",
-      ),
-      text(" and more particularly to such devices which use a "),
-      term(
-        "ruby crystal",
-        "Single-crystal corundum (aluminum oxide, Al2O3) doped with trivalent chromium ions (Cr3+) providing metastable optical energy states for stimulated emission.",
-      ),
-      text(
-        " as the active laser material. In the past, devices operating on the principles of stimulated emission of radiation were primarily confined to the microwave region of the spectrum and were commonly known as masers. More recently, theoretical proposals have suggested extending these principles into the optical spectrum, but practical realization has encountered severe difficulties regarding pumping efficiency and continuous threshold inversion.",
-      ),
-    ),
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 4–7",
+      title: "5 Sheets—Sheet 2",
+      description: [text("Nov. 14, 1967. T. H. Maiman. 3,353,115. RUBY LASER SYSTEMS. Original Filed April 13, 1961. "), ref("FIG. 4", "#figure-4", "Figure 4"), text("; "), ref("FIG. 5", "#figure-5", "Figure 5"), text("; "), ref("FIG. 6", "#figure-6", "Figure 6"), text("; "), ref("FIG. 7", "#figure-7", "Figure 7"), text(". Inventor Theodore H. Maiman; attorney Daniel T. Chubb.")],
+    },
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 8–11",
+      title: "5 Sheets—Sheet 3",
+      description: [text("Nov. 14, 1967. T. H. Maiman. 3,353,115. RUBY LASER SYSTEMS. Original Filed April 13, 1961. "), ref("FIG. 8", "#figure-8", "Figure 8"), text("; "), ref("FIG. 9", "#figure-9", "Figure 9"), text("; "), ref("FIG. 10", "#figure-10", "Figure 10"), text("; "), ref("FIG. 11", "#figure-11", "Figure 11"), text(". Inventor Theodore H. Maiman; attorney Daniel T. Chubb.")],
+    },
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 12–15",
+      title: "5 Sheets—Sheet 4",
+      description: [text("Nov. 14, 1967. T. H. Maiman. 3,353,115. RUBY LASER SYSTEMS. Original Filed April 13, 1961. "), ref("FIG. 12", "#figure-12", "Figure 12"), text("; "), ref("FIG. 13", "#figure-13", "Figure 13"), text("; "), ref("FIGS. 14 and 15", "#figure-14", "Figures 14 and 15"), text(". Inventor Theodore H. Maiman; attorney Daniel T. Chubb.")],
+    },
+    {
+      kind: "figure-sheet",
+      figureLabel: "FIGURES 16–18",
+      title: "5 Sheets—Sheet 5",
+      description: [text("Nov. 14, 1967. T. H. Maiman. 3,353,115. RUBY LASER SYSTEMS. Original Filed April 13, 1961. "), ref("FIGS. 16 and 17", "#figure-16", "Figures 16 and 17"), text("; "), ref("FIG. 18", "#figure-18", "Figure 18", ["/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png", "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png"]), text(". Inventor Theodore H. Maiman; attorney Daniel T. Chubb.")],
+    },
+    { kind: "heading", level: 2, text: "SPECIFICATION" },
+    p(text("This application is a continuation of my copending application Ser. No. 102,698 entitled, Laser Systems, filed Apr. 13, 1961, now abandoned.")),
+    p(text("This invention relates to the generation, amplification, and utilization of electromagnetic waves in the infrared, visible and ultraviolet portion of the spectrum, and more specifically to lasers and laser systems. A "), term("laser", "The source's acronym for light amplification by stimulated emission of radiation."), text(", the term being an acronym for light amplification by stimulated emission of radiation, is a device capable of generating or amplifying coherent light. The principle of operation is similar to that of a maser and is therefore also referred to as an optical maser.")),
+    p(text("Much effort has been expended in the fields of electronics and physics in attempts to generate or amplify coherent light. Such an achievement, it was known, would make available a vast new region of the electromagnetic spectrum for a multitude of purposes including communications and metrology (measurements) applications. Such coherent light would have the properties of being monochromatic and of having its component waves propagating in phase with each other. Thus, as at radio or microwave frequencies, a great deal of energy could be concentrated at or extremely near to a single frequency and be utilized in methods analogous to those at radio frequencies.")),
+    p(text("Ordinary techniques of generating or amplifying electromagnetic waves, including microwave maser techniques, cannot be extended usefully into the optical frequencies because such techniques require components, such as maser cavities, for supporting wave oscillations which must have physical dimensions of the order of a wavelength. Obviously, such components can neither be manufactured nor meaningfully utilized at optical frequencies where the wavelengths are of the order of atomic dimensions. When it is attempted to use cavities which have dimensions corresponding to a large number of wavelengths, many modes are supported, coherence is degraded, and impracticably large sources of pumping power are required.")),
+    p(text("A laser has been proposed by Schawlow and Townes, see United States Patent No. 2,929,922, issued March 22, 1960, which suggests using as the negative temperature medium certain gaseous state materials such as alkali metal vapors. Such materials may be shown to have energy levels in their atomic systems corresponding to appropriate optical frequencies for absorbing optical pump energy to invert the population from the stable equilibrium state and thus provide the material with what is known as a negative temperature or excited, nonequilibrium state. Then by stimulation or spontaneous relaxation the atomic system falls back to its normal equilibrium state by one or more steps emitting energy of certain optical frequencies.")),
+    p(text("Such proposed gaseous state devices are of great interest as theoretical models and represent significant academic advances, however, they have not been shown to provide a net generation or amplification of light. In addition, the structure of gaseous state systems is complex and requires the maintenance of critical vapor pressures and temperatures. Impurities in the gas is another very serious problem. The inter-atomic spacing of the gas severely limits the efficiency of coupling between the stimulated emission and a coherent wave propagating through the medium. In addition, the frequency of operation of any given gas laser may be effectively tuned only by Stark or Zeeman effects which can provide a tuning range of only approximately 5X10^10 cycles per second. Further, the construction of a gas cell is extremely critical in that the end plates must be highly reflective and perfectly parallel so that the many reflections required because of the low density gaseous material will be accomplished.")),
+    p(text("It is therefore an object of the present invention to provide an operable, low noise, efficient laser. It is another object to provide a laser which is mechanically stable and of noncritical construction. It is another object to provide a laser which operates at room temperature or cryogenic temperatures for additional simplicity and even greater flexibility in design parameters. It is another object to provide a laser which does not require critical vacuum or vapor pressure techniques and which operates in a medium of high dielectric constant. It is another object to provide a laser capable of much higher power handling. It is another object to provide a laser which is tunable over approximately a 5X10^11 cycles per second range. It is another object to provide an optical radar system utilizing the advantages of a laser.")),
+    p(text("Briefly, these and other objects are achieved in accordance with the present invention in a system including a solid state negative temperature medium.")),
+    p(text("In one example a segment of solid state active laser material such as a cylindrical ruby (Al2O3 doped with Cr2O3) rod with reflecting coating at each end is coaxially placed in a helical flash lamp. White light or, predominantly, the green and blue components thereof, is absorbed by the ruby; and red light is emitted therefrom and coupled out of the system through a hole in the reflective coating at one end of the rod. The reflecting coatings provide a regeneration related to the coupling between the reflecting wave, traveling back and forth many times, and the emitting atoms. In other words, a resonating, standing wave is provided which derives energy from the negative temperature dielectric. Thus the rod may be considered as a resonator having different Q's for different modes of oscillation. The mode having the highest Q corresponds to waves traveling nearly parallel to the rod axis since it supplies the highest degree of regeneration. This effect causes the output to be an extremely parallel beam so that it propagates immense distances without spreading. Inherent in the regeneration process is the coherent amplification of an extremely narrow band of frequencies, thus providing a monochromatic output.")),
+    p(text("Additional discussion of principles of operation, of further objects and advantages, including uses, and of other examples will be presented below in connection with a description of the accompanying drawings in which: "), ref("FIG. 1", "#figure-1", "Figure 1", "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png"), text(" is an energy level diagram for the atoms of a substance exhibiting laser properties; "), ref("FIG. 2", "#figure-2", "Figure 2", "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png"), text(" is a schematic diagram illustrating optical pumping of negative temperature laser material; "), ref("FIG. 3", "#figure-3", "Figure 3"), text(" is a schematic diagram of means for optically pumping the laser material with sunlight energy; "), ref("FIG. 4", "#figure-4", "Figure 4", "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png"), text(" is a schematic diagram of one embodiment which utilizes a helical gas-filled flash tube; "), ref("FIG. 5", "#figure-5", "Figure 5"), text(" is a diagram of an alternative embodiment utilizing a hollow gas-filled cylinder; "), ref("FIG. 6", "#figure-6", "Figure 6"), text(" is another embodiment utilizing a hollow cylindrical gas-filled optical pumping means separated from active material by a fluorescent material;")),
+    p(ref("FIG. 7", "#figure-7", "Figure 7", ["/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png", "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png", "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png", "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png"]), text(" is an energy level diagram illustrating the method of operation of the embodiment of FIG. 6; "), ref("FIG. 8", "#figure-8", "Figure 8"), text(" is a schematic diagram of an embodiment in which active laser material is a hollow cylinder surrounding a cylindrical gas-filled flash tube, the entire assembly being surrounded by a second hollow cylinder of coolant of a high index of refraction; "), ref("FIG. 9", "#figure-9", "Figure 9"), text(" is a cut-away view of an embodiment in which the laser material is refrigerated; "), ref("FIG. 10", "#figure-10", "Figure 10"), text(" is a diagram of a segment of laser material; "), ref("FIG. 11", "#figure-11", "Figure 11"), text(" is a diagram of a coated segment of laser material;")),
+    p(ref("FIG. 12", "#figure-12", "Figure 12"), text(" is a diagram of a segment of laser material which is surrounded by a coolant having a high index of refraction; "), ref("FIG. 13", "#figure-13", "Figure 13"), text(" is a schematic diagram of a portion of a laser system illustrating the use of an interferometer; "), ref("FIGS. 14 and 15", "#figure-14", "Figures 14 and 15"), text(" are schematic diagrams illustrating additional types of interferometers; "), ref("FIGS. 16 and 17", "#figure-16", "Figures 16 and 17"), text(" are diagrams of a laser system in which the optical pump utilizes an exploding wire; and "), ref("FIG. 18", "#figure-18", "Figure 18", ["/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png", "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png"]), text(" is a schematic diagram of a practical colidar system utilizing a laser.")),
     p(
       text(
         "In accordance with the present invention, a practical, high-power solid-state optical maser is provided comprising a synthetic ",
@@ -446,7 +327,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 8",
         "#figure-8",
         "Figure 8",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         ", the active laser material is a hollow cylinder within which a cylindrical flash tube is coaxially disposed. The active material is surrounded by a coolant cylinder, which may have a high index of refraction and a polished internal surface for reflecting pump energy back through the laser material. In ",
@@ -455,7 +335,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 9",
         "#figure-9",
         "Figure 9",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         ", the laser material is refrigerated. A rod has plated ends and a coupling hole for the output beam; a thermally conductive rod extends into liquid nitrogen in a Dewar flask, while a coaxial flash tube and coolant cylinder surround the laser rod.",
@@ -466,7 +345,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 10",
         "#figure-10",
         "Figure 10",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         " illustrates a segment of laser material surrounded by a low-index material such as air. An axial ray can travel without reflecting from the side, while nonparallel rays reflect at the boundary, increasing the effective resonating length and spreading the output. In ",
@@ -475,7 +353,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 11",
         "#figure-11",
         "Figure 11",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         ", a coating transparent to pump energy and absorptive near the laser output frequency absorbs nonparallel rays at the boundary. ",
@@ -484,7 +361,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 12",
         "#figure-12",
         "Figure 12",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         " shows a high-index coolant in immediate contact with the active segment, transmitting nonparallel rays that would otherwise reflect. The specification gives diodomethane as a practical coolant whose refractive index is close to that of ruby and explains that coolant also controls the operating frequency by controlling temperature.",
@@ -495,7 +371,6 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 13",
         "#figure-13",
         "Figure 13",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         " illustrates an interferometer arrangement in which prisms and mirrors define a closed path through active material. A Fabry-Perot interferometer between parallel plates selects the proper wavelength while nonparallel rays are lost from the circuit. ",
@@ -504,14 +379,12 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 14",
         "#figure-14",
         "Figure 14",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(" and "),
       ref(
         "FIG. 15",
         "#figure-15",
         "Figure 15",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         " show additional interferometers using mutually parallel reflective plates to discriminate against nonparallel rays and couple out the desired beam.",
@@ -522,14 +395,12 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 16",
         "#figure-16",
         "Figure 16",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(" and "),
       ref(
         "FIG. 17",
         "#figure-17",
         "Figure 17",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(
         " illustrate remote optical pumping of an active laser segment by broadband light. In the first arrangement parabolic reflectors collimate and refocus pump light through the segment; in the second, an elliptical surface reflects light from one focus to the laser segment at the other focus. The source may use an exploding wire, a gas-filled flash tube, or a carbon arc lamp.",
@@ -584,6 +455,17 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         ),
       ],
     },
+    {
+      kind: "heading",
+      level: 2,
+      text: "REFERENCES CITED",
+    },
+    p(text("UNITED STATES PATENTS")),
+    p(text("2,929,922  Schawlow et al.  3/1960  331-94.5")),
+    p(text("OTHER REFERENCES")),
+    p(text("Townes et al.: \u201cInfrared and Optical Masers,\u201d Physical Review, vol. 112, No. 6, Dec. 15, 1958, pp. 1940\u20131949. Wieder: \u201cSolid State, High-Intensity Monochromatic Light Sources,\u201d The Review of Scientific Instruments, vol. 30, No. 1, November 1959, pp. 995\u2013996.")),
+    p(text("JEWELL H. PEDERSEN, Primary Examiner. RONALD L. WILBERT, Examiner.")),
+    p(text("THEODORE H. MAIMAN, Inventor. BY DANIEL T. CHUBB, ATTORNEY.")),
   ],
 };
 

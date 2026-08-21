@@ -291,7 +291,7 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
       },
       term(
         "shunt capacitance",
-        "Unwanted capacitance from a lead to the semiconductor body beneath it.",
+        "Unwanted distributed capacitance between a metal lead and the semiconductor body beneath it, formed across the insulating oxide and increased by a thin oxide or conductive underlying region; it can slow or couple signals.",
       ),
       {
         kind: "text",
@@ -658,6 +658,23 @@ function manualClaimText(number: number): string {
   return sourceClaim.inlines.map((inline) => inline.text).join("");
 }
 
+/**
+ * A short, source-faithful opening excerpt for the catalogue record. It is
+ * assembled from the authored masthead and opening paragraphs so the record
+ * cannot drift from the archival edition or grow a second transcription.
+ */
+export const noyceIcOriginalTextExcerpt = (() => {
+  const masthead = noyceIcArchivalEdition.blocks.find((block) => block.kind === "masthead");
+  const openingParagraphs = noyceIcArchivalEdition.blocks
+    .filter((block) => block.kind === "paragraph")
+    .slice(0, 2)
+    .map((block) => block.inlines.map((inline) => inline.text).join(""));
+  if (!masthead || openingParagraphs.length !== 2) {
+    throw new Error("Noyce manual edition is missing its authored opening excerpt.");
+  }
+  return [...masthead.lines, ...openingParagraphs].join("\n\n");
+})();
+
 export const noyceIcRecordCorrections: Pick<
   Patent,
   | "shortTitle"
@@ -683,8 +700,7 @@ export const noyceIcRecordCorrections: Pick<
     "US 2,981,877 describes semiconductor bodies whose surface-reaching P-N junctions remain covered by an oxide layer except at selected contacts. Metal strips adhere to that oxide and cross the junction without shorting it. The specification illustrates one transistor, a multi-device circuit, and a parallel-strip variant; the grant issued on April 25, 1961, from an application filed July 30, 1959.",
   heroQuote:
     "This invention relates to electrical circuit structures incorporating semiconductor devices.",
-  originalText:
-    "This catalogue excerpt is not the archival edition. Open Original Patent Text for the complete manually prepared specification, all ten claims, all seven figures, and the source-cited references.",
+  originalText: noyceIcOriginalTextExcerpt,
   plainEnglishExplanation: {
     overview:
       "Noyce's specification addresses a practical routing problem inside a semiconductor body. Contacts must reach selected P-type and N-type regions, yet a lead that crosses a surface-reaching P-N junction must not join the two sides electrically. The proposed construction retains an oxide of the semiconductor across the junction and places a metal strip on that insulating surface, opening the oxide only where a contact is intended.",

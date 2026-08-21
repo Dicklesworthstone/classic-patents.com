@@ -109,9 +109,10 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     "public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
   );
 
-  test("publishes complete manual edition and originalTextAsset", () => {
-    expect(maimanRubyLaserPatent.archivalEdition).toBe(maimanRubyLaserArchivalEdition);
-    expect(maimanRubyLaserPatent.originalTextAsset).toBeDefined();
+  test("keeps the WIP edition unbound until independent facsimile acceptance", () => {
+    expect(maimanRubyLaserArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(maimanRubyLaserPatent.archivalEdition).toBeUndefined();
+    expect(maimanRubyLaserPatent.originalTextAsset).toBeUndefined();
   });
 
   test("pins the immutable facsimile PDF with matching lowercase SHA-256", () => {
@@ -150,7 +151,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     expect(claim2Text).toContain("light-resonating means");
   });
 
-  test("pins every authored figure occurrence to its complete source-pixel preview set", () => {
+  test("keeps every printed figure occurrence semantic while withholding unaccepted crops", () => {
     const actual = maimanRubyLaserArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.flatMap((inline) =>
@@ -180,53 +181,25 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
         ),
       ].sort((a, b) => a - b),
     ).toEqual(Array.from({ length: 18 }, (_, index) => index + 1));
-    expect(actual.length).toBeGreaterThanOrEqual(12);
-    expect(
-      [...new Set(actual.map(({ text }) => Number(text.replace(/\D/g, ""))))].sort((a, b) => a - b),
-    ).toEqual(Array.from({ length: 18 }, (_, index) => index + 1));
     for (const preview of actual) {
       expect(existsSync(join(root, "public", preview.src))).toBe(true);
     }
-
-    for (const expected of FIGURE_PREVIEW_EXPECTATIONS) {
-      const figPath = join(root, "public", expected.src);
-      expect(existsSync(figPath)).toBe(true);
-      const bytes = readFileSync(figPath);
-      expect(readPngDimensions(bytes)).toEqual({ width: expected.width, height: expected.height });
-      expect(createHash("sha256").update(bytes).digest("hex")).toBe(expected.sha256);
-    }
-
-    const figure7Alts = maimanRubyLaserArchivalEdition.blocks.flatMap((block) =>
-      block.kind === "paragraph"
-        ? block.inlines.flatMap((inline) =>
-            inline.kind === "reference" && inline.text === "FIG. 7"
-              ? (inline.figurePreviews ?? []).map(({ src, alt }) => ({ src, alt }))
-              : [],
-          )
-        : [],
-    );
-    expect(figure7Alts).toEqual([
-      {
-        src: "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png",
-        alt: "Source drawing sheet 2 containing Figures 4 through 7.",
-      },
-      {
-        src: "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
-        alt: "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",
-      },
-      {
-        src: "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png",
-        alt: "Printed Figure 7 label from the source drawing sheet.",
-      },
-      {
-        src: "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png",
-        alt: "Figure 7 upper-right labels: second energy level and level 2.",
-      },
-      {
-        src: "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png",
-        alt: "Figure 7 lower-right ruby path and downward arrow from level 2 to level 1.",
-      },
+    const accepted = new Set([
+      "FIG. 1",
+      "FIG. 2",
+      "FIG. 4",
+      "FIG. 7",
+      "FIG. 18",
     ]);
+    for (const inline of maimanRubyLaserArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter((candidate) => candidate.kind === "reference")
+        : [],
+    )) {
+      if (!accepted.has(inline.text)) {
+        expect(inline.figurePreviews).toBeUndefined();
+      }
+    }
   });
 
   test("pairs every source paragraph with an explicit non-lossy reading", () => {

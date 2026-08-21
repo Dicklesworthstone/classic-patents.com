@@ -34,7 +34,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       expect(fermiReactorPatent.originalTextAsset).toMatchObject({
         kind: "reviewed-transcription",
         pageCount: 58,
-        url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
+        sourcePdfSha256: fermiReactorArchivalEdition.sourcePdfSha256,
       });
   });
 
@@ -45,10 +45,46 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(fermiReactorPatent.claims.every((claim) => claim.isIndependent)).toBe(true);
     expect(fermiReactorClaims).toHaveLength(8);
     expect(fermiReactorPatent.stats).toMatchObject({ totalClaims: 8, independentClaims: 8 });
-    expect(fermiReactorPatent.claims[0]?.originalText).toContain("k = 1.00 curve of Figure 3");
-    expect(fermiReactorPatent.claims[7]?.originalText).toContain(
-      "all dimensions thereof at least 0.5 centimeter",
+  });
+
+  test("pins the bounded reviewed ledger reconciliation for PDF pages 36–38", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
     );
+    for (const page of [36, 37, 38]) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 58 ---`);
+    }
+    expect(ledger).toContain("One side of the reactor side wall 11");
+    expect(ledger).toContain("The uranium-bearing rows are spaced by rows of dead graphite");
+    expect(ledger).toContain("At least from the halfway point of construction");
+    const sourceFaceText = fermiReactorArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .map((inline) => inline.text)
+      .join(" ");
+    expect(sourceFaceText).toContain("safety-rod apertures 40");
+    expect(sourceFaceText).toContain("boron fluoride");
+    expect(sourceFaceText).toContain("saturation values A0");
+    for (const expectedTerm of [
+      "SOLID MODERATOR",
+      "shielding",
+      "vault space",
+      "pile",
+      "cubic lattice",
+      "Ionization chamber",
+      "boron fluoride",
+      "convergent",
+      "indium-foil measurements",
+      "saturation values",
+    ]) {
+      expect(
+        fermiReactorArchivalEdition.blocks.some((block) =>
+          "inlines" in block &&
+          block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        ),
+      ).toBe(true);
+    }
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {
@@ -67,7 +103,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
 
   test("makes source drawing sheets available as local crops", () => {
     const references = fermiReactorArchivalEdition.blocks.flatMap((block) =>
-      "inlines" in block
+      block.kind === "paragraph"
         ? block.inlines.filter(
             (inline) => inline.kind === "reference" && inline.referenceType === "figure",
           )

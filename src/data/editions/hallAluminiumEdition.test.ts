@@ -2,11 +2,15 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import type { CuratedSpecificationEdition } from "@/types/patent";
 import {
   HALL_ALUMINIUM_PARALLEL_READINGS,
   hallAluminiumArchivalEdition,
   manualHallClaimText,
 } from "./hallAluminiumEdition";
+import { hallAluminiumPatent } from "@/data/patents/hall-aluminium";
 
 describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
   const rootDir = process.cwd();
@@ -22,7 +26,29 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     expect(hallAluminiumArchivalEdition.sourcePdfSha256).toBe(expectedSha256);
   });
 
-  test("confirms figure crop files exist on disk with matching dimensions", () => {
+  test("keeps the candidate edition fail-closed until crop review is complete", () => {
+    const validation = validateCuratedSpecificationEdition(
+      hallAluminiumArchivalEdition as unknown as CuratedSpecificationEdition,
+    );
+    expect(validation.valid).toBe(false);
+    expect(validation.errors).toContain(
+      "The archival edition lacks an explicit full-facsimile review attestation.",
+    );
+    expect(hallAluminiumArchivalEdition.completeFacsimileReviewed).toBe(false);
+    const ledger = readFileSync(
+      resolve(rootDir, "public/patents/transcripts/us-400766-hall-aluminium-reviewed.txt"),
+      "utf8",
+    );
+    expect(validateReviewedTranscription(ledger, 3)).toEqual({ valid: true });
+    const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+    for (const block of hallAluminiumArchivalEdition.blocks) {
+      if (block.kind !== "paragraph" && block.kind !== "claim") continue;
+      const sourceText = normalize(block.inlines.map((inline) => inline.text).join(""));
+      expect(normalize(ledger)).toContain(sourceText);
+    }
+  });
+
+  test("preserves superseded crops while the versioned crop plan remains withheld", () => {
     const figures = [
       {
         path: "public/patents/figures/us-400766-hall-aluminium/fig-1-source-crop-v1.png",
@@ -40,6 +66,19 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
       const fullPath = resolve(rootDir, fig.path);
       expect(existsSync(fullPath)).toBe(true);
     }
+    expect(hallAluminiumPatent.archivalEdition).toBeUndefined();
+    const figureReferences = hallAluminiumArchivalEdition.blocks.flatMap((block) => {
+      const inlines = block.kind === "paragraph" ? block.inlines : [];
+      return inlines.flatMap((inline) =>
+        inline.kind === "reference" && inline.referenceType === "figure" ? [inline] : [],
+      );
+    });
+    expect(figureReferences.length).toBeGreaterThan(0);
+    expect(
+      figureReferences.every((reference) =>
+        reference.figurePreviews?.every((preview: { src: string }) => /-v2\.png$/.test(preview.src)),
+      ),
+    ).toBe(true);
   });
 
   test("confirms reviewed transcript ledger exists and contains page markers", () => {
@@ -65,8 +104,20 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
 
     const claim2 = manualHallClaimText(2);
     expect(claim2).toContain(
-      "2. The process of reducing aluminium by electrolysis, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and sodium",
+      "2. As an improvement in the art of manufacturing aluminium, the herein-described process, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium and sodium",
     );
+
+    const claim3 = manualHallClaimText(3);
+    expect(claim3).toContain(
+      "3. As an improvement in the art of manufacturing aluminium, the herein-described process, which consists in dissolving alumina in a fused bath composed of the fluorides of aluminium, sodium, and lithium",
+    );
+    expect(hallAluminiumPatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3]);
+    expect(hallAluminiumPatent.claims.map((claim) => claim.originalText)).toEqual([
+      manualHallClaimText(1),
+      manualHallClaimText(2),
+      manualHallClaimText(3),
+    ]);
+    expect(hallAluminiumPatent.stats).toMatchObject({ totalClaims: 3, independentClaims: 3 });
   });
 
   test("validates parallel readings map covers the archival blocks", () => {

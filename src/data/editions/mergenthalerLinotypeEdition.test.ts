@@ -14,15 +14,14 @@ import {
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
 describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
-  test("keeps the incomplete manual edition withheld and exposes only the source text asset", () => {
+  test("keeps the p1–17 drawing/crop boundary fail-closed", () => {
     expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
     expect(mergenthalerLinotypePatent.originalTextAsset).toBeDefined();
     expect(mergenthalerLinotypePatent.originalTextAsset?.kind).toBe("source-pdf-text-layer");
   });
 
   test("pins the 35-page facsimile and retains a structurally valid staged edition", () => {
-    if (mergenthalerLinotypePatent.archivalEdition)
-      expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
+    expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
     expect(validateCuratedSpecificationEdition(mergenthalerLinotypeArchivalEdition)).toEqual({
       valid: true,
       errors: [],
@@ -49,6 +48,15 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
       totalClaims: 70,
       independentClaims: 70,
     });
+    for (const claim of mergenthalerLinotypeClaims) {
+      const block = mergenthalerLinotypeArchivalEdition.blocks.find(
+        (candidate) => candidate.kind === "claim" && candidate.number === claim.number,
+      );
+      expect(block?.kind).toBe("claim");
+      if (block?.kind === "claim") {
+        expect(claim.originalText).toBe(block.inlines.map((inline) => inline.text).join(""));
+      }
+    }
   });
 
   test("pairs every prose paragraph with an authored parallel reading", () => {
@@ -86,8 +94,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
   });
 
   test("keeps any reviewed-ledger binding conditional on future source acceptance", () => {
-    if (mergenthalerLinotypePatent.archivalEdition)
-      expect(mergenthalerLinotypePatent.archivalEdition).toBe(mergenthalerLinotypeArchivalEdition);
+    expect(mergenthalerLinotypePatent.archivalEdition).toBeUndefined();
     if (mergenthalerLinotypePatent.originalTextAsset?.kind === "reviewed-transcription") {
       const asset = mergenthalerLinotypePatent.originalTextAsset;
       const ledger = readFileSync(publicFile(asset.url), "utf8");

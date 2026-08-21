@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
+import { bardeenTransistorPatent } from "@/data/patents/bardeen-transistor";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { CuratedSpecificationInline } from "@/types/patent";
 import {
@@ -14,6 +15,12 @@ import {
 type FigureReference = Extract<CuratedSpecificationInline, { kind: "reference" }>;
 
 describe("US 2,524,035 manual source edition", () => {
+  test("keeps the former module path as a compatibility alias to the canonical grant", () => {
+    expect(bardeenTransistorPatent).toBe(bardeenTransistor2524035Patent);
+    expect(bardeenTransistorPatent.id).toBe("us-2524035-bardeen-transistor");
+    expect(bardeenTransistorPatent.patentNumber).toBe("US 2,524,035");
+  });
+
   test("pins the correct fourteen-page Bardeen and Brattain facsimile and all printed claims", () => {
     expect(bardeenTransistor2524035Patent.patentNumber).toBe("US 2,524,035");
     expect(bardeenTransistor2524035Patent.grantDate).toBe("1950-10-03");

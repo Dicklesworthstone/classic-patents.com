@@ -13,10 +13,10 @@ import {
 
 describe("US 542,846 manual source edition", () => {
   test("pins the actual ten-page facsimile and source identity", () => {
-    // The editorial source face stays deliberately unbound while the root
-    // reviewer completes independent page-to-PDF and source-text acceptance.
-    expect(dieselEnginePatent.archivalEdition).toBeDefined();
-    expect(dieselEnginePatent.originalTextAsset).toBeDefined();
+    // The candidate source face stays deliberately unbound while the root
+    // reviewer completes foreign-patent, page-to-PDF, and source-text review.
+    expect(dieselEnginePatent.archivalEdition).toBeUndefined();
+    expect(dieselEnginePatent.originalTextAsset).toBeUndefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
     expect(dieselEnginePatent.filingDate).toBe("1892-08-26");
     expect(validateCuratedSpecificationEdition(dieselEngineArchivalEdition)).toEqual({
@@ -80,6 +80,17 @@ describe("US 542,846 manual source edition", () => {
         : [],
     );
     expect(terms.map((term) => term.text)).toContain("neutral gas or vapor");
+    expect(terms.map((term) => term.text)).toEqual(
+      expect.arrayContaining([
+        "P is a plunger",
+        "hopper B",
+        "admission-plug D",
+        "cut-off",
+        "air reservoir L",
+        "air-vessel",
+        "annular space s",
+      ]),
+    );
     expect(terms.every((term) => term.definition.length > 80)).toBe(true);
     for (const block of dieselEngineArchivalEdition.blocks) {
       const inlines =
@@ -208,6 +219,10 @@ describe("US 542,846 manual source edition", () => {
         .map((inline) => inline.text)
         .join("")
         .replace(/\s+/g, " ");
+      // The foreign-patent numeral is intentionally unresolved until cloud
+      // pixel review; the candidate edition must not turn either OCR reading
+      // into comparison evidence.
+      if (blockText.includes("number unresolved pending cloud facsimile pixel review")) continue;
       expect(continuousLedger).toContain(blockText);
     }
 

@@ -399,6 +399,16 @@ export const edisonLightbulbParallelReadings: Readonly<Record<number, readonly s
   ],
 };
 
+function manualClaimText(number: number): string {
+  const block = edisonLightbulbArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Edison Lightbulb manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const edisonLightbulbRecordCorrections: Pick<
   Patent,
   | "shortTitle"
@@ -506,8 +516,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "An electric lamp for giving light by incandescence, consisting of a filament of carbon of high resistance, made as described, and secured to metallic wires, as set forth.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "This claim covers the lamp as a combination of a high-resistance carbon filament made by the described method and secured to metallic wires. It does not claim every incandescent lamp in the abstract.",
       keyInnovations: ["High-resistance carbon filament", "Metallic-wire connection"],
@@ -515,8 +524,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The combination of carbon filaments with a receiver made entirely of glass and conductors passing through the glass, and from which receiver the air is exhausted, for the purposes set forth.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "This claim protects the combination of carbon filaments, an all-glass receiver, conductors passing through its glass wall, and an exhausted interior.",
       keyInnovations: ["All-glass receiver", "Sealed conductors", "Exhausted interior"],
@@ -524,8 +532,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "A carbon filament or strip coiled and connected to electric conductors so that only a portion of the surface of such carbon conductors shall be exposed for radiating light, as set forth.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "This claim narrows the carbon element to a coiled filament or strip connected to conductors so that only part of its surface is exposed as the radiating surface.",
       keyInnovations: ["Coiled carbon filament or strip", "Controlled radiating surface"],
@@ -533,8 +540,7 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     {
       number: 4,
       isIndependent: true,
-      originalText:
-        "The method herein described of securing the platina contact-wires to the carbon filament and carbonizing of the whole in a closed chamber, substantially as set forth.",
+      originalText: manualClaimText(4),
       plainEnglish:
         "This claim covers the specified manufacturing method: secure platina contact wires to the carbon filament and carbonize the assembled whole in a closed chamber.",
       keyInnovations: ["Platina contact wires", "Closed-chamber carbonization"],
