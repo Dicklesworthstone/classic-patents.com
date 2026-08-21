@@ -27,6 +27,24 @@
     }
   }
 
+/* Visitors who ask the OS for reduced motion get a still museum: loading
+   spinners freeze into static rings, pulses and kinetic hovers stop, and
+   state changes become instant. Layout/color transitions collapsing to
+   0.01ms is the standard accessible pattern; no JS waits on the events. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
   html.dark {
     color-scheme: dark;
   }
