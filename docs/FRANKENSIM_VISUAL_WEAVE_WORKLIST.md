@@ -645,9 +645,11 @@ host SI step and label it until a stepper export exists.
   rAF loops that used `const dt = 1/60` (Gramme, Otto, Fermi, Gatling, Diesel,
   Wozniak, Mergenthaler, Watt rotary, Tesla coil, Goodyear, and the rest of
   that 34-file drain). Edison/Bell/Nobel/Phonograph/Morse/Bardeen models drain
-  kernel seats instead of `timeSec * 8` tapes. A few faces still use a named
-  virtual tick (`dtVirtual`) or TickScheduler's own 1/60 step size. Fermi
-  kinematics freeze when k_eff > 1.002. HUD still does not say WASM.
+  kernel seats instead of `timeSec * 8` tapes. Named virtual ticks
+  (`dtVirtual` / `virtualTime += 1/60`) on Arkwright, Daimler, Watt condenser,
+  Sholes, Baekeland, Cort, and Lamarr now pump `createStudioClock`.
+  TickScheduler's own 1/60 is the physics tick size. Fermi kinematics freeze
+  when k_eff > 1.002. HUD still does not say WASM.
 - [x] P7.12 Replay digest on catalog HUDs is `host:` unless a WASM hasher
   actually stepped. Fake `blake3:` hex removed from `energyLedger`.
 - [x] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→

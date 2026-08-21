@@ -198,6 +198,12 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "compression",
     );
     expect(coupleEdgesFor("us-120057-gramme-dynamo", { shaftRate: 1 })[0]?.from).toBe("shaft rate");
+    expect(coupleEdgesFor("gb-931-arkwright-water-frame", { totalDraftRatio: 6 })[0]?.from).toBe(
+      "draft",
+    );
+    expect(
+      coupleEdgesFor("gb-913-watt-separate-condenser", { hasSeparateCondenser: 1 })[0]?.from,
+    ).toBe("separate condenser");
   });
 
   test("catalog 3Ds no longer fake const dt = 1/60 inside the rAF loop", () => {
@@ -214,10 +220,19 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "WattRotaryEngine3D.tsx",
       "TeslaCoil3D.tsx",
       "GoodyearRubber3D.tsx",
+      "ArkwrightWaterFrame3D.tsx",
+      "DaimlerEngine3D.tsx",
+      "WattSeparateCondenser3D.tsx",
+      "SholesTypewriter3D.tsx",
+      "BaekelandBakelite3D.tsx",
+      "CortPuddlingRolling3D.tsx",
+      "LamarrFrequencyHopping3D.tsx",
     ]) {
       const src = readFileSync(join(dir, name), "utf8");
       expect(src).toContain("createStudioClock");
       if (/const (dt|delta) = 1 \/ 60/.test(src)) leftover.push(name);
+      if (src.includes("dtVirtual")) leftover.push(`${name}:dtVirtual`);
+      if (src.includes("virtualTime += 1 / 60")) leftover.push(`${name}:virtualTime`);
     }
     expect(leftover).toEqual([]);
   });

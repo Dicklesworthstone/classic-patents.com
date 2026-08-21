@@ -3,7 +3,9 @@
  * Host fallback until a WASM couple module steps. HUD must not say WASM.
  */
 
+import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
+  stepDaimlerEngine,
   stepEdisonBulb,
   stepGoodyearRubber,
   stepGrammeDynamo,
@@ -14,6 +16,7 @@ import {
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { TESLA_FIELD_POLES } from "./teslaKernel";
+import { stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
 export type CoupleSource = "wasm" | "ts-fallback";
@@ -180,6 +183,53 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
         to: "EMF index",
         gain: Number((gramme.inducedEmfIndex / Math.max(0.4, params.shaftRate ?? 1)).toFixed(2)),
         unit: "index / rate",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "gb-931-arkwright-water-frame") {
+    const draft = params.totalDraftRatio ?? 6;
+    const roving = params.inputRovingCountNe ?? 1;
+    const frame = stepArkwrightWaterFrame({
+      totalDraftRatio: draft,
+      inputRovingCountNe: roving,
+    });
+    return [
+      {
+        from: "draft",
+        to: "yarn count",
+        gain: Number((frame.outputYarnCountNe / Math.max(0.1, draft)).toFixed(3)),
+        unit: "Ne / ratio",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "gb-913-watt-separate-condenser") {
+    const watt = stepWattCondenser({
+      hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) >= 0.5,
+      condenserTempC: params.condenserTempC ?? 35,
+    });
+    return [
+      {
+        from: "separate condenser",
+        to: "Newcomen fuel multiple",
+        gain: Number(watt.newcomenFuelMultiplier.toFixed(3)),
+        unit: "× coal",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-361931-daimler-engine") {
+    const daimler = stepDaimlerEngine({ engineRpm: params.engineRpm ?? 750 });
+    return [
+      {
+        from: "hot-tube rpm",
+        to: "brake hp",
+        gain: Number((daimler.brakeHorsepower / Math.max(1, params.engineRpm ?? 750)).toFixed(5)),
+        unit: "hp / rpm",
         crate: "fs-couple",
         source: "ts-fallback",
       },
