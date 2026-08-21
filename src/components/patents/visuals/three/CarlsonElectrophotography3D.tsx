@@ -1,9 +1,10 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import {
   articulateCarlsonElectrophotographyModel,
   buildCarlsonElectrophotographyModel,
@@ -12,6 +13,7 @@ import {
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 interface CarlsonElectrophotography3DProps {
   initialCoronaVoltageKv?: number;
@@ -51,6 +53,7 @@ export function CarlsonElectrophotography3D({
   const timeRef = useRef<number>(0);
 
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics("us-2297691-carlson-electrophotography");
   const coronaVoltageKv = (params.coronaVoltageKv as number) ?? initialCoronaVoltageKv;
   const exposureLuxSec = (params.exposureLuxSec as number) ?? initialExposureLuxSec;
@@ -147,7 +150,7 @@ export function CarlsonElectrophotography3D({
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+              <Camera className="w-3.5 h-3.5" /> View:
             </span>
             {(
               [
@@ -159,10 +162,10 @@ export function CarlsonElectrophotography3D({
               ] as CameraPreset[]
             ).map((preset) => (
               <button
-                type="button"
                 key={preset}
+                type="button"
                 onClick={() => handlePresetChange(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
                   cameraPreset === preset
                     ? "bg-amber-600 text-white shadow-xs font-semibold"
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -176,6 +179,22 @@ export function CarlsonElectrophotography3D({
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
@@ -199,16 +218,15 @@ export function CarlsonElectrophotography3D({
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
           <button
             aria-label="Reset camera view"
             type="button"
             onClick={() => handlePresetChange("isometric")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

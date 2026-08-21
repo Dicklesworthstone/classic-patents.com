@@ -1,13 +1,15 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "overview" | "transmitter" | "receiver" | "top";
 
@@ -40,7 +42,7 @@ export function BellPhotophone3D({
   const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isAudioActive, setIsAudioActive] = useState<boolean>(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -51,11 +53,11 @@ export function BellPhotophone3D({
 
   const photoState = useMemo(() => {
     return stepBellPhotophone({
-      voiceSplDb: isAudioActive ? voiceSplDb : 40,
+      voiceSplDb: !isAudioMuted ? voiceSplDb : 40,
       transmissionDistanceM,
       solarIrradianceWPerM2,
     });
-  }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioActive]);
+  }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioMuted]);
 
   const live = useLiveSimParams({ photoState });
 
@@ -103,7 +105,7 @@ export function BellPhotophone3D({
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+              <Camera className="w-3.5 h-3.5" /> View:
             </span>
             {(
               [
@@ -119,7 +121,7 @@ export function BellPhotophone3D({
                 onClick={() => handlePresetChange(preset)}
                 className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   cameraPreset === preset
-                    ? "bg-amber-600 text-white shadow-xs"
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
@@ -133,17 +135,19 @@ export function BellPhotophone3D({
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setIsAudioActive(!isAudioActive)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
-              isAudioActive
-                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
-                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            <span className="hidden md:inline">
-              {isAudioActive ? "Voice Active" : "Voice Muted"}
-            </span>
-            <span className="md:hidden">{isAudioActive ? "Voice" : "Muted"}</span>
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
           <button
             type="button"
