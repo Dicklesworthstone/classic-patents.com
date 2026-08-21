@@ -301,6 +301,24 @@ claim-start line lacking terminal punctuation, and no remaining target residue
 `sheet- like lamination`). These checks are source-edit evidence only; they do
 not change the false/unbound state.
 
+### Pages 25–26 duplicate-header repair
+
+The page-25/26 boundary was rechecked against the cloud page rasters
+`US2543181-24.png` and `US2543181-25.png`. Printed page 33 (PDF page 25)
+contains claims 21–26 and begins claim 27; printed page 35 (PDF page 26)
+continues claim 27, then begins claim 28 and carries claims 29 onward. The
+ledger previously repeated the numbered Claim 28 header before and after the
+PDF-page-26 marker. The earlier occurrence was removed; the continuation of
+Claim 27 remains attached to the page-26 marker, and Claim 28 now has exactly
+one numbered ledger header in its printed location.
+
+The patent-local regression reconstructs claim text across physical page
+markers, rejects duplicate or missing numbered headers, requires the ordered
+set 1–116, and compares each reconstructed claim with its explicit archival
+edition node after removing only scan line-wrap hyphens and whitespace. This
+is source-integrity evidence only. The edition remains unbound with
+`completeFacsimileReviewed: false`.
+
 ### Pages 29–32 final cloud claim checkpoint
 
 PDF pages 29–32 were visually reconciled from the cloud page rasters
