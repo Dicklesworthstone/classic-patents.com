@@ -1,15 +1,18 @@
 "use client";
 
-import { Cpu, Monitor, Sparkles, Zap } from "lucide-react";
+import { Cpu, Monitor, Pause, Play, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export { wozniakBusCycle };
 
 export function WozniakAppleSim() {
-  const { params, updateParam } = usePatentPhysics("us-4136359-wozniak-apple");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-4136359-wozniak-apple");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const crystalFreq = params.crystalFreq ?? 14.318;
   const apple = stepWozniakApple({
     crystalFreq,
