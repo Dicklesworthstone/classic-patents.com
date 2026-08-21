@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import {
   computeCarrierSprayField,
@@ -12,6 +13,8 @@ import {
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildCarrierAirConditionerModel,
   updateCarrierAirConditionerKinematics,
@@ -46,6 +49,7 @@ export function CarrierAirConditioner3D() {
   const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Psychrometric Air Treatment Parameters from Physics Bus
   const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
@@ -207,7 +211,15 @@ export function CarrierAirConditioner3D() {
         )}
 
         {/* Top-Right Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-808897-carrier-air-conditioner"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("sprayWaterTempC", active ? 8.0 : 28.0);
+            }}
+          />
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
@@ -303,66 +315,54 @@ export function CarrierAirConditioner3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Centrifugal Airflow
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {airflowCfm.toLocaleString()} CFM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5000"
-              max="30000"
-              step="1000"
-              value={airflowCfm}
-              onChange={(e) => updateParam("airflowCfm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carrierAirflow"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="airFlowCfm"
+            label="Centrifugal Airflow"
+            value={airflowCfm}
+            min={5000}
+            max={30000}
+            step={1000}
+            unit="CFM"
+            onChange={(val) => updateParam("airflowCfm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Atomizing Water Temp
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {sprayWaterTempC.toFixed(1)} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2"
-              max="20"
-              step="0.5"
-              value={sprayWaterTempC}
-              onChange={(e) => updateParam("sprayWaterTempC", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carrierWaterTemp"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="dewPointTempC"
+            label="Atomizing Water Temp"
+            value={sprayWaterTempC}
+            min={2}
+            max={20}
+            step={0.5}
+            unit="°C"
+            onChange={(val) => updateParam("sprayWaterTempC", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Inlet Relative Humidity
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {inletRhPct}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="30"
-              max="95"
-              step="5"
-              value={inletRhPct}
-              onChange={(e) => updateParam("inletRhPct", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carrierInletRh"
+            patentId="us-808897-carrier-air-conditioner"
+            paramKey="inletRhPct"
+            label="Inlet Relative Humidity"
+            value={inletRhPct}
+            min={30}
+            max={95}
+            step={5}
+            unit="%"
+            onChange={(val) => updateParam("inletRhPct", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-808897-carrier-air-conditioner"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

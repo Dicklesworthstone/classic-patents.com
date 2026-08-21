@@ -1,4 +1,4 @@
-# Provenance Receipt: US 706,737 — Wireless Telegraphy (Continuous-Wave Radio & Electrolytic Detector)
+# Provenance Receipt: US 706,737 — Wireless Telegraphy
 
 - **Catalogue ID**: `us-706737-fessenden-wireless`
 - **Granted Title**: `Wireless Telegraphy`
@@ -20,13 +20,13 @@
 
 | PDF Page | Historical Header / Content | Verification Notes |
 | :--- | :--- | :--- |
-| **Page 1** | Drawing Sheet (Figs. 1, 2, 3, 4, 5) | Verified 5 figures: CW transmitter/receiver diagrams, electrolytic detector 12, cage antenna structure 4-8, section 4, sleeve 17. |
-| **Page 2** | Masthead & Specification Col 1–2 (Lines 1–130) | Preamble, prior art critique of Marconi damped spark systems, continuous sinusoidal wave principle. |
-| **Page 3** | Specification Col 1–2 (Lines 1–130) | Low-loss antenna capacity, high-frequency alternator dynamo 3, resonant tuning. |
-| **Page 4** | Specification Col 1–2 (Lines 1–130) | Wave propagation mechanics, sine-wave current generation, antenna current distribution. |
-| **Page 5** | Specification Col 1–2 (Lines 1–130) | Liquid barretter / electrolytic detector mechanics, heat and current response, telephone diaphragm actuation. |
-| **Page 6** | Specification ending; Claims 1–12 begin | The printed claims begin in the lower right column. Claim 12 continues onto page 7. |
-| **Page 7** | Claim 12 conclusion; Claims 13–21; signatures | The grant ends with Claim 21, Reginald A. Fessenden's signature, and witnesses W. B. Fearing and S. C. Gray. |
+| **Page 1** | Drawing sheet (Figs. 1–5) | Diagrammatic sending and receiving systems, fine-wire and liquid receiving alternatives, cylindrical cage conductor, transverse section, and cylinder detail. |
+| **Page 2** | Masthead and opening specification | Preamble, objects, figure descriptions, spark-gap comparison, continuous uniform waves, and distributed capacity/self-induction. |
+| **Page 3** | Specification | Cage or cylinder construction, ground lead, low-frequency alternating-current dynamo, and source/conductor conditions. |
+| **Page 4** | Specification | Transformer relation, source/radiator natural-period adjustment, Fig. 1 telephone receiver, and Fig. 2 fine-wire receiver. |
+| **Page 5** | Specification | Liquid receiver with small Wollaston terminal, definition of low frequency, and listed advantages of low frequency and large capacity. |
+| **Page 6** | Specification ending; Claims 1–5 | Reduced losses, shorter sending-conductor, dynamo in place of induction-coil and spark-gap, persistent oscillation, and Claims 1–5. |
+| **Page 7** | Claims 6–21 and signatures | Claims 6–21, Fessenden's signature, and witnesses W. B. Fearing and S. C. Gray. |
 
 ---
 
@@ -36,4 +36,4 @@ The receipt identifies the pinned seven-page grant only. Editorial discussion of
 
 ## Publication Approval & Verification
 
-The archival edition is verified against the pinned facsimile (SHA-256: `2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887`). All 21 literal printed claims (Claims 1–5 on page 6, Claim 12 spanning pages 6–7, Claims 6–11 and 13–21 on page 7) have been transcribed and verified with matching claim decoders. Figure crops 1–5 exist locally and are bound to specification citations. Paragraph-level parallel readings cover all 11 continuous prose blocks. Publication approved.
+The local PDF digest and seven-page structure are verified, and the source-correct candidate edition contains all 21 claim blocks and figure references. The publication state remains **candidate / independent acceptance withheld**: the receipt does not self-approve the archival edition, and no claim is made here for amplitude modulation, carbon-microphone speech transmission, or later Fessenden broadcast history.

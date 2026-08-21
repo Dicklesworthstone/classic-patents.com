@@ -300,6 +300,112 @@ const fermiPages30To40Blocks: readonly CuratedSpecificationBlock[] = [
   ]),
 ];
 
+// Bounded WIP intake for PDF pages 41–50. These blocks continue the source
+// reading after p30–40 and remain explicitly unpublished until the complete
+// 58-page facsimile, ledger, figures, and certificate are independently checked.
+const fermiPages41To50Blocks: readonly CuratedSpecificationBlock[] = [
+  {
+    kind: "heading",
+    level: 2,
+    text: "Specification source chunk, PDF pages 41–50 (p41–50 WIP range)",
+  },
+  paragraph([
+    text(
+      "The patent tabulates representative beryllium-uranium reactors and notes that an efficient ",
+    ),
+    term(
+      "reflector",
+      "A surrounding moderator or scattering layer that reduces neutron leakage and therefore lowers the critical quantity of fuel and moderator.",
+    ),
+    text(
+      " can reduce critical amounts by a few per cent. Light-water lattices can give K around unity with natural uranium; diphenyl resembles light water and can increase K by roughly two to four per cent. A higher-K seed or central heavy-water portion can raise the average K of a composite reactor, while water lattices can also serve as efficient reflectors.",
+    ),
+  ]),
+  paragraph([
+    text("The resonance-loss curves in "),
+    figure(2, "Fig. 2"),
+    text(", "),
+    figure(3, "Fig. 3"),
+    text(", "),
+    figure(4, "Fig. 4"),
+    text(", "),
+    figure(5, "Fig. 5"),
+    text(", and "),
+    figure(6, "Fig. 6"),
+    text(
+      " are based on K = pfe: p is the probability that a fast fission neutron escapes resonance capture and becomes thermal, f is the fraction of thermal neutrons absorbed by uranium rather than carbon, and e is the fission-neutron multiplication factor. The graphs use uranium-metal and uranium-oxide spheres and rods in graphite and uranium rods in D2O, with body radius and moderator-to-uranium volume ratio as coordinates.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "The curves show minimum body radii and optimum K values for metal spheres, metal rods, oxide spheres, oxide rods, and D2O rods. Rods or short slugs in end-to-end relation are useful where fuel must be removed without dismantling the moderator or incorporated into a heat-absorbing system. K decreases when body size or moderator ratio moves away from the optimum. Enrichment with U233, U235, or U239 increases K and reduces the required overall size, but does not eliminate the need for uranium aggregation.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "The true reproduction factor must include losses from impurities. A composition of high ",
+    ),
+    term(
+      "neutronic purity",
+      "A composition substantially free of elements with large neutron-capture danger sums; it need not be chemically pure if remaining elements have low capture effects.",
+    ),
+    text(
+      " may contain oxygen, fluorine, carbon, or beryllium while remaining suitable for a chain reaction. The specification describes nitric-acid conversion of impure uranium oxide to uranyl nitrate, ether solution, and repeated water extraction. High-capture impurities preferentially dissolve in the water. Purified nitrate can be calcined to UO3, reduced to UO2, or converted through uranium tetrafluoride and magnesium reduction to massive metal billets.",
+    ),
+  ]),
+  paragraph([
+    text("The purification process is evaluated by an exponential-pile comparison or by a "),
+    term(
+      "shotgun test",
+      "A neutron-absorption comparison in which a detector foil and a standard boron absorber are replaced by a pellet containing impurities removed from a known uranium sample.",
+    ),
+    text(
+      ". The absorption is expressed in equivalent boron and divided by the absorption of ten kilograms of uranium; the ratio approximates the K reduction caused by the impurities. Graphite requires careful selection of petroleum coke and pitch, especially for boron and vanadium. D2O is ordinarily about 99.8 per cent pure and can be redistilled if tank or sheath contamination becomes important.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "A cooling system must remove fission heat without adding excessive neutron absorption. Gamma radiation contributes about 11 per cent, beta radiation 6 per cent, fission-fragment kinetic energy 79 per cent, and neutron kinetic energy the balance of the approximately 200 MeV per fission. About 92 per cent is generated in uranium, 6 per cent in graphite, and 2 per cent outside the pile. Coolant and tubes may exchange heat with the moderator, the uranium, or both; direct uranium cooling is preferred at higher powers because graphite conducts heat poorly.",
+    ),
+  ]),
+  paragraph([
+    text("The gas-cooled reactor of "),
+    figure(31, "Figs. 31 through 36", [32, 33, 34, 35, 36]),
+    text(
+      " uses a 24- to 26-foot graphite cube with roughly 2,000 square air channels, inlet filter and fan, concrete top and side shields, outlet chamber, and elevated stack. About 700 channels loaded with 68 aluminum-jacketed uranium slugs can reach unity; loading about 1,000 channels produces a small excess that is absorbed by movable cadmium or boron rods. Each slug in ",
+    ),
+    figure(34, "Fig. 34"),
+    text(
+      " is about 1.1 inches in diameter and 4 inches long, sealed in an aluminum jacket to conduct heat and retain fission fragments.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "Air cooling can operate continuously at 250 or 500 kilowatts with the stated flow rates and at higher output with increased fan capacity. Loading apertures and a plunger mechanism in ",
+    ),
+    figure(35, "Fig. 35"),
+    text(
+      " push slugs through the channels while air continues to circulate. The control rod is inserted as critical size is approached; neutron-density doubling time after withdrawal gives the reproduction ratio. After a run, the rod is fully inserted, delayed emission is allowed to cease, and irradiated slugs are pushed into a water-filled outlet and aged under water before chemical treatment. The added K reduction from jackets and air channels is about 0.005.",
+    ),
+  ]),
+  paragraph([
+    text("The liquid-cooled reactor in "),
+    figure(37, "Figs. 37, 38, and 39", [38, 39]),
+    text(
+      " places aluminum-jacketed uranium slugs in coolant tubes through a graphite core surrounded by a reflector, steel casing, concrete tank, and water or lead-shot shield. Water may flow once through the tubes or be recirculated; diphenyl requires a closed system. A representative 100,000-kilowatt design has a seven-meter active length, 4.94-meter radius, 200 metric tons of uranium, 850 metric tons of graphite, 1,695 rods, and a 21.3-centimeter square-array spacing. Jacket, pipe, and coolant parasitic losses reduce K from about 1.07 to about 1.034.",
+    ),
+  ]),
+  paragraph([
+    text(
+      "Different moderator lattices can be combined in concentric zones. A D2O center can raise the average K of a graphite or light-water structure; a lower-K center can flatten the neutron-density curve. The statistical-weight curves in ",
+    ),
+    figure(40, "Fig. 40"),
+    text(
+      " weight material by position, because a given mass near the center is more effective than the same mass near the edge. For concentric cylinders, cubes, or spheres, the average K follows from the zone K values, migration lengths, and the weighted radii or side lengths. Critical size can then be obtained from an exponential pile's measured relaxation constant A: spherical, rectangular, and cylindrical forms use their corresponding leakage relations, while known migration length M permits K to be recovered from (K − 1)/M and A.",
+    ),
+  ]),
+];
+
 export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
@@ -502,6 +608,7 @@ export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
       inlines: claimInlines(fermiReactorClaims[7].text),
     },
     ...fermiPages30To40Blocks,
+    ...fermiPages41To50Blocks,
   ],
 };
 
@@ -556,5 +663,35 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
   ],
   33: [
     "Ellipsoidal prototype scaling, cylindrical and spherical geometries, and heavy-water liquid moderated reactor assemblies complete the detailed engineering embodiments.",
+  ],
+  35: [
+    "Pages 41-50 begin with beryllium, light-water, diphenyl, and composite seed lattices, then explain how the K contour families in Figures 2-6 quantify neutron economy for spheres and rods.",
+  ],
+  36: [
+    "The resonance-loss analysis defines K as p times f times e and records the minimum radii, optimum volume ratios, and practical tradeoffs for uranium metal, uranium oxide, graphite, and heavy-water lattices.",
+  ],
+  37: [
+    "The patent explains neutronic purity, nitric-acid and ether-water purification, and conversion of purified uranium compounds to UO2, tetrafluoride, metal, and carbide without introducing high-capture impurities.",
+  ],
+  38: [
+    "Exponential-pile and shotgun tests express impurity absorption as equivalent boron and estimate its reduction of K, while selected graphite and D2O manufacturing practices limit parasitic neutron capture.",
+  ],
+  39: [
+    "The cooling discussion accounts for the approximately 200 MeV released per fission and warns that coolant, pipes, and direct uranium cooling must remove heat without consuming the neutron economy.",
+  ],
+  40: [
+    "The gas-cooled reactor uses a shielded graphite cube, thousands of air channels, aluminum-jacketed slugs, and movable absorbers, with Figures 31-36 documenting structure, loading, and fuel-jacket details.",
+  ],
+  41: [
+    "Air cooling, controlled loading, delayed-neutron timing, and underwater unloading keep the gas-cooled reactor within temperature and radiation limits while the measured doubling time supplies the reproduction ratio.",
+  ],
+  42: [
+    "The liquid-cooled embodiments in Figures 37-39 route water or diphenyl around jacketed uranium slugs inside a shielded graphite core and quantify the K penalty from jackets, pipes, and coolant.",
+  ],
+  43: [
+    "A liquid-cooled design is sized from its active cylinder, fuel and graphite masses, rod spacing, and coolant annulus; different moderator choices trade boiling point, circulation, and neutron absorption.",
+  ],
+  44: [
+    "Figure 40 weights concentric lattice zones by neutron density, allowing average K and critical dimensions to be calculated from zone factors, migration lengths, and an exponential-pile relaxation constant.",
   ],
 };

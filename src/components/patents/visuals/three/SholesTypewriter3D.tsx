@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { memo, useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepSholesTypewriter } from "@/physics/machineKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -89,12 +90,12 @@ export const SholesTypewriter3D = memo(() => {
     scene.add(rootGroup);
 
     let reqId: number;
-    let displayElapsedS = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      const { simTimeSec: displayElapsedS } = clock.pump(now);
       const p = live.current;
-      displayElapsedS += 1 / 60;
       const step = stepSholesTypewriter(p.demonstrationCadence, displayElapsedS);
 
       updateSholesTypewriterKinematics(

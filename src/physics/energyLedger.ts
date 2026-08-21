@@ -338,6 +338,211 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-174465-bell-telephone": {
+      const lineCurrentMa = params.lineCurrentMa ?? 15.0;
+      const soundDb = params.soundPressureDb ?? 75.0;
+      const i = lineCurrentMa / 1000.0;
+      const coilInductanceH = 0.12; // Horseshoe electromagnet coil inductance
+      em = 0.5 * coilInductanceH * i * i; // Stored magnetic pole energy
+      const diagMassKg = 0.003; // Iron diaphragm mass (3 grams)
+      const diagVelMps = 0.02 * (soundDb / 75.0);
+      kinetic = 0.5 * diagMassKg * diagVelMps * diagVelMps;
+      potential = 0.5 * 1800.0 * 15e-6 ** 2; // Diaphragm flexural strain energy (15 um deflection)
+      powerIn = 12.0 * i + 10 ** ((soundDb - 120) / 10) * 0.001; // Battery electrical input + acoustic wave work
+      dissipated = i * i * 350.0; // 350 Ohm line loop resistance Joule heat
+      thermal = 2.5; // Receiver coil thermal capacity
+      break;
+    }
+
+    case "us-1773980-farnsworth-tv": {
+      const anodeKv = params.anodeVoltageKv ?? 1.8;
+      const beamUa = params.electronBeamCurrentUa ?? 80.0;
+      const anodeV = anodeKv * 1000.0;
+      const beamA = beamUa * 1e-6;
+      powerIn = anodeV * beamA + 4.5; // Anode accelerator HV power + cathode heater wattage
+      const coilCurrA = 0.45;
+      const deflInductanceH = 0.035;
+      em = 0.5 * deflInductanceH * coilCurrA * coilCurrA; // Magnetic focusing/deflection coil stored energy
+      const electronMassKg = 9.1093837e-31;
+      const electronCount = beamA / 1.60217663e-19;
+      const vElectrons = Math.sqrt((2 * 1.60217663e-19 * anodeV) / electronMassKg);
+      kinetic =
+        electronCount * 0.5 * electronMassKg * vElectrons * vElectrons * (0.35 / vElectrons); // Flight-time beam kinetic energy
+      dissipated = powerIn * 0.92; // Phosphor screen thermal dissipation (8% cathode luminescence)
+      thermal = 18.0; // Dissector tube glass envelope heat capacity
+      break;
+    }
+
+    case "us-1781541-einstein-refrigerator": {
+      const heatInputW = params.heatInputWatts ?? params.burnerWatts ?? 120.0;
+      const genTempC = params.generatorTempC ?? 160.0;
+      const cop = 0.35; // Einstein single-pressure absorption cycle COP
+      powerIn = heatInputW; // Gas burner / electrical thermal input
+      potential = 0.85 * 9.80665 * 0.45; // Ammonia solution liquid head in bubble pump lift pipe
+      thermal = 2.4 * 4184.0 * (genTempC - 20.0) * 0.05; // Thermodynamic enthalpy in rich/poor solution
+      dissipated = heatInputW * (1.0 - cop * 0.2); // Condenser and absorber ambient rejection
+      break;
+    }
+
+    case "us-2292387-lamarr-frequency-hopping": {
+      const rfWatts = params.rfPowerWatts ?? 15.0;
+      const hopRateHz = params.hoppingRateHz ?? 12.0;
+      powerIn = rfWatts + 8.0; // Transmitter RF power + piano roll pneumatic/clockwork drive power
+      em = (rfWatts / (2 * Math.PI * 150e6)) * 25.0; // 150 MHz transmitter tank circuit energy
+      const tapeDrumInertia = 0.008; // Slotted paper roll inertia
+      const omegaDrum = (hopRateHz * 2 * Math.PI) / 88.0;
+      kinetic = 0.5 * tapeDrumInertia * omegaDrum * omegaDrum;
+      dissipated = rfWatts * 0.78 + 7.2; // Antenna radiation field + mechanical friction of 88 tracker-bar levers
+      thermal = 4.0; // Master chassis thermal capacity
+      break;
+    }
+
+    case "us-2524035-bardeen-transistor": {
+      const vColl = params.collectorVoltageV ?? 40.0;
+      const iEmitterMa = params.emitterCurrentMa ?? 2.0;
+      const iBaseMa = params.baseCurrentMa ?? 0.4;
+      const pSupply = vColl * ((iEmitterMa - iBaseMa) / 1000.0) + 1.5 * (iEmitterMa / 1000.0);
+      powerIn = pSupply; // DC bias battery power input
+      const cJunctionFarads = 5.0e-12; // 5 pF point contact depletion capacitance
+      em = 0.5 * cJunctionFarads * vColl * vColl; // Point-contact barrier space-charge energy
+      potential = 1.60217663e-19 * 0.67 * (iEmitterMa / 1000.0) * 6.242e18; // Germanium bandgap minority hole potential
+      dissipated = powerIn; // Germanium crystal block Joule heating
+      thermal = 0.01 * 320.0 * 25.0; // Germanium wafer heat capacity
+      break;
+    }
+
+    case "us-3138743-kilby-integrated-circuit": {
+      const vcc = params.supplyVoltageV ?? 5.0;
+      const fClock = params.mesaFrequencyMhz ?? 1.0;
+      const rMesa = 350.0; // Mesa diffused resistor
+      powerIn = (vcc * vcc) / rMesa + 12.0e-3; // Resistor chain + phase-shift oscillator power
+      const cMesaPf = 80.0e-12; // PN junction mesa capacitor
+      em = 0.5 * cMesaPf * vcc * vcc; // Distributed monolithic junction capacitor energy
+      dissipated = powerIn; // Germanium monolithic bar thermal dissipation
+      thermal = 0.005 * 320.0 * 25.0; // Integrated circuit bar heat capacity
+      break;
+    }
+
+    case "us-3541541-engelbart-mouse": {
+      const moveSpeedCms = params.movementSpeedCms ?? 12.0;
+      const v = moveSpeedCms / 100.0; // m/s
+      const mouseMassKg = 0.22; // Hardwood housing + knife-edge wheels
+      kinetic = 0.5 * mouseMassKg * v * v;
+      const iPot = 0.005; // 5 mA potentiometer divider current
+      powerIn = 5.0 * iPot + 0.15 * v; // 5V supply power + hand mechanical rolling work
+      dissipated = 5.0 * iPot + 0.14 * v; // Potentiometer Joule heat + rolling friction on desk
+      thermal = 1.2;
+      break;
+    }
+
+    case "us-4136359-wozniak-apple": {
+      const clockMhz = params.clockMhz ?? 1.023;
+      const dramBytes = 49152; // 48 KB RAM
+      powerIn = 38.0; // 38 Watts switching power supply input
+      em = 0.5 * 100e-6 * 5.0 * 5.0; // 100 uF main board decoupling capacitor energy
+      const dramDynPower = dramBytes * 1.5e-13 * 5.0 * 5.0 * (clockMhz * 1e6);
+      dissipated = powerIn; // Motherboard and logic TTL chip Joule heat
+      thermal = 0.85 * 840.0 * 25.0; // FR-4 PCB and ceramic IC heat capacity
+      break;
+    }
+
+    case "us-6120588-eink": {
+      const vElectrophoretic = params.electrophoreticVoltageV ?? 15.0;
+      const pixelCount = 600 * 800; // SVGA E-Ink display panel
+      const cPixelPf = 2.0e-12; // 2 pF per microcapsule electrode
+      em = 0.5 * pixelCount * cPixelPf * vElectrophoretic * vElectrophoretic; // Stored dielectric matrix energy
+      powerIn = pixelCount * cPixelPf * (vElectrophoretic * vElectrophoretic) * 1.0; // Zero static power, active only on page turn
+      dissipated = powerIn; // Microcapsule fluid viscous dissipation
+      thermal = 0.05 * 1200.0 * 25.0;
+      break;
+    }
+
+    case "us-6285999-pagerank": {
+      const nodes = params.crawlNodes ?? 10000.0;
+      const damping = params.dampingFactor ?? 0.85;
+      powerIn = (nodes / 1000.0) * 150.0; // Server compute cluster CPU power (Watts)
+      potential = nodes * Math.log2(nodes) * 1e-6; // Information-theoretic graph entropy potential (Joules)
+      dissipated = powerIn * damping; // Server thermal dissipation
+      thermal = 5000.0; // Rack server heat sink capacity
+      break;
+    }
+
+    case "us-6331181-davinci": {
+      const tensionN = params.cableTensionN ?? 45.0;
+      const jointSpeedDegS = params.jointVelocityDegS ?? 30.0;
+      const omega = (jointSpeedDegS * Math.PI) / 180.0;
+      const armInertia = 0.35;
+      kinetic = 0.5 * armInertia * omega * omega;
+      potential = (0.5 * (tensionN * tensionN)) / 85000.0; // Tungsten drive cable elastic strain energy
+      powerIn = 120.0 + tensionN * (jointSpeedDegS * 0.002); // Multi-axis brushless DC servo motor power
+      dissipated = powerIn * 0.85; // Harmonic drive gearbox friction + motor winding heat
+      thermal = 450.0; // Surgical tool wrist alloy heat capacity
+      break;
+    }
+
+    case "us-6594844-roomba": {
+      const driveMps = params.driveVelocityMps ?? 0.25;
+      const vacWatts = params.vacuumMotorWatts ?? 30.0;
+      const robotMassKg = 3.6;
+      kinetic = 0.5 * robotMassKg * driveMps * driveMps;
+      powerIn = 14.4 * 2.5; // NiMH battery discharge power (36 Watts)
+      dissipated = vacWatts + 5.5 * driveMps; // Impeller airflow turbulence + floor brush friction
+      thermal = 180.0; // Motor casing and battery thermal capacity
+      break;
+    }
+
+    case "us-7479949-multitouch": {
+      const touchPoints = params.touchPointCount ?? 2;
+      const scanHz = params.scanRateHz ?? 120.0;
+      const touchGridCapFarads = 45.0e-12; // 45 pF mutual capacitance ITO matrix
+      em = 0.5 * 15 * 20 * touchGridCapFarads * 3.3 * 3.3; // Stored electrostatic touch sensing matrix energy
+      powerIn = 1.2 + touchPoints * 0.15; // Display controller + multi-touch ASIC power (Watts)
+      dissipated = powerIn; // ITO grid resistor Joule heat + chip dissipation
+      thermal = 0.12 * 720.0 * 25.0; // Cover glass and digitizer thermal capacity
+      break;
+    }
+
+    case "us-808897-carrier-air-conditioner": {
+      const airFlowCfm = params.airFlowCfm ?? 2500.0;
+      const chillerHp = params.chillerHp ?? 15.0;
+      powerIn = chillerHp * 745.7; // Compressor electric power in Watts
+      const kgS = (airFlowCfm * 0.0283168 * 1.2) / 60.0;
+      thermal = kgS * 1005.0 * 15.0; // Enthalpy drop across chilled spray chamber
+      dissipated = powerIn * 0.22; // Spray pump viscous shear + motor losses
+      break;
+    }
+
+    case "us-727650-linde-air-liquefaction": {
+      const throttlePressureBar = params.throttlePressureBar ?? 200.0;
+      const compressorKw = params.compressorKw ?? 45.0;
+      powerIn = compressorKw * 1000.0;
+      potential = (throttlePressureBar * 1e5 * 0.05) / 1.4; // High-pressure gas pneumatic potential
+      thermal = 12000.0; // Cryogenic liquid air enthalpy reservoir (77 K)
+      dissipated = powerIn * 0.75; // Heat exchanger thermal rejection + throttling entropy production
+      break;
+    }
+
+    case "us-971501-haber-ammonia": {
+      const synthesisPressureBar = params.synthesisPressureBar ?? 200.0;
+      const spaceVelocity = params.spaceVelocity ?? 30000.0;
+      powerIn = (synthesisPressureBar / 200.0) * 85000.0; // High-pressure circulation pump power
+      potential = (synthesisPressureBar * 1e5 * 0.08) / 1.4;
+      thermal = (spaceVelocity / 30000.0) * 45000.0; // Exothermic heat of formation (dH = -92.4 kJ/mol)
+      dissipated = powerIn * 0.35; // Cooling jacket thermal rejection
+      break;
+    }
+
+    case "us-2297691-carlson-electrophotography": {
+      const coronaVoltageKv = params.coronaVoltageKv ?? 6.0;
+      const drumSpeedRpm = params.drumSpeedRpm ?? 15.0;
+      powerIn = coronaVoltageKv * 1000.0 * 0.002 + 800.0; // Corona wire + fusing lamp
+      em = 0.5 * 2.5e-9 * (coronaVoltageKv * 1000.0) ** 2; // Photoconductive layer electrostatic energy
+      kinetic = 0.5 * 0.45 * ((drumSpeedRpm * 2 * Math.PI) / 60) ** 2; // Rotating selenium drum
+      thermal = 1800.0; // Thermal fuser roller heat (180°C)
+      dissipated = powerIn * 0.92; // Fuser thermal conduction into paper
+      break;
+    }
+
     default: {
       kinetic = 100.0;
       potential = 50.0;

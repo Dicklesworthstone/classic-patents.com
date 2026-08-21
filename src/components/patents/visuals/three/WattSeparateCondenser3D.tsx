@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
@@ -83,13 +84,14 @@ export function WattSeparateCondenser3D() {
 
     let cyclePhase = 0;
     let rafId = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
+      const { dt } = clock.pump(now);
       const p = live.current;
 
-      const dtVirtual = 1 / 60;
-      cyclePhase = (cyclePhase + dtVirtual * p.cycleOmegaRadPerS) % (2 * Math.PI);
+      cyclePhase = (cyclePhase + dt * p.cycleOmegaRadPerS) % (2 * Math.PI);
 
       const pistonPos = Math.sin(cyclePhase);
       const beamAngleRad = -pistonPos * (12 * (Math.PI / 180));
@@ -105,7 +107,7 @@ export function WattSeparateCondenser3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

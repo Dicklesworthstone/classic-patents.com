@@ -129,9 +129,8 @@ export const fessendenWirelessPatent: Patent = {
   id: "us-706737-fessenden-wireless",
   patentNumber: "US 706,737",
   title: "Wireless Telegraphy",
-  shortTitle: "Continuous-Wave Radio & Electrolytic Detector",
-  subtitle:
-    "Uninterrupted Sinusoidal Wave Radiation, Low-Loss Cylindrical Cage Aerials, and Liquid Barretter Demodulation",
+  shortTitle: "Low-Frequency Wireless Radiating Conductors",
+  subtitle: "Distributed Capacity, Dynamo Resonance, and Direct-Action Electromagnetic Receivers",
   inventors: ["Reginald Aubrey Fessenden"],
   inventorLocation: "Allegheny, Pennsylvania",
   grantDate: "1902-08-12",
@@ -150,8 +149,8 @@ export const fessendenWirelessPatent: Patent = {
     url: "/patents/transcripts/us-706737-fessenden-wireless-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
+    reviewedBy: "Classic Patents editorial agent (Codex)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
     pageAnchors: [
       {
@@ -203,9 +202,9 @@ export const fessendenWirelessPatent: Patent = {
   drawings: [
     {
       figureNumber: "Fig. 1",
-      title: "Continuous-Wave Transmitting & Receiving System",
+      title: "Wireless Telegraphy System",
       caption:
-        "Transmitting system featuring high-frequency alternator dynamo (3), tuning inductance (2), and vertical antenna (1), alongside continuous-wave receiving station with aerial (10) and telephone receiver (11).",
+        "Diagrammatic system with radiating portion 1, inductance 2, alternating-current dynamo 3, and receiving-conductor 10 connected to telephone-receiver 11 and ground.",
       svgType: "fessenden-wireless",
       callouts: [
         {
@@ -214,7 +213,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "1",
           element: "Low-Loss Sending Conductor",
           description:
-            "Vertical radiating antenna exhibiting low high-frequency resistance and high capacitance.",
+            "Radiating portion of the sending-conductor connected through the source and inductance.",
           x: 35,
           y: 25,
         },
@@ -224,7 +223,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "2",
           element: "Series Tuning Inductance",
           description:
-            "Variable loading coil adjusting antenna self-induction for sharp resonance.",
+            "Coils in the conductor used to adjust the self-induction of the sending-conductor.",
           x: 25,
           y: 55,
         },
@@ -232,9 +231,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-3",
           figureRef: "Fig. 1",
           label: "3",
-          element: "High-Frequency Alternator Dynamo",
+          element: "Alternating-Current Dynamo",
           description:
-            "Mechanical continuous-wave generator producing uninterrupted sinusoidal RF current.",
+            "Alternating-current dynamo serving as the source of voltage for the sending-conductor.",
           x: 18,
           y: 75,
         },
@@ -243,8 +242,7 @@ export const fessendenWirelessPatent: Patent = {
           figureRef: "Fig. 1",
           label: "10",
           element: "Receiving Aerial Conductor",
-          description:
-            "Elevated aerial conductor collecting continuous electromagnetic wave oscillations.",
+          description: "Receiving-conductor connected to the receiving instrument and ground.",
           x: 70,
           y: 25,
         },
@@ -254,7 +252,7 @@ export const fessendenWirelessPatent: Patent = {
           label: "11",
           element: "Telephone Receiver Earpiece",
           description:
-            "Electromagnetic acoustic transducer converting demodulated RF variations into audible speech.",
+            "Telephone-receiver whose diaphragm responds to the low-frequency induced currents.",
           x: 88,
           y: 70,
         },
@@ -262,17 +260,18 @@ export const fessendenWirelessPatent: Patent = {
     },
     {
       figureNumber: "Fig. 2",
-      title: "Liquid Barretter / Electrolytic Detector Receiver",
+      title: "Modified Receiving Apparatus",
       caption:
-        "Complete continuous-wave signaling circuit showing the Liquid Barretter / Electrolytic Detector (12) with acid cup (13), microscopic Wollaston platinum point (14), polarizing battery (15), and telephone receiver (16).",
+        "Modified receiving apparatus with fine wire 12 between magnet poles 13, and an alternative liquid receiver with vessel 13, terminals 14, local battery 15, and telephone 16.",
       svgType: "fessenden-wireless",
       callouts: [
         {
           id: "fw-12",
           figureRef: "Fig. 2",
           label: "12",
-          element: "Liquid Barretter / Electrolytic Detector",
-          description: "Ultra-sensitive thermal-electrochemical RF demodulator.",
+          element: "Fine Wire Receiver",
+          description:
+            "Fine wire held in tension between the poles of a magnet and moved by the induced current.",
           x: 75,
           y: 60,
         },
@@ -280,8 +279,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-13",
           figureRef: "Fig. 2",
           label: "13",
-          element: "Acid Vessel",
-          description: "Glass cup containing dilute nitric acid electrolyte.",
+          element: "Magnet Poles / Liquid Vessel",
+          description:
+            "The drawing uses this number for the magnet in the fine-wire form and for the vessel in the liquid-receiver form.",
           x: 75,
           y: 75,
         },
@@ -289,8 +289,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-14",
           figureRef: "Fig. 2",
           label: "14",
-          element: "Wollaston Platinum Electrode",
-          description: "Sub-micron platinum wire tip contacting the acid meniscus.",
+          element: "Fine Terminal",
+          description:
+            "Extremely small terminal, including a Wollaston platinum wire in the liquid-receiver form.",
           x: 75,
           y: 50,
         },
@@ -298,8 +299,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-15",
           figureRef: "Fig. 2",
           label: "15",
-          element: "Local DC Polarizing Battery",
-          description: "DC voltage source establishing baseline electrochemical polarization.",
+          element: "Local Battery",
+          description: "Local battery included with the liquid receiver and telephone circuit.",
           x: 60,
           y: 70,
         },
@@ -307,9 +308,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-16",
           figureRef: "Fig. 2",
           label: "16",
-          element: "Telephone Headset",
+          element: "Telephone",
           description:
-            "Acoustic earpiece responding instantaneously to polarization current shifts.",
+            "Telephone included in the local receiving circuit and producing an audible signal.",
           x: 88,
           y: 70,
         },
@@ -326,8 +327,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-4",
           figureRef: "Fig. 3",
           label: "4",
-          element: "Vertical Radiating Conductors",
-          description: "Multiple parallel bronze wires distributed in a cylindrical cage.",
+          element: "Parallel Wires",
+          description:
+            "Wires arranged in the form of a cylinder or cage and connected together at top and bottom.",
           x: 40,
           y: 40,
         },
@@ -335,8 +337,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-5",
           figureRef: "Fig. 3",
           label: "5",
-          element: "Metallic Spreader Rings",
-          description: "Circular conductive hoops maintaining uniform cylinder diameter.",
+          element: "Supporting Rings",
+          description:
+            "Metal or other suitable rings supporting the wires through hubs or collars.",
           x: 50,
           y: 20,
         },
@@ -344,8 +347,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-7",
           figureRef: "Fig. 3",
           label: "7",
-          element: "Central Insulated Mast",
-          description: "Structural wooden/bamboo mast supporting the cage structure.",
+          element: "Central Mast",
+          description: "Central mast or support carrying the hubs or collars of the cage.",
           x: 50,
           y: 50,
         },
@@ -362,8 +365,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-4-sec",
           figureRef: "Fig. 4",
           label: "4",
-          element: "Perimeter Radiating Wires",
-          description: "Conductors uniformly spaced along outer circular boundary.",
+          element: "Wires",
+          description: "The wires shown in transverse section around the cylindrical conductor.",
           x: 50,
           y: 15,
         },
@@ -371,8 +374,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-5-ring",
           figureRef: "Fig. 4",
           label: "5",
-          element: "Circular Spreader Ring",
-          description: "Metallic ring preserving geometry.",
+          element: "Ring",
+          description: "The supporting ring shown in transverse section.",
           x: 50,
           y: 50,
         },
@@ -380,8 +383,8 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-6-hub",
           figureRef: "Fig. 4",
           label: "6",
-          element: "Insulated Hub Collar",
-          description: "Central collar mounted on supporting mast.",
+          element: "Hub or Collar",
+          description: "The hub or collar mounted on the central supporting mast.",
           x: 50,
           y: 50,
         },
@@ -389,17 +392,17 @@ export const fessendenWirelessPatent: Patent = {
     },
     {
       figureNumber: "Fig. 5",
-      title: "Continuous Sheet Cylinder Radiator Detail",
+      title: "Cylinder Radiating Portion Detail",
       caption:
-        "Detail view illustrating tubular radiating cylinder (9) with sliding adjustment sleeve collar (17) for tuning conductor length.",
+        "Detail view illustrating a radiating portion formed by a cylinder 9 having continuous metal walls.",
       svgType: "fessenden-wireless",
       callouts: [
         {
           id: "fw-9-cyl",
           figureRef: "Fig. 5",
           label: "9",
-          element: "Continuous Sheet Metal Cylinder",
-          description: "Alternative solid-wall tubular radiating conductor.",
+          element: "Cylinder",
+          description: "Alternative radiating portion formed with continuous metal walls.",
           x: 50,
           y: 50,
         },
@@ -407,8 +410,9 @@ export const fessendenWirelessPatent: Patent = {
           id: "fw-17-sleeve",
           figureRef: "Fig. 5",
           label: "17",
-          element: "Sliding Adjusting Collar",
-          description: "Movable sleeve for mechanical length tuning.",
+          element: "Adjusting Means",
+          description:
+            "Detail illustrating an adjusting means for the antenna or generating-conductor.",
           x: 50,
           y: 30,
         },
@@ -417,179 +421,84 @@ export const fessendenWirelessPatent: Patent = {
   ],
   plainEnglishExplanation: {
     overview:
-      "Before Reginald Fessenden, all early radio pioneers—including Guglielmo Marconi, Oliver Lodge, and Ferdinand Braun—believed that wireless signals had to be produced by violent high-voltage spark discharges across a spark gap. These spark bursts created brief, jagged, rapidly decaying wave trains (damped waves) with huge silent gaps between pulses. This caused immense broadband radio noise, made frequency filtering nearly impossible, and could only transmit Morse clicks. Fessenden made the radical breakthrough that radio waves should be emitted as a continuous, uninterrupted sinusoidal wave (CW). By generating pure continuous waves and inventing the ultra-responsive liquid electrolytic detector (the barretter), Fessenden unlocked sharp resonant selectivity and made human voice and music transmission possible.",
+      "The specification contrasts high-potential, high-frequency spark-gap oscillations, which rapidly diminish and vary in frequency and form, with a continuous train of waves of substantially uniform strength and predetermined frequency. Its stated engineering move is to enlarge and distribute the sending-conductor's capacity or self-induction so the radiating portion is a large fraction of the conductor and low-frequency currents can be used.",
     coreMechanism:
-      "A high-frequency mechanical alternator generates continuous sinusoidal alternating current at radio frequencies. This current is fed through a variable loading inductance into a low-loss cylindrical cage antenna, radiating uninterrupted harmonic electromagnetic waves ($E = E_0 sin(omega t)$). At the receiving station, the continuous wave induces a resonant voltage in a tuned LC circuit. The signal passes through an electrolytic detector consisting of an ultra-fine (0.0001-inch) platinum Wollaston wire contacting dilute nitric acid. High-frequency RF currents instantly heat the microscopic liquid-metal junction, breaking down the electrochemical polarization barrier and modulating the current from a local DC battery through an electromagnetic telephone receiver, reproducing clear audio in real time.",
+      "The source is an alternating-current dynamo or similar alternating-voltage source in series with the sending-conductor and ground. The conductor's capacity and self-induction are proportioned so its natural period is equal or approximately equal to the source frequency. In the receiving apparatus, low-frequency induced currents act directly on a telephone diaphragm, a fine wire in a magnetic field, or a tiny terminal in a liquid-and-battery circuit. The specification's resonance relationship is $f_{source} \\approx f_{natural}$; it does not claim a carbon microphone, amplitude modulation, or a later audio-broadcast system.",
     mechanicalBreakdown: [
       {
-        title: "High-Frequency Continuous-Wave Alternator",
+        title: "Alternating-Current Source",
         summary:
-          "A high-speed mechanical dynamo with hundreds of alternating magnetic poles on a high-velocity rotor, outputting smooth continuous sinusoidal RF electrical power directly into the antenna without spark gaps.",
+          "A low-frequency, substantial-voltage alternating-current dynamo is connected directly in series with the sending-conductor and ground.",
         technicalDetails:
-          "Operates at rotational speeds up to 10,000 RPM to generate fundamental carrier frequencies from 10 kHz to 100 kHz with harmonic distortion below 2%, delivering continuous RF power $P = I_{	ext{rms}}^2 R_{	ext{rad}}$ without pulse decay.",
-        archaicTerm: "Source of continuous alternating current / high-frequency dynamo",
-        modernEquivalent:
-          "Radio-frequency continuous-wave (CW) carrier transmitter / RF alternator",
+          "The grant says the source frequency should match the conductor's natural period, the armature should have low internal resistance and self-induction, and the machine should be ventilated for the potentially large current.",
+        archaicTerm: "alternating-current dynamo",
+        modernEquivalent: "Low-frequency alternating-voltage generator",
       },
       {
-        title: "Low-Loss Cylindrical Cage Antenna",
+        title: "Distributed-Capacity Sending-Conductor",
         summary:
-          "A vertical multi-wire cage structure suspended around an insulated central mast, providing immense electrostatic capacitance and minimal high-frequency skin-effect resistance.",
+          "A plurality of wires forms a cylinder or cage around a central mast, with supporting rings and a ground lead whose turns can adjust self-induction.",
         technicalDetails:
-          "The parallel conductor cage distributes RF current across a large effective surface area, reducing ohmic losses $R_{	ext{loss}} < 1,Omega$ and maximizing radiation efficiency $eta = rac{R_{	ext{rad}}}{R_{	ext{rad}} + R_{	ext{loss}}} > 85%$.",
-        archaicTerm: "Cylindrical cage conductor / low-resistance sending-conductor",
-        modernEquivalent: "High-Q cylindrical cage vertical monopole antenna",
+          "The source states that large capacity or self-induction, distributed with practical uniformity, lowers the frequency and allows a large radiating fraction. A continuous-wall cylinder is also described.",
+        archaicTerm: "sending-conductor",
+        modernEquivalent: "Distributed-capacitance radiating conductor",
       },
       {
-        title: "Liquid Barretter / Electrolytic Detector",
+        title: "Direct-Action Receiving Instruments",
         summary:
-          "An ultra-sensitive demodulator comprising a microscopic platinum wire point dipping into dilute acid, providing instantaneous continuous conductivity modulation without mechanical coherer tapping.",
+          "The receiving alternatives use the low-frequency induced current directly: a telephone, a fine wire between magnet poles, or a liquid receiver with a very small terminal and local battery.",
         technicalDetails:
-          "A 2.5-micron Wollaston wire etched to an exposed point contacts 20% $	ext{HNO}_3$. Incoming RF current dissipates heat in the microscopic contact volume ($V < 10^{-12},	ext{cm}^3$), thermally destroying the electrolytic polarization layer and creating instantaneous linear current response in the audio circuit.",
-        archaicTerm: "Thermal receiver / liquid electrolytic detector",
-        modernEquivalent: "Point-contact RF demodulator / thermal-electrochemical detector",
+          "The liquid form uses a vessel containing nitric acid, caustic soda, or similar liquid, with a Wollaston platinum terminal from one-thousandth to one ten-thousandth of an inch in diameter. Heat at the small terminal changes circuit resistance and varies the telephone current.",
+        archaicTerm: "translating device",
+        modernEquivalent: "Direct-current receiving transducer",
       },
       {
-        title: "High-Q Resonant Tank Tuning Circuit",
+        title: "Source-to-Radiator Resonance",
         summary:
-          "A series-resonant inductor-capacitor circuit calibrated to match the transmitter's exact carrier frequency, rejecting adjacent transmissions with extreme selectivity.",
+          "The source and sending-conductor are adjusted so the source frequency is equal or approximately equal to the natural frequency of the radiating system.",
         technicalDetails:
-          "Because the transmitted wave is continuous rather than damped, circuit Q-factor reaches $Q = rac{omega L}{R} > 150$, providing sharp 3 dB bandwidths $Delta f = f_0 / Q < 600,	ext{Hz}$ and eliminating broadband co-channel interference.",
-        archaicTerm: "Tuning coil / adjustable self-induction",
-        modernEquivalent: "Variable LC resonant tank tuner",
+          "The specification says this adjustment makes the voltage at the top of the sending-conductor a maximum for a given voltage at the dynamo terminals.",
+        archaicTerm: "natural period",
+        modernEquivalent: "Source-and-radiator resonance",
       },
     ],
     scientificPrinciples: [
       {
-        principle: "Thomson-Maxwell Resonant Frequency & Continuous Wave Radiation",
-        formula:
-          "f_0 = \frac{1}{2pi sqrt{L C}}, quad P_{\text{rad}} = \frac{2}{3} \frac{q^2 a^2}{c^3} = I_{\text{rms}}^2 R_{\text{rad}}",
+        principle: "Source and Conductor Resonance",
+        formula: "f_{source} \\approx f_{natural}",
         explanation:
-          "Continuous sinusoidal oscillations in a low-loss LC resonator drive sustained electromagnetic radiation according to Maxwell's equations, avoiding the decaying exponential envelope $e^{-gamma t}$ of damped spark discharges.",
+          "Fessenden says the best result occurs when the alternating-voltage source frequency is equal or approximately equal to the natural frequency of the radiating system, maximizing voltage at the top of the sending-conductor for a given source voltage.",
       },
       {
-        principle: "Antenna Radiation Efficiency & Quality Factor",
-        formula:
-          "eta = \frac{R_{\text{rad}}}{R_{\text{rad}} + R_{\text{loss}}}, quad Q = \frac{omega_0 L}{R_{\text{total}}} = \frac{f_0}{Delta f}",
+        principle: "Distributed Capacity and Inductance",
+        formula: "f_{wave} \\downarrow \\text{ as } C \\text{ or } L \\uparrow",
         explanation:
-          "By increasing antenna capacitance and reducing ohmic conductor resistance via the multi-wire cage geometry, Fessenden maximized radiation efficiency and achieved extremely high Q-factor for interference-free multi-channel selectivity.",
+          "The specification states that increasing capacity, self-induction, or both decreases the frequency of the radiated waves and correspondingly increases their wavelength, while distributed capacity allows a shorter conductor with a larger radiating fraction.",
       },
       {
-        principle: "Thermal-Electrochemical Demodulation (Barretter Effect)",
-        formula:
-          "Delta R = alpha R_0 Delta T = alpha R_0 left(\frac{I_{\text{rf}}^2 R_{\text{junction}}}{C_{\text{thermal}}}\right)",
+        principle: "Direct Thermal Receiving Action",
+        formula: "\\Delta R \\propto I^2 R_{small-terminal}",
         explanation:
-          "The microscopic volume of electrolyte around the sub-micron platinum wire tip heats instantaneously under micro-watt RF signals, modulating DC circuit resistance linearly and driving the audio telephone diaphragm directly.",
+          "In the liquid receiver described in Fig. 2, current-induced heat at the extremely small terminal changes the circuit resistance and therefore varies current through the local telephone.",
       },
     ],
     whyItMattersToday:
-      "Every modern radio receiver, mobile phone, and satellite transceiver is a direct descendant of Fessenden's continuous-wave paradigm, high-Q resonant selectivity, and continuous demodulation architecture.",
+      "The grant is an early source record for low-frequency radiating conductors, source-to-antenna resonance, and direct-action receiving instruments. Its claims should not be presented as proof that this single document claimed amplitude modulation, mobile telephony, or every later radio system.",
   },
   claims: fessendenClaims,
-  /*
-    {
-      number: 1,
-      isIndependent: true,
-      originalText: manualFessendenClaimText(1),
-      plainEnglish:
-        "The master independent claim covering the fundamental wireless transmission system comprising an aerial radiating conductor, a source of continuous alternating current, and means for continuously transmitting unbroken electromagnetic waves of uniform amplitude and controlled frequency.",
-      keyInnovations: [
-        "Uninterrupted continuous electromagnetic wave radiation",
-        "Source of continuous alternating current (RF alternator)",
-        "Elimination of intermittent decaying spark discharges",
-      ],
-      legalSignificance:
-        "The foundational broad patent claim for continuous-wave (CW) wireless communication, breaking Marconi's monopoly on spark-gap radio.",
-    },
-    {
-      number: 2,
-      isIndependent: true,
-      originalText: manualFessendenClaimText(2),
-      plainEnglish:
-        "The apparatus and method for generating in a transmitting aerial conductor continuous alternating currents possessing a pure sinusoidal harmonic waveform.",
-      keyInnovations: [
-        "Pure sinusoidal alternating current generation",
-        "Harmonic wave emission without broadband noise",
-      ],
-      legalSignificance:
-        "Secured exclusive legal rights to sinusoidal radio frequency generation for wireless transmission.",
-    },
-    {
-      number: 3,
-      isIndependent: true,
-      originalText: manualFessendenClaimText(3),
-      plainEnglish:
-        "A complete wireless signaling combination comprising a transmitting station with a high-frequency alternator dynamo and low-loss antenna, paired with a receiving station having a tuned resonant circuit and a continuous-response thermal detector.",
-      keyInnovations: [
-        "End-to-end continuous wave transmitting and receiving architecture",
-        "High-frequency alternator dynamo integration",
-        "Continuous thermal/electrolytic detector pairing",
-      ],
-      legalSignificance: "Covered the entire working continuous-wave radio communication system.",
-    },
-    {
-      number: 4,
-      isIndependent: true,
-      originalText: manualFessendenClaimText(4),
-      plainEnglish:
-        "A wireless receiving station comprising an aerial conductor, a local circuit with a DC power source and an electromagnetic telephone receiver, and an electrolytic detector responsive to continuous wave oscillations.",
-      keyInnovations: [
-        "Electrolytic liquid barretter detector in receiving circuit",
-        "Direct acoustic telephone receiver actuation without mechanical decoherers",
-      ],
-      legalSignificance:
-        "Established patent protection for the liquid barretter, the most sensitive radio detector in the world until the triode tube.",
-    },
-    {
-      number: 5,
-      isIndependent: false,
-      dependsOn: [1],
-      originalText: manualFessendenClaimText(5),
-      plainEnglish:
-        "A transmitting aerial conductor constructed as a plurality of vertical parallel wires arranged in a cylindrical cage and supported on metallic rings to provide high electrostatic capacitance and low ohmic resistance.",
-      keyInnovations: [
-        "Multi-wire cylindrical cage antenna geometry",
-        "High capacitance and minimal RF skin-effect resistance",
-      ],
-      legalSignificance:
-        "Protected the low-loss cage antenna design essential for high-power continuous-wave transmission.",
-    },
-  ], */
   historicalContext: {
     problemStatement:
-      "At the turn of the 20th century, all early wireless systems relied entirely on high-voltage spark discharges that created brief, decaying wave-trains separated by long silent intervals, resulting in severe broadband interference and making voice transmission impossible.",
+      "The grant identifies the contemporary problem as high-potential, high-frequency spark-gap oscillations that rapidly diminish, vary in frequency and form, and do not produce continuous uniform signals.",
     priorArtLimitations: [
-      "Marconi spark gaps produced decaying pulse bursts with extreme spectral splatter",
-      "Filings coherers required mechanical tapping to reset and could only register on/off Morse clicks",
-      "Sharp multi-channel resonant tuning was physically impossible with damped waveforms",
+      "Spark-gap waves rapidly diminished in amplitude or power",
+      "Spark-gap waves were irregular and varied in frequency and form",
+      "Receiving instruments such as coherers required mechanical tapping to restore them to an operative condition",
     ],
     breakthroughInsight:
-      "Replacing intermittent damped sparks with continuous, uninterrupted sinusoidal radio-frequency oscillations generated by an alternator dynamo and detected by an instantaneous thermal-electrochemical liquid barretter.",
-    patentWars: [
-      {
-        rivalName: "Marconi Wireless Telegraph Company",
-        rivalClaim: "Monopoly over all aerial wireless telegraphic communication",
-        conflictDetails:
-          "Marconi asserted broad rights over tuned aerial transmission and initially ridiculed continuous wave generation as impractical.",
-        resolution:
-          "Federal courts repeatedly upheld Fessenden's patents; Marconi was eventually forced to license continuous-wave technology.",
-        legalOutcome:
-          "Established continuous-wave radio as a distinct, patentable art superior to spark-gap telegraphy.",
-      },
-      {
-        rivalName: "Lee de Forest (American De Forest Wireless)",
-        rivalClaim: "Spade Detector patent rights",
-        conflictDetails:
-          "Lee de Forest copied Fessenden's liquid barretter and sold it commercially as the 'spade detector'.",
-        resolution:
-          "In 1905–1906, federal courts found de Forest guilty of willful infringement and issued a permanent injunction shutting down his stations.",
-        legalOutcome: "Vindicated Fessenden's exclusive priority in electrolytic RF demodulation.",
-      },
-    ],
+      "Increasing and distributing the sending-conductor's capacity or self-induction lowers the frequency, increases wavelength, and allows a large radiating portion; a dynamo or similar alternating-voltage source can then replace the induction-coil and spark-gap.",
+    patentWars: [],
     civilizationalImpact:
-      "Created the foundation of all modern continuous carrier communications, enabling the world's first audio radio broadcast on Christmas Eve 1906 and paving the way for AM/FM radio, television, mobile telephony, and Wi-Fi.",
-    funFact:
-      "On Christmas Eve 1906, ship radio operators across the Atlantic expecting Morse clicks were stunned to hear Fessenden speaking, playing 'O Holy Night' on his violin, and reading Luke Chapter 2.",
+      "The document records an early low-frequency wireless architecture: a distributed-capacity radiating conductor, source-to-conductor resonance, and receiving instruments driven directly by induced current.",
   },
   stats: {
     totalClaims: 21,

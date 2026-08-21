@@ -2,11 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildBellTelephoneModel, updateBellTelephoneKinematics } from "./bellTelephoneModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -40,6 +43,7 @@ export const BellTelephone3D = memo(() => {
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   const { params, updateParam } = usePatentPhysics("us-174465-bell-telephone");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const voiceAmplitudeDb = params.voiceAmplitude ?? 75;
   const acousticFrequencyHz = params.acousticFrequencyHz ?? 440;
   const batteryVoltage = params.batteryVoltage ?? 6.0;
@@ -287,82 +291,77 @@ export const BellTelephone3D = memo(() => {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Voice Pressure</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {voiceAmplitudeDb} dB
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="95"
-              step="1"
-              value={voiceAmplitudeDb}
-              onChange={(e) => updateParam("voiceAmplitude", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="bellVoiceAmplitude"
+            patentId="us-174465-bell-telephone"
+            paramKey="voiceAmplitude"
+            label="Voice Pressure"
+            value={voiceAmplitudeDb}
+            min={40}
+            max={95}
+            step={1}
+            unit=" dB"
+            onChange={(val) => updateParam("voiceAmplitude", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Voice Frequency</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {acousticFrequencyHz} Hz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="200"
-              max="800"
-              step="10"
-              value={acousticFrequencyHz}
-              onChange={(e) =>
-                updateParam("acousticFrequencyHz", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="bellAcousticFreq"
+            patentId="us-174465-bell-telephone"
+            paramKey="acousticFrequencyHz"
+            label="Voice Frequency"
+            value={acousticFrequencyHz}
+            min={200}
+            max={800}
+            step={10}
+            unit=" Hz"
+            onChange={(val) => updateParam("acousticFrequencyHz", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Battery Voltage</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {batteryVoltage.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1.0"
-              max="12.0"
-              step="0.5"
-              value={batteryVoltage}
-              onChange={(e) => updateParam("batteryVoltage", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="bellBatteryVoltage"
+            patentId="us-174465-bell-telephone"
+            paramKey="batteryVoltage"
+            label="Battery Voltage"
+            value={batteryVoltage}
+            min={1.0}
+            max={12.0}
+            step={0.5}
+            unit=" V"
+            onChange={(val) => updateParam("batteryVoltage", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Liquid Conductivity
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {liquidConductivity.toFixed(1)} S/m
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.2"
-              max="3.0"
-              step="0.1"
-              value={liquidConductivity}
-              onChange={(e) => updateParam("liquidConductivity", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="bellLiquidConductivity"
+            patentId="us-174465-bell-telephone"
+            paramKey="liquidConductivity"
+            label="Liquid Conductivity"
+            value={liquidConductivity}
+            min={0.2}
+            max={3.0}
+            step={0.1}
+            unit=" S/m"
+            onChange={(val) => updateParam("liquidConductivity", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-174465-bell-telephone"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-174465-bell-telephone"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine, lamarrChannelFrequencyMhz } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -131,14 +132,16 @@ export function LamarrFrequencyHopping3D() {
 
     // Animation Loop
     let reqId: number;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       updateLamarrFrequencyHoppingKinematics(
         model,
-        1 / 60,
+        dt,
         p.currentChannel,
         p.carrierChannelsCount,
         p.isJammingActive,
@@ -151,7 +154,7 @@ export function LamarrFrequencyHopping3D() {
       renderer.render(scene, studio.camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

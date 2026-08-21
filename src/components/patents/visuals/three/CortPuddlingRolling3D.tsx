@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCortPuddlingRolling } from "@/physics/cortKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
@@ -75,12 +76,12 @@ export function CortPuddlingRolling3D() {
     const model = buildCortPuddlingRollingModel();
     studio.scene.add(model.root);
 
-    let virtualTime = 0;
     let animId = 0;
+    const clock = createStudioClock();
 
-    const renderLoop = () => {
+    const renderLoop = (now: number) => {
       animId = requestAnimationFrame(renderLoop);
-      virtualTime += 1 / 60;
+      const { simTimeSec: virtualTime } = clock.pump(now);
 
       const p = live.current;
       const outputs = stepCortPuddlingRolling({
@@ -105,7 +106,7 @@ export function CortPuddlingRolling3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    renderLoop();
+    animId = requestAnimationFrame(renderLoop);
 
     return () => {
       cancelAnimationFrame(animId);

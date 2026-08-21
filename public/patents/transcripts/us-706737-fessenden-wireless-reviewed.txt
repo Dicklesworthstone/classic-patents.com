@@ -1,11 +1,17 @@
 --- REVIEWED TRANSCRIPTION PAGE 1 OF 7 ---
-[Drawing Sheet: United States Patent No. 706,737, Dated August 12, 1902. Inventor: Reginald A. Fessenden. Title: WIRELESS TELEGRAPHY.]
-[FIG. 1: Diagrammatic representation of continuous-wave sending conductor 1, tuning coil 2, high-frequency alternator 3, and receiving aerial 10 with telephone receiver 11.]
-[FIG. 2: Continuous-wave transmitting system and receiving station featuring liquid barretter/electrolytic detector 12, acid vessel 13, Wollaston fine-wire electrode 14, local battery 15, and telephone receiver 16.]
-[FIG. 3: Side elevation of low-loss cylindrical cage antenna comprising vertical conductors 4, support rings 5, central mast 7, insulating collars 6, and bottom lead 8.]
-[FIG. 4: Transverse horizontal cross-section of cylindrical cage antenna showing radiating wires 4, circular hoop 5, and insulated hub 6.]
-[FIG. 5: Detail of tubular conductor 9 with sliding adjustment sleeve collar 17.]
-WITNESSES: F. E. Gaither, Herbert Bradley. INVENTOR: Reginald A. Fessenden, by Darwin S. Wolcott, Att'y.
+Patented Aug. 12, 1902.
+
+R. A. FESSENDEN.
+
+WIRELESS TELEGRAPHY.
+
+FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5.
+
+INVENTOR.
+
+WITNESSES.
+
+The drawing sheet contains Figure 1, a diagrammatic view of a system; Figure 2, a similar view illustrating a modification; Figure 3, a side elevation of an antenna or generating-conductor; Figure 4, a transverse section of the same; and Figure 5, a detail view illustrating an adjusting means for the antenna or generating-conductor.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 7 ---
 UNITED STATES PATENT OFFICE.

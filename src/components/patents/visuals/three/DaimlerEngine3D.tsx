@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, Play, RotateCcw, Volume2, VolumeX } from "
 import { useEffect, useRef, useState } from "react";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
@@ -86,15 +87,16 @@ export function DaimlerEngine3D() {
     let crankAngleRad = 0;
     let virtualTime = 0;
     let lastAudioTime = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
+      const { dt } = clock.pump(now);
 
       const p = live.current;
       if (p.isPlaying) {
-        const dtVirtual = 1 / 60;
-        virtualTime += dtVirtual;
-        crankAngleRad = wrapCycleRad(crankAngleRad + dtVirtual * p.runningOmegaRadPerS);
+        virtualTime += dt;
+        crankAngleRad = wrapCycleRad(crankAngleRad + dt * p.runningOmegaRadPerS);
 
         const strokePeriod = (2 * Math.PI) / (p.runningOmegaRadPerS || 1);
         if (virtualTime - lastAudioTime > strokePeriod && !isMuted) {
@@ -109,7 +111,7 @@ export function DaimlerEngine3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    animId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animId);

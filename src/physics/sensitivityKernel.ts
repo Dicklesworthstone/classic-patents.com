@@ -523,9 +523,98 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-808897-carrier-air-conditioner": {
+      if (controlKey === "dewPointTempC" || controlKey === "dewPoint") {
+        return {
+          metricName: "Moisture Extraction Rate",
+          derivativeSymbol: "∂W / ∂T_dew",
+          derivativeValue: -0.42,
+          derivativeUnit: "g/kg / °C",
+          interpretation:
+            "Saturation psychrometric moisture reduction per degree of spray chilling.",
+        };
+      }
+      if (controlKey === "airFlowCfm") {
+        return {
+          metricName: "Sensible Heat Transfer",
+          derivativeSymbol: "∂Q_dot / ∂CFM",
+          derivativeValue: 1.08,
+          derivativeUnit: "BTU/hr / CFM",
+          interpretation: "Sensible cooling capacity scaling with volumetric airflow rate.",
+        };
+      }
+      break;
+    }
+
+    case "us-727650-linde-air-liquefaction": {
+      if (controlKey === "throttlePressureBar" || controlKey === "pressure") {
+        return {
+          metricName: "Joule-Thomson Throttling Drop",
+          derivativeSymbol: "∂ΔT_JT / ∂P",
+          derivativeValue: 0.23,
+          derivativeUnit: "K / bar",
+          interpretation: "Cryogenic isenthalpic expansion cooling gradient per bar pressure drop.",
+        };
+      }
+      break;
+    }
+
+    case "us-971501-haber-ammonia": {
+      if (controlKey === "synthesisPressureBar" || controlKey === "pressure") {
+        return {
+          metricName: "Equilibrium Ammonia Yield",
+          derivativeSymbol: "∂X_eq / ∂P",
+          derivativeValue: 0.18,
+          derivativeUnit: "% / bar",
+          interpretation: "Le Chatelier pressure displacement toward 2NH₃ volume contraction.",
+        };
+      }
+      if (controlKey === "synthesisTempC" || controlKey === "temperature") {
+        return {
+          metricName: "Catalytic Reaction Rate",
+          derivativeSymbol: "∂k_cat / ∂T",
+          derivativeValue: 0.045,
+          derivativeUnit: "s⁻¹ / °C",
+          interpretation: "Arrhenius activation rate acceleration over promoted iron catalyst.",
+        };
+      }
+      break;
+    }
+
+    case "us-2292387-lamarr-frequency-hopping": {
+      if (controlKey === "activeChannels" || controlKey === "channels") {
+        return {
+          metricName: "Jamming Processing Gain",
+          derivativeSymbol: "∂G_p / ∂N",
+          derivativeValue: 0.22,
+          derivativeUnit: "dB / channel",
+          interpretation: "Spread-spectrum electronic counter-countermeasures immunity.",
+        };
+      }
+      break;
+    }
+
+    case "us-2297691-carlson-electrophotography": {
+      if (controlKey === "coronaVoltageKv" || controlKey === "coronaVoltage") {
+        return {
+          metricName: "Surface Potential Build",
+          derivativeSymbol: "∂V_s / ∂V_corona",
+          derivativeValue: 95.0,
+          derivativeUnit: "V / kV",
+          interpretation: "Electrostatic scorotron ion charging of sulfur/selenium layer.",
+        };
+      }
+      break;
+    }
+
+    case "us-3353115-maiman-ruby-laser":
     case "us-3353115-maiman-laser":
     case "us-2929922-townes-laser": {
-      if (controlKey === "pumpPowerWatts" || controlKey === "pumpPower") {
+      if (
+        controlKey === "pumpPowerWatts" ||
+        controlKey === "pumpPower" ||
+        controlKey === "pumpEnergyJoules"
+      ) {
         const slopeEfficiency = 0.015; // 1.5% optical slope efficiency
         return {
           metricName: "Laser Coherent Emission",

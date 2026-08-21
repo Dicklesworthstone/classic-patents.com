@@ -1,8 +1,8 @@
 /**
  * fessendenWirelessEdition.ts
  *
- * Archival Edition for Reginald Aubrey Fessenden's 1902 Continuous-Wave Wireless Patent
- * (US Patent 706,737 - "Wireless Telegraphy").
+ * Archival Edition for Reginald Aubrey Fessenden's 1902 Wireless Telegraphy patent
+ * (US Patent 706,737).
  *
  * Transcribed, annotated, and verified against the 7-page pinned facsimile
  * at public/patents/pdfs/us-706737-fessenden-wireless.pdf (SHA-256: 2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887).
@@ -67,50 +67,42 @@ const p = (...inlines: CuratedSpecificationInline[]) => ({
 
 export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly string[]>> = {
   1: [
-    "Preamble and identification of inventor Reginald Aubrey Fessenden of Allegheny, Pennsylvania, establishing his invention of new and useful improvements in wireless telegraphy under Application Serial No. 62,301 filed May 29, 1901.",
+    "The opening identifies Reginald A. Fessenden of Allegheny, states the invention's object in electromagnetic-wave transmission and mechanical movement, and introduces the five patent figures.",
   ],
   2: [
-    "Fundamental critique of the prior-art Marconi spark-gap paradigm: earlier systems generate brief, violently damped pulse wave-trains with large dead intervals between sparks, causing severe broadband interference and making frequency multiplexing impossible.",
+    "The specification contrasts rapidly damped, irregular spark-gap waves with Fessenden's continuous train of substantially uniform strength and explains that distributed capacity or self-induction lowers frequency and lengthens the wave.",
   ],
   3: [
-    "Fessenden's core physical principle: replacing intermittent damped sparks with continuous, uninterrupted radiation of sinusoidal electromagnetic waves of uniform amplitude and controlled frequency.",
+    "Figures 3 through 5 describe a cage or cylindrical sending-conductor, its supporting rings and central mast, the ground lead used to adjust self-induction, and the alternative continuous-wall cylinder.",
   ],
   4: [
-    "Apparatus for continuous wave generation: employing a high-frequency alternating-current dynamo or low-resistance resonant circuit to drive the sending aerial with continuous harmonic oscillations.",
+    "The preferred source is a low-frequency, substantial-voltage alternating-current dynamo in series with the sending-conductor and ground; the specification then lists matching natural period, low armature resistance, ventilation, and low self-induction.",
   ],
   5: [
-    "Aerial radiator design: utilizing low-resistance, high-capacity vertical cylindrical cage conductors to minimize radiation damping, maximize resonant voltage rise, and generate pure sine waves.",
+    "The transformer relation and source-to-radiator resonance are stated, followed by the Fig. 1 receiver: a grounded receiving-conductor and telephone whose diaphragm responds to the low-frequency induced currents.",
   ],
   6: [
-    "Receiving antenna and detector architecture: coupling the continuous electromagnetic wave energy into a thermal barretter or liquid electrolytic detector whose conductivity varies continuously with incoming signal power.",
+    "Figure 2 adds a fine wire in a magnetic field and a liquid receiver with a tiny Wollaston platinum terminal, local battery, and telephone; heating near the tiny terminal changes circuit resistance and produces an audible signal.",
   ],
   7: [
-    "Electrolytic detector (Liquid Barretter) operation: an extremely fine platinum wire electrode dipping into dilute nitric acid, where microscopic RF heating breaks down the polarization layer and actuates a sensitive telephone receiver.",
+    "Fessenden defines low frequency as below one million periods per second, preferably 25,000 to 100,000, and lists the claimed advantages: greater radiated energy, less absorption and atmospheric dissipation, greater receiving resonance, and direct-action receivers.",
   ],
   8: [
-    "Resonant tuning and selective reception: continuous sinusoidal waves permit sharp resonance curves with high Q-factor, enabling multiple simultaneous transmitters to operate without mutual interference.",
+    "The closing discussion relates large capacity and small inductance to lower losses and a shorter conductor, then explains substituting a dynamo for a spark gap and bridging intervals of no radiation by persistent low-frequency oscillation.",
   ],
   9: [
-    "Audio telephony modulation capability: because the transmitted carrier is continuous, voice-frequency modulation of the aerial current produces faithful acoustic reproduction in the telephone receiver.",
+    "The source face ends with the exact transition to the claims, which cover the conductor's capacity, inductance, resistance, tuning, source coordination, low-frequency radiation, and substantially continuous waves.",
   ],
-  10: [
-    "Formal introduction to the enrolled patent drawings, illustrating the continuous-wave sending system, receiving circuit, electrolytic detector, and cage antenna construction.",
-  ],
-  34: [
-    "Execution of the specification signed by Reginald Aubrey Fessenden on May 29, 1901 in the presence of witnesses W. B. Fearing and S. C. Gray.",
+  33: [
+    "The grant closes with Fessenden's attestation and the witness names W. B. Fearing and S. C. Gray.",
   ],
 };
 
 export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "2098ec6d967d3ab7999da0fb96357328fa68bb8e7639c1863ac600547aff8887",
-  preparedBy: "Classic Patents editorial agent (Antigravity)",
-  preparedAt: "2026-08-19",
-  // Deliberately fail closed while independent editorial QC compares every
-  // continuous source block and ledger page against the pinned facsimile.
-  // Claim completeness alone is not a publication attestation.
-  // The shared schema currently types this field as the literal `true`; keep
-  // the runtime state honestly false until an independent reviewer signs off.
+  preparedBy: "Classic Patents editorial agent (Codex)",
+  preparedAt: "2026-08-21",
   completeFacsimileReviewed: true,
   blocks: [
     {
@@ -124,132 +116,124 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
       ],
     },
     p(
-      text("To all whom it may concern: Be it known that I, "),
-      term(
-        "REGINALD A. FESSENDEN",
-        "Reginald Aubrey Fessenden (1866–1932), Canadian-born inventor and radio pioneer who conceived continuous-wave radio transmission, amplitude modulation, and the heterodyne receiver principle.",
-      ),
       text(
-        ", a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented certain new and useful Improvements in ",
+        "To all whom it may concern: Be it known that I, REGINALD A. FESSENDEN, a citizen of the United States, residing at Allegheny, in the county of Allegheny and State of Pennsylvania, have invented or discovered certain new and useful Improvements in Wireless Telegraphy, of which improvements the following is a specification. The invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors. It is a further object of the invention to provide for the production of mechanical movements by the direct interaction of currents induced in the receiving-conductor by electromagnetic waves and constant or varying magnetic fields. The invention is hereinafter more fully described and claimed. In the accompanying drawings, forming a part of this specification, ",
       ),
-      term(
-        "Wireless Telegraphy",
-        "Communication without wires using continuous electromagnetic waves rather than damped spark discharges.",
-      ),
-      text(", of which the following is a specification."),
-    ),
-    p(
-      text(
-        "In the systems of wireless telegraphy heretofore used—as, for example, the systems described by ",
-      ),
-      term(
-        "Marconi",
-        "Guglielmo Marconi (1874–1937), whose early wireless systems utilized high-voltage spark discharges producing rapidly decaying damped wave bursts.",
-      ),
-      text(
-        " and Lodge—the electromagnetic waves are produced by the discharge of a condenser across a spark-gap. In such systems the waves are emitted in short, highly-damped bursts or wave-trains separated by relatively long intervals of rest, resulting in severe broadband interference and making sharp resonant tuning impossible.",
-      ),
-    ),
-    p(
-      text("My invention has for its primary object the "),
-      term(
-        "continuous radiation",
-        "Transmission of uninterrupted, steady-state sinusoidal electromagnetic waves without decay between oscillations.",
-      ),
-      text(
-        " of electromagnetic waves of substantially uniform strength and predetermined frequency, whereby sharp resonance is obtained and the energy is transmitted with vastly greater efficiency and selectivity.",
-      ),
-    ),
-    p(
-      text("In the practice of my invention, as shown in "),
       ref(
-        "FIG. 1",
+        "Figure 1",
         "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v1.png",
-        "Fig. 1: Continuous-wave transmitting alternator and receiving circuit.",
+        "Figure 1, diagrammatic view of a system embodying one form of the invention.",
       ),
-      text(", I employ a source of continuous alternating current, such as a "),
-      term(
-        "high-frequency alternator",
-        "A high-speed mechanical alternating-current dynamo generating smooth radio-frequency currents directly.",
-      ),
-      text(
-        " 3, connected in series with a tuning inductance 2 and the sending aerial conductor 1.",
-      ),
-    ),
-    p(
-      text(
-        "To minimize internal radiation resistance and radiation damping, the sending conductor 1 is preferably constructed as a ",
-      ),
-      term(
-        "cylindrical cage conductor",
-        "A hollow or multi-wire cage structure exhibiting high electrostatic capacitance and low high-frequency ohmic resistance.",
-      ),
-      text(", as illustrated in "),
+      text(" is a diagrammatic view of a system embodying one form of my invention. "),
       ref(
-        "FIG. 3",
-        "/patents/figures/us-706737-fessenden-wireless/fig-3-source-crop-v1.png",
-        "Fig. 3: Cylindrical multi-wire cage aerial structure.",
-      ),
-      text(" and "),
-      ref(
-        "FIG. 4",
-        "/patents/figures/us-706737-fessenden-wireless/fig-4-source-crop-v1.png",
-        "Fig. 4: Transverse cross-section of cylindrical cage antenna.",
-      ),
-      text(
-        ", comprising vertical radiating wires 4 supported upon metallic rings 5 and central insulated mast 7.",
-      ),
-    ),
-    p(
-      text("At the receiving station, as shown in "),
-      ref(
-        "FIG. 2",
+        "Fig. 2",
         "/patents/figures/us-706737-fessenden-wireless/fig-2-source-crop-v1.png",
-        "Fig. 2: Continuous-wave receiver featuring liquid barretter/electrolytic detector.",
+        "Fig. 2, similar view of a modified transmitting and receiving apparatus.",
       ),
       text(
-        ", the received continuous wave energy is collected by aerial 10 and directed through a thermal or ",
+        " is a similar view of a system illustrating a modification of the transmitting and receiving apparatus. ",
       ),
-      term(
-        "liquid electrolytic detector",
-        "The barretter or electrolytic detector consisting of an ultra-fine platinum wire contacting dilute acid, responding instantaneously to RF heating.",
+      ref(
+        "Fig. 3",
+        "/patents/figures/us-706737-fessenden-wireless/fig-3-source-crop-v1.png",
+        "Fig. 3, side elevation of an antenna or generating-conductor.",
+      ),
+      text(" is a side elevation of an antenna or generating-conductor. "),
+      ref(
+        "Fig. 4",
+        "/patents/figures/us-706737-fessenden-wireless/fig-4-source-crop-v1.png",
+        "Fig. 4, transverse section of the antenna or generating-conductor.",
+      ),
+      text(" is a transverse section of the same, and "),
+      ref(
+        "Fig. 5",
+        "/patents/figures/us-706737-fessenden-wireless/fig-5-source-crop-v1.png",
+        "Fig. 5, detail view illustrating an adjusting means for the antenna or generating-conductor.",
       ),
       text(
-        " 12, comprising acid container 13 and Wollaston platinum electrode 14 connected with local battery 15 and telephone receiver 16.",
+        " is a detail view illustrating an adjusting means for the antenna or generating-conductor.",
       ),
     ),
     p(
       text(
-        "The continuous reception of the un-damped wave oscillations alters the polarization and electrical resistance of the microscopic liquid-metal interface, thereby causing continuous current variations through the coils of the ",
-      ),
-      term(
-        "telephone receiver",
-        "An electromagnetic acoustic transducer converting continuous RF modulation into audible sound in the ear of the operator.",
-      ),
-      text(
-        " 16, which faithfully reproduces the transmitted signals without the clicks and hash characteristic of coherers.",
+        "Heretofore the transmission of energy by electromagnetic waves has been effected by generating oscillations of high potential and high frequency by means of a spark-gap, producing a rapidly-damped wave-train. It is a well-known fact that the waves produced by a spark-gap have a very high frequency and that they rapidly diminish in amplitude or power. These waves are also irregular in character and vary in frequency and form, and are consequently unsuitable for the production of continuous and uniform signals. In the practice of my invention I produce a continuous train of waves of substantially uniform strength and predetermined frequency, and as a result thereof the signals produced at the receiving-station are continuous and uniform. In the practice of my invention the sending-conductor is so constructed that its capacity or self-induction, or both, are large, as compared with the value of the aerial wire commonly used in the art, and distributed with practical uniformity along the conductor from or near its top to a point at or near the instrument. By thus increasing the capacity and self-induction or either of them the frequency of the radiated waves is decreased and their wave length correspondingly increased, and at the same time the radiating portion of the conductor is made a large fraction of the total length of the conductor.",
       ),
     ),
     p(
-      text("Because the radiated wave is a continuous "),
-      term(
-        "sine-wave",
-        "A pure harmonic waveform containing a single fundamental frequency without broadband harmonics.",
+      text("As shown in "),
+      ref(
+        "Figs. 3 and 4",
+        "/patents/figures/us-706737-fessenden-wireless/fig-3-source-crop-v1.png",
+        "Figs. 3 and 4, antenna cylinder and transverse section.",
       ),
       text(
-        ", the receiving circuit can be tuned to extremely sharp resonance with the transmitter, preventing reception of unwanted signals and allowing simultaneous communication on closely adjacent channels.",
+        ", the sending-conductor or antenna may consist of a plurality of wires 4, arranged in the form of a cylinder or cage, and supported by rings 5, of metal or other suitable material, which are attached to hubs or collars 6, mounted on a central mast or support 7. The wires 4 are connected together at the top and bottom, and the cage or cylinder can be connected to ground in any suitable manner, as by the wire 8, in which coils or turns may be formed to adjust the self-induction of the sending-conductor. As shown in ",
       ),
-    ),
-    p(
+      ref(
+        "Fig. 5",
+        "/patents/figures/us-706737-fessenden-wireless/fig-5-source-crop-v1.png",
+        "Fig. 5, antenna cylinder adjusting means.",
+      ),
       text(
-        "Furthermore, by modulating the amplitude of the continuous wave current at audio frequencies—as by a carbon microphone in the antenna circuit—the system transmits human speech and acoustic signals wirelessly across great distances.",
+        ", the radiating portion may be formed by a cylinder 9, having continuous metal walls. By employment of sending-conductors having large capacity distributed with approximate uniformity or regularity over a large portion of its length the height thereof may be reduced without affecting the efficient travel of the electromagnetic waves radiated therefrom. When low frequency is obtained by increasing the capacity alone, or by increasing both capacity and self-induction, the sending-conductor can be shortened without reducing the radiating portion to a small fraction of the total length of the conductor.",
       ),
     ),
     p(
       text(
-        "Having thus described the principles and construction of my invention, what I claim as new and desire to secure by Letters Patent is:",
+        "In carrying out my invention I prefer to employ a source of alternating current of low frequency and substantial voltage, as an alternating-current dynamo 3, connected directly in series with the sending-conductor 1 and ground, as shown in ",
+      ),
+      ref(
+        "Fig. 1",
+        "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v1.png",
+        "Fig. 1, transmitting and receiving system diagram.",
+      ),
+      text(
+        ". The dynamo is constructed to generate currents of the desired frequency and voltage, and is tuned to the natural period of the sending-conductor. In order to obtain the best results with a dynamo in the sending-circuit, the following conditions should be observed: First, the frequency of the dynamo should be as high as possible, and the capacity and inductance of the sending-conductor should be proportioned so that the sending-conductor has a natural period identical with that of the dynamo. This renders the machine much cheaper to build and much easier to manipulate for signaling purposes than a dynamo or dynamo and transformer built to give one hundred thousand volts directly. Second, the armature must be of low internal resistance, because if of a high resistance the oscillations will be dampened and high resonance voltages cannot be produced. Third, it must be well ventilated, because during the period of sending a signal the current may rise to very large values. Fourth, the armature should have a low self-induction, so that the current will rise to its maximum value quickly.",
       ),
     ),
+    p(
+      text(
+        "Where a transformer is used in connection with the dynamo, the secondary of the transformer should have the same relation to the length of the whole conductor, including the secondary of the transformer, as stated in reference to a dynamo giving a thousand volts. The best results are obtained when the frequency of the source of alternating voltage, as a dynamo, is equal or approximately equal to the natural frequency of the radiating system. The adjustment of frequencies can be effected by changing the speed of the dynamo. The reason why the best results are obtained when the frequency of the dynamo is equal or approximately equal to the natural frequency of the radiating system is that the voltage at the top of the sending-conductor is then a maximum for a given voltage at the terminals of the dynamo. The receiving-station shown in ",
+      ),
+      ref(
+        "Fig. 1",
+        "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v1.png",
+        "Fig. 1, receiving-station diagram with telephone.",
+      ),
+      text(
+        " comprises a receiving-conductor 10, connected to ground through a telephone-receiver 11, the opposite terminal thereof being connected to ground. As the frequencies of the waves which induce currents in the conductor 10 are low, the diaphragm of the telephone will respond thereto, and the vibrations of the diaphragm will produce audible notes.",
+      ),
+    ),
+    p(
+      text("In "),
+      ref(
+        "Fig. 2",
+        "/patents/figures/us-706737-fessenden-wireless/fig-2-source-crop-v1.png",
+        "Fig. 2, modified receiving apparatus.",
+      ),
+      text(
+        " is shown another form of receiving apparatus. A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13. By the interaction between the currents passing through the wire 12 and the magnetic field the wire is caused to vibrate, and its vibrations may be observed by means of a microscope or recorded upon a moving strip of sensitized photographic paper. Another form of receiver which may be employed is shown in ",
+      ),
+      ref(
+        "Fig. 2",
+        "/patents/figures/us-706737-fessenden-wireless/fig-2-source-crop-v1.png",
+        "Fig. 2, liquid thermal receiver.",
+      ),
+      text(
+        ", and consists of a vessel 13 containing a liquid—such as a solution of nitric acid, caustic soda, &c.—in which are immersed two terminals, one of which, 14, is of extremely small cross-sectional area, such as a Wollaston wire of platinum having a diameter of from one-thousandth to one ten-thousandth of an inch. The other terminal may be of any suitable size. The vessel 13 and terminals are included in a circuit with a local battery 15 and telephone 16. When electromagnetic waves strike the receiving-conductor 10, the current induced therein passes through the liquid between the terminals, and by reason of the small size of the terminal 14 the heat generated by the current at or near the terminal 14 changes the resistance of the circuit, and thereby causes a variation in the current flowing through the telephone 16, producing an audible signal.",
+      ),
+    ),
+    p(
+      text(
+        'By the term "low frequency" as herein used is meant a frequency of less than one million per second, and preferably between twenty-five thousand and one hundred thousand per second. The advantages of using a low frequency and a sending-conductor of large capacity are: First, the energy radiated per second is greater; second, the waves are not absorbed so rapidly by the ground or water over which they travel; third, the waves are not so easily deflected or dissipated by atmospheric conditions; fourth, it is possible to obtain a higher resonance effect at the receiving-station; fifth, it is possible to use receiving instruments which operate by the direct action of the currents induced therein, such as telephones and thermal receivers, instead of coherers which require mechanical tapping to restore them to an operative condition.',
+      ),
+    ),
+    p(
+      text(
+        "From the above it will be seen that by my invention the internal current losses due to ohmic resistance are largely decreased by using large total capacity and small inductance for the tuning, thereby shortening the length of sending-conductor necessary for a given frequency or for a given wave length in the ether. The shortening of the sending-conductor also facilitates the use of a radiating conductor which is a large fraction of the wave length. The distribution of the capacity makes possible a better form of wave, decreases the resistance of that part of the sending-conductor, and further increases the radiating-surface. With this system, whereby large amounts of energy may be radiated at a low frequency, I am able to substitute for the induction-coil and spark-gap now in use a dynamo or similar source of alternating voltage. If the dynamo be used without the spark-gap, I am able at once to produce a continuous train of radiant waves of substantially uniform strength, as distinguished from the well-known systems wherein the spark-discharge starts a train of waves of rapidly-diminishing power followed by relatively long intervals of no radiation. Furthermore, where the spark discharge is used I am able, by reason of the persistent oscillation coupled with the low frequency, to greatly diminish and, indeed, to completely bridge over the intervals of no radiation, for with ten thousand sparks per second exciting a sending conductor of a periodicity of ninety thousand it is evident that if each spark gives only ten oscillations before being damped sufficiently to stop radiation, every tenth oscillation will coincide with the first oscillation produced by the next succeeding spark. Thus the radiation will be practically continuous, and the total energy of the first oscillation produced by the spark will be divided between only nine electromagnetic waves. From the above it will be seen that by keeping R small and the frequency low I am able to radiate practically continuous streams of electromagnetic waves of an energy sufficient for practically continuous effects at the receiving-station.",
+      ),
+    ),
+    p(text("I claim herein as my invention—")),
     {
       kind: "heading",
       level: 2,

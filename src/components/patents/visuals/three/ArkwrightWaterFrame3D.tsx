@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildArkwrightWaterFrameModel } from "./arkwrightWaterFrameModel";
@@ -82,11 +83,12 @@ export function ArkwrightWaterFrame3D() {
     const model = buildArkwrightWaterFrameModel();
     studio.scene.add(model.root);
 
-    let virtualTime = 0;
     let rafId = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
+      const { simTimeSec: virtualTime } = clock.pump(now);
       const p = live.current;
 
       const out = stepArkwrightWaterFrame({
@@ -96,9 +98,6 @@ export function ArkwrightWaterFrame3D() {
         stapleLengthMm: p.stapleLengthMm,
         inputRovingCountNe: p.inputRovingCountNe,
       });
-
-      const dtVirtual = 1 / 60;
-      virtualTime += dtVirtual;
 
       // Kinematic rotations from the shared kernel ω
       model.wheelGroup.rotation.x = virtualTime * out.wheelOmegaRadPerS;
@@ -132,7 +131,7 @@ export function ArkwrightWaterFrame3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

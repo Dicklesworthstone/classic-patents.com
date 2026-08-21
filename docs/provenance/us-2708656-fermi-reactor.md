@@ -91,3 +91,31 @@ references, and period terms. It is not a local OCR run. The p30–40 text is
 not independently accepted and must be compared once more against the page
 images before any archival publication gate is opened. The continuation
 boundary is PDF page 41, beginning the next specification chunk.
+
+### Bounded cloud-source intake: PDF pages 41–50 (2026-08-21)
+
+This continuation is also intentionally WIP and is not a publication or
+binding decision. Pages 41–50 were checked against the authoritative cloud PDF
+at `https://patentimages.storage.googleapis.com/25/7c/5f/96bc44e6f2cc4f/US2708656.pdf`
+and the corresponding Google Patents record at
+`https://patents.google.com/patent/US2708656A/en`. The local pinned PDF was not
+changed. The reviewed ledger now carries literal, page-marked continuation
+text for pages 41–50, and the typed edition appends continuous paragraphs for
+the same bounded source range after the existing p30–40 WIP blocks.
+
+The p41–50 range covers the beryllium and water moderator alternatives; K
+contours and resonance capture; neutronic purity, ether-water purification,
+and impurity tests; heat accounting and cooling losses; gas-cooled Figs. 31–36;
+liquid-cooled Figs. 37–39; mixed moderator lattices; and the statistical-weight
+and critical-size analysis of Fig. 40. Figure references were authored against
+the existing source-sheet inventory. Terms introduced in this chunk include
+reflector, neutronic purity, shotgun test, parasitic loss, statistical weight,
+migration length, exponential pile, and relaxation distance.
+
+The source method was cloud PDF text/vision comparison followed by manual
+normalization of line wraps, obvious scan artefacts, units, figure references,
+and period terms. It is not a local OCR run. This continuation remains
+unaccepted until a second reviewer compares every ledger line and edition
+block against the facsimile pages, reconciles equations and tables, and checks
+the certificate and remaining pages 51–58. The continuation boundary is PDF
+page 51.

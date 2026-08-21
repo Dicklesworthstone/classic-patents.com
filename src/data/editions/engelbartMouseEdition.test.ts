@@ -85,7 +85,7 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     }
   });
 
-  test("uses source-cropped, figure-labelled framing for Figures 1 through 6", () => {
+  test("uses source-cropped, figure-labelled framing for Figures 1 through 7", () => {
     const figurePreview = (number: number) => {
       const reference = engelbartMouseArchivalEdition.blocks
         .flatMap((block) =>
@@ -137,6 +137,23 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
       width: 1550,
       height: 980,
     });
+    expect(figurePreview(7)).toMatchObject({
+      src: "/patents/figures/us-3541541-engelbart-mouse/fig-7-source-crop-v1.png",
+      width: 1300,
+      height: 1450,
+    });
+  });
+
+  test("keeps every canonical claim literal dynamically sourced from the edition", () => {
+    for (const claim of engelbartMousePatent.claims) {
+      const editionClaim = engelbartMouseArchivalEdition.blocks.find(
+        (block) => block.kind === "claim" && block.number === claim.number,
+      );
+      expect(editionClaim?.kind).toBe("claim");
+      if (editionClaim?.kind === "claim") {
+        expect(claim.originalText).toBe(editionClaim.inlines.map((inline) => inline.text).join(""));
+      }
+    }
   });
 
   test("keeps visible drawing callouts tied to the grant's printed reference labels", () => {

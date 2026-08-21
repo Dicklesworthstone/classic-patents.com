@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildBaekelandBakeliteModel } from "./baekelandBakeliteModel";
@@ -79,12 +80,12 @@ export function BaekelandBakelite3D() {
     const model = buildBaekelandBakeliteModel();
     studio.scene.add(model.rootGroup);
 
-    let virtualTime = 0;
     let rafId = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
-      virtualTime += 1 / 60;
+      const { simTimeSec: virtualTime } = clock.pump(now);
 
       model.update(live.current, virtualTime);
       model.setCutaway(cutawayRef.current);
@@ -94,7 +95,7 @@ export function BaekelandBakelite3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);

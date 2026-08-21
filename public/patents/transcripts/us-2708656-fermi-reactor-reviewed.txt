@@ -2640,43 +2640,154 @@ The liquid-moderator structure further includes a cooled lead-cadmium shield 107
 
 --- REVIEWED TRANSCRIPTION PAGE 41 OF 58 ---
 
-Sheet 41 of 58
+2,708,656
+
+The following table sets forth constants for representative beryllium-uranium reactors, as presently known.
+
+BERYLLIUM METAL, DENSITY 1.85 GM./CM.3
+
+                                      U sphere       U rod        Slab
+Radius of uranium bodies              5.0 cm.        3.5 cm.     1.5 cm. (thickness)
+Critical cylinder                     165 x 309.1 cm. 165 x 304.9 cm. 79 x 343.8 cm.
+Amount of beryllium                   515 tons       48.9 tons    63 tons
+Amount of uranium                                    47.3 tons    69.2 tons
+K constant                                           1.0982       .842
+
+BERYLLIUM OXIDE, DENSITY 2 GM./CM.3
+
+Radius of uranium bodies              3.0 cm.        1.5 cm.
+Critical cylinder                     94.2 x 358 cm. 199.3 x 368 cm.
+Amount of beryllium oxide             134 tons       145 tons
+
+With an efficient reflector, critical amounts of beryllium and uranium can be reduced a few per cent. Sphere and rod geometry as shown herein can be used with light water to give K factors around unity even with natural uranium. For example, a K constant slightly over 1 has been obtained by using uranium rods 1.5 centimeters in diameter, placed parallel in light water with a volume ratio of water to uranium metal of 1.65. Diphenyl can also be used as a moderator and closely resembles light water, giving a gain of from 2 to 4 per cent in K. With either moderator, slight enrichment of the uranium with U233, U235, or U239 will provide a K sufficiently greater than unity to enable construction of operating reactors.
+
+A water or diphenyl lattice may be used as part of a reactor, with a seed portion having a higher K in the center so that the average K is sufficiently above unity for a practical size. A heavy-water lattice can provide the higher-K center of a composite device. Water lattices are also useful as reflectors around other reactors and are efficient because neutron reproduction takes place in them.
+
+REDUCTION OF LOSSES DUE TO RESONANCE CAPTURE
+
+Limit curves for theoretically pure natural-uranium metal spheres and rods and oxide spheres and rods are shown in Figs. 2, 3, 4, 5, and 6 for various moderators. The shapes and extents of the curves are based on K being proportional to the product of three factors: p, the probability that a fast fission neutron escapes resonance capture and becomes a thermal neutron; f, the fraction of thermal neutrons absorbed by uranium rather than carbon; and e, the factor by which fission increases the number of neutrons before the fast fission neutrons leave the uranium lump. The factors can be computed separately from experimentally determined constants. The proportionality factor was fixed from measurements of subcritical pile structures and operating reactors, so the K values are accurate within the limits of this measurement.
+
+The contours in Figs. 2 and 4 represent spherical uranium metal and UO2 lumps embedded in graphite. Figs. 3 and 5 represent cylindrical rods extending through the reactor, and Fig. 6 represents uranium-metal rods in a D2O moderator. Radii are plotted on the ordinates and moderator-to-uranium volume ratios on the abscissae; the parenthetical values give unit-cell ratios for the spherical or cylindrical lattice geometry.
 
 --- REVIEWED TRANSCRIPTION PAGE 42 OF 58 ---
 
-Sheet 42 of 58
+2,708,656
+
+In Fig. 2, if the radii of metallic uranium spheres are less than about 0.3 centimeter, K is less than unity for all volume ratios and a self-sustaining chain reaction cannot be built, regardless of overall size. For spheres larger than 0.3 centimeter, K can exceed unity when the graphite-to-uranium ratio lies within the graph limits. Fig. 3 shows that rod geometry permits a limiting radius of about 0.25 centimeter. The innermost contour in Fig. 2 is about K = 1.09; the maximum is about K = 1.10 for theoretically pure spheres of about 2.75 centimeters radius and a volume ratio of about 54 carbon to 1 uranium.
+
+For uranium-oxide spheres in Fig. 4, no chain reaction occurs below about 1.2 centimeters radius. The optimum is about K = 1.06 for spheres of about 5.75 centimeters radius and a volume ratio of 18.7 carbon to 1 uranium. In Fig. 5 the minimum oxide-rod radius for K greater than unity is about 0.75 centimeter; the optimum, over K = 1.04, is near 3.75 centimeters radius and a volume ratio of about 17.5 carbon to 1 uranium. Rod geometry gives somewhat smaller K values than sphere geometry, but aggregation still permits a practical reactor with uranium oxide.
+
+Rods or rods made from short slugs in end-to-end relation are often preferable to spheres because they can be removed without tearing down the reactor and readily incorporated into fluid heat-absorbing systems. The K curves for uranium-metal rods in D2O in Fig. 6 have higher K constants than the graphite curves. Optimum K values of about 1.3 can be obtained with rods of about 2.25 to 2.5 centimeters radius at volume ratios from 40 to 80 D2O to 1 uranium. The favorable scattering-to-absorption ratio and the shorter neutron migration length make a D2O reactor smaller than a graphite or beryllium reactor.
+
+For any fixed body size, K falls from its maximum when the volume ratio increases or decreases from the optimum. The same occurs when body size changes from its optimum. The designer can choose a contour point to save uranium, reduce moderator, maximize production of U239, or limit the overall size. The curves are shown only through the economical ranges, but extrapolated areas also sustain reactions above critical size. Aggregation and enrichment with U233, U235, or U239 increase K and reduce the required overall size; enrichment widens the volume-ratio limits but does not remove the need for aggregation.
 
 --- REVIEWED TRANSCRIPTION PAGE 43 OF 58 ---
 
-Sheet 43 of 58
+2,708,656
+
+The curves account for resonance and moderator losses only. True K values for available materials must include impurity losses.
+
+REDUCTION OF NEUTRON LOSSES DUE TO IMPURITIES IN THE MATERIALS
+
+Uranium and its compounds can be produced substantially free from neutron-absorbing impurities. A composition with high neutronic purity need not be chemically pure; it is substantially free of elements having a high danger sum, while oxygen, fluorine, carbon, beryllium, and other low-danger elements may remain. Hydrochloric-acid leaching of pitchblende can give uranium oxide better than 99.5 per cent chemically pure while leaving high neutron-capture elements in parts-per-million quantities. High-neutronic-purity compositions have danger sums in K units below 0.3, preferably below 0.01.
+
+One illustrative process forms an ether solution of uranyl nitrate, washes impurities from it with small quantities of water, and recovers purified uranyl nitrate. Impure uranium oxide is treated with nitric acid, filtered, boiled to uranyl nitrate hexahydrate, and evaporated. The crystals are treated with ether; the resulting ether solution is extracted with small portions of water. High-absorption impurities dissolve more readily in water than in ether. Uranium loss is kept low by using only one-half to five per cent water by volume and by using water already saturated with uranyl nitrate. The term water extraction includes aqueous uranyl-nitrate solutions.
+
+Successive water portions give purified uranyl nitrate of extremely high neutronic purity. It may be recovered by evaporating the ether or by extracting it with substantially pure water, then converted to U3O8, UO2, uranium tetrafluoride, uranium hexafluoride, metal, or carbide. For large-scale production, one ether solution and as many water extractions as necessary are used. The final water extraction removes most uranyl nitrate from the ether.
+
+The purified nitrate can be calcined to UO3 and reduced with hydrogen to UO2. UO2 is neutronically pure enough for a self-sustaining system despite its oxygen content, but its uranium density is lower than metal and its critical size is larger. UO2 can be converted with fluorine to uranium tetrafluoride, which is reduced with finely divided magnesium in a calcium-oxide-lined iron bomb. The uranium collects as massive billets weighing 10 to 200 pounds and can be recast in graphite crucibles without air, then machined into rods, tubes, or other forms.
 
 --- REVIEWED TRANSCRIPTION PAGE 44 OF 58 ---
 
-Sheet 44 of 58
+2,708,656
+
+Uranium carbide, uranium tetrafluoride, and uranium hexafluoride will also support a chain reaction with a proper moderator and allowance for bulk-density changes. To determine the efficiency of purification, an exponential pile with the same geometry and moderator can compare compositions directly in terms of K. A simpler “shotgun test” places a thin neutron detector, such as indium foil near a neutron source inside paraffin, and compares its induced radioactivity with that produced when a standard boron pellet is replaced by a pellet containing impurities removed from a known uranium sample. The resulting danger sum is expressed as an equivalent boron absorption, from which K reduction is calculated.
+
+For a representative 10-kilogram uranium sample, the impurity pellet is made by exhaustive ether-water purification. The absorption ratio is the absorption of impurities in the pellet, expressed in equivalent milligrams of boron, divided by the absorption of 10 kilograms of uranium, also expressed in equivalent milligrams of boron. The latter is about 4,560 milligrams of boron. The ratio approximates the change in K. Analyses of residual impurities in metallic uranium produced from purified UO2 show danger sums on the order of 0.003 to 0.0053 K units when contamination is avoided.
+
+Graphite impurities are important because a uranium-graphite reactor uses roughly ten times as much moderator by weight as uranium. Graphite is made by impregnating calcined petroleum coke with pitch and graphitizing it under heat; careful selection of the raw materials, particularly for boron and vanadium, can limit the K reduction to about 0.01 to 0.015. D2O is produced at about 99.8 per cent purity, with light water as its principal impurity. Other contamination generally comes from tanks and uranium rod sheaths and can be removed by distillation. Neutron bombardment tends to purify a moderator: boron is converted to lithium, and light water in D2O is converted toward heavy water.
+
+The neutron detector foil test measures thermal-neutron density by induced radioactivity. A boron absorber lowers the density near the foil; replacing it with the extracted impurities permits a direct comparison. This gives the impurity danger sum and the corresponding K reduction without relying solely on chemical analysis.
 
 --- REVIEWED TRANSCRIPTION PAGE 45 OF 58 ---
 
-Sheet 45 of 58
+2,708,656
+
+EFFECT OF A COOLING SYSTEM IN A NEUTRONIC REACTOR
+
+Reactors conductively cooled by dissipating reaction heat through their exterior can operate continuously only at low power, or at high power for short periods. A coolant may be circulated for continuous high-power operation, but its neutron absorption and that of any coolant pipes must be included in the neutronic design.
+
+In a uranium-graphite reactor, the approximate heat sources are: gamma radiation, 23 million electron volts per fission (11 per cent); beta radiation, 11 (6 per cent); kinetic energy of fission fragments, 159 (79 per cent); and kinetic energy of neutrons, 7, for a total of 200 million electron volts per fission. About 184 MeV, or 92 per cent, is generated in uranium, 12 MeV, or 6 per cent, in graphite, and 4 MeV, or 2 per cent, outside the pile. Coolant and pipes may be arranged in heat-exchange relation to the moderator, the uranium bodies, or both.
+
+Aluminum tubes carrying water through the moderator provide one simple cooling system, but moderator cooling alone is limited to about 1,000 kilowatts because most moderators conduct heat poorly. Direct cooling of uranium is useful at higher powers, although uranium must be protected from chemical reaction with the coolant and radioactive fission fragments must be kept out of the coolant stream. Otherwise the external piping and circulating machinery would require heavy shielding and could remain inaccessible after shutdown.
+
+Air cooling has been used for a uranium-graphite reactor operating continuously up to 3,000 kilowatts, in the construction shown in Figs. 31 through 36. In any moderator, neutron bombardment during operation tends to reduce some absorbers: boron captures a neutron and emits an alpha particle to become lithium, and light water contamination in D2O is reduced by neutron capture. Absorbing materials formed in uranium during high-neutron-density operation are considered separately.
 
 --- REVIEWED TRANSCRIPTION PAGE 46 OF 58 ---
 
-Sheet 46 of 58
+2,708,656
+
+AN ILLUSTRATIVE GAS-COOLED NEUTRONIC REACTOR
+
+A gas-cooled structure comprises closely stacked graphite blocks 209 forming a cube 210, as shown in Figs. 31 and 32. The cube may be 24 to 26 feet on a side on concrete foundation 211. Horizontal square air channels 212, with one diagonal vertical, pass from inlet face 214 to outlet face 215; about 2,000 channels may be provided, and unused channels may be plugged. A concrete inlet duct 216, air filter 220, and electrically driven fan 221 supply air to the inlet chamber 225. Concrete top shield 226 and side shields 228 enclose the cube. Outlet shield 230, outlet chamber 231, and stack 234 carry air above ground; the concrete shields, five to twenty feet thick, reduce escaping neutrons and gamma radiation.
+
+Uranium bodies are placed in the channels so that the reproduction ratio is slightly above unity, after accounting for internal and exterior losses. About 700 channels, each loaded with 68 aluminum-jacketed uranium slugs 235 end to end at seven-inch spacing, give a reproduction ratio of unity for a roughly cylindrical active portion. Graphite and uranium should have the highest available purity. To obtain a rise in neutron density, about 1,000 channels may be loaded, giving an operating ratio near 1.005; neutron-absorbing material is then inserted to hold the ratio at unity. Unloaded channels may be plugged with graphite, while peripheral channels may remain open for cooling.
+
+The preferred slug construction is shown in Fig. 34. Each uranium slug 235 is 1.1 inches in diameter and 4 inches long in an aluminum jacket about 20 mils thick. The uranium portion 236 is machined and cleaned, inserted into a jacket can 237, drawn through a sizing die for thermal contact, and sealed with cap 238 and seam weld 240. The jacket prevents air corrosion and keeps fission fragments from entering the air stream.
 
 --- REVIEWED TRANSCRIPTION PAGE 47 OF 58 ---
 
-Sheet 47 of 58
+2,708,656
+
+The active portion of the air-cooled reactor is loaded above critical size, for example at a reproduction ratio of about 1.005 with absorbers withdrawn. At seven-inch slug spacing the volume ratio is about 47 carbon to 1 uranium and the rod-lattice K is about 1.06. With about one per cent of fission neutrons delayed for a mean time of about five seconds, neutron density doubles every eight to fifteen seconds. Partial insertion of absorbers slows the rise; near the critical rod position a single doubling may take several hours. When the desired density is reached, inserted absorbers reduce the ratio to unity.
+
+Control rod 241, shown diagrammatically in Fig. 32, slides in a graphite channel and is moved by rack and pinion 242. It contains cadmium or boron; shim and safety rods 241a and 241b are also provided. Heat is generated chiefly in the uranium. Aluminum jackets melt at 658 C., and uranium melts at about 1,100 C.; stable temperature must therefore remain below these limits. Atmospheric air passed through the graphite channels and directly over the aluminum jackets permits continuous operation at 250 kilowatts with 32,000 cubic feet per minute and at 500 kilowatts with about 50,000 cubic feet per minute. Increasing fan capacity has permitted continuous operation at 3,000 kilowatts.
+
+Loading apertures 245 in the inlet shield, shown in Figs. 31 and 35, align with the slug channels. Lead plugs 246 normally close the apertures. A charging tube 247 and plunger mechanism 251 push slugs into a channel while air continues to circulate. The loading mechanism is carried by elevator platform 256 and frame 257 alongside supply car 261. Initial loading starts with central channels and proceeds outward while neutron activity is checked. The control rod is inserted as critical size is approached; removal of the rod and measurement of neutron-density doubling time gives the reproduction ratio. The active core may contain 34 to 50 tons of uranium, and graphite plugs fill unused channels.
+
+After loading, the fan is started and the control rod withdrawn until the desired power and stable temperature are reached, then advanced until the reproduction ratio is unity. Air passing through the reactor becomes radioactive and is exhausted from a stack, for example 200 feet above ground. After a run sufficient to produce U239, such as 100 days at 500 kilowatts, the reactor is shut down by fully inserting the control rod and waiting about one-half hour for delayed neutron emission and short-lived activity to subside.
 
 --- REVIEWED TRANSCRIPTION PAGE 48 OF 58 ---
 
-Sheet 48 of 58
+2,708,656
+
+Unloading may be performed by pushing slugs out of the channels, or by inserting fresh slugs so that they push irradiated slugs out. The slugs fall from outlet face 215 into outlet chamber 231 and onto angular pad plates 290, then roll into outlet pipe 291 with valves 292 and 294. The pipe opens into coffin chamber 295 and tunnel 296, where coffin car 299 carries slug coffins 301. Rods 302 and 304 operate the valves behind lead shield 305; crane 306 places caps on filled coffins. Water fills the upper pipe while air circulation is maintained at about one-quarter operating flow. The slugs are cooled in water, then aged under water for about thirty days before chemical treatment.
+
+The additional losses in this air- or helium-cooled system are principally absorption in the aluminum jackets, with a small loss from moderator removed to form the air channels. The K reduction can be about 0.005. Liquid cooling requires pipes to keep the coolant out of the moderator; both the coolant and its pipes can have substantial neutron absorption.
+
+AN ILLUSTRATIVE LIQUID-COOLED NEUTRONIC REACTOR
+
+For powers above 1,000 to 3,000 kilowatts, water or diphenyl may be used as a liquid coolant. Jacketed uranium slugs or rods are placed in pipes so the coolant flows around them. A representative reactor for outputs up to 100,000 kilowatts is shown in Figs. 37, 38, and 39. Graphite-block reactor 350 is surrounded by graphite reflector 351 and enclosed in fluid-tight steel casing 352, supported by I-beams 354 in concrete tank 355. Water 356 shields neutrons and gamma radiation; charging face 357 has shield tank 358 filled with lead shot and water. Aluminum coolant tubes 359 pass through the concrete wall, shield tank, graphite moderator, and casing outlet face 362. Water enters through manifolds, discharges into tank 355, and leaves through outlet pipe 365.
+
+The tubes are loaded with aluminum-jacketed uranium slugs 372 in end-to-end relation. Water may pass once through the reactor or be cooled and recirculated; diphenyl requires a closed system. Loading and unloading use the gas-cooled mechanisms. Control rod 370, ionization chamber 371, and shim and safety rods 370a and 370b provide control and monitoring. In Fig. 39 the slugs rest on projections 373 inside coolant tubes 359, providing a uniform coolant annulus.
 
 --- REVIEWED TRANSCRIPTION PAGE 49 OF 58 ---
 
-Sheet 49 of 58
+2,708,656
+
+For one liquid-cooled uranium-graphite example designed for continuous operation at about 100,000 kilowatts, uranium rods in near-optimum graphite geometry give K about 1.07. Aluminum jackets and pipes reduce K by 0.013, coolant reduces K by 0.023, and the total reduction is 0.036, leaving K about 1.034. The principal dimensions are: active-cylinder axial length 7 meters; radius 4.94 meters; uranium-metal weight 200 metric tons; graphite weight 850 metric tons; uranium-rod radius 1.7 centimeters; aluminum jacket thickness 0.5 millimeter; aluminum-pipe thickness 1.5 millimeters; liquid annulus 2.2 millimeters with water or 4 millimeters with diphenyl; 1,695 rods; aluminum weight 8.7 metric tons; and square-array rod spacing 21.3 centimeters.
+
+Diphenyl permits a thicker coolant annulus because its danger sum is smaller for a given volume and its boiling temperature is higher. Against this advantage are the need for closed circulation and possible polymerization, which requires make-up fluid. Liquid coolants are suited to outputs up to 500,000 kilowatts. Since K minus 1 for uranium-graphite reactors is only about 0.1, coolant quantity must be limited. D2O uranium-rod reactors can tolerate a larger impurity fraction because K minus 1 can approach 0.3. D2O can itself be used as coolant, reducing parasitic absorption.
+
+By treating coolant and structural elements as parasitic impurities, evaluating their K reduction, and using the resulting K to determine critical and operating sizes, reactors for desired powers can be designed.
+
+USE OF DIFFERENT LATTICES IN THE SAME NEUTRONIC REACTOR
+
+The first uranium-graphite reactor used two lattice zones with different uranium forms. Other reactors may have zones with different K values and wholly different moderators. A D2O-moderated central portion can raise the average K of a composite reactor; a uranium-H2O lattice can be used around a uranium-D2O center. Such arrangements permit a practical operating size even when one lattice has a low K.
 
 --- REVIEWED TRANSCRIPTION PAGE 50 OF 58 ---
 
-Sheet 50 of 58
+2,708,656
+
+When reactors are constructed of concentric layers, the average K can be calculated. Curves in Fig. 40 give the statistical weight w of a sub-side or sub-radius of a zone having a specified lattice, plotted against S/R, where R is the side or radius of the entire active portion and S is the extent of the zone. Statistical weight is the value of a mass of lattice weighted by its position: a mass near the center is worth more than the same mass near the edge because neutron density is higher at the center. The effectiveness of a lattice varies approximately with the square of the average neutron density to which it is exposed.
+
+For a cylindrical active portion of radius R, a central lattice with K1 and migration length M1 may extend to radius S1, a second lattice with K2 and M2 to radius S2, and a third lattice with K3 and M3 to the outer radius R. The curves in Fig. 40 permit calculation of the overall K for concentric cubic, spherical, or cylindrical structures with uranium rods. When migration lengths are equal, the average K minus 1 is obtained directly from the separate K minus 1 values; with different moderators, the appropriate migration length is inserted.
+
+As an example, if the central zone has K1 = 1.05 and the surrounding zone has K2 = 1.06, the Fig. 40 curves give weights of approximately 0.525 and 0.475, producing an average K of about 1.0548. A center with high K can raise the average enough to reduce reactor size; a center with lower K can flatten the neutron-density curve.
+
+CRITICAL AND OPERATING SIZES OF NEUTRONIC REACTORS
+
+After all neutron losses except exterior leakage have been evaluated, the reactor size for operation must be determined. A satisfactory method, especially for low-power reactors, is to measure the relaxation distance or exponential constant A in an exponential pile similar in every respect to the proposed reactor. For a sphere the critical radius is obtained from A; for a rectangular parallelepiped the critical side lengths are obtained from the corresponding relation; and for a cylinder the critical height and radius follow from the cylindrical relation containing 2.405/R. Thus critical size can be obtained directly from measured A without first determining a numerical K. If migration length M is known, K can be determined from the relation involving (K - 1)/M and A, and the result can be used for critical and operating sizes at any power.
 
 --- REVIEWED TRANSCRIPTION PAGE 51 OF 58 ---
 
