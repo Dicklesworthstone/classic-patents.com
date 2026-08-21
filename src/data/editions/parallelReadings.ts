@@ -46,6 +46,7 @@ import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHopping
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
 import { lindeAirLiquefactionParallelReadings } from "./lindeAirLiquefactionEdition";
+import { maimanRubyLaserParallelReadings } from "./maimanRubyLaserEdition";
 import { marconiRadioParallelReadings } from "./marconiRadioEdition";
 import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
@@ -139,6 +140,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
+  "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,

@@ -42,8 +42,10 @@ export const multiTouchPatent: Patent = {
   },
   drawings: [
     {
-      figureNumber: 1,
+      figureNumber: "Figure 1",
+      title: "Block Diagram of Multi-Touch Device Architecture",
       caption: "FIG. 1: Block diagram of portable multi-touch device architecture",
+      svgType: "multitouch",
       imageUrl: "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
       description:
         "Architecture showing processor, touch screen controller, memory, and peripheral subsystems.",
@@ -69,9 +71,11 @@ export const multiTouchPatent: Patent = {
       ],
     },
     {
-      figureNumber: 2,
+      figureNumber: "Figure 2",
+      title: "Portable Multifunction Device Application Grid",
       caption:
         "FIG. 2: Portable multifunction device with graphical user interface application grid",
+      svgType: "multitouch",
       imageUrl: "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
       description:
         "Graphical user interface presenting icons for phone, email, browser, and photo applications.",
@@ -88,8 +92,10 @@ export const multiTouchPatent: Patent = {
       ],
     },
     {
-      figureNumber: 3,
+      figureNumber: "Figure 3",
+      title: "Touch Gesture Recognition & Trajectory Angle Heuristics",
       caption: "FIG. 3: Touch gesture recognition and trajectory angle heuristics",
+      svgType: "multitouch",
       imageUrl: "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
       description:
         "Diagram of finger contact motion angle thresholds differentiating vertical scroll from 2D pan.",
@@ -183,7 +189,6 @@ CLAIMS
     civilizationalImpact:
       "Defined the modern mobile computing paradigm, transforming smartphones into direct-manipulation glass windows for humanity.",
   },
-  drawings: [],
   tags: ["apple", "iphone", "touch", "hci", "steve jobs", "mobile"],
   claims: [
     {
