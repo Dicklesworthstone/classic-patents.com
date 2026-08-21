@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 
+import { allPatents } from "@/data/patents";
+
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 export const alt = "Classic Patents — Historical Technical Patent Museum";
@@ -10,6 +12,7 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
+  const patentCount = allPatents.length;
   return new ImageResponse(
     <div
       style={{
@@ -84,7 +87,7 @@ export default async function Image() {
             display: "flex",
           }}
         >
-          22 HISTORICAL MILESTONES
+          {patentCount} HISTORICAL MILESTONES
         </div>
       </div>
 
