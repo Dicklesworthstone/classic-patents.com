@@ -6,7 +6,7 @@ import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEdisonIndicatorModel } from "./edisonIndicatorModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -28,7 +28,7 @@ export default function EdisonIndicator3D() {
   const studioRef = useRef<StudioContext | null>(null);
 
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
