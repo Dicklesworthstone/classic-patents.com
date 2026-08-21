@@ -6,7 +6,6 @@ import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValid
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type {
   CuratedSpecificationBlock,
-  CuratedSpecificationEdition,
   CuratedSpecificationInline,
 } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
@@ -20,39 +19,24 @@ const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^
 const editionBlocks: readonly CuratedSpecificationBlock[] = fermiReactorArchivalEdition.blocks;
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
-  test("publishes valid manual archival edition and originalTextAsset", () => {
-    if (fermiReactorPatent.archivalEdition) {
-      expect(fermiReactorPatent.archivalEdition).toBe(
-        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
-      );
-    }
-    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
+  test("holds the candidate edition and leaves the canonical record unbound", () => {
+    expect(fermiReactorArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
+    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+    const validation = validateCuratedSpecificationEdition(fermiReactorArchivalEdition);
+    expect(validation.valid).toBe(false);
+    expect(validation.errors).toContain(
+      "The archival edition lacks an explicit full-facsimile review attestation.",
+    );
   });
 
-  test("pins the 58-page facsimile and retains a structurally valid staged edition", () => {
-    if (fermiReactorPatent.archivalEdition)
-      expect(fermiReactorPatent.archivalEdition).toBe(
-        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
-      );
-    expect(
-      validateCuratedSpecificationEdition({
-        ...(fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition),
-        completeFacsimileReviewed: true,
-      }),
-    ).toEqual({
-      valid: true,
-      errors: [],
-    });
+  test("pins the source PDF digest without treating WIP text as a publication asset", () => {
     const pdf = publicFile(fermiReactorPatent.originalPdfUrl);
     expect(createHash("sha256").update(readFileSync(pdf)).digest("hex")).toBe(
       fermiReactorArchivalEdition.sourcePdfSha256,
     );
-    if (fermiReactorPatent.originalTextAsset?.kind === "reviewed-transcription")
-      expect(fermiReactorPatent.originalTextAsset).toMatchObject({
-        kind: "reviewed-transcription",
-        pageCount: 58,
-        sourcePdfSha256: fermiReactorArchivalEdition.sourcePdfSha256,
-      });
+    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
   });
 
   test("uses the eight exact printed claims, all independent", () => {

@@ -2304,7 +2304,7 @@ export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   preparedBy: "Classic Patents editorial agent (SteelNeedle)",
   preparedAt: "2026-08-18",
-  completeFacsimileReviewed: true,
+  completeFacsimileReviewed: false,
   blocks: [
     {
       kind: "masthead",
