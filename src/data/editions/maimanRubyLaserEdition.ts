@@ -143,12 +143,18 @@ export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly s
     "An embodiment using a cooled optical cavity structure and energy-level operation is shown for Figure 7.",
   ],
   10: [
-    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
+    "Figures 8 and 9 show hollow and refrigerated laser arrangements: a coolant cylinder surrounds the active material, and a cooled rod is paired with a coaxial flash tube.",
   ],
   11: [
-    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
+    "Figures 10 through 12 explain how coatings and a high-index coolant suppress nonparallel rays and preserve a narrow, coherent output beam while controlling the active material's temperature.",
+  ],
+  12: [
+    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
   ],
   13: [
+    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
+  ],
+  15: [
     "Official statutory claims defining the legal scope of the three-level ruby laser system and solid-state optical maser apparatus.",
   ],
 };
