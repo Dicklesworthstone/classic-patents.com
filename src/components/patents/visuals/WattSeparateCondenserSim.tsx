@@ -1,5 +1,6 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useMemo, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -7,9 +8,12 @@ import {
   WATT_DEFAULT_CONTROLS,
   type WattCondenserControls,
 } from "@/physics/wattCondenserKernel";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function WattSeparateCondenserSim() {
-  const { params, updateParam } = usePatentPhysics("gb-913-watt-separate-condenser");
+  const { params, updateParam, resetParams } = usePatentPhysics("gb-913-watt-separate-condenser");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const controls: WattCondenserControls = useMemo(
     () => ({
       boilerPressurePsi: params.boilerPressurePsi ?? WATT_DEFAULT_CONTROLS.boilerPressurePsi,
@@ -60,7 +64,7 @@ export function WattSeparateCondenserSim() {
   return (
     <div className="w-full bg-stone-900/95 border border-stone-800 rounded-2xl p-6 text-stone-200 shadow-2xl backdrop-blur-xl">
       {/* Header & Mode Badge */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-stone-800">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-stone-800">
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 text-xs font-mono font-semibold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
@@ -71,32 +75,65 @@ export function WattSeparateCondenserSim() {
             </span>
           </div>
           <h3 className="text-xl font-bold text-stone-100 mt-1">
-            Watt Separate Condenser Engine Simulator
+            James Watt Steam Engine with Separate Condenser (GB 913)
           </h3>
         </div>
 
-        <div className="flex items-center gap-2 bg-stone-950/80 p-1.5 rounded-xl border border-stone-800">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <div className="flex items-center gap-2 bg-stone-950/80 p-1.5 rounded-xl border border-stone-800">
+            <button
+              type="button"
+              onClick={() => {
+                updateParam("hasSeparateCondenser", 1);
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                controls.hasSeparateCondenser
+                  ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/30"
+                  : "text-stone-400 hover:text-stone-200"
+              }`}
+            >
+              Watt Engine (1769)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                updateParam("hasSeparateCondenser", 0);
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                !controls.hasSeparateCondenser
+                  ? "bg-rose-600 text-white shadow-lg shadow-rose-900/30"
+                  : "text-stone-400 hover:text-stone-200"
+              }`}
+            >
+              Newcomen Engine (1712)
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => updateParam("hasSeparateCondenser", 1)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              controls.hasSeparateCondenser
-                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/30"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            Watt Engine (1769)
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => updateParam("hasSeparateCondenser", 0)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              !controls.hasSeparateCondenser
-                ? "bg-rose-600 text-white shadow-lg shadow-rose-900/30"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 transition-colors"
+            title="Reset Simulation"
           >
-            Newcomen Engine (1712)
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
