@@ -35,10 +35,11 @@ export const EngelbartMouse3D = memo(() => {
   const [isClicking, setIsClicking] = useState<boolean>(false);
 
   // Mechanical Coordinates & Pulse Resolver Parameters
-  const { params } = usePatentPhysics("us-3541541-engelbart-mouse");
-  const mouseSpeedMmPerS = params.mouseSpeedMmPerS ?? 350;
-  const surfaceFrictionCoeff = params.surfaceFrictionCoeff ?? 0.35;
-  const wheelRadiusMm = params.wheelRadiusMm ?? 9.5;
+  const { params, updateParam } = usePatentPhysics("us-3541541-engelbart-mouse");
+  const mouseSpeedMmPerS = (params.mouseSpeed as number) ?? (params.mouseSpeedMmPerS as number) ?? 350;
+  const surfaceFrictionCoeff = (params.surfaceFrictionCoeff as number) ?? 0.35;
+  const wheelRadiusMm = (params.wheelRadius as number) ?? (params.wheelRadiusMm as number) ?? 9.5;
+  const pulsesPerRev = (params.pulsesPerRev as number) ?? 200;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
@@ -46,7 +47,7 @@ export const EngelbartMouse3D = memo(() => {
   const mouse = stepEngelbartMouse({
     mouseSpeed: mouseSpeedMmPerS,
     wheelRadius: wheelRadiusMm,
-    pulsesPerRev: params.pulsesPerRev ?? 200,
+    pulsesPerRev,
   });
 
   const live = useLiveSimParams({
@@ -60,7 +61,7 @@ export const EngelbartMouse3D = memo(() => {
     wheelOmegaRadPerS: mouse.omegaRadPerS,
     pathDisplayOmega: mouse.pathDisplayOmega,
     resolverSvgScale: mouse.resolverSvgScale,
-    pulsesPerRev: params.pulsesPerRev ?? 200,
+    pulsesPerRev,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -117,8 +118,8 @@ export const EngelbartMouse3D = memo(() => {
     scene.add(desk);
 
     // Build procedural 3D model
-    const { rootGroup, nodes, materials, dispose } = buildEngelbartMouseModel();
-    scene.add(rootGroup);
+    const model = buildEngelbartMouseModel();
+    scene.add(model.rootGroup);
 
     // Animation Loop
     let reqId: number;
@@ -131,8 +132,8 @@ export const EngelbartMouse3D = memo(() => {
       const p = live.current;
 
       updateEngelbartMouseKinematics(
-        nodes,
-        materials,
+        model.nodes,
+        model.materials,
         dt,
         timeSec,
         p.pathDisplayOmega,
@@ -140,8 +141,8 @@ export const EngelbartMouse3D = memo(() => {
         "figure8",
         p.wheelRadiusMm,
         p.pulsesPerRev,
-        p.isClicking,
         p.isXRayMode,
+        p.isClicking,
       );
 
       controls.update();
@@ -152,7 +153,7 @@ export const EngelbartMouse3D = memo(() => {
 
     return () => {
       cancelAnimationFrame(reqId);
-      dispose();
+      model.dispose();
       deskMat.dispose();
       studio.cleanup();
       studioRef.current = null;
@@ -161,66 +162,13 @@ export const EngelbartMouse3D = memo(() => {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Douglas Engelbart Computer Mouse 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
-          <button
-            type="button"
-            onClick={() => setIsXRayMode(!isXRayMode)}
-            title={isXRayMode ? "Solid Walnut Body" : "X-Ray Walnut Body"}
-            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
-              isXRayMode
-                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-          >
-            {isXRayMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden sm:inline">{isXRayMode ? "X-Ray" : "Solid"}</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleManualClick}
-            className="px-2.5 py-1.5 rounded-xl bg-red-600/90 hover:bg-red-600 text-white text-xs font-sans font-medium transition-colors shadow-sm"
-          >
-            Click
-          </button>
-          <button
-            type="button"
-            onClick={toggleSound}
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              showUiOverlay
-                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
-            }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
-          >
-            <Zap className="w-4 h-4" />
-          </button>
-          <button
-            aria-label="Reset camera view"
-            type="button"
-            onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title="Reset Orbit Camera"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Camera Views Bar */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
               <Camera className="w-3.5 h-3.5" /> View:
             </span>
@@ -250,6 +198,83 @@ export const EngelbartMouse3D = memo(() => {
           </div>
         )}
 
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => setIsXRayMode(!isXRayMode)}
+            title={isXRayMode ? "Solid Walnut Body" : "X-Ray Walnut Body"}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
+              isXRayMode
+                ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+          >
+            {isXRayMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isXRayMode ? "X-Ray" : "Solid"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleManualClick}
+            className="px-2.5 py-1.5 rounded-xl bg-red-600/90 hover:bg-red-600 text-white text-xs font-sans font-medium transition-colors shadow-sm"
+          >
+            Click
+          </button>
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+          >
+            <Zap className="w-4 h-4" />
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Tracking Speed:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{mouseSpeedMmPerS} mm/s</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Resolution:</span>
+              <span className="font-bold text-emerald-800 dark:text-emerald-400">{mouse.dpi} CPI</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Pulse Rate:</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">{mouse.pulseRateHz.toFixed(0)} pulses/s</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Wheel Angular Vel:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">{mouse.omegaRadPerS.toFixed(1)} rad/s</span>
+            </div>
+          </div>
+        )}
+
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
@@ -275,6 +300,59 @@ export const EngelbartMouse3D = memo(() => {
             },
           ]}
         />
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Tracking Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{mouseSpeedMmPerS} mm/s</span>
+            </div>
+            <input
+              type="range"
+              min="100"
+              max="800"
+              step="25"
+              value={mouseSpeedMmPerS}
+              onChange={(e) => updateParam("mouseSpeed", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Wheel Radius</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{wheelRadiusMm} mm</span>
+            </div>
+            <input
+              type="range"
+              min="6"
+              max="18"
+              step="0.5"
+              value={wheelRadiusMm}
+              onChange={(e) => updateParam("wheelRadius", Number.parseFloat(e.target.value))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Resolver Pulses / Rev</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{pulsesPerRev} PPR</span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="400"
+              step="10"
+              value={pulsesPerRev}
+              onChange={(e) => updateParam("pulsesPerRev", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

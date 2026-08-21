@@ -31,6 +31,8 @@ export interface TownesLaserArticulationState {
   laserOutputPowerWatts: number;
   intraCavityPowerWatts: number;
   isLasing: boolean;
+  pumpShimmerOmegaRadPerS: number;
+  beamShimmerOmegaRadPerS: number;
 }
 
 export function buildTownesLaserModel(): TownesLaserModelNodes {
@@ -285,7 +287,7 @@ export function articulateTownesLaserModel(
 ) {
   // 1. Pumping Flashlamp emissive pulse
   const pumpNormalized = Math.min(1.0, state.pumpPowerWatts / 800);
-  const pumpPulse = 0.7 + 0.3 * Math.sin(time * 6.0);
+  const pumpPulse = 0.7 + 0.3 * Math.sin(time * state.pumpShimmerOmegaRadPerS);
   const lampMat = nodes.helicalFlashlamp.material as THREE.MeshStandardMaterial;
   lampMat.emissiveIntensity = 0.5 + pumpNormalized * 2.5 * pumpPulse;
 
@@ -298,7 +300,7 @@ export function articulateTownesLaserModel(
   const outMat = nodes.outputBeam.material as THREE.MeshBasicMaterial;
 
   if (state.isLasing && state.laserOutputPowerWatts > 0) {
-    const beamPulse = 0.85 + 0.15 * Math.sin(time * 12.0);
+    const beamPulse = 0.85 + 0.15 * Math.sin(time * state.beamShimmerOmegaRadPerS);
     intraMat.opacity = Math.min(0.9, 0.3 + (state.intraCavityPowerWatts / 300) * 0.6) * beamPulse;
     outMat.opacity = Math.min(0.95, 0.4 + (state.laserOutputPowerWatts / 150) * 0.6) * beamPulse;
   } else {

@@ -93,7 +93,7 @@ export function HaberAmmoniaSim({
       ctx.stroke();
 
       // Reciprocating Piston
-      const pistonOffset = Math.sin(time * 6) * 16;
+      const pistonOffset = Math.sin(time * physics.compressorDisplayOmegaRadPerS) * 16;
       ctx.fillStyle = "#334155";
       ctx.fillRect(compX + 15, compY + 25 + pistonOffset, 50, 20);
       ctx.strokeStyle = "#38bdf8";
@@ -230,7 +230,7 @@ export function HaberAmmoniaSim({
       const particleCount = 20;
       for (let i = 0; i < particleCount; i++) {
         const py = catY + ((time * 40 + i * 20) % catH);
-        const px = rX + 28 + (Math.sin(time * 3 + i) * 20 + 20);
+        const px = rX + 28 + (Math.sin(time * physics.compressorDisplayOmegaRadPerS + i) * 20 + 20);
         const isNh3 = i < Math.floor(particleCount * (physics.ammoniaYieldPct / 100) * 4);
 
         ctx.fillStyle = isNh3 ? "#22d3ee" : "#f1f5f9";

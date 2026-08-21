@@ -36,7 +36,6 @@ import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
 import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
-import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";

@@ -30,13 +30,14 @@ export function GatlingGun3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Ballistic Simulation Parameters
-  const { params } = usePatentPhysics("us-36836-gatling-gun");
+  const { params, updateParam } = usePatentPhysics("us-36836-gatling-gun");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const crankRpm = params.crankRpm ?? 60;
+  const barrelCount = params.barrelCount ?? 6;
   const gatling = stepGatlingGun({
     crankRpm,
-    barrelCount: params.barrelCount ?? 6,
+    barrelCount,
   });
   const roundsPerMinute = gatling.roundsPerMin;
   const [showMuzzleFlash] = useState<boolean>(true);
@@ -99,39 +100,46 @@ export function GatlingGun3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      // Update cutaway transparency on breech casing
-      model.materials.bronzeReceiver.opacity = p.isCutaway ? 0.35 : 1.0;
-      model.materials.bronzeReceiver.transparent = p.isCutaway;
+      // Rotate Barrel Cluster & Drive Crank via shared SI speed
+      const omega = p.crankOmegaRadPerS;
+      model.nodes.barrelCluster.rotation.x += omega * delta;
+      model.nodes.crankHandle.rotation.x += omega * delta;
 
-      const omegaRadPerSec = p.crankOmegaRadPerS;
-      model.barrelClusterGroup.rotation.x += omegaRadPerSec * delta;
-      model.crankGroup.rotation.x += omegaRadPerSec * delta;
-
-      // Kinematic Cam Track Bolt Reciprocation
-      const currentAngle = model.barrelClusterGroup.rotation.x;
-      model.bolts.forEach((bolt, idx) => {
-        const barrelAngle = currentAngle + idx * p.barrelSpacingRad;
-        const flex = gatlingBoltCamFlex(idx, model.bolts.length, p.crankRpm);
-        bolt.position.x =
-          gatlingBoltStudioX(barrelAngle, p.boltHomeX, p.camStrokeStudio) + flex * p.boltFlexStudio;
+      // Reciprocate Bolts along Spiral Cam Track
+      const clusterAngle = model.nodes.barrelCluster.rotation.x;
+      model.nodes.bolts.forEach((bolt, i) => {
+        const boltPhase = clusterAngle + i * p.barrelSpacingRad;
+        const camProgress = Math.sin(boltPhase);
+        bolt.position.x = gatlingBoltStudioX(
+          p.boltHomeX,
+          p.camStrokeStudio,
+          camProgress,
+          gatlingBoltCamFlex(p.boltFlexStudio, camProgress),
+        );
       });
 
-      // Muzzle Flash & Acoustic Pulse at 12 o'clock firing position
-      const now = renderedSteps * (1 / 60);
+      // Muzzle Flash & Sound Triggering on live fire interval
+      const now = renderedSteps * delta;
       if (now - lastFireTime > p.fireIntervalS) {
         lastFireTime = now;
         if (p.showMuzzleFlash) {
-          model.materials.muzzleFlash.opacity = 0.95;
+          model.nodes.flashLight.intensity = 3.5;
         }
-        if (!p.isAudioMuted && typeof window !== "undefined") {
-          soundEngine.playSparks();
+        if (!p.isAudioMuted) {
+          soundEngine.playGatlingShot();
         }
-      } else {
-        model.materials.muzzleFlash.opacity = Math.max(
+      }
+
+      // Decay Muzzle Flash
+      if (model.nodes.flashLight.intensity > 0) {
+        model.nodes.flashLight.intensity = Math.max(
           0,
-          model.materials.muzzleFlash.opacity - delta * p.muzzleFlashDecayPerS,
+          model.nodes.flashLight.intensity - p.muzzleFlashDecayPerS * delta,
         );
       }
+
+      // Cutaway Visibility
+      model.nodes.breechCover.visible = !p.isCutaway;
 
       controls.update();
       renderer.render(scene, camera);
@@ -149,18 +157,39 @@ export function GatlingGun3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Richard Gatling Gun 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Top-Left Title HUD */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 pointer-events-none rounded-xl border border-parchment-700/60 bg-parchment-950/80 px-3.5 py-2 backdrop-blur-md shadow-lg">
-            <div className="font-mono text-xs font-bold text-parchment-100 uppercase tracking-wider">
-              Gatling Gun 3D
-            </div>
-            <div className="text-[11px] text-parchment-300 font-sans">
-              US Patent 36,836 • Revolving Battery Gun
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(
+              [
+                { id: "iso", label: "Isometric" },
+                { id: "barrels", label: "6 Barrels" },
+                { id: "breech_cam", label: "Cam Breech" },
+                { id: "hopper", label: "Hopper Feed" },
+                { id: "crank", label: "Crank" },
+                { id: "top", label: "Plan View" },
+              ] as const
+            ).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => applyCameraPreset(c.id)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === c.id
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {c.label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -169,7 +198,7 @@ export function GatlingGun3D() {
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
-            title={isCutaway ? "Solid Receiver" : "Cutaway Breech Casing"}
+            title={isCutaway ? "Solid Housing" : "Cutaway Breech"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
@@ -184,6 +213,7 @@ export function GatlingGun3D() {
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -214,35 +244,25 @@ export function GatlingGun3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3.5 h-3.5" /> View:
-            </span>
-            {(
-              [
-                { id: "iso", label: "Isometric" },
-                { id: "barrels", label: "6 Barrels" },
-                { id: "breech_cam", label: "Cam Breech" },
-                { id: "hopper", label: "Hopper Feed" },
-                { id: "crank", label: "Crank" },
-                { id: "top", label: "Plan View" },
-              ] as const
-            ).map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => applyCameraPreset(c.id)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activeCamera === c.id
-                    ? "bg-amber-600 text-white shadow-xs font-semibold"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Rate of Fire:</span>
+              <span className="font-bold text-rose-700 dark:text-rose-400">{roundsPerMinute} rds/min</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Crank Speed:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(crankRpm)} RPM</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Cooling Interval:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">{gatling.barrelCoolingIntervalS.toFixed(2)} s/bbl</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Muzzle Energy:</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">{gatling.muzzleEnergyJoules} J</span>
+            </div>
           </div>
         )}
 
@@ -252,7 +272,7 @@ export function GatlingGun3D() {
           title="Gatling cam-crank cluster"
           chips={[
             { label: "Crank", value: String(Math.round(crankRpm)), unit: "rpm" },
-            { label: "Barrels", value: String(params.barrelCount ?? 6) },
+            { label: "Barrels", value: String(barrelCount) },
             { label: "RoF", value: String(roundsPerMinute), unit: "rds/min" },
             { label: "Cooling", value: String(gatling.barrelCoolingIntervalS), unit: "s/bbl" },
             { label: "E", value: String(gatling.muzzleEnergyJoules), unit: "J" },
@@ -264,6 +284,43 @@ export function GatlingGun3D() {
             { label: "h₁", value: gatling.clusterHarmonicH1.toFixed(3) },
           ]}
         />
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Hand Crank Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{Math.round(crankRpm)} RPM</span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="120"
+              step="5"
+              value={crankRpm}
+              onChange={(e) => updateParam("crankRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Revolving Barrel Count</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{barrelCount} barrels</span>
+            </div>
+            <input
+              type="range"
+              min="4"
+              max="10"
+              step="2"
+              value={barrelCount}
+              onChange={(e) => updateParam("barrelCount", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

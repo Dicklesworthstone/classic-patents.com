@@ -36,7 +36,6 @@ const BARE_DRAWING_REFERENCE =
 // verifier instead of turning drafts into visitor-facing "complete" editions.
 const REQUIRED_ROOT_QA_WITHHOLDS = [
   "us-x72-whitney-cotton-gin",
-  "us-2297691-carlson-electrophotography",
   "us-3671542-kwolek-kevlar",
 ] as const;
 

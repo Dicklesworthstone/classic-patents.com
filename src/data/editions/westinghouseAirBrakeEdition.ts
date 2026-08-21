@@ -19,7 +19,10 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
 });
 
 const crop = (number: number, width: number, height: number) => ({
-  src: `/patents/figures/us-124404-westinghouse-air-brake/fig-${number}-source-crop.png`,
+  src:
+    number === 4
+      ? "/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop-v2.png"
+      : `/patents/figures/us-124404-westinghouse-air-brake/fig-${number}-source-crop.png`,
   alt: `Source-facsimile crop of Fig. ${number} from US 124,404.`,
   width,
   height,
@@ -29,7 +32,7 @@ const FIGURES = {
   "Fig. 1": crop(1, 1540, 900),
   "Fig. 2": crop(2, 800, 650),
   "Fig. 3": crop(3, 800, 650),
-  "Fig. 4": crop(4, 720, 570),
+  "Fig. 4": crop(4, 430, 520),
   "Fig. 5": crop(5, 830, 460),
   "Fig. 6": crop(6, 900, 400),
 } as const;

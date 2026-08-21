@@ -3528,6 +3528,8 @@ export function stepTownesLaser(params: {
   const cavityQFactor = Number(
     (2 * Math.PI * opticalFrequencyHz * cavityPhotonLifetimeNs * 1e-9).toExponential(2),
   );
+  const pumpShimmerOmegaRadPerS = 6;
+  const beamShimmerOmegaRadPerS = isAboveThreshold ? 12 : 0;
 
   return {
     activeMedium: medium,
@@ -3547,6 +3549,8 @@ export function stepTownesLaser(params: {
     longitudinalModeSpacingMhz,
     cavityPhotonLifetimeNs,
     cavityQFactor,
+    pumpShimmerOmegaRadPerS,
+    beamShimmerOmegaRadPerS,
   };
 }
 

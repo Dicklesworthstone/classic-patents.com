@@ -16,6 +16,10 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(modelSource).not.toContain("GLTFLoader");
+    expect(modelSource).not.toContain("time * 6.0");
+    expect(modelSource).not.toContain("time * 12.0");
+    expect(modelSource).toContain("pumpShimmerOmegaRadPerS");
+    expect(studioSource).toContain("beamShimmerOmegaRadPerS");
 
     expect(studioSource).not.toContain(".gltf");
     expect(studioSource).not.toContain(".glb");
@@ -46,6 +50,8 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(below.isLasing).toBe(false);
     expect(below.laserOutputPowerWatts).toBe(0);
     expect(below.thresholdGainPerCm).toBeGreaterThan(0.005);
+    expect(below.beamShimmerOmegaRadPerS).toBe(0);
+    expect(below.pumpShimmerOmegaRadPerS).toBe(6);
 
     // Above threshold (P = 400 W)
     const above = stepTownesLaser({
@@ -60,6 +66,7 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(above.beamDivergenceMrad).toBeGreaterThan(0.2);
     expect(above.beamDivergenceMrad).toBeLessThan(2.0);
     expect(above.fresnelNumber).toBeGreaterThan(0.1);
+    expect(above.beamShimmerOmegaRadPerS).toBe(12);
   });
 
   test("builds and articulates procedural base rail, mirror mounts, laser tube, helical flashlamp, and coherent beams", () => {
@@ -76,6 +83,7 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
     expect(nodes.detectorHousing).toBeDefined();
 
     // Articulate above threshold
+    const above = stepTownesLaser({ pumpPowerWatts: 500 });
     articulateTownesLaserModel(
       nodes,
       {
@@ -83,6 +91,8 @@ describe("US 2,929,922 Arthur L. Schawlow & Charles H. Townes Optical Maser / La
         laserOutputPowerWatts: 120,
         intraCavityPowerWatts: 1800,
         isLasing: true,
+        pumpShimmerOmegaRadPerS: above.pumpShimmerOmegaRadPerS,
+        beamShimmerOmegaRadPerS: above.beamShimmerOmegaRadPerS,
       },
       1.5,
     );

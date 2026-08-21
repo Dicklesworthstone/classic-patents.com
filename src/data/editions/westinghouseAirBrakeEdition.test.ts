@@ -86,6 +86,14 @@ describe("US 124,404 manual source edition", () => {
       }
     }
 
+    const figureFourPreview = figureReferences.find((reference) => reference.text === "Fig. 4")
+      ?.figurePreviews?.[0];
+    expect(figureFourPreview).toMatchObject({
+      src: "/patents/figures/us-124404-westinghouse-air-brake/fig-4-source-crop-v2.png",
+      width: 430,
+      height: 520,
+    });
+
     const sourceParagraphInlines = westinghouseAirBrakeArchivalEdition.blocks
       .filter(
         (

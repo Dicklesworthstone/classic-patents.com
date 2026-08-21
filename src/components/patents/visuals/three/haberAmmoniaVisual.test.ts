@@ -28,6 +28,12 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(studioSource).not.toContain("setPressureAtm");
     expect(modelSource).not.toContain("const compSpeed = 4.0");
     expect(modelSource).toContain("compressorDisplayOmegaRadPerS");
+    const simSource = readFileSync(
+      join(rootDir, "src/components/patents/visuals/HaberAmmoniaSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("physics.compressorDisplayOmegaRadPerS");
+    expect(simSource).not.toContain("time * 6)");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

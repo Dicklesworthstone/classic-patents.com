@@ -10,9 +10,12 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
  * temperature, flow, yield, or production-rate measurement.
  */
 export function LindeAirLiquefactionSim() {
-  usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
   const [activeTab, setActiveTab] = useState<"liquefaction" | "separation">("liquefaction");
-  const linde = FrankenSimEngine.stepLindeAirLiquefaction();
+  const linde = FrankenSimEngine.stepLindeAirLiquefaction({
+    inletPressureAtm: params.inletPressureAtm ?? params.highPressureAtm,
+    coolerOutletC: params.coolerOutletC,
+  });
 
   return (
     <div className="flex w-full flex-col gap-6 rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-neutral-100 shadow-2xl">

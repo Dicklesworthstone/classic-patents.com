@@ -529,6 +529,8 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.436 Linde 3D rAF now passes `(dt, timeSec, p, showFlowTracer, cutaway)` in the kinematics order — leftover swapped `timeSec` as `dt` and cutaway/tracer. JT handwheel / liquid ripple ω scale with grant `p` (75 atm → 0.4 / 3.0). Engine step accepts inlet pressure instead of ignoring the slider. No fabricated yield. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.437 Haber compressor flywheel drains `compressorDisplayOmegaRadPerS` from feed flow (50 mol/s → leftover 4 rad/s). Loop particles drain `loopFlowAdvance`. Leftover `const compSpeed = 4.0` is gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 - [x] P5.438 Rillieux tube-bundle boil drains `boilDisplayOmegaRadPerS` from total evaporation (`m_evap / 1000`, ~8 rad/s at 10 t/h). Leftover `const boilSpeed = 8.0` is gone. Per-effect amplitude still uses `heatTransferKw`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.439 Townes flashlamp / output-beam shimmer drain `pumpShimmerOmegaRadPerS` (6) and `beamShimmerOmegaRadPerS` (12 while lasing, 0 below threshold). Leftover `time * 6.0` / `12.0` are gone. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
+- [x] P5.440 Haber 2D piston and catalyst swirl drain `compressorDisplayOmegaRadPerS` (same seat as 3D). Leftover `time * 6` / `time * 3` are gone. Linde 2D steps the engine with `inletPressureAtm` instead of leftover `stepLindeAirLiquefaction()`. P6.5 still does not copy the 5.1 MB `fs-wasm` artifact.
 
 ## P6 — Generic crate composition (no per-patent WASM required)
 

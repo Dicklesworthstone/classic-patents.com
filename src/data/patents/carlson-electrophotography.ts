@@ -35,6 +35,7 @@ export const carlsonElectrophotographyPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-2297691-carlson-electrophotography.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2297691A/en",
   usptoClassification: "399/1",
+  archivalEdition: carlsonElectrophotographyArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
     pageCount: 10,
@@ -66,13 +67,12 @@ export const carlsonElectrophotographyPatent: Patent = {
       {
         page: 10,
         sourceRelationship:
-          "Claims 21–27, Formal execution, and Inventor signature of Chester F. Carlson",
+          "Claims 20–27, Formal witness attestation, and Signature of Chester F. Carlson",
         exactSourceText:
           "IN TESTIMONY WHEREOF, I have hereunto subscribed my name this 3rd day of April, 1939. CHESTER F. CARLSON.",
       },
     ],
   },
-  archivalEdition: carlsonElectrophotographyArchivalEdition,
   originalText:
     "To all whom it may concern: Be it known that I, CHESTER F. CARLSON, a citizen of the United States, residing at Jackson Heights, in the county of Queens and State of New York, have invented certain new and useful Improvements in Electrophotography, of which the following is a specification.\n\nThis invention relates to photography, and more particularly to a method and apparatus for producing photographic images utilizing the photoelectric properties of certain materials. An object of the invention is to improve methods of photography and to provide a simple, rapid and economical method of taking and reproducing pictures and documents without requiring wet chemical developing and fixing baths...\n\nAccording to the present invention, a layer of photo-conductive insulating material, such as sulfur, anthracene, or amorphous selenium, is supported on an electrically conductive backing plate, such as metal foil or plate. In darkness or subdued light, a uniform electrostatic charge is applied to the outer surface of the photo-conductive insulating layer, as by rubbing with an appropriate insulating cloth, or by electrostatic spraying from a high-voltage corona discharge... The charged layer is then exposed to an optical light pattern or projected image... The resulting visible powder image is then transferred from the photo-conductive layer to a permanent carrier sheet, such as paper or cardboard, by pressing the sheet against the powdered surface... permanently fixed by applying heat to melt and fuse the resinous powder particles into the fibers of the paper.",
   drawings: [
@@ -264,134 +264,361 @@ export const carlsonElectrophotographyPatent: Patent = {
       isIndependent: true,
       originalText: manualCarlsonClaimText(1),
       plainEnglish:
-        "The master method claim for electrophotography: producing an electric charge on the surface of a photo-conductive insulating layer, exposing the layer to a light image to selectively discharge illuminated regions, and depositing finely-divided electroscopic powder on the layer to develop the image.",
+        "Foundational method of dry electrophotographic reproduction: applying a photoconductive insulating layer to a conductive backing, developing an electrostatic charge by rubbing, exposing to a light image to drain charge in bright areas, contacting with fine dust to form an electrostatic dust deposit in remaining charged areas, and blowing off excess dust to reveal the image.",
       keyInnovations: [
-        "Photoconductive insulating layer on conductive backing",
-        "Selective electrostatic discharge by light exposure",
-        "Dry powder development of latent electrostatic image",
+        "Photoconductive insulating layer on plane conductive backing",
+        "Triboelectric electrostatic surface charging",
+        "Differential light-induced charge dissipation to ground",
+        "Direct electrostatic dust development with excess removal",
       ],
       legalSignificance:
-        "The historic master patent claim that established legal protection for the entire xerographic and laser printing industry.",
+        "The master patent claim establishing legal priority for the 5-step xerographic cycle: charging, exposure, dusting, and selective powder image formation.",
+    },
+    {
+      number: 2,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText: manualCarlsonClaimText(2),
+      plainEnglish:
+        "The electrophotographic process of Claim 1 further comprising transferring the developed electrostatic dust image from the photoconductor surface to a receiving sheet of plain paper by pressure contact.",
+      keyInnovations: [
+        "Pressure transfer of powder image to ordinary paper sheet",
+        "Physical image detachment from reusable semiconductor plate",
+      ],
+      legalSignificance:
+        "Broadly covers electrostatic document reproduction with image transfer to plain paper.",
+    },
+    {
+      number: 3,
+      isIndependent: false,
+      dependsOn: [1],
+      originalText: manualCarlsonClaimText(3),
+      plainEnglish:
+        "Direct-positive reproduction method including simultaneous backing contact during exposure, dark powder dusting, air stream cleaning, pressure transfer to paper, and permanent fixing of the dust to the paper.",
+      keyInnovations: [
+        "Air-stream aerodynamic removal of uncharged background toner",
+        "Complete image transfer and permanent paper fixing chain",
+      ],
+      legalSignificance:
+        "Protects the complete end-to-end direct-positive copying workflow through permanent fixing on plain paper.",
+    },
+    {
+      number: 4,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(4),
+      plainEnglish:
+        "Process for producing and trapping a persistent electrostatic latent image by establishing a high transverse electric field across the semiconductor layer and projecting a light image to induce charge migration in illuminated areas, trapping the image when light is extinguished.",
+      keyInnovations: [
+        "Trapped electrostatic latent image in high dark-resistivity state",
+        "Photo-induced carrier drift across steep potential gradient",
+      ],
+      legalSignificance:
+        "Fundamental process claim covering the creation, storage, and persistence of latent electrostatic charge patterns on high-resistivity semiconductors.",
     },
     {
       number: 5,
       isIndependent: true,
       originalText: manualCarlsonClaimText(5),
       plainEnglish:
-        "An electrophotographic apparatus comprising a member having a photo-conductive insulating layer on an electrically conductive backing, means for applying an electrostatic charge, means for exposing the charged layer to a light image to produce a latent image, and means for applying electroscopic powder to develop the image.",
+        "Method of electrophotography comprising charging a photoconductor, exposing it to light while backed by a conductor until highlighted areas substantially discharge, dusting with fine electroscopic powder, and permanently fixing the powder.",
       keyInnovations: [
-        "Complete electrophotographic apparatus architecture",
-        "Integration of electrostatic charging, optical exposure, and dry powder development",
+        "Optically calibrated exposure duration for full background discharge",
+        "Electroscopic powder adhesion and permanent in situ fixing",
       ],
       legalSignificance:
-        "Master apparatus claim covering any machine implementing the charging-exposure-development cycle.",
+        "Core operational claim defining the exposure timing necessary for high optical contrast and clean background clearing.",
+    },
+    {
+      number: 6,
+      isIndependent: false,
+      dependsOn: [5],
+      originalText: manualCarlsonClaimText(6),
+      plainEnglish:
+        "Electrophotographic method maintaining continuous conductive backing contact throughout charging and exposure to establish a defined electrostatic ground return during powder development.",
+      keyInnovations: [
+        "Continuous ground plane contact throughout exposure and dusting",
+        "Electrostatically attractable developer powder",
+      ],
+      legalSignificance:
+        "Covers continuous backing ground configurations used in flatbed and cylindrical electrophotographic apparatus.",
     },
     {
       number: 7,
       isIndependent: true,
       originalText: manualCarlsonClaimText(7),
       plainEnglish:
-        "The method of making a photograph comprising providing a photoconductive layer on a conductive backing, frictionally generating electrostatic charge on its outer surface, projecting an optical image to selectively discharge exposed portions, and dusting the layer with electroscopic powder.",
+        "Method of simultaneous electrophotographic imaging: applying an external electric field across a photoconductive layer simultaneously with optical image projection, followed by electroscopic dusting.",
       keyInnovations: [
-        "Frictional electrostatic surface charging mechanism",
-        "Optical image projection onto charged semiconductor layer",
+        "Simultaneous electric field application and optical exposure",
+        "Direct in-field latent image formation and development",
       ],
       legalSignificance:
-        "Covers frictional charging embodiments used in early manual laboratory and office copying apparatus.",
+        "Covers simultaneous charge-and-expose architectures that eliminate separate sequential dark charging.",
+    },
+    {
+      number: 8,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(8),
+      plainEnglish:
+        "Method of producing and storing an electrostatic latent image by sequential charging, conductive-backed image exposure, light shutoff, and dark room temperature storage of the charge pattern.",
+      keyInnovations: [
+        "Extended dark storage of electrostatic latent image",
+        "Conduction of surface charge to ground during exposure",
+      ],
+      legalSignificance:
+        "Protects the ability of electrophotographic plates to store latent images prior to development for flexible document processing.",
+    },
+    {
+      number: 9,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(9),
+      plainEnglish:
+        "Method of generating and indefinitely storing a latent electrostatic charge image on an affixed photoconductive layer, exploiting the material's ultra-low dark conductivity to preserve charge contrast.",
+      keyInnovations: [
+        "Indefinite latent image retention on bonded semiconductor layers",
+        "High dark-decay time constant ($t_{1/2} > 10\text{ hours}$)",
+      ],
+      legalSignificance:
+        "Affirms the indefinite storage property of high-quality semiconductor layers like amorphous selenium and purified sulfur.",
     },
     {
       number: 10,
       isIndependent: true,
       originalText: manualCarlsonClaimText(10),
       plainEnglish:
-        "The method of continuous electrophotographic reproduction comprising continuously advancing an endless photo-conductive surface past a charging station, an optical exposure station, a powder developing station, and a transfer station.",
+        "Method of electrostatic printing utilizing thermoadhesive toner powder or thermoadhesive paper, transferring the powder under pressure, and applying heat to melt and permanently fuse the design.",
       keyInnovations: [
-        "Continuous advancing endless photoconductive drum/belt process",
-        "Sequential stations for charging, exposure, development, and transfer",
+        "Thermoadhesive polymer resin powder developer",
+        "Thermal fusion and molten bonding to receiving substrate",
       ],
       legalSignificance:
-        "Foundational process claim for all high-speed rotary photocopiers and laser printers.",
+        "The historic master claim covering heat-fused toner powder development for office copiers and laser printers.",
+    },
+    {
+      number: 11,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(11),
+      plainEnglish:
+        "Continuous-tone photographic reproduction method where deposited dust density varies continuously with local electrostatic charge intensity, reproducing continuous tonal gradations.",
+      keyInnovations: [
+        "Continuous-tone density modulation proportional to charge",
+        "Graded dust deposition across continuous image gradations",
+      ],
+      legalSignificance:
+        "Covers continuous-tone and pictorial electrophotography beyond binary line art.",
     },
     {
       number: 12,
       isIndependent: true,
       originalText: manualCarlsonClaimText(12),
       plainEnglish:
-        "An electrophotographic recording plate comprising a conductive base plate and a thin adherent photo-conductive insulating layer of sulfur having high electrical resistance in darkness and exhibiting photo-conductivity upon exposure to light.",
+        "Apparatus for electrophotography comprising spaced parallel conductive electrode layers sandwiching a thin photoconductive semiconductor layer, high-voltage potential means, and an optical projection system.",
       keyInnovations: [
-        "Thin-film sulfur photoconductive semiconductor coating",
-        "High dark-resistivity charge storage combined with light sensitivity",
+        "Parallel-plate capacitor electrophotographic structure",
+        "Integrated high-voltage potential supply and optical imaging projector",
       ],
       legalSignificance:
-        "Protects the sulfur-coated semiconductor plate Carlson used to produce the world's first xerographic print (10-22-38 ASTORIA).",
+        "Master apparatus claim for parallel-electrode electrophotographic camera and exposure fixtures.",
+    },
+    {
+      number: 13,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(13),
+      plainEnglish:
+        "Image reproducing device featuring a non-hygroscopic photoconductor operating in open ambient air at atmospheric pressure without requiring vacuum chambers or desiccated enclosures.",
+      keyInnovations: [
+        "Non-hygroscopic ambient-air semiconductor formulation",
+        "Atmospheric pressure operation without vacuum encapsulation",
+      ],
+      legalSignificance:
+        "Key practical claim ensuring electrophotographic copiers function reliably in ordinary ambient office environments.",
     },
     {
       number: 14,
       isIndependent: true,
       originalText: manualCarlsonClaimText(14),
       plainEnglish:
-        "An electrophotographic recording plate comprising a conductive base plate and a thin adherent layer of amorphous selenium.",
+        "Electrophotographic camera comprising a photoconductive plate, a spaced transparent conductive front electrode (such as conductive glass), an imaging lens, and high-voltage biasing means across the front and rear electrodes.",
       keyInnovations: [
-        "Amorphous selenium thin-film photoconductor",
-        "High sensitivity across visible spectrum with rapid charge dissipation",
+        "Transparent conductive front electrode for through-plane optical exposure",
+        "Integrated camera lens and high-voltage electrostatic gate",
       ],
       legalSignificance:
-        "Covers selenium photoreceptors, which became the commercial standard for all Xerox copiers for four decades.",
+        "Covers transparent electrode camera architectures used in microfilm reproduction and high-resolution optical recorders.",
+    },
+    {
+      number: 15,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(15),
+      plainEnglish:
+        "Complete electrophotographic camera unit inside a light-tight enclosure with lens, shutter, high-voltage electrodes, transparent front electrode, and an internal flood lamp for optical erasure and plate pre-conditioning.",
+      keyInnovations: [
+        "Internal optical flood lamp for pre-exposure or residual charge erasure",
+        "Light-tight camera body with shuttered lens and electrostatic charging assembly",
+      ],
+      legalSignificance:
+        "Architectural camera claim incorporating optical flood erasure, a universal feature of all modern laser printers and copiers.",
+    },
+    {
+      number: 16,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(16),
+      plainEnglish:
+        "Two-step latent image formation method: uniformly charging the front surface of a backed semiconductor layer, exposing to an optical image to drain charge in bright areas, and cutting off exposure to freeze the latent image.",
+      keyInnovations: [
+        "Distributed electrostatic surface charging",
+        "Differential light drain to ground with exposure termination",
+      ],
+      legalSignificance:
+        "Succinct, robust process claim covering sequential charging, optical exposure, and dark latent image capture.",
+    },
+    {
+      number: 17,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(17),
+      plainEnglish:
+        "Image recording method generating an electric field through a photoconductive layer, exposing to light to induce localized current flow and surface charge alteration, and ending illumination to trap the latent charge image indefinitely.",
+      keyInnovations: [
+        "Electric field-assisted photo-induced charge redistribution",
+        "Indefinite electrostatic trapping upon restoration of dark resistivity",
+      ],
+      legalSignificance:
+        "Covers electrostatic charge storage mechanisms where optical stimulation modulates surface potential in an external field.",
     },
     {
       number: 18,
       isIndependent: true,
       originalText: manualCarlsonClaimText(18),
       plainEnglish:
-        "An electrophotographic copying apparatus comprising a rotary cylinder carrying a photo-conductive insulating layer, driving means for rotating the cylinder, electrostatic charging means, slit optical projection means, powder applying means, and transfer means for transferring the image to a paper web.",
+        "Bipolar electrostatic imaging process: charging to a first polarity, exposing through a same-polarity transparent electrode until bright areas discharge and invert polarity by induction, creating dual-polarity charge images.",
       keyInnovations: [
-        "Rotary cylinder/drum electrophotographic copier architecture",
-        "Slit optical projection synchronized with cylinder rotation",
-        "Continuous transfer to paper web",
+        "Polarity-inverting transparent electrode exposure",
+        "Dual-polarity electrostatic latent image formation (+ and - on same surface)",
       ],
       legalSignificance:
-        "The architectural master claim for the rotary drum photocopier that culminated in the legendary Xerox 914.",
+        "Groundbreaking claim for bipolar electrostatic imaging, enabling positive-to-negative and negative-to-positive image reversal.",
+    },
+    {
+      number: 19,
+      isIndependent: false,
+      dependsOn: [17],
+      originalText: manualCarlsonClaimText(19),
+      plainEnglish:
+        "The method of Claim 17 further comprising developing the entrapped latent electrostatic charge image by depositing finely divided powder material onto the stored charge pattern.",
+      keyInnovations: [
+        "Sequential field-assisted exposure and delayed powder development",
+        "Stable latent image storage prior to developer deposition",
+      ],
+      legalSignificance:
+        "Covers delayed or asynchronous development of previously stored electrostatic latent images.",
+    },
+    {
+      number: 20,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(20),
+      plainEnglish:
+        "Direct electrophotographic imaging method: applying a strong electric field simultaneously with light image projection to cause localized conduction, followed by electrostatically attractable powder deposition to visualize the image.",
+      keyInnovations: [
+        "Simultaneous electric field projection and powder visualization",
+        "Direct visible image creation from photo-conduction current",
+      ],
+      legalSignificance:
+        "Protects single-stage simultaneous exposure-development apparatus.",
     },
     {
       number: 21,
       isIndependent: true,
       originalText: manualCarlsonClaimText(21),
       plainEnglish:
-        "The method of electrophotographic development comprising contacting a latent electrostatic image with a developer mixture of finely-divided toner particles and granular carrier particles, whereby the toner acquires electrostatic charge by triboelectric friction with the carrier.",
+        "Method of electrographic recording on an insulating layer: producing a latent charge pattern, developing with electrostatically attractable powder, transferring the powder image to a second surface under pressure, and affixing it.",
       keyInnovations: [
-        "Two-component developer system (toner + carrier beads)",
-        "Triboelectric charging mechanism for polarity and charge control",
+        "General insulating layer electrographic recording",
+        "Pressure image transfer and permanent affixing",
       ],
       legalSignificance:
-        "Covers the dual-component developer technology essential for clean, background-free xerographic development.",
+        "Broad electrographic recording claim not restricted solely to photoconductors, covering dielectric charge writing and electrostatic plotting.",
+    },
+    {
+      number: 22,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(22),
+      plainEnglish:
+        "Electrostatic design printing process comprising generating a charge pattern on an insulating surface, developing with fine powder to make it visible, transferring the powder to a second surface, and permanently affixing it.",
+      keyInnovations: [
+        "Electrostatic master design generation",
+        "Visible powder transfer and permanent substrate affixing",
+      ],
+      legalSignificance:
+        "Protects electrostatic duplication, master stencil printing, and graphic arts reproduction.",
     },
     {
       number: 23,
       isIndependent: true,
       originalText: manualCarlsonClaimText(23),
       plainEnglish:
-        "An electrophotographic developer composition comprising a mixture of finely-divided pigmented resinous particles and relatively larger carrier particles, the resinous particles being triboelectrically chargeable relative to the carrier upon agitation.",
+        "Method of transferring an electrostatic powder design to a second surface coated with an adhesive layer, transferring the powder by contact adhesion without requiring heat.",
       keyInnovations: [
-        "Pigmented resinous toner composition",
-        "Carrier particle mixture engineered for triboelectric charging",
+        "Adhesive-assisted powder image transfer",
+        "Cold transfer to adhesive-coated receiver sheets",
       ],
-      legalSignificance: "Master composition-of-matter claim for dry xerographic toner developer.",
+      legalSignificance:
+        "Covers cold chemical and adhesive transfer methods for sensitive papers, foils, and plastics.",
     },
     {
       number: 24,
-      isIndependent: true,
+      isIndependent: false,
+      dependsOn: [23],
       originalText: manualCarlsonClaimText(24),
       plainEnglish:
-        "The method of electrophotographic charging comprising exposing a photo-conductive insulating layer to a corona discharge generated by a high-voltage wire electrode.",
+        "The method of Claim 23 further comprising permanently affixing the transferred powder design to the adhesive-bearing second surface.",
       keyInnovations: [
-        "High-voltage corona wire discharge charging (corotron)",
-        "Contactless uniform electrostatic surface ionization",
+        "Permanent bonding of adhesive-transferred powder design",
+        "Multi-stage transfer and permanent fixing",
       ],
       legalSignificance:
-        "Protects corona wire charging, the universal method of charging photoreceptors in modern laser printers.",
+        "Protects permanent label, decal, and specialty graphic fabrication via electrostatic deposition.",
+    },
+    {
+      number: 25,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(25),
+      plainEnglish:
+        "Through-sheet electrostatic development: generating a charge pattern on an insulating layer, covering it with a second insulating sheet, and dusting the top surface so the underlying charge acts through the sheet to adhere powder.",
+      keyInnovations: [
+        "Through-sheet electrostatic field development",
+        "Direct development onto top surface of overlay sheet",
+      ],
+      legalSignificance:
+        "Innovative claim covering direct imaging through protective sheets and dielectric transfer layers.",
+    },
+    {
+      number: 26,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(26),
+      plainEnglish:
+        "Method of producing continuous half-tone pictures: distributing individual fusible solid particles in density matching desired image shading, and melting each particle to form an individual half-tone dot.",
+      keyInnovations: [
+        "Particle-density half-tone shading control",
+        "Individual particle melting to form half-tone dots",
+      ],
+      legalSignificance:
+        "Pioneering digital half-tone concept: treating individual fusible toner particles as discrete half-tone printing dots.",
+    },
+    {
+      number: 27,
+      isIndependent: true,
+      originalText: manualCarlsonClaimText(27),
+      plainEnglish:
+        "Method of half-tone electrophotography: creating a variable electrostatic charge image, depositing individual fusible particles in density proportional to local charge, and melting the particles to create discrete half-tone dots.",
+      keyInnovations: [
+        "Electrostatic charge-modulated particle dot density",
+        "Fusible particle half-tone dot formation for pictorial photography",
+      ],
+      legalSignificance:
+        "The foundational claim connecting electrostatic surface potential modulation to discrete micro-dot printing, the operating principle of all modern digital laser and xerographic presses.",
     },
   ],
-  historicalContext: {
+    historicalContext: {
     problemStatement:
       "In the 1930s, copying documents required either manual carbon paper typing, chemical photostat cameras using liquid photographic developer and fixer baths that took hours to wash and dry, or foul-smelling diazo/ammonia blueprint processes. There was no clean, dry, fast method for reproducing office documents.",
     priorArtLimitations: [
@@ -419,7 +646,7 @@ export const carlsonElectrophotographyPatent: Patent = {
       "The world's first xerographic copy was made by Chester Carlson and his assistant Otto Kornei on October 22, 1938, in a rented second-floor apartment behind a beauty parlor in Astoria, Queens. The historic message, written in India ink on a glass microscope slide, read: '10-22-38 ASTORIA'.",
   },
   stats: {
-    totalClaims: 10,
-    independentClaims: 10,
+    totalClaims: 27,
+    independentClaims: 22,
   },
 };

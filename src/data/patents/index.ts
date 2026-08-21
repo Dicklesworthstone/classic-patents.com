@@ -154,6 +154,7 @@ export const allPatents: Patent[] = parsePatentCatalog([
   farnsworthTvPatent,
   einsteinRefrigeratorPatent,
   lamarrFrequencyHoppingPatent,
+  carlsonElectrophotographyPatent, // 1942-10-06
   spencerMicrowavePatent,
   bardeenTransistor2524035Patent,
   landPolaroidPatent, // 1951-02-27
@@ -166,6 +167,11 @@ export const allPatents: Patent[] = parsePatentCatalog([
   kwolekKevlarPatent,
   boyleSmithCcdPatent,
   wozniakApplePatent,
+  eInkPatent, // 2000-09-19
+  pagerankPatent, // 2001-09-04
+  daVinciPatent, // 2001-12-18
+  roombaPatent, // 2003-07-22
+  multiTouchPatent, // 2009-01-20
 ]);
 
 export function getPatentById(id: string): Patent | undefined {

@@ -66,6 +66,8 @@ export function TownesLaser3D({
     laserOutputPowerWatts: sim.laserOutputPowerWatts,
     intraCavityPowerWatts: sim.intraCavityPowerWatts,
     isLasing: sim.isLasing,
+    pumpShimmerOmegaRadPerS: sim.pumpShimmerOmegaRadPerS,
+    beamShimmerOmegaRadPerS: sim.beamShimmerOmegaRadPerS,
     isRotating,
   });
 
@@ -106,6 +108,8 @@ export function TownesLaser3D({
           laserOutputPowerWatts: current.laserOutputPowerWatts,
           intraCavityPowerWatts: current.intraCavityPowerWatts,
           isLasing: current.isLasing,
+          pumpShimmerOmegaRadPerS: current.pumpShimmerOmegaRadPerS,
+          beamShimmerOmegaRadPerS: current.beamShimmerOmegaRadPerS,
         },
         timeRef.current,
       );
