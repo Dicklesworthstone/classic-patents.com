@@ -724,7 +724,7 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       patentId: "us-942699-baekeland-bakelite",
       claimTitle: "Simultaneous Heat & Pressure Autoclaved Thermoset Polycondensation",
       activeDescription:
-        "Claim 1 applies heat ($150^\circ\text{C}-200^\circ\text{C}$) and pressure ($10-20\\text{ MPa}$) to phenol and formaldehyde prepolymers in a closed mold to synthesize insoluble, infusible Bakelite C resin.",
+        "Claim 1 applies heat ($150^circ\text{C}-200^circ\text{C}$) and pressure ($10-20\\text{ MPa}$) to phenol and formaldehyde prepolymers in a closed mold to synthesize insoluble, infusible Bakelite C resin.",
       invertedDescription:
         "Atmospheric unpressurized heating: volatile condensation water and formaldehyde boil off at 100°C, producing a porous, foamy, brittle, and mechanically useless spongy mass.",
       failureModeName: "Volatile Boiling & Spongy Foam Collapse",
@@ -744,6 +744,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Throttle Wire-Drawing Enthalpy Loss",
       historicalPriorArt:
         "Steam engines used fixed eccentric slide valves and throttle governors that restricted steam pressure throughout the entire stroke.",
+    },
+  ],
+  "us-2543181-land-polaroid": [
+    {
+      claimNumber: 1,
+      patentId: "us-2543181-land-polaroid",
+      claimTitle: "Rupturable Pod Reagent Spreading & Instant Diffusion-Transfer Development",
+      activeDescription:
+        "Claim 1 spreads a viscous chemical reagent from a rupturable pod between a photosensitive negative and image-receiving sheet via compression rollers, completing solubilizing diffusion-transfer positive image formation in under 60 seconds without a darkroom.",
+      invertedDescription:
+        "Multi-bath wet darkroom immersion: without viscous pod spreading and positive transfer mordants, exposed film requires developer tanks, acid stop baths, fixers, and wash baths over 30+ minutes.",
+      failureModeName: "Multi-Bath Wet Darkroom Immersion Delay",
+      historicalPriorArt:
+        "Traditional photography required wet chemical processing tanks, darkrooms, and prolonged chemical fixing/washing before a positive print could be viewed.",
     },
   ],
 };
@@ -1260,6 +1274,20 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "CUT-OFF DISENGAGEMENT FAILURE: Automatic governor trip-gear required for instantaneous valve cutoff and full steam expansion.";
+      }
+      break;
+    }
+
+    case "us-2543181-land-polaroid": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.transferEfficiencyPct = 0.0; // No diffusion transfer
+        modified.developmentTimeSec = 1800.0; // 30 minutes in darkroom
+        activeFailures.push(
+          "Multi-Bath Darkroom Delay: Without pod reagent spreading, positive image requires wet developer, stop, and fixer baths",
+        );
+        refusalWarning =
+          "INSTANT DEVELOPMENT COLLAPSE: Rupturable pod and solubilizing diffusion transfer required for 60-second daylight processing.";
       }
       break;
     }

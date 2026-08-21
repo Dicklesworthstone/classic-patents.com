@@ -233,7 +233,9 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
         constraint?.failureModeName,
         constraint?.historicalPriorArt,
       ].join(" ");
-      expect(visitorText).not.toMatch(/polyphase|rotating B-field|zero starting torque|stalled rotor|overheating|standing wave/i);
+      expect(visitorText).not.toMatch(
+        /polyphase|rotating B-field|zero starting torque|stalled rotor|overheating|standing wave/i,
+      );
 
       const res = applyClaimConstraintModifications(
         "us-381968-tesla-motor",

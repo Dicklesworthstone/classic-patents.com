@@ -19,9 +19,7 @@ export interface PeltonWheelVisualState {
   sourceTelemetryAvailable: false;
 }
 
-export function stepPeltonWheelVisual(
-  controls: PeltonWheelVisualControls,
-): PeltonWheelVisualState {
+export function stepPeltonWheelVisual(controls: PeltonWheelVisualControls): PeltonWheelVisualState {
   const runnerRpm = Number.isFinite(controls.runnerRpm) ? Math.max(0, controls.runnerRpm) : 0;
   const runnerOmegaRadPerS = (runnerRpm * 2 * Math.PI) / 60;
   return {

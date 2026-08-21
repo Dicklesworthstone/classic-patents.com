@@ -278,9 +278,9 @@ export function computePortHamiltonianEnergy(
       const alternatorRpm = 10000.0;
       const omega = (alternatorRpm * 2 * Math.PI) / 60.0;
       kinetic = 0.5 * 12.0 * (0.15 * omega) ** 2; // High-frequency Alexanderson-Fessenden alternator rotor
-      em = 0.5 * (1.2e-3) * rfCurrentAmps * rfCurrentAmps; // Stator multi-slot high-frequency field
+      em = 0.5 * 1.2e-3 * rfCurrentAmps * rfCurrentAmps; // Stator multi-slot high-frequency field
       powerIn = 3500.0; // 5 HP electric drive motor
-      dissipated = 3500.0 - (rfCurrentAmps * rfCurrentAmps * antennaRadiationOhms); // Core eddy current & bearing losses
+      dissipated = 3500.0 - rfCurrentAmps * rfCurrentAmps * antennaRadiationOhms; // Core eddy current & bearing losses
       thermal = 800.0;
       break;
     }
@@ -301,11 +301,15 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-235199-bell-photophone": {
-      const beamWatts = params.beamPowerWatts ?? 2.5; // Concentrated sunlight optical beam
+      const solarIlluminanceLux = params.solarIlluminanceLux ?? 50000.0;
+      const seleniumResistanceOhms = params.seleniumResistanceOhms ?? 1200.0;
+      const biasVoltageV = params.biasVoltageV ?? 24.0;
+      const beamWatts = params.beamPowerWatts ?? (solarIlluminanceLux / 100000.0) * 1.5;
       const modulation = params.modulationDepth ?? 0.35;
-      powerIn = beamWatts; // Solar optical radiant power flux
-      em = (beamWatts / 3e8) * 100.0; // Stored optical photon beam radiation in transit
-      dissipated = beamWatts * (1.0 - 0.08 * modulation); // Mirror absorption & selenium ohmic heating
+      powerIn = beamWatts + (biasVoltageV * biasVoltageV) / seleniumResistanceOhms;
+      potential = 0.5 * 250.0 * 0.00008 ** 2; // Silvered glass diaphragm acoustic deflection strain
+      em = (beamWatts / 3e8) * 100.0 + 0.5 * 15e-12 * biasVoltageV * biasVoltageV;
+      dissipated = beamWatts * (1.0 - 0.08 * modulation) + powerIn * 0.99;
       thermal = 0.015 * 320.0 * 25.0; // Selenium cell thermal mass
       break;
     }
@@ -662,7 +666,12 @@ export function computePortHamiltonianEnergy(
       const palletChainMassKg = 420.0;
       kinetic = 0.5 * (totalPassengerMassKg + palletChainMassKg) * beltSpeedMps * beltSpeedMps;
       potential = totalPassengerMassKg * 9.80665 * (inclineHeightM / 2.0);
-      powerIn = totalPassengerMassKg * 9.80665 * beltSpeedMps * Math.sin((inclineAngleDeg * Math.PI) / 180) + 1200.0;
+      powerIn =
+        totalPassengerMassKg *
+          9.80665 *
+          beltSpeedMps *
+          Math.sin((inclineAngleDeg * Math.PI) / 180) +
+        1200.0;
       dissipated = 1200.0 + totalPassengerMassKg * 0.08 * 9.80665 * beltSpeedMps; // Drive sprocket friction
       thermal = 600.0;
       break;
@@ -686,7 +695,7 @@ export function computePortHamiltonianEnergy(
       const omega = (crankRpm * 2 * Math.PI) / 60.0;
       kinetic = 0.5 * clusterMassKg * (0.08 * omega) ** 2; // Rotating 6-barrel cluster inertia
       powerIn = 75.0 + (rateOfFireRpm / 60.0) * 2800.0; // Crank muscular work + powder combustion throughput
-      dissipated = (rateOfFireRpm / 60.0) * 2800.0 * 0.70; // 6-barrel convective & muzzle gas dissipation
+      dissipated = (rateOfFireRpm / 60.0) * 2800.0 * 0.7; // 6-barrel convective & muzzle gas dissipation
       thermal = barrelCount * 2.8 * 490.0 * (120.0 - 20.0); // Distributed thermal capacity of 6 steel barrels
       break;
     }
@@ -698,10 +707,12 @@ export function computePortHamiltonianEnergy(
       const wireCrossSectionM2 = Math.PI * 0.00125 * 0.00125;
       const youngsModulusPa = 210e9;
       const shearModulusPa = 79e9;
-      const thetaRad = twistRateTpi * (2 * Math.PI / 0.0254) * wireLengthM;
+      const thetaRad = twistRateTpi * ((2 * Math.PI) / 0.0254) * wireLengthM;
       potential =
-        0.5 * ((youngsModulusPa * wireCrossSectionM2) / wireLengthM) * (lineTensionN / (youngsModulusPa * wireCrossSectionM2) * wireLengthM) ** 2 +
-        0.5 * ((shearModulusPa * (Math.PI * 0.00125 ** 4 / 2)) / wireLengthM) * thetaRad ** 2;
+        0.5 *
+          ((youngsModulusPa * wireCrossSectionM2) / wireLengthM) *
+          ((lineTensionN / (youngsModulusPa * wireCrossSectionM2)) * wireLengthM) ** 2 +
+        0.5 * ((shearModulusPa * ((Math.PI * 0.00125 ** 4) / 2)) / wireLengthM) * thetaRad ** 2;
       powerIn = 450.0; // Twisting machine drive motor
       dissipated = 380.0; // Plastic torsion work + barb crimping friction
       thermal = 250.0;
@@ -715,7 +726,7 @@ export function computePortHamiltonianEnergy(
       const omega = (mandrelRpm * 2 * Math.PI) / 60.0;
       kinetic = 0.5 * (0.5 * mandrelMassKg * 0.05 * 0.05) * omega * omega;
       potential = 0.5 * 120.0 * (0.00015 * (soundPressurePa / 2.0)) ** 2; // Diaphragm compliance strain
-      powerIn = 0.5 * (soundPressurePa * soundPressurePa * 0.002) / 415.0 + 8.5; // Acoustic acoustic wave power + crank work
+      powerIn = (0.5 * (soundPressurePa * soundPressurePa * 0.002)) / 415.0 + 8.5; // Acoustic acoustic wave power + crank work
       dissipated = 8.2; // Stylus drag in tinfoil/wax groove + bearing friction
       thermal = 45.0;
       break;
@@ -743,7 +754,8 @@ export function computePortHamiltonianEnergy(
       const needleAssemblyMassKg = 0.12;
       const flywheelInertia = 0.015;
       const omega = (stitchesPerMinute * 2 * Math.PI) / 60.0;
-      kinetic = 0.5 * needleAssemblyMassKg * vNeedle * vNeedle + 0.5 * flywheelInertia * omega * omega;
+      kinetic =
+        0.5 * needleAssemblyMassKg * vNeedle * vNeedle + 0.5 * flywheelInertia * omega * omega;
       potential = 0.5 * 45.0 * 0.008 * 0.008; // Thread tension spring
       powerIn = 25.0; // Treadle mechanical input power
       dissipated = 22.0; // Fabric penetration shear + shuttle race friction
@@ -824,15 +836,14 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "us-235199-bell-photophone": {
-      const solarIlluminanceLux = params.solarIlluminanceLux ?? 50000.0;
-      const seleniumResistanceOhms = params.seleniumResistanceOhms ?? 1200.0;
-      const biasVoltageV = params.biasVoltageV ?? 24.0;
-      powerIn = (solarIlluminanceLux / 100000.0) * 1.5 + (biasVoltageV * biasVoltageV) / seleniumResistanceOhms;
-      potential = 0.5 * 250.0 * (0.00008) ** 2; // Silvered glass diaphragm acoustic deflection strain
-      em = 0.5 * 15e-12 * biasVoltageV * biasVoltageV;
-      thermal = 15.0;
-      dissipated = powerIn * 0.99; // Recombination dissipation + headphone coil heat
+    case "us-2543181-land-polaroid": {
+      const rollerPressureN = params.rollerPressureN ?? 85.0;
+      const rollerSpeedMps = 0.05;
+      const podVolumeMl = 2.5;
+      powerIn = rollerPressureN * rollerSpeedMps; // Manual roller crank mechanical work
+      potential = 0.5 * 1200.0 * 0.002 ** 2; // Rupturable pod pouch burst spring strain
+      dissipated = 0.85 * powerIn + 1.2; // Viscous hydro-shear dissipation of reagent paste
+      thermal = 45.0; // Exothermic chemical reduction enthalpy
       break;
     }
 

@@ -674,14 +674,17 @@ export function computeParameterSensitivity(
             "Short-recoil delayed unlocking buffer protecting barrel pressure drop before chamber opens.",
         };
       }
-      if (controlKey === "firingRateRpm" || controlKey === "rateOfFireRpm" || controlKey === "rpm") {
+      if (
+        controlKey === "firingRateRpm" ||
+        controlKey === "rateOfFireRpm" ||
+        controlKey === "rpm"
+      ) {
         return {
           metricName: "Water Jacket Heat Rejection",
           derivativeSymbol: "∂Q_jacket / ∂RPM",
           derivativeValue: 10.5,
           derivativeUnit: "W / RPM",
-          interpretation:
-            "Propellant heat flux rejected into 4.2-liter evaporating water jacket.",
+          interpretation: "Propellant heat flux rejected into 4.2-liter evaporating water jacket.",
         };
       }
       break;
@@ -844,6 +847,30 @@ export function computeParameterSensitivity(
           derivativeUnit: "HP / psi",
           interpretation:
             "Indicated horsepower scaling with full initial boiler admission pressure without throttling.",
+        };
+      }
+      break;
+    }
+
+    case "us-2543181-land-polaroid": {
+      if (controlKey === "devTimeSec" || controlKey === "time") {
+        return {
+          metricName: "Diffusion Optical Density",
+          derivativeSymbol: "∂OD / ∂t_dev",
+          derivativeValue: 0.035,
+          derivativeUnit: "OD / s",
+          interpretation:
+            "Rate of solubilized unexposed silver halide diffusion across reagent reagent layer to mordant surface.",
+        };
+      }
+      if (controlKey === "rollerGapUm" || controlKey === "gap") {
+        return {
+          metricName: "Reagent Layer Hydro-Spreading",
+          derivativeSymbol: "∂LayerThickness / ∂Gap",
+          derivativeValue: 0.85,
+          derivativeUnit: "µm / µm",
+          interpretation:
+            "Uniformity of viscous chemical developer pod spreading under mechanical roller nip compression.",
         };
       }
       break;

@@ -188,8 +188,20 @@ describe("Physics Telemetry Data Registry", () => {
     expect(diesel.engineMethod).toBe("source-edition-hold");
     expect(diesel.controls).toEqual([]);
     expect(diesel.computeMetrics({})).toEqual([
-      { label: "Publication state", value: "HELD", unit: "source review", badgeColor: "amber", progressPct: 0 },
-      { label: "Telemetry", value: "WITHHELD", unit: "no measured values", badgeColor: "rose", progressPct: 0 },
+      {
+        label: "Publication state",
+        value: "HELD",
+        unit: "source review",
+        badgeColor: "amber",
+        progressPct: 0,
+      },
+      {
+        label: "Telemetry",
+        value: "WITHHELD",
+        unit: "no measured values",
+        badgeColor: "rose",
+        progressPct: 0,
+      },
     ]);
   });
 

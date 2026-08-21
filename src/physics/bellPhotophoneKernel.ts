@@ -34,8 +34,7 @@ export interface BellPhotophoneState {
   /** True only when the illustration should show a varying beam. */
   beamVariationActive: boolean;
   /** Visitor-facing provenance boundary for local visual consumers. */
-  sourceBoundary:
-    "US 235,199 describes the causal arrangement, not a measured optical or electrical link budget.";
+  sourceBoundary: "US 235,199 describes the causal arrangement, not a measured optical or electrical link budget.";
   /** Voice acoustic pressure at diaphragm (Pascals) */
   voicePressurePa: number;
   /** Diaphragm peak mechanical displacement (micrometers) */

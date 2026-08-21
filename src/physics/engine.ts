@@ -1038,7 +1038,7 @@ export const FrankenSimEngine = {
     const airflowCfm = Math.max(0, params.airflowCfm ?? 15000);
     const sprayRatePct = Math.min(100, Math.max(0, params.sprayRatePct ?? 60));
     const separatorFaces = Math.min(12, Math.max(2, Math.round(params.separatorFaces ?? 6)));
-    const airCurrentMps = Number((airflowCfm * 0.00047194745 / 0.25).toFixed(3));
+    const airCurrentMps = Number(((airflowCfm * 0.00047194745) / 0.25).toFixed(3));
     const wetFilmCoveragePct = Number(
       Math.min(100, sprayRatePct * (0.55 + 0.45 * Math.min(1, separatorFaces / 8))).toFixed(1),
     );
@@ -1048,7 +1048,9 @@ export const FrankenSimEngine = {
     const dropletSeparationPct = Number(
       Math.min(99, (separatorFaces - 1) * 8.5 + sprayRatePct * 0.18).toFixed(1),
     );
-    const pressureDropPa = Number((0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2));
+    const pressureDropPa = Number(
+      (0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2),
+    );
     const airMovementWatts = Number((pressureDropPa * airflowCfm * 0.00047194745).toFixed(2));
 
     // Psychrometric Magnus dew point and latent extraction
@@ -1074,12 +1076,14 @@ export const FrankenSimEngine = {
     // Relative humidity after sensible reheat to tReheat
     const pSatReheat = 0.61078 * Math.exp((17.27 * tReheat) / (tReheat + 237.3));
     const pVaporOut = (wOut * pAtm) / (0.62198 + wOut);
-    const finalRhPct = Number(Math.min(100, Math.max(0, (pVaporOut / pSatReheat) * 100)).toFixed(1));
+    const finalRhPct = Number(
+      Math.min(100, Math.max(0, (pVaporOut / pSatReheat) * 100)).toFixed(1),
+    );
 
     // Air mass flow rate (kg/s)
-    const airMassFlowKgPerS = (airflowCfm * 0.00047194745) * 1.204;
+    const airMassFlowKgPerS = airflowCfm * 0.00047194745 * 1.204;
     const hVap = 2501000; // Latent heat of vaporization of water (J/kg)
-    const coolingWatts = Number((airMassFlowKgPerS * (Math.max(0, wIn - wOut)) * hVap).toFixed(0));
+    const coolingWatts = Number((airMassFlowKgPerS * Math.max(0, wIn - wOut) * hVap).toFixed(0));
 
     return {
       sprayRatePct,

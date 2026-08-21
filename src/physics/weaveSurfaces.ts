@@ -1089,7 +1089,13 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     return [
       { label: "Wet film", min: 0, max: 100, live: carrier.wetFilmCoveragePct, unit: "%" },
       { label: "Dust capture", min: 0, max: 99, live: carrier.particleCapturePct, unit: "%" },
-      { label: "Droplet separation", min: 0, max: 99, live: carrier.dropletSeparationPct, unit: "%" },
+      {
+        label: "Droplet separation",
+        min: 0,
+        max: 99,
+        live: carrier.dropletSeparationPct,
+        unit: "%",
+      },
     ];
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {

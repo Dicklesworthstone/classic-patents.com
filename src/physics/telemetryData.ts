@@ -2803,7 +2803,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domain: "electromagnetics_flux",
     domainTitle: "Synchronized record-controlled radio tuning",
     equationName: "Record position and receiver matching",
-    governingEquation: "r_tx(t) = r_rx(t),\\quad r_tx \\in \\{A, B, C, D, E, F, G\\},\\quad r_rx \\in \\{D, E, F, G\\}",
+    governingEquation:
+      "r_tx(t) = r_rx(t),\\quad r_tx \\in \\{A, B, C, D, E, F, G\\},\\quad r_rx \\in \\{D, E, F, G\\}",
     engineMethod: "source-controlled Lamarr record model",
     controls: [
       {
