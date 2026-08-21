@@ -1,8 +1,11 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface MultiTouchSimProps {
   initialFingerCount?: number;
@@ -19,7 +22,8 @@ export function MultiTouchSim({
   const sepId = useId();
   const pressureId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-7479949-multitouch");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-7479949-multitouch");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const fingerCount = Math.round(params.fingerCount ?? initialFingerCount);
   const separationMm = params.fingerSeparationMm ?? initialSeparationMm;
   const pressureGrams = params.touchPressureGrams ?? initialPressureGrams;
@@ -306,9 +310,64 @@ export function MultiTouchSim({
   }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying]);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 text-neutral-100 shadow-xl">
+    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Steve Jobs et al. Multi-Touch Gesture UI (US 7,479,949)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Interactive mutual capacitance sensor matrix, centroid tracking, pinch-to-zoom, and
+            affine gesture heuristics.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
         <canvas
           ref={canvasRef}
           width={760}
@@ -318,12 +377,14 @@ export function MultiTouchSim({
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-neutral-900/70 border border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
         {/* Finger Separation Distance */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
             <label htmlFor={sepId}>Finger Separation D(t):</label>
-            <span className="text-amber-400 font-bold">{separationMm.toFixed(0)} mm</span>
+            <span className="text-amber-600 dark:text-amber-400 font-bold">
+              {separationMm.toFixed(0)} mm
+            </span>
           </div>
           <input
             id={sepId}
@@ -335,16 +396,18 @@ export function MultiTouchSim({
             onChange={(e) => updateParam("fingerSeparationMm", parseFloat(e.target.value))}
             className="w-full accent-amber-500 cursor-pointer"
           />
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
             Pinch fingers together (15mm) to zoom out; spread apart (120mm) to zoom in
           </span>
         </div>
 
         {/* Touch Normal Pressure */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
             <label htmlFor={pressureId}>Touch Contact Force:</label>
-            <span className="text-cyan-400 font-bold">{pressureGrams.toFixed(0)} grams</span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-bold">
+              {pressureGrams.toFixed(0)} grams
+            </span>
           </div>
           <input
             id={pressureId}
@@ -356,7 +419,7 @@ export function MultiTouchSim({
             onChange={(e) => updateParam("touchPressureGrams", parseFloat(e.target.value))}
             className="w-full accent-cyan-500 cursor-pointer"
           />
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
             Higher contact force expands finger flesh contact area, deepening capacitive shunt
           </span>
         </div>
@@ -367,37 +430,37 @@ export function MultiTouchSim({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => updateParam("fingerCount", 1)}
+            onClick={() => {
+              updateParam("fingerCount", 1);
+              soundEngine.playSwitchClick();
+            }}
             className={`px-3 py-1.5 rounded-lg font-mono text-xs font-semibold border transition-all ${
               fingerCount === 1
-                ? "bg-blue-950/60 border-blue-500/80 text-blue-300"
-                : "bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-neutral-200"
+                ? "bg-blue-100 dark:bg-blue-950/60 border-blue-400 dark:border-blue-500/80 text-blue-800 dark:text-blue-300"
+                : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
             ☝️ 1 Finger: Scroll
           </button>
           <button
             type="button"
-            onClick={() => updateParam("fingerCount", 2)}
+            onClick={() => {
+              updateParam("fingerCount", 2);
+              soundEngine.playSwitchClick();
+            }}
             className={`px-3 py-1.5 rounded-lg font-mono text-xs font-semibold border transition-all ${
               fingerCount === 2
-                ? "bg-amber-950/60 border-amber-500/80 text-amber-300"
-                : "bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-neutral-200"
+                ? "bg-amber-100 dark:bg-amber-950/60 border-amber-400 dark:border-amber-500/80 text-amber-800 dark:text-amber-300"
+                : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
             ✌️ 2 Fingers: Pinch & Rotate
           </button>
-          <button
-            type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            {isPlaying ? "⏸ Pause" : "▶ Play"}
-          </button>
         </div>
 
-        <span className="text-[11px] font-mono text-neutral-400">
-          Transform Engine: <span className="text-indigo-400">Affine Matrix Interpolation</span>
+        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+          Transform Engine:{" "}
+          <span className="text-indigo-600 dark:text-indigo-400">Affine Matrix Interpolation</span>
         </span>
       </div>
     </div>

@@ -1,8 +1,11 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepDaVinci } from "@/physics/daVinciKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface DaVinciSimProps {
   initialMotionScale?: number;
@@ -18,7 +21,8 @@ export function DaVinciSim({
   const speedId = useId();
   const gripId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-6331181-davinci");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-6331181-davinci");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const motionScale = params.motionScaleRatio ?? initialMotionScale;
   const tremorFilter = (params.tremorFilterEnabled ?? (initialTremorFilter ? 1 : 0)) === 1;
   const inputSpeed = params.masterInputSpeedMps ?? 0.5;

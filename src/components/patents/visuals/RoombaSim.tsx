@@ -1,8 +1,11 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface RoombaSimProps {
   initialWheelSpeed?: number;
@@ -14,7 +17,8 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
   const speedId = useId();
   const turnId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-6594844-roomba");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-6594844-roomba");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const wheelSpeed = params.wheelSpeedMps ?? initialWheelSpeed;
   const turnRate = params.turnRateRadSec ?? initialTurnRate;
 
@@ -290,9 +294,66 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
   }, [isPlaying]);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-5 rounded-2xl bg-neutral-950 border border-neutral-800 text-neutral-100 shadow-xl">
+    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Robotic Autonomous Vacuum Cleaner (US 6,594,844)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Autonomous mobile robot floor cleaning apparatus: spiral coverage, wall-following bumper
+            detection, and obstacle deflection heuristics.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              trailRef.current = [];
+              setCleanedAreaPct(5);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
         <canvas
           ref={canvasRef}
           width={760}
@@ -302,12 +363,14 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-neutral-900/70 border border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
         {/* Drive Wheel Speed */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
             <label htmlFor={speedId}>Differential Wheel Speed:</label>
-            <span className="text-amber-400 font-bold">{wheelSpeed.toFixed(2)} m/s</span>
+            <span className="text-amber-600 dark:text-amber-400 font-bold">
+              {wheelSpeed.toFixed(2)} m/s
+            </span>
           </div>
           <input
             id={speedId}
@@ -319,16 +382,18 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             onChange={(e) => updateParam("wheelSpeedMps", parseFloat(e.target.value))}
             className="w-full accent-amber-500 cursor-pointer"
           />
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
             Linear velocity across floor driving Archimedean spiral and straight cruise modes
           </span>
         </div>
 
         {/* Turn Rate Rad/Sec */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
             <label htmlFor={turnId}>Turn Angular Rate:</label>
-            <span className="text-cyan-400 font-bold">{turnRate.toFixed(1)} rad/s</span>
+            <span className="text-cyan-600 dark:text-cyan-400 font-bold">
+              {turnRate.toFixed(1)} rad/s
+            </span>
           </div>
           <input
             id={turnId}
@@ -340,7 +405,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             onChange={(e) => updateParam("turnRateRadSec", parseFloat(e.target.value))}
             className="w-full accent-cyan-500 cursor-pointer"
           />
-          <span className="text-[10px] text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
             Spin rate of differential drive wheels during obstacle collision deflection
           </span>
         </div>
@@ -354,22 +419,19 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             onClick={() => {
               trailRef.current = [];
               setCleanedAreaPct(5);
+              soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-neutral-900 border border-neutral-700 text-neutral-200 hover:bg-neutral-800 hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-neutral-900 border border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
             🧹 Clear Trail Ribbon
           </button>
-          <button
-            type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-neutral-900 border border-neutral-700 text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            {isPlaying ? "⏸ Pause Cleaner" : "▶ Resume Cleaner"}
-          </button>
         </div>
 
-        <span className="text-[11px] font-mono text-neutral-400">
-          Navigation: <span className="text-indigo-400">Brooks Subsumption Architecture</span>
+        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+          Navigation:{" "}
+          <span className="text-indigo-600 dark:text-indigo-400">
+            Brooks Subsumption Architecture
+          </span>
         </span>
       </div>
     </div>
