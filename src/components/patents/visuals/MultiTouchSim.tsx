@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepMultiTouch } from "@/physics/multiTouchKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -39,6 +40,7 @@ export function MultiTouchSim({
 
     let animId: number;
     let timeSec = 0;
+    const clock = createStudioClock();
     let state = stepMultiTouch(
       {
         fingerCount,
@@ -49,9 +51,10 @@ export function MultiTouchSim({
       0,
     );
 
-    const render = () => {
+    const render = (now: number) => {
       if (isPlaying) {
-        timeSec += 0.016;
+        const { simTimeSec } = clock.pump(now);
+        timeSec = simTimeSec;
         state = stepMultiTouch(
           {
             fingerCount,

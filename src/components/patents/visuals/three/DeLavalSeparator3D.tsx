@@ -2,11 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildDeLavalSeparatorModel } from "./delavalSeparatorModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -43,6 +46,7 @@ export function DeLavalSeparator3D() {
   const centrifugalGs = sep.gForce;
   const throughputLitersPerHr = sep.creamFlowLph;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
@@ -152,6 +156,13 @@ export function DeLavalSeparator3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-247804-delaval-separator"
+        params={{
+          bowlRpm,
+          feedRateLph: rawMilkFlowLph,
+        }}
+      />
       <div className="sr-only">De Laval Separator 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -188,7 +199,15 @@ export function DeLavalSeparator3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-247804-delaval-separator"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("bowlRpm", active ? 6500 : 100);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -335,6 +354,21 @@ export function DeLavalSeparator3D() {
               className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800 max-w-2xl">
+          <SensitivitySlider
+            id="us-247804-delaval-separator-bowlrpm"
+            patentId="us-247804-delaval-separator"
+            paramKey="bowlRpm"
+            label="Centrifuge Bowl Speed"
+            value={bowlRpm}
+            unit="RPM"
+            min={2000}
+            max={9000}
+            step={250}
+            onChange={(val) => updateParam("bowlRpm", Math.round(val))}
+          />
         </div>
       </div>
     </div>

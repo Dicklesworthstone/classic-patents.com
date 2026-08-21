@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "@/components/patents/visuals/PortHamiltonianEnergyStrip";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { coltNextChamber } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
@@ -50,16 +53,17 @@ export function ColtRevolver3D() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x9430-colt-revolver");
 
   // Reactive Physics & Mechanical Parameters
-  const chamberPressureMpa = params.chamberPressure ?? 85;
-  const cockingAngleDeg = params.cockingAngle ?? 45; // 0 (hammer down) to 45 (full cock)
-  const rammerPositionPct = params.rammerPosition ?? 0; // 0 (latched under barrel) to 100 (fully rammed)
-  const currentChamberIndex = Math.max(1, Math.round(params.chamberIndex ?? 1));
+  const chamberPressureMpa = Number(params.chamberPressure ?? 85);
+  const cockingAngleDeg = Number(params.cockingAngle ?? 45); // 0 (hammer down) to 45 (full cock)
+  const rammerPositionPct = Number(params.rammerPosition ?? 0); // 0 (latched) to 100 (seated)
+  const currentChamberIndex = Math.max(1, Math.round(Number(params.chamberIndex ?? 1)));
 
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isFiring, setIsFiring] = useState<boolean>(false);
   const [showLockworkCutaway, setShowLockworkCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true, 2: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   // Solid Mechanics & Ballistics via FrankenSim Engine
@@ -101,11 +105,20 @@ export function ColtRevolver3D() {
     isAudioMuted,
     muzzleVelocityMps,
     recoilKick: coltMech.recoilKick,
+    recoilKickX: coltMech.recoilKickX,
     hoopStressMpa,
     isLocked: coltMech.isLocked ? 1 : 0,
   });
 
-  const fireTimerRef = useRef<number | null>(null);
+  const animRef = useRef({
+    visualCockingAngle: cockingAngleDeg,
+    visualCylinderAngle: -((currentChamberIndex - 1) * 2 * Math.PI) / 5,
+    visualRammerPct: rammerPositionPct,
+    isFiringSeq: false,
+    firingProgress: 0,
+    recoilZ: 0,
+    recoilX: 0,
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -119,41 +132,50 @@ export function ColtRevolver3D() {
   }, [updateParam]);
 
   const handleStepChamber = useCallback(() => {
-    updateParam("chamberIndex", coltNextChamber(currentChamberIndex, coltMech.chamberCount));
+    const nextIdx = coltNextChamber(currentChamberIndex, coltMech.chamberCount);
+    updateParam("chamberIndex", nextIdx);
+    animRef.current.visualCylinderAngle = -((nextIdx - 1) * 2 * Math.PI) / 5;
     soundEngine.playMicroswitchClick();
   }, [updateParam, currentChamberIndex, coltMech.chamberCount]);
+
+  const handleRamChamber = useCallback(() => {
+    updateParam("rammerPosition", rammerPositionPct > 50 ? 0 : 100);
+    soundEngine.playSwitchClick();
+  }, [updateParam, rammerPositionPct]);
 
   const handlePullTrigger = useCallback(() => {
     if (!isFullCock || isFiring) return;
     setIsFiring(true);
-    updateParam("cockingAngle", 0);
+    animRef.current.isFiringSeq = true;
+    animRef.current.firingProgress = 0;
 
     // Gunshot percussion blast & lockwork clack
     soundEngine.playLockstitchClack();
 
-    if (fireTimerRef.current !== null) {
-      window.clearTimeout(fireTimerRef.current);
-    }
-    fireTimerRef.current = window.setTimeout(() => {
+    // Trigger impulse
+    const kick = coltMech.recoilKick;
+    const kickX = coltMech.recoilKickX;
+    animRef.current.recoilZ = Math.min(0.22, kick * 1.5);
+    animRef.current.recoilX = Math.max(-0.4, -kickX * 1.8);
+
+    window.setTimeout(() => {
       setIsFiring(false);
-      updateParam("chamberIndex", coltNextChamber(currentChamberIndex, coltMech.chamberCount));
-    }, coltMech.cycleDisplayMs);
+      animRef.current.isFiringSeq = false;
+      const nextChamber = coltNextChamber(currentChamberIndex, coltMech.chamberCount);
+      updateParam("cockingAngle", 0);
+      updateParam("chamberIndex", nextChamber);
+      animRef.current.visualCockingAngle = 0;
+      animRef.current.visualCylinderAngle = -((nextChamber - 1) * 2 * Math.PI) / 5;
+    }, 450);
   }, [
     isFullCock,
     isFiring,
     updateParam,
     currentChamberIndex,
-    coltMech.cycleDisplayMs,
     coltMech.chamberCount,
+    coltMech.recoilKick,
+    coltMech.recoilKickX,
   ]);
-
-  useEffect(() => {
-    return () => {
-      if (fireTimerRef.current !== null) {
-        window.clearTimeout(fireTimerRef.current);
-      }
-    };
-  }, []);
 
   // 3D Scene Initialization
   useEffect(() => {
@@ -210,35 +232,54 @@ export function ColtRevolver3D() {
 
     // Animation Loop
     let reqId = 0;
-    let smokePuffScale = 1.0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const p = live.current;
+      const anim = animRef.current;
 
+      // Smooth kinematic interpolation
+      if (anim.isFiringSeq) {
+        anim.firingProgress = Math.min(1.0, anim.firingProgress + 0.035);
+        // Hammer strikes forward rapidly from 45° to 0°
+        anim.visualCockingAngle = Math.max(0, 45 * (1.0 - anim.firingProgress * 2.5));
+      } else {
+        // Smoothly follow cocking slider
+        const diff = p.cockingAngleDeg - anim.visualCockingAngle;
+        anim.visualCockingAngle += diff * 0.22;
+
+        // Smoothly track target cylinder angle
+        const targetCyl = -((p.currentChamberIndex - 1) * 2 * Math.PI) / 5;
+        const targetWithCock = targetCyl - (anim.visualCockingAngle / 45) * ((2 * Math.PI) / 5);
+        const cylDiff = targetWithCock - anim.visualCylinderAngle;
+        anim.visualCylinderAngle += cylDiff * 0.2;
+      }
+
+      // Smoothly track rammer
+      const rammerDiff = p.rammerPositionPct - anim.visualRammerPct;
+      anim.visualRammerPct += rammerDiff * 0.2;
+
+      // Update Kinematics on Three.js Model
       updateColtRevolverKinematics(
         model,
-        p.cockingAngleDeg,
+        anim.visualCockingAngle,
         p.currentChamberIndex,
-        p.rammerPositionPct,
-        p.isFiring,
+        anim.visualRammerPct,
+        anim.isFiringSeq,
         p.showLockworkCutaway,
+        anim.firingProgress,
+        anim.visualCylinderAngle,
       );
 
-      if (p.isFiring) {
-        smokePuffScale += 0.12;
-        model.smokeMesh.scale.set(smokePuffScale, smokePuffScale, smokePuffScale);
-
-        const kick = p.recoilKick;
-        model.group.rotation.z = Math.min(0.24, model.group.rotation.z + kick);
-        model.group.position.x = Math.max(-0.4, model.group.position.x - kick);
+      // Recoil Damping
+      if (anim.isFiringSeq) {
+        model.group.rotation.z = anim.recoilZ;
+        model.group.position.x = anim.recoilX;
+        anim.recoilZ *= 0.88;
+        anim.recoilX *= 0.88;
       } else {
-        smokePuffScale = 1.0;
-        model.smokeMesh.scale.set(1, 1, 1);
-
-        // Return to rest position
-        model.group.rotation.z *= 0.85;
-        model.group.position.x *= 0.85;
+        model.group.rotation.z *= 0.82;
+        model.group.position.x *= 0.82;
       }
 
       pinGroup.visible = showCalloutPins;
@@ -437,85 +478,79 @@ export function ColtRevolver3D() {
             <RotateCcw className="w-3.5 h-3.5" />
             Rotate Cylinder
           </button>
+
+          <button
+            type="button"
+            onClick={handleRamChamber}
+            className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 font-mono text-xs sm:text-sm font-medium rounded-xl border border-parchment-300 dark:border-ink-700 transition-colors cursor-pointer"
+            title="Toggle Creeping Loading Lever Rammer"
+          >
+            <Target className="w-3.5 h-3.5" />
+            Ram Chamber
+          </button>
         </div>
 
-        {/* Sliders Grid */}
+        {/* Sensitivity Sliders Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-          {/* Chamber Pressure Slider */}
-          <div className="space-y-1.5 bg-white/70 dark:bg-ink-950/60 p-3 rounded-xl border border-parchment-300 dark:border-ink-800">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-ink-700 dark:text-parchment-300 font-medium">
-                Powder / Pressure
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {chamberPressureMpa} MPa ({powderGrains} gr)
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="140"
-              step="5"
-              value={chamberPressureMpa}
-              onChange={(e) => updateParam("chamberPressure", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer h-1.5 bg-parchment-200 dark:bg-ink-800 rounded-lg"
-            />
-            <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-              <span>15 gr (Light)</span>
-              <span>45 gr (Proof)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-chamberpressure"
+            patentId="us-x9430-colt-revolver"
+            paramKey="chamberPressure"
+            label="Chamber Pressure / Powder"
+            value={chamberPressureMpa}
+            min={40}
+            max={140}
+            step={5}
+            unit="MPa"
+            onChange={(val) => updateParam("chamberPressure", val)}
+            allParams={params}
+          />
 
-          {/* Hammer Cocking Angle Slider */}
-          <div className="space-y-1.5 bg-white/70 dark:bg-ink-950/60 p-3 rounded-xl border border-parchment-300 dark:border-ink-800">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-ink-700 dark:text-parchment-300 font-medium">
-                Hammer Cocking Angle
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {cockingAngleDeg}° / 45°
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="45"
-              step="1"
-              value={cockingAngleDeg}
-              onChange={(e) => updateParam("cockingAngle", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer h-1.5 bg-parchment-200 dark:bg-ink-800 rounded-lg"
-            />
-            <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-              <span>0° (At Rest)</span>
-              <span>45° (Full Cock)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-cockingangle"
+            patentId="us-x9430-colt-revolver"
+            paramKey="cockingAngle"
+            label="Hammer Cocking Angle"
+            value={cockingAngleDeg}
+            min={0}
+            max={45}
+            step={1}
+            unit="deg"
+            onChange={(val) => updateParam("cockingAngle", val)}
+            allParams={params}
+          />
 
-          {/* Loading Lever Rammer Slider */}
-          <div className="space-y-1.5 bg-white/70 dark:bg-ink-950/60 p-3 rounded-xl border border-parchment-300 dark:border-ink-800">
-            <div className="flex justify-between text-xs font-mono">
-              <span className="text-ink-700 dark:text-parchment-300 font-medium">
-                Loading Lever Rammer
-              </span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">
-                {rammerPositionPct}% Rammed
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="2"
-              value={rammerPositionPct}
-              onChange={(e) => updateParam("rammerPosition", Number(e.target.value))}
-              className="w-full accent-amber-600 cursor-pointer h-1.5 bg-parchment-200 dark:bg-ink-800 rounded-lg"
-            />
-            <div className="flex justify-between text-[10px] text-ink-500 font-mono">
-              <span>Latched (0%)</span>
-              <span>Seated (100%)</span>
-            </div>
-          </div>
+          <SensitivitySlider
+            id="us-x9430-colt-revolver-rammerposition"
+            patentId="us-x9430-colt-revolver"
+            paramKey="rammerPosition"
+            label="Loading Lever Rammer"
+            value={rammerPositionPct}
+            min={0}
+            max={100}
+            step={2}
+            unit="%"
+            onChange={(val) => updateParam("rammerPosition", val)}
+            allParams={params}
+          />
         </div>
+
+        {/* Claim Inversion Failure Modes */}
+        <ClaimConstraintToggle
+          patentId="us-x9430-colt-revolver"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        {/* Port-Hamiltonian Dirac Energy Strip */}
+        <PortHamiltonianEnergyStrip
+          patentId="us-x9430-colt-revolver"
+          params={params}
+          className="mt-3"
+        />
 
         {/* Footer Attribution Banner */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] font-sans text-ink-600 dark:text-ink-400 border-t border-parchment-200 dark:border-ink-800/80">

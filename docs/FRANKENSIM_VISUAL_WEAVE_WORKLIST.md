@@ -648,8 +648,11 @@ host SI step and label it until a stepper export exists.
   kernel seats instead of `timeSec * 8` tapes. Named virtual ticks
   (`dtVirtual` / `virtualTime += 1/60`) on Arkwright, Daimler, Watt condenser,
   Sholes, Baekeland, Cort, and Lamarr now pump `createStudioClock`.
-  TickScheduler's own 1/60 is the physics tick size. Fermi kinematics freeze
-  when k_eff > 1.002. HUD still does not say WASM.
+  TickScheduler's own 1/60 is the physics tick size. Remaining `+= 0.016`
+  presentation clocks on Photophone, Townes, Carlson, Kilby, Land, De Forest,
+  Haber, Fessenden, Hewitt, Rillieux, Boyle-Smith, Edison phonograph, and the
+  Da Vinci / E-Ink / MultiTouch 2D faces now pump `createStudioClock`.
+  Fermi kinematics freeze when k_eff > 1.002. HUD still does not say WASM.
 - [x] P7.12 Replay digest on catalog HUDs is `host:` unless a WASM hasher
   actually stepped. Fake `blake3:` hex removed from `energyLedger`.
 - [x] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→

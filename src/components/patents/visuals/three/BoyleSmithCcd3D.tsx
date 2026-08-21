@@ -2,6 +2,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -84,12 +85,14 @@ export function BoyleSmithCcd3D() {
 
     let animId = 0;
     let clockPhase = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
+      const { dt } = clock.pump(now);
 
       if (live.current.isRunning) {
-        clockPhase = (clockPhase + 0.05) % (Math.PI * 2);
+        clockPhase = (clockPhase + dt * 3) % (Math.PI * 2);
       }
 
       ccdModel.setCutaway?.(live.current.isCutaway ?? false);
@@ -98,7 +101,7 @@ export function BoyleSmithCcd3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    animId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animId);

@@ -3,6 +3,7 @@
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { stepEInk } from "@/physics/eInkKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
@@ -86,16 +87,18 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
       0.016,
     );
 
-    const render = () => {
+    const clock = createStudioClock();
+    const render = (now: number) => {
       if (isPlaying) {
-        timeSec += 0.016;
+        const { dt, simTimeSec } = clock.pump(now);
+        timeSec = simTimeSec;
         state = stepEInk(
           {
             electrodeVoltageVolts: voltage,
             fluidViscosityCp: viscosity,
             particleChargeCoupled: chargeCoupled,
           },
-          0.016,
+          dt,
           state,
         );
 

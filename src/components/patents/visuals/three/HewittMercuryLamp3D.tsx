@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -104,15 +105,14 @@ export function HewittMercuryLamp3D({
     nodesRef.current = nodes;
     studio.scene.add(nodes.root);
 
-    let lastTime: number | null = null;
+    const clock = createStudioClock();
     const animate = (now: number) => {
-      const dt = lastTime === null ? 0.016 : Math.min(0.1, (now - lastTime) / 1000);
-      lastTime = now;
-      timeRef.current += dt;
+      const { dt, simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
 
       const p = live.current;
       if (p.isRotating) {
-        nodes.root.rotation.y += 0.0044;
+        nodes.root.rotation.y += dt * 0.26;
       }
       studio.controls.update();
 

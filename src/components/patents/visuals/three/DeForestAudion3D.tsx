@@ -112,7 +112,7 @@ export function DeForestAudion3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    animId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animId);

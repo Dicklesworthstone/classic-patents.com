@@ -204,6 +204,16 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(
       coupleEdgesFor("gb-913-watt-separate-condenser", { hasSeparateCondenser: 1 })[0]?.from,
     ).toBe("separate condenser");
+    expect(coupleEdgesFor("us-971501-haber-ammonia", { pressureAtm: 175 })[0]?.from).toBe(
+      "pressure",
+    );
+    expect(coupleEdgesFor("us-235199-bell-photophone", { transmissionDistanceM: 213 })[0]?.from).toBe(
+      "range",
+    );
+    expect(coupleEdgesFor("us-2981877-noyce-ic", { reverseBias: 5 })[0]?.from).toBe("reverse bias");
+    expect(coupleEdgesFor("us-4750-howe-sewing-machine", { flywheelRpm: 200 })[0]?.from).toBe(
+      "flywheel",
+    );
   });
 
   test("catalog 3Ds no longer fake const dt = 1/60 inside the rAF loop", () => {
@@ -227,6 +237,13 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "BaekelandBakelite3D.tsx",
       "CortPuddlingRolling3D.tsx",
       "LamarrFrequencyHopping3D.tsx",
+      "BellPhotophone3D.tsx",
+      "TownesLaser3D.tsx",
+      "KilbyIntegratedCircuit3D.tsx",
+      "HaberAmmonia3D.tsx",
+      "FessendenWireless3D.tsx",
+      "DeForestAudion3D.tsx",
+      "BoyleSmithCcd3D.tsx",
     ]) {
       const src = readFileSync(join(dir, name), "utf8");
       expect(src).toContain("createStudioClock");

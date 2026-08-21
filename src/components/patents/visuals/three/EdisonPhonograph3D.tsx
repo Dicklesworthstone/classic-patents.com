@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -107,17 +108,13 @@ export function EdisonPhonograph3D() {
     const model = buildEdisonPhonographModel();
     scene.add(model.rootGroup);
 
-    // Animation Loop
+    // Animation Loop (lastFrameMs tracked by createStudioClock)
     let reqId: number;
-    let timeSec = 0;
-    let lastFrameMs: number | undefined;
+    const clock = createStudioClock();
 
     const animate = (frameMs: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta =
-        lastFrameMs !== undefined ? Math.min((frameMs - lastFrameMs) / 1000, 0.1) : 1 / 60;
-      lastFrameMs = frameMs;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(frameMs);
       const p = live.current;
 
       updateEdisonPhonographKinematics(
@@ -361,8 +358,9 @@ export function EdisonPhonograph3D() {
 
         <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800 max-w-2xl">
           <SensitivitySlider
+            id="us-200521-edison-phonograph-groovedepthum"
             patentId="us-200521-edison-phonograph"
-            controlKey="grooveDepthUm"
+            paramKey="grooveDepthUm"
             label="Tinfoil Indentation Depth"
             value={Number((voiceVolumeDb * 0.35).toFixed(1))}
             unit="µm"

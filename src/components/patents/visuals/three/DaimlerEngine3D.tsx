@@ -2,11 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -43,6 +46,7 @@ export function DaimlerEngine3D() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
 
@@ -123,6 +127,13 @@ export function DaimlerEngine3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-361931-daimler-engine"
+        params={{
+          engineRpm,
+          hotTubeTempC,
+        }}
+      />
       <div className="sr-only">Daimler High-Speed Petrol Engine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -160,7 +171,15 @@ export function DaimlerEngine3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-361931-daimler-engine"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("engineRpm", active ? 750 : 120);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsPlaying(!isPlaying)}
@@ -322,6 +341,21 @@ export function DaimlerEngine3D() {
               className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800">
+          <SensitivitySlider
+            id="us-361931-daimler-engine-enginerpm"
+            patentId="us-361931-daimler-engine"
+            paramKey="engineRpm"
+            label="Engine Speed"
+            value={engineRpm}
+            unit="RPM"
+            min={200}
+            max={1200}
+            step={25}
+            onChange={(val) => updateParam("engineRpm", Math.round(val))}
+          />
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildPeltonWheelModel, updatePeltonWheelKinematics } from "./peltonWheelModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -44,6 +45,7 @@ export function PeltonWheel3D() {
   const powerKw = pelton.shaftPowerKw;
   const [showJet, setShowJet] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
@@ -185,7 +187,15 @@ export function PeltonWheel3D() {
         )}
 
         {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-233692-pelton-water-wheel"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("runnerRpm", active ? 600 : 50);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}

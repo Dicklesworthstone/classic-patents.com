@@ -642,6 +642,35 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-x9430-colt-revolver": {
+      if (
+        controlKey === "chamberPressure" ||
+        controlKey === "chamberPressureMpa" ||
+        controlKey === "pressure"
+      ) {
+        const p = Number(params.chamberPressure ?? params.chamberPressureMpa ?? 85.0);
+        const dv_dp = 13.5 / (2 * Math.sqrt(Math.max(1, p)));
+        return {
+          metricName: "Muzzle Velocity Sensitivity",
+          derivativeSymbol: "∂v_muzzle / ∂P_chamber",
+          derivativeValue: Number(dv_dp.toFixed(2)),
+          derivativeUnit: "(m/s) / MPa",
+          interpretation:
+            "Gas expansion ballistic velocity gain per unit increase in peak chamber deflagration pressure.",
+        };
+      }
+      if (controlKey === "cockingAngle" || controlKey === "cockingAngleDeg") {
+        return {
+          metricName: "Cylinder Indexing Advance",
+          derivativeSymbol: "∂θ_cyl / ∂θ_cock",
+          derivativeValue: 1.6,
+          derivativeUnit: "deg / deg",
+          interpretation: "Linear 72° chamber indexing ratio per 45° of single-action hammer draw.",
+        };
+      }
+      break;
+    }
+
     case "us-235199-bell-photophone": {
       if (controlKey === "beamPowerWatts" || controlKey === "beamPower") {
         return {

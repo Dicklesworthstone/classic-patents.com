@@ -5,16 +5,21 @@
 
 import { stepArkwrightWaterFrame } from "./arkwrightKernel";
 import {
+  stepBellPhotophone,
   stepDaimlerEngine,
   stepEdisonBulb,
   stepGoodyearRubber,
   stepGrammeDynamo,
+  stepHaberAmmonia,
   stepMarconiRadio,
+  stepMorseTelegraph,
+  stepNoyceIC,
   stepOttoEngine,
   stepPeltonWheel,
   stepSpencerMicrowave,
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
+import { stepHoweSewingMachine } from "./machineKernels";
 import { TESLA_FIELD_POLES } from "./teslaKernel";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
@@ -217,6 +222,82 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
         to: "Newcomen fuel multiple",
         gain: Number(watt.newcomenFuelMultiplier.toFixed(3)),
         unit: "× coal",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-971501-haber-ammonia") {
+    const pAtm = params.pressureAtm ?? 175;
+    const haber = stepHaberAmmonia({
+      pressureAtm: pAtm,
+      temperatureCelsius: params.temperatureCelsius ?? 530,
+    });
+    return [
+      {
+        from: "pressure",
+        to: "NH3 yield",
+        gain: Number((haber.ammoniaYieldPct / Math.max(1, pAtm)).toFixed(4)),
+        unit: "% / atm",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-235199-bell-photophone") {
+    const dist = params.transmissionDistanceM ?? 213;
+    const phone = stepBellPhotophone({
+      transmissionDistanceM: dist,
+      voiceSplDb: params.voiceSplDb ?? 75,
+    });
+    return [
+      {
+        from: "range",
+        to: "selenium audio current",
+        gain: Number((phone.audioSignalCurrentUa / Math.max(1, dist)).toFixed(4)),
+        unit: "µA / m",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-2981877-noyce-ic") {
+    const vr = params.reverseBias ?? 5;
+    const die = stepNoyceIC({ reverseBias: vr });
+    return [
+      {
+        from: "reverse bias",
+        to: "depletion width",
+        gain: Number((die.depletionWidthUm / Math.max(0.1, vr)).toFixed(4)),
+        unit: "µm / V",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-1647-morse-telegraph") {
+    const volts = params.lineVoltageV ?? 24;
+    const morse = stepMorseTelegraph({ lineVoltageV: volts });
+    return [
+      {
+        from: "line voltage",
+        to: "loop current",
+        gain: Number((morse.ohmicCurrentMa / Math.max(0.1, volts)).toFixed(3)),
+        unit: "mA / V",
+        crate: "fs-couple",
+        source: "ts-fallback",
+      },
+    ];
+  }
+  if (patentId === "us-4750-howe-sewing-machine") {
+    const rpm = params.flywheelRpm ?? 200;
+    const howe = stepHoweSewingMachine(rpm, params.stitchTensionGrams ?? 40);
+    return [
+      {
+        from: "flywheel",
+        to: "cloth feed",
+        gain: Number((howe.clothFeedMmPerS / Math.max(1, rpm)).toFixed(4)),
+        unit: "mm/s / rpm",
         crate: "fs-couple",
         source: "ts-fallback",
       },

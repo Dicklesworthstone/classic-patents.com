@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -106,11 +107,10 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     modelRef.current = model;
     studio.scene.add(model.group);
 
-    let lastTime: number | null = null;
+    const clock = createStudioClock();
     const animate = (now: number) => {
-      const dt = lastTime === null ? 0.016 : Math.min(0.1, (now - lastTime) / 1000);
-      lastTime = now;
-      timeRef.current += dt;
+      const { simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
 
       const p = live.current;
       const simState = stepRillieuxEvaporator({
