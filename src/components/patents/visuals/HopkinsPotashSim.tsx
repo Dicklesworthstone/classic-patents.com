@@ -3,6 +3,7 @@
 import {
   Flame,
   FlaskConical,
+  Pause,
   Play,
   RotateCcw,
   Sparkles,
@@ -13,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HopkinsPotashSim() {
@@ -58,49 +60,62 @@ export function HopkinsPotashSim() {
   return (
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       {/* Top Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-parchment-200 dark:border-ink-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono font-medium bg-amber-100 text-amber-900 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800/60">
-              US Patent No. 1 [X1] (1790)
-            </span>
-            <span className="text-xs font-serif text-parchment-600 dark:text-ink-400">
-              Thermochemical Calcination & Leaching
-            </span>
+            <FlaskConical className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-lg font-serif font-bold text-ink-900 dark:text-parchment-100">
+              Samuel Hopkins Potash &amp; Pearl Ash Apparatus (US X1)
+            </h3>
           </div>
-          <h3 className="text-lg font-serif font-bold text-ink-900 dark:text-parchment-100 mt-1">
-            Hopkins Potash & Pearl Ash Industrial Apparatus
-          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            US Patent No. 1 (1790) — Thermochemical calcination, raw ash leaching, and pearl ash
+            crystallization.
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-parchment-200 hover:bg-parchment-300 dark:bg-ink-800 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
-            <Play className={`w-3.5 h-3.5 ${isPlaying ? "fill-current" : ""}`} />
-            {isPlaying ? "Pause Cycle" : "Resume"}
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"
-            onClick={resetParams}
-            className="p-1.5 rounded-lg text-xs font-medium bg-parchment-200 hover:bg-parchment-300 dark:bg-ink-800 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset to Patent Defaults"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={toggleSound}
-            className="p-1.5 rounded-lg text-xs font-medium bg-parchment-200 hover:bg-parchment-300 dark:bg-ink-800 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
             {isAudioMuted ? (
-              <VolumeX className="w-3.5 h-3.5" />
+              <VolumeX className="w-4 h-4" />
             ) : (
-              <Volume2 className="w-3.5 h-3.5" />
+              <Volume2 className="w-4 h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setCycleProgress(0);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

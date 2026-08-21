@@ -6,6 +6,10 @@ import type {
 
 const text = (value: string): CuratedSpecificationInlines => [{ kind: "text", text: value }];
 const p = (value: string) => ({ kind: "paragraph" as const, inlines: text(value) });
+const pInlines = (...inlines: CuratedSpecificationInline[]) => ({
+  kind: "paragraph" as const,
+  inlines: inlines as CuratedSpecificationInlines,
+});
 
 const term = (value: string, definition: string): CuratedSpecificationInline => ({
   kind: "term",
@@ -384,11 +388,27 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
     p(
       "By means of the polarizer 123, light rotator 125, and analyzer comprising the gratings 129 and 130 and the bi-axial crystal 131, the constant supply of light through arc light 120 is caused to produce a light output varying in intensity in accordance with the intensity of the light current supplied to the coil 126. Thereby, without the employment of any mechanical moving apparatus, the light current is reconverted into light. Such light is then passed through a lens 132 by which it is focused upon a pair of cooperating oscillographs 133 and 134. Said cooperating oscillographs 133 and 134 are positioned at right angles one to the other and so that the light from one strikes the other oscillograph. Said oscillographs are operated at different frequencies with the result that the light is by said oscillographs projected in horizontal vibrations, which are successively lowered or raised vertically so that the light can pass through a lens 135 upon a screen 136 and covers successively an entire rectangular area of said screen. The oscillographs 133 and 134 are operated by electrical currents of the frequencies of the two analyzer currents applied to the plates 13 to 16 of the photo-electric cell so that the passage of the beam of light over the screen 136 is in synchronism with the bending of the electrical discharge from the sensitive plate 6 of the photo-electric cell and thereby each portion of the beam of light is properly coordinated to produce a correct image of the object being transmitted.",
     ),
-    p(
-      "The details of the construction of the oscillographs 133 and 134 are shown in Figures 4 and 5, only one of the oscillographs being illustrated since they are of similar construction. The oscillographs comprise a base or body 137 of any suitable material. In the center thereof, is mounted a quartz strip 138 having a silvered mirror surface 139 at its top. Said quartz strip vibrator 138 is held in a holder 140 which is vertically adjustable by a set-screw 141. The quartz strip vibrator is engaged at opposite sides and at points spaced apart slightly vertically by a pair of quartz strips 142 and 143 laid horizontally and plated at the tops and bottoms by a metallic plating, such as copper, as indicated at 144 and 145. The outer ends of such quartz strips 142 and 143 engage guides 146 on the body, and hence engage clamps 147 by which they are held to carriers 148. The clamps 147 are connected by adjusting screws 149 to the body 137 by means of which the quartz strips 142 and 143 may have their pressure against the quartz strip vibrator 138 adjusted. At the inner ends of the quartz strips 142 and 143 are placed rests 149a over which are placed a resilient material, such as rubber, and thereabove is placed a further quantity of rubber.",
+    pInlines(
+      {
+        kind: "text",
+        text: "The details of the construction of the oscillographs 133 and 134 are shown in ",
+      },
+      figureGroup([4, 5], "Figures 4 and 5"),
+      {
+        kind: "text",
+        text: ", only one of the oscillographs being illustrated since they are of similar construction. The oscillographs comprise a base or body 137 of any suitable material. In the center thereof, is mounted a quartz strip 138 having a silvered mirror surface 139 at its top. Said quartz strip vibrator 138 is held in a holder 140 which is vertically adjustable by a set-screw 141. The quartz strip vibrator is engaged at opposite sides and at points spaced apart slightly vertically by a pair of quartz strips 142 and 143 laid horizontally and plated at the tops and bottoms by a metallic plating, such as copper, as indicated at 144 and 145. The outer ends of such quartz strips 142 and 143 engage guides 146 on the body, and hence engage clamps 147 by which they are held to carriers 148. The clamps 147 are connected by adjusting screws 149 to the body 137 by means of which the quartz strips 142 and 143 may have their pressure against the quartz strip vibrator 138 adjusted. At the inner ends of the quartz strips 142 and 143 are placed rests 149a over which are placed a resilient material, such as rubber, and thereabove is placed a further quantity of rubber.",
+      },
     ),
-    p(
-      "Clamps 150 are placed over the top of the inner ends of the quartz strips and connected with adjusting screws 151 by means of which the vertical positions of the ends of the quartz strips may be adjusted. It is understood that in the showing of Figures 4 and 5, the quartz strips are greatly exaggerated in thickness inasmuch as in practice such strips are very thin, approximating the thickness of a sheet of paper, and are cut with their thickness in the direction of the electric axis, their length in the direction of the axis of extension and their width along the optic axis of the crystal. The bottom sides of the strips 142 and 143 are connected by conductors 152 while the top plating on the strips is connected by conductors 153 connected with springs 154 at the top of the clamps 150.",
+    pInlines(
+      {
+        kind: "text",
+        text: "Clamps 150 are placed over the top of the inner ends of the quartz strips and connected with adjusting screws 151 by means of which the vertical positions of the ends of the quartz strips may be adjusted. It is understood that in the showing of ",
+      },
+      figureGroup([4, 5], "Figures 4 and 5"),
+      {
+        kind: "text",
+        text: ", the quartz strips are greatly exaggerated in thickness inasmuch as in practice such strips are very thin, approximating the thickness of a sheet of paper, and are cut with their thickness in the direction of the electric axis, their length in the direction of the axis of extension and their width along the optic axis of the crystal. The bottom sides of the strips 142 and 143 are connected by conductors 152 while the top plating on the strips is connected by conductors 153 connected with springs 154 at the top of the clamps 150.",
+      },
     ),
     {
       kind: "paragraph",
