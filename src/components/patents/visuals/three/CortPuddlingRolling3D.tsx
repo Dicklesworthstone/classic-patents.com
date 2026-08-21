@@ -1,13 +1,15 @@
 "use client";
 
-import { Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "gb-1420-cort-puddling-rolling";
 
@@ -30,6 +32,7 @@ export function CortPuddlingRolling3D() {
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const furnaceTempC = params.furnaceTemperatureCelsius ?? 1350;
@@ -175,33 +178,78 @@ export function CortPuddlingRolling3D() {
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
+        {/* Camera Views Bar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {presets.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activePreset === id
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setCutaway((v) => !v)}
+            onClick={() => {
+              setCutaway((v) => !v);
+              soundEngine.playSwitchClick();
+            }}
             title={cutaway ? "Switch to Solid Furnace" : "Switch to Roof Cutaway"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               cutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            <span className="hidden md:inline">{cutaway ? "Solid" : "Cutaway"}</span>
-            <span className="md:hidden">{cutaway ? "Sol" : "Cut"}</span>
+            <Layers className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{cutaway ? "Cutaway" : "Solid"}</span>
           </button>
           <button
             type="button"
-            onClick={() => setShowCallouts((v) => !v)}
+            onClick={() => {
+              setShowCallouts((v) => !v);
+              soundEngine.playSwitchClick();
+            }}
             title={showCallouts ? "Hide Callout Letters" : "Show Callout Letters"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               showCallouts
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            <span className="hidden md:inline">{showCallouts ? "Pins On" : "Pins Off"}</span>
-            <span className="md:hidden">Pins</span>
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showCallouts ? "Pins" : "Pins Off"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
           <button
             type="button"
@@ -228,26 +276,6 @@ export function CortPuddlingRolling3D() {
             <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
-
-        {/* Camera Views Bar */}
-        {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            {presets.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                  activePreset === id
-                    ? "bg-amber-600 text-white shadow-xs"
-                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Bottom SI Telemetry Chips */}
         <StudioKernelChips visible={showUiOverlay} chips={chips} title="SI Telemetry" />
