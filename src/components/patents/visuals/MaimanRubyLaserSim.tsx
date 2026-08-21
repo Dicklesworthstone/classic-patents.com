@@ -333,17 +333,75 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
   }, [pumpEnergy, outputReflectivity, temperature, isFiring, metrics]);
 
   return (
-    <div className="flex flex-col rounded-xl border border-slate-800 bg-slate-950 p-4 shadow-2xl">
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Theodore Maiman Ruby Laser (US 3,353,115)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Solid-state ruby optical maser: xenon flashlamp excitation, Cr³⁺ 3-level population
+            inversion, and 694.3 nm stimulated photon cascade.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              handleTriggerFlash();
+              soundEngine.playSwitchClick();
+            }}
+            disabled={isFiring}
+            aria-label="Trigger Flashlamp"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-mono text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+            title="Trigger Flashlamp"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            <span>{isFiring ? "FIRING..." : "TRIGGER"}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Canvas */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-slate-800 bg-slate-950">
         <canvas ref={canvasRef} width={800} height={420} className="h-full w-full object-contain" />
       </div>
 
       {interactive && (
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-slate-800/80 bg-slate-900/50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-slate-800/80 bg-parchment-100/80 dark:bg-slate-900/50 p-4">
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex flex-col gap-1">
-              <label htmlFor="pumpEnergy" className="text-xs font-mono text-slate-400">
-                Flash Pump Energy: {pumpEnergy} J
+              <label
+                htmlFor="pumpEnergy"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Flash Pump Energy:{" "}
+                <span className="font-bold text-rose-600 dark:text-rose-400">{pumpEnergy} J</span>
               </label>
               <input
                 id="pumpEnergy"
@@ -353,13 +411,19 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
                 step="10"
                 value={pumpEnergy}
                 onChange={(e) => updateParam("pumpEnergyJoules", Number(e.target.value))}
-                className="h-1.5 w-36 accent-rose-500"
+                className="h-1.5 w-36 accent-rose-600 dark:accent-rose-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="outputReflectivity" className="text-xs font-mono text-slate-400">
-                Output Mirror R2: {(outputReflectivity * 100).toFixed(0)}%
+              <label
+                htmlFor="outputReflectivity"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Output Mirror R2:{" "}
+                <span className="font-bold text-cyan-600 dark:text-cyan-400">
+                  {(outputReflectivity * 100).toFixed(0)}%
+                </span>
               </label>
               <input
                 id="outputReflectivity"
@@ -369,13 +433,19 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
                 step="0.01"
                 value={outputReflectivity}
                 onChange={(e) => updateParam("outputMirrorReflectivity", Number(e.target.value))}
-                className="h-1.5 w-32 accent-rose-500"
+                className="h-1.5 w-32 accent-cyan-600 dark:accent-rose-500"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="temperature" className="text-xs font-mono text-slate-400">
-                Crystal Temp: {temperature} K
+              <label
+                htmlFor="temperature"
+                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+              >
+                Crystal Temp:{" "}
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {temperature} K
+                </span>
               </label>
               <input
                 id="temperature"
@@ -385,23 +455,10 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
                 step="10"
                 value={temperature}
                 onChange={(e) => updateParam("crystalTemperatureKelvin", Number(e.target.value))}
-                className="h-1.5 w-28 accent-rose-500"
+                className="h-1.5 w-28 accent-emerald-600 dark:accent-rose-500"
               />
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={handleTriggerFlash}
-            disabled={isFiring}
-            className={`flex items-center gap-2 rounded-md px-5 py-2 font-mono text-xs font-bold transition ${
-              isFiring
-                ? "bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/50"
-                : "bg-rose-600 text-white hover:bg-rose-500 active:scale-95 shadow-lg shadow-rose-600/30"
-            }`}
-          >
-            {isFiring ? "⚡ FLASH DISCHARGE ACTIVE" : "⚡ TRIGGER FLASH DISCHARGE"}
-          </button>
         </div>
       )}
     </div>
