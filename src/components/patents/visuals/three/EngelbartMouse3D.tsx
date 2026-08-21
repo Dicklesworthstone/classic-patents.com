@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
@@ -204,15 +204,15 @@ export const EngelbartMouse3D = memo(() => {
           <button
             type="button"
             onClick={() => setIsXRayMode(!isXRayMode)}
-            title={isXRayMode ? "Solid Walnut Body" : "X-Ray Walnut Body"}
+            title={isXRayMode ? "Solid Walnut Body" : "Cutaway X-Ray Walnut Body"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm text-xs font-sans flex items-center gap-1 ${
               isXRayMode
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {isXRayMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            <span className="hidden sm:inline">{isXRayMode ? "X-Ray" : "Solid"}</span>
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isXRayMode ? "Cutaway" : "Solid"}</span>
           </button>
           <button
             type="button"

@@ -13,11 +13,13 @@ export interface BoyleSmithCcdModelNodes {
   potentialWellMesh: THREE.Mesh;
   busLines: THREE.Group;
   diffusionContacts: THREE.Group;
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function createBoyleSmithCcdModel(): {
   nodes: BoyleSmithCcdModelNodes;
   update: (controls: BoyleSmithCcdControls, timeSec: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 } {
   const group = new THREE.Group();
@@ -304,6 +306,11 @@ export function createBoyleSmithCcdModel(): {
     wellGeo.dispose();
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    dipPackage.visible = !cutaway;
+    leadPins.visible = !cutaway;
+  };
+
   return {
     nodes: {
       group,
@@ -317,8 +324,10 @@ export function createBoyleSmithCcdModel(): {
       potentialWellMesh,
       busLines,
       diffusionContacts,
+      setCutaway,
     },
     update,
+    setCutaway,
     dispose,
   };
 }

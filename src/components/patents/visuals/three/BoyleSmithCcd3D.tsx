@@ -1,13 +1,15 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { createBoyleSmithCcdModel } from "./boyleSmithCcdModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "gate_array" | "package" | "potential_well" | "top";
 
@@ -28,6 +30,8 @@ export function BoyleSmithCcd3D() {
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isRunning, setIsRunning] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const gateVoltage = params.gateVoltageV ?? 10;
   const clockFreq = params.clockFrequencyMhz ?? 5.0;
@@ -42,6 +46,7 @@ export function BoyleSmithCcd3D() {
     integrationTimeMs: integrationTime,
     temperatureKelvin: temperature,
     isRunning,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -85,6 +90,7 @@ export function BoyleSmithCcd3D() {
         clockPhase = (clockPhase + 0.05) % (Math.PI * 2);
       }
 
+      ccdModel.setCutaway?.(live.current.isCutaway ?? false);
       ccdModel.update(live.current, clockPhase);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -141,6 +147,37 @@ export function BoyleSmithCcd3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
+            onClick={() => {
+              setIsCutaway((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Switch to Solid Package" : "Switch to Die Cutaway"}
+            aria-label={isCutaway ? "Switch to Solid Package" : "Switch to Die Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsRunning(!isRunning)}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRunning
@@ -168,10 +205,10 @@ export function BoyleSmithCcd3D() {
             aria-label="Reset camera view"
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

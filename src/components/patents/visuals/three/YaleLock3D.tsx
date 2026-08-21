@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { createYaleLockModel } from "./yaleLockModel";
@@ -287,6 +288,35 @@ export function YaleLock3D({
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="PIN-TUMBLER SHEAR LINE MECHANICS"
+        chips={[
+          { label: "Key Insertion", value: `${(keyInsertion * 100).toFixed(0)}%` },
+          {
+            label: "Applied Torque",
+            value: `${appliedTorqueNm.toFixed(2)}`,
+            unit: "N·m",
+          },
+          {
+            label: "Shear Line",
+            value: yaleState.isUnlocked ? "Aligned Clear" : "Binding Tumbler",
+            tone: yaleState.isUnlocked ? "ok" : "warn",
+          },
+          {
+            label: "Lock Status",
+            value: yaleState.isUnlocked ? "Unlocked & Rotating" : "Locked",
+            tone: yaleState.isUnlocked ? "hot" : "warn",
+          },
+          {
+            label: "Key Profile",
+            value: useAuthorizedKey ? "Factory Milled Bittings" : "Incorrect Blank",
+          },
+          { label: "Tumbler Array", value: "5 Spring-Loaded Driver Pins" },
+        ]}
+      />
     </div>
   );
 }

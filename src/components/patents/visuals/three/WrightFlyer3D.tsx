@@ -13,6 +13,7 @@ import {
   WRIGHT_PATENT_ID,
   wrightHoverY,
 } from "@/physics/wrightKernel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
   createThreeStudioScene,
@@ -549,6 +550,33 @@ export function WrightFlyer3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="WRIGHT 1903 3-AXIS AERODYNAMICS"
+        chips={[
+          {
+            label: "Lift Force",
+            value: `${si.liftNewtons.toFixed(0)}`,
+            unit: "N",
+            tone: "hot",
+          },
+          { label: "Drag Force", value: `${si.totalDragNewtons.toFixed(0)}`, unit: "N" },
+          {
+            label: "L/D Ratio",
+            value: `${si.liftToDrag.toFixed(2)}`,
+          },
+          { label: "Lift Coeff (C_L)", value: `${si.cl.toFixed(3)}` },
+          { label: "Airspeed", value: `${airspeedMph}`, unit: "mph" },
+          { label: "Net Yaw", value: `${si.netYawNm.toFixed(1)}`, unit: "N·m" },
+          {
+            label: "Coupling",
+            value: isCoupled ? "Warp + Rudder Interlock" : "Independent",
+          },
+          { label: "Flight Kernel", value: `${kernelLabel} / ${aeroLabel}` },
+        ]}
+      />
     </div>
   );
 }
