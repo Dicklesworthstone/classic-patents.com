@@ -75,7 +75,13 @@ export function TextWithLatex({ text, className = "" }: { text: string; classNam
       const key = `${n}:${part.slice(0, 48)}`;
       if (part.startsWith("$$") && part.endsWith("$$")) {
         const formula = part.slice(2, -2);
-        return <LatexRenderer key={key} math={formula} block={true} />;
+        // Display math has intrinsic width: give it its own scrollable block
+        // so long equations cannot push prose past narrow viewports.
+        return (
+          <span key={key} className="block overflow-x-auto">
+            <LatexRenderer math={formula} block={true} />
+          </span>
+        );
       }
       if (part.startsWith("$") && part.endsWith("$")) {
         const formula = part.slice(1, -1);

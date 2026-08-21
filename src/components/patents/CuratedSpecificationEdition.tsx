@@ -64,7 +64,7 @@ function AnnotatedTerm({
         aria-controls={tooltipId}
         aria-expanded={touchOpen}
         aria-label={`${inline.text}. ${inline.label ?? "Historical-term definition."}`}
-        className="inline cursor-help border-b border-dotted border-amber-700 bg-transparent p-0 font-inherit font-medium text-amber-950 decoration-amber-700 underline decoration-dotted underline-offset-4 dark:border-amber-400 dark:text-amber-200 dark:decoration-amber-400"
+        className="inline cursor-help border-b border-dotted border-amber-700 bg-transparent p-0 [font-family:inherit] font-medium text-amber-950 decoration-amber-700 underline decoration-dotted underline-offset-4 dark:border-amber-400 dark:text-amber-200 dark:decoration-amber-400"
         onClick={handleSummaryClick}
       >
         {inline.text}
@@ -72,7 +72,7 @@ function AnnotatedTerm({
       <span
         id={tooltipId}
         role="tooltip"
-        className={`absolute bottom-full left-0 z-20 mb-2 w-72 rounded-xl border border-amber-300 bg-parchment-50 p-3 font-sans text-xs font-normal leading-relaxed text-ink-900 shadow-xl group-hover:block group-focus-within:block dark:border-amber-800 dark:bg-ink-950 dark:text-parchment-100 ${
+        className={`absolute bottom-full left-0 z-20 mb-2 w-[min(18rem,calc(100vw-2.5rem))] rounded-xl border border-amber-300 bg-parchment-50 p-3 font-sans text-xs font-normal leading-relaxed text-ink-900 shadow-xl group-hover:block group-focus-within:block dark:border-amber-800 dark:bg-ink-950 dark:text-parchment-100 ${
           touchOpen ? "block" : "hidden"
         }`}
       >

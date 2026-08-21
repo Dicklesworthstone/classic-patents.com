@@ -276,7 +276,7 @@ export function PhysicsTelemetryBadge({
 
       {/* Expanded Governing Equations & Deep Pedagogical Theory */}
       {showTheory && (
-        <div className="pt-4 border-t border-parchment-200 dark:border-ink-800 space-y-4 animate-in fade-in duration-200">
+        <div className="pt-4 border-t border-parchment-200 dark:border-ink-800 space-y-4 animate-[ui-fade-in_200ms_ease-out]">
           {equations.length > 0 ? (
             <ColorizedEquation equation={equations[0]} />
           ) : (
