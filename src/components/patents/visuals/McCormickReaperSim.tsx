@@ -1,6 +1,6 @@
 "use client";
 
-import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Cog, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   mccormickCrankPinSvg,
@@ -48,12 +48,15 @@ export function McCormickReaperSim() {
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            McCormick Reaper Motion Transmission (US X8277)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Mechanical reaper: ground wheel drive, gear transmission, reciprocating sickle bar, and
-            revolving grain divider reel.
+          <div className="flex items-center gap-2">
+            <Cog className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Cyrus McCormick Mechanical Grain Reaper (US X8277)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Ground wheel drive, gear transmission, reciprocating sickle bar, and revolving grain
+            divider reel.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">

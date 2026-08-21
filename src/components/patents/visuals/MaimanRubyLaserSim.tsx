@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -73,7 +73,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
       // Title & Architecture
       ctx.fillStyle = "#e2e8f0";
       ctx.font = "bold 14px 'JetBrains Mono', monospace";
-      ctx.fillText("US 3,353,115 — THEODORE MAIMAN RUBY LASER (MAY 16, 1960)", 24, 28);
+      ctx.fillText("RUBY OPTICAL MASER (LASER)", 24, 32);
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "11px Inter, sans-serif";
@@ -337,10 +337,13 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Theodore Maiman Ruby Laser (US 3,353,115)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Theodore Maiman Ruby Laser (US 3,353,115)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
             Solid-state ruby optical maser: xenon flashlamp excitation, Cr³⁺ 3-level population
             inversion, and 694.3 nm stimulated photon cascade.
           </p>

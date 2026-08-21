@@ -1,14 +1,16 @@
 "use client";
 
-import { Radio, Zap } from "lucide-react";
+import { Radio, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SparkWaterfall } from "@/components/patents/visuals/SparkWaterfall";
 import { stepMarconiRadio } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function MarconiRadioSim() {
-  const { params, updateParam } = usePatentPhysics("us-586193-marconi-radio");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-586193-marconi-radio");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const antennaHeightMeters = params.aerialHeight ?? 88;
   const sparkPowerKv = params.sparkVoltage ?? 28;
   const [isSparking, setIsSparking] = useState<boolean>(false);
@@ -32,7 +34,9 @@ export function MarconiRadioSim() {
 
   const triggerSpark = () => {
     setIsSparking(true);
-    soundEngine.playContinuousTone(800, "sawtooth", 0.08);
+    if (!isAudioMuted) {
+      soundEngine.playContinuousTone(800, "sawtooth", 0.08);
+    }
     setTimeout(() => {
       setIsSparking(false);
       soundEngine.stopContinuousTone();
@@ -40,30 +44,58 @@ export function MarconiRadioSim() {
   };
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Marconi Spark-Gap RF Transmitter &amp; Grounded Monopole Simulator (US 586,193)
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Guglielmo Marconi Spark-Gap RF Transmitter (US 586,193)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Observe how elevated aerial capacitance coupled with an earth ground plane propagates RF
-            waves across the horizon.
+            Elevated aerial capacitance coupled with an earth ground plane radiating electromagnetic
+            wavefronts.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={triggerSpark}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-md transition-colors active:scale-95"
-        >
-          <Zap className="w-4 h-4" />
-          <span>Fire Spark Transmitter</span>
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={triggerSpark}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-amber-600 hover:bg-amber-700 text-white shadow-md transition-colors active:scale-95"
+          >
+            <Zap className="w-4 h-4" />
+            <span>Fire Spark</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsSparking(false);
+              soundEngine.stopContinuousTone();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Visual Canvas */}
