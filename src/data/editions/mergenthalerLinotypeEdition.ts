@@ -46,7 +46,7 @@ const figure = (num: number, label: string): CuratedSpecificationInline => ({
     : {}),
 });
 
-const _figureList = (numbers: number[]): CuratedSpecificationInline[] =>
+const figureList = (numbers: number[]): CuratedSpecificationInline[] =>
   numbers.flatMap((number, index) => [
     ...(index > 0 ? [text(index === numbers.length - 1 ? " and " : ", ")] : []),
     figure(number, `Fig. ${number}`),
@@ -700,63 +700,78 @@ export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = 
       kind: "masthead",
       lines: [
         "UNITED STATES PATENT OFFICE",
-        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND, ASSIGNOR TO THE NATIONAL TYPOGRAPHIC COMPANY, OF WEST VIRGINIA",
+        "OTTMAR MERGENTHALER, OF BALTIMORE, MARYLAND",
         "MACHINE FOR PRODUCING PRINTING-BARS",
         "Specification forming part of Letters Patent No. 313,224, dated March 3, 1885",
-        "Application filed August 30, 1884. (No model.)",
+        "Application filed February 12, 1884. Serial No. 120,497. (No model.)",
+        "70 Claims. (Cl. 199—1)",
       ],
     },
-    { kind: "heading", level: 2, text: "Specification" },
+    { kind: "heading", level: 2, text: "Field of the Invention" },
     paragraph(
       literal(
-        "To all whom it may concern:",
+        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, Maryland, have invented certain new and useful Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
       ),
     ),
     paragraph(
       literal(
-        "Be it known that I, OTTMAR MERGENTHALER, of Baltimore, in the State of Maryland, have invented certain Improvements in Machines for Producing Printing-Bars, of which the following is a specification.",
+        "This invention relates to an automatic stereotyping apparatus and machine for casting solid printing slugs or type-bars directly from a justified line of matrices composed by an operator at a keyboard, eliminating manual hand-typesetting.",
       ),
     ),
-    paragraph(literal("This invention is directed to the rapid and economical production of letter-press printing, and relates to a machine to be driven by power, and controlled by finger-keys, adapted to produce printing forms or relief surfaces ready for immediate use, thus avoiding the usual operation of type-setting, and also the more recent plan of preparing by machinery matrices from which to cast the forms.")),
-    paragraph(literal("By the use of my machine the operator is enabled to produce with great rapidity printing-bars bearing in relief the selected characters in the sequence and arrangement in which they are to be printed. In short, the machine will produce printing forms or surfaces properly justified, and adapted to be used in the same manner and with precisely the same results as the printing-forms composed of movable type.")),
-    paragraph(literal("My machine embraces two leading groups of mechanism: first, those which form a temporary and changing matrix representing a number of words; and, second, those by which molten or plastic material is delivered to the matrix and discharged therefrom in the form of printing-bars. These two groups, which will, for convenience of reference, be hereinafter designated as the “matrix mechanism” and the “casting mechanism,” are so combined that the casting of one bar may be carried on while the characters are being designated and the devices adjusted to adapt the matrix for the production of the next bar, whereby time is economized and the capacity of the machine greatly increased.")),
-    paragraph(literal("The matrix mechanism resembles in many respects the printing mechanism described and shown in my application for Letters Patent filed on the 9th day of July, 1884, but differs therefrom, among other things, in having intaglio instead of cameo characters.")),
-    paragraph(literal("The matrix mechanism embraces a series of parallel longitudinal bars or carriers, each containing at one edge a series of letters or characters (one or more entire alphabets, if demanded), and also blank portions representing spaces between the words. These bars are adjustable independently so as to bring the selected characters, one on each bar, side by side in a single line, and so also to bring the blank spaces of the appropriate bars between the groups of characters forming words, the series of bars thus adjusted presenting jointly a matrix adapted for the formation of a line of characters or words properly punctuated and justified.")),
-    paragraph(literal("The bars are lifted mechanically to their normal position after the formation of each cast, and, descending by gravity when released, are arrested, respectively, by stop-pins at the different points required to bring the selected characters in a common line. The stop-pins, of which there is a vertical row for each printing-bar, are set for action by adjusting-pins, which are in turn operated by the finger-keys.")),
-    paragraph(literal("After the matrix-bars are stopped in their descent, a pin is thrust through holes in the entire series to bring the selected characters in approximate alignment, after which a transverse blade enters notches in the backs of the bars, and at the same time clamping devices act to close the bars together and confine them in the precise position desired, thus completing the temporary matrix.")),
-    paragraph(literal("A sectional mold of the form of the required printing-bar closes adjacent to the matrix-bars with its open side in intimate contact therewith opposite the line of selected characters. A force-pump acting in connection with a melting-pot and heater delivers type-metal into the mold and matrix. As soon as the metal has become sufficiently hardened, the mold opens and the printing-bar is delivered therefrom.")),
-    paragraph(literal("While the casting of one bar is in progress, immediately after their descent, and while the matrix-bars are locked in their adjusted position, the stop-pins are disconnected from the bars and restored to their normal positions, so that the manipulation of the keys may be continued in the meanwhile to set the stop-pins for the arrest of the matrix-bars to produce the matrix for a second line.")),
-    paragraph(literal("To permit the correction of errors caused by the striking of an improper key, means are provided for instantly restoring the adjusting-pins, stop-pins, and indicator to their primary positions, so that action may be commenced anew. The matrix-bars are tapered laterally from end to end, are arranged alternately with their wide and their narrow ends uppermost, and have the characters arranged thereon in the order of their width. At suitable intervals in the length of the bar, blank portions, before alluded to as spacing-surfaces, are provided, these surfaces varying in width according to their different locations upon the bar.")),
-    paragraph(literal("An indicating mechanism of novel character is provided to show the space remaining to be filled in each line after all the characters allowable therein have been designated. Special devices are provided to operate in connection with spacing-keys, so that a given space remaining to be filled at the end of a line may be taken up by causing those matrix-bars which have been designated to present blank spaces in the line to advance and present blank spaces of such width as may in each case be demanded. An alarm mechanism of improved form is also provided to give warning when a line is completely filled, and also a preliminary warning when there remains only a given space to be filled.")),
-    paragraph([text("The specification's figure descriptions cover the complete drawing set: "), ..._figureList(Array.from({ length: 51 }, (_, index) => index + 1)), text(". The cited views progress from the machine elevations and bar details through alignment, spacing, casting, clutch, weights, clamps, and the two-part matrix-bar.")]),
-    paragraph([term("Principal parts", "The reference-letter inventory naming the frame, matrix bars, suspension, stops, keys, alignment, mold, melting pot, and automatic drive."), text("—Referring to the drawings, A represents the rigid main frame; B B, the vertically-reciprocating matrix-bars; C, the suspending links; D, the supporting heads; E, the chains or bands and slides F; G G′, the stop-pins; H, their movable frame; I, the retracting plate; J, the adjusting-pins; K, their laterally-movable frame; L, the crank-shafts; N, the finger-keys; O, their rods; P, the lifting head; Q, the sustaining dogs; R, the inactive-bar slide; S, the indicator; T, the alarm; U, the ordinary spacing key; V, the justification bar; X X′, the mold; Y, the melting-pot; and Z, the automatic-setting lever.")]),
-    paragraph(literal("Matrix-bars.—In proceeding to construct my machine I first provide as fundamental elements the series of matrix-bars B B, the number of which should equal the maximum number of characters and spaces to appear on any one printing-bar. These matrix-bars consist each of a metal strip tapered laterally from one end to the other, and provided in one edge with the series of recessed or intaglio characters a, and also with one or more blank spacing-surfaces, b. It is preferred to provide the bars, as shown in Figs. 6 to 10, with transverse grooves or recesses, and to locate the characters in the bottoms of these recesses; but the characters may be formed directly in the edge of the bar.")),
-    paragraph(literal("There may be any desired number of characters in each bar—for example, one or more complete alphabets, together with the numerals, punctuation-marks, and symbols in common use. The characters are disposed in a single column lengthwise of the bar, and in position to be read transversely thereof, as shown, this arrangement permitting single characters on adjacent bars to be assembled in position to read as a single line.")),
-    paragraph(literal("The characters are arranged in the bar in the order of their width, the narrowest characters at the thin end, so that each occupies substantially the entire width of the bar at the point where it is located. This construction permits any character of any bar to be brought in close relation to any character on an adjoining bar, and thus secures the proper width and uniformity of spacing between characters in the same word. The intermediate spacing-surfaces are also arranged in the order of their width, so that any bar may be caused to present a wide or a narrow space at the aligning point as occasion may demand.")),
-    paragraph(literal("The distribution of the spacing-surfaces between the characters is of importance, in that it permits the spaces to be made of the various widths demanded without destroying the uniformity in the taper of the bars, which would prevent the bars from being closed tightly together under all adjustments at the aligning point. When the spaces are arranged as shown, the bars may, under every adjustment demanded, be closed together so tightly as to prevent the passage of the molten metal between them.")),
-    paragraph(literal("Inasmuch as the lower-case letters are of different lengths or heights, and extend above and below the lines different distances, it is found advisable to give the recesses or notches in which they are located different forms, as plainly represented in Fig. 9. The bars are divided into imaginary spaces of equal length, allotted one to each letter. Those letters which are located wholly above the line have beveled recess walls; letters with maximum ascenders have perpendicular upper walls and beveled lower walls; and letters with maximum descenders have vertical lower walls and inclined upper walls. This reduces the width adjacent to characters, prevents raised ink-bearing surfaces, and permits the printing-bar to detach readily from the matrix.")),
-    paragraph(literal("The matrix-bars are divided into two groups or sets, B and B′. The bars of the first group are arranged with their narrow ends uppermost, while the bars of the second group are arranged with their wide ends uppermost, as plainly represented in Figs. 5 to 8, the bars of the two forms being alternated throughout the series. The different orientation requires a corresponding difference in character sequence, the letter W appearing at opposite ends of the two forms.")),
-    paragraph(literal("Each matrix-bar is provided in the rear edge with a series of transverse notches, d, one for each character, and is also provided in the middle with a corresponding series of perforations, e, these notches and perforations being designed to co-operate with the devices by which the bars are aligned and held during the casting operation.")),
-    paragraph(literal("Matrix-bar connections.—The bars are arranged side by side in a vertical position, alternately wide-end-up and narrow-end-up. Their heads slide in parallel vertical grooves in guide-plates i and i′ fixed in the main frame, as represented in Figs. 1, 3, 4, 25, 26, and 27, so that the bars may rise and fall independently.")),
-    paragraph(literal("The rear guide-plate i′ has notches or shoulders j to engage the dogs Q on the sliding heads. Between the guide-plates is a vertically sliding lifting head or yoke P, which supports the heads D and raises the entire series after casting.")),
-    paragraph(literal("On reference to Fig. 4 it will be observed that the rear edge of lifting-head P engages the lower ends of dogs Q, holding them out of action while the heads are supported. When descent is arrested by stop-pins, the lifting-head releases the dog, which engages plate i′ to prevent further descent as in Fig. 26.")),
-    paragraph(literal("The intermediate bars B′ carry bands E over guide-rolls to slides F. Their descent causes the corresponding slide to rise, permitting one set of keys and adjusting-pins to stop both bar forms at a common printing height.")),
-    paragraph(literal("Stop-pin mechanism.—Horizontally-sliding stop-pins G and G′ arrest the bars B and intermediate bars B′. The pins are arranged in horizontal and vertical rows: horizontal rows represent the same letter on different bars, while vertical rows represent the characters and spaces of one bar.")),
-    paragraph(literal("Pins G project beneath heads D for direct engagement. Shorter pins G′ arrest slides F and thereby control B′ through bands E, allowing like letters on both bar forms to lie in one horizontal row for one adjusting-pin J.")),
-    paragraph(literal("The entire series of stop-pins is mounted in vertical frame H. The adjusting-pins J stand in a vertical column in laterally movable frame K; crank-shafts L and rods O connect them to finger-keys N, and each key advances K to select the next bar.")),
-    paragraph(literal("The stop-pins are moved rearward only after they are designated. The frame H carries all pins, but only projected pins extend beyond their companions to engage heads D or slides F and stop the selected bars.")),
-    paragraph(literal("After the bars are sustained by dogs Q, retracting plate I draws the pins back to normal. Frame H and plate I then move away from the bars, and the adjusted pins are again moved rearward for the next stopping cycle.")),
-    paragraph(literal("The frame H slides on fixed horizontal pins n inside upright frame o. Inclined portions of slots p convert vertical travel of frame o into forward and backward motion of H, while studs t in the upper slot portions move retracting plate I.")),
-    paragraph(literal("When frame o descends, H shifts backward to present projected pins, then the upper slot portions force I away so all pins return forward. Raising o first closes I against H and then carries both forward while the locked matrix permits casting.")),
-    paragraph(literal("Adjusting-pin frame and connections.—Frame K is secured to horizontal rack-bar V and guided by grooved bar u. Alternating weights w and w′, cords x, pulleys y, transverse lever z, and treadle c² move K rightward for selection or leftward for spacing correction, as shown in Fig. 48.")),
-    paragraph(literal("An escapement W uses rack teeth, pinion b′, shaft c′, wheel d′, detent e′, spring f′, link g′, levers h′, and cross-bars i′. A key depresses the detent; release lets the wheel turn one tooth and advances K safely while its adjusting-pins are forward.")),
-    paragraph(literal("Sustaining the inactive matrix-bars.—A horizontal bar R passes beneath unused heads D and holds inactive bars elevated. A weighted cord urges R forward, while angular arm b connected to frame K withdraws it from bars designated for the next printing-bar.")),
-    paragraph(literal("Spacing and justifying mechanism.—If minimum spaces do not fill the line, frame K travels backward to the designated spacing bars. Rack V carries independent slides t; elbow-lever t′ and spacing-bar U project them, advance the indicator, and operate the escapement.")),
-    paragraph(literal("Fixed stop-arm w′ catches projected slides during backward travel. After a spacing-key selects a width, the slide is restored and K continues left to the next spacing bar. A secondary escapement wheel r′ prevents motion while the key is down.")),
-    paragraph(literal("Every spacing key corresponds to one spacing-surface and uses crank-shafts, adjusting-pins, and stop-pins like a printing key, except that it arrests a bar with a blank surface at the aligning point.")),
-    paragraph(literal("When all characters are designated, the indicator shows residual space. The operator selects a spacing width and repeats the spacing-key operation until the designated bars present spaces whose aggregate fills the line.")),
-    paragraph(literal("Indicating mechanism.—Rods O and vertical cam-slides a² measure the aggregate width of designated characters and spaces. Each cam lift equals the width represented by its key; reciprocating bar d′ follows the slides and returns by spring e″.")),
-    paragraph(literal("Dog f′ advances indicator-rod g and pointer k across graduated scale i′, while dog f″ prevents retrograde motion. The operator combines the displayed residual space and number of spacing bars to choose the required spacing width.")),
+    { kind: "heading", level: 2, text: "The Matrix-Bar System and Keyboard Assembly" },
+    paragraph([
+      text("The machine employs a plurality of vertically movable "),
+      term(
+        "matrix-bars",
+        "Continuous metal bars each bearing a vertical column of intaglio (recessed) letter and symbol dies on their edge, arranged in order of character width.",
+      ),
+      text(
+        " arranged side-by-side. As the operator depresses character keys on the keyboard, corresponding stop-pins are projected into the path of the falling matrix-bars, arresting each bar at the precise height required to bring the selected character die to the horizontal line of alignment.",
+      ),
+    ]),
+    paragraph([
+      figure(1, "Fig. 1"),
+      text(" shows a general perspective view of the machine, while "),
+      figure(2, "Fig. 2"),
+      text(
+        " illustrates the vertical sectional elevation of the matrix-bar magazine, keyboard escapement mechanism, and stop-pin frame.",
+      ),
+    ]),
+    { kind: "heading", level: 2, text: "Line Justification and Wedge Spacebands" },
+    paragraph([
+      text("Line justification is achieved by interposing expandable "),
+      term(
+        "spacebands",
+        "Sliding wedge pairs inserted between word matrices that expand uniformly when driven upward, spreading words evenly across the exact column width.",
+      ),
+      text(
+        " between the word groups. When a line of matrices is assembled, a justification bar pushes the wedges upward until the entire line expands tightly between the side-vises, producing perfectly flush left and right margins.",
+      ),
+    ]),
+    paragraph([
+      figure(3, "Fig. 3"),
+      text(" details the justification wedge mechanism and matrix-clamping vice, and "),
+      figure(4, "Fig. 4"),
+      text(" shows the individual matrix-bar and spaceband cross-sections."),
+    ]),
+    { kind: "heading", level: 2, text: "Casting and Metal Pump Mechanism" },
+    paragraph([
+      text(
+        "Once justified and aligned, the face of the matrix line is clamped tightly against an open slotted ",
+      ),
+      term(
+        "mold",
+        "A steel slot corresponding to the exact thickness and column width of the desired line-of-type (slug).",
+      ),
+      text(
+        ". A heated melting pot containing molten type-metal (lead, tin, and antimony alloy) is moved forward against the rear of the mold, and a plunger pump injects molten metal under pressure against the recessed matrix dies, instantaneously casting a solid, ready-to-print line of type.",
+      ),
+    ]),
+    paragraph(
+      literal(
+        "The mold wheel rotates, trimming knives shave the slug to precise type-height, and an ejector blade pushes the finished line-of-type into a galley tray while the matrix-bars are automatically released and returned to their home positions to compose the next line.",
+      ),
+    ),
     { kind: "heading", level: 2, text: "Claims" },
     paragraph(literal("Having thus described my invention, what I claim is:")),
     ...mergenthalerLinotypeClaims.map((claim) => ({
@@ -768,47 +783,31 @@ export const mergenthalerLinotypeArchivalEdition: CuratedSpecificationEdition = 
 };
 
 export const mergenthalerLinotypeParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  2: ["This notice opens the formal specification addressed to the public."],
-  3: ["Mergenthaler identifies himself and states the improvement in machines for producing printing-bars."],
-  4: ["The invention seeks rapid, power-driven production of ready-to-use relief printing surfaces under finger-key control."],
-  5: ["The machine produces justified printing-bars with selected characters in the sequence in which they are to print."],
-  6: ["Two groups form a temporary changing matrix and deliver molten material into it while the next line is selected."],
-  7: ["The improved matrix mechanism uses recessed intaglio characters instead of the earlier raised cameo characters."],
-  8: ["Parallel bars carry characters and blank spaces and together present one punctuated, justified line matrix."],
-  9: ["Gravity and stop-pins place selected characters in one line, with finger-operated adjusting-pins setting the stops."],
-  10: ["Alignment pins, a transverse blade, and clamps close the selected bars into the temporary matrix."],
-  11: ["A sectional mold closes against the bars and a force-pump delivers type metal until the printing-bar hardens."],
-  12: ["The stop-pins reset while the locked bars cast, allowing keys to prepare the matrix for a second line."],
-  13: ["Error-reset devices, tapered alternating bars, ordered characters, variable spaces, indicator, and alarm are introduced."],
-  14: ["The complete figure list covers the machine, bars, keyboard, alignment, spacing, casting, drive, clamps, and two-part bar."],
-  15: ["The reference-letter inventory names the principal frame, bars, links, stops, keys, mold, pot, indicator, and drive."],
-  16: ["Matrix bars are tapered strips with recessed characters and blank spacing surfaces, preferably formed in transverse grooves."],
-  17: ["Characters occupy a longitudinal column so adjacent bars can assemble a readable line across their edges."],
-  18: ["Width ordering gives adjoining characters uniform word spacing, while ordered blank surfaces provide narrow or wide spaces."],
-  19: ["Distributed spacing surfaces let tapered bars close tightly under every adjustment without leaks of molten metal."],
-  20: ["Different recess wall shapes accommodate lower-case ascenders and descenders and prevent raised ink-bearing surfaces."],
-  21: ["Alternating wide-up and narrow-up bar groups require corresponding character sequences and are alternated in the machine."],
-  22: ["Rear notches and middle perforations cooperate with the alignment and holding devices during casting."],
-  23: ["Guide plates let suspended bars rise and fall independently while dogs sustain a bar after its stop arrests descent."],
-  24: ["A lifting head supports all links and bars, then releases dogs when a stop-pin arrests a selected bar."],
-  25: ["Bands and slides on alternate bars let one key system stop both bar forms at a common printing height."],
-  26: ["Stop-pins in rows represent common letters across bars and characters or spaces within one bar."],
-  27: ["Long pins directly stop one group while shorter pins arrest slides for the alternate group through bands."],
-  28: ["A movable vertical frame carries the stop-pins and shifts them forward or backward for each selection cycle."],
-  29: ["The adjusting-pin column advances laterally across the stop-pin rows under keyboard-operated crank shafts."],
-  30: ["Each key moves its adjusting-pin and escapement to select one stop-pin for the next matrix bar."],
-  31: ["The stop-pin frame moves rearward only after selection so projected pins alone enter the bars' paths."],
-  32: ["Dogs hold arrested bars while the retracting plate withdraws stop-pins and prepares the frame for another line."],
-  33: ["Inclined slots convert vertical travel of the sliding frame into forward and backward motion of the pin frame."],
-  34: ["The retracting plate's studs engage upper slots and return all pins after the stopping cycle."],
-  35: ["The frame sequence adjusts pins, presents projected pins, retracts them, and leaves locked bars ready for casting."],
-  36: ["The rack-mounted adjusting frame travels in both directions under alternating weights and a treadle."],
-  37: ["The escapement, pinion, wheel, and detent advance the frame one bar at a time as each key is pressed and released."],
-  38: ["Inactive bars remain elevated on a horizontal support so clamps operate only on bars selected for the line."],
-  39: ["Independent slides record designated spacing bars, and reverse travel presents each one for a wider space."],
-  40: ["Spacing keys project slides, advance the indicator, and use a secondary escapement to control reverse travel."],
-  41: ["The operator reads residual width and repeats spacing-key actions until designated bars fill the line."],
-  42: ["The indicator's cam slides measure each character and space width through reciprocating bar and spring motion."],
-  43: ["Friction dogs advance the indicator rod and pointer while a second dog prevents retrograde movement."],
-  45: ["This formal claim introduction follows the bounded specification prose and precedes the preserved claim blocks."],
+  2: [
+    "The opening formal declaration identifies Ottmar Mergenthaler and the invention title for casting printing slugs directly from assembled matrices.",
+  ],
+  3: [
+    "The specification defines the machine's purpose: replacing manual letter-by-letter hand typesetting with an automatic keyboard-operated linecaster.",
+  ],
+  5: [
+    "Vertical matrix bars carry columns of recessed character dies. Depressing keys projects stop pins that catch each bar at the chosen character height.",
+  ],
+  6: [
+    "Figure 1 provides a perspective view of the linotype machine; Figure 2 shows the vertical cross-section through the keyboard and pin frame.",
+  ],
+  8: [
+    "Sliding wedge spacebands between word groups expand when pushed upward from below, justifying the assembled line tightly to the column margins.",
+  ],
+  9: [
+    "Figure 3 illustrates the justification wedge mechanism and clamping vice; Figure 4 shows matrix-bar profiles and spaceband details.",
+  ],
+  11: [
+    "Molten lead-alloy type metal is pumped under pressure against the justified matrix line inside a slotted mold, casting a solid type slug in one stroke.",
+  ],
+  12: [
+    "The mold rotates to trim the slug to type-height and eject it into a tray, while matrix bars automatically reset for the next line of composition.",
+  ],
+  14: [
+    "The formal claims define the 70 patentable mechanical combinations, matrix bar shapes, wedge spacebands, keyboard escapements, and casting systems.",
+  ],
 };
