@@ -1,15 +1,19 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface MaimanRubyLaserSimProps {
   interactive?: boolean;
 }
 
 export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimProps) {
-  const { params, updateParam } = usePatentPhysics("us-3353115-maiman-ruby-laser");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-3353115-maiman-ruby-laser");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFiring, setIsFiring] = useState(false);
 

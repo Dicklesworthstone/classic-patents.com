@@ -49,10 +49,17 @@ describe("grammeDynamoArchivalEdition", () => {
       expect(publicText).toContain(figure);
     }
     const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
+    expectedCropFiles[0] = "fig-1-source-crop-v3.png";
+    expectedCropFiles[1] = "fig-2-source-crop-v3.png";
     expectedCropFiles[2] = "fig-3-source-crop-v2.png";
     expectedCropFiles[3] = "fig-4-source-crop-v2.png";
-    expectedCropFiles[6] = "fig-7-source-crop.png";
+    expectedCropFiles[4] = "fig-5-source-crop-v3.png";
     expectedCropFiles[5] = "fig-6-source-crop-v2.png";
+    expectedCropFiles[6] = "fig-7-source-crop.png";
+    expectedCropFiles[7] = "fig-8-source-crop-v3.png";
+    expectedCropFiles[8] = "fig-9.png";
+    expectedCropFiles[9] = "fig-10-source-crop-v3.png";
+    expectedCropFiles[10] = "fig-11-source-crop-v3.png";
     expectedCropFiles[11] = "fig-12-source-crop-v3.png";
     expectedCropFiles[12] = "fig-13-source-crop-v3.png";
     expectedCropFiles[13] = "fig-14-source-crop-v5.png";
