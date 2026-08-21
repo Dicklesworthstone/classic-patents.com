@@ -334,6 +334,14 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    secondaryCopperWireMat.wireframe = cutaway;
+    secondaryCopperWireMat.needsUpdate = true;
+    baseMahoganyMat.transparent = cutaway;
+    baseMahoganyMat.opacity = cutaway ? 0.4 : 1.0;
+    baseMahoganyMat.needsUpdate = true;
+  };
+
   const dispose = () => {
     for (const d of disposables) {
       d.dispose();
@@ -353,6 +361,7 @@ export function buildTeslaCoilModel(): TeslaCoilModel {
     streamerGeos,
     capacitorGroup,
     updateKinematics,
+    setCutaway,
     dispose,
   };
 }

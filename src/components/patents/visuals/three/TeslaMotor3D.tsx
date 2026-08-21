@@ -34,7 +34,6 @@ export function TeslaMotor3D() {
   // Electrical & Mechanical Simulation State
   const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
-  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const acFrequencyHz = teslaMotorPhaseHz(params);
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const fig13Unavailable = phaseCount === 3;
@@ -244,19 +243,6 @@ export function TeslaMotor3D() {
             ) : (
               <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
-            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
-              isCutaway
-                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
-                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
-            }`}
-            title={isCutaway ? "Solid Stator Housing" : "Transparent Stator Cutaway"}
-            aria-label={isCutaway ? "Solid Stator Housing" : "Transparent Stator Cutaway"}
-          >
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
