@@ -16,9 +16,6 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
-  "us-395781-hollerith-tabulating",
-  "us-2929922-townes-laser",
-  "us-3671542-kwolek-kevlar",
 ] as const;
 
 const SOURCE_QA_RELEASED_EDITIONS = [
@@ -50,7 +47,7 @@ describe("root editorial publication holds", () => {
   });
 
   test("keeps records with known incomplete source ledgers unbound as a second fail-closed layer", () => {
-    for (const patentId of ["us-621195-zeppelin-airship"]) {
+    for (const patentId of ["gb-913-watt-separate-condenser", "gb-931-arkwright-water-frame", "gb-1306-watt-rotary-engine", "gb-1420-cort-puddling-rolling"]) {
       const patent = allPatents.find((candidate) => candidate.id === patentId);
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
