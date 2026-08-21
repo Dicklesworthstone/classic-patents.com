@@ -195,7 +195,7 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
   frontMirrorMount.add(frontMirror);
   root.add(frontMirrorMount);
 
-  // 4. Central Gain Tube (x = -0.3, Length = 2.6)
+  // 4. Central Gain Tube with Brewster Angle Quartz End Windows (x = -0.3, Length = 2.6)
   const tubeGeo = new THREE.CylinderGeometry(0.32, 0.32, 2.6, 32);
   const laserTube = new THREE.Mesh(tubeGeo, glassTubeMat);
   laserTube.rotation.z = Math.PI / 2;
@@ -207,6 +207,28 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
   gainCore.rotation.z = Math.PI / 2;
   gainCore.position.set(-0.3, 0, 0);
   root.add(gainCore);
+
+  // Brewster Angle Quartz Windows at tube ends (~56° angle of incidence)
+  const brewsterGeo = new THREE.CylinderGeometry(0.33, 0.33, 0.04, 24);
+  const brewsterL = new THREE.Mesh(brewsterGeo, glassTubeMat);
+  brewsterL.rotation.z = Math.PI / 3;
+  brewsterL.position.set(-1.6, 0, 0);
+  root.add(brewsterL);
+
+  const brewsterR = new THREE.Mesh(brewsterGeo, glassTubeMat);
+  brewsterR.rotation.z = Math.PI / 3;
+  brewsterR.position.set(1.0, 0, 0);
+  root.add(brewsterR);
+
+  // RF Gas Discharge Electrodes (Anode and Cathode gas feed tubes)
+  const rfGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.5, 12);
+  const rf1 = new THREE.Mesh(rfGeo, brassMat);
+  rf1.position.set(-1.0, 0.45, 0);
+  root.add(rf1);
+
+  const rf2 = new THREE.Mesh(rfGeo, brassMat);
+  rf2.position.set(0.4, 0.45, 0);
+  root.add(rf2);
 
   // Gain tube mounting stanchions
   for (const x of [-1.2, 0.6]) {
@@ -244,7 +266,7 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
   outputBeam.position.set(1.92, 0, 0);
   root.add(outputBeam);
 
-  // 8. Receiver / Detector Station (x = 2.6)
+  // 8. Receiver / Detector Station (x = 2.6) with Photodetector Target
   const detectorHousing = new THREE.Group();
   detectorHousing.position.set(2.6, 0, 0);
 
@@ -261,6 +283,21 @@ export function buildTownesLaserModel(): TownesLaserModelNodes {
   lensHolder.rotation.z = Math.PI / 2;
   lensHolder.position.set(-0.18, 0, 0);
   detectorHousing.add(lensHolder);
+
+  // TEM00 Gaussian Spot Profile on Detector Target
+  const spotDiscGeo = new THREE.CircleGeometry(0.18, 24);
+  const spotDiscMat = addMat(
+    new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.0,
+    }),
+  );
+  const spotDisc = new THREE.Mesh(spotDiscGeo, spotDiscMat);
+  spotDisc.rotation.y = -Math.PI / 2;
+  spotDisc.position.set(-0.19, 0, 0);
+  detectorHousing.add(spotDisc);
+
   root.add(detectorHousing);
 
   return {

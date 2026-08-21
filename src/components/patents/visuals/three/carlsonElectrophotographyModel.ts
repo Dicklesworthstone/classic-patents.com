@@ -238,7 +238,59 @@ export function buildCarlsonElectrophotographyModel(): CarlsonElectrophotography
   root.add(tonerParticles);
 
   // ==========================================
-  // 6. PAPER TRANSFER & THERMAL FUSER ROLLERS (Station 4 & 5)
+  // 6. CLEANING BLADE & RESIDUAL TONER COLLECTOR SUMP (Station 6: Left-Bottom)
+  // ==========================================
+  const cleanerGroup = new THREE.Group();
+  cleanerGroup.position.set(-1.0, -0.4, 0);
+
+  const sumpGeo = new THREE.BoxGeometry(0.5, 0.4, 1.9);
+  const sumpMesh = new THREE.Mesh(sumpGeo, chassisMat);
+  cleanerGroup.add(sumpMesh);
+
+  // Polyurethane wiper blade
+  const bladeGeo = new THREE.BoxGeometry(0.18, 0.04, 1.85);
+  const bladeMat = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b,
+    roughness: 0.4,
+    metalness: 0.2,
+  });
+  materials.push(bladeMat);
+  const bladeMesh = new THREE.Mesh(bladeGeo, bladeMat);
+  bladeMesh.rotation.z = -Math.PI / 4;
+  bladeMesh.position.set(0.2, 0.15, 0);
+  cleanerGroup.add(bladeMesh);
+
+  root.add(cleanerGroup);
+
+  // ==========================================
+  // 7. GLASS DOCUMENT PLATEN & SCANNER CARRIAGE
+  // ==========================================
+  const platenGroup = new THREE.Group();
+  platenGroup.position.set(-0.2, 1.6, 0);
+
+  const platenGlassGeo = new THREE.BoxGeometry(2.4, 0.05, 1.8);
+  const platenGlassMat = new THREE.MeshPhysicalMaterial({
+    color: 0xe2e8f0,
+    transmission: 0.9,
+    roughness: 0.05,
+    transparent: true,
+    opacity: 0.7,
+  });
+  materials.push(platenGlassMat);
+  const platenMesh = new THREE.Mesh(platenGlassGeo, platenGlassMat);
+  platenGroup.add(platenMesh);
+
+  // Document paper sheet on platen
+  const docGeo = new THREE.PlaneGeometry(1.8, 1.3);
+  const docMesh = new THREE.Mesh(docGeo, paperMat);
+  docMesh.rotation.x = -Math.PI / 2;
+  docMesh.position.set(0, 0.03, 0);
+  platenGroup.add(docMesh);
+
+  root.add(platenGroup);
+
+  // ==========================================
+  // 8. PAPER TRANSFER & THERMAL FUSER ROLLERS (Station 4 & 5)
   // ==========================================
   // Continuous Paper Web
   const paperGeo = new THREE.PlaneGeometry(3.6, 1.6);

@@ -21,7 +21,10 @@ export interface HaberAmmoniaModelNodes {
   heatExchangerCoil: THREE.Mesh;
   condenserLiquidMesh: THREE.Mesh;
   flowParticles: THREE.Points;
+  reactorWallMesh?: THREE.Mesh;
+  hxShellMesh?: THREE.Mesh;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
@@ -37,6 +40,16 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
     metalness: 0.85,
   });
   materials.push(steelMat);
+
+  const cutawayShellMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.35,
+    metalness: 0.85,
+    transparent: true,
+    opacity: 0.25,
+    side: THREE.DoubleSide,
+  });
+  materials.push(cutawayShellMat);
 
   const darkFlangeMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
@@ -162,7 +175,7 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
   reactorWallMesh.castShadow = true;
   reactorGroup.add(reactorWallMesh);
 
-  // Heavy Bolted Flanges (Top, Middle, Bottom)
+  // Heavy Bolted Flanges (Top, Middle, Bottom) with Perimeter Stud Bolts
   const flangeGeo = new THREE.CylinderGeometry(0.68, 0.68, 0.18, 24);
   const topFlange = new THREE.Mesh(flangeGeo, steelMat);
   topFlange.position.set(0, 3.0, 0);
@@ -176,11 +189,38 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
   btmFlange.position.set(0, 0.15, 0);
   reactorGroup.add(btmFlange);
 
-  // Solid Catalyst Bed (Inside / Cutaway core)
+  // High-Pressure Flange Stud Bolts (12 high-tensile alloy steel bolts per flange)
+  const boltGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.26, 8);
+  for (let b = 0; b < 12; b++) {
+    const angle = (b * Math.PI * 2) / 12;
+    const bx = Math.cos(angle) * 0.61;
+    const bz = Math.sin(angle) * 0.61;
+
+    const bTop = new THREE.Mesh(boltGeo, darkFlangeMat);
+    bTop.position.set(bx, 3.0, bz);
+    reactorGroup.add(bTop);
+
+    const bMid = new THREE.Mesh(boltGeo, darkFlangeMat);
+    bMid.position.set(bx, 1.5, bz);
+    reactorGroup.add(bMid);
+
+    const bBtm = new THREE.Mesh(boltGeo, darkFlangeMat);
+    bBtm.position.set(bx, 0.15, bz);
+    reactorGroup.add(bBtm);
+  }
+
+  // Solid Catalyst Bed (Inside / Cutaway core with wire mesh liner)
   const catBedGeo = new THREE.CylinderGeometry(0.42, 0.42, 1.8, 20);
   const catalystBed = new THREE.Mesh(catBedGeo, catalystMat);
   catalystBed.position.set(0, 1.5, 0.1);
   reactorGroup.add(catalystBed);
+
+  // High-Pressure Bourdon Tube Pressure Gauge (0 - 300 atm)
+  const gaugeGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.08, 16);
+  gaugeGeo.rotateZ(Math.PI / 2);
+  const gaugeMesh = new THREE.Mesh(gaugeGeo, copperPipeMat);
+  gaugeMesh.position.set(0.68, 2.6, 0);
+  reactorGroup.add(gaugeMesh);
 
   // Catalyst Thermal Glow Point Light
   const catalystGlowLight = new THREE.PointLight(0xf59e0b, 2.0, 4.0);
@@ -282,6 +322,16 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
   const flowParticles = new THREE.Points(particleGeo, particleMat);
   root.add(flowParticles);
 
+  const setCutaway = (cutaway: boolean) => {
+    if (cutaway) {
+      reactorWallMesh.material = cutawayShellMat;
+      hxShellMesh.material = cutawayShellMat;
+    } else {
+      reactorWallMesh.material = darkFlangeMat;
+      hxShellMesh.material = steelMat;
+    }
+  };
+
   return {
     root,
     compressorPiston,
@@ -291,7 +341,10 @@ export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
     heatExchangerCoil,
     condenserLiquidMesh,
     flowParticles,
+    reactorWallMesh,
+    hxShellMesh,
     materials,
+    setCutaway,
   };
 }
 

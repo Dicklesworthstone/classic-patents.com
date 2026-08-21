@@ -181,10 +181,26 @@ export function buildNoycePlanarIcModel(): NoycePlanarIcModelResult {
   substrateMesh.receiveShadow = true;
   rootGroup.add(substrateMesh);
 
-  // 5. 9 Isolated N-Type Diffused Wells
+  // 5. 9 Isolated N-Type Diffused Wells with P-Base & N-Emitter regions
   const nWellsGroup = new THREE.Group();
+  const pBaseMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xec4899,
+      roughness: 0.3,
+      metalness: 0.7,
+    }),
+  );
+  const nEmitterMat = trackMat(
+    new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      roughness: 0.25,
+      metalness: 0.85,
+    }),
+  );
+
   for (let x = -2.2; x <= 2.2; x += 2.2) {
     for (let z = -2.2; z <= 2.2; z += 2.2) {
+      // N-Collector well
       const well = new THREE.Mesh(
         trackGeo(new THREE.BoxGeometry(1.5, 0.18, 1.5)),
         materials.nDiffused,
@@ -192,11 +208,21 @@ export function buildNoycePlanarIcModel(): NoycePlanarIcModelResult {
       well.position.set(x, 0.12, z);
       well.castShadow = true;
       nWellsGroup.add(well);
+
+      // P-Base diffused region inside well
+      const pBase = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.9, 0.08, 0.9)), pBaseMat);
+      pBase.position.set(x, 0.24, z);
+      nWellsGroup.add(pBase);
+
+      // N-Emitter diffused region inside base
+      const nEmit = new THREE.Mesh(trackGeo(new THREE.BoxGeometry(0.45, 0.06, 0.45)), nEmitterMat);
+      nEmit.position.set(x, 0.3, z);
+      nWellsGroup.add(nEmit);
     }
   }
   rootGroup.add(nWellsGroup);
 
-  // 6. Thermally Grown SiO2 Passivation Layer
+  // 6. Thermally Grown SiO2 Passivation Layer with Contact Via Windows
   const oxideLayer = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(7.8, 0.35, 7.8)),
     materials.siliconDioxide,
@@ -231,6 +257,31 @@ export function buildNoycePlanarIcModel(): NoycePlanarIcModelResult {
     bridge.castShadow = true;
     metalGroup.add(bridge);
   }
+
+  // Gold Wire Bonds connecting bond pads to package leadframe fingers
+  for (let f = 0; f < 7; f++) {
+    const fX = -4.2 + f * 1.4;
+    [-1, 1].forEach((dir) => {
+      const padPos = new THREE.Vector3(fX * 0.8, 0.58, dir * 3.6);
+      const leadPos = new THREE.Vector3(fX, -0.58, dir * 5.0);
+      const midPos = new THREE.Vector3()
+        .addVectors(padPos, leadPos)
+        .multiplyScalar(0.5)
+        .add(new THREE.Vector3(0, 0.8, 0));
+
+      const wireCurve = new THREE.QuadraticBezierCurve3(padPos, midPos, leadPos);
+      const wireGeo = trackGeo(new THREE.TubeGeometry(wireCurve, 16, 0.035, 8, false));
+      const wireMesh = new THREE.Mesh(wireGeo, materials.goldBondWire);
+      metalGroup.add(wireMesh);
+
+      // Gold Ball Bond at pad
+      const ballGeo = trackGeo(new THREE.SphereGeometry(0.08, 8, 8));
+      const ballMesh = new THREE.Mesh(ballGeo, materials.goldBondWire);
+      ballMesh.position.copy(padPos);
+      metalGroup.add(ballMesh);
+    });
+  }
+
   rootGroup.add(metalGroup);
 
   // 8. Logic Signal Pulse Particles

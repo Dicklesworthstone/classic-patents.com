@@ -190,6 +190,22 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   crankPin.castShadow = true;
   flywheelGroup.add(crankPin);
 
+  // Heart-Shaped Cam on Main Driving Shaft (drives curved needle rocker arm)
+  const camGeo = new THREE.CylinderGeometry(0.55, 0.45, 0.35, 24);
+  geometriesToDispose.push(camGeo);
+  const heartCam = new THREE.Mesh(camGeo, brass);
+  heartCam.rotation.z = Math.PI / 2;
+  heartCam.position.set(0.6, 1.8, 0);
+  heartCam.castShadow = true;
+  rootGroup.add(heartCam);
+
+  // Leaf Spring Thread Tensioner Disc Assembly on Upper Girder
+  const tensionerGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.12, 16);
+  geometriesToDispose.push(tensionerGeo);
+  const tensioner = new THREE.Mesh(tensionerGeo, brass);
+  tensioner.position.set(-0.2, 2.1, 0.3);
+  rootGroup.add(tensioner);
+
   // --- 4. VIBRATING CURVED NEEDLE ARM (Claim 1) ---
   const needleArmGroup = new THREE.Group();
   needleArmGroup.position.set(0.6, 1.8, 0.6);
@@ -203,6 +219,14 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
   armMesh.rotation.z = -0.3;
   armMesh.castShadow = true;
   needleArmGroup.add(armMesh);
+
+  // Cam Follower Roller on Needle Arm
+  const followerGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.2, 12);
+  geometriesToDispose.push(followerGeo);
+  const follower = new THREE.Mesh(followerGeo, polishedSteel);
+  follower.rotation.x = Math.PI / 2;
+  follower.position.set(0, 0, -0.3);
+  needleArmGroup.add(follower);
 
   // Curved Eye-Pointed Steel Needle (US Patent 4,750 Claim 1)
   const needleCurve = new THREE.QuadraticBezierCurve3(
