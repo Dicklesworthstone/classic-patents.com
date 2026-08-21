@@ -1,8 +1,5 @@
 import type { Patent } from "@/types/patent";
-import {
-  manualWattClaimText,
-  wattSeparateCondenserArchivalEdition,
-} from "../editions/wattSeparateCondenserEdition";
+import { manualWattClaimText } from "../editions/wattSeparateCondenserEdition";
 
 const wattFigureCallouts: Record<
   string,
@@ -120,15 +117,9 @@ export const wattSeparateCondenserPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/gb-913-watt-separate-condenser.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB176900913A/en",
   usptoClassification: "Thermodynamic Power Cycles / Steam Condensers & Engines",
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-913-watt-separate-condenser-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents Editorial Team",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "ba8638c99df583d72958f9ef8125bc30cd4e0f8784656cd561aecdc58b8b8fad",
-  },
-  archivalEdition: wattSeparateCondenserArchivalEdition,
+  // Publication hold: the pinned PDF is a 2026 Typst reconstruction, not a
+  // primary historical facsimile. Keep the editorial WIP out of the visitor
+  // source face until a genuine primary facsimile is pinned and reviewed.
   originalText:
     "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, JAMES WATT, of Glasgow, in Scotland, Merchant, send greeting.\n\nWHEREAS His most Excellent Majesty King George the Third did give and grant unto me His special licence for my NEW INVENTED METHOD OF LESSENING THE CONSUMPTION OF STEAM AND FUEL IN FIRE ENGINES...\n\nFirst, That vessel in which the powers of steam are to be employed to work the engine, which is called the cylinder in common fire engines, and which I call the steam vessel, must, during the whole time the engine is at work, be kept as hot as the steam that enters it; first, by inclosing it in a case of wood... secondly, by surrounding it with steam or other heated bodies; and, thirdly, by suffering neither water nor any other substance colder than the steam to enter or touch it during that time.\n\nSecondly, In engines that are to be worked wholly or partially by condensation of steam, the steam is to be condensed in vessels distinct from the steam vessels or cylinders, although occasionally communicating with them; these vessels I call condensers; and, whilst the engines are working, these condensers ought at least to be kept as cold as the air in the neighbourhood of the engines...",
   plainEnglishExplanation: {

@@ -38,11 +38,18 @@ const FIGURE_CROPS = {
   12: crop(12, 940, 720, "Fig. 12"),
   13: crop(13, 500, 720, "Fig. 13"),
   14: {
-    src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v3.png",
-    alt: "Source-facsimile crop of Fig. 14 from US 120,057, rotated clockwise for normal left-to-right reading.",
-    width: 1500,
-    height: 1000,
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v4.png",
+    alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057; the separate label preview preserves the printed figure label without including the witness block.",
+    width: 1320,
+    height: 975,
   },
+} as const;
+
+const FIGURE_14_LABEL_CROP = {
+  src: "/patents/figures/us-120057-gramme-dynamo/fig-14-label-source-crop-v4.png",
+  alt: "Upright source-facsimile crop of the printed Fig. 14 label from US 120,057.",
+  width: 180,
+  height: 100,
 } as const;
 
 type FigureNumber = keyof typeof FIGURE_CROPS;
@@ -55,7 +62,9 @@ const figureGroup = (text: string, sheet: 1 | 2 | 3 | 4, figures: readonly Figur
     href: `#drawing-sheet-${sheet}`,
     referenceType: "figure",
     label: `Open the source-facsimile crop for ${text} in US 120,057`,
-    figurePreviews: figures.map((figure) => FIGURE_CROPS[figure]),
+    figurePreviews: figures.flatMap((figure) =>
+      figure === 14 ? [FIGURE_CROPS[figure], FIGURE_14_LABEL_CROP] : [FIGURE_CROPS[figure]],
+    ),
   }) satisfies FigureReference;
 
 const figure1To3 = figureGroup("Figs. 1, 2, and 3", 1, [1, 2, 3]);
@@ -100,7 +109,9 @@ const sourceFigure = (
     href: `#drawing-sheet-${sheet}`,
     referenceType: "figure",
     label: `Open the source-facsimile crop for ${text} in US 120,057`,
-    figurePreviews: figures.map((figure) => FIGURE_CROPS[figure]),
+    figurePreviews: figures.flatMap((figure) =>
+      figure === 14 ? [FIGURE_CROPS[figure], FIGURE_14_LABEL_CROP] : [FIGURE_CROPS[figure]],
+    ),
   };
 };
 

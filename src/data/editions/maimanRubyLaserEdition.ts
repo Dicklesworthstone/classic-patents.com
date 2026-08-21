@@ -22,52 +22,86 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 });
 
 const FIGURE_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v1.png": {
-    width: 928,
-    height: 733,
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png": {
+    width: 1600,
+    height: 1100,
   },
-  "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v1.png": {
-    width: 928,
-    height: 630,
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png": {
+    width: 1700,
+    height: 620,
   },
-  "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v1.png": {
-    width: 928,
-    height: 511,
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png": {
+    width: 1600,
+    height: 520,
   },
-  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-source-crop-v1.png": {
-    width: 928,
-    height: 733,
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png": {
+    width: 1120,
+    height: 700,
   },
-  "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-source-crop-v1.png": {
-    width: 928,
-    height: 715,
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png": {
+    width: 300,
+    height: 300,
   },
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png": {
+    width: 550,
+    height: 480,
+  },
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png": {
+    width: 380,
+    height: 450,
+  },
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png": {
+    width: 1150,
+    height: 1200,
+  },
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png": {
+    width: 900,
+    height: 600,
+  },
+};
+
+const FIGURE_PREVIEW_ALTS: Readonly<Record<string, string>> = {
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png":
+    "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png":
+    "Printed Figure 7 label from the source drawing sheet.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png":
+    "Figure 7 upper-right labels: second energy level and level 2.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png":
+    "Figure 7 lower-right ruby path and downward arrow from level 2 to level 1.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png":
+    "Figure 18 transmitter, receiver, synch power, and numbered optical apparatus.",
+  "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png":
+    "Figure 18 output beam, target 212, and printed Figure 18 label.",
 };
 
 const ref = (
   refText: string,
   targetHref: string,
   targetLabel: string,
-  previewSrc?: string,
+  previewSrc?: string | readonly string[],
 ): CuratedSpecificationInline => {
-  const dims = previewSrc
-    ? (FIGURE_DIMENSIONS[previewSrc] ?? { width: 800, height: 600 })
-    : { width: 800, height: 600 };
+  const previewSources = previewSrc
+    ? typeof previewSrc === "string"
+      ? [previewSrc]
+      : previewSrc
+    : [];
   return {
     kind: "reference",
     text: refText,
     href: targetHref,
     referenceType: "figure",
     label: targetLabel,
-    figurePreviews: previewSrc
-      ? [
-          {
-            src: previewSrc,
-            alt: targetLabel,
+    figurePreviews: previewSources.length
+      ? previewSources.map((src) => {
+          const dims = FIGURE_DIMENSIONS[src] ?? { width: 800, height: 600 };
+          return {
+            src,
+            alt: FIGURE_PREVIEW_ALTS[src] ?? targetLabel,
             width: dims.width,
             height: dims.height,
-          },
-        ]
+          };
+        })
       : undefined,
   };
 };
@@ -176,7 +210,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 1",
         "#figure-1",
         "Figure 1",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v1.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-1-source-crop-v2.png",
       ),
       text("."),
     ),
@@ -191,7 +225,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 2",
         "#figure-2",
         "Figure 2",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v1.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-2-source-crop-v2.png",
       ),
       text(
         ". Chromium atoms in the ruby crystal initially reside in the ground state (Level 1). High-intensity broadband optical pumping light in the green (560 nm) and violet (410 nm) absorption bands excites the chromium ions to the broad third energy levels (Level 3). From these levels, the excited ions undergo an extremely rapid ",
@@ -239,7 +273,7 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "FIG. 4",
         "#figure-4",
         "Figure 4",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v1.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-4-source-crop-v2.png",
       ),
       text(
         ". One end face is coated with an opaque silver reflecting layer ($R_1 \\approx 99.9\\%$) while the opposite end face is coated with a partially transmitting silver layer or provided with a central transmission aperture ($R_2 \\approx 90\\%\\text{--}98\\%$) to permit extraction of the output beam.",
@@ -249,12 +283,12 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       text(
         "For high repetition rates or continuous operation, the ruby rod and flash tube are enclosed within a cooled optical cavity structure as shown in ",
       ),
-      ref(
-        "FIG. 7",
-        "#figure-7",
-        "Figure 7",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-source-crop-v1.png",
-      ),
+      ref("FIG. 7", "#figure-7", "Figure 7", [
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-labels-source-crop-v4.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-right-path-source-crop-v4.png",
+      ]),
       text(
         ", utilizing circulating liquid or forced nitrogen coolant to maintain crystal thermal stability during intense excitation discharges.",
       ),
@@ -268,12 +302,10 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "Coherent Light Detection and Ranging (the earliest form of modern LIDAR), transmitting microsecond laser pulses and measuring echo time-of-flight with picosecond-scale optical resolution.",
       ),
       text(", as illustrated in "),
-      ref(
-        "FIG. 18",
-        "#figure-18",
-        "Figure 18",
-        "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-source-crop-v1.png",
-      ),
+      ref("FIG. 18", "#figure-18", "Figure 18", [
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-apparatus-source-crop-v4.png",
+        "/patents/figures/us-3353115-maiman-ruby-laser/fig-18-output-source-crop-v4.png",
+      ]),
       text(
         ". The narrow beam divergence and extreme monochromaticity of the pulsed ruby laser beam permit pinpoint ranging over tens of miles with complete immunity to conventional electromagnetic jamming.",
       ),

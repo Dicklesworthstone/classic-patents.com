@@ -86,18 +86,6 @@ export const wattSeparateCondenserArchivalEdition: CuratedSpecificationEdition =
       ],
     },
     {
-      kind: "figure-sheet",
-      figureLabel: "Fig. 1",
-      title:
-        "Boulton & Watt Single-Acting Beam Engine with Separate Condenser, Air Pump, and Steam Jacket (1769)",
-      description: [
-        {
-          kind: "text",
-          text: "General sectional elevation illustrating the steam cylinder B surrounded by steam jacket B, separate condenser vessel E submerged in the cold water cistern, and condensate extraction air pump G connected to walking beam H.",
-        },
-      ],
-    },
-    {
       kind: "claim",
       number: 1,
       inlines: [
@@ -298,10 +286,10 @@ export const WATT_SEPARATE_CONDENSER_PARALLEL_READINGS: Readonly<
   4: [
     "General statement declaring the foundational thermodynamic objective: reducing steam and coal consumption by fundamentally restructuring engine heat flows.",
   ],
-  13: ["Legal execution testimonium signed and sealed by James Watt on April 25, 1769."],
-  14: ["Inventor signature of James Watt."],
-  15: [
+  12: ["Legal execution testimonium signed and sealed by James Watt on April 25, 1769."],
+  13: ["Inventor signature of James Watt."],
+  14: [
     "Chancery acknowledgment and official enrollment recording on April 29, 1769 in the ninth year of King George III.",
   ],
-  16: ["Official date stamp recording Chancery enrollment on April 29, 1769."],
+  15: ["Official date stamp recording Chancery enrollment on April 29, 1769."],
 };

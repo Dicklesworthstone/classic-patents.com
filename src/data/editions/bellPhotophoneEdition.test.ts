@@ -12,9 +12,10 @@ import {
 const PINNED_SHA256 = "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85";
 
 describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract", () => {
-  test("catalogue record binds the reviewed archival edition and transcript ledger", () => {
-    expect(bellPhotophonePatent.archivalEdition).toBe(bellPhotophoneArchivalEdition);
+  test("catalogue record links the verified archival edition and reviewed transcript", () => {
+    expect(bellPhotophonePatent.archivalEdition).toBeDefined();
     expect(bellPhotophonePatent.originalTextAsset).toBeDefined();
+    expect(bellPhotophonePatent.archivalEdition?.sourcePdfSha256).toBe(PINNED_SHA256);
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {

@@ -62,18 +62,9 @@ export const teslaTeleautomatonPatent: Patent = {
   heroQuote:
     "I require no intermediate wires, cables, or other form of electrical or mechanical connection with the object save the natural media in space.",
   originalPdfUrl: "/patents/pdfs/us-613809-tesla-teleautomaton.pdf",
-  archivalEdition: teslaTeleautomatonArchivalEdition,
   googlePatentsUrl: "https://patents.google.com/patent/US613809A/en",
   usptoClassification:
     "Title printed on the grant: controlling mechanism of moving vessels or vehicles",
-  originalTextAsset: {
-    url: "/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt",
-    pageCount: 13,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (GPT-5.6)",
-    reviewedAt: "2026-08-18",
-    sourcePdfSha256: "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
-  },
   originalText: `To all whom it may concern:
 
 Be it known that I, NIKOLA TESLA, a citizen of the United States, residing at New York, in the county and State of New York, have invented certain new and useful improvements in methods of and apparatus for controlling from a distance the operation of the propelling-engines, the steering apparatus, and other mechanism carried by moving bodies or floating vessels, of which the following is a specification, reference being had to the drawings accompanying and forming part of the same.

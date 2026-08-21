@@ -19,34 +19,34 @@ const claim = (number: number, value: string) => ({
 
 const FIGURE_PREVIEWS = {
   "Fig. 1": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v4.png",
-    alt: "US 1,102,653, Fig. 1: longitudinal partial section of the primary rocket, firing tube, auxiliary rocket, and tapered exhaust tube.",
-    width: 540,
-    height: 2020,
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png",
+    alt: "US 1,102,653, Fig. 1: longitudinal partial section of the primary rocket, its auxiliary rocket, and tapered exhaust tube.",
+    width: 720,
+    height: 2160,
   },
   "Fig. 2": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v3.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png",
     alt: "US 1,102,653, Fig. 2: enlarged longitudinal section through the auxiliary-rocket head, camera support, and gyroscope.",
-    width: 890,
-    height: 930,
+    width: 1050,
+    height: 920,
   },
   "Fig. 3": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v3.png",
-    alt: "US 1,102,653, Fig. 3: transverse section of the primary rocket's backward-curved spin tubes and their electrical ignition circuit.",
-    width: 540,
-    height: 570,
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png",
+    alt: "US 1,102,653, Fig. 3 transverse section with unavoidable adjoining source leaders retained unaltered.",
+    width: 650,
+    height: 640,
   },
   "Fig. 4": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v3.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png",
     alt: "US 1,102,653, Fig. 4: transverse section of the auxiliary rocket's backward-curved spin-restoration tubes.",
-    width: 500,
-    height: 560,
+    width: 620,
+    height: 620,
   },
   "Fig. 5": {
-    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v3.png",
+    src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png",
     alt: "US 1,102,653, Fig. 5: vertical launching framework with ball bearings supporting the rocket before fuse ignition.",
-    width: 500,
-    height: 760,
+    width: 740,
+    height: 850,
   },
 } as const;
 

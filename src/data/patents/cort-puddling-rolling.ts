@@ -1,7 +1,4 @@
-import {
-  cortPuddlingRollingArchivalEdition,
-  manualCortClaimText,
-} from "@/data/editions/cortPuddlingRollingEdition";
+import { manualCortClaimText } from "@/data/editions/cortPuddlingRollingEdition";
 import type { Patent } from "@/types/patent";
 
 export const cortPuddlingRollingPatent: Patent = {
@@ -26,29 +23,6 @@ export const cortPuddlingRollingPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/gb-1420-cort-puddling-rolling.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB178401420A/en",
   usptoClassification: "C21B 11/00",
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f",
-    pageAnchors: [
-      {
-        page: 1,
-        sourceRelationship: "Chancery enrollment preamble, royal grant, and complete specification",
-        exactSourceText:
-          "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, HENRY CORT, of Fontley, in the Parish of Titchfield, in the County of Southampton, Esquire, send greeting:",
-      },
-      {
-        page: 2,
-        sourceRelationship: "Claims 1–4, annexed technical plate, and Chancery enrollment testatum",
-        exactSourceText:
-          "Having thus described my Invention, what I claim and secure by the said Letters Patent is:",
-      },
-    ],
-  },
-  archivalEdition: cortPuddlingRollingArchivalEdition,
   originalText:
     "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, HENRY CORT, of Fontley, in the Parish of Titchfield, in the County of Southampton, Esquire, send greeting:\\n\\nWHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Thirteenth day of February, in the twenty-fourth year of His reign, did give and grant unto me, the said Henry Cort, His especial licence, full power, sole privilege and authority, that I, the said Henry Cort, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented 'Method of Shingling, Welding, and Manufacturing Iron and Steel into Bars, Plates, and Rods of Purer Quality and in Larger Quantities by More Effectual and Expeditious Methods and with Fewer Fires Than Heretofore Used;' in which said Letters Patent there is contained a proviso obliging me, the said Henry Cort, by an instrument in writing under my hand and seal, to cause a particular description of the nature of my said Invention, and the manner in which the same is to be performed, to be inrolled in His Majesty's High Court of Chancery within one calendar month next and immediately after the date of the said Letters Patent...\\n\\nThe crude iron, commonly called pig iron or cast iron, is first introduced into a reverberatory or air furnace heated by pit coal or common coal. In this furnace the fuel burns in a separate combustion grate, and the intense flame and heated gases are caused to reverberate from the curved arched roof down upon the hearth, where the iron is placed upon a bed of sand and slag, wholly secluded from direct contact with the solid sulfurous fuel.",
   plainEnglishExplanation: {

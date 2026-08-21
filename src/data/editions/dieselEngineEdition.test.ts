@@ -13,9 +13,10 @@ import {
 
 describe("US 542,846 manual source edition", () => {
   test("pins the actual ten-page facsimile and source identity", () => {
-    if (dieselEnginePatent.archivalEdition) {
-      expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
-    }
+    // The editorial source face stays deliberately unbound while the root
+    // reviewer completes independent page-to-PDF and source-text acceptance.
+    expect(dieselEnginePatent.archivalEdition).toBeUndefined();
+    expect(dieselEnginePatent.originalTextAsset).toBeUndefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
     expect(dieselEnginePatent.filingDate).toBe("1892-08-26");
     expect(validateCuratedSpecificationEdition(dieselEngineArchivalEdition)).toEqual({
@@ -83,63 +84,102 @@ describe("US 542,846 manual source edition", () => {
       }
     }
     const approvedCrops = {
-      1: { version: 1, width: 600, height: 470 },
-      2: { version: 4, width: 635, height: 760 },
-      3: { version: 4, width: 785, height: 720 },
-      4: { version: 3, width: 800, height: 1580 },
-      5: { version: 2, width: 560, height: 700 },
-      6: { version: 2, width: 700, height: 650 },
-      7: { version: 2, width: 1000, height: 1500 },
-      8: { version: 3, width: 1000, height: 990 },
-      9: { version: 3, width: 1000, height: 1600 },
-      10: { version: 2, width: 1000, height: 700 },
+      1: {
+        src: "/patents/figures/us-542846-diesel-engine/fig-1-source-crop-v1.png",
+        width: 600,
+        height: 470,
+        sha256: "5d83fe4c2918a24fcfda560cd0b4df15fca02644d18f9bd2946e96edf90ec9f4",
+      },
+      2: {
+        src: "/patents/figures/us-542846-diesel-engine/fig-2-source-crop-v4.png",
+        width: 635,
+        height: 760,
+        sha256: "7c1d31ac4cbf1bd879e92ed5be23b6e4777d048224825b1d648bd67077e5e0e4",
+      },
+      3: {
+        src: "/patents/figures/us-542846-diesel-engine/fig-3-source-crop-v4.png",
+        width: 785,
+        height: 720,
+        sha256: "5679bb3ce9db974e049979ebba6f1b7bacfb72790b1a9d09396d0b42374f55ce",
+      },
+      4: {
+        src: "/patents/figures/us-542846-diesel-engine/figs-4-6-source-crop-v3.png",
+        width: 2100,
+        height: 2450,
+        sha256: "3d137a3ea53d6fbc19052d7fbfa1b4a7cbbc4098f082fec89e015777d62aa50c",
+      },
+      5: {
+        src: "/patents/figures/us-542846-diesel-engine/figs-4-6-source-crop-v3.png",
+        width: 2100,
+        height: 2450,
+        sha256: "3d137a3ea53d6fbc19052d7fbfa1b4a7cbbc4098f082fec89e015777d62aa50c",
+      },
+      6: {
+        src: "/patents/figures/us-542846-diesel-engine/figs-4-6-source-crop-v3.png",
+        width: 2100,
+        height: 2450,
+        sha256: "3d137a3ea53d6fbc19052d7fbfa1b4a7cbbc4098f082fec89e015777d62aa50c",
+      },
+      7: {
+        src: "/patents/figures/us-542846-diesel-engine/fig-7-source-crop-v7.png",
+        width: 1450,
+        height: 2200,
+        sha256: "7ba5b22c6a4ce28051a8b545332687bcce99af6e319f968ec4bc6fc26772e188",
+      },
+      8: {
+        src: "/patents/figures/us-542846-diesel-engine/figs-8-and-10-source-crop-v2.png",
+        width: 2100,
+        height: 2350,
+        sha256: "43912b42435410bba1468cb6724c37b7bb3ba563fd7f95a2dae64a08e40fe8d5",
+      },
+      9: {
+        src: "/patents/figures/us-542846-diesel-engine/fig-9-source-crop-v7.png",
+        width: 1600,
+        height: 2350,
+        sha256: "4de683e9443bb072b0f56857bdefee8ee95b2c5e67b2a184f12c25ab1885a3fe",
+      },
+      10: {
+        src: "/patents/figures/us-542846-diesel-engine/figs-8-and-10-source-crop-v2.png",
+        width: 2100,
+        height: 2350,
+        sha256: "43912b42435410bba1468cb6724c37b7bb3ba563fd7f95a2dae64a08e40fe8d5",
+      },
     } as const;
-    for (const [figureText, expected] of Object.entries(approvedCrops)) {
-      const figure = Number(figureText);
-      expect(
-        existsSync(
-          resolve(
-            process.cwd(),
-            "public",
-            `patents/figures/us-542846-diesel-engine/fig-${figure}-source-crop-v${expected.version}.png`,
-          ),
-        ),
-      ).toBe(true);
+    for (const expected of Object.values(approvedCrops)) {
+      const asset = resolve(process.cwd(), "public", expected.src.slice(1));
+      const png = readFileSync(asset);
+      expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect(png.readUInt32BE(16)).toBe(expected.width);
+      expect(png.readUInt32BE(20)).toBe(expected.height);
+      expect(createHash("sha256").update(png).digest("hex")).toBe(expected.sha256);
     }
-    const figureTwoPreview = references
-      .flatMap((reference) => reference.figurePreviews ?? [])
-      .find((source) => source.src.includes("fig-2-source-crop"));
-    expect(figureTwoPreview).toMatchObject({
-      src: "/patents/figures/us-542846-diesel-engine/fig-2-source-crop-v4.png",
-      width: 635,
-      height: 760,
-    });
-    const figureThreePreview = references
-      .flatMap((reference) => reference.figurePreviews ?? [])
-      .find((source) => source.src.includes("fig-3-source-crop"));
-    expect(figureThreePreview).toMatchObject({
-      src: "/patents/figures/us-542846-diesel-engine/fig-3-source-crop-v4.png",
-      width: 785,
-      height: 720,
-    });
-    for (const [figureText, expected] of Object.entries(approvedCrops)) {
-      const figure = Number(figureText);
-      expect(
-        references.some((reference) =>
-          reference.figurePreviews?.some(
-            (source) =>
-              source.src ===
-                `/patents/figures/us-542846-diesel-engine/fig-${figure}-source-crop-v${expected.version}.png` &&
-              source.width === expected.width &&
-              source.height === expected.height,
-          ),
-        ),
-      ).toBe(true);
+
+    const expectedAssetsByOccurrence: Readonly<Record<string, string[]>> = {
+      "Figure 1": [approvedCrops[1].src],
+      "Fig. 1": [approvedCrops[1].src],
+      "Fig. 2": [approvedCrops[2].src],
+      "Fig. 3": [approvedCrops[3].src],
+      "Fig. 4": [approvedCrops[4].src],
+      "Fig. 5": [approvedCrops[5].src],
+      "Fig. 6": [approvedCrops[6].src],
+      "Fig. 7": [approvedCrops[7].src],
+      "Fig. 8": [approvedCrops[8].src],
+      "Fig. 9": [approvedCrops[9].src],
+      "Fig. 10": [approvedCrops[10].src],
+      "Figs. 4 and 5": [approvedCrops[4].src],
+      "Figs. 8 to 10": [approvedCrops[8].src, approvedCrops[9].src],
+      "Figs. 9 and 10": [approvedCrops[9].src, approvedCrops[10].src],
+      "Figs. 8 and 10": [approvedCrops[8].src],
+    };
+    for (const reference of references) {
+      const expectedAssets = expectedAssetsByOccurrence[reference.text];
+      expect(expectedAssets).toBeDefined();
+      expect(reference.figurePreviews?.map((preview) => preview.src)).toEqual(expectedAssets);
     }
     expect(dieselEngineParallelReadings).toBeDefined();
   });
 
-  test("publishes a reviewed-transcription ledger with the correct ordered markers", () => {
+  test("keeps a reviewed-transcription ledger with the correct ordered markers", () => {
     const transcriptPath = `${process.cwd()}/public/patents/transcripts/us-542846-diesel-engine-reviewed.txt`;
     if (!existsSync(transcriptPath)) return;
     const ledger = readFileSync(transcriptPath, "utf8");

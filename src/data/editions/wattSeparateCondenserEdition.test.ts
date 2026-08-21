@@ -2,16 +2,17 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { wattSeparateCondenserPatent } from "../patents/watt-separate-condenser";
 import {
   manualWattClaimText,
   WATT_SEPARATE_CONDENSER_PARALLEL_READINGS,
   wattSeparateCondenserArchivalEdition,
 } from "./wattSeparateCondenserEdition";
 
-describe("Watt Separate Condenser Archival Edition Publication Contract", () => {
+describe("Watt Separate Condenser source-identity hold", () => {
   const root = process.cwd();
 
-  test("pins the immutable source PDF and matches SHA-256 digest", () => {
+  test("preserves the currently pinned reconstruction fingerprint for provenance", () => {
     const pdfPath = resolve(
       root,
       "public",
@@ -27,19 +28,7 @@ describe("Watt Separate Condenser Archival Edition Publication Contract", () => 
     expect(sha).toBe("ba8638c99df583d72958f9ef8125bc30cd4e0f8784656cd561aecdc58b8b8fad");
   });
 
-  test("confirms figure crop file exists on disk", () => {
-    const figPath = resolve(
-      root,
-      "public",
-      "patents",
-      "figures",
-      "gb-913-watt-separate-condenser",
-      "fig-1-source-crop-v1.png",
-    );
-    expect(existsSync(figPath)).toBe(true);
-  });
-
-  test("confirms reviewed transcript ledger exists and contains page markers", () => {
+  test("preserves the staged transcription as research evidence", () => {
     const txtPath = resolve(
       root,
       "public",
@@ -57,7 +46,15 @@ describe("Watt Separate Condenser Archival Edition Publication Contract", () => 
     expect(content).toContain("these vessels I call condensers");
   });
 
-  test("exposes all 7 principles/claims via dynamic single-source lookup", () => {
+  test("keeps the reconstruction and staged edition out of the public source face", () => {
+    expect(wattSeparateCondenserPatent.originalTextAsset).toBeUndefined();
+    expect(wattSeparateCondenserPatent.archivalEdition).toBeUndefined();
+    expect(
+      wattSeparateCondenserArchivalEdition.blocks.some((block) => block.kind === "figure-sheet"),
+    ).toBe(false);
+  });
+
+  test("retains the seven staged principles through dynamic single-source lookup", () => {
     for (let c = 1; c <= 7; c++) {
       const txt = manualWattClaimText(c);
       expect(typeof txt).toBe("string");
@@ -75,7 +72,7 @@ describe("Watt Separate Condenser Archival Edition Publication Contract", () => 
     );
   });
 
-  test("validates parallel readings map covers the archival blocks", () => {
+  test("keeps staged parallel readings aligned with the unbound WIP blocks", () => {
     const keys = Object.keys(WATT_SEPARATE_CONDENSER_PARALLEL_READINGS).map(Number);
     expect(keys.length).toBeGreaterThanOrEqual(8);
     for (const key of keys) {

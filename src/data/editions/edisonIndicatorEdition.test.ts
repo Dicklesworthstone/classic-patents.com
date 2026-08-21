@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { edisonIndicatorPatent } from "@/data/patents/edison-indicator";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import {
   edisonIndicatorArchivalEdition,
@@ -47,6 +48,11 @@ describe("US 307,031 Thomas Edison Electrical Indicator Archival Edition", () =>
     root,
     "public/patents/transcripts/us-307031-edison-indicator-reviewed.txt",
   );
+
+  it("links the published archival edition and reviewed transcript", () => {
+    expect(edisonIndicatorPatent.archivalEdition).toBeDefined();
+    expect(edisonIndicatorPatent.originalTextAsset).toBeDefined();
+  });
   const pdfPath = join(root, "public/patents/pdfs/us-307031-edison-indicator.pdf");
 
   it("satisfies the curated archival edition contract", () => {

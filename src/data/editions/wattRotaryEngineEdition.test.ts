@@ -1,14 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
+import { wattRotaryEnginePatent } from "@/data/patents/watt-rotary-engine";
 import {
   manualWattRotaryClaimText,
   wattRotaryEngineArchivalEdition,
   wattRotaryEngineParallelReadings,
 } from "./wattRotaryEngineEdition";
 
-describe("James Watt Rotary Motion 1781 (GB 1306) Archival Edition Contract", () => {
-  test("pins the immutable 2-page source PDF digest and metadata", () => {
+describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
+  test("pins the two-page reconstruction fingerprint and keeps it out of the public source face", () => {
     const pdfPath = resolve(process.cwd(), "public/patents/pdfs/gb-1306-watt-rotary-engine.pdf");
     expect(existsSync(pdfPath)).toBe(true);
     expect(statSync(pdfPath).size).toBeGreaterThan(50000);
@@ -18,9 +19,11 @@ describe("James Watt Rotary Motion 1781 (GB 1306) Archival Edition Contract", ()
     expect(wattRotaryEngineArchivalEdition.sourcePdfSha256).toBe(
       "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
     );
+    expect(wattRotaryEnginePatent.archivalEdition).toBeUndefined();
+    expect(wattRotaryEnginePatent.originalTextAsset).toBeUndefined();
   });
 
-  test("contains all 4 printed claims and extracts text dynamically", () => {
+  test("retains all 4 staged claim nodes and extracts text dynamically", () => {
     for (let i = 1; i <= 4; i++) {
       const claimText = manualWattRotaryClaimText(i);
       expect(claimText).toBeDefined();
@@ -33,7 +36,7 @@ describe("James Watt Rotary Motion 1781 (GB 1306) Archival Edition Contract", ()
     expect(manualWattRotaryClaimText(4)).toContain("internal planetary gearing");
   });
 
-  test("references existing local high-resolution figure crops with valid dimensions", () => {
+  test("retains the reconstruction crop as non-public research evidence", () => {
     const cropPath = resolve(
       process.cwd(),
       "public/patents/figures/gb-1306-watt-rotary-engine/fig-1-source-crop-v1.png",
@@ -76,7 +79,7 @@ describe("James Watt Rotary Motion 1781 (GB 1306) Archival Edition Contract", ()
     }
   });
 
-  test("ledger transcript matches the archival edition content", () => {
+  test("staged ledger remains internally aligned with the unbound edition", () => {
     const transcriptPath = resolve(
       process.cwd(),
       "public/patents/transcripts/gb-1306-watt-rotary-engine-reviewed.txt",

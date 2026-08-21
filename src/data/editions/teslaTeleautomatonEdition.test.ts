@@ -11,8 +11,9 @@ import {
 } from "./teslaTeleautomatonEdition";
 
 describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => {
-  test("pins the complete thirteen-page facsimile and its thirteen printed claims", () => {
-    expect(teslaTeleautomatonPatent.archivalEdition).toBe(teslaTeleautomatonArchivalEdition);
+  test("pins the thirteen-page source candidate and keeps it withheld after figure QC rejection", () => {
+    expect(teslaTeleautomatonPatent.archivalEdition).toBeUndefined();
+    expect(teslaTeleautomatonPatent.originalTextAsset).toBeUndefined();
     expect(teslaTeleautomatonArchivalEdition.sourcePdfSha256).toBe(
       "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b",
     );
@@ -76,16 +77,11 @@ describe("US 613,809 Nikola Tesla Teleautomaton manual archival edition", () => 
     }
   });
 
-  test("publishes a reviewed ledger and validates source text", () => {
-    const asset = teslaTeleautomatonPatent.originalTextAsset;
-    expect(asset).toMatchObject({
-      url: "/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt",
-      pageCount: 13,
-      kind: "reviewed-transcription",
-      sourcePdfSha256: teslaTeleautomatonArchivalEdition.sourcePdfSha256,
-    });
-    if (!asset) throw new Error("Tesla Teleautomaton reviewed transcript asset is missing.");
-    const ledger = readFileSync(`${process.cwd()}/public${asset.url}`, "utf8");
+  test("retains and validates the unbound reviewed-ledger candidate", () => {
+    const ledger = readFileSync(
+      `${process.cwd()}/public/patents/transcripts/us-613809-tesla-teleautomaton-reviewed.txt`,
+      "utf8",
+    );
     expect(validateReviewedTranscription(ledger, 13)).toEqual({ valid: true });
   });
 });

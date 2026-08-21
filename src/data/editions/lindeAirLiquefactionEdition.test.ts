@@ -40,11 +40,23 @@ describe("US 727,650 Carl Linde Air Liquefaction manual archival edition", () =>
     );
     expect(references).not.toHaveLength(0);
     for (const reference of references) {
-      expect(reference.figurePreviews?.length).toBeGreaterThan(0);
+      expect(reference.figurePreviews).toHaveLength(2);
       for (const preview of reference.figurePreviews ?? []) {
         expect(preview.src).toStartWith("/patents/figures/us-727650-linde-air-liquefaction/");
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
+      expect(reference.figurePreviews).toContainEqual({
+        src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-source-crop-v2.png",
+        alt: "Upright source-facsimile crop of the sole apparatus drawing in US 727,650, excluding the witness and inventor-signature blocks.",
+        width: 1640,
+        height: 1500,
+      });
+      expect(reference.figurePreviews).toContainEqual({
+        src: "/patents/figures/us-727650-linde-air-liquefaction/fig-1-left-pipe-source-crop-v2.png",
+        alt: "Upright source-facsimile detail preserving the left-hand pipe and flow arrow cropped from the main US 727,650 apparatus preview.",
+        width: 360,
+        height: 120,
+      });
     }
   });
 

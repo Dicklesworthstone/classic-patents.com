@@ -41,26 +41,16 @@ const FIGURE_CROP_VERSION: Readonly<Record<number, number>> = {
   1: 1,
   2: 4,
   3: 4,
-  4: 3,
-  5: 2,
-  6: 2,
-  7: 2,
-  8: 3,
-  9: 3,
-  10: 2,
+  7: 7,
+  9: 7,
 };
 
 const FIGURE_CROP_DIMENSIONS: Readonly<Record<number, readonly [number, number]>> = {
   1: [600, 470],
   2: [635, 760],
   3: [785, 720],
-  4: [800, 1580],
-  5: [560, 700],
-  6: [700, 650],
-  7: [1000, 1500],
-  8: [1000, 990],
-  9: [1000, 1600],
-  10: [1000, 700],
+  7: [1450, 2200],
+  9: [1600, 2350],
 };
 
 const preview = (figure: number) => {
@@ -72,6 +62,30 @@ const preview = (figure: number) => {
     height,
   };
 };
+
+const groupedPreview = (group: "4-6" | "8-and-10"): ReturnType<typeof preview> => {
+  if (group === "4-6") {
+    return {
+      src: "/patents/figures/us-542846-diesel-engine/figs-4-6-source-crop-v3.png",
+      alt: "Source-facsimile grouped crop of Figs. 4, 5, and 6 from US 542,846; the printed sheet nests their drawings.",
+      width: 2100,
+      height: 2450,
+    };
+  }
+  return {
+    src: "/patents/figures/us-542846-diesel-engine/figs-8-and-10-source-crop-v2.png",
+    alt: "Source-facsimile grouped crop of Figs. 8 and 10 from US 542,846; the printed sheet nests their drawings.",
+    width: 2100,
+    height: 2350,
+  };
+};
+
+const sourcePreviews = (figure: number): readonly ReturnType<typeof preview>[] => {
+  if (figure === 4 || figure === 5 || figure === 6) return [groupedPreview("4-6")];
+  if (figure === 8 || figure === 10) return [groupedPreview("8-and-10")];
+  return [preview(figure)];
+};
+
 const figure = (
   number: number,
   sourceText = `Fig. ${number}`,
@@ -82,7 +96,7 @@ const figure = (
   href: "#",
   referenceType: "figure",
   label: `Open the source-facsimile crop for Fig. ${number} in US 542,846`,
-  figurePreviews: [preview(number), ...additionalPreviews],
+  figurePreviews: [...sourcePreviews(number), ...additionalPreviews],
 });
 
 /**
@@ -312,7 +326,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "I will now proceed to describe some particular forms especially constructed for carrying out said method. Reference being had at present to ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: " of the drawings, the letter C designates a single-acting cylinder especially constructed for the use of coal in a finely-divided condition. P is a plunger constructed for high pressures. b is the connecting-rod; c, the crank; d, the shaft, and a the guides for the plunger. E is the governor whose shaft g is connected to the shaft d by suitable gears at f. At the upper end of the cylinder is located a hopper B provided with a charging-opening m, ",
@@ -370,12 +384,12 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: ". In this figure the valves are indicated diagrammatically. The frame, the connecting-rod, the fly-wheel, &c., are omitted, all these parts being exactly the same as shown in ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: ". The engine consists of two cylinders C with plungers P—that is to say, two combustion-cylinders, the construction, distributing devices, &c., of which are identical to those of the cylinder represented in ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: ". These two cylinders C are connected by means of the controlled valves b to the two sides of a large central cylinder B, and by the two valves a, which are also controlled, the two combustion-cylinders are in communication with the air-reservoir L.",
@@ -391,7 +405,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "The process may, however, be carried out either with or without injection of water. The action in the cylinders C is exactly the same as has been described with reference to ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: ", excepting that piston P does not draw in the air directly from the atmosphere, but from reservoir L, in which the air is under pressure. On its upstroke piston P therefore effects the second stage of the compression up to the prescribed degree. The lower and upper end positions of the piston are shown in dotted lines and marked 1 and 2. Piston P now moves downward again to position 3, fuel being during this time gradually introduced and the combustion controlled, as above described. At 3 the admission of fuel ceases and the air continues to expand.",
@@ -413,12 +427,12 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
       ),
     ),
     paragraph([
-      figure(8, "Figs. 8 to 10", [preview(9), preview(10)]),
+      figure(8, "Figs. 8 to 10", [preview(9)]),
       {
         kind: "text",
         text: " show a construction for a motor in which liquid fuel is employed, and at the same time the external distributing device, in particular the device for gradually introducing fuel, is of a quite different construction. This engine consists of two identical single-acting cylinders provided with plunger-pistons, the cranks of which are arranged on the common fly-wheel shaft in the same position. The frame, fly-wheel, and distributing device are substantially the same as illustrated in ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: " and therefore not represented. The combustion in the cylinders takes place alternately, so that at each revolution a working-stroke is effected.",
@@ -429,7 +443,7 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
         kind: "text",
         text: "The process in each cylinder is the same as described with reference to ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: ", viz: drawing in of air through valve W, then compression by one stroke up to the end position 2 of the piston, (shown in dotted lines;) introduction of liquid fuel through nozzle D and combustion of same during the prescribed period of admission 2 3, ",
@@ -442,12 +456,12 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
     ]),
     paragraph([
       { kind: "text", text: "This simplest possible regulation is effected by cam S, " },
-      figure(9, "Figs. 9 and 10", [preview(10)]),
+      figure(9, "Figs. 9 and 10", [groupedPreview("8-and-10")]),
       {
         kind: "text",
         text: ", by means of the bent lever, as shown in the drawings. The cam S is carried by the distributing-shaft W, which latter is driven by the shaft of the fly-wheel in a similar way, as in ",
       },
-      figure(4, "Figs. 4 and 5", [preview(5)]),
+      figure(4, "Figs. 4 and 5"),
       {
         kind: "text",
         text: ". The nozzle D is kept closed by the needle n and serves for gradually admitting the fuel. The liquid fuel is in the inner space r of the nozzle D, and is maintained there by means of a feed-pump (not shown) provided with an air-chamber under a pressure which is higher than the highest pressure of compression of the air in the cylinder.",
@@ -468,12 +482,12 @@ export const dieselEngineArchivalEdition: CuratedSpecificationEdition = {
     ]),
     paragraph([
       { kind: "text", text: "In " },
-      figure(8, "Figs. 8 and 10", [preview(10)]),
+      figure(8, "Figs. 8 and 10"),
       {
         kind: "text",
         text: " there is formed round the nozzle D an annular space s, which is in free communication with the interior of the cylinder. When the piston moves backward under decreasing pressure, the air flows from this annular space back into the cylinder and serves in this way both for dividing the jet of fuel and for producing turbulent motion for distributing the combustion heat over the whole air volume. This annular space s is only of practical importance and is not essential for the process. There is, moreover, in ",
       },
-      figure(8, "Figs. 8 and 10", [preview(10)]),
+      figure(8, "Figs. 8 and 10"),
       {
         kind: "text",
         text: " at O an opening for introducing compressed air or gases from explosive substances serving to start the motor. When in ",

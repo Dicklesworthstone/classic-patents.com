@@ -9,10 +9,7 @@
  * - Pinned facsimile PDF and reviewed ledger digests match the provenance receipt.
  */
 
-import {
-  manualWattRotaryClaimText,
-  wattRotaryEngineArchivalEdition,
-} from "@/data/editions/wattRotaryEngineEdition";
+import { manualWattRotaryClaimText } from "@/data/editions/wattRotaryEngineEdition";
 import type { Patent } from "@/types/patent";
 
 export const wattRotaryEnginePatent: Patent = {
@@ -37,33 +34,6 @@ export const wattRotaryEnginePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/gb-1306-watt-rotary-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB178101306A/en",
   usptoClassification: "GB Class 122 (Steam Engines & Gearing)",
-
-  originalTextAsset: {
-    url: "/patents/transcripts/gb-1306-watt-rotary-engine-reviewed.txt",
-    pageCount: 2,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-19",
-    sourcePdfSha256: "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
-    pageAnchors: [
-      {
-        page: 1,
-        sourceRelationship:
-          "Chancery enrollment preamble, royal grant, and complete description of the First Method (Sun and Planet Gearing)",
-        exactSourceText:
-          "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, JAMES WATT, of Birmingham, in the County of Warwick, Engineer, send greeting:",
-      },
-      {
-        page: 2,
-        sourceRelationship:
-          "Descriptions of Methods 2–5, Claims 1–4, annexed figure plate, and Chancery inrollment testatum",
-        exactSourceText:
-          "Having thus described my Invention, what I claim and secure by the said Letters Patent is:",
-      },
-    ],
-  },
-
-  archivalEdition: wattRotaryEngineArchivalEdition,
 
   originalText:
     "TO ALL TO WHOM THESE PRESENTS SHALL COME, I, JAMES WATT, of Birmingham, in the County of Warwick, Engineer, send greeting:\n\nWHEREAS His most Excellent Majesty King George the Third, by His Letters Patent under the Great Seal of Great Britain, bearing date at Westminster, the Twenty-fifth day of October, in the twenty-first year of His reign, did give and grant unto me, the said James Watt, His especial licence, full power, sole privilege and authority, that I, the said James Watt, my executors, administrators, and assigns, should and lawfully might make, use, exercise, and vend, within England, Wales, and the Town of Berwick-upon-Tweed, my new Invented 'Certain New Methods of Producing a Continued Rotative Motion Around an Axis or Center, and for other Purposes, to be Applied to the Steam or Fire Engines;' in which said Letters Patent there is contained a proviso obliging me, the said James Watt, by an instrument in writing under my hand and seal, to cause a particular description of the nature of my said Invention, and the manner in which the same is to be performed, to be inrolled in His Majesty's High Court of Chancery within four calendar months next and immediately after the date of the said Letters Patent...\n\nMy Invention consists in certain new methods or apparatus for applying the reciprocating motion of the working beams or pistons of steam or fire engines to turn large wheels, axles, or shafts, and to produce a continued circular or rotative motion round an axis or center, without employing a simple revolving crank; which circular motion may be applied to drive mills of all kinds, forge hammers, rolling mills, spinning and weaving machinery, and other mechanical apparatus requiring continuous rotation.",

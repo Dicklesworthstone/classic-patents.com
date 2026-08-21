@@ -51,7 +51,8 @@ describe("grammeDynamoArchivalEdition", () => {
     const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
     expectedCropFiles[2] = "fig-3-source-crop-v2.png";
     expectedCropFiles[6] = "fig-7-source-crop.png";
-    expectedCropFiles[13] = "fig-14-source-crop-v3.png";
+    expectedCropFiles[13] = "fig-14-source-crop-v4.png";
+    expectedCropFiles.push("fig-14-label-source-crop-v4.png");
     for (const cropFile of expectedCropFiles) {
       expect(publicText).toContain(`/patents/figures/us-120057-gramme-dynamo/${cropFile}`);
     }
@@ -62,6 +63,22 @@ describe("grammeDynamoArchivalEdition", () => {
         expect(existsSync(resolve(process.cwd(), "public", preview.src.slice(1)))).toBe(true);
       }
     }
+
+    const figure14Previews = figureReferences
+      .filter((reference) => /Fig\. 14/.test(reference.text))
+      .flatMap((reference) => reference.figurePreviews ?? []);
+    expect(figure14Previews).toContainEqual({
+      src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v4.png",
+      alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057; the separate label preview preserves the printed figure label without including the witness block.",
+      width: 1320,
+      height: 975,
+    });
+    expect(figure14Previews).toContainEqual({
+      src: "/patents/figures/us-120057-gramme-dynamo/fig-14-label-source-crop-v4.png",
+      alt: "Upright source-facsimile crop of the printed Fig. 14 label from US 120,057.",
+      width: 180,
+      height: 100,
+    });
   });
 
   test("does not leave a source figure citation stranded in a plain text node", () => {

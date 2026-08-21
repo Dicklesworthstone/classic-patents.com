@@ -25,7 +25,7 @@ describe("goddardRocketArchivalEdition", () => {
     ).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  test("maps every visitor-reachable figure citation to an isolated, versioned source crop", async () => {
+  test("maps every visitor-reachable figure citation to its exact versioned source crop or documented source group", async () => {
     const serialized = JSON.stringify(goddardRocketArchivalEdition.blocks);
     expect(serialized).not.toContain("SOURCE PDF PAGE");
     expect(serialized).not.toContain("pdftotext");
@@ -33,34 +33,34 @@ describe("goddardRocketArchivalEdition", () => {
 
     const expectedPreviews = {
       "Fig. 1": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v4.png",
-        width: 540,
-        height: 2020,
-        sha256: "b697774d64c1c0c44e43af33424b868e3d843cec33385dc75ac9045d77e6abfb",
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-1-source-crop-v8.png",
+        width: 720,
+        height: 2160,
+        sha256: "77d43e7f37d6f89037510a44fbbd7c9b449ad999c3f7a1bb739177bda3b491ee",
       },
       "Fig. 2": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v3.png",
-        width: 890,
-        height: 930,
-        sha256: "39196ea98e3bf23b81cb95a7adff6e07d9c395146f8fc65f6e075e863d0c0e3b",
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-2-source-crop-v5.png",
+        width: 1050,
+        height: 920,
+        sha256: "18292325c5c392c25b0afd75cbad453b63b352ce2dffc6e32f20a7383d2ebbf6",
       },
       "Fig. 3": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v3.png",
-        width: 540,
-        height: 570,
-        sha256: "8f4494f58ab08f58993c93c852c49b07ca1547615f1fffae6b206db0ce7f4b2e",
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-3-source-crop-v8.png",
+        width: 650,
+        height: 640,
+        sha256: "e759f032d871373a9f9d24baf268ed41a50802e5e93a8b4f3e1f560f163e2e06",
       },
       "Fig. 4": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v3.png",
-        width: 500,
-        height: 560,
-        sha256: "e4b43c29563b106ca890e2a2128226613a383888ee826485fc6567530d49d247",
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-4-source-crop-v7.png",
+        width: 620,
+        height: 620,
+        sha256: "918e9bf70957b76b2e774b5e1c7582987c7938c582a117adf2abe2e51ecd5b95",
       },
       "Fig. 5": {
-        src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v3.png",
-        width: 500,
-        height: 760,
-        sha256: "e2b7bcbd930e78afec81073044c11156ab4987d8d81b8fdc03a9f8717996a021",
+        src: "/patents/figures/us-1102653-goddard-rocket-fig-5-source-crop-v8.png",
+        width: 740,
+        height: 850,
+        sha256: "1c83557e8cedfe583fb5c7cdaa43721f4fd1e03adcc83454fec9669b866e08a9",
       },
     } as const;
 
