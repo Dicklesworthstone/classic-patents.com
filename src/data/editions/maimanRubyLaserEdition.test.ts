@@ -183,7 +183,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     expect(actual.length).toBeGreaterThanOrEqual(12);
     expect(
       [...new Set(actual.map(({ text }) => Number(text.replace(/\D/g, ""))))].sort((a, b) => a - b),
-    ).toEqual(Array.from({ length: 18 }, (_, index) => index + 1));
+    ).toEqual([...Array.from({ length: 11 }, (_, index) => index + 1), 18]);
     for (const preview of actual) {
       expect(existsSync(join(root, "public", preview.src))).toBe(true);
     }

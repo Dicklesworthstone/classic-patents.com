@@ -191,8 +191,8 @@ describe("grammeDynamoArchivalEdition", () => {
       editionClaims.map((claim) => claim.inlines.map((inline) => inline.text).join("")),
     );
     expect(grammeDynamoPatent.stats).toEqual({ totalClaims: 3, independentClaims: 3 });
-    expect(grammeDynamoPatent.stats.totalClaims).toBe(canonicalClaims.length);
-    expect(grammeDynamoPatent.stats.independentClaims).toBe(
+    expect(grammeDynamoPatent.stats?.totalClaims).toBe(canonicalClaims.length);
+    expect(grammeDynamoPatent.stats?.independentClaims).toBe(
       canonicalClaims.filter((claim) => claim.isIndependent).length,
     );
     const includedClaimNumbers = new Set(canonicalClaims.map((claim) => claim.number));

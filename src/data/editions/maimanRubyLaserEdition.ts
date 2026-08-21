@@ -69,7 +69,7 @@ const FIGURE_PREVIEW_ALTS: Readonly<Record<string, string>> = {
   "/patents/figures/us-3353115-maiman-ruby-laser/sheet-2-02.png":
     "Source drawing sheet 2 containing Figures 4 through 7.",
   "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png":
-    "Source drawing sheet 3 containing Figures 8 through 17.",
+    "Source drawing sheet 3 containing Figures 8 through 11.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-apparatus-source-crop-v4.png":
     "Figure 7 energy-level apparatus: white-light input, fluorescent stage, and ruby stage.",
   "/patents/figures/us-3353115-maiman-ruby-laser/fig-7-label-source-crop-v4.png":
