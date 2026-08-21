@@ -6,10 +6,10 @@
 - **Granted title:** *Art of Compiling Statistics*
 - **Inventor as printed:** Herman Hollerith, of New York, N. Y.
 - **Grant date:** January 8, 1889
-- **Filing date:** June 8, 1887; Serial No. 240,029
+- **Filing date:** June 8, 1887; Serial No. 240,629
 - **Primary public record:** <https://patents.google.com/patent/US395781A/en>
 - **Pinned local facsimile:** `public/patents/pdfs/us-395781-hollerith-tabulating.pdf`
-- **Retrieved and visually reviewed:** 2026-08-18; two complete page-by-page rendered-image passes.
+- **Retrieved and reviewed against the authoritative Census Bureau cloud PDF:** 2026-08-21; pages 10–17 were reconciled from the cloud-hosted grant text and the existing p1–9 ledger boundary. Local OCR, rendering, and image processing were not used in this continuation.
 - **Rights basis:** The historical United States patent text and drawings are United States Government material and are treated here as public-domain source material.
 - **SHA-256:** `39d7c9879f8386f63f609bd43c0a73c96dbe50943d5d17044733c254b8d5a780`
 - **PDF page count:** 17
@@ -47,11 +47,13 @@ claims and 17 numbered figures. PDF text layers, OCR, and machine drafts are
 research aids only; they are not the public source edition or evidence of its
 completeness.
 
-## Bounded source-ledger reconciliation — 2026-08-21
+## Source-ledger reconciliation — 2026-08-21
 
-This checkpoint covers PDF pages 1–9 only. The reviewed ledger already carries
-the complete page-marked chunk for this boundary and remains the byte-preserved
-comparison artifact for pages 10–17.
+The reviewed ledger now carries the complete ordered page-marked transcription
+for all 17 PDF pages. Pages 1–9 were preserved from the prior reviewed chunk;
+pages 10–17 were repaired against the Census Bureau cloud-hosted facsimile text
+and the pinned grant identity. The ledger remains comparison evidence, not the
+visitor-facing source face.
 
 - **Drawing sheets (pages 1–6):** the literal sheet headers, patent title and
   number, printer line, signature matter, and figure sequence are recorded as
@@ -64,11 +66,26 @@ comparison artifact for pages 10–17.
   platen / yielding-pin / mercury-cup mechanism through the Fig. 15
   equivalent-contact reference.
 - **Source method and boundary:** this reconciliation used the authoritative
-  online Google Patents record for US395781A together with the existing
-  page-marked ledger and typed edition blocks. No local OCR, page rendering,
-  test, build, publication binding, or shared-registry edit was performed.
-  Figure-crop visual acceptance and the untouched pages 10–17 remain for the
-  independent root review gate.
+  Census Bureau cloud PDF (`https://www2.census.gov/about/history/agency-history/innovations/technology/hollerith-machine/hollerith-patent.pdf`)
+  for the target US395781 grant, together with the existing page-marked ledger
+  and typed edition blocks. No local OCR, page rendering, image processing,
+  tests, builds, publication binding, or shared-registry edit was performed.
+  Figure-crop visual acceptance remains for the independent root review gate.
+
+## Pages 10–17 continuation candidate
+
+- **Specification p. 4–8:** the edition and ledger now include the complete
+  Fig. 7 relay reduction, Fig. 8 two-relay battery arrangement, Fig. 9
+  single-battery arrangement, Figs. 10–11 two-index-point circuits, Fig. 12
+  pair-combination circuit, the successive white/colored then native/foreign
+  sorting pass, and the Fig. 14–17 open/closed-circuit variants.
+- **Claim ordering:** page 15 carries claims 1–6, page 16 carries claims 7–17,
+  and page 17 carries claims 18–21 followed by Hollerith's signature and the
+  two printed witnesses. The canonical record resolves all 21 claim literals
+  from the edition blocks rather than duplicating them.
+- **Candidate status:** this is a complete source-led candidate for root review,
+  not publication acceptance. Existing versioned figure crops remain preserved;
+  the record stays withheld pending independent visual QA of every preview.
 
 ## Root figure QA hold
 

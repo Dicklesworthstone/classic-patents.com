@@ -576,8 +576,8 @@ export const hollerithTabulatingPages7To9ParallelReadings: Readonly<
 
 /**
  * Literal source blocks manually read from PDF pages 10–14 (specification
- * pages 4–8). They remain a patent-local continuation draft until the first
- * three specification sheets receive the same ledger treatment.
+ * pages 4–8), including the relay variants, two-index-point circuits,
+ * successive sorting pass, and open/closed-circuit modifications.
  */
 export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecificationBlock[] = [
   {
@@ -862,9 +862,9 @@ export const hollerithTabulatingPages10To14ParallelReadings: Readonly<
 };
 
 /**
- * Manually read and typed from PDF pages 15–17. This claim sequence is kept
- * separate from the unpublished edition until the specification and reviewed
- * ledger have received the same literal page-by-page treatment.
+ * Manually read and typed from PDF pages 15–17. The claim sequence is kept
+ * separate from the specification prose so the canonical record can resolve
+ * all 21 literal claims from one continuous edition source.
  */
 export const hollerithTabulatingManualClaimDraft: readonly CuratedSpecificationBlock[] = [
   {

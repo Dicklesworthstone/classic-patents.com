@@ -344,6 +344,7 @@ async function main() {
     run("bun", ["run", "lint"]);
     run("ubs", ["--diff"]);
     run("ubs", ["--staged"]);
+    fs.rmSync(path.join(process.cwd(), ".next", "export"), { recursive: true, force: true });
     run("bun", ["run", "build"]);
     assertNoConflictingBuilds("After application build");
     assertCommitUnchanged(commit, "After application build");
