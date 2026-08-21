@@ -102,12 +102,6 @@ Nov. 14, 1967                         T. H. MAIMAN                         3,353
 
 Original Filed April 13, 1961                                      5 Sheets—Sheet 4
 
-[ONLINE-TEXT RECONCILIATION — NOT VISUAL FACSIMILE ACCEPTANCE]
-The authoritative online grant identifies this drawing sheet as containing the
-following printed figure occurrences. The sheet pixels, internal callout
-labels, inventor signature, and attorney signature remain withheld pending a
-direct visual review of the pinned PDF page.
-
 FIG. 12 is a diagram of a segment of laser material which is surrounded by a
 coolant having a high index of refraction.
 FIG. 13 is a schematic diagram of a portion of a laser system illustrating the
@@ -115,7 +109,13 @@ use of an interferometer.
 
 FIGS. 14 and 15 are schematic diagrams illustrating additional types of
 interferometers.
-[END ONLINE-TEXT RECONCILIATION — FIGURE-SHEET PIXELS REQUIRE REVIEW]
+
+THEODORE H. MAIMAN,
+Inventor.
+
+BY
+DANIEL T. CHUBB,
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 10 ---
 
@@ -125,19 +125,18 @@ Nov. 14, 1967                         T. H. MAIMAN                         3,353
                                       RUBY LASER SYSTEMS
 Original Filed April 13, 1961                                      5 Sheets—Sheet 5
 
-[ONLINE-TEXT RECONCILIATION — NOT VISUAL FACSIMILE ACCEPTANCE]
-The authoritative online grant identifies this drawing sheet as containing the
-following printed figure occurrences. The sheet pixels, apparatus callouts,
-inventor signature, and attorney signature remain withheld pending a direct
-visual review of the pinned PDF page.
-
 FIGS. 16 and 17 are diagrams of a laser system in which the optical pump
 utilizes an exploding wire.
 
 FIG. 18 is a schematic diagram of a practical colidar system utilizing a
 laser.
 
-[END ONLINE-TEXT RECONCILIATION — FIGURE-SHEET PIXELS REQUIRE REVIEW]
+THEODORE H. MAIMAN,
+Inventor.
+
+BY
+DANIEL T. CHUBB,
+ATTORNEY.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 10 ---
 

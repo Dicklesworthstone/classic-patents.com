@@ -8,7 +8,7 @@ FIG. 1.
 
 FIG. 1: chain-reaction neutron balance diagram.
 
-The drawing sheet is retained as source-sheet-01-01.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Printed diagram headings and labels: Thermal Neutrons; Radioactive Fission Fragments; Beta Rays; Gamma Rays; Fast Neutron Leakage From System; Volume Resonance Absorption; Surface Resonance Absorption; Neutrons Reaching Thermal Energy; Neutrons Absorbed by Impurities in System and Controls; Neutrons Absorbed By Carbon; and Thermal Neutrons. The diagram's visible lettered reference labels are A, B, C, D, E, F, G, H, and I. Readable nuclide and timing labels include U235, U238, U239, 93-239, 94-239, 23 minutes, 2.3 days, and 100 fast neutrons. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 2 OF 58 ---
 
@@ -20,7 +20,7 @@ FIG. 2.
 
 FIG. 2: uranium-metal spheres in graphite K contours.
 
-The drawing sheet is retained as source-sheet-02-02.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Graph headings and labels: Radius of Spheres (cm); Vc/Vu; and K contour values 1.00 through 1.10. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 3 OF 58 ---
 
@@ -32,7 +32,7 @@ FIG. 3.
 
 FIG. 3: uranium-metal rods in graphite K contours.
 
-The drawing sheet is retained as source-sheet-03-03.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Graph headings and labels: Radius of Rods (cm); Vc/Vu; and K contour values 1.00 through 1.10. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 58 ---
 
@@ -44,7 +44,7 @@ FIG. 4.
 
 FIG. 4: uranium-oxide spheres in graphite K contours.
 
-The drawing sheet is retained as source-sheet-04-04.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Graph headings and labels: Radius of Spheres (cm); Vc/Vox; and K contour values 1.00 through 1.10. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 58 ---
 
@@ -56,7 +56,7 @@ FIG. 5.
 
 FIG. 5: uranium-oxide rods in graphite K contours.
 
-The drawing sheet is retained as source-sheet-05-05.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Graph headings and labels: Radius of Rods (cm); Vc/Vox; and K contour values 1.00 through 1.10. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 6 OF 58 ---
 
@@ -68,7 +68,7 @@ FIG. 6.
 
 FIG. 6: uranium rods in heavy water K contours.
 
-The drawing sheet is retained as source-sheet-06-06.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Graph headings and labels: Radius of Rods (cm); Vaq/Vu; and K contour values 1.00 through 1.09. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 7 OF 58 ---
 
@@ -80,7 +80,7 @@ FIG. 7.
 
 FIG. 7: uranium-graphite reactor perspective.
 
-The drawing sheet is retained as source-sheet-07-07.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Readable component reference numerals: 10–17, 20–23, 25–26, 29, 29a, 30–37, 40–43, 45–46, 95–96, and 202a. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 8 OF 58 ---
 
@@ -92,7 +92,7 @@ FIG. 8.
 
 FIG. 8: front plan and central section of the Fig. 7 reactor.
 
-The drawing sheet is retained as source-sheet-08-08.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Readable component reference numerals: 10–12, 14–15, 17, 20–21, 26–27, 29a, 30, 32, 36–37, 50–52, 54, 56, 60–61, 73, 75, and 79. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 9 OF 58 ---
 
@@ -104,7 +104,7 @@ FIG. 9.
 
 FIG. 9: side plan and central section of the reactor.
 
-The drawing sheet is retained as source-sheet-09-09.png. Readable figure labels and the printed role headings “Witnesses:” and “By:” are transcribed above. Reference numerals remain in the source drawing; no numeral is normalized here when the cloud facsimile text is not reliably legible. The inventor names printed throughout the grant are Enrico Fermi and Leo Szilard; no illegible witness or attorney name is supplied by this ledger.
+Readable component reference numerals: 10–11, 14, 17, 20–21, 26–27, 30–32, 40–41, 50–52, 54, 56, 56a, 60, and 72. Witnesses: three handwritten signatures; the second reads “Francis W. Toy” and the third reads “Henry H. Johnson”; the first is not reliably legible. Inventors: Enrico Fermi; Leo Szilard. By: handwritten attorney signature, surname not reliably legible; Attorney.
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 58 ---
 
@@ -730,7 +730,7 @@ A=“light” fission fragment, e. g., Br, Kr, Rb, Sr, Y, Zr,
 
 2,708,656
 
-Cb, Mo, 43, Ru, Rh. Atomic mass, 83-99, inclusive.
+Cb, Mo, Nb, Ru, Rh. Atomic mass, 83-99, inclusive.
 Atomic number, 35-45, inclusive.
 
 B=“heavy” fission fragment, e. g., Sb, Te, I, Xe, Cs, Ba,
@@ -758,20 +758,20 @@ ing this diffusion, a small percentage of the neutrons are
 absorbed by the moderator, leaving sufficient thermal
 neutrons to enter a uranium body to produce new fast
 neutrons by fission, to repeat the cycle. In the uranium-
-graphite system about 72n thermal neutrons enter the
-uranium body to produce 100” new fast neutrons, i. e.,
-a survival of about 72 per cent of the original 100” fast
+graphite system about 72 thermal neutrons enter the
+uranium body to produce 100 new fast neutrons, i. e.,
+a survival of about 72 per cent of the original 100 fast
 neutrons during the slowing process.
 
 The four neutron losses from the chain reaction re- ,
 
 ferred to above are represented in Fig. 1, where the reso-
-nance absorption at Cand the friction of thermal neu-
+nance absorption at C and the fraction of thermal neu-
 trons absorbed by U238 at I represent the uranium ab-
 sorption losses, Losses due to impurities are represented
 at F, those due to absorption in the moderator at G, and
 the leakage losses due to the finite size of the system at
-Band E.
+B and E.
 
 These losses will be considered in detail in the order
 named, as any one of these losses, or their total if too
@@ -1164,7 +1164,7 @@ as follows:
 4
 
 ny= Ae OM (2)
-with a relaxation distance or length equal to 51, the re-
+with a relaxation distance or length equal to b, the re-
 laxation distance or length being the distance in which
 the neutron flux is reduced to a fraction of 1/e of its orig-
 inal value. Ata sufficiently large distance from the source
@@ -1290,7 +1290,7 @@ predetermined time. For these measurements the indium
 foil is held in a nickel holder. Thus the activation of
 the foil (Ani) is due to the absorption of both thermal
 and indium resonance neutrons. All measurements are
-corrected to give the foil activity values for iniinite times
+corrected to give the foil activity values for infinite times
 of irradiation. The emission of neutrons by spontaneous
 fission of the uranium in the pile produces a small neu-
 tron background which must be subtracted from the
@@ -1314,7 +1314,7 @@ b= = nas (7)
 
 where D is the distance between the two positions x: and
 x2 along the vertical axis at which (Ani)1, and (Ani)2
-are measured and Jn the mean [ogarithm to the base e.
+are measured and ln the mean logarithm to the base e.
 
 For measurements near the top of the pile the har-
 monic correction may be ignored. For measurements
@@ -1600,7 +1600,7 @@ Fig. 18 is a diagrammatic side view of a safety rod;
 Fig. 19 is a diagrammatic side view of a shim or limit-
 ing rod;
 
-Fig, 20 is a diagrammatic side view of a control rod;
+Fig. 20 is a diagrammatic side view of a control rod;
 
 Fig. 21 is a graph on which are plotted neutron density
 value relations found in the active portion of the system
