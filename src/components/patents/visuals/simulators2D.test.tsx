@@ -168,7 +168,9 @@ describe("2D Dynamic Vector Simulators & Source Visuals", () => {
 
   for (const { name, comp } of activeSims) {
     test(`renders 2D simulator for ${name} in SSR mode`, () => {
-      const html = renderToStaticMarkup(React.createElement(comp));
+      const html = renderToStaticMarkup(
+        React.createElement(comp as React.ComponentType<Record<string, unknown>>),
+      );
       expect(typeof html).toBe("string");
       expect(html.length).toBeGreaterThan(0);
       expect(html.includes("<svg") || html.includes("<canvas") || html.includes("<div")).toBe(true);
