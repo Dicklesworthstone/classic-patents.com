@@ -217,20 +217,26 @@ export function TeslaCoil3D() {
           <button
             aria-label="Toggle test tone"
             type="button"
-            onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
             className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-            title={isPlayingAudio ? "Mute Tesla Audio" : "Enable Tesla Resonant Tone"}
+            title={isAudioMuted ? "Unmute Tesla Audio" : "Mute Tesla Audio"}
           >
-            {isPlayingAudio ? (
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
-            ) : (
+            {isAudioMuted ? (
               <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
           </button>
           <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
             type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            onClick={() => {
+              setShowCalloutPins(!showCalloutPins);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
