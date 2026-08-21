@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -100,8 +101,10 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     modelRef.current = model;
     studio.scene.add(model.group);
 
-    const animate = () => {
-      timeRef.current += 0.016;
+    const clock = createStudioClock();
+    const animate = (now: number) => {
+      const { simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
       studio.controls.update();
 
       model.update(timeRef.current, {

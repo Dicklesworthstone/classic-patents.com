@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
@@ -82,12 +83,11 @@ export function DeForestAudion3D() {
     studio.scene.add(nodes.root);
 
     let animId = 0;
-    let frame = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
-      frame += 1;
-      const time = frame / 60;
+      const { simTimeSec: time } = clock.pump(now);
       const p = live.current;
 
       if (p.isRotating) {

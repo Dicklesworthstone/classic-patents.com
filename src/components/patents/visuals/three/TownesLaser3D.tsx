@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -99,8 +100,10 @@ export function TownesLaser3D({
     studio.scene.add(nodes.root);
     nodesRef.current = nodes;
 
-    const animate = () => {
-      timeRef.current += 0.016;
+    const clock = createStudioClock();
+    const animate = (now: number) => {
+      const { simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
       const current = live.current;
       if (current.isRotating) {
         nodes.root.rotation.y += 0.0044;

@@ -28,6 +28,9 @@ export interface ColtRevolverModel {
   smokeMesh: THREE.Points;
   sparkPoints: THREE.Points;
   lockworkCutawayGroup: THREE.Group;
+  handPawl: THREE.Mesh;
+  boltDetent: THREE.Mesh;
+  mainspring: THREE.Mesh;
   textures: THREE.Texture[];
   dispose: () => void;
 }
@@ -729,13 +732,16 @@ export function buildColtRevolverModel(): ColtRevolverModel {
     smokeMesh,
     sparkPoints,
     lockworkCutawayGroup,
+    handPawl,
+    boltDetent,
+    mainspring,
     textures,
     dispose,
   };
 }
 
 /**
- * Updates Colt Paterson revolver hammer cocking, cylinder rotation, folding trigger drop, rammer, and cutaway.
+ * Updates Colt Paterson revolver hammer cocking, cylinder rotation, folding trigger drop, rammer, lockwork, and firing blast.
  */
 export function updateColtRevolverKinematics(
   model: ColtRevolverModel,
@@ -744,35 +750,84 @@ export function updateColtRevolverKinematics(
   rammerPositionPct: number,
   isFiring: boolean,
   showLockworkCutaway: boolean,
+  firingPhase: number = 0,
+  cylinderRotationOverrideRad?: number,
 ): void {
-  // Hammer rotation: 0° (hammer down) to 45° (full cock)
-  const cockProgress = cockingAngleDeg / 45;
+  const cockProgress = Math.min(1, Math.max(0, cockingAngleDeg / 45));
+
+  // Hammer rotation: 0° (hammer down resting on cap) to 45° (full cock)
   model.hammerGroup.rotation.z = -(cockingAngleDeg * Math.PI) / 180;
 
   // Folding Trigger drop: emerges from frame slot as hammer is cocked
-  model.triggerGroup.position.y = -0.3 - cockProgress * 0.38;
-  model.triggerGroup.rotation.z = -cockProgress * 0.25;
+  const triggerDeployY = -0.3 - cockProgress * 0.38;
+  model.triggerGroup.position.y = triggerDeployY;
+  const triggerPullZ = isFiring ? 0.12 : -cockProgress * 0.25;
+  model.triggerGroup.rotation.z = triggerPullZ;
 
-  // Cylinder indexing: 5 chambers -> 72° per chamber (2π/5)
-  const baseChamberAngle = ((currentChamberIndex - 1) * 2 * Math.PI) / 5;
-  model.cylinderGroup.rotation.x = baseChamberAngle + cockProgress * ((2 * Math.PI) / 5);
+  // Cylinder indexing: 5 chambers -> 72° per chamber (-2π/5)
+  if (typeof cylinderRotationOverrideRad === "number") {
+    model.cylinderGroup.rotation.x = cylinderRotationOverrideRad;
+  } else {
+    const targetChamberAngle = -((currentChamberIndex - 1) * 2 * Math.PI) / 5;
+    const prevChamberAngle = targetChamberAngle + (2 * Math.PI) / 5;
+    const currentAngle = isFiring
+      ? targetChamberAngle
+      : prevChamberAngle - cockProgress * ((2 * Math.PI) / 5);
+    model.cylinderGroup.rotation.x = currentAngle;
+  }
 
   // Loading Lever & Creeping Rammer plunger
-  const rammerProgress = rammerPositionPct / 100;
-  model.loadingLeverGroup.rotation.z = -rammerProgress * 0.65;
-  model.rammerPlunger.position.x = -rammerProgress * 0.55;
+  const rammerProgress = Math.min(1, Math.max(0, rammerPositionPct / 100));
+  model.loadingLeverGroup.rotation.z = -rammerProgress * 0.75;
+  model.rammerPlunger.position.x = -rammerProgress * 0.72;
+
+  // Articulated Lockwork Cutaway parts
+  if (model.handPawl) {
+    model.handPawl.position.y = 0.45 + cockProgress * 0.28;
+    model.handPawl.position.x = 0.45 - cockProgress * 0.1;
+    model.handPawl.rotation.z = isFiring ? -0.35 : -0.3 + cockProgress * 0.22;
+  }
+  if (model.boltDetent) {
+    const boltDrop = cockProgress > 0.08 && cockProgress < 0.88 && !isFiring ? -0.16 : 0;
+    model.boltDetent.position.y = -0.75 + boltDrop;
+  }
+  if (model.mainspring) {
+    const springFlex = 1.0 - cockProgress * 0.08;
+    model.mainspring.scale.set(springFlex, 1.0 + cockProgress * 0.08, 1.0);
+  }
 
   // Muzzle flash / smoke explosion during firing
   if (isFiring) {
     const field = wave2dFrames(16, 16, 2);
     const rms = waveFrameRms(field, 16, 16, ((currentChamberIndex % 16) + 16) % 16);
-    model.blastMesh.visible = true;
-    (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0.55 + rms;
-    (model.sparkPoints.material as THREE.PointsMaterial).opacity = 0.7 + rms;
+    model.blastMesh.visible = firingPhase < 0.35;
+    const blastScale = 1.0 + firingPhase * 1.8;
+    model.blastMesh.scale.set(blastScale, blastScale, blastScale);
+    (model.blastMesh.material as THREE.MeshBasicMaterial).opacity = Math.max(
+      0,
+      1.0 - firingPhase * 3.2,
+    );
+
+    const smokeScale = 1.0 + firingPhase * 3.5;
+    model.smokeMesh.scale.set(smokeScale, smokeScale, smokeScale);
+    (model.smokeMesh.material as THREE.PointsMaterial).opacity = Math.max(
+      0,
+      (1.0 - firingPhase) * (0.65 + rms * 0.3),
+    );
+
+    const sparkScale = 1.0 + firingPhase * 2.8;
+    model.sparkPoints.scale.set(sparkScale, sparkScale, sparkScale);
+    (model.sparkPoints.material as THREE.PointsMaterial).opacity = Math.max(
+      0,
+      (1.0 - firingPhase * 1.5) * (0.8 + rms * 0.2),
+    );
   } else {
     model.blastMesh.visible = false;
+    (model.blastMesh.material as THREE.MeshBasicMaterial).opacity = 0;
     (model.smokeMesh.material as THREE.PointsMaterial).opacity = 0;
     (model.sparkPoints.material as THREE.PointsMaterial).opacity = 0;
+    model.smokeMesh.scale.set(1, 1, 1);
+    model.sparkPoints.scale.set(1, 1, 1);
   }
 
   // Lockwork Cutaway view

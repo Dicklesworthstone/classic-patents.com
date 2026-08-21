@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -110,8 +111,10 @@ export function CarlsonElectrophotography3D({
     studio.scene.add(nodes.root);
     nodesRef.current = nodes;
 
-    const animate = () => {
-      timeRef.current += 0.016;
+    const clock = createStudioClock();
+    const animate = (now: number) => {
+      const { simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
       const current = live.current;
       if (current.isRotating) {
         nodes.root.rotation.y += 0.0044;

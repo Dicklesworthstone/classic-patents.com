@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
@@ -93,8 +94,10 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     modelRef.current = model;
     studio.scene.add(model.group);
 
-    const animate = () => {
-      timeRef.current += 0.016;
+    const clock = createStudioClock();
+    const animate = (now: number) => {
+      const { simTimeSec } = clock.pump(now);
+      timeRef.current = simTimeSec;
       studio.controls.update();
       model.setCutaway?.(live.current.isCutaway ?? false);
       model.update(timeRef.current, live.current);

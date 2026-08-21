@@ -8,6 +8,7 @@ import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildOttoEngineModel,
@@ -62,6 +63,7 @@ export function OttoEngine3D() {
   const powerBhp = otto.brakeHorsepower.toFixed(1);
   const thermalEfficiencyPct = otto.thermalEfficiencyPct;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const live = useLiveSimParams({
@@ -222,7 +224,15 @@ export function OttoEngine3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-194047-otto-engine"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("compressionRatio", active ? 4.5 : 1.2);
+            }}
+          />
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}

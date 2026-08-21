@@ -2,9 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -43,6 +47,7 @@ export function BellPhotophone3D({
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
 
@@ -94,16 +99,16 @@ export function BellPhotophone3D({
     studio.scene.add(model.group);
 
     let rafId = 0;
-    let elapsedTimeSec = 0;
-    const animate = () => {
+    const clock = createStudioClock();
+    const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
-      elapsedTimeSec += 0.016;
+      const { simTimeSec: elapsedTimeSec } = clock.pump(now);
       model.update(live.current.photoState, elapsedTimeSec);
       model.setCutaway?.(live.current.isCutaway ?? false);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-    animate();
+    rafId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId);
@@ -115,6 +120,13 @@ export function BellPhotophone3D({
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-235199-bell-photophone"
+        params={{
+          beamPowerWatts: (solarIrradianceWPerM2 * 0.05 * 0.8),
+          voiceSplDb,
+        }}
+      />
       <div className="sr-only">Alexander Graham Bell Photophone 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -150,7 +162,15 @@ export function BellPhotophone3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-235199-bell-photophone"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("voiceSplDb", active ? 75 : 30);
+            }}
+          />
           <button
             type="button"
             onClick={() => {
@@ -311,6 +331,24 @@ export function BellPhotophone3D({
               className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800">
+          <SensitivitySlider
+            id="bell-photophone-beam-power"
+            patentId="us-235199-bell-photophone"
+            paramKey="beamPowerWatts"
+            label="Optical Beam Power"
+            value={Number((solarIrradianceWPerM2 * 0.05 * 0.8).toFixed(2))}
+            unit="W"
+            min={0.5}
+            max={5.0}
+            step={0.1}
+            onChange={(val) => {
+              const newSolar = val / (0.05 * 0.8);
+              updateParam("solarIrradianceWPerM2", Math.round(newSolar));
+            }}
+          />
         </div>
       </div>
 

@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildEdisonPhonographModel,
   updateEdisonPhonographKinematics,
@@ -47,6 +50,7 @@ export function EdisonPhonograph3D() {
   const cylinderRpm = mandrelRpm;
   const voiceVolumeDb = params.voiceVolumeDb ?? params.soundWaveAmpDb ?? 75;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
@@ -144,6 +148,13 @@ export function EdisonPhonograph3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <PortHamiltonianEnergyStrip
+        patentId="us-200521-edison-phonograph"
+        params={{
+          cylinderRpm: mandrelRpm,
+          voiceVolumeDb,
+        }}
+      />
       <div className="sr-only">Thomas Edison Phonograph 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -181,7 +192,15 @@ export function EdisonPhonograph3D() {
         )}
 
         {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-200521-edison-phonograph"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("mandrelRpm", active ? 60 : 0);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -338,6 +357,23 @@ export function EdisonPhonograph3D() {
               className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
+        </div>
+
+        <div className="mt-3 pt-3 border-t border-parchment-200 dark:border-ink-800 max-w-2xl">
+          <SensitivitySlider
+            patentId="us-200521-edison-phonograph"
+            controlKey="grooveDepthUm"
+            label="Tinfoil Indentation Depth"
+            value={Number((voiceVolumeDb * 0.35).toFixed(1))}
+            unit="µm"
+            min={5.0}
+            max={45.0}
+            step={0.5}
+            onChange={(val) => {
+              const newDb = Math.round(val / 0.35);
+              updateParam("voiceVolumeDb", newDb);
+            }}
+          />
         </div>
       </div>
     </div>
