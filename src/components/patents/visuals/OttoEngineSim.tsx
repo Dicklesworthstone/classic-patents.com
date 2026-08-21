@@ -74,7 +74,7 @@ export function OttoEngineSim() {
     otto.pistonStrokePx,
     otto.crankCx,
     otto.crankCy,
-    otto.rodOriginY0,
+    otto.rodOriginX,
   );
 
   return (
