@@ -641,8 +641,12 @@ host SI step and label it until a stepper export exists.
 - [x] P7.10 `autodiff_derivatives` layout plus host Dual on the badge
   (`∂metric/∂control` and `d(param)/dt`). Crate AD is bound; until WASM
   steps the chip says `host Dual`.
-- [x] P7.11 Host-pumped `TickScheduler` on Pasteur, Nobel, McCormick, Bardeen,
-  Edison, Noyce 3Ds (rAF timestamp, bounded catch-up).
+- [x] P7.11 Host-pumped `TickScheduler` / `createStudioClock` on Pasteur, Nobel,
+  McCormick, Bardeen, Edison, Noyce, Farnsworth, Spencer, Carrier, Pelton,
+  Bell telephone, Morse, Otis, Marconi. Edison/Bell/Nobel/Phonograph/Morse/
+  Bardeen 3D models drain kernel RMS/heat seats instead of `timeSec * 8`
+  crate-tape indexes. Remaining catalog 3Ds still on `dt = 1/60` are the
+  next drain.
 - [x] P7.12 Replay digest on catalog HUDs is `host:` unless a WASM hasher
   actually stepped. Fake `blake3:` hex removed from `energyLedger`.
 - [x] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→

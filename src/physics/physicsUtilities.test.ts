@@ -4,7 +4,7 @@ import { energyChannelsFor } from "./energyChannels";
 import { canonicalizeParam, expandParamAliases } from "./paramAliases";
 import { formatSones, sonesFromDbSpl } from "./psycho";
 import { qtyDimension } from "./qty";
-import { TickScheduler } from "./tickScheduler";
+import { createStudioClock, TickScheduler } from "./tickScheduler";
 
 describe("Shared Physics Mathematical Utilities & Conversions", () => {
   test("blackbodyRgb computes CIE RGB approximations across temperature ranges", () => {
@@ -155,5 +155,16 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     });
     expect(lagRan).toBeLessThanOrEqual(3);
     expect(scheduler.reanchors).toBeGreaterThan(0);
+  });
+
+  test("createStudioClock host-feeds dt from rAF timestamps and bounds catch-up", () => {
+    const clock = createStudioClock(1 / 60);
+    const first = clock.pump(0);
+    expect(first.dt).toBe(0);
+    const second = clock.pump(16);
+    expect(second.dt).toBeCloseTo(0.016, 3);
+    expect(second.simTimeSec).toBeGreaterThan(0);
+    const lag = clock.pump(5000);
+    expect(lag.dt).toBeLessThanOrEqual(0.1);
   });
 });

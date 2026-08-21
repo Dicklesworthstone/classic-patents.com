@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
+import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 
 describe("StudioKernelChips Component", () => {
   const sampleChips: KernelChip[] = [
@@ -37,6 +37,10 @@ describe("StudioKernelChips Component", () => {
     expect(html).toContain("385");
     expect(html).toContain("Thermal Flux");
     expect(html).toContain("1.42");
-    expect(html).toContain("right-4");
+    expect(html).toContain("right-3");
+  });
+
+  test("useResponsiveStudioHud exports a valid hook function", () => {
+    expect(typeof useResponsiveStudioHud).toBe("function");
   });
 });

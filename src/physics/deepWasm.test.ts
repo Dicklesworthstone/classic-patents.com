@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import {
   stepEdisonBulb,
   stepGoodyearRubber,
@@ -31,6 +33,7 @@ import {
 } from "./deepWasm";
 import { computePortHamiltonianEnergy } from "./energyLedger";
 import {
+  computeCarrierSprayField,
   computeFarnsworthRasterField,
   computeNoyceDepletionField,
   computeSpencerCavityField,
@@ -185,6 +188,31 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     const e = coupleEdgesFor("us-223898-edison-lightbulb", { voltage: 110 });
     expect(e[0]?.from).toBe("I²R");
     expect(e[0]?.to).toBe("radiation");
+    expect(coupleEdgesFor("us-586193-marconi-radio", { sparkGapMm: 10 })[0]?.from).toBe(
+      "spark train",
+    );
+    expect(coupleEdgesFor("us-233692-pelton-water-wheel", { headMeters: 450 })[0]?.from).toBe(
+      "head",
+    );
+  });
+
+  test("3D models drain kernel seats instead of indexing crate tapes with timeSec * 8", () => {
+    const models = [
+      "edisonBulbModel.ts",
+      "bellTelephoneModel.ts",
+      "nobelDynamiteModel.ts",
+      "edisonPhonographModel.ts",
+      "morseTelegraphModel.ts",
+      "bardeenTransistorModel.ts",
+    ];
+    for (const name of models) {
+      const src = readFileSync(
+        join(import.meta.dir, "../components/patents/visuals/three", name),
+        "utf8",
+      );
+      expect(src).not.toContain("timeSec * 8");
+      expect(src).not.toContain("_timeSec * 8");
+    }
   });
 
   test("field textures write finite grids for Tesla, Noyce, Farnsworth, Spencer", () => {
@@ -196,6 +224,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(computeNoyceDepletionField(5, 16).length).toBe(256);
     expect(computeFarnsworthRasterField(0.4, 16).length).toBe(256);
     expect(computeSpencerCavityField(800, true, 0.2, 16).length).toBe(256);
+    expect(computeCarrierSprayField(15000, 16).length).toBe(256);
     const rgba = new Uint8Array(16 * 16 * 4);
     writeColormappedField(rgba, tesla, 16, 16);
     expect(rgba[3]).toBe(255);
