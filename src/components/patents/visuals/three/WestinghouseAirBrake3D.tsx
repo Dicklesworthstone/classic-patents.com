@@ -41,12 +41,12 @@ export function WestinghouseAirBrake3D() {
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
 
   // Pneumatic Simulation Parameters from Shared Hook
-  const { params } = usePatentPhysics("us-124404-westinghouse-air-brake");
-  const trainPipePressurePsi = params.trainPipePressure ?? 0;
-  const reservoirPipePressurePsi = params.reservoirPipePressure ?? 90;
-  const selectingCockPos = params.selectingCockPosition ?? 0;
-  const accidentTripMode = params.accidentTrip ?? 0;
-  const signalPulsePsi = params.signalPulsePressure ?? 0;
+  const { params, updateParam } = usePatentPhysics("us-124404-westinghouse-air-brake");
+  const trainPipePressurePsi = (params.trainPipePressure as number) ?? 0;
+  const reservoirPipePressurePsi = (params.reservoirPipePressure as number) ?? 90;
+  const selectingCockPos = (params.selectingCockPosition as number) ?? 0;
+  const accidentTripMode = (params.accidentTrip as number) ?? 0;
+  const signalPulsePsi = (params.signalPulsePressure as number) ?? 0;
 
   const tripModes = ["running", "tripped_derailment", "tripped_parting"] as const;
   const tripCockState = tripModes[accidentTripMode] ?? "running";
@@ -110,9 +110,9 @@ export function WestinghouseAirBrake3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    // Build procedural 3D model
+    // Authentic Model
     const brakeModel: WestinghouseAirBrakeModelResult = buildWestinghouseAirBrakeModel();
-    scene.add(brakeModel.root);
+    scene.add(brakeModel.rootGroup);
 
     // Animation Loop
     let reqId: number;
@@ -124,8 +124,7 @@ export function WestinghouseAirBrake3D() {
       const delta = 1 / 60;
       const p = live.current;
 
-      const wheelOmega = p.rollingOmegaRadPerS ?? 0;
-      wheelAngle -= wheelOmega * delta;
+      wheelAngle += (p.rollingOmegaRadPerS ?? 0) * delta;
 
       // Update model kinematics
       updateWestinghouseAirBrakeKinematics(
@@ -170,94 +169,181 @@ export function WestinghouseAirBrake3D() {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Westinghouse Double-Pipe Air Brake 3D</div>
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto text-parchment-100">
-          <Activity className="w-4 h-4 text-sky-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Westinghouse Double-Pipe Air Brake 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
-            US Patent 124,404 (1872)
-          </span>
-        </div>
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Overview"],
+                ["selecting_cock", "Selecting Cock d¹"],
+                ["trip_apparatus", "Trip Cock e"],
+                ["brake_cylinder", "Cylinder C"],
+                ["reservoir", "Receiver D"],
+                ["signaling_gauge", "Signal Gauge g²"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Overview"],
-              ["selecting_cock", "Selecting Cock d¹"],
-              ["trip_apparatus", "Trip Cock e"],
-              ["brake_cylinder", "Cylinder C"],
-              ["reservoir", "Receiver D"],
-              ["signaling_gauge", "Signal Gauge g²"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-sky-600 text-white font-semibold shadow-sm"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
+        {/* Top Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              showUiOverlay
+                ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+                : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
+            }`}
+            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4 text-sky-400" />
+            <Zap className="w-4 h-4" />
+          </button>
+
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Bottom-Left Telemetry HUD */}
+        {showUiOverlay && (
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Operating Pipe B:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">{westinghouse.operatingPipePressurePsi} psi</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Receiver Pipe B¹:</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">{westinghouse.reservoirPipePressurePsi} psi</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Cylinder C:</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">{westinghouse.brakeCylinderPressurePsi} psi</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Clamping Force:</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">{clampingForceKn.toFixed(1)} kN</span>
+            </div>
+          </div>
+        )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="US 124,404 Double-Pipe Pneumatics"
+          chips={[
+            { label: "Operating Pipe B", value: `${westinghouse.operatingPipePressurePsi} psi` },
+            { label: "Receiver Pipe B¹", value: `${westinghouse.reservoirPipePressurePsi} psi` },
+            {
+              label: "Cock d¹",
+              value: westinghouse.isSelectingCockReversed ? "Position 2 (Swapped)" : "Position 1",
+              tone: "ok",
+            },
+            {
+              label: "Cock e",
+              value: westinghouse.isTripped ? "TRIPPED (Accident)" : "ARMED",
+              tone: westinghouse.isTripped ? "warn" : "ok",
+            },
+            { label: "Cylinder C", value: `${westinghouse.brakeCylinderPressurePsi} psi` },
+            { label: "Clamping", value: `${clampingForceKn.toFixed(1)} kN` },
+            { label: "Signal Code", value: westinghouse.signalMessage },
+            {
+              label: "Pneumatics kernel",
+              value: crateSource === "wasm" ? "fs-fluid" : "ts-pneumatics",
+            },
+          ]}
+        />
       </div>
 
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="US 124,404 Double-Pipe Pneumatics"
-        chips={[
-          { label: "Operating Pipe B", value: `${westinghouse.operatingPipePressurePsi} psi` },
-          { label: "Receiver Pipe B¹", value: `${westinghouse.reservoirPipePressurePsi} psi` },
-          {
-            label: "Cock d¹",
-            value: westinghouse.isSelectingCockReversed ? "Position 2 (Swapped)" : "Position 1",
-            tone: "ok",
-          },
-          {
-            label: "Cock e",
-            value: westinghouse.isTripped ? "TRIPPED (Accident)" : "ARMED",
-            tone: westinghouse.isTripped ? "warn" : "ok",
-          },
-          { label: "Cylinder C", value: `${westinghouse.brakeCylinderPressurePsi} psi` },
-          { label: "Clamping", value: `${clampingForceKn.toFixed(1)} kN` },
-          { label: "Signal Code", value: westinghouse.signalMessage },
-          {
-            label: "Pneumatics kernel",
-            value: crateSource === "wasm" ? "fs-fluid" : "ts-pneumatics",
-          },
-        ]}
-      />
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Operating Pipe (Pipe B)</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{trainPipePressurePsi} psi</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="80"
+              step="5"
+              value={trainPipePressurePsi}
+              onChange={(e) => updateParam("trainPipePressure", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Auxiliary Reservoir (Pipe B¹)</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{reservoirPipePressurePsi} psi</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              value={reservoirPipePressurePsi}
+              onChange={(e) => updateParam("reservoirPipePressure", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Selecting Cock d¹</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{selectingCockPos === 1 ? "Position 2 (Swapped)" : "Position 1 (Normal)"}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="1"
+              value={selectingCockPos}
+              onChange={(e) => updateParam("selectingCockPosition", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
