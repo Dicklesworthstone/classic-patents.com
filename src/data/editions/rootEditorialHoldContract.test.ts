@@ -16,6 +16,9 @@ import {
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-x72-whitney-cotton-gin",
+  "us-395781-hollerith-tabulating",
+  "us-2929922-townes-laser",
+  "us-3671542-kwolek-kevlar",
 ] as const;
 
 const SOURCE_QA_RELEASED_EDITIONS = [
