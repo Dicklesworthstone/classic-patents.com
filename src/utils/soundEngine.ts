@@ -150,6 +150,29 @@ class SoundEngine {
   }
 
   /**
+   * Live field transducer. Frequency and gain come from the latest kernel
+   * sample, not a canned one-shot. Default mute is enforced by isMuted.
+   */
+  public playFieldTransducer(opts: {
+    kind: "am" | "photocurrent" | "rf";
+    sample: number;
+    carrierHz: number;
+  }) {
+    if (this.isMuted) return;
+    const sample = Math.max(0, Math.min(1, Math.abs(opts.sample)));
+    if (opts.kind === "am") {
+      const audio = Math.max(80, opts.carrierHz);
+      this.playContinuousTone(audio * (0.85 + 0.3 * sample), "sine", 0.02 + 0.06 * sample);
+      return;
+    }
+    if (opts.kind === "photocurrent") {
+      this.playContinuousTone(Math.max(120, opts.carrierHz), "sine", 0.015 + 0.07 * sample);
+      return;
+    }
+    this.playContinuousTone(Math.max(60, Math.min(240, opts.carrierHz)), "sawtooth", 0.02 * sample);
+  }
+
+  /**
    * Procedural Popcorn Pop (short burst of bandpass filtered noise) for Spencer Microwave
    */
   public playPopcornPop() {

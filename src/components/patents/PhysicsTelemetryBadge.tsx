@@ -6,8 +6,10 @@ import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { coupleEdgesFor } from "@/physics/coupleGraph";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
+import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 
@@ -39,6 +41,12 @@ export function PhysicsTelemetryBadge({
   }, [resetParams]);
 
   const energy = useMemo(() => energyChannelsFor(patentId, params), [patentId, params]);
+  const coupleEdges = useMemo(() => coupleEdgesFor(patentId, params), [patentId, params]);
+  const sliderSensitivity = useMemo(() => {
+    const key = lastChange?.id ?? data?.controls[0]?.id;
+    if (!key) return null;
+    return computeParameterSensitivity(patentId, key, params);
+  }, [lastChange?.id, data?.controls, patentId, params]);
   const liveEnvelope = liveMetrics.map((m) => `${m.label} ${m.value} ${m.unit}`).join("; ");
   const [announcedEnvelope, setAnnouncedEnvelope] = useState("");
 
@@ -163,6 +171,50 @@ export function PhysicsTelemetryBadge({
           );
         })}
       </div>
+
+      {coupleEdges.length > 0 ? (
+        <div className="flex flex-wrap gap-2 pt-1">
+          {coupleEdges.map((edge) => (
+            <div
+              key={`${edge.from}->${edge.to}`}
+              className="rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5"
+              title={`${edge.crate} ${edge.source}`}
+            >
+              <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
+                {edge.from} → {edge.to}
+              </div>
+              <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">
+                {edge.gain}{" "}
+                <span className="font-normal text-ink-500 dark:text-ink-400">{edge.unit}</span>
+              </div>
+              <div className="text-[9px] font-mono text-ink-400">{edge.source}</div>
+            </div>
+          ))}
+          {sliderSensitivity ? (
+            <div className="rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5">
+              <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
+                {sliderSensitivity.derivativeSymbol} (host Dual)
+              </div>
+              <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">
+                {sliderSensitivity.derivativeValue}{" "}
+                <span className="font-normal text-ink-500 dark:text-ink-400">
+                  {sliderSensitivity.derivativeUnit}
+                </span>
+              </div>
+            </div>
+          ) : null}
+          {lastChange ? (
+            <div className="rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5">
+              <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
+                d({lastChange.id})/dt
+              </div>
+              <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">
+                {lastChange.ratePerSec.toFixed(3)} /s
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* Live Parameter Controls Grid (Unified Physical Inputs) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pt-4 border-t border-parchment-200 dark:border-ink-800">

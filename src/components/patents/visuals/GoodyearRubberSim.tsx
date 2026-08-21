@@ -107,7 +107,7 @@ export function GoodyearRubberSim() {
                   {/* Sulfur Disulfide Cross-Links between chains */}
                   {!isRaw && idx < 3 && (
                     <g stroke="#eab308" strokeWidth="2.5">
-                      {rubber.chainPostXs.map((_, i) => {
+                      {rubber.chainPostXs.map((_: number, i: number) => {
                         const post = goodyearChainPost(i, rubber.chainPostXs);
                         return (
                           <g key={post.x}>

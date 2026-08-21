@@ -2,9 +2,16 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
+import {
+  computeEdisonFilamentThermalField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -104,14 +111,38 @@ export const EdisonBulb3D = memo(() => {
     const model = buildEdisonBulbModel();
     scene.add(model.rootGroup);
 
-    // Animation Loop
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeEdisonFilamentThermalField(2200, 110, 1e-4, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.2, 3.2),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    fieldPlane.position.set(0, 1.2, 0);
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
+
     let reqId: number;
     let timeSec = 0;
+    const sched = new TickScheduler(1 / 60, 0);
+    let lastMs: number | undefined;
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const delta = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
+      lastMs = now;
+      sched.pump(now / 1000, () => {
+        timeSec += 1 / 60;
+      });
       const p = live.current;
 
       updateEdisonBulbKinematics(
@@ -129,14 +160,30 @@ export const EdisonBulb3D = memo(() => {
         p.appliedVoltage,
       );
 
+      writeColormappedField(
+        fieldRgba,
+        computeEdisonFilamentThermalField(
+          p.filamentTempKelvin ?? 2200,
+          p.appliedVoltage ?? 110,
+          p.vacuumTorr ?? 1e-4,
+          fieldGrid,
+        ),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
+
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       model.dispose();
       studio.cleanup();
       studioRef.current = null;

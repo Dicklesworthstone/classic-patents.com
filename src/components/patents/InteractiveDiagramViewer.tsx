@@ -655,7 +655,7 @@ function _renderHistoricalSchematic(
             stroke="#94a3b8"
           />
           <path d={bulb.schematicFilamentD} stroke="#f59e0b" strokeWidth="3" fill="none" />
-          {bulb.schematicTerminalXs.map((_, i) => {
+          {bulb.schematicTerminalXs.map((_: number, i: number) => {
             const t = edisonSchematicTerminal(
               i,
               bulb.schematicTerminalXs,

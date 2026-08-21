@@ -150,9 +150,16 @@ export function SpencerMicrowave3D() {
 
       if (!p.isAudioMuted && p.isOscillating) {
         audioTick += 1;
+        soundEngine.playFieldTransducer({
+          kind: "rf",
+          sample: Math.min(1, (p.spokeDisplayOmegaRadPerS ?? 0) / 4.5),
+          carrierHz: 90,
+        });
         if (audioTick % 30 === 0) {
           soundEngine.playSparkDischarge(0.15);
         }
+      } else if (p.isAudioMuted) {
+        soundEngine.stopContinuousTone();
       }
 
       controls.update();

@@ -53,6 +53,19 @@ export function FessendenWireless3D() {
     transmissionDistanceKm: distanceKm,
   });
 
+  useEffect(() => {
+    if (isAudioMuted) {
+      soundEngine.stopContinuousTone();
+      return;
+    }
+    const audioHz = sim.audioFrequencyHz;
+    const sample = Math.min(1, Math.abs(sim.audioSignalCurrentMicroamps) / 80);
+    soundEngine.playFieldTransducer({ kind: "am", sample, carrierHz: audioHz });
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isAudioMuted, sim.audioFrequencyHz, sim.audioSignalCurrentMicroamps]);
+
   const live = useLiveSimParams({
     carrierFreqKhz,
     audioModPct,

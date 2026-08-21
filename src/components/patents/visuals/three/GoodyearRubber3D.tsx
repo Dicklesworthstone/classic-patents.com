@@ -1,12 +1,13 @@
-"use client";
-
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGoodyearRubberModel, updateGoodyearRubberKinematics } from "./goodyearRubberModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -41,6 +42,7 @@ export function GoodyearRubber3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Thermodynamic & Polymer Mechanics Calculations
   const rubberPhysics = FrankenSimEngine.stepGoodyearRubber(
@@ -117,8 +119,8 @@ export function GoodyearRubber3D() {
 
     const { scene, camera, renderer, controls } = studio;
 
-    const model = buildGoodyearRubberModel();
-    scene.add(model.rootGroup);
+    const { rootGroup, nodes, materials, dispose } = buildGoodyearRubberModel();
+    scene.add(rootGroup);
 
     // Animation Loop
     let reqId: number;
@@ -131,8 +133,8 @@ export function GoodyearRubber3D() {
       const p = live.current;
 
       updateGoodyearRubberKinematics(
-        model.nodes,
-        model.materials,
+        nodes,
+        materials,
         dt,
         timeSec,
         p.appliedTensileStretch,
@@ -156,7 +158,7 @@ export function GoodyearRubber3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
-      model.dispose();
+      dispose();
       studio.cleanup();
       studioRef.current = null;
     };
@@ -164,7 +166,14 @@ export function GoodyearRubber3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Charles Goodyear Vulcanized Rubber 3D</div>
+      <PortHamiltonianEnergyStrip
+        patentId="us-3633-goodyear-rubber"
+        params={{
+          appliedTensileStretch,
+          vulcanTemp: cureTemperatureCelsius,
+        }}
+      />
+      <div className="sr-only">Charles Goodyear Vulcanized Rubber 3D Simulation</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -179,9 +188,9 @@ export function GoodyearRubber3D() {
                 ["iso", "Isometric"],
                 ["chains", "Polymer Chains"],
                 ["bridges", "Sulfur Bridges"],
-                ["clamps", "Tensile Clamps"],
-                ["stress_vectors", "Stress Vectors"],
-                ["top", "Plan View"],
+                ["clamps", "Tensile Grips"],
+                ["stress_vectors", "Stress Field"],
+                ["top", "Top View"],
               ] as [CameraPreset, string][]
             ).map(([preset, label]) => (
               <button
@@ -201,7 +210,15 @@ export function GoodyearRubber3D() {
         )}
 
         {/* Top Right Tool Bar */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center gap-1.5 sm:gap-2 justify-end max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-3633-goodyear-rubber"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("vulcanTemp", active ? 145 : 25);
+            }}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -323,63 +340,47 @@ export function GoodyearRubber3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Vulcanization Temp</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {cureTemperatureCelsius} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="110"
-              max="190"
-              step="2"
-              value={cureTemperatureCelsius}
-              onChange={(e) => updateParam("vulcanTemp", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="cureTemp"
+            patentId="us-3633-goodyear-rubber"
+            paramKey="vulcanTemp"
+            label="Vulcanization Temp"
+            value={cureTemperatureCelsius}
+            min={110}
+            max={190}
+            step={2}
+            unit="°C"
+            onChange={(val) => updateParam("vulcanTemp", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Sulfur Fraction</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {sulfurWeightPct} wt%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2"
-              max="14"
-              step="0.5"
-              value={sulfurWeightPct}
-              onChange={(e) => updateParam("sulfurPct", Number.parseFloat(e.target.value))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="sulfurPct"
+            patentId="us-3633-goodyear-rubber"
+            paramKey="sulfurPct"
+            label="Sulfur Fraction"
+            value={sulfurWeightPct}
+            min={2}
+            max={14}
+            step={0.5}
+            unit="wt%"
+            onChange={(val) => updateParam("sulfurPct", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Tensile Stretch (λ)
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {appliedTensileStretch.toFixed(2)}x
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1.0"
-              max="2.5"
-              step="0.05"
-              value={appliedTensileStretch}
-              onChange={(e) =>
-                updateParam("appliedTensileStretch", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="tensileStretch"
+            patentId="us-3633-goodyear-rubber"
+            paramKey="appliedTensileStretch"
+            label="Tensile Stretch (λ)"
+            value={appliedTensileStretch}
+            min={1.0}
+            max={2.5}
+            step={0.05}
+            unit="x"
+            onChange={(val) => updateParam("appliedTensileStretch", val)}
+            allParams={params}
+          />
         </div>
       </div>
     </div>

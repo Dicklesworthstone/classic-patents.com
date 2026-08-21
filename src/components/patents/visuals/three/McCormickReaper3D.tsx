@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } fr
 import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
@@ -95,13 +96,16 @@ export function McCormickReaper3D() {
 
     // Animation Loop
     let reqId: number;
-    let presentationStep = 0;
+    let simTimeSec = 0;
+    const sched = new TickScheduler(1 / 60, 0);
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      sched.pump(now / 1000, () => {
+        simTimeSec += 1 / 60;
+      });
       const p = live.current;
-      const elapsedSeconds = presentationStep / 60;
-      presentationStep += 1;
+      const elapsedSeconds = simTimeSec;
 
       updateMcCormickReaperKinematics(
         model,
@@ -117,7 +121,7 @@ export function McCormickReaper3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

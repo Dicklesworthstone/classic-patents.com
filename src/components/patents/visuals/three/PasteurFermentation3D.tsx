@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { memo, useEffect, useRef, useState } from "react";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import {
@@ -103,13 +104,18 @@ export const PasteurFermentation3D = memo(() => {
     scene.add(rootGroup);
 
     let reqId: number;
-    let presentationStep = 0;
+    let simTimeSec = 0;
+    const sched = new TickScheduler(1 / 60, 0);
+    let lastMs: number | undefined;
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      const elapsedSec = presentationStep * dt;
-      presentationStep += 1;
+      const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
+      lastMs = now;
+      sched.pump(now / 1000, () => {
+        simTimeSec += 1 / 60;
+      });
+      const elapsedSec = simTimeSec;
       const p = live.current;
 
       updatePasteurFermentationKinematics(
@@ -127,7 +133,7 @@ export const PasteurFermentation3D = memo(() => {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

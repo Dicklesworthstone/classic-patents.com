@@ -1,9 +1,20 @@
+"use client";
+
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepNoyceIC } from "@/physics/catalogKernels";
+import {
+  computeNoyceDepletionField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
+import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildNoycePlanarIcModel, updateNoycePlanarIcKinematics } from "./noycePlanarICModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -100,11 +111,35 @@ export const NoycePlanarIC3D = memo(() => {
     const { rootGroup, nodes, materials, dispose } = buildNoycePlanarIcModel();
     scene.add(rootGroup);
 
-    let reqId: number;
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeNoyceDepletionField(5, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.4, 2.4),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false,
+      }),
+    );
+    fieldPlane.rotation.x = -Math.PI / 2;
+    fieldPlane.position.y = 0.04;
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
 
-    const animate = () => {
+    let reqId: number;
+    const sched = new TickScheduler(1 / 60, 0);
+    let lastMs: number | undefined;
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 1 / 60;
+      lastMs = now;
+      sched.pump(now / 1000, () => undefined);
       const p = live.current;
 
       updateNoycePlanarIcKinematics(
@@ -117,14 +152,25 @@ export const NoycePlanarIC3D = memo(() => {
         p.isCutaway,
       );
 
+      writeColormappedField(
+        fieldRgba,
+        computeNoyceDepletionField(p.reverseBias ?? 5, fieldGrid),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
+
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       dispose();
       studio.cleanup();
       studioRef.current = null;
@@ -174,7 +220,7 @@ export const NoycePlanarIC3D = memo(() => {
           <ClaimConstraintToggle
             patentId="us-2981877-noyce-ic"
             claimStates={claimStates}
-            onToggleClaim={(c, active) => {
+            onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
               updateParam("reverseBias", active ? 5.0 : 1.0);
             }}

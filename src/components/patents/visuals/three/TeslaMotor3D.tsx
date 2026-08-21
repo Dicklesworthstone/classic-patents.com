@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import {
+  computeTeslaRotatingBField,
+  createColormappedFieldTexture,
+  writeColormappedField,
+} from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -66,6 +71,7 @@ export function TeslaMotor3D() {
     fieldDisplayOmegaRadPerS: apparatus.fieldDisplayOmegaRadPerS,
     isAudioMuted,
     rotorSpeedRpm,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -121,11 +127,32 @@ export function TeslaMotor3D() {
     );
     scene.add(bFieldArrow);
 
+    const fieldGrid = 32;
+    const fieldTex = createColormappedFieldTexture(
+      computeTeslaRotatingBField(0, 2, fieldGrid),
+      fieldGrid,
+      fieldGrid,
+    );
+    const fieldPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(6.4, 6.4),
+      new THREE.MeshBasicMaterial({
+        map: fieldTex,
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false,
+      }),
+    );
+    fieldPlane.rotation.x = -Math.PI / 2;
+    fieldPlane.position.y = 0.02;
+    scene.add(fieldPlane);
+    const fieldRgba = fieldTex.image.data as Uint8Array;
+
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
     let reqId: number;
     let bFieldAngle = 0;
     let fieldTimeSec = 0;
     let lastFrameTimeMs: number | undefined;
+    let lastLegalAngle = 0;
 
     const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
@@ -134,9 +161,15 @@ export function TeslaMotor3D() {
       lastFrameTimeMs = frameTimeMs;
       const p = live.current;
       const fig9Available = p.phaseCount === 2;
+      const refused = (p.claim1Active ?? 1) < 0.5;
 
-      fieldTimeSec += delta;
-      bFieldAngle += p.fieldDisplayOmegaRadPerS * delta;
+      if (refused) {
+        bFieldAngle = lastLegalAngle;
+      } else {
+        fieldTimeSec += delta;
+        bFieldAngle += p.fieldDisplayOmegaRadPerS * delta;
+        lastLegalAngle = bFieldAngle;
+      }
 
       const cos = Math.cos(bFieldAngle);
       const sin = Math.sin(bFieldAngle);
@@ -160,6 +193,14 @@ export function TeslaMotor3D() {
       );
 
       bFieldArrow.visible = p.showMagneticFlux && fig9Available;
+      fieldPlane.visible = p.showMagneticFlux && fig9Available;
+      writeColormappedField(
+        fieldRgba,
+        computeTeslaRotatingBField(bFieldAngle, p.phaseCount === 3 ? 3 : 2, fieldGrid),
+        fieldGrid,
+        fieldGrid,
+      );
+      fieldTex.needsUpdate = true;
 
       controls.update();
       renderer.render(scene, camera);
@@ -171,6 +212,9 @@ export function TeslaMotor3D() {
       cancelAnimationFrame(reqId);
       fig9Model.dispose();
       bFieldArrow.dispose();
+      fieldTex.dispose();
+      fieldPlane.geometry.dispose();
+      (fieldPlane.material as THREE.MeshBasicMaterial).dispose();
       studio.dispose();
       studioRef.current = null;
     };

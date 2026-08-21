@@ -60,6 +60,22 @@ export function BellPhotophone3D({
     });
   }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioMuted]);
 
+  useEffect(() => {
+    if (isAudioMuted) {
+      soundEngine.stopContinuousTone();
+      return;
+    }
+    const sample = Math.min(1, Math.abs(photoState.audioSignalCurrentUa) / 40);
+    soundEngine.playFieldTransducer({
+      kind: "photocurrent",
+      sample,
+      carrierHz: 800,
+    });
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isAudioMuted, photoState.audioSignalCurrentUa]);
+
   const live = useLiveSimParams({ photoState, isCutaway });
 
   useEffect(() => {
