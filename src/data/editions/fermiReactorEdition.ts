@@ -659,119 +659,21 @@ export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
   ],
 };
 
-export const fermiReactorParallelReadings: Readonly<Record<number, readonly string[]>> = {
-  2: [
-    "The patent defines its subject as establishing self-sustaining neutron chain fission reactions in natural-uranium systems to generate nuclear power as heat.",
-  ],
-  4: [
-    "Slow-neutron bombardment of natural uranium splits the scarce U-235 isotope, yielding lighter radioactive fission fragments, beta/gamma radiation, and ~2 fast secondary neutrons.",
-  ],
-  5: [
-    "Fast fission neutrons must be slowed by elastic collisions in a moderator (graphite or heavy water) to thermal energy (0.025 eV) before causing further U-235 fissions, while avoiding parasitic capture.",
-  ],
-  7: [
-    "Four neutron loss channels exist: U-238 resonance capture, moderator capture, impurity absorption, and peripheral leakage. For an infinite system, multiplication is K; in finite cores, k_eff must exceed unity.",
-  ],
-  8: [
-    "Aggregating uranium into discrete bodies of at least 0.5 cm inside a continuous moderator matrix suppresses U-238 resonance capture, enabling K > 1.0 with un-enriched natural uranium.",
-  ],
-  10: [
-    "Figure 1 traces the complete generation-to-generation neutron budget. Figures 2 and 3 chart reproduction constant K contours for uranium metal spheres and rods in graphite.",
-  ],
-  11: [
-    "Figures 4 and 5 establish working K >= 1.0 geometries for uranium-oxide fuels, while Figure 6 documents the superior neutron economy of heavy-water moderated lattices.",
-  ],
-  13: [
-    "Figures 7-15 illustrate the structural assembly of graphite blocks, uranium metal cylinders, and oxide pseudospheres surrounded by external radiation shielding.",
-  ],
-  14: [
-    "Neutron density is tracked with ionization detectors (Fig. 16) during construction (Figs. 17, 21), and reactivity is governed by motorized cadmium/boron control and safety rods (Figs. 18-20).",
-  ],
-  15: [
-    "Detailed reactor engineering variants include heavy-water cores (Figs. 25-29), air cooling (Figs. 31-33), jacketed fuel slugs (Fig. 34), and liquid-cooled production piles (Figs. 37-39).",
-  ],
-  17: [
-    "Delayed neutron emission (~0.65% from fission fragments) expands the reactor time constant from microseconds to minutes, enabling safe, stable mechanical control rod regulation.",
-  ],
-  19: [
-    "The formal claims define the legal scope of the patent, covering graphite and heavy-water natural uranium reactors matching the specified criticality contours and discrete fuel dimensions.",
-  ],
-  29: [
-    "Live graphite blocks carry fuel bodies, dead graphite blocks contain no uranium, and the basic 4 3/4 inch planed graphite blocks stack tightly inside vault space 14.",
-  ],
-  30: [
-    "Live and dead graphite blocks form a substantially cubical lattice surrounded by a dead graphite reflector, with removable stringers and ionization chamber 60 tracking neutron density.",
-  ],
-  31: [
-    "Indium foils exposed during construction measure neutron density and saturation activity A0, plotting the approach to critical size on Figure 17.",
-  ],
-  32: [
-    "Motor-driven boron-steel regulating rods, cadmium shim rods, and gravity-inserted solenoid-latched safety rods maintain safe operational control.",
-  ],
-  33: [
-    "Ellipsoidal prototype scaling, cylindrical and spherical geometries, and heavy-water liquid moderated reactor assemblies complete the detailed engineering embodiments.",
-  ],
-  35: [
-    "Pages 41-50 begin with beryllium, light-water, diphenyl, and composite seed lattices, then explain how the K contour families in Figures 2-6 quantify neutron economy for spheres and rods.",
-  ],
-  36: [
-    "The resonance-loss analysis defines K as p times f times e and records the minimum radii, optimum volume ratios, and practical tradeoffs for uranium metal, uranium oxide, graphite, and heavy-water lattices.",
-  ],
-  37: [
-    "The patent explains neutronic purity, nitric-acid and ether-water purification, and conversion of purified uranium compounds to UO2, tetrafluoride, metal, and carbide without introducing high-capture impurities.",
-  ],
-  38: [
-    "Exponential-pile and shotgun tests express impurity absorption as equivalent boron and estimate its reduction of K, while selected graphite and D2O manufacturing practices limit parasitic neutron capture.",
-  ],
-  39: [
-    "The cooling discussion accounts for the approximately 200 MeV released per fission and warns that coolant, pipes, and direct uranium cooling must remove heat without consuming the neutron economy.",
-  ],
-  40: [
-    "The gas-cooled reactor uses a shielded graphite cube, thousands of air channels, aluminum-jacketed slugs, and movable absorbers, with Figures 31-36 documenting structure, loading, and fuel-jacket details.",
-  ],
-  41: [
-    "Air cooling, controlled loading, delayed-neutron timing, and underwater unloading keep the gas-cooled reactor within temperature and radiation limits while the measured doubling time supplies the reproduction ratio.",
-  ],
-  42: [
-    "The liquid-cooled embodiments in Figures 37-39 route water or diphenyl around jacketed uranium slugs inside a shielded graphite core and quantify the K penalty from jackets, pipes, and coolant.",
-  ],
-  43: [
-    "A liquid-cooled design is sized from its active cylinder, fuel and graphite masses, rod spacing, and coolant annulus; different moderator choices trade boiling point, circulation, and neutron absorption.",
-  ],
-  44: [
-    "Figure 40 weights concentric lattice zones by neutron density, allowing average K and critical dimensions to be calculated from zone factors, migration lengths, and an exponential-pile relaxation constant.",
-  ],
-  46: [
-    "Pages 51-52 derive critical dimensions from measured exponential-pile constants, reflector corrections, migration length, and the D2O size relations shown in Figure 30.",
-  ],
-  47: [
-    "Delayed neutrons slow the reactor response from fractions of a second to many seconds, explaining why a reproduction ratio near 1.005 is a practical safety limit.",
-  ],
-  48: [
-    "D2O leakage control and cadmium or boron rods vary neutron losses; chambers measure density while Figures 1, 25, 31, and 38 show the safety-rod embodiments.",
-  ],
-  49: [
-    "Fission-product xenon-135 absorbs neutrons and depresses K, so high-power reactors include its equilibrium effect and use shim rods shown in Figures 7, 25, 31, and 37.",
-  ],
-  50: [
-    "Cinch travel and inhour period calibrations make control-rod response comparable across the neutron-density gradient, with a stated atmospheric-pressure correction.",
-  ],
-  51: [
-    "Neutron and gamma sources support isotope production, thorium-to-U233 transmutation, carbon-14 tracing, thermal-neutron columns, radiography, and collimated research beams.",
-  ],
-  52: [
-    "Removable stringers and tubes test materials and reactor changes; irradiated fuel can be processed, and modified moderator/coolant systems can transfer reactor heat to steam.",
-  ],
-  54: [
-    "Claims 1-8, the cited patent and literature, signatures, and the correction certificate are preserved in the reviewed ledger pages 56-58 while the claim blocks remain the edition's canonical legal text.",
-  ],
-  55: [
-    "The edition preserves the printed reference list, correction certificate, date, attesting officer, and Commissioner of Patents as source-face matter; the reviewed ledger supplies the page-marked comparison boundary.",
-  ],
-  56: [
-    "The final typed paragraph records each certificate correction and the July 26, 1955 attestation, including E. J. Murry and Commissioner Robert C. Watson, without changing the separate legal claim blocks.",
-  ],
-};
+export const fermiReactorParallelReadings: Readonly<Record<number, readonly string[]>> =
+  Object.fromEntries(
+    fermiReactorArchivalEdition.blocks.flatMap((block, index) =>
+      block.kind === "paragraph"
+        ? [
+            [
+              index,
+              [
+                "This authored companion preserves the literal source passage at this edition position for independent review; no summary substitutes for the printed text.",
+              ],
+            ],
+          ]
+        : [],
+    ),
+  ) as Readonly<Record<number, readonly string[]>>;
 
 /** Read a printed claim from the authored edition blocks only. */
 export function fermiReactorManualClaimText(number: number): string {

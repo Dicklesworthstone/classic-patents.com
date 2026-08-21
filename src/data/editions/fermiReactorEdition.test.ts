@@ -8,24 +8,21 @@ import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
   fermiReactorArchivalEdition,
   fermiReactorClaims,
+  fermiReactorManualClaimText,
   fermiReactorParallelReadings,
 } from "./fermiReactorEdition";
 
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
-  test("publishes valid manual archival edition and originalTextAsset", () => {
-    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+  test("keeps the incomplete manual edition withheld and exposes only the text layer", () => {
+    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
+    expect(fermiReactorPatent.originalTextAsset?.kind).toBe("source-pdf-text-layer");
   });
 
-  test("pins the 58-page facsimile and retains a structurally valid staged edition", () => {
-    if (fermiReactorPatent.archivalEdition)
-      expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
-    expect(validateCuratedSpecificationEdition(fermiReactorArchivalEdition)).toEqual({
-      valid: true,
-      errors: [],
-    });
+  test("pins the 58-page facsimile and records the staged edition as incomplete", () => {
+    expect(validateCuratedSpecificationEdition(fermiReactorArchivalEdition).valid).toBe(false);
     const pdf = publicFile(fermiReactorPatent.originalPdfUrl);
     expect(createHash("sha256").update(readFileSync(pdf)).digest("hex")).toBe(
       fermiReactorArchivalEdition.sourcePdfSha256,
@@ -45,6 +42,9 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     expect(fermiReactorPatent.claims.every((claim) => claim.isIndependent)).toBe(true);
     expect(fermiReactorClaims).toHaveLength(8);
     expect(fermiReactorPatent.stats).toMatchObject({ totalClaims: 8, independentClaims: 8 });
+    expect(fermiReactorPatent.claims.map((claim) => claim.originalText)).toEqual(
+      fermiReactorClaims.map((claim, index) => fermiReactorManualClaimText(index + 1)),
+    );
     expect(fermiReactorPatent.claims[0]?.originalText).toContain("k = 1.00 curve of Figure 3");
     expect(fermiReactorPatent.claims[7]?.originalText).toContain(
       "all dimensions thereof at least 0.5 centimeter",
