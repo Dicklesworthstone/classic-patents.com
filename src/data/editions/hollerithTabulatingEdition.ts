@@ -1321,7 +1321,7 @@ export const hollerithTabulatingArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "39d7c9879f8386f63f609bd43c0a73c96dbe50943d5d17044733c254b8d5a780",
   preparedBy: "Classic Patents editorial agent (GPT-5.6)",
-  preparedAt: "2026-08-18",
+  preparedAt: "2026-08-21",
   completeFacsimileReviewed: true,
   blocks: [
     ...hollerithTabulatingSourceBlocksDraft,
