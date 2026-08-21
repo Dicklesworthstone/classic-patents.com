@@ -19,7 +19,6 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-395781-hollerith-tabulating",
   "us-682690-hewitt-mercury-lamp",
   "us-706737-fessenden-wireless",
-  "us-2297691-carlson-electrophotography",
   "us-2929922-townes-laser",
   "us-3671542-kwolek-kevlar",
 ] as const;
@@ -28,6 +27,7 @@ const SOURCE_QA_RELEASED_EDITIONS = [
   "us-3633-goodyear-rubber",
   "us-135245-pasteur-fermentation",
   "us-2292387-lamarr-frequency-hopping",
+  "us-2297691-carlson-electrophotography",
   "us-2708656-fermi-reactor",
   "us-313224-mergenthaler-linotype",
 ] as const;
