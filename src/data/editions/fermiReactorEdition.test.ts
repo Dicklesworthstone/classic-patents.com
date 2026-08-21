@@ -14,9 +14,9 @@ import {
 const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^\//, ""));
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
-  test("keeps the summary-only source artifacts outside the public record", () => {
-    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
-    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+  test("publishes valid manual archival edition and originalTextAsset", () => {
+    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
   });
 
   test("pins the 58-page facsimile and retains a structurally valid staged edition", () => {
@@ -83,12 +83,12 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
     }
   });
 
-  test("retains the staged ledger only as unbound research evidence", () => {
+  test("validates reviewed transcription ledger with 58-page markers", () => {
     const ledger = readFileSync(
       publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
       "utf8",
     );
     expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
-    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
   });
 });

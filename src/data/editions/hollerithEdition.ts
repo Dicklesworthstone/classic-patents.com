@@ -4,17 +4,6 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
-const term = (
-  surfaceText: string,
-  key: string,
-  definition: string,
-): CuratedSpecificationInline => ({
-  kind: "term",
-  text: surfaceText,
-  label: key,
-  definition,
-});
-
 export const HOLLERITH_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
   1: { width: 1320, height: 1940 },
   2: { width: 1360, height: 880 },

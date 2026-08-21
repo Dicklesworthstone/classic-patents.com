@@ -5,10 +5,7 @@ import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import { teslaTeleautomatonPatent } from "@/data/patents/tesla-teleautomaton";
-import {
-  teslaTeleautomatonArchivalEdition,
-  teslaTeleautomatonParallelReadings,
-} from "./teslaTeleautomatonEdition";
+import { teslaTeleautomatonArchivalEdition } from "./teslaTeleautomatonEdition";
 
 const PINNED_SHA256 = "b92da6bad46cca996f7ecc99a16a87bdd38d12b3e04a0fce11cc5f033aed849b";
 

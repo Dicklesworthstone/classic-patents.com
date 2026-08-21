@@ -29,6 +29,7 @@ import { einsteinRefrigeratorParallelReadings } from "./einsteinRefrigeratorEdit
 import { engelbartMouseParallelReadings } from "./engelbartMouseEdition";
 import { ericssonPropellerParallelReadings } from "./ericssonPropellerEdition";
 import { farnsworthTvParallelReadings } from "./farnsworthTvEdition";
+import { fermiReactorParallelReadings } from "./fermiReactorEdition";
 import { fessendenWirelessParallelReadings } from "./fessendenWirelessEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
@@ -38,10 +39,10 @@ import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
 import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
-import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
+import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
@@ -69,7 +70,6 @@ import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
 import { teslaMotorParallelReadings } from "./teslaMotorEdition";
 import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
-import { townesLaserParallelReadings } from "./townesLaserEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
@@ -137,7 +137,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-2495429-spencer-microwave": spencerMicrowaveParallelReadings,
   "us-2524035-bardeen-transistor": bardeenTransistorParallelReadings,
   "us-2543181-land-polaroid": landPolaroidParallelReadings,
-  "us-2929922-townes-laser": townesLaserParallelReadings,
+  "us-2708656-fermi-reactor": fermiReactorParallelReadings,
   "us-2981877-noyce-ic": noyceIcParallelReadings,
   "us-3138743-kilby-integrated-circuit": kilbyIntegratedCircuitParallelReadings,
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
