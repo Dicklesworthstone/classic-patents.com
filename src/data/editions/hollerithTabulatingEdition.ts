@@ -1307,7 +1307,7 @@ export const hollerithTabulatingSignatureDraft: readonly CuratedSpecificationBlo
 export const hollerithTabulatingSignatureParallelReading: Readonly<
   Record<number, readonly string[]>
 > = {
-  68: [
+  70: [
     "Herman Hollerith signs the completed claim set; John R. Floyd and Edward N. Hill appear as the printed witnesses.",
   ],
 };

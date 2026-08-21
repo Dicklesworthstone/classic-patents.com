@@ -51,23 +51,22 @@ history. These assertions have not been carried into the source-led work. The
 pinned facsimile does not support using them as its complete primary-source
 edition.
 
-### Bounded page-18-to-25 continuation (2026-08-21)
+### Specification pages 18-30 and claims pages 31-35 (2026-08-21)
 
-Pages 18 through 25 were authored from the pinned facsimile using the
-authoritative Google Patents US313224A text as a cloud comparison source. The
-local PDF text layer was used only to locate columns and compare spelling; it
-was not promoted as the transcription authority, and no local OCR or rendering
-was run. The reviewed ledger retains the exact page markers and page-local
-content. The React edition is continuous: its first authored source reading
-now runs from the masthead through the final indicator paragraph on PDF page
-25, with typed figure references for the cited Figs. 1 through 51 and authored
-term definitions for the source's period vocabulary.
+Pages 18 through 30 were authored from the pinned facsimile with the
+authoritative Google Patents US313224A text and the existing PDF text layer
+used only as cloud/source comparison aids. No local OCR or rendering was run.
+The reviewed ledger now carries literal page-local prose through the alarm,
+clamping, mold, pump, drawing-gear, operation, and modifications sections on
+page 30. Page 31 begins the formal claims; pages 31 through 35 retain all
+70 claim literals in order followed by the printed Ottmar Mergenthaler,
+F. E. Stephens, and C. E. Tully signature sequence.
 
-The exact continuation boundary is the final indicator paragraph on page 25.
-The next source sentence begins on PDF page 26 and is deliberately not
-represented by this bounded edit. Pages 26-30 remain an independent
-specification-completion gap; claims 1-70 and the prior drawing WIP are
-preserved but do not establish complete source acceptance.
+The exact continuation boundary is the final modifications paragraph on page
+30, followed by the claim introduction on page 31. The edition remains
+unbound pending reconciliation of its continuous React blocks, dynamic claim
+derivation, and direct local crops for every figure reference. Pages 1-17
+remain the independent drawing-sheet/crop boundary.
 
 ## Published-edition boundary
 
@@ -84,11 +83,8 @@ coverage as a complete historical edition.
 
 ### Root re-hold (2026-08-20)
 
-A later concurrent change attached the WIP edition and a 35-marker ledger to
-the public record. Marker count did not establish completeness: drawing pages
-repeat one generic inventory, and specification pages 14–30 repeat the same
-short mechanism summary instead of transcribing their printed columns. The
-canonical record is unbound again. The 70 checked claims and other WIP source
-artifacts remain preserved, but publication requires literal page content,
-continuous source blocks, complete figure-reference previews, and independent
-facsimile acceptance.
+The canonical record remains unbound. The ledger now has literal specification
+content through pages 18-30 and retains the complete 70-claim/signature tail,
+but publication still requires the edition's continuous React blocks, dynamic
+claim binding, complete figure-reference previews, and independent facsimile
+acceptance for drawing pages 1-17.
