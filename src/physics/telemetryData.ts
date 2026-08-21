@@ -6641,12 +6641,12 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     domainTitle: "Markov Chain Stationary Distributions & Link Centrality",
     equationName: "PageRank Stationary Probability Distribution",
     governingEquation:
-      "\\mathbf{r} = d \\cdot \\mathbf{M} \\mathbf{r} + \\frac{1-d}{N} \\mathbf{1}",
+      "PR(u) = \\frac{\\alpha}{N} + (1-\\alpha) \\sum_{v \\in B_u} \\frac{PR(v)}{L(v)}",
     engineMethod: "stepPageRank",
     controls: [
       {
         id: "dampingFactor",
-        label: "Damping Factor (d)",
+        label: "Link-follow probability (1−α)",
         min: 0.0,
         max: 1.0,
         step: 0.05,
@@ -6668,14 +6668,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
         {
           label: "Random Jump Probability",
           value: `${((1 - (p.dampingFactor ?? 0.85)) * 100).toFixed(1)}%`,
-          unit: "1-d",
+          unit: "α",
           badgeColor: "amber",
           progressPct: clampProgress((1 - (p.dampingFactor ?? 0.85)) * 100),
         },
       ];
     },
     pedagogicalInsight:
-      "PageRank calculates the objective importance of web documents by solving for the dominant eigenvector of a link transition matrix adjusted by a random surfer damping probability.",
+      "The patent calls α the random-jump probability and assigns each backlink source a normalized contribution through 1−α; repeated application approaches a steady-state score vector when the iteration converges.",
   },
   "us-6594844-roomba": {
     domain: "autonomous_robotics",
@@ -6728,15 +6728,14 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-6331181-davinci": {
     domain: "medical_robotics",
-    domainTitle: "Master-Slave Telepresence & Tremor Cancellation",
-    equationName: "Scaled Inverse Kinematics & Butterworth Tremor Filtering",
-    governingEquation:
-      "\\mathbf{x}_{slave}(t) = \\frac{1}{K} \\cdot \\mathcal{F}^{-1}\\{ H_{LPF}(j\\omega) \\cdot \\mathcal{F}\\{\\mathbf{x}_{master}(t)\\} \\}",
+    domainTitle: "Compatibility, Calibration, and Engagement Data",
+    equationName: "Nominal-to-Measured Tool Offset",
+    governingEquation: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
     engineMethod: "stepDaVinci",
     controls: [
       {
         id: "motionScaleRatio",
-        label: "Motion Scaling (Master:Slave)",
+        label: "Compatibility table entries (illustrative)",
         min: 1,
         max: 10,
         step: 1,
@@ -6745,7 +6744,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "tremorFilterEnabled",
-        label: "Tremor Cancellation (8Hz LPF)",
+        label: "Compatibility signal present",
         min: 0,
         max: 1,
         step: 1,
@@ -6754,7 +6753,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "gripAngleDeg",
-        label: "EndoWrist Grip Angle",
+        label: "End-effector angle (illustrative)",
         min: 0,
         max: 60,
         step: 5,
@@ -6763,7 +6762,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       },
       {
         id: "masterInputSpeedMps",
-        label: "Master Velocity",
+        label: "Drive velocity (illustrative)",
         min: 0.2,
         max: 1.5,
         step: 0.05,
@@ -6776,21 +6775,21 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const filterOn = (p.tremorFilterEnabled ?? 1) > 0.5;
       return [
         {
-          label: "Motion Scale Ratio",
+          label: "Compatibility entries",
           value: `${scale}:1`,
           unit: "K",
           badgeColor: "cyan",
           progressPct: clampProgress((scale / 10) * 100),
         },
         {
-          label: "Tremor Attenuation",
-          value: filterOn ? "94.5%" : "0.0%",
-          unit: "atten",
+          label: "Compatibility signal",
+          value: filterOn ? "present" : "absent",
+          unit: "",
           badgeColor: filterOn ? "emerald" : "rose",
-          progressPct: filterOn ? 94.5 : 0,
+          progressPct: filterOn ? 100 : 0,
         },
         {
-          label: "Master Velocity",
+          label: "Drive velocity (illustrative)",
           value: (p.masterInputSpeedMps ?? 0.5).toFixed(2),
           unit: "m/s",
           badgeColor: "amber",
@@ -6799,7 +6798,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       ];
     },
     pedagogicalInsight:
-      "The Da Vinci telemanipulator translates macroscopic surgeon hand motions into sub-millimeter surgical actions via electronic motion scaling and 8Hz physiological tremor filtration.",
+      "US 6,331,181 centers tool-boundary data: compatibility, tool type, measured calibration offsets, life information, and engagement signals are transmitted to a processor before or during tool exchange.",
   },
   "us-6120588-eink": {
     domain: "colloidal_physics",

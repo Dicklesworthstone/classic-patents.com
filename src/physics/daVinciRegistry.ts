@@ -1,14 +1,13 @@
 export const daVinciRegistryEntry = {
-  domain: "Robotics & Teleoperation",
-  domainTitle: "Master-Slave Telepresence & Kinematics",
-  equationName: "Scaled Inverse Kinematics & Low-Pass Filtering",
-  governingEquation:
-    "\\mathbf{x}_{slave}(t) = \\frac{1}{K} \\cdot \\mathcal{F}^{-1}\\{ H_{LPF}(j\\omega) \\cdot \\mathcal{F}\\{\\mathbf{x}_{master}(t)\\} \\}",
+  domain: "Robotic Tool Interfaces",
+  domainTitle: "Compatibility, Calibration, and Engagement Data",
+  equationName: "Nominal-to-Measured Tool Offset",
+  governingEquation: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
   engineMethod: "stepDaVinci",
   controls: [
     {
       id: "motionScaleRatio",
-      label: "Motion Scale (Master:Slave)",
+      label: "Compatibility table entries (illustrative)",
       min: 1,
       max: 10,
       step: 1,
@@ -17,7 +16,7 @@ export const daVinciRegistryEntry = {
     },
     {
       id: "tremorFilterEnabled",
-      label: "Tremor Filter (8Hz LPF)",
+      label: "Compatibility signal present",
       min: 0,
       max: 1,
       step: 1,
@@ -26,7 +25,7 @@ export const daVinciRegistryEntry = {
     },
     {
       id: "gripAngleDeg",
-      label: "EndoWrist Grip Angle",
+      label: "End-effector angle (illustrative)",
       min: 0,
       max: 60,
       step: 5,
@@ -35,7 +34,7 @@ export const daVinciRegistryEntry = {
     },
     {
       id: "masterInputSpeedMps",
-      label: "Master Velocity",
+      label: "Drive velocity (illustrative)",
       min: 0.1,
       max: 1.0,
       step: 0.1,
@@ -48,21 +47,21 @@ export const daVinciRegistryEntry = {
     const filterOn = (params.tremorFilterEnabled ?? 1) > 0.5;
     return [
       {
-        label: "Motion Scale Ratio",
-        value: `${scale}:1`,
+        label: "Compatibility entries",
+        value: `${scale}`,
         unit: "",
         badgeColor: "cyan" as const,
         progressPct: (scale / 10) * 100,
       },
       {
-        label: "Tremor Attenuation",
-        value: filterOn ? "94.5" : "0.0",
-        unit: "%",
+        label: "Compatibility signal",
+        value: filterOn ? "present" : "absent",
+        unit: "",
         badgeColor: filterOn ? "emerald" : "rose",
-        progressPct: filterOn ? 94.5 : 0,
+        progressPct: filterOn ? 100 : 0,
       },
     ];
   },
   pedagogicalInsight:
-    "The Da Vinci master-slave system decouples human macroscopic hand movements from micro-surgical actions via variable motion scaling (up to 10:1) and a digital low-pass filter that eliminates physiological 6-10 Hz hand tremor at the EndoWrist.",
+    "This source-bounded instrument illustrates the patent's tool-boundary data path: a releasable interface can report compatibility and tool-specific calibration information to a processor. Numeric motion and tremor controls are illustrative, not limitations stated by this grant.",
 };

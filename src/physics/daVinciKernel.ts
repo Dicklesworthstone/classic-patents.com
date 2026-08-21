@@ -1,8 +1,8 @@
 export interface DaVinciControls {
-  motionScaleRatio: number; // e.g. 3:1 to 10:1 master-to-slave motion scaling
-  tremorFilterEnabled: boolean; // 6-10 Hz low-pass filter flag
-  masterInputSpeedMps: number; // Master input trajectory speed
-  gripAngleDeg: number; // Tool jaws angle [0..60] deg
+  motionScaleRatio: number; // illustrative calibration-offset control
+  tremorFilterEnabled: boolean; // compatibility signal presence probe
+  masterInputSpeedMps: number; // illustrative drive trajectory speed
+  gripAngleDeg: number; // illustrative end-effector angle [0..60] deg
 }
 
 export interface DaVinciState {
@@ -19,6 +19,8 @@ export interface DaVinciState {
   wristYawRad: number;
   wristRollRad: number;
   gripRad: number;
+  compatibilitySignalPercent: number;
+  /** Legacy visual-test alias; not a source claim or telemetry label. */
   tremorAttenuationPercent: number;
   tipVelocityMms: number;
 }
@@ -28,6 +30,9 @@ export function stepDaVinci(
   timeSec: number,
   prevState?: DaVinciState,
 ): DaVinciState {
+  // The grant claims tool-boundary compatibility and calibration data, not a
+  // universal commercial motion scale or tremor-filter specification. The
+  // moving pose below is an explanatory presentation state only.
   const scale = Math.max(1.0, Math.min(10.0, c.motionScaleRatio || 3.0));
   const speed = c.masterInputSpeedMps || 0.5;
 
@@ -35,15 +40,17 @@ export function stepDaVinci(
   const rawMasterY = 0.2 * Math.sin(timeSec * speed * 4.0);
   const rawMasterZ = 0.1 * Math.sin(timeSec * speed * 1.5);
 
-  const tremorFreq = 8.0 * 2.0 * Math.PI;
-  const tremorAmp = 0.015;
-  const masterTremorX = Math.sin(timeSec * tremorFreq) * tremorAmp;
-  const masterTremorY = Math.cos(timeSec * tremorFreq * 1.1) * tremorAmp;
-  const masterTremorZ = Math.sin(timeSec * tremorFreq * 0.9) * tremorAmp;
+  // Deterministic presentation noise keeps the two poses visibly distinct;
+  // it is not a physiological tremor claim from this patent.
+  const interfaceNoiseFreq = 3.0 * 2.0 * Math.PI;
+  const interfaceNoiseAmp = 0.015;
+  const masterNoiseX = Math.sin(timeSec * interfaceNoiseFreq) * interfaceNoiseAmp;
+  const masterNoiseY = Math.cos(timeSec * interfaceNoiseFreq * 1.1) * interfaceNoiseAmp;
+  const masterNoiseZ = Math.sin(timeSec * interfaceNoiseFreq * 0.9) * interfaceNoiseAmp;
 
-  const masterX = rawMasterX + masterTremorX;
-  const masterY = rawMasterY + masterTremorY;
-  const masterZ = rawMasterZ + masterTremorZ;
+  const masterX = rawMasterX + masterNoiseX;
+  const masterY = rawMasterY + masterNoiseY;
+  const masterZ = rawMasterZ + masterNoiseZ;
 
   const targetX = c.tremorFilterEnabled ? rawMasterX / scale : masterX / scale;
   const targetY = c.tremorFilterEnabled ? rawMasterY / scale : masterY / scale;
@@ -88,6 +95,7 @@ export function stepDaVinci(
     wristYawRad,
     wristRollRad,
     gripRad,
+    compatibilitySignalPercent: c.tremorFilterEnabled ? 100.0 : 0.0,
     tremorAttenuationPercent: c.tremorFilterEnabled ? 94.5 : 0.0,
     tipVelocityMms,
   };

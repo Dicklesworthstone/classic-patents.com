@@ -487,15 +487,17 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-6331181-davinci": {
-      const tensionN = params.cableTensionN ?? 45.0;
-      const jointSpeedDegS = params.jointVelocityDegS ?? 30.0;
-      const omega = (jointSpeedDegS * Math.PI) / 180.0;
-      const armInertia = 0.35;
-      kinetic = 0.5 * armInertia * omega * omega;
-      potential = (0.5 * (tensionN * tensionN)) / 85000.0; // Tungsten drive cable elastic strain energy
-      powerIn = 120.0 + tensionN * (jointSpeedDegS * 0.002); // Multi-axis brushless DC servo motor power
-      dissipated = powerIn * 0.85; // Harmonic drive gearbox friction + motor winding heat
-      thermal = 450.0; // Surgical tool wrist alloy heat capacity
+      // The grant claims tool-boundary data and calibration memory, not a
+      // particular motor, cable material, torque, or power budget. Keep this
+      // ledger explicitly illustrative instead of presenting invented hardware
+      // constants as source telemetry.
+      const interfaceReadWatts = params.interfaceReadWatts ?? 1.0;
+      const processorReadWatts = params.processorReadWatts ?? 2.0;
+      kinetic = 0;
+      potential = 0;
+      powerIn = interfaceReadWatts + processorReadWatts;
+      dissipated = powerIn;
+      thermal = 0;
       break;
     }
 

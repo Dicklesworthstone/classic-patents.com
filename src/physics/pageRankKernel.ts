@@ -5,23 +5,23 @@ export interface PageRankParams {
 
 export interface PageRankState {
   ranks: number[];
-  displayOmega: number;
-  omegaRadPerSec: number;
+  iterations: number;
+  displayRate: number;
 }
 
+/**
+ * One source-bounded PageRank update for the three-document FIG. 2 example.
+ * The UI calls `dampingFactor` the link-follow probability (1 - alpha), while
+ * the patent calls alpha the random-jump probability.
+ */
 export function stepPageRank(params: PageRankParams, currentState?: number[]): PageRankState {
-  const d = params.dampingFactor ?? 0.85;
-  const N = 5;
+  const d = Math.min(1, Math.max(0, params.dampingFactor ?? 0.85));
+  const N = 3;
 
-  // Graph adjacency structure
-  // Node 0 (Page A) links to 1, 2
-  // Node 1 (Page B) links to 2
-  // Node 2 (Page C) links to 0
-  // Node 3 (Page D) links to 2
-  // Node 4 (Page E) links to 0, 3
-  const links = [[1, 2], [2], [0], [2], [0, 3]];
+  // FIG. 2: C points to A; A points to B and C; B points to C.
+  const links = [[1, 2], [2], [0]];
 
-  const ranks = currentState || Array(N).fill(1 / N);
+  const ranks = currentState?.slice(0, N) ?? Array(N).fill(1 / N);
   const nextRanks = Array(N).fill(0);
 
   for (let i = 0; i < N; i++) {
@@ -36,10 +36,9 @@ export function stepPageRank(params: PageRankParams, currentState?: number[]): P
     }
   }
 
-  const omegaRadPerSec = Number((0.8 * (d / 0.85)).toFixed(4));
   return {
     ranks: nextRanks,
-    displayOmega: omegaRadPerSec,
-    omegaRadPerSec,
+    iterations: 1,
+    displayRate: Number((0.8 * d).toFixed(4)),
   };
 }

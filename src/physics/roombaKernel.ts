@@ -3,6 +3,10 @@ export interface RoombaControls {
   turnRateRadSec: number;
   roomWidth: number;
   roomHeight: number;
+  /** Height of the downward sensor above the expected floor, in inches. */
+  sensorHeightInches?: number;
+  /** Wall range used by the lateral sensor, in inches. */
+  wallDistanceInches?: number;
 }
 
 /** Shared arena. 2D and 3D must step the same box (not 5×3.2 vs 4×4). */
@@ -46,6 +50,11 @@ export interface RoombaState {
   randomSeed: number;
   displayX: number;
   displayY: number;
+  /** Source-bounded optical telemetry shared by the 2D and 3D faces. */
+  surfaceOverlapFraction: number;
+  surfacePresent: boolean;
+  wallPresent: boolean;
+  redirectReason: "none" | "surface-absent" | "wall-detected";
 }
 
 function nextRandom(seed: number) {
@@ -53,23 +62,49 @@ function nextRandom(seed: number) {
 }
 
 export function stepRoomba(c: RoombaControls, s?: RoombaState, dt: number = 1 / 120): RoombaState {
-  const state = s
+  const state: RoombaState = s
     ? { ...s }
     : {
         x: 0,
         y: 0,
         heading: 0,
-        mode: "spiral" as const,
+        mode: "spiral",
         timeInMode: 0,
         randomSeed: 42,
         displayX: 0,
         displayY: 0,
+        surfaceOverlapFraction: 1,
+        surfacePresent: true,
+        wallPresent: false,
+        redirectReason: "none",
       };
 
   const speed = c.wheelSpeedMps;
   const turnSpeed = c.turnRateRadSec;
   const roomWidth = c.roomWidth ?? ROOMBA_ROOM.width;
   const roomHeight = c.roomHeight ?? ROOMBA_ROOM.height;
+  const sensorHeightInches = c.sensorHeightInches ?? 0.5;
+  const wallDistanceInches = c.wallDistanceInches ?? 2.6;
+
+  // The patent's measurement is the overlap of emitter field and detector
+  // field, not a generic brightness or map estimate. The preferred cliff
+  // geometry reports full overlap near nominal height and loses overlap as a
+  // stair/drop moves the surface away. The wall embodiment uses a finite
+  // intersection around the described 2.6 inch range.
+  const surfaceOverlapFraction = Math.max(
+    0,
+    Math.min(1, 1 - Math.abs(sensorHeightInches - 0.5) / 0.5),
+  );
+  const surfacePresent = surfaceOverlapFraction > 0.2;
+  const wallPresent = Math.abs(wallDistanceInches - 2.6) < 0.35;
+  state.surfaceOverlapFraction = surfaceOverlapFraction;
+  state.surfacePresent = surfacePresent;
+  state.wallPresent = wallPresent;
+  state.redirectReason = !surfacePresent
+    ? "surface-absent"
+    : wallPresent
+      ? "wall-detected"
+      : "none";
 
   state.timeInMode += dt;
 
@@ -80,8 +115,12 @@ export function stepRoomba(c: RoombaControls, s?: RoombaState, dt: number = 1 / 
     state.y < -roomHeight / 2 + ROOMBA_BUMPER_M ||
     hitsFurniture(state.x, state.y);
 
-  if (isBumping && state.mode !== "backup" && state.mode !== "turn") {
+  if ((!surfacePresent || isBumping) && state.mode !== "backup" && state.mode !== "turn") {
     state.mode = "backup";
+    state.timeInMode = 0;
+  }
+  if (wallPresent && state.mode === "straight") {
+    state.mode = "turn";
     state.timeInMode = 0;
   }
 

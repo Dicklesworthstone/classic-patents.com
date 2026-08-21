@@ -4,12 +4,13 @@ export const pageRankRegistryEntry = {
   domain: "Network_Analysis",
   domainTitle: "Network Probability Dynamics",
   equationName: "PageRank Centrality",
-  governingEquation: "PR(u) = \\frac{1-d}{N} + d \\sum_{v \\in B_u} \\frac{PR(v)}{L(v)}",
+  governingEquation:
+    "PR(u) = \\frac{\\alpha}{N} + (1-\\alpha) \\sum_{v \\in B_u} \\frac{PR(v)}{L(v)}",
   engineMethod: "stepPageRank",
   controls: [
     {
       id: "dampingFactor",
-      label: "Damping Factor (d)",
+      label: "Link-follow probability (1−α)",
       min: 0.0,
       max: 1.0,
       step: 0.05,
@@ -31,5 +32,5 @@ export const pageRankRegistryEntry = {
     ];
   },
   pedagogicalInsight:
-    "PageRank converges on the steady-state probability distribution of a random surfer clicking links, scaled by the damping factor (d) representing the chance they jump randomly instead.",
+    "The patent calls alpha the random-jump probability. The UI exposes its complement, 1−alpha, as link-follow probability; each source rank is divided by its forward-link count before propagation.",
 };

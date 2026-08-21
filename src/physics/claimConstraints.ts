@@ -205,14 +205,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-6331181-davinci",
-      claimTitle: "Tele-Robotic Master-Slave Surgical Wrist Articulation",
+      claimTitle: "Tool Compatibility Identifier and Lookup Table",
       activeDescription:
-        "Claim 1 maps surgeon master console hand motions through tendon-driven 7-DOF articulating wrist end-effectors.",
+        "Claim 1 requires circuitry on a releasable robotic surgical tool to transmit an identifier that the processor compares with a table of compatible tool identifiers.",
       invertedDescription:
-        "Rigid laparoscopic shaft: rigid tool lacks internal wrist degrees of freedom, restricting dexterity in deep surgical cavities.",
-      failureModeName: "Fulcrum-Effect Dexterity Lock",
+        "Unverified tool interface: a processor cannot safely configure a detachable tool when the tool provides no compatible identifier at the holder boundary.",
+      failureModeName: "Compatibility Signal Missing",
       historicalPriorArt:
-        "Standard laparoscopy reversed surgeon hand motions over a fixed port fulcrum with only 4 degrees of freedom.",
+        "The grant describes tool changes, multiple tool types, and the need to avoid operating a tool whose data is absent from the system's compatibility information.",
     },
   ],
   "us-6594844-roomba": [

@@ -70,6 +70,8 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
   const timeMin = Math.max(1, Math.min(180, inputs.puddlingDurationMinutes));
   const passes = Math.max(1, Math.min(8, Math.round(inputs.rollerPassCount)));
   const rollDiamMm = inputs.rollerDiameterMm ?? 450;
+  // GB 1420 names grooved rollers but supplies no rotational speed. This is a
+  // visitor-controlled teaching default, not a historical measurement.
   const rollRpm = inputs.rollSpeedRpm ?? 30;
   const rawBallMassKg = inputs.puddleBallMassKg ?? 35;
 
@@ -145,7 +147,9 @@ export function stepCortPuddlingRolling(inputs: CortKernelInputs): CortKernelOut
   // 6. Productivity & Industrial Throughput
   // Cort's grooved rolling process produced ~15 tons per 12-hour shift vs 1 ton with forge hammer
   const hourlyIronOutputKg = (spongeBallMassKg * (rollRpm * 0.6 * passes)) / 10;
-  const productionSpeedupVsHammer = 15.0;
+  // No checked source establishes a speed multiplier. Keep the telemetry
+  // neutral rather than repeating the earlier unsupported “15x” claim.
+  const productionSpeedupVsHammer = 1.0;
   const rollOmegaRadPerS = (rollRpm * 2 * Math.PI) / 60;
   const rabbleOmegaRadPerS = (rabbleRpm * 2 * Math.PI) / 60;
 

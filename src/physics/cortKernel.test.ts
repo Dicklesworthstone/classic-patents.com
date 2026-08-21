@@ -27,7 +27,7 @@ describe("Henry Cort SI Metallurgy & Rolling Physics Kernel", () => {
     expect(outputs.tensileStrengthMpa).toBeGreaterThan(280);
     expect(outputs.yieldStrengthMpa).toBeGreaterThan(160);
     expect(outputs.ductilityElongationPercent).toBeGreaterThan(15);
-    expect(outputs.productionSpeedupVsHammer).toBe(15.0);
+    expect(outputs.productionSpeedupVsHammer).toBe(1.0);
     expect(outputs.rollSpeedRpm).toBe(30);
     expect(outputs.rollOmegaRadPerS).toBeCloseTo((30 * 2 * Math.PI) / 60, 8);
     expect(outputs.rabbleOmegaRadPerS).toBeCloseTo((15 * 2 * Math.PI) / 60, 8);
