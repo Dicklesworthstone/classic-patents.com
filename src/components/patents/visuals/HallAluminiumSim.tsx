@@ -1,12 +1,15 @@
 "use client";
 
-import { Flame, Zap } from "lucide-react";
+import { Flame, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useMemo, useState } from "react";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HallAluminiumSim() {
-  const { params, updateParam } = usePatentPhysics("us-400766-hall-aluminium");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-400766-hall-aluminium");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const currentAmperes = (params.currentAmperes as number) ?? 300000;
   const bathTemperatureCelsius = (params.bathTemperatureCelsius as number) ?? 960;
@@ -30,34 +33,64 @@ export function HallAluminiumSim() {
   const _anodeGlow = Math.min(1.0, 0.4 + currentRatio * 0.4);
 
   return (
-    <div className="w-full bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 shadow-xl text-parchment-100 font-sans space-y-6">
+    <div className="w-full bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 shadow-xl text-ink-900 dark:text-parchment-100 font-sans space-y-6">
       {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-cyan-600 dark:text-cyan-400 font-bold">
             <Zap className="w-3.5 h-3.5" />
             Hall-Héroult Electrolytic Smelting Simulator
           </div>
-          <h3 className="font-serif text-lg sm:text-xl font-bold text-parchment-50">
+          <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-950 dark:text-parchment-50">
             Molten Cryolite Alumina Reduction Cell (US 400,766)
           </h3>
         </div>
 
-        <div className="flex bg-ink-900 p-1 rounded-xl border border-ink-800 text-xs font-mono">
-          {(["electrolysis", "cross_section", "chemistry"] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1.5 rounded-lg capitalize transition-all cursor-pointer ${
-                activeTab === tab
-                  ? "bg-cyan-600 text-white font-bold shadow-xs"
-                  : "text-parchment-400 hover:text-white"
-              }`}
-            >
-              {tab.replace("_", " ")}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <div className="flex bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+            {(["electrolysis", "cross_section", "chemistry"] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tab);
+                  soundEngine.playSwitchClick();
+                }}
+                className={`px-3 py-1.5 rounded-lg capitalize transition-all cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-cyan-600 text-white font-bold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-400 hover:text-ink-900 dark:hover:text-white"
+                }`}
+              >
+                {tab.replace("_", " ")}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setActiveTab("electrolysis");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

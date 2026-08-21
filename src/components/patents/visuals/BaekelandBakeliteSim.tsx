@@ -1,17 +1,23 @@
 "use client";
 
+import { FlaskConical, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useMemo } from "react";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface BaekelandBakeliteSimProps {
   className?: string;
 }
 
 export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimProps) {
-  const { params: controls, updateParam: setControl } = usePatentPhysics(
-    "us-942699-baekeland-bakelite",
-  );
+  const {
+    params: controls,
+    updateParam: setControl,
+    resetParams,
+  } = usePatentPhysics("us-942699-baekeland-bakelite");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const curingTempC = (controls.curingTempC as number) ?? 130;
   const autoclavePressurePsi = (controls.autoclavePressurePsi as number) ?? 75;
@@ -42,46 +48,69 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
 
   return (
     <div
-      className={`flex flex-col gap-6 p-6 bg-stone-900/90 text-stone-100 rounded-xl border border-stone-700 shadow-2xl backdrop-blur-md ${className}`}
+      className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-stone-700 bg-parchment-50 dark:bg-stone-900/90 p-4 sm:p-6 shadow-md text-ink-900 dark:text-stone-100 transition-colors ${className}`}
     >
       {/* Header & Principle Banner */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-700 pb-4">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-parchment-200 dark:border-stone-700 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 text-xs font-mono font-bold bg-amber-500/20 text-amber-300 rounded border border-amber-500/30">
-              US 942,699
-            </span>
-            <span className="text-xs text-stone-400 font-mono">
-              1909 Master Synthetic Polymer Grant
-            </span>
+            <FlaskConical className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-stone-100">
+              Leo Baekeland Bakelite Phenol-Formaldehyde Synthesis (US 942,699)
+            </h3>
           </div>
-          <h2 className="text-xl font-bold text-stone-100 mt-1">
-            Bakelizer Autoclave & Phenol-Formaldehyde Crosslinking Simulator
-          </h2>
+          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
+            Autoclave pressurized polymerization: resole (A-stage), resitol (B-stage), and infusible
+            resite (C-stage) thermoset crosslinking.
+          </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <div
-            className={`px-3 py-1 text-xs font-mono font-semibold rounded-full border ${
+            className={`px-3 py-1 text-xs font-mono font-semibold rounded-lg border ${
               sim.resinStage.startsWith("C-stage")
-                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                ? "bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-300"
                 : sim.resinStage.startsWith("B-stage")
-                  ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
-                  : "bg-indigo-500/20 border-indigo-500/40 text-indigo-300"
+                  ? "bg-amber-100 dark:bg-amber-500/20 border-amber-400 dark:border-amber-500/40 text-amber-900 dark:text-amber-300"
+                  : "bg-indigo-100 dark:bg-indigo-500/20 border-indigo-400 dark:border-indigo-500/40 text-indigo-900 dark:text-indigo-300"
             }`}
           >
             {sim.resinStage}
           </div>
           <div
-            className={`px-3 py-1 text-xs font-mono font-semibold rounded-full border ${
+            className={`px-3 py-1 text-xs font-mono font-semibold rounded-lg border ${
               sim.isFoamingSuppressed
-                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
-                : "bg-rose-500/20 border-rose-500/40 text-rose-300 animate-pulse"
+                ? "bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-300"
+                : "bg-rose-100 dark:bg-rose-500/20 border-rose-400 dark:border-rose-500/40 text-rose-900 dark:text-rose-300 animate-pulse"
             }`}
           >
             {sim.isFoamingSuppressed
               ? "Foaming Suppressed (Dense)"
-              : "Boiling & Porous (Defective)"}
+              : "Boiling / Porous (Defective)"}
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

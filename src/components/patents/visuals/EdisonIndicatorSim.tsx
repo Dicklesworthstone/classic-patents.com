@@ -1,11 +1,15 @@
 "use client";
 
+import { Lightbulb, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useMemo } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
-export default function EdisonIndicatorSim() {
-  const { params, updateParam } = usePatentPhysics("us-307031-edison-indicator");
+export function EdisonIndicatorSim() {
+  const { params, updateParam, resetParams } = usePatentPhysics("us-307031-edison-indicator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const mainsVoltage = params.mainsVoltageV ?? 110;
   const biasNum = params.plateBiasPolarity ?? 1;
   const plateBias: "positive" | "negative" | "neutral" =
@@ -29,18 +33,22 @@ export default function EdisonIndicatorSim() {
   const needleRotation = sim.galvoDeflectionDeg;
 
   return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6 bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-800 rounded-2xl shadow-sm text-ink-900 dark:text-parchment-100 font-sans">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 rounded-2xl shadow-md text-ink-900 dark:text-parchment-100 font-sans">
       {/* Header / Mode Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-300 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
-          <span className="text-xs font-mono font-bold tracking-widest text-amber-700 dark:text-amber-400 uppercase">
-            US 307,031 · 1884 Interactive Simulator
-          </span>
-          <h3 className="font-serif text-lg sm:text-xl font-bold">
-            Edison Effect Thermionic Diode &amp; Torsion Voltage Regulator
-          </h3>
+          <div className="flex items-center gap-2">
+            <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-950 dark:text-parchment-50">
+              Thomas Edison Electrical Indicator & Thermionic Diode (US 307,031)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Edison effect thermionic emission, plate bias polarity, and torsion galvanometer voltage
+            regulation.
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <span
             className={`px-2.5 py-1 rounded-full text-xs font-mono font-bold border ${
               sim.regulatorState === "nominal"
@@ -51,11 +59,35 @@ export default function EdisonIndicatorSim() {
             }`}
           >
             {sim.regulatorState === "nominal"
-              ? "● Grid Pressure: Equilibrium"
+              ? "● Equilibrium"
               : sim.regulatorState === "high_voltage_trip"
-                ? "▲ Over-Voltage Trip: Decreasing Field"
-                : "▼ Under-Voltage Trip: Boosting Field"}
+                ? "▲ Over-Voltage"
+                : "▼ Under-Voltage"}
           </span>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -594,3 +626,5 @@ export default function EdisonIndicatorSim() {
     </div>
   );
 }
+
+export default EdisonIndicatorSim;

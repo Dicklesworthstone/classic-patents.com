@@ -1,11 +1,17 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function CarrierAirConditionerSim() {
-  const { params, updateParam } = usePatentPhysics("us-808897-carrier-air-conditioner");
+  const { params, updateParam, resetParams } = usePatentPhysics(
+    "us-808897-carrier-air-conditioner",
+  );
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [activeTab, setActiveTab] = useState<"chamber" | "psychrometric">("chamber");
 
   const tIn = params.inletTempC ?? 35;
@@ -24,43 +30,75 @@ export function CarrierAirConditionerSim() {
   const finalRh = carrier.finalRhPct;
 
   return (
-    <div className="w-full rounded-2xl bg-neutral-950 border border-neutral-800 p-6 space-y-6 text-neutral-200">
+    <div className="w-full rounded-2xl bg-parchment-50 dark:bg-neutral-950 border border-parchment-300 dark:border-neutral-800 p-6 space-y-6 text-ink-900 dark:text-neutral-200">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-            <h3 className="text-lg font-semibold tracking-wide text-neutral-100">
-              Willis H. Carrier — Psychrometric Dew-Point Air Conditioning Apparatus
+            <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400 animate-pulse" />
+            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-neutral-100">
+              Willis H. Carrier — Psychrometric Dew-Point Air Conditioning Apparatus (US 808,897)
             </h3>
           </div>
-          <p className="text-xs text-neutral-400 mt-0.5">
-            US Patent 808,897 · Chilled Water Spray Dehumidification, Inertial Baffles & Sensible
-            Reheat
+          <p className="text-xs text-ink-600 dark:text-neutral-400 mt-0.5">
+            Chilled Water Spray Dehumidification, Inertial Baffles & Sensible Reheat
           </p>
         </div>
-        <div className="flex rounded-lg bg-neutral-900 p-1 border border-neutral-800 text-xs">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <div className="flex rounded-lg bg-parchment-200 dark:bg-neutral-900 p-1 border border-parchment-300 dark:border-neutral-800 text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("chamber");
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
+                activeTab === "chamber"
+                  ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/30"
+                  : "text-ink-600 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+              }`}
+            >
+              1. Spray Chamber
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("psychrometric");
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
+                activeTab === "psychrometric"
+                  ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border border-cyan-400 dark:border-cyan-500/30"
+                  : "text-ink-600 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+              }`}
+            >
+              2. Psychrometric Process
+            </button>
+          </div>
           <button
             type="button"
-            onClick={() => setActiveTab("chamber")}
-            className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-              activeTab === "chamber"
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            1. Spray Conditioning Chamber
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("psychrometric")}
-            className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-              activeTab === "psychrometric"
-                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
+            onClick={() => {
+              resetParams();
+              setActiveTab("chamber");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            2. Psychrometric State Process
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

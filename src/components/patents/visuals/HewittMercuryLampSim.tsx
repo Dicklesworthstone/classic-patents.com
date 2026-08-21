@@ -1,8 +1,11 @@
 "use client";
 
+import { Lightbulb, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface HewittMercuryLampSimProps {
   initialMainsVoltageV?: number;
@@ -21,7 +24,8 @@ export function HewittMercuryLampSim({
 }: HewittMercuryLampSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-682690-hewitt-mercury-lamp");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-682690-hewitt-mercury-lamp");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const mainsVoltageV = params.mainsVoltageV ?? initialMainsVoltageV;
   const tubeLengthCm = params.tubeLengthCm ?? initialTubeLengthCm;
   const tubeDiameterMm = params.tubeDiameterMm ?? initialTubeDiameterMm;
@@ -333,30 +337,74 @@ export function HewittMercuryLampSim({
   }, [tubeDiameterMm, isLit, strikePulseTime, physics]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
-      {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
-        <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
-
-        {/* High-Voltage Strike Ignition Button */}
-        <div className="absolute top-4 right-4 flex items-center gap-2">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <Lightbulb className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Peter Cooper Hewitt Mercury-Vapor Arc Lamp (US 682,690)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Liquid mercury cathode pool, high-voltage inductive strike, positive column glow, and
+            condensing globe.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={handleStrike}
-            className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold font-mono rounded-lg border border-cyan-400/40 shadow-lg transition active:scale-95"
+            onClick={() => {
+              handleStrike();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Strike Ignition Pulse"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold font-mono transition shadow-sm active:scale-95"
           >
-            ⚡ STRIKE IGNITION PULSE
+            <Zap className="w-3.5 h-3.5" />
+            <span>STRIKE</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              handleStrike();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
+      {/* 2D Canvas Viewport */}
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
+        <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
+      </div>
+
       {/* Control Sliders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
         {/* Mains Voltage */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-400">Mains Voltage</span>
-            <span className="font-mono text-cyan-300">{mainsVoltageV} V</span>
+            <span className="text-cyan-600 dark:text-cyan-400">Mains Voltage</span>
+            <span className="font-mono text-cyan-700 dark:text-cyan-300">{mainsVoltageV} V</span>
           </div>
           <input
             type="range"
@@ -365,9 +413,11 @@ export function HewittMercuryLampSim({
             step={5}
             value={mainsVoltageV}
             onChange={(e) => updateParam("mainsVoltageV", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-slate-400">Commercial supply mains</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Commercial supply mains
+          </span>
         </div>
 
         {/* Tube Length */}

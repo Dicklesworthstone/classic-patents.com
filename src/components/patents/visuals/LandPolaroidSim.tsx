@@ -1,9 +1,12 @@
 "use client";
 
+import { Camera, Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface LandPolaroidSimProps {
   className?: string;
@@ -13,7 +16,8 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-2543181-land-polaroid");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2543181-land-polaroid");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [internalTime, setInternalTime] = useState<number>(params.developmentTimeSec ?? 30);
@@ -298,44 +302,97 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
 
   return (
     <div
-      className={`flex flex-col gap-4 p-5 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl ${className}`}
+      className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors ${className}`}
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
-          <h3 className="text-base font-bold tracking-wide text-emerald-400">
-            Polaroid Diffusion Transfer Reversal (DTR) Simulator
-          </h3>
-          <p className="text-xs text-slate-400">
-            Audited SI chemical kinetics model of US Patent 2,543,181
+          <div className="flex items-center gap-2">
+            <Camera className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Edwin Land Instant Photography & Diffusion Transfer (US 2,543,181)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Diffusion Transfer Reversal (DTR): reagent pod rupture, silver halide solubilization,
+            and positive mordant deposition.
           </p>
         </div>
 
-        {/* View Mode Tabs */}
-        <div className="flex gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800">
-          {(["diffusion", "sandwich", "print"] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setViewMode(mode)}
-              className={`px-3 py-1 text-xs font-mono rounded transition-colors ${
-                viewMode === mode
-                  ? "bg-emerald-950/80 text-emerald-300 border border-emerald-500"
-                  : "bg-slate-800 hover:bg-slate-700 text-slate-300"
-              }`}
-            >
-              {mode === "diffusion"
-                ? "Diffusion Kinetics"
-                : mode === "sandwich"
-                  ? "Roller Spread"
-                  : "Instant Print"}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          {/* View Mode Tabs */}
+          <div className="flex gap-1 bg-parchment-200 dark:bg-slate-900 p-1 rounded-lg border border-parchment-300 dark:border-slate-800">
+            {(["diffusion", "sandwich", "print"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => {
+                  setViewMode(mode);
+                  soundEngine.playSwitchClick();
+                }}
+                className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
+                  viewMode === mode
+                    ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500"
+                    : "bg-parchment-100 dark:bg-slate-800 hover:bg-parchment-200 dark:hover:bg-slate-700 text-ink-700 dark:text-slate-300"
+                }`}
+              >
+                {mode === "diffusion"
+                  ? "Diffusion Kinetics"
+                  : mode === "sandwich"
+                    ? "Roller Spread"
+                    : "Instant Print"}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isPlaying ? "Pause Timer" : "Resume Timer"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isPlaying ? "Pause Timer" : "Resume Timer"}
+          >
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setInternalTime(30);
+              setIsPlaying(true);
+              setViewMode("diffusion");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full h-[320px] rounded-lg overflow-hidden bg-slate-900 border border-slate-800">
+      <div className="relative w-full h-[320px] rounded-xl overflow-hidden bg-slate-900 border border-parchment-300 dark:border-slate-800">
         <canvas ref={canvasRef} width={680} height={320} className="w-full h-full" />
       </div>
 

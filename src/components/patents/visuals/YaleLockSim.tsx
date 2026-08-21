@@ -1,8 +1,11 @@
 "use client";
 
+import { Key, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/yaleLockKernel";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface YaleLockSimProps {
   initialKeyInsertion?: number;
@@ -17,7 +20,8 @@ export function YaleLockSim({
 }: YaleLockSimProps) {
   const insertionId = useId();
   const torqueId = useId();
-  const { params, updateParam } = usePatentPhysics("us-48475-yale-lock");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-48475-yale-lock");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const keyInsertion = params.keyInsertion ?? initialKeyInsertion;
   const appliedTorqueNm = params.appliedTorqueNm ?? initialAppliedTorque;
   const [useAuthorizedKey, setUseAuthorizedKey] = useState<boolean>(true);
@@ -36,25 +40,31 @@ export function YaleLockSim({
   }, [keyInsertion, appliedTorqueNm, activeKeyBittings, isRotating, useAuthorizedKey]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
+    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-2xl backdrop-blur-md">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
-          <h3 className="text-xl font-bold tracking-tight text-amber-400">
-            Linus Yale Jr. Pin-Tumbler Cylinder Simulation
-          </h3>
-          <p className="text-sm text-neutral-400">
-            US Patent 48,475 (1865) • 5-Chamber Shear-Line Kinematics & Lost-Motion Cam Actuator
+          <div className="flex items-center gap-2">
+            <Key className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-xl font-bold font-serif tracking-tight text-ink-950 dark:text-amber-400">
+              Linus Yale Jr. Pin-Tumbler Cylinder Lock (US 48,475)
+            </h3>
+          </div>
+          <p className="text-sm text-ink-600 dark:text-neutral-400">
+            5-Chamber Shear-Line Kinematics & Lost-Motion Cam Actuator
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <button
             type="button"
-            onClick={() => setUseAuthorizedKey(!useAuthorizedKey)}
+            onClick={() => {
+              setUseAuthorizedKey(!useAuthorizedKey);
+              soundEngine.playSwitchClick();
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
               useAuthorizedKey
-                ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
-                : "bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30"
+                ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border-emerald-400 dark:border-emerald-500/40 hover:bg-emerald-200 dark:hover:bg-emerald-500/30"
+                : "bg-rose-100 dark:bg-rose-500/20 text-rose-900 dark:text-rose-300 border-rose-400 dark:border-rose-500/40 hover:bg-rose-200 dark:hover:bg-rose-500/30"
             }`}
           >
             {useAuthorizedKey ? "Authorized Key" : "Mismatched / Pick Key"}
@@ -62,16 +72,45 @@ export function YaleLockSim({
           <button
             type="button"
             disabled={!yaleState.isUnlocked}
-            onClick={() => setIsRotating(!isRotating)}
+            onClick={() => {
+              setIsRotating(!isRotating);
+              soundEngine.playSwitchClick();
+            }}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
               yaleState.isUnlocked
                 ? isRotating
-                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                  : "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30"
-                : "bg-neutral-800 text-neutral-500 border-neutral-700 cursor-not-allowed"
+                  ? "bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border-amber-400 dark:border-amber-500/40 hover:bg-amber-200 dark:hover:bg-amber-500/30"
+                  : "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border-cyan-400 dark:border-cyan-500/40 hover:bg-cyan-200 dark:hover:bg-cyan-500/30"
+                : "bg-parchment-200 dark:bg-neutral-800 text-ink-400 dark:text-neutral-500 border-parchment-300 dark:border-neutral-700 cursor-not-allowed"
             }`}
           >
             {isRotating ? "Return Key (0°)" : "Turn Key (90°)"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setUseAuthorizedKey(true);
+              setIsRotating(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

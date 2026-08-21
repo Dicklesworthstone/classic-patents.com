@@ -1,11 +1,14 @@
 "use client";
 
-import { Layers } from "lucide-react";
+import { Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { goodyearChainPost, stepGoodyearRubber } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GoodyearRubberSim() {
-  const { params, updateParam } = usePatentPhysics("us-3633-goodyear-rubber");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-3633-goodyear-rubber");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const sulfurPercent = params.sulfurPct ?? 8;
   const specimenTempC = params.specimenTempC ?? 35;
   const stretchLambda = params.appliedTensileStretch ?? 1.8;
@@ -21,7 +24,7 @@ export function GoodyearRubberSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Layers className="w-5 h-5 text-amber-500" />
@@ -35,16 +38,16 @@ export function GoodyearRubberSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <span
             className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold border shadow-sm ${
               isMelted
-                ? "bg-red-950 border-red-700 text-red-300 animate-pulse"
+                ? "bg-red-100 dark:bg-red-950 border-red-400 dark:border-red-700 text-red-900 dark:text-red-300 animate-pulse"
                 : isBrittle
-                  ? "bg-blue-950 border-blue-700 text-blue-300"
+                  ? "bg-blue-100 dark:bg-blue-950 border-blue-400 dark:border-blue-700 text-blue-900 dark:text-blue-300"
                   : isElastic
-                    ? "bg-emerald-950 border-emerald-700 text-emerald-300"
-                    : "bg-amber-950 border-amber-700 text-amber-300"
+                    ? "bg-emerald-100 dark:bg-emerald-950 border-emerald-400 dark:border-emerald-700 text-emerald-900 dark:text-emerald-300"
+                    : "bg-amber-100 dark:bg-amber-950 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-300"
             }`}
           >
             {isMelted
@@ -52,9 +55,33 @@ export function GoodyearRubberSim() {
               : isBrittle
                 ? "✗ RAW GUM: Hardened / brittle in cold"
                 : isElastic
-                  ? "✓ HEAT-TREATED COMPOUND: Temperature-stable elastic fabric"
-                  : "✓ HIGH-SULFUR COMPOUND: Hard rubber resin"}
+                  ? "✓ HEAT-TREATED COMPOUND: Stable elastic fabric"
+                  : "✓ HIGH-SULFUR: Hard ebonite resin"}
           </span>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

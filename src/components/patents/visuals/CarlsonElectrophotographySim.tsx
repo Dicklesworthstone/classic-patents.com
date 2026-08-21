@@ -1,8 +1,11 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface CarlsonElectrophotographySimProps {
   initialCoronaVoltageKv?: number;
@@ -19,7 +22,9 @@ export function CarlsonElectrophotographySim({
 }: CarlsonElectrophotographySimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-2297691-carlson-electrophotography");
+  const physicsState = usePatentPhysics("us-2297691-carlson-electrophotography");
+  const { params, updateParam, resetParams } = physicsState;
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const coronaVoltageKv = params.coronaVoltageKv ?? initialCoronaVoltageKv;
   const exposureLuxSec = params.exposureLuxSec ?? initialExposureLuxSec;
   const layerThicknessUm = params.layerThicknessUm ?? initialLayerThicknessUm;
@@ -349,19 +354,73 @@ export function CarlsonElectrophotographySim({
   }, [isRotating, physics]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      {/* Header with Title and Global Action Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
+        <div>
+          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+            Chester Carlson Electrophotography / Xerography (US 2,297,691)
+          </h3>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+            Corona electrostatic charging, photoconductive optical discharge, toner transfer, and
+            heat fusing.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              setIsRotating(!isRotating);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isRotating ? "Pause Drum" : "Run Drum"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isRotating ? "Pause Drum" : "Run Drum"}
+          >
+            {isRotating ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsRotating(true);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Interactive Control Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
         {/* Corona Voltage */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-yellow-400">Corona Voltage</span>
-            <span className="font-mono text-yellow-300">{coronaVoltageKv.toFixed(2)} kV</span>
+            <span className="text-amber-600 dark:text-yellow-400">Corona Voltage</span>
+            <span className="font-mono text-amber-700 dark:text-yellow-300">
+              {coronaVoltageKv.toFixed(2)} kV
+            </span>
           </div>
           <input
             type="range"
@@ -370,16 +429,20 @@ export function CarlsonElectrophotographySim({
             step={0.25}
             value={coronaVoltageKv}
             onChange={(e) => updateParam("coronaVoltageKv", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
           />
-          <span className="text-[10px] text-slate-400">Surface charging potential</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Surface charging potential
+          </span>
         </div>
 
         {/* Optical Exposure */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-cyan-400">Optical Exposure</span>
-            <span className="font-mono text-cyan-300">{exposureLuxSec} lx·s</span>
+            <span className="text-cyan-600 dark:text-cyan-400">Optical Exposure</span>
+            <span className="font-mono text-cyan-700 dark:text-cyan-300">
+              {exposureLuxSec} lx·s
+            </span>
           </div>
           <input
             type="range"
@@ -388,16 +451,20 @@ export function CarlsonElectrophotographySim({
             step={1}
             value={exposureLuxSec}
             onChange={(e) => updateParam("exposureLuxSec", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-slate-400">Discharge light energy</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Discharge light energy
+          </span>
         </div>
 
         {/* Photoreceptor Thickness */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-indigo-400">Selenium Thickness</span>
-            <span className="font-mono text-indigo-300">{layerThicknessUm} µm</span>
+            <span className="text-indigo-600 dark:text-indigo-400">Selenium Thickness</span>
+            <span className="font-mono text-indigo-700 dark:text-indigo-300">
+              {layerThicknessUm} µm
+            </span>
           </div>
           <input
             type="range"
@@ -406,16 +473,20 @@ export function CarlsonElectrophotographySim({
             step={5}
             value={layerThicknessUm}
             onChange={(e) => updateParam("layerThicknessUm", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-500"
           />
-          <span className="text-[10px] text-slate-400">Semiconductor layer depth</span>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Semiconductor layer depth
+          </span>
         </div>
 
         {/* Fuser Temperature */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
-            <span className="text-rose-400">Fuser Temperature</span>
-            <span className="font-mono text-rose-300">{fuserTemperatureC}°C</span>
+            <span className="text-rose-600 dark:text-rose-400">Fuser Temperature</span>
+            <span className="font-mono text-rose-700 dark:text-rose-300">
+              {fuserTemperatureC}°C
+            </span>
           </div>
           <input
             type="range"
@@ -424,24 +495,11 @@ export function CarlsonElectrophotographySim({
             step={5}
             value={fuserTemperatureC}
             onChange={(e) => updateParam("fuserTemperatureC", Number(e.target.value))}
-            className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-600 dark:accent-rose-500"
           />
-          <span className="text-[10px] text-slate-400">Thermal resin bonding</span>
-        </div>
-
-        {/* Motor Rotation Toggle */}
-        <div className="flex flex-col justify-end">
-          <button
-            type="button"
-            onClick={() => setIsRotating(!isRotating)}
-            className={`w-full py-2 px-3 text-xs font-semibold rounded-lg transition ${
-              isRotating
-                ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                : "bg-slate-800 hover:bg-slate-700 text-slate-300"
-            }`}
-          >
-            {isRotating ? "Pause Drum" : "Run Drum"}
-          </button>
+          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+            Thermal resin bonding
+          </span>
         </div>
       </div>
     </div>

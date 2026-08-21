@@ -1,8 +1,11 @@
 "use client";
 
+import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface DeForestAudionSimProps {
   initialPlateVoltageV?: number;
@@ -21,7 +24,8 @@ export function DeForestAudionSim({
 }: DeForestAudionSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-879532-de-forest-audion");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const plateVoltageV = params.plateVoltageV ?? initialPlateVoltageV;
   const gridBiasVoltageV = params.gridBiasVoltageV ?? initialGridBiasVoltageV;
   const filamentCurrentA = params.filamentCurrentA ?? initialFilamentCurrentA;
@@ -353,14 +357,56 @@ export function DeForestAudionSim({
   ]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-slate-800 bg-parchment-50 dark:bg-slate-950 p-4 sm:p-6 text-ink-900 dark:text-slate-100 shadow-md transition-colors">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-slate-800 pb-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <Radio className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Lee de Forest Audion Triode Vacuum Tube Amplifier (US 879,532)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-slate-400 mt-0.5">
+            Electrostatic grid control of thermionic plate current, space-charge mediation, and
+            voltage gain.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Interactive Control Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-slate-900/60 rounded-lg border border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
         {/* B-Battery Plate Voltage */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">

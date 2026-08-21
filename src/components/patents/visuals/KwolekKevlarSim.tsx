@@ -1,12 +1,15 @@
 "use client";
 
-import { Shield, ShieldAlert } from "lucide-react";
+import { RotateCcw, Shield, ShieldAlert, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { kevlarChainBond, kevlarChainPath, stepKevlarContinuum } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function KwolekKevlarSim() {
-  const { params, updateParam } = usePatentPhysics("us-3671542-kwolek-kevlar");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-3671542-kwolek-kevlar");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const drawRatio = params.drawRatio ?? 6.5;
   const tensileTension = params.appliedTension ?? 30;
   const [bulletFired, setBulletFired] = useState<boolean>(false);
@@ -36,28 +39,56 @@ export function KwolekKevlarSim() {
   };
 
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-amber-500" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Kwolek Liquid-Crystalline Aramid (Kevlar) Molecular Alignment Simulator
+            <Shield className="w-5 h-5 text-amber-500" />
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Stephanie Kwolek Poly-p-Phenylene Terephthalamide (Kevlar) (US 3,671,542)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Discover how parallel alignment of rigid aromatic PPTA chains creates a fiber 5x
-            stronger than steel.
+            Liquid-crystalline aramid alignment: rigid aromatic PPTA chains, hydrogen bond
+            crosslinking, and ballistic energy dissipation.
           </p>
         </div>
-        <div>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={fireBulletTest}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-sm"
+            onClick={() => {
+              fireBulletTest();
+              soundEngine.playSwitchClick();
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-sm active:scale-95"
           >
             <ShieldAlert className="w-3.5 h-3.5" />
-            Simulate Ballistic Impact
+            <span>IMPACT</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setBulletFired(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

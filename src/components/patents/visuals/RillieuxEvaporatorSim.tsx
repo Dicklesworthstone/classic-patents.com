@@ -1,8 +1,11 @@
 "use client";
 
+import { Gauge, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useId, useMemo } from "react";
 import { stepRillieuxEvaporator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface RillieuxEvaporatorSimProps {
   initialJuiceRateKgH?: number;
@@ -22,7 +25,8 @@ export function RillieuxEvaporatorSim({
   const targetId = useId();
   const effectsId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-3237-rillieux-evaporator");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-3237-rillieux-evaporator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const juiceFeedRateKgPerH = params.juiceFeedRateKgPerH ?? initialJuiceRateKgH;
   const initialBrixDeg = params.initialBrixDeg ?? initialBrix;
   const targetBrixDeg = params.targetBrixDeg ?? initialTargetBrix;
@@ -38,25 +42,51 @@ export function RillieuxEvaporatorSim({
   }, [juiceFeedRateKgPerH, initialBrixDeg, targetBrixDeg, numberOfEffects]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-md backdrop-blur-md transition-colors">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
-          <h3 className="text-xl font-bold tracking-tight text-amber-400">
-            Norbert Rillieux Multiple-Effect Vacuum Evaporation Simulation
-          </h3>
-          <p className="text-sm text-neutral-400">
-            US Patent 3,237 (1843) • Latent Heat Cascading, Multi-Stage Vacuum Boiling & Steam
-            Cogeneration
+          <div className="flex items-center gap-2">
+            <Gauge className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-xl font-bold font-serif tracking-tight text-ink-950 dark:text-amber-400">
+              Norbert Rillieux Multiple-Effect Evaporator (US 3,237)
+            </h3>
+          </div>
+          <p className="text-sm text-ink-600 dark:text-neutral-400">
+            Latent Heat Cascading, Multi-Stage Vacuum Boiling & Steam Cogeneration
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-            Fuel Savings: {rillState.fuelSavingsPct.toFixed(1)}%
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500/30">
+            Savings: {rillState.fuelSavingsPct.toFixed(1)}%
           </span>
-          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border border-amber-400 dark:border-amber-500/30">
             Economy: {rillState.steamEconomyRatio.toFixed(2)}×
           </span>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

@@ -53,21 +53,25 @@ const figureDimensions: Readonly<Record<number, readonly [number, number]>> = {
   17: [400, 400],
 };
 
-const figure = (number: number, sourceText = `Figure ${number}`): CuratedSpecificationInline => ({
+const figureGroup = (
+  numbers: readonly number[],
+  sourceText = numbers.map((number) => `Figure ${number}`).join(", "),
+): CuratedSpecificationInline => ({
   kind: "reference",
   text: sourceText,
-  href: "#",
+  href: `#figure-${numbers[0]}`,
   referenceType: "figure",
-  label: `Open the source-facsimile crop for Figure ${number} in US 1,773,980`,
-  figurePreviews: [
-    {
-      src: `/patents/figures/us-1773980-farnsworth-tv/fig-${number}-source-crop-v${figureCropVersion[number]}.png`,
-      alt: `Source-facsimile crop containing Figure ${number}, oriented for legibility, from US 1,773,980.`,
-      width: figureDimensions[number][0],
-      height: figureDimensions[number][1],
-    },
-  ],
+  label: `Open the source-facsimile crops for ${sourceText} in US 1,773,980`,
+  figurePreviews: numbers.map((number) => ({
+    src: `/patents/figures/us-1773980-farnsworth-tv/fig-${number}-source-crop-v${figureCropVersion[number]}.png`,
+    alt: `Source-facsimile crop containing Figure ${number}, oriented for legibility, from US 1,773,980.`,
+    width: figureDimensions[number][0],
+    height: figureDimensions[number][1],
+  })),
 });
+
+const figure = (number: number, sourceText = `Figure ${number}`): CuratedSpecificationInline =>
+  figureGroup([number], sourceText);
 
 const claim = (number: number, value: string) => ({
   kind: "claim" as const,
@@ -107,7 +111,7 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "The apparatus and method will best be understood from a description of the accompanying drawings, in which: ",
+          text: "The present invention, together with various objects and advantages thereof will best be understood from a description of a preferred form or example of a process and apparatus for television embodying the invention. For this purpose, I have hereinafter set forth one form of example of a method and apparatus for producing television in accordance with the present invention, and have illustrated said apparatus and method as it is adapted for television by wireless. It is to be understood, however, that the invention is capable of various and numerous modifications, changes, and substitutions, and is not necessarily limited to the transmission by wireless or radio. The apparatus and method will best be understood from a description of the accompanying drawings, in which: ",
         },
         figure(1),
         {
@@ -175,10 +179,10 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
       "This invention relates to a television apparatus and process, that is, it is directed to an apparatus and process for the instantaneous transmission of a scene or moving image of an object located at a distance in which the transmission is by electricity.",
     ),
     p(
-      "Heretofore attempts have been made to transmit an image of an object by electricity so that the image of the object will instantaneously appear at a distance. These prior attempts at television have generally embodied an apparatus and method in which each particular elementary area of the image of the object is successively converted into an electrical current, the intensity of which is proportional to the intensity of the light at that particular elementary area; all the elementary areas of the image being covered in that fraction of a second during which the eye will retain a picture, hereafter referred to as the optical period.",
+      "Heretofore attempts have been made to transmit an image of an object by electricity so that the image of the object will instantaneously appear at a distance. These prior attempts at television have generally embodied an apparatus and method in which each particular elementary area of the image of the object is successively converted into an electrical current, the intensity of which is proportional to the intensity of the light at that particular elementary area; all the elementary areas of the image being covered in that fraction of a second during which the eye will retain a picture, hereafter referred to as the optical period. This is followed by a transmission of such current and a conversion of such current to light corresponding in intensity to the intensities of the light of the individual areas of the original image; the reconversion process likewise being performed within the optical period so that, by a proper coordination of the developed light, an image of the object to be transmitted appears as instantly formed at the receiving end of the apparatus and method.",
     ),
     p(
-      "All prior attempts at television have attempted to employ some mechanically moving part for dissecting the image of the original object during the process of forming an electrical current which varies in intensity in accordance with the light shades of the respective elementary areas of the image. None of these prior attempts at television have proven successful. They have resulted at best in the production of a crude moving silhouette of the object to be transmitted.",
+      "The time during which the human eye will retain a picture is of such short duration that the conversion of the light shades of the original image of the object to electricity and the reconversion of said electricity to light and the proper coordination of such light must be performed at a very tremendous speed. All prior attempts at television have attempted to employ some mechanically moving part for dissecting the image of the original object during the process of forming an electrical current which varies in intensity in accordance with the light shades of the respective elementary areas of the image. None of these prior attempts at television have proven successful. They have resulted at best in the production of a crude moving silhouette of the object to be transmitted. This has generally been due to the fact that the mechanically moving parts of the prior apparatus have not been able to travel at the necessary speed requirements with the synchronism required in a television apparatus.",
     ),
     p(
       "An object of the present invention is to provide a method and apparatus for television, which is adapted to transmit electrically a true moving image in full light shades of the object to be transmitted. Another object of the present invention is to provide a method and apparatus for television in which the conversion and dissecting of the light shades of the object to be transmitted, to electricity and the reconversion of such electricity to form an image is accomplished in the following manner:",
@@ -196,7 +200,7 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
         ),
         {
           kind: "text",
-          text: " of a photo-electrical cell to thereby develop an electronic discharge from said plate, in which each portion of the cross section of such electronic discharge will correspond in electrical intensity with the intensity of light imposed on that portion of the sensitive plate from which the electrical discharge originated. Such a discharge is herein termed an electrical image.",
+          text: " of a photo-electrical cell to thereby develop an electronic discharge from said plate, in which each portion of the cross section of such electronic discharge will correspond in electrical intensity with the intensity of light imposed on that portion of the sensitive plate from which the electrical discharge originated. Such a discharge is herein termed an electrical image. An electrical shutter is then interposed between said sensitive plate and the anode of the photo-electrical cell, the shutter having a small aperture therein so that there can be received upon said anode at one instant, only the electrons which originate from one elementary area of the light sensitive plate. There is then imposed upon the electrical discharge a plurality of electrical potentials of different frequencies for causing the electrical discharge to bend in two directions, whereby the electrons from each elementary portion of the sensitive plate are successively directed through said shutter; this action taking place so as to completely cover the area of the sensitive plate within the optical period. The scene to be transmitted is thus analyzed or dissected to produce an electrical current, or “light” current having variations in intensity in accordance with the light shades of the object to be transmitted and this is accomplished within the optical period without the necessity of employing any mechanically moving parts.",
         },
       ],
     },
@@ -230,7 +234,7 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
       "Referring to the drawings, 2 represents an object, an image of which is to be transmitted. Said object may be an actual scene or a photograph, a projection of a motion picture film, or any other object. The object 2 is preferably illuminated, for example, by means of an arc light 3 focused thereon by a lens 4. 5 indicates a lens for focusing an image of the object 2 upon the light sensitive plate 6 of a photo-electric cell 7.",
     ),
     p(
-      "The light sensitive plate 6 or cathode of the cell is preferably made flat and is formed of a fine mesh screen 8, and said screen 8 is covered or coated with a light sensitive material such as sodium, potassium, or rubidium. 10 is the anode of the photo-electric cell positioned at the other end of the cell. Between the sensitive plate 6 and anode 10 and closely adjacent to anode 10 is placed an electric shutter 11 formed by a metallic plate in which there is a small aperture 12.",
+      "The photo-electric cell is preferably constructed as follows: The light sensitive plate 6 or cathode of the cell is preferably made flat and is formed of a fine mesh screen 8, and said screen 8 is covered or coated with a light sensitive material such as sodium, potassium, or rubidium. 10 is the anode of the photo-electric cell positioned at the other end of the cell. Between the sensitive plate 6 and anode 10 and closely adjacent to anode 10 is placed an electric shutter 11 formed by a metallic plate in which there is a small aperture 12.",
     ),
     p(
       "Between the shutter 11 and light sensitive plate 6, four plates 13, 14, 15, and 16 are placed at right angles to each other and outside the path of electrons from the plate 6 to the shutter 11. Each opposed pair of the plates are connected to a source of electrical potential of a different frequency.",
@@ -239,7 +243,7 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
       "The circuit photo-electric cell should be highly evacuated, such for example as to 10⁻⁷ cm. mercury to permit a high potential across the cell without ionization.",
     ),
     p(
-      "The necessity for employing a high potential across the cell arises from the fact that the photo electrons emitted from the cathode 6 have a small emission velocity which depends upon the color of the light causing their emission. This emission velocity is always small, of the order of that which an electron would acquire by falling through a volt or two, but it may have nearly any direction. This haphazard motion tends to distort the electric image and is only prevented from doing so by making the potential between the cathode 6 and the anode 10 high enough to insure that the time taken for an electron to traverse the distance between cathode 6 and anode 10 is so small that the small velocity transverse to this path produces no appreciable distortion.",
+      "The necessity for employing a high potential across the cell arises from the fact that the photo electrons emitted from the cathode 6 have a small emission velocity which depends upon the color of the light causing their emission. This emission velocity is always small, of the order of that which an electron would acquire by falling through a volt or two, but it may have nearly any direction. This haphazard motion tends to distort the electric image and is only prevented from doing so by making the potential between the cathode 6 and the anode 10 high enough to insure that the time taken for an electron to traverse the distance between cathode 6 and anode 10 is so small that the small velocity transverse to this path produces no appreciable distortion. Hence the vacuum in the photo-electric cell 7 should be the highest obtainable.",
     ),
     p(
       "The electrical potentials are provided by an oscillator 17, capable of developing two different high frequency electrical currents. Said oscillator 17 not only is required to provide a source of oscillating energy but is required to provide a form of oscillating energy, the wave form of which is composed of substantially straight lines, as will be hereinafter pointed out. Such a wave form is essential to accomplish a uniform lighting of all portions of the image which is to be produced.",
@@ -349,16 +353,17 @@ export const farnsworthTvArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "The operation of this analyzer will best be understood from Figures ",
+          text: "The operation of this analyzer will best be understood from ",
         },
-        figure(15, "15"),
-        { kind: "text", text: ", " },
-        figure(16, "16"),
-        { kind: "text", text: " and " },
-        figure(17, "17"),
+        figureGroup([15, 16, 17], "Figures 15, 16 and 17"),
         {
           kind: "text",
-          text: ", in which Figures 15, 16 and 17 there is disclosed how a rotation of a few degrees will change complete extinction to complete restoration. A indicates a beam of light passing through the first grating 129 and hence through the bi-axial crystal 131 to the second grating 130, the lines of which are opposed to the lines of the grating 129. If the beam of light passes directly through the bi-axial crystal it is completely extinguished by the lines of the grating 130 but if the plane of polarization of the beam A is rotated slightly, the ray A will take the direction of the dotted lines through the crystal and pass between the lines of the grating 130, a slight difference in refraction of the light in the bi-axial crystal 131 being sufficient for this purpose.",
+          text: ", in which ",
+        },
+        figureGroup([15, 16, 17], "Figures 15, 16 and 17"),
+        {
+          kind: "text",
+          text: " there is disclosed how a rotation of a few degrees will change complete extinction to complete restoration. A indicates a beam of light passing through the first grating 129 and hence through the bi-axial crystal 131 to the second grating 130, the lines of which are opposed to the lines of the grating 129. If the beam of light passes directly through the bi-axial crystal it is completely extinguished by the lines of the grating 130 but if the plane of polarization of the beam A is rotated slightly, the ray A will take the direction of the dotted lines through the crystal and pass between the lines of the grating 130, a slight difference in refraction of the light in the bi-axial crystal 131 being sufficient for this purpose.",
         },
       ],
     },

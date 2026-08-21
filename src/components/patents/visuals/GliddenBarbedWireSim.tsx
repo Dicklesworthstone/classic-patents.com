@@ -1,8 +1,9 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { RotateCcw, ShieldAlert, Volume2, VolumeX } from "lucide-react";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function GliddenBarbedWireSim() {
@@ -29,26 +30,23 @@ export function GliddenBarbedWireSim() {
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Glidden "The Winner" Twisted Barbed Wire (US 157,124)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Structural Mechanics — Two-Strand Helical Interlock, Coiled Spur Barbs,
-            and High-Contact Stress Deterrence
+          <div className="flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Joseph Glidden "The Winner" Twisted Barbed Wire (US 157,124)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Two-strand helical interlock, coiled spur barbs, and high contact stress deterrence.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={resetParams}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
             aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -57,6 +55,17 @@ export function GliddenBarbedWireSim() {
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

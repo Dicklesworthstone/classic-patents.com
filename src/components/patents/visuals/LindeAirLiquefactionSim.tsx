@@ -1,8 +1,11 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 /**
  * An annotated reading of the apparatus in US 727,650, not a plant-sizing
@@ -10,7 +13,8 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
  * temperature, flow, yield, or production-rate measurement.
  */
 export function LindeAirLiquefactionSim() {
-  const { params } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { params, resetParams } = usePatentPhysics("us-727650-linde-air-liquefaction");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [activeTab, setActiveTab] = useState<"liquefaction" | "separation">("liquefaction");
   const linde = FrankenSimEngine.stepLindeAirLiquefaction({
     inletPressureAtm: params.inletPressureAtm ?? params.highPressureAtm,
@@ -18,42 +22,75 @@ export function LindeAirLiquefactionSim() {
   });
 
   return (
-    <div className="flex w-full flex-col gap-6 rounded-2xl border border-neutral-800 bg-neutral-950 p-6 text-neutral-100 shadow-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+    <div className="flex w-full flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-neutral-800 bg-parchment-50 dark:bg-neutral-950 p-4 sm:p-6 text-ink-900 dark:text-neutral-100 shadow-md transition-colors">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-cyan-500" />
-            <h3 className="text-lg font-semibold tracking-wide text-neutral-100">
-              Carl Linde’s apparatus, read from US 727,650
+            <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-neutral-100">
+              Carl von Linde Cryogenic Air Liquefaction & Rectification (US 727,650)
             </h3>
           </div>
-          <p className="mt-0.5 text-xs text-neutral-400">
-            Source-bounded guide to C, K, G′, R′, V′, V², G², and G³. It does not predict plant
-            output.
+          <p className="mt-0.5 text-xs text-ink-600 dark:text-neutral-400">
+            Joule-Thomson countercurrent regenerator, expansion throttling, and fractional
+            distillation.
           </p>
         </div>
-        <div className="flex rounded-lg border border-neutral-800 bg-neutral-900 p-1 text-xs">
+        <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+          <div className="flex rounded-lg border border-parchment-300 dark:border-neutral-800 bg-parchment-200 dark:bg-neutral-900 p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("liquefaction");
+                soundEngine.playSwitchClick();
+              }}
+              className={`rounded-md px-3 py-1.5 font-medium transition-all ${
+                activeTab === "liquefaction"
+                  ? "bg-cyan-600 text-white font-bold"
+                  : "text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+              }`}
+            >
+              Liquefaction
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("separation");
+                soundEngine.playSwitchClick();
+              }}
+              className={`rounded-md px-3 py-1.5 font-medium transition-all ${
+                activeTab === "separation"
+                  ? "bg-cyan-600 text-white font-bold"
+                  : "text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+              }`}
+            >
+              Fractionation
+            </button>
+          </div>
           <button
             type="button"
-            onClick={() => setActiveTab("liquefaction")}
-            className={`rounded-md px-3 py-1.5 font-medium transition-all ${
-              activeTab === "liquefaction"
-                ? "border border-cyan-500/30 bg-cyan-500/20 text-cyan-300"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            Liquefaction circuit
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("separation")}
-            className={`rounded-md px-3 py-1.5 font-medium transition-all ${
-              activeTab === "separation"
-                ? "border border-cyan-500/30 bg-cyan-500/20 text-cyan-300"
-                : "text-neutral-400 hover:text-neutral-200"
-            }`}
+            onClick={() => {
+              resetParams();
+              setActiveTab("liquefaction");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            Fractionation extension
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

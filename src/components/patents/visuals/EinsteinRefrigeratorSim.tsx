@@ -1,11 +1,14 @@
 "use client";
 
-import { RotateCcw, Sparkles, Thermometer, Waves } from "lucide-react";
+import { RotateCcw, Sparkles, Thermometer, Volume2, VolumeX, Waves } from "lucide-react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function EinsteinRefrigeratorSim() {
-  const { params, updateParam } = usePatentPhysics("us-1781541-einstein-refrigerator");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-1781541-einstein-refrigerator");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const heatInputWatts = params.heatInput ?? 220;
   const systemPressureAtm = params.totalPressure ?? 15.0;
   const ammoniaRatio = params.ammoniaRatio ?? params.auxiliaryGasRatio ?? 0.65;
@@ -23,6 +26,7 @@ export function EinsteinRefrigeratorSim() {
   const partialPressureButaneAtm = thermo.partialPressureButaneAtm;
 
   const resetToStandardCycle = () => {
+    resetParams();
     updateParam("heatInput", 220);
     updateParam("totalPressure", 15.0);
     updateParam("ammoniaRatio", 0.65);
@@ -31,7 +35,7 @@ export function EinsteinRefrigeratorSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Thermometer className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
@@ -42,19 +46,37 @@ export function EinsteinRefrigeratorSim() {
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
             Continuous refrigeration with{" "}
             <strong>no moving parts, no seals, and no toxic freon leaks</strong>. A thermal burner
-            drives ammonia vapor to decrease butane's partial pressure, evoking rapid evaporation at
-            sub-zero temperatures.
+            drives ammonia vapor to decrease butane&apos;s partial pressure, evoking rapid
+            evaporation at sub-zero temperatures.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={resetToStandardCycle}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset Cycle</span>
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetToStandardCycle();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Cycle"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Cycle"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Grid: 2D Thermodynamic Schematic + Telemetry */}

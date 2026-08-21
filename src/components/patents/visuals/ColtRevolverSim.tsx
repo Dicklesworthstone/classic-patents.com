@@ -66,7 +66,7 @@ export function ColtRevolverSim() {
   return (
     <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
@@ -80,7 +80,7 @@ export function ColtRevolverSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <button
             type="button"
             onClick={handleCockHammer}
@@ -88,7 +88,7 @@ export function ColtRevolverSim() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono font-bold text-amber-700 dark:text-amber-400 hover:bg-amber-500/10 disabled:opacity-40 transition-colors shadow-sm cursor-pointer"
           >
             <Activity className="w-3.5 h-3.5" />
-            <span>1. Cock Hammer (72° Index)</span>
+            <span>1. Cock Hammer</span>
           </button>
           <button
             type="button"
@@ -101,19 +101,28 @@ export function ColtRevolverSim() {
           </button>
           <button
             type="button"
-            onClick={resetParams}
-            className="p-1.5 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
-            title="Reset Simulation"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            <RotateCcw className="w-4 h-4" />
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => toggleSound()}
-            className="p-1.5 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
-            title={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
+            onClick={() => {
+              resetParams();
+              setCurrentChamberIndex(1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors cursor-pointer"
+            title="Reset Simulation"
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

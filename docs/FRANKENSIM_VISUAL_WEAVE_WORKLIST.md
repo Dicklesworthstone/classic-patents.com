@@ -597,6 +597,68 @@ instead of waiting for a ready-made per-machine crate.
 - [x] P6.49 Shared heat seats: `cycleHeatCrate` (Otto/Diesel), `jacketHeatCrate` (Daimler/Maxim), `wortHeatCrate` (Pasteur bath glow), `chainHeatCrate` (Goodyear), `liftHeatCrate` (Zeppelin). 2D gas/jacket/envelope opacity reads them.
 - [x] P6.50 Shared wave/fluid seats: `shockWaveCrate` (Nobel flash), `lineWaveCrate` (Morse wire), `grooveWaveCrate` (phonograph foil), `wakeFluidCrate` (Ericsson), `lintFluidCrate` (Whitney), `meltFluidCrate` (Hyatt steam), `bellowsFluidCrate` (Lincoln waterline).
 
+## P7 — Deeper WASM: the crate owns the law, not a canned tape
+
+P6 made catalog visuals *sample* generic crate demos (`heat_frames`, `wave2d_frames`,
+`fluid_frames`, `cyclic_symmetry`, `laplacian_modes`, `ga_motor_orbit`) and use
+one scalar (RMS / (u,v) sample / first harmonic) to scale opacity or speed.
+That is honest analog composition. It is not Wright-class: the tape is cached
+by grid size, not by slider; the mesh still follows the host SI step; HUD still
+says `ts-*-fallback` because `/wasm/fs-generic/` was never copied (P6.5, 4.9 MB).
+
+`fs-wasm` already exports the next layer. Classic Patents binds six of ~50
+`wasm_bindgen` functions. Deeper weaves call the crate that *owns the claim*,
+host-pumped, control-driven, with a field/pose buffer the renderer drains.
+
+Do not analog-mismatch. Fermi neutrons are not `heat_frames`. Kwolek rupture
+is not a wave RMS. If the generic demo cannot take the patent's BCs, keep the
+host SI step and label it until a stepper export exists.
+
+- [ ] P7.1 Slim `fs-wasm` for the museum, do not copy the 4.9 MB kitchen-sink
+  `pkg/`. Feature-gate a `fs-generic-lite` (heat, wave, fluid, ga, cyclic, modes,
+  poisson, gray_scott, fft, hodge, trusspath, flowcert) and `wasm-opt`. Loader
+  already probes `/wasm/fs-generic/`. Until that artifact exists, HUD stays
+  `ts-*-fallback`.
+- [ ] P7.2 Control-driven tapes. Today's `heat_frames(n, frames, steps)` ignores
+  Edison T, Spencer RF, Diesel cutoff. Need a host-pumped `heat_step(dt, source)`
+  / `wave_step(dt, forcing)` whose source term is the live registry control.
+  Until fs-wasm grows that stepper, do not pretend the canned blob is the filament.
+- [ ] P7.3 Field `DataTexture` drain. Tesla B, Spencer cavity, Farnsworth raster,
+  Fermi n(x), Noyce depletion: WASM writes a flat f32 once per tick; Three.js
+  uploads once. Stop reducing the field to RMS-then-opacity. Wright force vectors
+  and Tesla Fig. 4 strobe are the pattern.
+- [ ] P7.4 `trusspath` / `run_frame` for Wright stay-wires and Otis cable
+  (replace P6.6 `cyclic_symmetry` bay analog). Color bays from the LP receipt,
+  refuse if the certificate is Estimated.
+- [ ] P7.5 `hodge_decomposition` for Tesla stator 1-forms (fs-feec). Discrete
+  Whitney forms on Fig. 4, not hypot-rotate leftover or ga-orbit particles.
+- [ ] P7.6 `fft_power_spectrum` for Marconi spark train and Tesla coil LC
+  (odd harmonics, beat). Bind the spectrum to the waterfall / secondary voltage,
+  not a leftover bar count.
+- [ ] P7.7 `gray_scott_frames` for Goodyear vulcanization / Pasteur / Haber
+  (reaction-diffusion). Sulfur / yeast / catalyst sliders are feed/kill. Do not
+  use this for Fermi 6-group kinetics.
+- [ ] P7.8 `poisson2d` for Noyce / Bardeen electrostatics (junction potential).
+  Contours on the die, not laplacian_modes analog speed.
+- [ ] P7.9 `navier_stokes_cavity` / `flowcert` for Pelton bucket, Wright
+  streamlines, Carrier spray, Ericsson wake. LBM lift/drag on the HUD when the
+  module actually stepped.
+- [ ] P7.10 `autodiff_derivatives` for badge `d(param)/dt` (fs-ad). Slider
+  derivatives from the crate, not a host finite difference.
+- [ ] P7.11 Host-pumped `TickScheduler` on catalog 3Ds that still `presentationStep += 1`
+  or index `floor(timeSec * 8) % 16` into a crate tape. Wright transport is the
+  reference: host clock, bounded catch-up, no `std::time` on wasm32.
+- [ ] P7.12 Blake3 replay chip on catalog HUDs. Control tape + digest. Wright
+  already has it; Gramme/Otto/Tesla motor should print the same digest the kernel
+  hashed, not a decorative hash of particle index.
+- [ ] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→
+  radiation. A couple graph, not two independent numbers.
+- [ ] P7.14 Refusal freeze from crate certificates (TrussPath Estimated,
+  Hull cutoff, k_eff bound, gray-scott blow-up). Keep last legal pose. Do not
+  silently clamp and keep animating.
+- [ ] P7.15 Audio as transducer from the latest field sample (Fessenden AM,
+  Photophone selenium current, Spencer RF). Default muted.
+
 ## Explicitly out of scope
 
 CSV export, digest QR, print receipts, OG stills from ticks, budget pies,

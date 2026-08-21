@@ -1,6 +1,6 @@
 "use client";
 
-import { Radio } from "lucide-react";
+import { Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   FrankenSimEngine,
@@ -10,9 +10,14 @@ import {
   lamarrRadioChannel,
 } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function LamarrFrequencyHoppingSim() {
-  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
+  const { params, updateParam, resetParams } = usePatentPhysics(
+    "us-2292387-lamarr-frequency-hopping",
+  );
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [isHoppingActive, setIsHoppingActive] = useState<boolean>(true);
   const hopsPerSec = params.hopRate ?? 4.0;
   const liveChannels = Math.max(8, Math.min(88, Math.round(params.channels ?? 88)));
@@ -55,7 +60,7 @@ export function LamarrFrequencyHoppingSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Radio className="w-5 h-5 text-purple-500 animate-pulse" />
@@ -69,10 +74,13 @@ export function LamarrFrequencyHoppingSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <button
             type="button"
-            onClick={() => setIsHoppingActive((active) => !active)}
+            onClick={() => {
+              setIsHoppingActive((active) => !active);
+              soundEngine.playSwitchClick();
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
               isHoppingActive
                 ? "bg-purple-700 text-white border-purple-800"
@@ -83,14 +91,42 @@ export function LamarrFrequencyHoppingSim() {
           </button>
           <button
             type="button"
-            onClick={() => updateParam("isJammingActive", isEnemyJamming ? 0 : 1)}
+            onClick={() => {
+              updateParam("isJammingActive", isEnemyJamming ? 0 : 1);
+              soundEngine.playSwitchClick();
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-colors border shadow-sm ${
               isEnemyJamming
                 ? "bg-red-600 text-white border-red-700 animate-pulse"
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300"
             }`}
           >
-            {isEnemyJamming ? "⚠ Enemy Spot Jammer (Active)" : "Enemy Jammer: Off"}
+            {isEnemyJamming ? "⚠ Jammer Active" : "Jammer Off"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsHoppingActive(true);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

@@ -1,8 +1,11 @@
 "use client";
 
+import { RotateCcw, Sun, Volume2, VolumeX } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface BellPhotophoneSimProps {
   initialVoiceSplDb?: number;
@@ -19,7 +22,8 @@ export function BellPhotophoneSim({
   const distId = useId();
   const solarId = useId();
 
-  const { params, updateParam } = usePatentPhysics("us-235199-bell-photophone");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-235199-bell-photophone");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const voiceSplDb = params.voiceSplDb ?? initialVoiceSplDb;
   const transmissionDistanceM = params.transmissionDistanceM ?? initialDistanceM;
   const solarIrradianceWPerM2 = params.solarIrradianceWPerM2 ?? initialSolarWPerM2;
@@ -34,29 +38,59 @@ export function BellPhotophoneSim({
   }, [voiceSplDb, transmissionDistanceM, solarIrradianceWPerM2, isAudioActive]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-neutral-900/90 border border-neutral-800 text-neutral-100 shadow-2xl backdrop-blur-md">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-md backdrop-blur-md transition-colors">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
         <div>
-          <h3 className="text-xl font-bold tracking-tight text-amber-400">
-            Alexander Graham Bell Photophone Optical Wireless Simulation
-          </h3>
-          <p className="text-sm text-neutral-400">
-            US Patent 235,199 (1880) • Voice-Modulated Sunbeam, Parabolic Flux Collector &
-            Photoconductive Selenium
+          <div className="flex items-center gap-2">
+            <Sun className="w-5 h-5 text-amber-500 animate-spin-slow" />
+            <h3 className="text-xl font-bold font-serif tracking-tight text-ink-950 dark:text-amber-400">
+              Alexander Graham Bell Photophone Optical Wireless (US 235,199)
+            </h3>
+          </div>
+          <p className="text-sm text-ink-600 dark:text-neutral-400">
+            Voice-Modulated Sunbeam, Parabolic Flux Collector & Photoconductive Selenium Receiver
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <button
             type="button"
-            onClick={() => setIsAudioActive(!isAudioActive)}
+            onClick={() => {
+              setIsAudioActive(!isAudioActive);
+              soundEngine.playSwitchClick();
+            }}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
               isAudioActive
-                ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30"
-                : "bg-neutral-800 text-neutral-400 border-neutral-700 hover:bg-neutral-700"
+                ? "bg-amber-100 dark:bg-cyan-500/20 text-amber-900 dark:text-cyan-300 border-amber-400 dark:border-cyan-500/40"
+                : "bg-parchment-200 dark:bg-neutral-800 text-ink-600 dark:text-neutral-400 border-parchment-300 dark:border-neutral-700"
             }`}
           >
-            {isAudioActive ? "Voice Modulating ON" : "Quiet Beam (Unmodulated)"}
+            {isAudioActive ? "Voice Modulating ON" : "Quiet Beam"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsAudioActive(true);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

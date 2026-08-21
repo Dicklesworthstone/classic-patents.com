@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, RotateCcw, Shield, Sparkles } from "lucide-react";
+import { Activity, RotateCcw, Shield, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
@@ -8,9 +8,11 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { fermiLatticeCell } from "@/physics/fermiKinetics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function FermiReactorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-2708656-fermi-reactor");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
   const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
@@ -39,22 +41,23 @@ export function FermiReactorSim() {
   }, [thermalPowerWatts]);
 
   useEffect(() => {
-    if (kEffective <= 1.0 || soundEngine.getIsMuted()) return;
+    if (kEffective <= 1.0 || isAudioMuted || soundEngine.getIsMuted()) return;
     const periodMs = kinetics.geigerIntervalMs;
     const timer = setInterval(() => {
       soundEngine.playMorseClick();
     }, periodMs);
     return () => clearInterval(timer);
-  }, [kEffective, kinetics.geigerIntervalMs]);
+  }, [kEffective, isAudioMuted, kinetics.geigerIntervalMs]);
 
   const resetToCriticality = () => {
     resetParams();
+    soundEngine.playSwitchClick();
   };
 
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-amber-600 dark:text-amber-500 animate-pulse" />
@@ -67,14 +70,28 @@ export function FermiReactorSim() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={resetToCriticality}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Calibrate k=1.000</span>
-        </button>
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Geiger Clicks" : "Mute Geiger Clicks"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Geiger Clicks" : "Mute Geiger Clicks"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={resetToCriticality}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 bg-white/80 dark:bg-ink-900/80 text-xs font-mono text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset k=1.000</span>
+          </button>
+        </div>
       </div>
 
       {/* Grid: 2D Reactor Core Cutaway + Telemetry */}

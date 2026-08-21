@@ -1,15 +1,19 @@
 "use client";
 
+import { Flame, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useMemo, useState } from "react";
 import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface CortPuddlingRollingSimProps {
   className?: string;
 }
 
 export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSimProps) {
-  const { params, updateParam } = usePatentPhysics("gb-1420-cort-puddling-rolling");
+  const { params, updateParam, resetParams } = usePatentPhysics("gb-1420-cort-puddling-rolling");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const [activeTab, setActiveTab] = useState<"furnace" | "mill">("furnace");
 
@@ -31,40 +35,76 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
 
   return (
     <div
-      className={`w-full rounded-2xl bg-ink-950/90 border border-parchment-700/40 shadow-2xl p-4 sm:p-6 text-parchment-100 ${className}`}
+      className={`w-full rounded-2xl bg-parchment-50 dark:bg-ink-950/90 border border-parchment-300 dark:border-parchment-700/40 shadow-md p-4 sm:p-6 text-ink-900 dark:text-parchment-100 transition-colors ${className}`}
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ink-800 pb-4 mb-5">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4 mb-5">
         <div>
-          <h3 className="text-lg font-serif font-bold text-parchment-100 tracking-wide">
-            Henry Cort Puddling Furnace &amp; Grooved Rolling Simulation
-          </h3>
-          <p className="text-xs font-mono text-parchment-400">
-            GB 1420 (1784) • Reverberatory Decarburization &amp; Continuous Grooved Roll Squeeze
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+            <h3 className="text-lg font-serif font-bold text-ink-950 dark:text-parchment-100 tracking-wide">
+              Henry Cort Puddling Furnace &amp; Grooved Rolling (GB 1420)
+            </h3>
+          </div>
+          <p className="text-xs font-mono text-ink-500 dark:text-parchment-400 mt-0.5">
+            Reverberatory Decarburization &amp; Continuous Grooved Roll Squeeze
           </p>
         </div>
-        <div className="flex items-center gap-1.5 bg-ink-900/80 p-1 rounded-lg border border-ink-700">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <div className="flex items-center gap-1 bg-parchment-200 dark:bg-ink-900/80 p-1 rounded-lg border border-parchment-300 dark:border-ink-700">
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("furnace");
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
+                activeTab === "furnace"
+                  ? "bg-amber-600 text-white font-bold"
+                  : "text-ink-600 dark:text-parchment-400 hover:text-ink-900 dark:hover:text-parchment-200"
+              }`}
+            >
+              Furnace
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("mill");
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
+                activeTab === "mill"
+                  ? "bg-amber-600 text-white font-bold"
+                  : "text-ink-600 dark:text-parchment-400 hover:text-ink-900 dark:hover:text-parchment-200"
+              }`}
+            >
+              Rolling Mill
+            </button>
+          </div>
           <button
             type="button"
-            onClick={() => setActiveTab("furnace")}
-            className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
-              activeTab === "furnace"
-                ? "bg-amber-600/90 text-white font-bold"
-                : "text-parchment-400 hover:text-parchment-200"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            Reverberatory Furnace
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => setActiveTab("mill")}
-            className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
-              activeTab === "mill"
-                ? "bg-amber-600/90 text-white font-bold"
-                : "text-parchment-400 hover:text-parchment-200"
-            }`}
+            onClick={() => {
+              resetParams();
+              setActiveTab("furnace");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            Grooved Rolling Mill
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
 
 export function EastmanKodakSim() {
@@ -24,6 +25,7 @@ export function EastmanKodakSim() {
 
   const handleTriggerShutter = () => {
     setIsShutterTriggered(true);
+    soundEngine.playSwitchClick();
     if (exposureCount < totalExposures) {
       setExposureCount((prev) => prev + 1);
     }
@@ -34,12 +36,14 @@ export function EastmanKodakSim() {
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Eastman Kodak Box Camera &amp; Roll Film (US 388,850)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D Optical Model — Cylindrical Barrel Shutter, 100-Exposure Flexible Roll
-            Film, and Key Wind Mechanism
+          <div className="flex items-center gap-2">
+            <Camera className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              George Eastman Kodak Box Camera &amp; Roll Film (US 388,850)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Cylindrical barrel shutter, 100-exposure flexible roll film, and key wind mechanism.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -47,7 +51,7 @@ export function EastmanKodakSim() {
             type="button"
             onClick={handleTriggerShutter}
             aria-label="Press Button / Snap Shutter"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-sans text-xs font-bold shadow transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-sans text-xs font-bold shadow transition-colors active:scale-95"
           >
             <Camera className="w-4 h-4" />
             <span>Snap Shutter</span>
@@ -55,18 +59,9 @@ export function EastmanKodakSim() {
           <button
             type="button"
             onClick={() => {
-              resetParams();
-              setExposureCount(0);
-              setIsShutterTriggered(false);
+              toggleSound();
+              soundEngine.playSwitchClick();
             }}
-            aria-label="Reset Film Roll"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => toggleSound()}
             aria-label={isAudioMuted ? "Unmute Audio" : "Mute Audio"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
           >
@@ -75,6 +70,19 @@ export function EastmanKodakSim() {
             ) : (
               <Volume2 className="w-4 h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setExposureCount(0);
+              setIsShutterTriggered(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Film Roll"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

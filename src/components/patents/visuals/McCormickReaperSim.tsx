@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, RotateCcw } from "lucide-react";
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   mccormickCrankPinSvg,
@@ -11,9 +11,12 @@ import {
   stepMcCormickReaper,
 } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const groundSpeedMph = params.forwardSpeedMph ?? params.groundSpeedMph ?? 2.5;
   const reaper = stepMcCormickReaper({ forwardSpeedMph: groundSpeedMph });
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -49,24 +52,49 @@ export function McCormickReaperSim() {
             McCormick Reaper Motion Transmission (US X8277)
           </h3>
           <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Interactive 2D host estimate from the printed wheel, gear, and pulley dimensions; not a
-            measured field-performance simulation.
+            Mechanical reaper: ground wheel drive, gear transmission, reciprocating sickle bar, and
+            revolving grain divider reel.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
             aria-label={isPlaying ? "Pause Simulation" : "Play Simulation"}
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isPlaying ? "Pause Simulation" : "Play Simulation"}
           >
-            <Play className={`w-4 h-4 ${isPlaying ? "text-amber-600" : ""}`} />
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
           </button>
           <button
             type="button"
-            onClick={resetParams}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsPlaying(true);
+              soundEngine.playSwitchClick();
+            }}
             aria-label="Reset Simulation"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
             <RotateCcw className="w-4 h-4" />
           </button>

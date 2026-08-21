@@ -1,15 +1,17 @@
 "use client";
 
-import { AlertCircle, Lightbulb } from "lucide-react";
+import { AlertCircle, Lightbulb, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { MaterialCard } from "@/components/patents/MaterialCard";
 import { blackbodyRgb } from "@/physics/blackbody";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function EdisonBulbSim() {
-  const { params, updateParam } = usePatentPhysics("us-223898-edison-lightbulb");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-223898-edison-lightbulb");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const voltage = params.voltage ?? 110;
   const [resistanceMode, setResistanceMode] = useState<"high-resistance" | "low-resistance">(
     "high-resistance",
@@ -44,12 +46,12 @@ export function EdisonBulbSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-amber-500" />
             <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Edison High-Resistance Incandescent Lamp Simulator (US 223,898)
+              Thomas Edison High-Resistance Incandescent Lamp (US 223,898)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
@@ -58,20 +60,48 @@ export function EdisonBulbSim() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setIsVacuumIntact(!isVacuumIntact);
-            soundEngine.playSwitchClick();
-          }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
-            isVacuumIntact
-              ? "bg-emerald-600 text-white border-emerald-700"
-              : "bg-red-600 text-white border-red-700 animate-bounce"
-          }`}
-        >
-          {isVacuumIntact ? "✓ Sprengel Vacuum (10⁻⁶ atm)" : "✗ Air Leak (Atmospheric O₂)"}
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={() => {
+              setIsVacuumIntact(!isVacuumIntact);
+              soundEngine.playSwitchClick();
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-colors border shadow-sm ${
+              isVacuumIntact
+                ? "bg-emerald-600 text-white border-emerald-700"
+                : "bg-red-600 text-white border-red-700 animate-bounce"
+            }`}
+          >
+            {isVacuumIntact ? "✓ Vacuum Intact" : "✗ Vacuum Leak"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setIsVacuumIntact(true);
+              setResistanceMode("high-resistance");
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Visual Canvas and Comparative Circuit */}

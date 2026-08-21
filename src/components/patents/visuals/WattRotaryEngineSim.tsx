@@ -1,12 +1,26 @@
 "use client";
 
-import { Activity, Cog, Flame, Gauge, Play, RotateCw } from "lucide-react";
+import {
+  Activity,
+  Cog,
+  Flame,
+  Gauge,
+  Pause,
+  Play,
+  RotateCcw,
+  RotateCw,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function WattRotaryEngineSim() {
-  const { params, updateParam } = usePatentPhysics("gb-1306-watt-rotary-engine");
+  const { params, updateParam, resetParams } = usePatentPhysics("gb-1306-watt-rotary-engine");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const [activeTab, setActiveTab] = useState<
     "engine-elevation" | "gear-mesh" | "alternative-methods"
@@ -74,37 +88,67 @@ export function WattRotaryEngineSim() {
   const sunAngleDeg = telemetry.sunShaftAngleDeg;
 
   return (
-    <div className="w-full bg-[#0d1117] border border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-stone-200">
+    <div className="w-full bg-parchment-50 dark:bg-[#0d1117] border border-parchment-300 dark:border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-ink-900 dark:text-stone-200">
       {/* Header & Subtitle */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-amber-900/30 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-amber-900/30 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 font-semibold">
               GB 1306 (1781)
             </span>
-            <h3 className="text-lg font-bold text-amber-100 font-serif">
+            <h3 className="text-lg font-bold text-ink-950 dark:text-amber-100 font-serif">
               James Watt Sun &amp; Planet Epicyclic Rotative Engine
             </h3>
           </div>
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
             Authentic 2:1 speed multiplication, planetary tooth mesh, and continuous rotative shaft
             drive
           </p>
         </div>
 
-        {/* Play/Pause & View Tabs */}
-        <div className="flex items-center gap-2">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
-              isPlaying
-                ? "bg-amber-600/20 border-amber-500/40 text-amber-200 hover:bg-amber-600/30"
-                : "bg-emerald-600/20 border-emerald-500/40 text-emerald-200 hover:bg-emerald-600/30"
-            }`}
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isPlaying ? "Pause Motion" : "Resume Motion"}
+            aria-label={isPlaying ? "Pause Motion" : "Resume Motion"}
           >
-            <Play className={`w-3.5 h-3.5 ${isPlaying ? "text-amber-400" : "text-emerald-400"}`} />
-            <span>{isPlaying ? "Pause Motion" : "Resume Motion"}</span>
+            {isPlaying ? (
+              <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setTime(0);
+              setIsPlaying(true);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

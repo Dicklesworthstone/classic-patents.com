@@ -1,9 +1,12 @@
 "use client";
 
+import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepKilbyIntegratedCircuit } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface KilbySimProps {
   className?: string;
@@ -11,7 +14,10 @@ interface KilbySimProps {
 
 export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className = "" }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { params, updateParam } = usePatentPhysics("us-3138743-kilby-integrated-circuit");
+  const { params, updateParam, resetParams } = usePatentPhysics(
+    "us-3138743-kilby-integrated-circuit",
+  );
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const [activeCircuitMode, setActiveCircuitMode] = useState<"flipflop" | "oscillator">("flipflop");
   const [clockState, setClockState] = useState<boolean>(false);

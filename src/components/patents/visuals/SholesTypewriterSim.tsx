@@ -1,12 +1,15 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
+import { Keyboard, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
 import { sholesTypebarPose, stepSholesTypewriter } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function SholesTypewriterSim() {
   const { params, resetParams, updateParam } = usePatentPhysics("us-79265-sholes-typewriter");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [typedMarks, setTypedMarks] = useState<string>("••••••••");
   const [activeKeyIndex, setActiveKeyIndex] = useState<number>(0);
 
@@ -15,6 +18,7 @@ export function SholesTypewriterSim() {
 
   const handleKeyPress = (keyNumber: number) => {
     setActiveKeyIndex(keyNumber - 1);
+    soundEngine.playSwitchClick();
     if (typedMarks.length < 28) {
       setTypedMarks((previous) => `${previous}•`);
     }
@@ -24,24 +28,40 @@ export function SholesTypewriterSim() {
     <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Type-Writing Machine Mechanism Study (US 79,265)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
-            Source-constrained diagram of the key, radial type-bar, ratchet, carriage, and
-            inking-ribbon relationship
+          <div className="flex items-center gap-2">
+            <Keyboard className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Christopher Latham Sholes Type-Writer Mechanism Study (US 79,265)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
+            Radial type-bar kinematics, escapement carriage feed, and inked ribbon impression.
           </p>
         </div>
         <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
             onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
               setTypedMarks("");
               setActiveKeyIndex(0);
               resetParams();
+              soundEngine.playSwitchClick();
             }}
             aria-label="Clear diagrammatic type marks"
             className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
             <RotateCcw className="w-4 h-4" />
           </button>

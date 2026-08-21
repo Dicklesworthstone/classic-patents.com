@@ -1,13 +1,17 @@
 "use client";
 
+import { Cog, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
 
 export function ArkwrightWaterFrameSim() {
-  const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
+  const { params, updateParam, resetParams } = usePatentPhysics(EXHIBIT_ID);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const waterWheelRpm = params.waterWheelRpm ?? ARKWRIGHT_DEFAULT_CONTROLS.waterWheelRpm;
   const totalDraftRatio = params.totalDraftRatio ?? ARKWRIGHT_DEFAULT_CONTROLS.totalDraftRatio;
   const rollerClampingWeightKg =
@@ -62,51 +66,80 @@ export function ArkwrightWaterFrameSim() {
   const traverseOffset = Math.sin(traversePhase) * 18;
 
   return (
-    <div className="w-full bg-stone-900/95 border border-stone-800 rounded-2xl p-6 text-stone-200 shadow-2xl backdrop-blur-xl">
+    <div className="w-full bg-parchment-50 dark:bg-stone-900/95 border border-parchment-300 dark:border-stone-800 rounded-2xl p-4 sm:p-6 text-ink-900 dark:text-stone-200 shadow-md backdrop-blur-xl transition-colors">
       {/* Header & Mode Badge */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-stone-800">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-parchment-200 dark:border-stone-800">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-xs font-mono font-semibold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-              GB 931 (1769)
-            </span>
-            <span className="text-xs font-mono text-stone-400">
-              Differential Roller Drafting &amp; High-Speed Flyer Twisting
-            </span>
+            <Cog className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-stone-100">
+              Richard Arkwright Water Frame Spinning Simulator (GB 931)
+            </h3>
           </div>
-          <h3 className="text-xl font-bold text-stone-100 mt-1">
-            Arkwright Water Frame Spinning Simulator
-          </h3>
+          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
+            Differential roller drafting (draw zones), weighted top-roller clamping, and high-speed
+            flyer twisting.
+          </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-stone-950/80 p-1.5 rounded-xl border border-stone-800">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          <div className="flex items-center gap-1.5 bg-parchment-200 dark:bg-stone-950/80 p-1.5 rounded-xl border border-parchment-300 dark:border-stone-800 text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                updateParam("totalDraftRatio", 6.0);
+                updateParam("rollerClampingWeightKg", 3.5);
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                (controls.totalDraftRatio ?? 6.0) >= 4.0
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-ink-600 dark:text-stone-400 hover:text-ink-900 dark:hover:text-stone-200"
+              }`}
+            >
+              Arkwright Frame (Warp)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                updateParam("totalDraftRatio", 2.5);
+                updateParam("rollerClampingWeightKg", 0.8);
+                soundEngine.playSwitchClick();
+              }}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                (controls.totalDraftRatio ?? 6.0) < 4.0
+                  ? "bg-amber-600 text-white shadow-sm"
+                  : "text-ink-600 dark:text-stone-400 hover:text-ink-900 dark:hover:text-stone-200"
+              }`}
+            >
+              Manual Jenny Mode
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => {
-              updateParam("totalDraftRatio", 6.0);
-              updateParam("rollerClampingWeightKg", 3.5);
+              toggleSound();
+              soundEngine.playSwitchClick();
             }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              (controls.totalDraftRatio ?? 6.0) >= 4.0
-                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-900/30"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            Arkwright Frame (Warp Twist)
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={() => {
-              updateParam("totalDraftRatio", 2.5);
-              updateParam("rollerClampingWeightKg", 0.8);
+              resetParams();
+              setAnimTime(0);
+              soundEngine.playSwitchClick();
             }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              (controls.totalDraftRatio ?? 6.0) < 4.0
-                ? "bg-amber-600 text-white shadow-lg shadow-amber-900/30"
-                : "text-stone-400 hover:text-stone-200"
-            }`}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            Low-Draft Manual Jenny Mode
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>

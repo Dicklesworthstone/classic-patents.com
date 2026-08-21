@@ -1,12 +1,15 @@
 "use client";
 
-import { Cpu } from "lucide-react";
+import { Cpu, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { bardeenHoleStream, stepBardeenTransistor } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function BardeenTransistorSim() {
-  const { params, updateParam } = usePatentPhysics("us-2524035-bardeen-transistor");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2524035-bardeen-transistor");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const emitterCurrentMa = params.emitterCurrent ?? 1.5;
   const collectorVoltageV = Math.abs(params.collectorBias ?? -40);
   const pointSpacingMicrons = params.pointSpacing ?? 50;
@@ -24,7 +27,7 @@ export function BardeenTransistorSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
             <Cpu className="w-6 h-6 text-emerald-500 animate-pulse" />
@@ -38,10 +41,34 @@ export function BardeenTransistorSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
           <div className="px-3.5 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 text-xs sm:text-sm font-mono font-bold border border-emerald-300 dark:border-emerald-800 shadow-2xs">
-            +{powerGainDb} dB Power Gain (Solid-State)
+            +{powerGainDb} dB Gain
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 

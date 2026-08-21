@@ -1,13 +1,16 @@
 "use client";
 
-import { Play, Scissors } from "lucide-react";
+import { Pause, Play, RotateCcw, Scissors, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { howeStitch, stepHoweLockstitch, stepHoweSewingMachine } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function HoweSewingMachineSim() {
-  const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-4750-howe-sewing-machine");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const sewingSpeedRpm = params.crankRpm ?? 240;
@@ -44,7 +47,7 @@ export function HoweSewingMachineSim() {
   return (
     <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
             <Scissors className="w-6 h-6 text-amber-600 dark:text-amber-400" />
@@ -58,18 +61,48 @@ export function HoweSewingMachineSim() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             type="button"
-            onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-mono font-bold transition-colors border shadow-sm ${
+            onClick={() => {
+              setIsPlaying(!isPlaying);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-2 rounded-lg transition-colors border shadow-sm ${
               isPlaying
-                ? "bg-amber-600 text-white border-amber-700 animate-pulse"
+                ? "bg-amber-600 text-white border-amber-700"
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
             }`}
+            title={isPlaying ? "Pause Mechanism" : "Run Mechanism"}
+            aria-label={isPlaying ? "Pause Mechanism" : "Run Mechanism"}
           >
-            <Play className="w-4 h-4" />
-            <span>{isPlaying ? "Pause Mechanism" : "Run Mechanism"}</span>
+            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              setCrankAngleDeg(120);
+              setIsPlaying(false);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
