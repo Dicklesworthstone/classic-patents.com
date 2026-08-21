@@ -1,12 +1,14 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 import { createYaleLockModel } from "./yaleLockModel";
 
 type CameraPreset = "iso" | "cutaway" | "keyway" | "top";
@@ -42,6 +44,7 @@ export function YaleLock3D({
   const [useAuthorizedKey, setUseAuthorizedKey] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("iso");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -107,50 +110,30 @@ export function YaleLock3D({
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <button
-              type="button"
-              onClick={() => handlePresetChange("iso")}
-              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                cameraPreset === "iso"
-                  ? "bg-amber-600 text-white shadow-xs font-semibold"
-                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              Isometric
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("cutaway")}
-              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                cameraPreset === "cutaway"
-                  ? "bg-amber-600 text-white shadow-xs font-semibold"
-                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              Cutaway Side
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("top")}
-              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                cameraPreset === "top"
-                  ? "bg-amber-600 text-white shadow-xs font-semibold"
-                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              Top Shear
-            </button>
-            <button
-              type="button"
-              onClick={() => handlePresetChange("keyway")}
-              className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
-                cameraPreset === "keyway"
-                  ? "bg-amber-600 text-white shadow-xs font-semibold"
-                  : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-              }`}
-            >
-              Keyway Face
-            </button>
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["cutaway", "Cutaway Side"],
+                ["top", "Top Shear"],
+                ["keyway", "Keyway Face"],
+              ] as const
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => handlePresetChange(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  cameraPreset === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
@@ -158,7 +141,10 @@ export function YaleLock3D({
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
-            onClick={() => setUseAuthorizedKey(!useAuthorizedKey)}
+            onClick={() => {
+              setUseAuthorizedKey(!useAuthorizedKey);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               useAuthorizedKey
                 ? "bg-emerald-700 text-white border-emerald-800 shadow-md ring-2 ring-emerald-500/30 dark:bg-emerald-600"
@@ -171,7 +157,10 @@ export function YaleLock3D({
           <button
             type="button"
             disabled={!yaleState.isUnlocked}
-            onClick={() => setIsRotating(!isRotating)}
+            onClick={() => {
+              setIsRotating(!isRotating);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               yaleState.isUnlocked
                 ? isRotating
@@ -181,6 +170,19 @@ export function YaleLock3D({
             }`}
           >
             {isRotating ? "Return (0°)" : "Turn Key (90°)"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </button>
 
           <button
@@ -201,10 +203,10 @@ export function YaleLock3D({
             aria-label="Reset camera view"
             type="button"
             onClick={() => handlePresetChange("iso")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
