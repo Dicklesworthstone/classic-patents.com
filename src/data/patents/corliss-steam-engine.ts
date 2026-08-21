@@ -1,6 +1,17 @@
 import type { Patent } from "@/types/patent";
 import { corlissSteamEngineArchivalEdition } from "../editions/corlissSteamEngineEdition";
 
+/** Keep catalogue claim decoders tied to the single authored source face. */
+function manualClaimText(number: number): string {
+  const block = corlissSteamEngineArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Corliss manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 export const corlissSteamEnginePatent: Patent = {
   id: "us-6162-corliss-steam-engine",
   patentNumber: "US 6,162",
@@ -12,8 +23,8 @@ export const corlissSteamEnginePatent: Patent = {
   grantDate: "1849-03-10",
   // Neither the reviewed grant nor the primary public record supplies a filing date.
   filingDate: null,
-  era: "Early Republic & Industrial Dawn (1790–1830)",
-  category: "materials",
+  era: "Industrial Dawn (1840–1870)",
+  category: "consumer",
   categoryLabel: "Thermodynamics & Steam Power",
   summary:
     "US 6,162 describes a tension-braced beam-engine frame, a rock shaft whose arms give unequal travel to paired slide valves, and a centrifugal governor that releases the steam-valve catches earlier as speed rises. The local facsimile is dated March 10, 1849 and records reissue No. 200 on May 13, 1851.",
@@ -45,49 +56,41 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
     overview:
       "Before George Corliss, steam engines were throttled: a governor opened or choked a narrow neck valve in the steam pipe, wasting immense energy in friction and lowering steam pressure before it even entered the cylinder. Corliss realized that the only thermodynamic way to run an engine efficiently was to admit steam at full boiler pressure and temperature, then snap the valve shut partway through the stroke, letting the trapped steam expand adiabatically like a compressed spring to push the piston.",
     coreMechanism:
-      "Corliss placed four independent rotary valves at the corners of the cylinder—two at the top for high-pressure steam admission and two at the bottom for exhaust, eliminating thermal cross-contamination and dead clearance volume. A central oscillating 'wrist-plate' rocks back and forth via an eccentric rod from the crankshaft. As the wrist-plate opens a steam valve, a catch-hook latches onto the valve arm. A centrifugal flyball governor continuously adjusts the height of a tripping wedge. When the catch-hook hits the wedge, it unlatches in a fraction of a millisecond, and a vacuum air-cushioned dashpot slams the valve shut. If the factory load increases, the governor lets the valve stay open longer; if load drops, the governor trips cutoff earlier ($10\\%\\text{ of stroke}$), maintaining perfectly constant engine speed.",
+      "The specification describes paired steam and exhaust slide valves, each driven from a common rock shaft by a separate arm or crank wrist. The wrists are phased so the valve that is opening or closing receives the greatest longitudinal motion while the valve that remains closed moves near its dead point, reducing the work needed to move a pressure-loaded valve. For cut-off, a centrifugal governor raises a sliding rod carrying cams; those cams meet projections on the valve rods sooner at higher speed, release catches, and allow weights to close the steam valves so the trapped steam expands for the rest of the stroke. A small air cylinder and piston cushions the closing motion.",
     mechanicalBreakdown: [
       {
-        title: "Four-Valve Corner Geometry & Oscillating Plugs",
-        summary: "Two top admission and two bottom exhaust rotary valves.",
-        technicalDetails:
-          "Four cylindrical oscillating valve plugs seated in transverse bores directly at the cylinder ends. This reduced parasitic clearance volume from $>10\\%$ to $<2.5\\%$ and kept cold exhaust steam ($100^\\circ\\text{C}$) separated from hot intake steam ($170^\\circ\\text{C}$), eliminating cylinder wall condensation losses.",
-        archaicTerm: "Four separate oscillating cylindrical valves",
-        modernEquivalent: "Corliss rotary oscillatory valves & multi-port heads",
-      },
-      {
-        title: "Central Oscillating Wrist-Plate Linkage",
-        summary: "Centrally mounted rocker plate creating non-linear dwell kinematics.",
-        technicalDetails:
-          "A disk pivoted at the cylinder center driven in harmonic oscillation by an eccentric. The link pin layout provides a non-linear toggle action: valves open rapidly when the link is near dead center, but dwell with near-zero motion when closed, reducing valve seat wear.",
-        archaicTerm: "Oscillating wrist-plate or rocker disk",
-        modernEquivalent: "Rotary kinematic wrist-plate distributor",
-      },
-      {
-        title: "Governor-Regulated Variable Trip Cut-Off & Dashpot",
-        summary: "Catch-hook unlatched by governor wedges; closed by vacuum dashpot.",
-        technicalDetails:
-          "The flyball governor adjusts the angular position of a trip cam. When released, an air dashpot with a vacuum cylinder pulls the valve closed in $<15\\text{ milliseconds}$. A bottom air-bleed needle valve provides a viscous air cushion that stops the valve without mechanical shock ($b_{\\text{damping}} = \\frac{\\Delta P A_{\\text{piston}}}{\\dot{x}}$).",
-        archaicTerm: "Catch-hook trip mechanism and pneumatic dashpot",
-        modernEquivalent: "Pneumatic dashpot trip-cutoff valve gear",
-      },
-      {
-        title: "Pneumatic Vacuum Dashpot & Compression Snubber",
+        title: "Tension-braced beam-engine frame",
         summary:
-          "Dual-chamber springless actuator slamming valves shut and providing hydraulic cushioning.",
+          "Diagonal tension braces stiffen the frame carrying the beam and crank-shaft bearings.",
         technicalDetails:
-          "A vertical cylinder containing a close-fitting bronze plunger. The upper chamber pulls a high vacuum ($P < 20\\text{ kPa}$) during valve opening to supply rapid closing acceleration, while the lower chamber compresses entrapped air through an adjustable needle orifice to cushion the final $5\\text{ mm}$ of travel without seat bounce.",
-        archaicTerm: "Air-cushion dash-pot or closing cylinder",
-        modernEquivalent: "Pneumatic vacuum return actuator & air snubber",
+          "The bed, horizontal beams, vertical standards, working-beam shaft, and crank-shaft boxes are tied together by diagonal rods tightened with nuts. Corliss's stated load path puts the upward-stroke forces through one set of braces and the return-stroke support through the standards and beams held in tension, reducing frame working and the resulting shaft damage.",
+        archaicTerm: "working or yielding of the frame",
+        modernEquivalent: "preloaded braced machine frame",
       },
       {
-        title: "Steam-Jacketed Cylinder Casting & Corner Ports",
-        summary:
-          "Double-walled iron jacket maintaining cylinder temperature and isolating thermal domains.",
+        title: "Differential rock-shaft valve motion",
+        summary: "Separate rock-shaft arms give different useful travel to the paired valves.",
         technicalDetails:
-          "Live boiler steam circulates through an outer annular jacket ($t = 25\\text{ mm}$) encasing the working cylinder, keeping the inner iron walls above saturation temperature ($T_{\\text{wall}} \\approx 175^\\circ\\text{C}$). Independent short corner ports reduce internal clearance volume to $<2.0\\%$, minimizing wasted re-compression work.",
-        archaicTerm: "Steam-casing or jacket surrounding the cylinder",
-        modernEquivalent: "Steam-jacketed cylinder barrel & low-clearance porting",
+          "The two crank wrists are set about a quarter-circle apart. During equal rock-shaft rotation, one connecting rod is in the high-motion part of its arc while the other is near the dead point. In modern kinematic terms, the design deliberately makes the two valve displacements unequal without changing the rock shaft's angular range.",
+        archaicTerm: "rock shaft / crank wrist",
+        modernEquivalent: "phase-offset common actuator",
+      },
+      {
+        title: "Governor-released steam cut-off",
+        summary:
+          "Centrifugal motion shifts cams that release the steam-valve catches earlier or later.",
+        technicalDetails:
+          "A rack and catch temporarily transmit rock-shaft motion to each steam valve. A projection on the valve rod meets a governor-controlled cam and releases that catch. Because the governor raises the cam rod when the engine runs too fast, release occurs earlier and the admission interval is shortened; when the governor is down, the cams clear the rods and the valves can take a full stroke.",
+        archaicTerm: "cut off / catch",
+        modernEquivalent: "variable-expansion trip mechanism",
+      },
+      {
+        title: "Air-cylinder closing cushion",
+        summary: "A small air cylinder and piston cushion the released valve's closing motion.",
+        technicalDetails:
+          "When the catch is released, a weighted lever closes the steam valve. Near the end of that travel, the air cylinder attached to the valve rods embraces a piston fixed to the frame; compressing the air supplies the buffer that prevents slamming and the resulting breakage.",
+        archaicTerm: "air cylinder and piston for checking the motions",
+        modernEquivalent: "pneumatic end-of-stroke damper",
       },
     ],
     scientificPrinciples: [
@@ -110,25 +113,24 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
         formula:
           "\\eta = \\frac{W_{\\text{net}}}{Q_{\\text{in}}} = 1 - \\frac{h_{\\text{exhaust}} - h_{\\text{condensate}}}{h_{\\text{boiler}} - h_{\\text{feedwater}}}",
         explanation:
-          "Admitting steam at full boiler pressure without throttling avoids irreversible throttling entropy generation ($\\Delta s_{\\text{throttle}} = -R \\ln(P_2/P_1)$), increasing overall thermal efficiency by $30\\text{ to }40\\%$.",
+          "The source's cut-off arrangement admits steam and then closes the valve so the trapped charge can continue the stroke by expansion. The formula is a modern engineering description of the boundary work; the patent does not claim a measured efficiency increase or a particular percentage.",
       },
       {
         principle: "Wall Condensation Irreversibility & Heat Transfer Barrier",
         formula:
           "\\dot{Q}_{\\text{loss}} = h_{\\text{film}} A_{\\text{wall}} (T_{\\text{steam}} - T_{\\text{wall}}), \\quad m_{\\text{condensed}} = \\frac{\\dot{Q}_{\\text{loss}} \\Delta t}{h_{fg}}",
         explanation:
-          "Separating cold exhaust passage routes from hot intake ports prevents cyclic cooling of cylinder head surfaces, eliminating initial condensation where up to 40% of fresh boiler steam would otherwise liquefy uselessly on cold iron.",
+          "The patent describes separate steam and exhaust valves above and below the cylinder and focuses its claims on their motion and cut-off linkage. It does not provide a measured condensation percentage, so this card stays at the level of the source's mechanical arrangement.",
       },
     ],
     whyItMattersToday:
-      "Corliss's principle of variable valve timing and unthrottled expansion is the direct ancestor of modern automotive variable valve timing (VTEC, VANOS, MultiAir) and electronic fuel injection cutoff. The massive 1,400-horsepower Centennial Corliss Engine powered all 8,000 machines at the 1876 World's Fair in Philadelphia, becoming the defining physical icon of the American Industrial Century.",
+      "Corliss's source-grounded contribution is a mechanical pattern still recognizable in later valve gear: use a common actuator with deliberately phased linkages, then let a speed-sensitive trip change the admission interval rather than merely choking the inlet. The historical record for this catalogue entry should be read alongside the facsimile and provenance receipt; this page does not turn later Corliss engines or modern valve-timing systems into claims of the 1849 grant.",
   },
   claims: [
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The method, substantially as described, of operating the slide valves of steam engines by connecting the valves that govern the ports at opposite ends of the cylinder, with separate arms of the rock shaft, or the mechanical equivalents thereof, so that from the motion thereof the valve that keeps its port or ports closed shall move over a less space while its port or ports is closed than the one that is opening or closing its port, or ports, and vice versa, while at the same time the two arms by which they are operated have the same range of motion, as described, whereby I am enabled to save much of the power heretofore required to work the slide valves of steam engines, and by which also I am enabled to give a greater range of motion to the valves at the periods of opening and closing the ports to facilitate the induction and eduction of steam, as specified.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 covers the differential-motion arrangement: separate arms on one rock shaft operate opposite-end slide valves, but the closed valve receives less travel while it stays shut. The opening or closing valve receives more travel even though both arms swing through the same range, reducing force spent moving a pressure-loaded closed valve while keeping port events rapid.",
       keyInnovations: [
@@ -142,8 +144,7 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "And lastly I claim the method of regulating the motion of steam engines by means of the centrifugal regulator by combining the said regulator with the catches that liberate the steam valves by means of movable cams or stops, substantially as described.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 covers speed regulation by combining the centrifugal governor with the catches that release the admission valves, using movable cams or stops. When speed changes, the governor changes when the catch releases, thereby changing the point of steam cut-off.",
       keyInnovations: ["Centrifugal regulator", "Valve-release catches", "Movable cams or stops"],
@@ -200,33 +201,19 @@ Be it known that I, GEORGE H. CORLISS, of the city and county of Providence and 
   ],
   historicalContext: {
     problemStatement:
-      "In the 1840s, factory steam engines were notoriously fuel-inefficient, burning cords of wood or tons of expensive coal because throttle governors choked the steam flow, reducing the pressure and thermodynamic availability of the steam before it reached the piston.",
+      "Corliss frames the problem as mechanical: a beam-engine frame that works or yields under changing forces can contribute to shaft breakage, while paired slide valves impose frictional work even when one valve is closed under steam pressure.",
     priorArtLimitations: [
-      "Watt throttle governors placed a restrictor valve in the steam pipe, causing massive thermodynamic throttling irreversibilities.",
-      "Slide valves forced hot fresh steam and cold wet exhaust through the same passages, chilling the cylinder walls and causing severe condensation.",
-      "Fixed cutoff gears could not adapt to changing machine shop loads, causing engine speed to surge and sag.",
+      "The specification says the paired valves move over the same extent of surface, even though one must remain closed while the other opens or closes.",
+      "The source describes earlier cam devices as noisy and liable to derangement, without asserting that every prior device had the same construction.",
+      "A governor-controlled cam can alter the point at which a catch releases the steam valve, but the patent does not quantify a particular speed or cut-off percentage.",
     ],
     breakthroughInsight:
-      "Corliss recognized that the governor should not control *how much* the steam valve opened, but *how long* it stayed open before being snapped shut by a vacuum dashpot, ensuring that all steam entered at maximum boiler pressure and expanded cleanly.",
-    patentWars: [
-      {
-        rivalName: "Zachariah Allen and Sickels",
-        rivalClaim:
-          "Frederick Sickels patented a drop cut-off in 1842; Allen claimed prior art on variable expansion gearing.",
-        conflictDetails:
-          "Corliss was sued for patent infringement by Sickels. Corliss vigorously defended his design in federal court, demonstrating that Sickels used poppet valves with lifting cams, whereas Corliss invented a complete system of four rotary oscillating valves integrated with a central wrist-plate and governor tripping cams.",
-        resolution:
-          "The courts ruled in Corliss's favor, recognizing his combination as a distinct and superior mechanical system. Corliss's business model was revolutionary: he offered to install his engines for free in textile mills in exchange for the cost of the coal saved over five years, earning massive fortunes as fuel bills dropped by $35\\%$ to $50\\%$.",
-        legalOutcome:
-          "Upheld Corliss's patents as the standard for high-efficiency stationary steam power.",
-      },
-    ],
+      "The invention combines a preloaded frame, phase-offset rock-shaft arms, and a governor-controlled catch release. The claim language is narrower than a general claim to rotary valves, a vacuum dashpot, or every form of steam-engine speed control.",
+    patentWars: [],
     civilizationalImpact:
-      "Corliss engines powered New England textile mills, water pumping stations, and industrial factories worldwide. In 1876, the monumental 700-ton Corliss Centennial Engine was started by President Ulysses S. Grant and Emperor Dom Pedro II of Brazil to open the Centennial Exposition, powering the entire 13-acre Machinery Hall.",
-    funFact:
-      "When Corliss offered to replace the steam engine at the James Steam Mills in Newburyport, Massachusetts, the mill owners were skeptical. Corliss offered to provide his engine for either $7,100 cash or the value of all coal saved over five years. The owners chose the savings option; Corliss earned nearly $20,000 in fuel savings checks!",
+      "The source records an attempt to make stationary beam engines more durable and economical to operate by controlling frame strain, valve travel, and steam admission. Broader claims about later Corliss installations belong in separately sourced historical context, not in this patent's literal source face.",
     aftermath:
-      "George Corliss received the Rumford Medal from the American Academy of Arts and Sciences in 1870 and the Montyon Prize from the Institute of France. The Corliss Steam Engine Company in Providence, Rhode Island, grew into the largest engine manufacturing plant in the world.",
+      "The local facsimile also records the 1851 reissue number and the later `[FIRST PRINTED 1913.]` notice. No additional legal outcome is asserted here without a separately reviewed primary source.",
   },
   tags: [
     "George Corliss",
