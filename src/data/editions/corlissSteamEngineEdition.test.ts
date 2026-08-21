@@ -38,9 +38,7 @@ describe("corlissSteamEngineArchivalEdition", () => {
         (candidate) => candidate.kind === "claim" && candidate.number === claim.number,
       );
       expect(authoredClaim?.kind).toBe("claim");
-      expect(claim.originalText).toBe(
-        authoredClaim?.inlines.map((inline) => inline.text).join(""),
-      );
+      expect(claim.originalText).toBe(authoredClaim?.inlines.map((inline) => inline.text).join(""));
     }
   });
 
