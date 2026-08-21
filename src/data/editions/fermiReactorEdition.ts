@@ -1,5 +1,6 @@
 import type {
   CuratedSpecificationBlock,
+  CuratedSpecificationEdition,
   CuratedSpecificationInline,
   CuratedSpecificationInlines,
 } from "@/types/patent";
