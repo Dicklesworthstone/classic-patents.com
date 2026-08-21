@@ -405,6 +405,15 @@ export const fessendenWirelessPatent: Patent = {
           x: 50,
           y: 50,
         },
+        {
+          id: "fw-7-rod",
+          figureRef: "Fig. 4",
+          label: "7",
+          element: "Supporting-Rod",
+          description: "Supporting-rod 7 passing through the hub or central socket 6.",
+          x: 50,
+          y: 70,
+        },
       ],
     },
     {

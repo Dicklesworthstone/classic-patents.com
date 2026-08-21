@@ -10,7 +10,7 @@
  * 3. Generic nozzle and distributing-box arrangement shown in the source drawing.
  * 4. Source-described water stream and twin split discharge paths.
  *
- * The grant supplies no casing, bearing, tailrace, material, head, speed, or
+ * The grant supplies no casing, bearing, runoff basin, material, head, speed, or
  * bucket count. Those are deliberately absent rather than inferred from a
  * modern Pelton turbine.
  */
@@ -291,7 +291,7 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
 
   // --- 4. SOURCE ARRANGEMENT ---
   // Keep the group for the separately drawn nozzle/manifold arrangement. The
-  // patent does not show or claim a surrounding casing, bearings, or tailrace.
+  // patent does not show or claim a surrounding casing, bearings, or runoff basin.
   const sourceArrangementGroup = new THREE.Group();
   rootGroup.add(sourceArrangementGroup);
   sourceArrangementGroup.add(nozzleGroup);

@@ -119,13 +119,11 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(sens?.derivativeUnit).toContain("HP / PSI");
     });
 
-    test("computes Pelton wheel hydraulic power sensitivity ∂P/∂H", () => {
-      const sens = computeParameterSensitivity("us-233692-pelton-wheel", "waterHeadM", {
+    test("does not fabricate a Pelton sensitivity beyond the three-sheet source", () => {
+      const sens = computeParameterSensitivity("us-233692-pelton-water-wheel", "waterHeadM", {
         flowRateLps: 45.0,
       });
-      expect(sens).not.toBeNull();
-      expect(sens?.derivativeValue).toBeGreaterThan(0.3);
-      expect(sens?.derivativeUnit).toContain("kW / m");
+      expect(sens).toBeNull();
     });
 
     test("computes Otto engine Carnot thermal efficiency sensitivity ∂η/∂r", () => {
@@ -179,14 +177,21 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.isConservative).toBe(true);
     });
 
-    test("computes hydraulic power and kinetic storage for Pelton wheel", () => {
-      const ledger = computePortHamiltonianEnergy("us-233692-pelton-wheel", {
+    test("does not fabricate a Pelton energy ledger beyond the three-sheet source", () => {
+      const ledger = computePortHamiltonianEnergy("us-233692-pelton-water-wheel", {
         waterHeadM: 150.0,
         flowRateLps: 45.0,
         wheelRpm: 320.0,
       });
-      expect(ledger.energy.kineticJoules).toBeGreaterThan(5000);
-      expect(ledger.inputPowerWatts).toBeGreaterThan(50000);
+      expect(ledger.energy).toEqual({
+        kineticJoules: 0,
+        potentialJoules: 0,
+        electromagneticJoules: 0,
+        thermalJoules: 0,
+        totalHamiltonianJoules: 0,
+      });
+      expect(ledger.inputPowerWatts).toBe(0);
+      expect(ledger.dissipatedPowerWatts).toBe(0);
       expect(ledger.isConservative).toBe(true);
     });
 

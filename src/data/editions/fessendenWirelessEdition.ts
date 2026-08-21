@@ -271,7 +271,7 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
     ),
     p(
       text(
-        "In the experiments heretofore made in wireless transmission of energy, as in telegraphy, relatively high frequencies, of the order of two million (2,000,000) periods or more per second, have been used. It is impossible to produce or utilize mechanical movements directly by the interaction of a constant or independently-varying magnetic field and a current induced by electromagnetic waves of such high periodicities, because the element to be moved, as the diaphragm of a telephone, is incapable of such rapid vibrations or the vibrations are too rapid to be utilized. In order to utilize directly the interaction between currents produced by electromagnetic waves and a constant or independently-varying magnetic field to produce motion in one of two members of a receiving instrument, one member thereof consisting of a constant or independently-varying magnetic field, the sending-conductor is so constructed that its capacity or self-induction, or both, are large compared with the value of the aerial wire commonly used in the art and are distributed with practical uniformity along the conductor from or near its top to a point at or near the instrument. By increasing the capacity or self-induction the frequency of the electric oscillations in the conductors, and consequently of the waves generated, is made sufficiently low to produce utilizable motion in the instrument. Low frequency means low relative to the frequency hitherto used in wireless telegraphy.",
+        "In the experiments heretofore made in wireless transmission of energy, as in telegraphy, relatively high frequencies, of the order of two million (2,000,000) periods or more per second, have been used. It is impossible to produce or utilize mechanical movements directly by the interaction of a constant or independently-varying magnetic field and a current induced by electromagnetic waves of such high periodicities, because the element to be moved, as the diaphragm of a telephone, is incapable of such rapid vibrations or the vibrations are too rapid to be utilized. In order to utilize directly the interaction between currents produced by electromagnetic waves and a constant or independently-varying magnetic field to produce motion in one of two members of a receiving instrument, one member thereof consisting of a constant or independently-varying magnetic field, the sending-conductor is so constructed that its capacity or self-induction, or both, are large compared with the value of the aerial wire commonly used in the art and are distributed with practical uniformity along the conductor from or near its top to a point at or near the instrument. By thus increasing the capacity and self-induction of either of them the frequency of the electric oscillations in the conductors, and consequently of the waves generated, will be sufficiently low to produce utilizable motion in the instrument. By low frequency is meant low relative to the frequency hitherto used in wireless telegraphy.",
       ),
     ),
     p(
@@ -393,7 +393,7 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
         "The contact point is adjusted normally out of contact with the fine wire; vibration of the wire makes and breaks the secondary circuit, allowing a local battery to energize a relay or another translating device.",
       ),
       text(
-        ", which is normally out of contact with the wire 12. A circuit including a battery 15 and relay 16, or another translating device, is formed in part by the contact 14 and wire 12, so that whenever the secondary circuit is completed by vibration of the wire the relay is energized.",
+        ", which is adjusted normally out of contact with the wire 12. A circuit including a battery 15 and relay 16, or another translating device, is formed in part by the contact 14 and wire 12, so that whenever the secondary circuit is completed by vibration of the wire the relay is energized.",
       ),
     ),
     p(
@@ -434,19 +434,20 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       ),
     ),
     p(
+      text("By the term "),
       _term(
         "electromagnetic waves",
         "Here the phrase means waves whose wavelength is long compared with the wavelength of what are commonly called heat-waves or radiant heat; it is a source-defined period distinction, not a modern communications-band label.",
       ),
       text(
-        " are waves of a wave length long in comparison with the wave length of what are commonly called heat-waves or radiant heat. By a ",
+        ' as used herein is meant waves of a wave length long in comparison with the wave length of what are commonly called "heat-waves" or "radiant heat." By "',
       ),
       _term(
         "grounded conductor",
         "A grounded conductor is connected to earth directly or through capacity, inductance, or resistance, so current flows through the conductor to ground and back when electromagnetic waves are generated.",
       ),
       text(
-        " is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance. The terms ",
+        '" is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance, so that the current in the conductor flows through the conductor to ground, and vice versa, when electromagnetic waves are generated. The terms ',
       ),
       _term(
         "tuned and resonant",

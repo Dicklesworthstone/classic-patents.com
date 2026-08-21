@@ -181,7 +181,7 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(content).toContain("REGINALD A. FESSENDEN");
     expect(content).toContain("WIRELESS TELEGRAPHY");
     expect(content).toContain("CLω²=1");
-    expect(content).toContain("REGINALD A. FESSENDEN.");
+    expect(content).toContain("REGINALD A. FESSENDEN,");
     expect(content).toContain("W. B. FEARING,");
     expect(content).toContain("S. C. GRAY.");
   });
@@ -301,7 +301,7 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     );
     expect(editionText).toContain("which is adjusted normally out of contact with the wire 12");
     expect(editionText).toContain(
-      "grounded conductor is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance, so that the current in the conductor flows through the conductor to ground, and vice versa",
+      'grounded conductor" is meant a conductor grounded either directly or through a capacity, an inductance, or a resistance, so that the current in the conductor flows through the conductor to ground, and vice versa',
     );
   });
 
@@ -398,7 +398,7 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(page7).toContain("13. A sending-conductor for electromagnetic waves");
     expect(page7).toContain("21. A system for transmission of energy by electromagnetic waves");
     expect(page7).toContain("In testimony whereof I have hereunto set my hand.");
-    expect(page7).toContain("REGINALD A. FESSENDEN.");
+    expect(page7).toContain("REGINALD A. FESSENDEN,");
     expect(page7).toContain("W. B. FEARING,");
     expect(page7).toContain("S. C. GRAY.");
 
