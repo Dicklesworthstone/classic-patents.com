@@ -1,10 +1,10 @@
-"use client";
-
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createBoyleSmithCcdModel } from "./boyleSmithCcdModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -108,7 +108,14 @@ export function BoyleSmithCcd3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Boyle &amp; Smith Charge Coupled Device 3D</div>
+      <PortHamiltonianEnergyStrip
+        patentId="us-3858232-boyle-smith-ccd"
+        params={{
+          gateVoltageV: gateVoltage,
+          clockFrequencyMhz: clockFreq,
+        }}
+      />
+      <div className="sr-only">Willard Boyle & George Smith Charge-Coupled Device 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -246,63 +253,47 @@ export function BoyleSmithCcd3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Gate Transfer Voltage
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {gateVoltage} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="5"
-              max="20"
-              step="1"
-              value={gateVoltage}
-              onChange={(e) => updateParam("gateVoltageV", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="gateVoltage"
+            patentId="us-3858232-boyle-smith-ccd"
+            paramKey="reverseBias"
+            label="Gate Potential"
+            value={gateVoltage}
+            min={5}
+            max={20}
+            step={1}
+            unit="V"
+            onChange={(val) => updateParam("gateVoltageV", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Clock Frequency</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {clockFreq.toFixed(1)} MHz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.5"
-              value={clockFreq}
-              onChange={(e) => updateParam("clockFrequencyMhz", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="clockFrequency"
+            patentId="us-3858232-boyle-smith-ccd"
+            paramKey="clockFrequencyMhz"
+            label="Clock Frequency"
+            value={clockFreq}
+            min={1}
+            max={20}
+            step={0.5}
+            unit="MHz"
+            onChange={(val) => updateParam("clockFrequencyMhz", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Incident Illumination
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {incidentLux} lux
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="1000"
-              step="25"
-              value={incidentLux}
-              onChange={(e) => updateParam("incidentLux", Number.parseFloat(e.target.value))}
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="incidentLux"
+            patentId="us-3858232-boyle-smith-ccd"
+            paramKey="incidentLux"
+            label="Incident Illumination"
+            value={incidentLux}
+            min={10}
+            max={1000}
+            step={25}
+            unit="lux"
+            onChange={(val) => updateParam("incidentLux", val)}
+            allParams={params}
+          />
         </div>
       </div>
 

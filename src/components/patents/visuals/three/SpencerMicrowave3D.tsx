@@ -1,5 +1,6 @@
-import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -336,7 +337,7 @@ export function SpencerMicrowave3D() {
             max={4000}
             step={50}
             unit="V"
-            onChange={(val) => updateParam("anodeVoltage", val)}
+            onChange={(val: number) => updateParam("anodeVoltage", val)}
             allParams={params}
           />
 
@@ -350,7 +351,7 @@ export function SpencerMicrowave3D() {
             max={2500}
             step={25}
             unit="G"
-            onChange={(val) => updateParam("magneticFieldGauss", val)}
+            onChange={(val: number) => updateParam("magneticFieldGauss", val)}
             allParams={params}
           />
 
@@ -364,7 +365,7 @@ export function SpencerMicrowave3D() {
             max={1500}
             step={50}
             unit="W"
-            onChange={(val) => updateParam("rfPowerSetting", val)}
+            onChange={(val: number) => updateParam("rfPowerSetting", val)}
             allParams={params}
           />
         </div>
