@@ -38,6 +38,31 @@ comparison.
 | PDF p. 7 | Completion of the parallel-strip example, broad-aspect non-limitation, and claims 1–7 were checked. |
 | PDF p. 8 | Claims 7–10 and the four United States references cited in the patent file were checked. |
 
+## Figure-preview source crop map
+
+The source previews below were rendered directly from the pinned PDF at 300
+dpi and cropped without rotation, retouching, masking, or signature removal.
+The older preview files remain preserved beside these versioned replacements.
+
+| Literal figure reference | PDF page | Source-pixel rectangle (left, top, width, height) | Published preview |
+| --- | --- | --- | --- |
+| Fig. 1 | 1 | `420, 570, 1500, 1250` | `fig-1-source-crop-v2.png` |
+| Fig. 2 | 1 | `500, 1900, 1340, 660` | `fig-2-source-crop-v2.png` |
+| Fig. 3 | 2 | `430, 570, 1500, 950` | `fig-3-source-crop-v3.png` |
+| Fig. 4 | 2 | `350, 1450, 1700, 570` | `fig-4-source-crop-v3.png` |
+| Fig. 5, left source panel | 2 | `400, 2150, 950, 650` | `fig-5-source-crop-v2-left.png` |
+| Fig. 5, right source panel | 2 | `1250, 2150, 800, 460` | `fig-5-source-crop-v2-right.png` |
+| Fig. 6 | 3 | `600, 570, 1200, 880` | `fig-6-source-crop-v2.png` |
+| Fig. 7 | 3 | `600, 1650, 1100, 800` | `fig-7-source-crop-v2.png` |
+
+Fig. 5 is deliberately two adjacent source panels. Its printed `FIG. 5`
+caption shares the drawing-sheet band with the inventor and attorney
+signatures, while its rightmost circuit symbols extend toward that band. A
+single rectangular crop would either hide a source feature or include a
+signature. The two panels retain only the actual source pixels for the labeled
+left circuit and its right-side continuation; no pixels were erased,
+reconstructed, or supplied by a different figure.
+
 ## Editorial boundaries
 
 - `src/data/editions/noyceIcEdition.ts` is the visitor-facing source edition.

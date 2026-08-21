@@ -17,21 +17,42 @@ const term = (value: string, definition: string): CuratedSpecificationInline => 
   definition,
 });
 
-const crop = (number: number, width: number, height: number, version: "v1" | "v2" = "v1") => ({
+const crop = (
+  number: number,
+  width: number,
+  height: number,
+  version: string = "v1",
+  alt: string = `Source-facsimile crop of Fig. ${number} from US 2,981,877.`,
+) => ({
   src: `/patents/figures/us-2981877-noyce-ic/fig-${number}-source-crop-${version}.png`,
-  alt: `Source-facsimile crop of Fig. ${number} from US 2,981,877.`,
+  alt,
   width,
   height,
 });
 
 const FIGURES = {
-  "Fig. 1": crop(1, 820, 760),
-  "Fig. 2": crop(2, 880, 470),
-  "Fig. 3": crop(3, 1300, 680, "v2"),
-  "Fig. 4": crop(4, 1800, 650, "v2"),
-  "Fig. 5": crop(5, 920, 440),
-  "Fig. 6": crop(6, 780, 600),
-  "Fig. 7": crop(7, 780, 510),
+  "Fig. 1": [crop(1, 1500, 1250, "v2")],
+  "Fig. 2": [crop(2, 1340, 660, "v2")],
+  "Fig. 3": [crop(3, 1500, 950, "v3")],
+  "Fig. 4": [crop(4, 1700, 570, "v3")],
+  "Fig. 5": [
+    crop(
+      5,
+      950,
+      650,
+      "v2-left",
+      "Left source panel of Fig. 5 from US 2,981,877, including the printed figure label and input circuit.",
+    ),
+    crop(
+      5,
+      800,
+      460,
+      "v2-right",
+      "Right source panel of Fig. 5 from US 2,981,877, including the transistor, load, supply, and ground symbols.",
+    ),
+  ],
+  "Fig. 6": [crop(6, 1200, 880, "v2")],
+  "Fig. 7": [crop(7, 1100, 800, "v2")],
 } as const;
 
 const figure = (
@@ -43,7 +64,7 @@ const figure = (
   href: "#",
   referenceType: "figure",
   label: `Open the source-facsimile crop for ${label} in US 2,981,877`,
-  figurePreviews: [FIGURES[label]],
+  figurePreviews: FIGURES[label],
 });
 
 const claim = (number: number, value: string) => ({
@@ -93,7 +114,10 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 6"),
         { kind: "text", text: " and " },
         figure("Fig. 7"),
-        { kind: "text", text: ". Every preview is cropped directly from the pinned facsimile." },
+        {
+          kind: "text",
+          text: ". Every preview is cropped directly from the pinned facsimile. Fig. 5 is presented as two adjacent source panels because its printed caption shares a sheet band with the inventor and attorney signatures; no signature pixels are included.",
+        },
       ],
     },
     p(
