@@ -1,12 +1,15 @@
 "use client";
 
-import { Ship } from "lucide-react";
+import { RotateCcw, Ship, Volume2, VolumeX } from "lucide-react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function LincolnBuoySim() {
-  const { params, updateParam } = usePatentPhysics("us-6469-lincoln-buoy");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-6469-lincoln-buoy");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const bellowsExpansionPercent = params.inflationPct ?? 75;
   const vesselCargoTons = params.weightTons ?? 380;
   const riverDepthFeet = params.shoalDepth ?? 3.5;
@@ -24,34 +27,58 @@ export function LincolnBuoySim() {
   const buoyantLiftTons = lincoln.liftTons;
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <Ship className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-            <h3 className="font-serif text-2xl font-bold text-ink-950 dark:text-parchment-50">
-              Abraham Lincoln&apos;s Steamboat Buoyancy Simulator (US 6,469)
+          <div className="flex items-center gap-2">
+            <Ship className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-950 dark:text-parchment-50">
+              Abraham Lincoln Steamboat Buoyancy Bellows (US 6,469)
             </h3>
           </div>
-          <p className="text-sm sm:text-base text-ink-700 dark:text-ink-300 mt-1">
-            Simulate steam-driven expandable side bellows displacing water to lift riverboats over
-            shallow Mississippi sandbars.
+          <p className="text-xs sm:text-sm text-ink-600 dark:text-ink-400 mt-1">
+            Steam-driven expandable side bellows displacing water to lift riverboats over shallow
+            Mississippi sandbars.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           <div
-            className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-mono font-bold border shadow-2xs ${
+            className={`px-3 py-1 rounded-lg text-xs font-mono font-bold border shadow-xs ${
               isGrounded
                 ? "bg-red-100 text-red-800 border-red-300 dark:bg-red-950 dark:text-red-300 dark:border-red-800 animate-pulse"
                 : "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800"
             }`}
           >
             {isGrounded
-              ? `GROUNDED ON SANDBAR (${Math.abs(clearanceFeet).toFixed(1)} ft mud strike)`
-              : `FLOATING CLEAR (+${clearanceFeet.toFixed(1)} ft clearance)`}
+              ? `GROUNDED (${Math.abs(clearanceFeet).toFixed(1)} ft mud strike)`
+              : `FLOATING (+${clearanceFeet.toFixed(1)} ft clearance)`}
           </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              resetParams();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
