@@ -41,8 +41,6 @@ import {
   mccormickSchematicSickleX,
   morseSchematicInstrument,
   nobelSchematicKieselguhr,
-  pasteurSchematicBubbleX,
-  pasteurSchematicYeast,
   peltonSchematicBucket,
   spencerSchematicCavity,
   stepBardeenTransistor,
@@ -71,8 +69,6 @@ import {
   stepMorseTelegraph,
   stepNobelDynamite,
   stepOttoEngine,
-  stepParsonsTurbine,
-  stepPasteurFermentation,
   stepPeltonWheel,
   stepSpencerMicrowave,
   stepThomsonWelding,
@@ -86,6 +82,7 @@ import {
   zeppelinSchematicGondola,
 } from "@/physics/catalogKernels";
 import { FrankenSimEngine, lamarrSchematicHop, lamarrSchematicStaffY } from "@/physics/engine";
+import { stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { fermiSchematicSlug, stepFermiKinetics } from "@/physics/fermiKinetics";
 import {
   ccdSchematicGateX,
@@ -203,6 +200,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/hyatt|celluloid|105338|105,338/, "hyatt-celluloid"],
   [/gramme|dynamo|120057|120,057/, "gramme-dynamo"],
   [/westinghouse|air[- ]brake|124404|124,404/, "westinghouse-air-brake"],
+  [/pasteur-fermentation-fig-2/, "pasteur-fermentation-fig-2"],
   [/pasteur|fermentation|135245|135,245/, "pasteur-fermentation"],
   [/glidden|barbed[- ]wire|157124|157,124/, "glidden-barbed-wire"],
   [/otto|194047|194,047/, "otto-engine"],
@@ -217,7 +215,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/hollerith|tabulating|395781|395,781/, "hollerith-tabulating"],
   [/reno|escalator|470918|470,918/, "reno-escalator"],
   [/diesel|542846|542,846/, "diesel-engine"],
-  [/parsons|turbine|608969|608,969|328710|328,710/, "parsons-turbine"],
+  [/marine steam[- ]turbine|608969|608,969/, "parsons-turbine"],
   [/teleautomaton|613809|613,809/, "tesla-teleautomaton"],
   [/zeppelin|airship|621195|621,195/, "zeppelin-airship"],
   [/de[- ]?forest|audion|879532|879,532/, "de-forest-audion"],
@@ -264,6 +262,11 @@ function _renderHistoricalSchematic(
       const rasterSkew = pose.rasterSkew;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+          <defs>
+            <marker id="parsons-schematic-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+            </marker>
+          </defs>
           <g
             opacity="0.28"
             transform={`skewX(${rasterSkew})`}
@@ -446,8 +449,8 @@ function _renderHistoricalSchematic(
       const freq = params?.frequency ?? 60;
       const apparatus = stepTeslaMotorFig9(freq);
       const omegaT = ((params?.omegaT ?? 0) * Math.PI) / 180;
-      const live = teslaBAt(omegaT, 2);
-      const strobe = teslaFig4Strobe(2);
+      const live = teslaBAt(omegaT);
+      const strobe = teslaFig4Strobe();
       const whitney = whitneySamples(omegaT);
       const arrow = (bx: number, by: number, len: number, opacity: number, width: number) => {
         const x2 = apparatus.statorCenterX + bx * len;
@@ -2724,58 +2727,17 @@ function _renderHistoricalSchematic(
       );
     }
     case "diesel-engine": {
-      const diesel = FrankenSimEngine.stepDieselEngine({ compressionRatio: 18, engineRpm: 150 });
       return (
-        <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <rect
-            x={diesel.schematicCylinderX}
-            y={diesel.schematicCylinderY}
-            width={diesel.schematicCylinderW}
-            height={diesel.schematicCylinderH}
-            rx="6"
-            stroke="#94a3b8"
-          />
-          <rect
-            x={diesel.schematicInjectorX}
-            y={diesel.schematicInjectorY}
-            width={diesel.schematicInjectorW}
-            height={diesel.schematicInjectorH}
-            rx="3"
-            fill="#fbbf24"
-            stroke="#d97706"
-          />
-          <text x="200" y="10" fill="#fbbf24" fontSize="8" textAnchor="middle">
-            Blast-Air Injector (65 bar)
+        <g stroke="#fbbf24" strokeWidth="1.5" fill="none">
+          <rect x="32" y="38" width="336" height="224" rx="8" stroke="#fbbf24" />
+          <text x="200" y="92" fill="#fbbf24" fontSize="12" textAnchor="middle">
+            Diesel visual held for source review
           </text>
-          <rect
-            x={diesel.schematicPistonX}
-            y={diesel.schematicPistonY}
-            width={diesel.schematicPistonW}
-            height={diesel.schematicPistonH}
-            rx="3"
-            fill="#38bdf8"
-            fillOpacity="0.2"
-            stroke="#38bdf8"
-          />
-          <line
-            x1={diesel.schematicRodX}
-            y1={diesel.schematicRodY0}
-            x2={diesel.schematicRodX}
-            y2={diesel.schematicRodY1}
-            stroke="#e2e8f0"
-            strokeWidth="8"
-            strokeLinecap="round"
-          />
-          {/* Crankshaft */}
-          <circle
-            cx={diesel.schematicFlywheelCx}
-            cy={diesel.schematicFlywheelCy}
-            r={diesel.schematicFlywheelR}
-            stroke="#fbbf24"
-            strokeWidth="2"
-          />
-          <text x="200" y="295" fill="#4ade80" fontSize="9" textAnchor="middle">
-            Adiabatic Compression Ratio 18:1 (680°C)
+          <text x="200" y="124" fill="#e2e8f0" fontSize="9" textAnchor="middle">
+            The grant's process sequence is retained in the archival candidate.
+          </text>
+          <text x="200" y="148" fill="#e2e8f0" fontSize="9" textAnchor="middle">
+            No measured machine state is published on this schematic.
           </text>
         </g>
       );
@@ -3079,8 +3041,18 @@ function _renderHistoricalSchematic(
             fill="#7f1d1d"
             fillOpacity="0.3"
           />
-          <text x="75" y="85" fill="#f87171" fontSize="8" textAnchor="middle">
-            200-Bar Comp
+          <text x="75" y="85" fill="#f87171" fontSize="10" textAnchor="middle">
+            C
+          </text>
+          <text x="75" y="122" fill="#f87171" fontSize="8" textAnchor="middle">
+            compressor
+          </text>
+          <path d="M 110 80 H 145" stroke="#fbbf24" />
+          <text x="128" y="72" fill="#fbbf24" fontSize="9" textAnchor="middle">
+            K
+          </text>
+          <text x="128" y="94" fill="#fbbf24" fontSize="7" textAnchor="middle">
+            refrigerator
           </text>
           {/* Counter-Current Column */}
           <rect
@@ -3098,8 +3070,14 @@ function _renderHistoricalSchematic(
             stroke="#38bdf8"
             strokeDasharray="4 2"
           />
+          <text x="235" y="112" fill="#38bdf8" fontSize="9">
+            G′
+          </text>
           {/* JT Valve & Vacuum Vessel */}
           <polygon points="200,195 190,210 210,210" fill="#fbbf24" stroke="#d97706" />
+          <text x="218" y="201" fill="#fbbf24" fontSize="8">
+            N / R′
+          </text>
           <rect
             x="170"
             y="215"
@@ -3110,11 +3088,21 @@ function _renderHistoricalSchematic(
             fill="#0369a1"
             fillOpacity="0.4"
           />
-          <text x="200" y="240" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Liquid Air (-193°C)
+          <text x="200" y="240" fill="#38bdf8" fontSize="9" textAnchor="middle">
+            V′
           </text>
           <text x="200" y="20" fill="#38bdf8" fontSize="9" textAnchor="middle">
-            Counter-Current Regenerator
+            G′ counter-current apparatus
+          </text>
+          <path d="M 230 235 H 285 V 95" stroke="#a78bfa" strokeDasharray="3 2" />
+          <text x="286" y="90" fill="#a78bfa" fontSize="9">
+            V²
+          </text>
+          <text x="286" y="105" fill="#a78bfa" fontSize="8">
+            S
+          </text>
+          <text x="286" y="120" fill="#a78bfa" fontSize="8">
+            G² / G³
           </text>
         </g>
       );
@@ -3122,7 +3110,7 @@ function _renderHistoricalSchematic(
     case "carrier-air-conditioner": {
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Plenum Chamber */}
+          {/* Carrier source apparatus: spray, wet front, rear gutters, and trap. */}
           <rect
             x="40"
             y="60"
@@ -3133,7 +3121,7 @@ function _renderHistoricalSchematic(
             fill="#0f172a"
             fillOpacity="0.3"
           />
-          {/* Chilled Water Nozzle Sprays */}
+          {/* Fine liquid spray h in casing m. */}
           <line x1="120" y1="70" x2="120" y2="190" stroke="#0284c7" strokeWidth="3" />
           {[90, 120, 150, 180].map((y) => (
             <polygon
@@ -3143,7 +3131,7 @@ function _renderHistoricalSchematic(
               fillOpacity="0.4"
             />
           ))}
-          {/* Zigzag Baffles */}
+          {/* Upright sinuous plates with wet front faces and rear projections. */}
           {[190, 205, 220].map((x) => (
             <polyline
               key={x}
@@ -3152,28 +3140,24 @@ function _renderHistoricalSchematic(
               strokeWidth="2"
             />
           ))}
-          {/* Steam Reheat Coil */}
-          <rect
-            x="270"
-            y="70"
-            width="18"
-            height="120"
-            rx="2"
-            fill="#ef4444"
-            fillOpacity="0.3"
-            stroke="#ef4444"
-          />
+          {[190, 205, 220].map((x) => (
+            <path key={`gutter-${x}`} d={`M ${x + 8} 100 l 14 6 M ${x + 8} 160 l 14 6`} stroke="#fbbf24" />
+          ))}
+          <rect x="300" y="175" width="28" height="22" rx="2" fill="#164e63" stroke="#38bdf8" />
           <text x="120" y="50" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Chilled Spray
+            Fine spray h
           </text>
           <text x="205" y="50" fill="#94a3b8" fontSize="8" textAnchor="middle">
-            Eliminators
+            Wet faces i / bends j
           </text>
-          <text x="280" y="50" fill="#ef4444" fontSize="8" textAnchor="middle">
-            Reheat
+          <text x="295" y="50" fill="#fbbf24" fontSize="8" textAnchor="middle">
+            Rear flanges b / c
           </text>
-          <text x="200" y="225" fill="#4ade80" fontSize="9" textAnchor="middle">
-            Psychrometric Dew-Point Control Cycle
+          <text x="315" y="215" fill="#7dd3fc" fontSize="8" textAnchor="middle">
+            Trap J / filter L
+          </text>
+          <text x="200" y="240" fill="#4ade80" fontSize="9" textAnchor="middle">
+            Wet air washing and sinuous liquid separation
           </text>
         </g>
       );
@@ -4522,60 +4506,95 @@ function _renderHistoricalSchematic(
         </g>
       );
     }
-    case "pasteur-fermentation": {
-      const pasteur = stepPasteurFermentation({
-        pasteurizationTempC: params?.pasteurizationTempC,
-        holdTimeMin: params?.holdTimeMin,
-        wortTempC: params?.wortTempC ?? params?.tempCelsius,
-      });
-      const yeast = pasteurSchematicYeast(
-        pasteur.schematicYeastX,
-        pasteur.schematicYeastY,
-        pasteur.schematicYeastW,
-        pasteur.schematicYeastH,
-      );
+    case "pasteur-fermentation":
+    case "pasteur-fermentation-fig-2": {
+      if (/\b2\b/.test(figureNumber)) {
+        return (
+          <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
+            <path d="M190 45 V78" stroke="#94a3b8" strokeWidth="3" />
+            <path d="M168 92 H212 L198 111 H182Z" fill="#94a3b8" fillOpacity="0.28" />
+            <path d="M120 116 Q190 94 260 116 V226 H120Z" fill="#b58a57" fillOpacity="0.22" stroke="#d6b98c" strokeWidth="2" />
+            <path d="M111 128 H269 M111 226 H269" stroke="#cbd5e1" strokeWidth="7" />
+            <text x="96" y="132" fill="#cbd5e1" fontSize="9">g</text>
+            <text x="275" y="132" fill="#cbd5e1" fontSize="9">g′</text>
+            <text x="96" y="232" fill="#cbd5e1" fontSize="9">g</text>
+            <text x="275" y="232" fill="#cbd5e1" fontSize="9">g′</text>
+            <text x="190" y="177" fill="#fde68a" fontSize="14" textAnchor="middle">B</text>
+            <path d="M190 204 V224" stroke="#94a3b8" strokeWidth="4" />
+            <circle cx="190" cy="207" r="7" fill="#64748b" fillOpacity="0.35" />
+            <text x="204" y="211" fill="#cbd5e1" fontSize="9">R</text>
+            <path d="M132 226 V270 M248 226 V270 M100 270 H286" stroke="#94a3b8" strokeWidth="5" />
+            <path d="M190 96 V121 M174 118 L190 110 L206 118" stroke="#38bdf8" strokeDasharray="3 3" />
+            <text x="190" y="30" fill="#cbd5e1" fontSize="10" textAnchor="middle">Fig. 2 · modified removable-top vessel</text>
+          </g>
+        );
+      }
+      const co2SweepOpacity = 0.12 + Math.min(100, Math.max(0, params?.co2SweepPct ?? 100)) / 130;
+      const sprayOpacity =
+        0.12 + Math.min(100, Math.max(0, params?.sprayCoveragePct ?? 100)) / 130;
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          <path
-            d={pasteur.schematicVesselD}
-            stroke="#38bdf8"
-            fill="#0284c7"
-            fillOpacity="0.15"
-            strokeWidth="2"
-          />
-          <path d={pasteur.schematicSwanD} stroke="#4ade80" strokeWidth="2.5" />
-          <rect
-            x={yeast.x}
-            y={yeast.y}
-            width={yeast.w}
-            height={yeast.h}
-            rx="3"
-            fill="#f59e0b"
-            fillOpacity="0.35"
-            stroke="#d97706"
-          />
-          {Array.from({ length: pasteur.schematicBubbleCount }, (_, i) => (
-            <circle
-              key={i}
-              cx={pasteurSchematicBubbleX(
-                i,
-                pasteur.schematicBubbleOriginX,
-                pasteur.schematicBubblePitchX,
-              )}
-              cy={pasteur.schematicBubbleY}
-              r={pasteur.schematicBubbleR}
-              fill="#38bdf8"
-              fillOpacity="0.5"
-            />
+          <path d="M65 46 H340" stroke="#94a3b8" strokeWidth="5" />
+          <text x="199" y="37" fill="#cbd5e1" fontSize="10" textAnchor="middle">
+            water pipe E
+          </text>
+          <rect x="18" y="92" width="62" height="50" rx="5" fill="#64748b" fillOpacity="0.28" />
+          <text x="49" y="112" fill="#cbd5e1" fontSize="9" textAnchor="middle">
+            M M
+          </text>
+          <text x="49" y="128" fill="#cbd5e1" fontSize="7" textAnchor="middle">
+            gas generator
+          </text>
+          <path d="M80 116 H105 V155" stroke="#60a5fa" strokeWidth="3" />
+          <text x="89" y="108" fill="#60a5fa" fontSize="8">
+            w
+          </text>
+          {[135, 225, 315].map((x) => (
+            <g key={x}>
+              <path
+                d={`M${x - 34} 118 Q${x} 91 ${x + 34} 118 V225 H${x - 34}Z`}
+                fill="#b58a57"
+                fillOpacity="0.22"
+                stroke="#d6b98c"
+                strokeWidth="2"
+              />
+              <text x={x} y="176" fill="#fde68a" fontSize="12" textAnchor="middle">
+                A
+              </text>
+              <path d={`M${x} 46 V90`} stroke="#94a3b8" strokeWidth="3" />
+              <path d={`M${x - 12} 99 H${x + 12} L${x} 116Z`} fill="#94a3b8" />
+              <text x={x + 17} y="103" fill="#cbd5e1" fontSize="8">
+                P
+              </text>
+              {[0, 1, 2, 3, 4].map((drop) => (
+                <circle
+                  key={drop}
+                  cx={x - 16 + drop * 8}
+                  cy={127 + drop * 15}
+                  r="2"
+                  fill="#38bdf8"
+                  fillOpacity={sprayOpacity}
+                />
+              ))}
+              <path d={`M${x - 35} 234 Q${x} 244 ${x + 35} 234`} stroke="#94a3b8" />
+              <text x={x + 29} y="246" fill="#cbd5e1" fontSize="8">
+                g
+              </text>
+            </g>
           ))}
-          <text x="250" y="30" fill="#4ade80" fontSize="8" textAnchor="middle">
-            Sterile Swan-Neck
+          {[114, 132, 150, 168].map((x) => (
+            <circle key={x} cx={x} cy="196" r="2.5" fill="#60a5fa" fillOpacity={co2SweepOpacity} />
+          ))}
+          <path d="M101 180 H90 V232 H65" stroke="#60a5fa" strokeWidth="3" />
+          <rect x="45" y="226" width="22" height="22" rx="3" fill="#38bdf8" fillOpacity="0.25" />
+          <text x="74" y="224" fill="#60a5fa" fontSize="8">
+            x
           </text>
-          <text x="200" y="130" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Anaerobic Fermenter
+          <text x="52" y="241" fill="#cbd5e1" fontSize="8">
+            v
           </text>
-          <text x="200" y="212" fill="#f59e0b" fontSize="8" textAnchor="middle">
-            Pure Yeast Strain Bed
+          <text x="200" y="274" fill="#cbd5e1" fontSize="8" textAnchor="middle">
+            Boil closed → sweep air with CO₂ → spray-cool exterior → add yeast at 20–22.5 °C
           </text>
         </g>
       );
@@ -4782,10 +4801,10 @@ function _renderHistoricalSchematic(
             Acoustic Horn
           </text>
           <text x="190" y="70" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Mica Diaphragm &amp; Stylus
+            Diaphragm &amp; Hard Point
           </text>
           <text x="190" y="205" fill="#fbbf24" fontSize="8" textAnchor="middle">
-            Grooved Brass Cylinder (Tinfoil)
+            Grooved Cylinder A (yielding material)
           </text>
         </g>
       );
@@ -5949,66 +5968,49 @@ function _renderHistoricalSchematic(
       );
     }
     case "parsons-turbine": {
-      const parsons = stepParsonsTurbine({
-        rotorRpm: params?.rotorRpm,
-        inletPressurePsi: params?.inletPressurePsi,
+      const routeIndex = Math.max(0, Math.min(2, Math.round(params?.routeTopology ?? 0)));
+      const routing = ["series", "compound-parallel", "simple-parallel"][routeIndex] as
+        | "series"
+        | "compound-parallel"
+        | "simple-parallel";
+      const marine = stepParsonsMarine({
+        routing,
+        reversing: (params?.reversingTurbineEnabled ?? 0) >= 0.5,
       });
+      const nodePositions: Record<string, [number, number]> = {
+        boiler: [38, 145],
+        A: [108, 90],
+        "A′": [108, 200],
+        B: [170, 90],
+        "B′": [170, 200],
+        C: [232, 90],
+        "C′": [232, 200],
+        D: [294, 90],
+        "D′": [294, 200],
+        X: [210, 55],
+        Y: [270, 235],
+        "condenser E": [360, 145],
+        "condenser G": [360, 95],
+        "condenser H": [360, 195],
+      };
       return (
         <g stroke="#38bdf8" strokeWidth="1.5" fill="none">
-          {/* Stepped Rotor Core */}
-          <polygon
-            points={parsons.schematicRotorPoints}
-            stroke="#94a3b8"
-            fill="#1e293b"
-            fillOpacity="0.3"
-            strokeWidth="2"
-          />
-          {/* Multi-Stage Blade Rings */}
-          {parsons.schematicStageXs.map((x) => (
-            <line
-              key={x}
-              x1={x}
-              y1={parsons.schematicBladeY0}
-              x2={x}
-              y2={parsons.schematicBladeY1}
-              stroke="#38bdf8"
-              strokeWidth="2"
-              strokeDasharray="3 2"
-            />
+          <text x="200" y="18" fill="#fbbf24" fontSize="10" textAnchor="middle">
+            {marine.routeLabel}
+          </text>
+          {marine.routeEdges.map(([from, to]) => {
+            const [x1, y1] = nodePositions[from] ?? [0, 0];
+            const [x2, y2] = nodePositions[to] ?? [0, 0];
+            return <path key={`${from}-${to}`} d={`M ${x1} ${y1} L ${x2} ${y2}`} markerEnd="url(#parsons-schematic-arrow)" />;
+          })}
+          {Object.entries(nodePositions).map(([name, [x, y]]) => (
+            <g key={name}>
+              <circle cx={x} cy={y} r={name === "boiler" || name.startsWith("condenser") ? 15 : 11} fill={name === "X" || name === "Y" ? "#581c87" : "#1e293b"} stroke={name === "boiler" ? "#fbbf24" : "#94a3b8"} />
+              <text x={x} y={y + 3} fill="#f8fafc" fontSize="7" textAnchor="middle">{name}</text>
+            </g>
           ))}
-          {/* Expanding Casing */}
-          <line
-            x1={parsons.schematicCasingX1}
-            y1={parsons.schematicCasingY0}
-            x2={parsons.schematicCasingX2}
-            y2={parsons.schematicCasingY1}
-            stroke="#60a5fa"
-            strokeWidth="2.5"
-          />
-          <line
-            x1={parsons.schematicCasingX1}
-            y1={parsons.schematicCasingY2}
-            x2={parsons.schematicCasingX2}
-            y2={parsons.schematicCasingY3}
-            stroke="#60a5fa"
-            strokeWidth="2.5"
-          />
-          <line
-            x1={parsons.schematicInletX1}
-            y1={parsons.schematicInletY}
-            x2={parsons.schematicInletX2}
-            y2={parsons.schematicInletY}
-            stroke="#fbbf24"
-            strokeWidth="3"
-          />
-          <text x="55" y="130" fill="#fbbf24" fontSize="8" textAnchor="middle">
-            HP Steam In
-          </text>
-          <text x="200" y="50" fill="#38bdf8" fontSize="8" textAnchor="middle">
-            Continuous Axial Expansion
-          </text>
-          <text x="200" y="235" fill="#4ade80" fontSize="8" textAnchor="middle">
-            Stepped Multi-Stage Reaction Rotor
+          <text x="200" y="292" fill={marine.directionLabel === "astern" ? "#e879f9" : "#4ade80"} fontSize="9" textAnchor="middle">
+            {marine.directionLabel.toUpperCase()} · valves select the topology
           </text>
         </g>
       );

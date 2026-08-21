@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
 import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
+import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
 import { whitneyCottonGinPatent } from "@/data/patents/whitney-cotton-gin";
 import type { Patent } from "@/types/patent";
@@ -74,29 +75,33 @@ describe("patent view URL state", () => {
 
 describe("archival publication boundary", () => {
   test("renders only editions with approved explicit paragraph companions", () => {
-    expect(archivalEditionForPublication(lamarrPatent)).toBe(lamarrPatent.archivalEdition);
+    expect(archivalEditionForPublication(goodyearRubberPatent)).toBe(
+      goodyearRubberPatent.archivalEdition,
+    );
+    expect(isArchivalEditionExplicitlyWithheld(lamarrPatent.id)).toBe(true);
+    expect(archivalEditionForPublication(lamarrPatent)).toBeUndefined();
     expect(isArchivalEditionExplicitlyWithheld(whitneyCottonGinPatent.id)).toBe(true);
     expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
     const unmappedPatent: Patent = {
-      ...lamarrPatent,
+      ...goodyearRubberPatent,
       id: "us-unmapped-draft-test",
     };
     expect(archivalEditionForPublication(unmappedPatent)).toBeUndefined();
   });
 
   test("does not make optional reviewed-ledger page anchors a publication condition", () => {
-    const asset = lamarrPatent.originalTextAsset;
+    const asset = goodyearRubberPatent.originalTextAsset;
     if (!asset) {
-      throw new Error("Lamarr publication fixture requires a reviewed source asset.");
+      throw new Error("Goodyear publication fixture requires a reviewed source asset.");
     }
 
     const withoutOptionalPageAnchors: Patent = {
-      ...lamarrPatent,
+      ...goodyearRubberPatent,
       originalTextAsset: { ...asset, pageAnchors: undefined },
     };
 
     expect(archivalEditionForPublication(withoutOptionalPageAnchors)).toBe(
-      lamarrPatent.archivalEdition,
+      goodyearRubberPatent.archivalEdition,
     );
   });
 
@@ -106,7 +111,14 @@ describe("archival publication boundary", () => {
       .map((patent) => patent.id)
       .toSorted();
 
-    expect(releasedIds).toEqual(Object.keys(ARCHIVAL_PARALLEL_READINGS).toSorted());
+    const approvedMappedIds = Object.keys(ARCHIVAL_PARALLEL_READINGS)
+      .filter((patentId) => {
+        const patent = allPatents.find((candidate) => candidate.id === patentId);
+        return Boolean(patent?.archivalEdition) && !isArchivalEditionExplicitlyWithheld(patentId);
+      })
+      .toSorted();
+
+    expect(releasedIds).toEqual(approvedMappedIds);
     expect(releasedIds).not.toHaveLength(0);
   });
 });

@@ -29,12 +29,12 @@ describe("ColorizedEquation Component", () => {
   test("renders Tesla Motor colorized equation with terms and drawer", () => {
     const eq =
       ALL_COLORIZED_EQUATIONS["us-381968-tesla-motor"].find(
-        (e) => e.id === "tesla-stator-bfield",
+        (e) => e.id === "tesla-fig9-pole-shift",
       ) ?? ALL_COLORIZED_EQUATIONS["us-381968-tesla-motor"][0];
     expect(eq).toBeDefined();
 
     const html = renderToString(<ColorizedEquation equation={eq} />);
-    expect(html).toContain("Resultant Magnetic Direction");
+    expect(html).toContain("Figure 9 Progressive Pole Shift");
   });
 
   test("color palette helper produces correct KaTeX color tags", () => {

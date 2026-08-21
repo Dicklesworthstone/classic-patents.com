@@ -463,108 +463,12 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 2. Tesla Electro-Magnetic Motor (US 381,968): source-specific teaching relations
+  // 2. Tesla Electro-Magnetic Motor (US 381,968): source-specific teaching relation
   "us-381968-tesla-motor": [
     {
-      id: "tesla-stator-bfield",
+      id: "tesla-fig9-pole-shift",
       patentId: "us-381968-tesla-motor",
-      title: "Resultant Magnetic Direction in the Two-Circuit Figure 9 Arrangement",
-      category: "Electromagnetics & Induction",
-      rawLatex:
-        "\\vec{B}(t) = B_0 \\left( \\cos(\\omega t)\\,\\hat{i} + \\sin(\\omega t)\\,\\hat{j} \\right)",
-      colorizedLatex:
-        "\\textcolor{#9333ea}{\\vec{B}(t)} = \\textcolor{#0891b2}{B_0} \\left( \\textcolor{#059669}{\\cos(\\omega t)}\\,\\hat{i} + \\textcolor{#d97706}{\\sin(\\omega t)}\\,\\hat{j} \\right)",
-      plainEnglishSentence: [
-        {
-          text: "The ",
-        },
-        {
-          text: "resultant rotating magnetic field vector",
-          variableId: "b_vec",
-        },
-        {
-          text: " maintains constant ",
-        },
-        {
-          text: "peak flux amplitude",
-          variableId: "b_0",
-        },
-        {
-          text: " through the sum of ",
-        },
-        {
-          text: "in-phase horizontal coil flux",
-          variableId: "b_x",
-        },
-        {
-          text: " and ",
-        },
-        {
-          text: "quadrature vertical coil flux",
-          variableId: "b_y",
-        },
-        {
-          text: ".",
-        },
-      ],
-      variables: [
-        {
-          id: "b_vec",
-          symbol: "\\vec{B}(t)",
-          name: "Resultant Rotating Magnetic Field",
-          color: "amethyst",
-          role: "Modern vector shorthand for the resultant magnetic direction formed by the two Fig. 9 motor-coil pairs",
-          unit: "Tesla (T)",
-          dimension: "[M T^-2 I^-1]",
-          explanation:
-            "The source diagrams show two changing generator currents whose magnetizing effects combine. The shorthand describes their resultant direction; the patent itself explains the effect through eight generator positions.",
-          telemetryMetricLabel: "Stator Field (B)",
-        },
-        {
-          id: "b_0",
-          symbol: "B_0",
-          name: "Peak Magnetic Field Strength",
-          color: "cyan",
-          role: "Maximum magnetic flux density produced by stator electromagnet pole windings",
-          unit: "Tesla (T)",
-          dimension: "[M T^-2 I^-1]",
-          explanation:
-            "Determined by the number of coil turns, core magnetic permeability, and excitation current ($B_0 = \\mu N I / g$).",
-        },
-        {
-          id: "b_x",
-          symbol: "\\cos(\\omega t)",
-          name: "Phase-A Horizontal Flux",
-          color: "emerald",
-          role: "Sinusoidal magnetic flux generated across the primary stator pole pair",
-          unit: "Normalized sinusoid [-1, 1]",
-          dimension: "[1]",
-          explanation:
-            "Phase A is energized by AC current $I_A(t) = I_0 \\cos(\\omega t)$, generating a pulsating horizontal field along the x-axis.",
-          telemetryKey: "freqHz",
-        },
-        {
-          id: "b_y",
-          symbol: "\\sin(\\omega t)",
-          name: "Phase-B Quadrature Flux",
-          color: "amber",
-          role: "90-degree phase-shifted magnetic flux along the orthogonal vertical pole pair",
-          unit: "Normalized sinusoid [-1, 1]",
-          dimension: "[1]",
-          explanation:
-            "Phase B is energized 90 degrees out of phase ($I_B(t) = I_0 \\sin(\\omega t)$). The trigonometric identity $\\cos^2(\\omega t) + \\sin^2(\\omega t) = 1$ ensures constant field magnitude and smooth, vibration-free rotation.",
-        },
-      ],
-      pedagogicalNote:
-        "Figure 9 uses insulated collector rings and brushes on the generator to connect corresponding circuits. Tesla's stated distinction is that the motor needs no commutator; Figure 15–16 separately gives an arrangement without sliding contacts.",
-      claimRef: 1,
-      historicalSignificance:
-        "The card isolates the historical idea this grant actually illustrates: independently connected generator and motor circuits can make the motor's points of attraction progress around a ring.",
-    },
-    {
-      id: "tesla-sync-speed",
-      patentId: "us-381968-tesla-motor",
-      title: "Figure 9 Pole Shift per Generator Revolution",
+      title: "Figure 9 Progressive Pole Shift",
       category: "Electromagnetics & Kinematics",
       rawLatex:
         "\\Delta\\theta_{\\mathrm{poles}} = 2\\pi \\quad \\text{per generator revolution in Fig. 9}",
@@ -572,245 +476,51 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
         "\\textcolor{#2563eb}{\\Delta\\theta_{\\mathrm{poles}}} = 2\\pi \\quad \\text{per generator revolution in Fig. 9}",
       plainEnglishSentence: [
         {
-          text: "The ",
+          text: "Tesla's ",
         },
         {
           text: "progressive pole shift",
-          variableId: "omega_s",
+          variableId: "pole_shift_rate",
         },
         {
-          text: " follows the ",
-        },
-        {
-          text: "generator's rotation",
-          variableId: "line_freq",
-        },
-        {
-          text: " once around ring R in the Figure 9 demonstration.",
+          text: " carries the attractive region once around ring R for one generator revolution in the Figure 9 teaching model.",
         },
       ],
       variables: [
         {
-          id: "omega_s",
-          symbol: "\\omega_s",
+          id: "pole_shift_rate",
+          symbol: "\\Delta\\theta_{\\mathrm{poles}}",
           name: "Progressive Pole Shift",
           color: "sapphire",
-          role: "The source-stated once-around shift of the motor's attractive region for one Fig. 9 generator revolution",
-          unit: "one revolution per generator revolution",
-          dimension: "[T^-1]",
+          role: "The source-stated once-around shift of the motor's attractive region for one Figure 9 generator revolution.",
+          unit: "revolutions per generator revolution",
+          dimension: "[1]",
           explanation:
-            "Tesla describes this relation for the illustrated Figure 9 arrangement. It is not a general modern line-frequency speed formula for every motor construction.",
+            "Tesla describes this relation for the illustrated generator and motor. It is not a general speed, slip, torque, current, power, or material-performance formula.",
           telemetryKey: "frequency",
-          telemetryMetricLabel: "Pole shift rate",
+          telemetryMetricLabel: "Pole shift around ring",
         },
         {
-          id: "line_freq",
+          id: "frequency",
           symbol: "f",
           name: "Generator Phase-Cycle Rate",
           color: "emerald",
-          role: "Frequency of alternating current generated by the polyphase dynamo",
-          unit: "Hertz (Hz = s^-1)",
-          dimension: "[T^-1]",
-          explanation:
-            "The visitor control changes a teaching-model rate so the phase sequence can be seen. The patent prints generator geometry and connections, not a modern utility-grid standard.",
-        },
-      ],
-      pedagogicalNote:
-        "Tesla says Figure 9's disk follows the moving points of greatest attraction synchronously with the generator armature under normal working conditions.",
-      claimRef: 1,
-      historicalSignificance:
-        "The figure establishes the patent's source-specific correspondence between generator rotation and a progressive shift of the motor poles.",
-    },
-    {
-      id: "tesla-fig9-disk-following",
-      patentId: "us-381968-tesla-motor",
-      title: "Figure 9 Disk Following the Moving Attractive Region",
-      category: "Electromagnetics & Induction",
-      rawLatex: "\\theta_D \\approx \\theta_{\\mathrm{attraction}}",
-      colorizedLatex:
-        "\\textcolor{#059669}{\\theta_D} \\approx \\textcolor{#2563eb}{\\theta_{\\mathrm{attraction}}}",
-      plainEnglishSentence: [
-        {
-          text: "The ",
-        },
-        {
-          text: "magnetic disk D",
-          variableId: "disk_d",
-        },
-        {
-          text: " follows the ",
-        },
-        {
-          text: "moving points of greatest attraction",
-          variableId: "attraction_points",
-        },
-        {
-          text: " in Tesla's Figure 9 explanation.",
-        },
-      ],
-      variables: [
-        {
-          id: "disk_d",
-          symbol: "\\theta_D",
-          name: "Magnetic Disk D Position",
-          color: "crimson",
-          role: "Angular position of the free magnetic disk mounted inside ring R in Figure 9",
-          unit: "radians (rad)",
-          dimension: "[1]",
-          explanation:
-            "Tesla says the disk tends to take the position that embraces the greatest possible number of magnetic lines and follows the moving attractive region.",
-          telemetryMetricLabel: "Disk D relation",
-        },
-        {
-          id: "attraction_points",
-          symbol: "\\theta_{\\mathrm{attraction}}",
-          name: "Moving Attractive Region",
-          color: "amber",
-          role: "Position of the ring's strongest resultant attraction as the corresponding generator currents change",
-          unit: "radians (rad)",
-          dimension: "[1]",
-          explanation:
-            "The teaching model uses this source relation for the Fig. 9 apparatus. It does not substitute an unprinted modern torque curve for the patent's mechanism.",
-          telemetryKey: "frequency",
-        },
-      ],
-      pedagogicalNote:
-        "The source describes a disk and moving attraction pattern. The card keeps the historical relation visible without claiming unprinted electrical parameters.",
-      claimRef: 2,
-      historicalSignificance:
-        "It directs attention to the free disk D and the progressive motion of the ring poles that Claims 1 through 4 require the generator-motor combination to produce.",
-    },
-    {
-      id: "tesla-eddy-current-subdivision",
-      patentId: "us-381968-tesla-motor",
-      title: "Core Subdivision & Eddy Current Power Loss",
-      category: "Electromagnetics & Materials",
-      rawLatex:
-        "P_{\\text{eddy}} = \\frac{\\pi^2 \\cdot d^2 \\cdot B_{\\text{max}}^2 \\cdot f^2}{6 \\cdot \\rho_{\\text{Fe}} \\cdot D}",
-      colorizedLatex:
-        "\\textcolor{#dc2626}{P_{\\text{eddy}}} = \\frac{\\pi^2 \\cdot \\textcolor{#2563eb}{d^2} \\cdot \\textcolor{#9333ea}{B_{\\text{max}}^2} \\cdot \\textcolor{#059669}{f^2}}{6 \\cdot \\textcolor{#0891b2}{\\rho_{\\text{Fe}}} \\cdot \\textcolor{#d97706}{D}}",
-      plainEnglishSentence: [
-        {
-          text: "The parasitic ",
-        },
-        {
-          text: "eddy current thermal power loss",
-          variableId: "p_eddy",
-        },
-        {
-          text: " in the iron core scales with the square of ",
-        },
-        {
-          text: "lamination sheet thickness",
-          variableId: "lam_thick",
-        },
-        {
-          text: ", square of ",
-        },
-        {
-          text: "peak magnetic flux density",
-          variableId: "b_peak",
-        },
-        {
-          text: ", and square of ",
-        },
-        {
-          text: "electrical frequency",
-          variableId: "freq",
-        },
-        {
-          text: ", inversely proportional to ",
-        },
-        {
-          text: "iron electrical resistivity",
-          variableId: "rho_fe",
-        },
-        {
-          text: " and ",
-        },
-        {
-          text: "mass density",
-          variableId: "density_fe",
-        },
-        {
-          text: ".",
-        },
-      ],
-      variables: [
-        {
-          id: "p_eddy",
-          symbol: "P_{\\text{eddy}}",
-          name: "Specific Eddy Current Loss",
-          color: "crimson",
-          role: "Heat energy wasted by circulating parasitic currents induced within the magnetic iron core",
-          unit: "Watts per kilogram (W/kg)",
-          dimension: "[L^2 T^-3]",
-          explanation:
-            "Alternating magnetic flux induces miniature circulating vortex currents in solid iron that waste power as resistive Joule heat ($I^2 R$).",
-        },
-        {
-          id: "lam_thick",
-          symbol: "d",
-          name: "Lamination Sheet Thickness",
-          color: "sapphire",
-          role: "Thickness of individual insulated iron plates forming the subdivided core",
-          unit: "meters (m, typically 0.35 to 0.5 mm in modern silicon steel)",
-          dimension: "[L]",
-          explanation:
-            "For a given material and field waveform, thinner insulated subdivisions shorten the circulating-current paths. The numerical relation is a modern teaching relation, not a performance figure printed in US 381,968.",
-        },
-        {
-          id: "b_peak",
-          symbol: "B_{\\text{max}}",
-          name: "Peak Core Magnetic Flux Density",
-          color: "amethyst",
-          role: "Maximum magnetic operating point in the core before magnetic saturation",
-          unit: "Tesla (T, typically 1.2 to 1.6 T)",
-          dimension: "[M T^-2 I^-1]",
-          explanation:
-            "Higher flux density enables more compact motors, but losses grow with $B_{\\text{max}}^2$.",
-        },
-        {
-          id: "freq",
-          symbol: "f",
-          name: "Operating Alternating Frequency",
-          color: "emerald",
-          role: "Rate of magnetic reversal per second",
+          role: "The visitor-controlled teaching rate used to make the source's successive current positions visible.",
           unit: "Hertz (Hz)",
           dimension: "[T^-1]",
           explanation:
-            "Losses increase quadratically with frequency ($f^2$), making core lamination essential at 60 Hz.",
-        },
-        {
-          id: "rho_fe",
-          symbol: "\\rho_{\\text{Fe}}",
-          name: "Core Electrical Resistivity",
-          color: "cyan",
-          role: "Electrical resistance of the ferromagnetic alloy to circulating eddy currents",
-          unit: "\\Omega \\cdot \\text{m}",
-          dimension: "[M L^3 T^-3 I^-2]",
-          explanation:
-            "Tesla's Fig. 10 text calls for a drum-armature core split up as far as practicable to prevent circulating induction currents. Later electrical-steel compositions are outside this patent's stated construction.",
-        },
-        {
-          id: "density_fe",
-          symbol: "D",
-          name: "Iron Mass Density",
-          color: "amber",
-          role: "Mass density of the ferromagnetic core material",
-          unit: "kg/m^3 (~7850 kg/m^3)",
-          dimension: "[M L^-3]",
-          explanation: "Converts volumetric loss to specific power loss per unit mass.",
+            "The grant supplies generator geometry, circuits, and successive positions; it does not supply a modern utility-grid frequency.",
+          telemetryKey: "frequency",
+          telemetryMetricLabel: "Generator rotation",
         },
       ],
       pedagogicalNote:
-        "In the Fig. 10 discussion, Tesla says the drum-armature core should be split up as far as practicable to prevent circulating induction currents. This card explains that stated construction with a later engineering loss relation; it does not attribute the universal laminated-core practice to this grant.",
+        "The card keeps the equation tied to Tesla's Figure 9 statement: corresponding generator circuits progressively shift the ring poles, and disk D follows the moving points of greatest attraction.",
       claimRef: 1,
       historicalSignificance:
-        "The passage records a practical concern about circulating induction currents in the illustrated drum armature. The grant does not supply a before-and-after motor-efficiency measurement.",
+        "This is the source-specific correspondence between generator rotation and progressive motion of the motor's poles. The separate Figure 13 three-coil arrangement is described in the edition but is not silently merged into Figure 9.",
     },
   ],
-
   // 3. Edison Light Bulb (US 223,898)
   "us-223898-edison-lightbulb": [
     {
@@ -6066,343 +5776,37 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   // 19. Rudolf Diesel Internal Combustion Engine (US 542,846)
   "_legacy-unpublished-us-542846-diesel-engine": [
     {
-      id: "diesel-carnot-ideal-efficiency",
+      id: "diesel-source-process-hold",
       patentId: "us-542846-diesel-engine",
-      title: "Diesel Carnot Cycle Thermodynamic Efficiency",
-      category: "Thermodynamics & Heat Engines",
-      rawLatex: "\\eta_{\\text{Carnot}} = 1 - \\frac{T_C}{T_H} = 1 - \\frac{1}{r^{\\gamma - 1}}",
-      colorizedLatex:
-        "\\textcolor{#059669}{\\eta_{\\text{Carnot}}} = 1 - \\frac{\\textcolor{#0891b2}{T_C}}{\\textcolor{#dc2626}{T_H}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r^{\\gamma - 1}}}",
-      plainEnglishSentence: [
-        {
-          text: "The ",
-        },
-        {
-          text: "theoretical maximum thermal efficiency",
-          variableId: "eta_carnot",
-        },
-        {
-          text: " is determined by the ratio of ",
-        },
-        {
-          text: "cold exhaust temperature",
-          variableId: "t_cold",
-        },
-        {
-          text: " to ",
-        },
-        {
-          text: "peak hot combustion temperature",
-          variableId: "t_hot",
-        },
-        {
-          text: ", scaling with ",
-        },
-        {
-          text: "adiabatic compression ratio",
-          variableId: "comp_ratio",
-        },
-        {
-          text: ".",
-        },
-      ],
-      variables: [
-        {
-          id: "eta_carnot",
-          symbol: "\\eta_{\\text{Carnot}}",
-          name: "Maximum Thermodynamic Thermal Efficiency",
-          color: "emerald",
-          role: "Upper theoretical limit of heat energy conversion into mechanical shaft work",
-          unit: "Dimensionless percentage (%)",
-          dimension: "[1]",
-          explanation:
-            "Diesel designed his engine specifically to approach the Carnot limit by raising compression temperature above fuel ignition threshold without premature knocking.",
-          telemetryMetricLabel: "Thermal Efficiency",
-        },
-        {
-          id: "t_cold",
-          symbol: "T_C",
-          name: "Cold Reservoir / Ambient Intake Temperature",
-          color: "cyan",
-          role: "Temperature of intake air inducted into the working cylinder ($300\\text{ K} = 27^\\circ\\text{C}$)",
-          unit: "Kelvin (K)",
-          dimension: "[Theta]",
-          explanation:
-            "Lower ambient temperature increases air density and thermodynamic expansion delta.",
-        },
-        {
-          id: "t_hot",
-          symbol: "T_H",
-          name: "Peak Combustion Temperature",
-          color: "crimson",
-          role: "Maximum gas temperature during progressive constant-pressure fuel burning ($1800\\text{ K} - 2200\\text{ K}$)",
-          unit: "Kelvin (K)",
-          dimension: "[Theta]",
-          explanation:
-            "Controlled by progressive fuel injection rate so peak temperature does not cause dissociation or mechanical failure.",
-        },
-        {
-          id: "comp_ratio",
-          symbol: "r",
-          name: "Volumetric Compression Ratio",
-          color: "sapphire",
-          role: "Ratio of maximum cylinder volume at bottom dead center to minimum clearance volume at top dead center ($V_1 / V_2 = 14:1\\text{ to }22:1$)",
-          unit: "Dimensionless ratio",
-          dimension: "[1]",
-          explanation:
-            "High compression ($r=18:1$) produces over $40\\text{ bar}$ pressure, heating air to $>900\\text{ K}$ for instant auto-ignition.",
-          telemetryKey: "compressionRatio",
-        },
-      ],
-      pedagogicalNote:
-        "Steam engines converted barely 10% of coal energy to work. Rudolf Diesel proved that compressing pure air to 40+ atmospheres eliminated spark plugs and doubled thermal efficiency to 42%.",
-      claimRef: 1,
-      historicalSignificance:
-        "Created the primary power source for global maritime shipping, heavy rail freight, long-haul trucking, and electrical generation.",
-    },
-    {
-      id: "diesel-compression-ignition-temp",
-      patentId: "us-542846-diesel-engine",
-      title: "Adiabatic Compression Auto-Ignition Temperature",
-      category: "Thermodynamics & Gas Dynamics",
-      rawLatex: "T_2 = T_1 \\cdot r^{\\gamma - 1}",
-      colorizedLatex:
-        "\\textcolor{#dc2626}{T_2} = \\textcolor{#0891b2}{T_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}",
-      plainEnglishSentence: [
-        {
-          text: "The ",
-        },
-        {
-          text: "top dead center compressed air temperature",
-          variableId: "t_comp",
-        },
-        {
-          text: " equals ",
-        },
-        {
-          text: "ambient intake air temperature",
-          variableId: "t_ambient",
-        },
-        {
-          text: " multiplied by ",
-        },
-        {
-          text: "compression ratio",
-          variableId: "r_ratio",
-        },
-        {
-          text: " raised to the power of ",
-        },
-        {
-          text: "specific heat ratio minus one",
-          variableId: "gamma_poly",
-        },
-        {
-          text: ".",
-        },
-      ],
-      variables: [
-        {
-          id: "t_comp",
-          symbol: "T_2",
-          name: "Compression Temperature at Top Dead Center",
-          color: "crimson",
-          role: "Peak air temperature achieved entirely by mechanical work of piston compression ($~953\\text{ K} = 680^\\circ\\text{C}$)",
-          unit: "Kelvin (K)",
-          dimension: "[Theta]",
-          explanation:
-            "Far exceeds the auto-ignition temperature of heavy petroleum oil ($~210^\\circ\\text{C}$), ensuring instantaneous spontaneous combustion upon fuel atomization.",
-          telemetryMetricLabel: "TDC Temperature",
-        },
-        {
-          id: "t_ambient",
-          symbol: "T_1",
-          name: "Intake Air Temperature",
-          color: "cyan",
-          role: "Initial ambient temperature of fresh air inducted on the downward intake stroke ($300\\text{ K}$)",
-          unit: "Kelvin (K)",
-          dimension: "[Theta]",
-          explanation:
-            "Diesel engines draw in pure air rather than an explosive fuel-air vapor, eliminating pre-ignition knock.",
-        },
-        {
-          id: "r_ratio",
-          symbol: "r",
-          name: "Compression Ratio",
-          color: "sapphire",
-          role: "Volumetric ratio of cylinder displacement ($V_1 / V_2 = 18:1$)",
-          unit: "Dimensionless ratio",
-          dimension: "[1]",
-          explanation:
-            "Diesel engines operate at compression ratios 3x higher than gasoline spark-ignition engines.",
-        },
-        {
-          id: "gamma_poly",
-          symbol: "\\gamma",
-          name: "Adiabatic Heat Capacity Ratio",
-          color: "amber",
-          role: "Ratio of specific heat at constant pressure to constant volume ($c_p / c_v = 1.40$ for diatomic air)",
-          unit: "Dimensionless constant (1.40)",
-          dimension: "[1]",
-          explanation:
-            "Governs the steep exponential rise in temperature as molecular kinetic energy is concentrated in a tight combustion bowl.",
-        },
-      ],
-      pedagogicalNote:
-        "Because only pure air is compressed, there is zero fuel present to prematurely ignite. This allowed Diesel to raise compression to extreme levels impossible in Otto-cycle gasoline engines.",
-      claimRef: 1,
-      historicalSignificance:
-        "Eliminated electrical ignition systems, magnetos, and spark plugs, creating an inherently reliable all-mechanical heat engine.",
-    },
-    {
-      id: "diesel-air-standard-efficiency",
-      patentId: "us-542846-diesel-engine",
-      title: "Diesel Air-Standard Cycle Thermal Efficiency & Cut-Off Ratio",
-      category: "Thermodynamics & Heat Engines",
+      title: "Diesel source process, telemetry withheld",
+      category: "Source-Bound Heat-Engine Process",
       rawLatex:
-        "\\eta_{\\text{th}} = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[ \\frac{r_c^\\gamma - 1}{\\gamma(r_c - 1)} \\right]",
+        "\\text{compressed air} \\rightarrow \\text{gradual fuel admission} \\rightarrow \\text{cut-off} \\rightarrow \\text{further expansion}",
       colorizedLatex:
-        "\\textcolor{#059669}{\\eta_{\\text{th}}} = 1 - \\frac{1}{\\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma - 1}}} \\left[ \\frac{\\textcolor{#9333ea}{r_c}^{\\textcolor{#d97706}{\\gamma}} - 1}{\\textcolor{#d97706}{\\gamma}(\\textcolor{#9333ea}{r_c} - 1)} \\right]",
+        "\\textcolor{#2563eb}{\\text{compressed air}} \\rightarrow \\textcolor{#d97706}{\\text{gradual fuel admission}} \\rightarrow \\textcolor{#dc2626}{\\text{cut-off}} \\rightarrow \\textcolor{#059669}{\\text{further expansion}}",
       plainEnglishSentence: [
-        { text: "The " },
-        { text: "air-standard thermal efficiency", variableId: "diesel_eta_th" },
-        { text: " of the Diesel cycle depends on both the " },
-        { text: "compression ratio", variableId: "diesel_r" },
-        { text: ", the " },
-        { text: "specific heat ratio", variableId: "diesel_gamma" },
-        { text: ", and the " },
-        { text: "fuel admission cut-off ratio", variableId: "diesel_rc" },
-        { text: ", decreasing slightly as more fuel is injected at constant pressure." },
+        { text: "The held source face records compression before fuel admission, gradual admission during expansion, cut-off, and further expansion without heat transfer. No numerical state is asserted." },
       ],
       variables: [
         {
-          id: "diesel_eta_th",
-          symbol: "\\eta_{\\text{th}}",
-          name: "Diesel Cycle Thermal Efficiency",
-          color: "emerald",
-          role: "Net indicated thermodynamic work output divided by fuel heat input ($40\\% - 54\\%$)",
-          unit: "Dimensionless percentage (%)",
-          dimension: "[1]",
-          explanation:
-            "Diesel's constant-pressure heat addition cycle achieves higher real-world efficiency than Otto spark-ignition engines due to its extreme compression ratios.",
-          telemetryMetricLabel: "Thermal Efficiency",
-        },
-        {
-          id: "diesel_r",
-          symbol: "r",
-          name: "Volumetric Compression Ratio",
+          id: "diesel_source_process",
+          symbol: "source sequence",
+          name: "Claim-bounded process sequence",
           color: "sapphire",
-          role: "Ratio of maximum cylinder volume to minimum clearance volume ($r = V_1 / V_2 \\approx 18$)",
-          unit: "Dimensionless ratio",
-          dimension: "[1]",
+          role: "The ordered process described by the specification and Claim 1.",
+          unit: "Source-stated sequence",
+          dimension: "not a measured telemetry value",
           explanation:
-            "Higher compression ratio directly increases the expansion ratio, allowing more mechanical enthalpy extraction per stroke.",
-          telemetryKey: "compressionRatio",
-        },
-        {
-          id: "diesel_gamma",
-          symbol: "\\gamma",
-          name: "Specific Heat Ratio (Isentropic Exponent)",
-          color: "amber",
-          role: "Ratio of constant-pressure to constant-volume specific heat ($c_p / c_v = 1.40$ for fresh air)",
-          unit: "Dimensionless constant",
-          dimension: "[1]",
-          explanation:
-            "Governs the steepness of adiabatic compression and expansion curves on the indicator diagram.",
-        },
-        {
-          id: "diesel_rc",
-          symbol: "r_c",
-          name: "Combustion Cut-Off Ratio",
-          color: "amethyst",
-          role: "Ratio of cylinder volume when fuel injection ceases to clearance volume ($r_c = V_3 / V_2 \\approx 1.8 - 2.5$)",
-          unit: "Dimensionless ratio",
-          dimension: "[1]",
-          explanation:
-            "In Diesel's patent, fuel is admitted gradually as the piston begins moving downward, keeping pressure constant until cut-off.",
+            "The candidate edition is withheld pending foreign-patent-number and facsimile review. This card does not bind a compression ratio, temperature, pressure, speed, performance value, or later engine configuration.",
         },
       ],
       pedagogicalNote:
-        "At the limit where cut-off ratio approaches 1 (instantaneous combustion), the Diesel efficiency formula converges to the Otto cycle formula.",
+        "Diesel's candidate equation card is intentionally limited to the printed process sequence. Numeric thermodynamic and engine-performance cards remain unavailable until independent source acceptance.",
       claimRef: 1,
       historicalSignificance:
-        "Rudolf Diesel's breakthrough was demonstrating that timed cut-off combustion allowed unprecedented fuel economy in stationary and marine prime movers.",
-    },
-    {
-      id: "diesel-peak-adiabatic-pressure",
-      patentId: "us-542846-diesel-engine",
-      title: "Adiabatic Peak Cylinder Compression Pressure",
-      category: "Thermodynamics & Gas Dynamics",
-      rawLatex: "P_2 = P_1 \\cdot r^\\gamma",
-      colorizedLatex:
-        "\\textcolor{#dc2626}{P_2} = \\textcolor{#0891b2}{P_1} \\cdot \\textcolor{#2563eb}{r}^{\\textcolor{#d97706}{\\gamma}}",
-      plainEnglishSentence: [
-        { text: "The " },
-        { text: "peak cylinder compression pressure", variableId: "p_peak" },
-        { text: " at top dead center equals " },
-        { text: "intake atmospheric pressure", variableId: "p_intake" },
-        { text: " scaled by " },
-        { text: "compression ratio", variableId: "comp_r" },
-        { text: " to the power of the " },
-        { text: "isentropic exponent", variableId: "isentropic_gamma" },
-        { text: "." },
-      ],
-      variables: [
-        {
-          id: "p_peak",
-          symbol: "P_2",
-          name: "Peak Compression Pressure",
-          color: "crimson",
-          role: "Pressure inside the cylinder at the end of the compression stroke ($40 - 60\\text{ bar} \\approx 4 - 6\\text{ MPa}$)",
-          unit: "Bar / Pascals (Pa)",
-          dimension: "[M L^-1 T^-2]",
-          explanation:
-            "Extreme pressure ensures that the air is hot enough to instantly ignite atomized heavy oil without external spark plugs.",
-          telemetryMetricLabel: "Peak Pressure",
-        },
-        {
-          id: "p_intake",
-          symbol: "P_1",
-          name: "Intake Manifold Pressure",
-          color: "cyan",
-          role: "Ambient atmospheric intake pressure ($1.013\\text{ bar} = 101.3\\text{ kPa}$)",
-          unit: "Bar / Pascals (Pa)",
-          dimension: "[M L^-1 T^-2]",
-          explanation:
-            "Pure atmospheric air inducted during the downstroke before intake valve closure.",
-        },
-        {
-          id: "comp_r",
-          symbol: "r",
-          name: "Compression Ratio",
-          color: "sapphire",
-          role: "Cylinder volumetric compression ratio ($18:1$)",
-          unit: "Dimensionless ratio",
-          dimension: "[1]",
-          explanation:
-            "Compresses the inducted air into a compact combustion bowl in the piston crown.",
-          telemetryKey: "compressionRatio",
-        },
-        {
-          id: "isentropic_gamma",
-          symbol: "\\gamma",
-          name: "Isentropic Exponent",
-          color: "amber",
-          role: "Air adiabatic index ($1.40$)",
-          unit: "Dimensionless constant",
-          dimension: "[1]",
-          explanation:
-            "Assumes rapid compression with minimal instantaneous heat transfer to cylinder cooling jackets.",
-        },
-      ],
-      pedagogicalNote:
-        "Achieving 40+ atmospheres required Diesel and MAN engineers to invent precision cast-iron piston rings and high-strength crosshead cylinder construction.",
-      claimRef: 1,
-      historicalSignificance:
-        "Established high-pressure compression-ignition as a practical engineering reality.",
+        "The card preserves the legal sequence without presenting later engine engineering as a measurement in US 542,846.",
     },
   ],
-
   // 20. Lester Pelton Split-Bucket Impulse Water Wheel (US 233,692)
   "us-233692-pelton-water-wheel": [
     {
@@ -7011,91 +6415,33 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       patentId: "us-727650-linde-air-liquefaction",
       title: "Counter-current heat exchange: qualitative companion",
       category: "Cryogenics & Thermodynamics",
-      rawLatex:
-        "y = \\frac{\\dot{m}_{\\text{liquid}}}{\\dot{m}_{\\text{inlet}}} = \\frac{h_{\\text{return}}(P_{\\text{low}}, T_{\\text{amb}}) - h_{\\text{inlet}}(P_{\\text{high}}, T_{\\text{amb}})}{h_{\\text{return}}(P_{\\text{low}}, T_{\\text{amb}}) - h_{\\text{liquid}}(P_{\\text{low}}, T_{\\text{sat}})}",
+      rawLatex: "\\dot{Q}_{\\text{exchange}} = U A \\Delta T_{\\text{LMTD}}",
       colorizedLatex:
-        "\\textcolor{#059669}{y} = \\frac{\\textcolor{#2563eb}{\\dot{m}_{\\text{liquid}}}}{\\textcolor{#d97706}{\\dot{m}_{\\text{inlet}}}} = \\frac{\\textcolor{#9333ea}{h_{\\text{return}}} - \\textcolor{#dc2626}{h_{\\text{inlet}}}}{\\textcolor{#9333ea}{h_{\\text{return}}} - \\textcolor{#0891b2}{h_{\\text{liquid}}}}",
+        "\\textcolor{#059669}{\\dot{Q}_{\\text{exchange}}} = \\textcolor{#2563eb}{U}\\textcolor{#d97706}{A}\\textcolor{#0891b2}{\\Delta T_{\\text{LMTD}}}",
       plainEnglishSentence: [
         {
           text: "The ",
         },
         {
-          text: "counter-current heat-exchange balance",
-          variableId: "yield_frac",
+          text: "counter-current heat exchange",
         },
         {
-          text: " equals the ratio of ",
-        },
-        {
-          text: "condensed portion",
-          variableId: "m_liq",
-        },
-        {
-          text: " to ",
-        },
-        {
-          text: "incoming high-pressure stream",
-          variableId: "m_in",
-        },
-        {
-          text: ", determined by the enthalpy gap between ",
+          text: " is represented by the product of conductance, area, and a log-mean temperature difference between ",
         },
         {
           text: "returning low-pressure stream",
           variableId: "h_ret",
         },
         {
-          text: ", ",
+          text: " and ",
         },
         {
-          text: "incoming stream after cooler K",
+          text: "the incoming stream after cooler K",
           variableId: "h_in",
         },
-        {
-          text: ", and ",
-        },
-        {
-          text: "condensed portion in V′",
-          variableId: "h_liq",
-        },
-        {
-          text: ".",
-        },
+        { text: "." },
       ],
       variables: [
-        {
-          id: "yield_frac",
-          symbol: "y",
-          name: "Condensed portion",
-          color: "emerald",
-          role: "The specification says a certain portion condenses in V′ once the critical point is reached, but supplies no fraction.",
-          unit: "Not quantified in the grant",
-          dimension: "[1]",
-          explanation:
-            "The returning gas in the outer channel of G′ exchanges heat with incoming gas in the inner channel. The displayed symbol is explanatory, not a reported yield.",
-        },
-        {
-          id: "m_liq",
-          symbol: "\\dot{m}_{\\text{liquid}}",
-          name: "Condensed portion in V′",
-          color: "sapphire",
-          role: "The source says liquefied air collects at the bottom of the closed vessel V′; it gives no receiver design or mass-flow rate.",
-          unit: "Not quantified in the grant",
-          dimension: "[M T^-1]",
-          explanation:
-            "V′ is a closed vessel under the source-described low-pressure condition, not a vacuum Dewar.",
-        },
-        {
-          id: "m_in",
-          symbol: "\\dot{m}_{\\text{inlet}}",
-          name: "High-Pressure Inlet Air Flow",
-          color: "amber",
-          role: "Compressor C receives air through T a′ and compresses it before it passes through K and G′.",
-          unit: "Not quantified in the grant",
-          dimension: "[M T^-1]",
-          explanation:
-            "The facsimile identifies two long coiled pipes, one within the other, and suggests a length of about one hundred meters.",
-        },
         {
           id: "h_ret",
           symbol: "h_{\\text{return}}",
@@ -7118,20 +6464,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           explanation:
             "Linde’s effective example uses seventy-five atmospheres high pressure and a cooler outlet t³ of about 10 °C or less.",
         },
-        {
-          id: "h_liq",
-          symbol: "h_{\\text{liquid}}",
-          name: "Saturated Liquid Air Enthalpy",
-          color: "cyan",
-          role: "The condensed portion is said to collect in V′. The facsimile does not report a saturation temperature or enthalpy.",
-          unit: "Not quantified in the grant",
-          dimension: "[L^2 T^-2]",
-          explanation:
-            "The source then directs liquid through R² to V² when nitrogen and oxygen are to be further separated.",
-        },
       ],
       pedagogicalNote:
-        "This is a modern balance notation, not a numerical model of the patent apparatus. The grant supplies the route and the 75/25-atmosphere example, but not a yield, a flow rate, or a terminal temperature.",
+        "This is a modern heat-exchange notation, not a numerical model of the patent apparatus. The grant supplies the route and the 75/25-atmosphere example, but not a measured heat-transfer rate or terminal temperature.",
       claimRef: 1,
       historicalSignificance:
         "Claims 4 through 10 extend the basic circuit to separation of a liquefied mixture, including nitrogen and oxygen paths.",
@@ -13936,8 +13271,9 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
     },
   ],
 
-  // 47. Louis Pasteur Fermentation & Microbial Control (US 135,245)
-  "us-135245-pasteur-fermentation": [
+  // Preserved non-serving research cards that describe later pasteurization,
+  // not the process printed in US 135,245.
+  "_legacy-unpublished-us-135245-pasteur-fermentation": [
     {
       id: "pasteur-arrhenius-microbial-inactivation-rate",
       patentId: "us-135245-pasteur-fermentation",
@@ -14160,6 +13496,83 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       claimRef: 1,
       historicalSignificance:
         "US 135245 proved the Germ Theory of Disease in an industrial setting, created modern aseptic industrial bioprocessing, and protected global food and beverage supplies from bacterial contamination.",
+    },
+  ],
+
+  // 47. Louis Pasteur, US 135,245. Source-bounded process sequence.
+  "us-135245-pasteur-fermentation": [
+    {
+      id: "pasteur-source-gas-sweep-and-spray-cooling",
+      patentId: "us-135245-pasteur-fermentation",
+      title: "Closed-Vessel Gas Displacement and Exterior Spray Cooling",
+      category: "Brewing Process & Thermal Transport",
+      rawLatex:
+        "\\text{boiling wort} \\rightarrow \\text{CO}_2\\text{ sweep} \\rightarrow \\text{external spray cooling} \\rightarrow T=20\\text{--}22.5^{\\circ}\\mathrm{C}",
+      colorizedLatex:
+        "\\textcolor{#dc2626}{\\text{boiling wort}} \\rightarrow \\textcolor{#2563eb}{\\text{CO}_2\\text{ sweep}} \\rightarrow \\textcolor{#0891b2}{\\text{external spray cooling}} \\rightarrow \\textcolor{#059669}{T=20\\text{--}22.5^{\\circ}\\mathrm{C}}",
+      plainEnglishSentence: [
+        { text: "The printed process confines " },
+        { text: "boiling-hot wort", variableId: "hot_wort" },
+        { text: ", sweeps it with " },
+        { text: "carbon-dioxide gas", variableId: "co2_sweep" },
+        { text: " to expel contained air, applies " },
+        { text: "water spray outside the vessel", variableId: "spray_cooling" },
+        { text: ", and adds yeast in the stated " },
+        { text: "20–22.5 °C band", variableId: "yeast_band" },
+        { text: "." },
+      ],
+      variables: [
+        {
+          id: "hot_wort",
+          symbol: "\\text{boiling wort}",
+          name: "Initial Wort State",
+          color: "crimson",
+          role: "The specification says the prepared wort enters vessel A while yet boiling hot.",
+          unit: "Source-described state",
+          dimension: "[\\Theta]",
+          explanation:
+            "The grant gives no charge mass, vessel pressure, cooling duration, or numerical starting temperature beyond the phrase boiling hot.",
+        },
+        {
+          id: "co2_sweep",
+          symbol: "\\text{CO}_2\\text{ sweep}",
+          name: "Carbonic-Acid-Gas Sweep",
+          color: "sapphire",
+          role: "Gas from generator M M passes through the closed vessel to expel contained air.",
+          unit: "Source-described operation",
+          dimension: "[1]",
+          explanation:
+            "The patent requires thorough gas penetration but supplies no flow rate, pressure, residual oxygen fraction, or purge-time measurement.",
+        },
+        {
+          id: "spray_cooling",
+          symbol: "\\text{external spray cooling}",
+          name: "Exterior Water-Spray Cooling",
+          color: "cyan",
+          role: "Nozzles P distribute water over the domed vessel exterior and troughs collect it.",
+          unit: "Source-described operation",
+          dimension: "[1]",
+          explanation:
+            "Heat leaves through the vessel wall into the falling water film; the grant states no heat-transfer coefficient, water flow, or cooling time.",
+        },
+        {
+          id: "yeast_band",
+          symbol: "T=20\\text{--}22.5^{\\circ}\\mathrm{C}",
+          name: "Printed Yeast-Addition Band",
+          color: "emerald",
+          role: "Modern conversion of the printed 16°–18° Réaumur interval.",
+          unit: "Degrees Celsius (°C)",
+          dimension: "[\\Theta]",
+          explanation:
+            "The conversion uses 1 °Ré = 1.25 °C. This is the point at which the patent says yeast or pure ferment is added, not a pasteurization hold.",
+          telemetryKey: "wortTempC",
+        },
+      ],
+      pedagogicalNote:
+        "This card follows the sole claim and disclosed apparatus. It deliberately excludes microbial kill kinetics, shelf-life predictions, ABV, pressure, sterile-culture claims, and apparatus from later experiments because US 135,245 does not print them.",
+      claimRef: 1,
+      historicalSignificance:
+        "US 135,245 records a narrow brewery process coupling air expulsion and cooling; it is not a general claim to later heat pasteurization.",
     },
   ],
 
@@ -16398,9 +15811,8 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
   ],
 };
 
-// The public US 542,846 route renders only this source-bounded Claim 1 card.
-// The retained legacy cards above describe a later performance model and must
-// remain unreachable until a source-specific visual and manuscript pass review.
+// The public US 542,846 route renders only this source-bounded Claim 1 card;
+// no generated performance model is reachable from the held route.
 ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"] = [
   {
     id: "diesel-source-claim-one-controlled-combustion-sequence",
@@ -16446,7 +15858,7 @@ ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"] = [
       },
     ],
     pedagogicalNote:
-      "This card is limited to the ordered Claim 1 process. The ten-page manuscript is under independent source repair, so the site does not infer a numerical diesel cycle, compression ratio, pressure, temperature, speed, material, efficiency, power output, or later engine configuration from this grant.",
+      "This card is limited to the ordered Claim 1 process. The ten-page manuscript is under independent source repair, so the site does not infer a numerical diesel cycle, compression ratio, pressure, temperature, speed, power output, or later engine configuration from this grant.",
     claimRef: 1,
     historicalSignificance:
       "The card identifies the legal sequence printed in Claim 1 rather than presenting a later-engine performance narrative as if it were a measurement in US 542,846.",
@@ -17560,26 +16972,8 @@ function _convertScientificPrincipleToColorizedEquation(
       }
     }
 
-    // 0s. DIESEL INTERNAL COMBUSTION ENGINE
-    else if (patentId.includes("diesel") || pLower.includes("diesel")) {
-      if (sym.includes("r^{\\gamma") || sym.includes("r^\\gamma") || sym === "r_c" || sym === "r") {
-        name = "Compression / Cutoff Volume Ratio";
-        unit = "Dimensionless ratio ($r \\approx 18:1$)";
-        dimension = "[1]";
-        role =
-          "Extreme compression ratio achieving 600°C auto-ignition temperature of injected fuel";
-      } else if (sym === "d_{32}" || sym === "D") {
-        name = "Sauter Mean Droplet Diameter";
-        unit = "Micrometers (μm) [~20 μm]";
-        dimension = "[L]";
-        role = "Fuel atomization droplet size governing high-pressure combustion surface area";
-      } else if (sym === "d^2" || sym === "d_0^2") {
-        name = "Droplet Evaporation Surface Term";
-        unit = "Square micrometers (μm²)";
-        dimension = "[L^2]";
-        role = "D-squared law governing fuel droplet vaporization rate in hot compressed air";
-      }
-    }
+    // Diesel has an explicit source-bounded card above; no generated
+    // parameter labels may manufacture later-engine measurements.
 
     // 0t. MARCONI WIRELESS TELEGRAPHY
     else if (
@@ -17770,57 +17164,18 @@ function _convertScientificPrincipleToColorizedEquation(
       }
     }
 
-    // 0ab. TESLA POLYPHASE AC INDUCTION MOTOR
-    else if (
-      patentId.includes("tesla-motor") ||
-      patentId.includes("381968") ||
-      pLower.includes("induction motor")
-    ) {
-      if (sym === "j") {
-        name = "Quadrature Spatial / Phase Operator";
-        unit = "90-degree phase operator";
-        dimension = "[1]";
-        role = "Orthogonal spatial stator orientation matching temporal 90-degree AC phase shift";
-      } else if (sym === "E") {
-        name = "Induced Rotor Electromotive Force";
-        unit = "Volts (V)";
-        dimension = "[M L^2 T^-3 I^-1]";
-        role = "Faraday EMF induced in short-circuited rotor windings by rotating magnetic flux";
-      } else if (sym === "o" || sym === "N") {
-        name = "Stator Phase Turns per Pole";
-        unit = "Coil turns";
-        dimension = "[1]";
-        role = "Number of winding turns per magnetic pole pair";
-      } else if (sym === "s_{crit}") {
-        name = "Critical Breakdown Slip Fraction";
-        unit = "Dimensionless fraction [0-1]";
-        dimension = "[1]";
-        role = "Rotor slip at which motor delivers peak breakdown stall torque";
-      } else if (sym === "V_{th}^2" || sym === "V_{th}") {
-        name = "Thevenin Equivalent Stator Terminal Voltage";
-        unit = "Volts squared (V²) / Volts (V)";
-        dimension = "[M L^2 T^-3 I^-1]";
-        role = "Stator phase voltage driving magnetization and rotor current loops";
-      } else if (sym === "n_s") {
-        name = "Synchronous Stator Field Rotational Speed";
-        unit = "Revolutions per minute (RPM) [e.g. 1800 RPM]";
+    // 0ab. TESLA PROGRESSIVE ALTERNATING-CURRENT MOTOR-GENERATOR
+    else if (patentId.includes("tesla-motor") || patentId.includes("381968")) {
+      if (sym === "n_s") {
+        name = "Figure 9 Generator Rotation Rate";
+        unit = "Revolutions per minute (RPM)";
         dimension = "[T^-1]";
-        role = "Speed of rotating magnetic field ($n_s = 120 f / P$)";
-      } else if (sym === "d_{lam}^2" || sym === "d_{lam}") {
-        name = "Silicon Steel Core Lamination Thickness";
-        unit = "Millimeters (mm) [~0.5 mm]";
-        dimension = "[L]";
-        role = "Thin insulated core sheets suppressing parasitic eddy current heat losses";
+        role = "Source-bound generator rate used to show the once-around progressive pole shift in Figure 9";
       } else if (sym === "f^2" || sym === "f") {
-        name = "AC Power Grid Supply Frequency";
-        unit = "Hertz (Hz) [60 Hz]";
+        name = "Generator Phase-Cycle Rate";
+        unit = "Hertz (Hz)";
         dimension = "[T^-1]";
-        role = "Line frequency driving alternating polyphase excitation";
-      } else if (sym === "D_{iron}") {
-        name = "Ferromagnetic Iron Core Density";
-        unit = "Kilograms per cubic meter (kg/m³)";
-        dimension = "[M L^-3]";
-        role = "Soft silicon iron core mass density governing magnetic saturation flux";
+        role = "Teaching-model rate for Tesla's alternating generator currents; the grant does not specify a utility-grid frequency";
       }
     }
 

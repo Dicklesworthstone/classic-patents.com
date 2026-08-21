@@ -118,4 +118,23 @@ describe("InteractiveDiagramViewer React rendering", () => {
     expect(source).toContain("matrixRatePerMin: params?.matrixRate");
     expect(source).toContain("engineRpm: params?.engineRpm");
   });
+
+  test("keeps the Pasteur schematic on the apparatus printed in US 135,245", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/patents/InteractiveDiagramViewer.tsx"),
+      "utf8",
+    );
+    const pasteurCase = source.slice(
+      source.indexOf('case "pasteur-fermentation"'),
+      source.indexOf('case "glidden-barbed-wire"'),
+    );
+    expect(source).toContain('case "pasteur-fermentation-fig-2"');
+    expect(source).toContain(
+      '[/pasteur-fermentation-fig-2/, "pasteur-fermentation-fig-2"]',
+    );
+    for (const printedLabel of ["water pipe E", "M M", "gas generator", "Boil closed"])
+      expect(pasteurCase).toContain(printedLabel);
+    for (const unsupported of ["Swan-Neck", "Anaerobic Fermenter", "Pure Yeast Strain Bed"])
+      expect(pasteurCase).not.toContain(unsupported);
+  });
 });

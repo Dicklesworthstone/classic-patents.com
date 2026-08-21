@@ -3,6 +3,7 @@
 import { BookOpen, Check, ChevronLeft, ChevronRight, Copy, Scale, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { stepTeslaMotorFig9 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
 import type { CuratedSpecificationEdition, PatentClaim } from "@/types/patent";
@@ -29,7 +30,10 @@ function claimLiveState(
     }
   }
   if (patentId.includes("tesla-motor") && claimNum === 1) {
-    return (params.phaseCount ?? 2) >= 2 ? "held" : "broken";
+    const frequencyHz = params.frequency ?? params.frequencyHz;
+    if (typeof frequencyHz !== "number" || !Number.isFinite(frequencyHz)) return null;
+    const apparatus = stepTeslaMotorFig9(frequencyHz);
+    return frequencyHz > 0 && apparatus.phaseCycleHz > 0 ? "held" : "broken";
   }
   if (patentId.includes("fermi") && claimNum === 1) {
     return (params.controlRodExtractionPct ?? 60) <= 85 ? "held" : "broken";
@@ -74,8 +78,17 @@ function claimLiveState(
   if (patentId.includes("otto-engine") && claimNum === 1) {
     return (params.compressionRatio ?? 4.5) >= 2.5 ? "held" : "broken";
   }
-  if (patentId.includes("parsons-turbine") && claimNum === 1) {
-    return (params.inletPressurePsi ?? 150) >= 40 ? "held" : "broken";
+  if (patentId === "us-608969-parsons-turbine") {
+    if (claimNum === 1) {
+      const topology = params.routeTopology;
+      if (typeof topology !== "number" || !Number.isFinite(topology)) return null;
+      return topology >= 0 && topology <= 2 ? "held" : "broken";
+    }
+    if (claimNum === 2 || claimNum === 3) {
+      const reversing = params.reversingTurbineEnabled;
+      if (typeof reversing !== "number" || !Number.isFinite(reversing)) return null;
+      return reversing >= 0.5 ? "held" : "broken";
+    }
   }
   if (patentId.includes("marconi") && claimNum === 1) {
     return (params.mastHeightM ?? 45) >= 20 ? "held" : "broken";

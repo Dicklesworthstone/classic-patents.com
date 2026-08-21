@@ -20,7 +20,7 @@ describe("Procedural Sound Synthesizer Engine (soundEngine.ts)", () => {
 
   test("executes continuous tones and stops cleanly", () => {
     expect(() => soundEngine.playContinuousTone(440, "sine", 0.05)).not.toThrow();
-    expect(() => soundEngine.playTeslaMotorHum(60, 1800)).not.toThrow();
+    expect(() => soundEngine.playTeslaGeneratorTone(60, 3600)).not.toThrow();
     expect(() =>
       soundEngine.playFieldTransducer({ kind: "am", sample: 0.4, carrierHz: 1000 }),
     ).not.toThrow();

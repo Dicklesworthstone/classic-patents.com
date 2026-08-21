@@ -110,6 +110,29 @@ describe("Colorized Equations Quality & Integrity Suite", () => {
     }
   });
 
+  test("keeps Pasteur US 135,245 on its printed gas-sweep and spray-cooling sequence", () => {
+    const cards = ALL_COLORIZED_EQUATIONS["us-135245-pasteur-fermentation"];
+    expect(cards.map((card) => card.id)).toEqual([
+      "pasteur-source-gas-sweep-and-spray-cooling",
+    ]);
+    expect(cards[0]?.rawLatex).toContain("external spray cooling");
+    expect(cards[0]?.claimRef).toBe(1);
+
+    const publicCards = JSON.stringify(cards).toLowerCase();
+    for (const unsupportedPublicAssertion of [
+      "log kill",
+      "arrhenius",
+      "shelf life",
+      "cfu/ml",
+      "65^",
+      "glycolysis",
+      "germ theory of disease",
+      "swan-neck",
+    ]) {
+      expect(publicCards).not.toContain(unsupportedPublicAssertion);
+    }
+  });
+
   test("keeps Diesel US 542,846 on its printed Claim 1 process sequence", () => {
     const cards = ALL_COLORIZED_EQUATIONS["us-542846-diesel-engine"];
     expect(cards.map((card) => card.id)).toEqual([

@@ -140,13 +140,11 @@ class SoundEngine {
     this.stopAll();
   }
 
-  /**
-   * Tesla AC Induction Motor dual-phase harmonic hum
-   */
-  public playTeslaMotorHum(frequency: number, rotorSpeedRpm: number) {
+  /** Fig. 9 generator phase-cycle teaching tone. */
+  public playTeslaGeneratorTone(frequency: number, generatorRpm: number) {
     if (this.isMuted) return;
     const baseFreq = Math.max(30, frequency);
-    this.playContinuousTone(baseFreq, "triangle", 0.04 + (rotorSpeedRpm / 1800) * 0.03);
+    this.playContinuousTone(baseFreq, "triangle", 0.04 + (generatorRpm / 3600) * 0.03);
   }
 
   /**
