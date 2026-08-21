@@ -39,6 +39,10 @@
 
 ## Editorial & Preservation Boundaries
 
+### Root figure-QA hold (2026-08-20)
+
+The public source face is withheld pending a source-drawing repair. Direct review of PDF page 3 shows Figures 16 through 24, not Figures 16 through 23. The current edition and drawing-sheet ledger omit Figure 24, and the current Figure 18 through 23 preview set includes sideways, clipped, or misnumbered crops from that rotated sheet. The old assets remain preserved as evidence; no crop may be rebound until each printed figure number has an upright, isolated, source-derived preview and every occurrence in the specification is linked to the correct figure.
+
 - **Visitor Source Face**: `src/data/editions/bellPhotophoneEdition.ts`
 - **Reviewed Ledger**: `public/patents/transcripts/us-235199-bell-photophone-reviewed.txt`
 - **Crop Directory**: `public/patents/figures/us-235199-bell-photophone/` (23 cropped PNGs, Figs. 1–23)
