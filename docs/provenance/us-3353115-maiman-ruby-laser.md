@@ -61,9 +61,19 @@ Pages 6–10 were manually reconciled against the existing PDF text-layer
 research evidence: the continuation metadata, drawing descriptions, closing
 specification paragraph, two claims, and cited references are now represented
 in the ledger. OCR-like spelling errors were corrected where the source text
-was unambiguous. Pages 4–5 remain withheld from literal promotion because the
-workspace has no corresponding source-page render and their existing draft is
-visibly garbled; no labels or signatures were invented to fill that gap.
+was unambiguous. Pages 4–5 now contain a bounded online-text reconciliation
+candidate for Sheets 4 and 5: the clean sheet headers and the source's literal
+Figure 12–18 descriptions are recorded, while drawing pixels, internal
+callouts, and signatures remain withheld. This candidate is not visual
+facsimile acceptance and does not lift the publication hold.
+
+The online research source for Pages 4–5 is the exact grant record at
+https://patents.google.com/patent/US3353115A/en and its linked official grant
+PDF at https://patentimages.storage.googleapis.com/59/cf/32/e1a06428b806fa/US3353115.pdf.
+The Google Patents description identifies Sheet 4 as Figures 12–15 and Sheet 5
+as Figures 16–18; its figure-description text supplies the wording used in the
+candidate ledger. These online text/image representations are research
+evidence only until the pinned local PDF pages can be visually reviewed.
 
 The held edition now has explicit semantic references for every printed figure
 number 1–18. Only occurrences with source pixels available in this workspace
