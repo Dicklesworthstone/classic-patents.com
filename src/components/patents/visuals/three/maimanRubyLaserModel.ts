@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { type MaimanRubyLaserControls, stepMaimanRubyLaser } from "@/physics/catalogKernels";
+import { computeLaserCavityField } from "@/physics/fieldTextures";
 
 export interface MaimanRubyLaserModelNodes {
   group: THREE.Group;
@@ -257,6 +258,9 @@ export function createMaimanRubyLaserModel(): {
   // Update loop
   const update = (controls: MaimanRubyLaserControls, timeSec: number, isFiring: boolean) => {
     const metrics = stepMaimanRubyLaser(controls);
+    const pumpJoules = controls.pumpEnergyJoules ?? 1500;
+    const invFrac = metrics.isLasing ? 0.85 : 0.45;
+    const cavityField = computeLaserCavityField(pumpJoules, invFrac, 16);
 
     // Flash tube activation
     if (isFiring) {
@@ -269,7 +273,13 @@ export function createMaimanRubyLaserModel(): {
       // Animate internal photon oscillation along optical cavity axis
       const pAttr = photonGeo.attributes.position;
       for (let i = 0; i < photonCount; i++) {
-        let px = pAttr.getX(i) + (i % 2 === 0 ? 0.4 : -0.4);
+        const u = Math.max(0, Math.min(1, (pAttr.getX(i) + 2.9) / 5.8));
+        const v = Math.max(0, Math.min(1, (pAttr.getY(i) - 0.4 + 0.4) / 0.8));
+        const gx = Math.floor(u * 15);
+        const gy = Math.floor(v * 15);
+        const fieldGain = 0.8 + 0.4 * (cavityField[gy * 16 + gx] ?? 0.5);
+
+        let px = pAttr.getX(i) + (i % 2 === 0 ? 0.4 * fieldGain : -0.4 * fieldGain);
         if (px > 2.9) px = -2.9;
         if (px < -2.9) px = 2.9;
         pAttr.setX(i, px);

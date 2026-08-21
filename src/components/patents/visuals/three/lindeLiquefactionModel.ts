@@ -14,6 +14,7 @@
  */
 
 import * as THREE from "three";
+import { computeJouleThomsonThermalField } from "@/physics/fieldTextures";
 
 export interface LindeLiquefactionModelNodes {
   root: THREE.Group;
@@ -435,10 +436,15 @@ export function updateLindeLiquefactionKinematics(
   if (showFlowTracer) {
     const pos = nodes.flowTracerPoints.geometry.attributes.position.array as Float32Array;
     const jetSpeed = (highPressureAtm / 75) * 1.1;
+    const jtField = computeJouleThomsonThermalField(highPressureAtm, 120, 16);
 
     for (let i = 0; i < MIST_COUNT; i++) {
       const idx = i * 3;
-      pos[idx + 1] -= jetSpeed * dt;
+      const u = Math.max(0, Math.min(1, (pos[idx + 1] + 2.5) / 0.8));
+      const gx = Math.floor(u * 15);
+      const thermalMod = 0.8 + 0.4 * (jtField[gx] ?? 0.5);
+
+      pos[idx + 1] -= jetSpeed * dt * thermalMod;
 
       if (pos[idx + 1] < -2.5) {
         const r = Math.sqrt((i + 1) / MIST_COUNT) * 0.4;
