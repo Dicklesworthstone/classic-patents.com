@@ -2596,15 +2596,16 @@ const fermiSourceSpecificParallelReadings: Readonly<Record<number, readonly stri
 
 /** Every key is a final-edition paragraph block index, never a claim or heading. */
 export const fermiReconciledParagraphIndices = Object.freeze(
-  fermiReactorArchivalEdition.blocks.flatMap((block, index) =>
-    block.kind === "paragraph" ? [index] : [],
+  fermiReactorArchivalEdition.blocks.flatMap(
+    (block: CuratedSpecificationBlock, index: number) =>
+      block.kind === "paragraph" ? [index] : [],
   ),
 );
 
 export const fermiReactorParallelReadings: Readonly<Record<number, readonly string[]>> =
   Object.freeze(
     Object.fromEntries(
-      fermiReconciledParagraphIndices.map((index) => {
+      fermiReconciledParagraphIndices.map((index: number) => {
         const reading = fermiSourceSpecificParallelReadings[index];
         if (!reading) {
           throw new Error(`Fermi manual edition paragraph ${index} lacks an authored reading.`);
@@ -2617,10 +2618,11 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
 /** Read a printed claim from the authored edition blocks only. */
 export function fermiReactorManualClaimText(number: number): string {
   const block = fermiReactorArchivalEdition.blocks.find(
-    (candidate) => candidate.kind === "claim" && candidate.number === number,
+    (candidate: CuratedSpecificationBlock) =>
+      candidate.kind === "claim" && candidate.number === number,
   );
   if (block?.kind !== "claim") {
     throw new Error(`Fermi manual edition is missing claim ${number}.`);
   }
-  return block.inlines.map((inline) => inline.text).join("");
+  return block.inlines.map((inline: CuratedSpecificationInline) => inline.text).join("");
 }
