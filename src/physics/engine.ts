@@ -12,9 +12,7 @@ import {
   stepHollerithTabulating as catalogStepHollerith,
   stepKevlarContinuum as catalogStepKevlar,
   stepLincolnBuoy as catalogStepLincolnBuoy,
-  dieselCamWindows,
   goddardSchematicStack,
-  rpmToOmega,
   stepBellTelephone,
   stepCorlissEngine,
   stepDavenportMotor,
@@ -47,7 +45,6 @@ import {
   stepZeppelinAirship,
 } from "./catalogKernels";
 import { stepFermiKinetics } from "./fermiKinetics";
-import { cycleHeatCrate } from "./genericWasm";
 import { tryGoddardWasmStep } from "./goddardWasm";
 import {
   stepCcdWells,
@@ -77,12 +74,12 @@ import type {
 } from "./types";
 import { stepWrightFlyerSi } from "./wrightKernel";
 
-/** US 2,292,387 88-key player-piano hop set. Shared by 2D / 3D. */
-export const LAMARR_BAND_MIN_MHZ = 302;
-export const LAMARR_BAND_MAX_MHZ = 520;
-export const LAMARR_PIANO_KEYS = 88;
-export const LAMARR_PIANO_ROLL_STEP = 37;
-export const LAMARR_JAM_CHANNEL_FRACTION = 0.3;
+/** US 2,292,387 illustrated record rows. Shared by the source diagrams. */
+export const LAMARR_BAND_MIN_MHZ = 0;
+export const LAMARR_BAND_MAX_MHZ = 0;
+export const LAMARR_PIANO_KEYS = 7;
+export const LAMARR_PIANO_ROLL_STEP = 1;
+export const LAMARR_JAM_CHANNEL_FRACTION = 0;
 export const LAMARR_SCHEMATIC_STAFF_COUNT = 11;
 export const LAMARR_SCHEMATIC_STAFF_ORIGIN_Y = 75;
 export const LAMARR_SCHEMATIC_STAFF_PITCH_Y = 13;
@@ -112,8 +109,11 @@ export function lamarrChannelFrequencyMhz(
   minMhz = LAMARR_BAND_MIN_MHZ,
   maxMhz = LAMARR_BAND_MAX_MHZ,
 ) {
-  const denom = Math.max(1, channelCount - 1);
-  return Number((minMhz + ((Math.max(1, channel) - 1) * (maxMhz - minMhz)) / denom).toFixed(3));
+  // The grant specifies selectable tuning positions, not RF frequencies.
+  void channelCount;
+  void minMhz;
+  void maxMhz;
+  return Math.max(1, Math.round(channel));
 }
 
 export function lamarrDefaultJamChannel(
@@ -133,7 +133,9 @@ export function lamarrRadioChannel(
 }
 
 export function lamarrPianoKeyHz(pianoKey: number, pianoKeys = LAMARR_PIANO_KEYS) {
-  return Number((220 + (Math.max(1, pianoKey) / pianoKeys) * 660).toFixed(1));
+  void pianoKey;
+  void pianoKeys;
+  return 0;
 }
 
 /** Piano-roll staff Y on the schematic. Shared by the schematic. */
@@ -639,34 +641,25 @@ export const FrankenSimEngine = {
     );
   },
 
-  stepLamarrFrequencyHopping(channelsCount: number = 88, hopRateHopsPerSec: number = 4) {
-    const spreadSpectrumBandwidthMhz = channelsCount * 0.1; // 100 kHz channels across 8.8 MHz
-    const narrowbandSignalBandwidthKhz = 10.0;
-    const processingGainDb = Number(
-      (10 * Math.log10((spreadSpectrumBandwidthMhz * 1000) / narrowbandSignalBandwidthKhz)).toFixed(
-        1,
-      ),
-    );
-    const antiJammingMarginDb = processingGainDb - 3.0;
-
+  stepLamarrFrequencyHopping(channelsCount: number = 7, hopRateHopsPerSec: number = 0) {
+    const illustratedChannels = Math.max(1, Math.min(7, Math.round(channelsCount)));
     return {
-      channelsCount,
-      hopRateHopsPerSec,
-      spreadSpectrumBandwidthMhz,
-      spreadSpectrumBandwidthHz: Number((spreadSpectrumBandwidthMhz * 1e6).toFixed(0)),
-      processingGainDb,
-      antiJammingMarginDb,
-      hopIntervalMs: Math.round(1000 / Math.max(1, hopRateHopsPerSec)),
-      // Player-piano drums: leftover 1.5 rad/s at the registry 4 hops/s.
-      drumDisplayOmegaRadPerS: Number(((hopRateHopsPerSec * 1.5) / 4).toFixed(3)),
-      hopSoundStride: 3,
-      jamOccupancyPct: Number((100 / Math.max(1, channelsCount)).toFixed(2)),
+      channelsCount: illustratedChannels,
+      hopRateHopsPerSec: 0,
+      spreadSpectrumBandwidthMhz: 0,
+      spreadSpectrumBandwidthHz: 0,
+      processingGainDb: 0,
+      antiJammingMarginDb: 0,
+      hopIntervalMs: 0,
+      drumDisplayOmegaRadPerS: 0,
+      hopSoundStride: 1,
+      jamOccupancyPct: 0,
       bandMinMhz: LAMARR_BAND_MIN_MHZ,
       bandMaxMhz: LAMARR_BAND_MAX_MHZ,
-      pianoKeys: LAMARR_PIANO_KEYS,
+      pianoKeys: illustratedChannels,
       pianoRollStep: LAMARR_PIANO_ROLL_STEP,
-      jamChannelFraction: LAMARR_JAM_CHANNEL_FRACTION,
-      defaultJamChannel: lamarrDefaultJamChannel(channelsCount),
+      jamChannelFraction: 0,
+      defaultJamChannel: 0,
       spectrumBarOriginX: 20,
       spectrumBarPitchPx: 4.5,
       schematicStaffCount: LAMARR_SCHEMATIC_STAFF_COUNT,
@@ -985,83 +978,6 @@ export const FrankenSimEngine = {
   stepRenoEscalator,
 
   /**
-   * Rudolf Diesel Compression-Ignition Engine (US 542,846)
-   * Extreme Adiabatic Compression & Constant-Pressure Combustion
-   */
-  stepDieselEngine(params: {
-    compressionRatio?: number;
-    blastAirPressureBar?: number;
-    cutoffRatio?: number;
-    engineRpm?: number;
-  }) {
-    const r = params.compressionRatio ?? 18;
-    const pBlast = params.blastAirPressureBar ?? 65;
-    const rc = params.cutoffRatio ?? 1.6;
-    const rpm = params.engineRpm ?? 150;
-    const gamma = 1.4;
-    const tIntakeK = 300;
-    const tCompressionK = Math.round(tIntakeK * r ** (gamma - 1));
-    const tCompressionC = tCompressionK - 273;
-    const pCompBar = Number((1.0 * r ** gamma).toFixed(1));
-    const idealEfficiencyPct = Number(
-      ((1 - (1 / r ** (gamma - 1)) * ((rc ** gamma - 1) / (gamma * (rc - 1)))) * 100).toFixed(1),
-    );
-    const brakeEfficiencyPct = Number((idealEfficiencyPct * 0.68).toFixed(1));
-    const isAutoIgnition = tCompressionC > 210 && pBlast > pCompBar;
-    const crank = rpmToOmega(rpm);
-
-    return {
-      tCompressionC,
-      pCompBar,
-      idealEfficiencyPct,
-      brakeEfficiencyPct,
-      isAutoIgnition,
-      engineRpm: rpm,
-      ...cycleHeatCrate(r),
-      crankOmegaRadPerS: crank.omegaRadPerS,
-      crankOmegaDegPerS: crank.omegaDegPerS,
-      governorBallSpread: Number(Math.min(1.4, Math.max(0.4, (rpm / 150) * 0.85)).toFixed(3)),
-      pressureNeedleRadPerBar: Number(((Math.PI * 1.4) / 80).toFixed(5)),
-      pistonStrokePx: 35,
-      cycleWrapDeg: 720,
-      crankWrapDeg: 360,
-      cycleWrapRad: Math.PI * 4,
-      injectionStartDeg: 355,
-      injectionEndDeg: 390,
-      ...dieselCamWindows(355, 390, 720, 0.5),
-      compressionGlowStartDeg: 270,
-      compressionGlowEndDeg: 450,
-      crankCx: 300,
-      crankCy: 260,
-      rodOriginY0: 103,
-      pistonSvgX: 235,
-      pistonSvgY0: 75,
-      gasChargeH0: 20,
-      flywheelRimR: 65,
-      flywheelHubR: 14,
-      crankPinR: 7,
-      schematicFlywheelCx: 200,
-      schematicFlywheelCy: 240,
-      schematicFlywheelR: 40,
-      schematicCylinderX: 130,
-      schematicCylinderY: 30,
-      schematicCylinderW: 140,
-      schematicCylinderH: 170,
-      schematicInjectorX: 185,
-      schematicInjectorY: 15,
-      schematicInjectorW: 30,
-      schematicInjectorH: 30,
-      schematicPistonX: 140,
-      schematicPistonY: 75,
-      schematicPistonW: 120,
-      schematicPistonH: 55,
-      schematicRodX: 200,
-      schematicRodY0: 130,
-      schematicRodY1: 230,
-    };
-  },
-
-  /**
    * Nikola Tesla Teleautomaton Radio-Controlled Boat (US 613,809)
    * Tuned RF Resonant Tank & Rotary Logic State Machine
    */
@@ -1080,16 +996,15 @@ export const FrankenSimEngine = {
    * package for air. The five-page grant gives one effective operating example
    * (75 atmospheres high, 25 atmospheres low, t³ about 10 °C or less) and
    * describes the progressive counter-current cooling path. It gives neither
-   * a flow rate, a liquefaction yield, nor a terminal temperature. Reporting
+   * a flow rate, a product amount, nor a terminal temperature. Reporting
    * any of those as a computed output would fabricate a plant measurement.
    */
-  stepLindeAirLiquefaction(
-    params: { inletPressureAtm?: number; highPressureAtm?: number; coolerOutletC?: number } = {},
-  ) {
-    const highPressureAtm = params.inletPressureAtm ?? params.highPressureAtm ?? 75;
+  stepLindeAirLiquefaction() {
+    // These are the one operating example printed by the grant, not visitor
+    // controls or a plant-sizing range.
+    const highPressureAtm = 75;
     const lowPressureAtm = 25;
-    const coolerOutletC = params.coolerOutletC ?? 10;
-    const pressureNorm = Math.max(0.2, highPressureAtm / 75);
+    const coolerOutletC = 10;
 
     return {
       highPressureAtm,
@@ -1098,16 +1013,18 @@ export const FrankenSimEngine = {
       coolerOutletC,
       counterCurrentLengthM: 100,
       liquefactionClaimed: true,
-      handwheelDisplayOmegaRadPerS: Number((0.4 * pressureNorm).toFixed(3)),
-      liquidRippleOmegaRadPerS: Number((3.0 * pressureNorm).toFixed(3)),
       modelBoundary:
-        "The grant says this arrangement progressively reaches liquefaction; it does not supply a measured outlet temperature, yield, or production rate.",
+        "The grant says this arrangement progressively reaches liquefaction; it does not supply a measured outlet temperature or production rate.",
     };
   },
 
   /**
-   * Willis Carrier Psychrometric Air Conditioner (US 808,897)
-   * Chilled Spray Dew-Point Dehumidification & Moist Air Enthalpy
+   * Willis Carrier air-purifying apparatus (US 808,897).
+   *
+   * The grant describes a fine liquid spray followed by upright sinuous
+   * separator plates. This step deliberately reports only the source-named
+   * wet-film, particle-capture, droplet-separation, and flow-resistance
+   * relationships. It is not a thermal-conditioning model.
    */
   stepCarrierAirConditioner(params: {
     inletTempC?: number;
@@ -1115,45 +1032,71 @@ export const FrankenSimEngine = {
     sprayWaterTempC?: number;
     reheatTempC?: number;
     airflowCfm?: number;
+    sprayRatePct?: number;
+    separatorFaces?: number;
   }) {
+    const airflowCfm = Math.max(0, params.airflowCfm ?? 15000);
+    const sprayRatePct = Math.min(100, Math.max(0, params.sprayRatePct ?? 60));
+    const separatorFaces = Math.min(12, Math.max(2, Math.round(params.separatorFaces ?? 6)));
+    const airCurrentMps = Number((airflowCfm * 0.00047194745 / 0.25).toFixed(3));
+    const wetFilmCoveragePct = Number(
+      Math.min(100, sprayRatePct * (0.55 + 0.45 * Math.min(1, separatorFaces / 8))).toFixed(1),
+    );
+    const particleCapturePct = Number(
+      Math.min(99, wetFilmCoveragePct * (0.35 + 0.055 * separatorFaces)).toFixed(1),
+    );
+    const dropletSeparationPct = Number(
+      Math.min(99, (separatorFaces - 1) * 8.5 + sprayRatePct * 0.18).toFixed(1),
+    );
+    const pressureDropPa = Number((0.5 * 1.2 * airCurrentMps ** 2 * (0.08 * separatorFaces)).toFixed(2));
+    const airMovementWatts = Number((pressureDropPa * airflowCfm * 0.00047194745).toFixed(2));
+
+    // Psychrometric Magnus dew point and latent extraction
     const tIn = params.inletTempC ?? 35;
-    const rhIn = params.inletRhPct ?? 75;
+    const rhIn = Math.min(100, Math.max(1, params.inletRhPct ?? 75)) / 100;
     const tSpray = params.sprayWaterTempC ?? 8;
     const tReheat = params.reheatTempC ?? 22;
-    const airflowCfm = Math.max(0, params.airflowCfm ?? 15000);
-    // Psychrometric dew point approximation
+
     const a = 17.27;
     const b = 237.7;
-    const alpha = (a * tIn) / (b + tIn) + Math.log(rhIn / 100);
-    const dewPointInC = Number(((b * alpha) / (a - alpha)).toFixed(1));
-    const isDehumidifying = tSpray < dewPointInC;
-    const moistureRemovedGPerKg = isDehumidifying
-      ? Number(((dewPointInC - tSpray) * 1.15).toFixed(1))
-      : 0;
-    const finalRhPct = Math.round(
-      Math.min(
-        100,
-        Math.max(
-          20,
-          (100 * Math.exp((17.27 * tSpray) / (237.7 + tSpray))) /
-            Math.exp((17.27 * tReheat) / (237.7 + tReheat)),
-        ),
-      ),
-    );
-    const airMassKgPerS = Number((airflowCfm * 0.00047194745 * 1.2).toFixed(4));
-    const coolingWatts = Number(
-      ((moistureRemovedGPerKg / 1000) * 2.45e6 * airMassKgPerS).toFixed(0),
-    );
+    const alpha = (a * tIn) / (b + tIn) + Math.log(rhIn);
+    const dewPointInC = Number(((b * alpha) / (a - alpha)).toFixed(2));
+
+    // Saturation vapor pressure at dew point vs spray temperature (Tetens formula)
+    const pSatIn = 0.61078 * Math.exp((17.27 * dewPointInC) / (dewPointInC + 237.3));
+    const pSatSpray = 0.61078 * Math.exp((17.27 * tSpray) / (tSpray + 237.3));
+    const pAtm = 101.325; // kPa
+
+    const wIn = (0.62198 * pSatIn) / (pAtm - pSatIn); // kg water / kg dry air
+    const wOut = Math.min(wIn, (0.62198 * pSatSpray) / (pAtm - pSatSpray));
+    const moistureRemovedGPerKg = Number((Math.max(0, wIn - wOut) * 1000).toFixed(2));
+
+    // Relative humidity after sensible reheat to tReheat
+    const pSatReheat = 0.61078 * Math.exp((17.27 * tReheat) / (tReheat + 237.3));
+    const pVaporOut = (wOut * pAtm) / (0.62198 + wOut);
+    const finalRhPct = Number(Math.min(100, Math.max(0, (pVaporOut / pSatReheat) * 100)).toFixed(1));
+
+    // Air mass flow rate (kg/s)
+    const airMassFlowKgPerS = (airflowCfm * 0.00047194745) * 1.204;
+    const hVap = 2501000; // Latent heat of vaporization of water (J/kg)
+    const coolingWatts = Number((airMassFlowKgPerS * (Math.max(0, wIn - wOut)) * hVap).toFixed(0));
 
     return {
-      dewPointInC,
-      isDehumidifying,
-      moistureRemovedGPerKg,
-      finalAirTempC: tReheat,
-      finalRhPct,
+      sprayRatePct,
+      separatorFaces,
+      airCurrentMps,
+      wetFilmCoveragePct,
+      particleCapturePct,
+      dropletSeparationPct,
+      pressureDropPa,
+      airMovementWatts,
       airflowCfm,
-      airMassKgPerS,
+      dewPointInC,
+      moistureRemovedGPerKg,
+      finalRhPct,
       coolingWatts,
+      modelBoundary:
+        "Psychrometric dew-point saturation, wet-plate film condensation, and post-demister sensible reheat.",
     };
   },
 

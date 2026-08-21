@@ -14,7 +14,6 @@ import {
   stepDeLavalSeparator,
   stepEdisonBulb,
   stepEdisonIndicator,
-  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEngelbartMouse,
   stepEricssonPropeller,
@@ -280,22 +279,6 @@ export function materialProbe(
       note: `${coil.secondaryPotentialMv.toFixed(2)} MV at k=${(params.couplingK ?? 0.18).toFixed(2)}.`,
     };
   }
-  if (patentId.includes("diesel") || patentId.includes("542846")) {
-    const diesel = FrankenSimEngine.stepDieselEngine({
-      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
-      blastAirPressureBar: params.blastAirPressure ?? 65,
-      cutoffRatio: params.cutoffRatio ?? 1.6,
-      engineRpm: params.engineRpm ?? 150,
-    });
-    return {
-      part: calloutLabel,
-      material: "Uncooled cast-iron blast-air injector, 1893 Augsburg",
-      qty: "T₂",
-      value: diesel.tCompressionC.toString(),
-      unit: "°C",
-      note: `${diesel.pCompBar} bar. Autoignition ${diesel.isAutoIgnition ? "yes" : "no"} · ω ${diesel.crankOmegaRadPerS} rad/s.`,
-    };
-  }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
     const raw = params.shutterSpeed ?? 0.05;
     const t = raw > 1 ? 1 / raw : raw;
@@ -326,20 +309,6 @@ export function materialProbe(
       note: `β = ${tv.relativisticBeta}. ${tv.electronVelocityMps.toLocaleString()} m/s.`,
     };
   }
-  if (patentId.includes("phonograph") || patentId.includes("200521")) {
-    const phono = stepEdisonPhonograph({
-      mandrelRpm: params.mandrelRpm,
-      voiceVolumeDb: params.voiceVolumeDb,
-    });
-    return {
-      part: calloutLabel,
-      material: "Tinfoil on brass mandrel, stylus indent",
-      qty: "groove",
-      value: phono.grooveDepthMicrons.toString(),
-      unit: "µm",
-      note: `${phono.trackSpeedInPerS} in/s at the 4-inch drum · ω ${phono.mandrelOmegaRadPerS} rad/s.`,
-    };
-  }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
     const ic = stepNoyceIC({
       reverseBias: params.reverseBias,
@@ -355,21 +324,19 @@ export function materialProbe(
       note: `${ic.junctionCapPfPerMm2} pF/mm² · tpd ${ic.propDelayNs} ns · margin ${ic.breakdownMarginV} V.`,
     };
   }
-  if (patentId.includes("carrier") || patentId.includes("808897")) {
+  if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: params.inletTempC,
-      inletRhPct: params.inletRhPct,
-      sprayWaterTempC: params.sprayWaterTempC,
-      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
+      sprayRatePct: params.sprayRatePct,
+      separatorFaces: params.separatorFaces,
     });
     return {
       part: calloutLabel,
       material: "Wet sinuous plates, spray, and rear gutters",
-      qty: "T_dp",
-      value: carrier.dewPointInC.toFixed(1),
-      unit: "°C",
-      note: `${carrier.moistureRemovedGPerKg} g/kg extracted · leaving ${carrier.finalRhPct}% RH · ${carrier.coolingWatts} W latent.`,
+      qty: "η_dust",
+      value: carrier.particleCapturePct.toFixed(1),
+      unit: "%",
+      note: `${carrier.wetFilmCoveragePct}% wet-film coverage · ${carrier.dropletSeparationPct}% droplet separation · ${carrier.pressureDropPa} Pa modeled resistance.`,
     };
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -716,17 +683,17 @@ export function materialProbe(
   }
   if (patentId.includes("pasteur") || patentId.includes("135245")) {
     const vat = stepPasteurFermentation({
-      pasteurizationTempC: params.pasteurizationTempC,
-      holdTimeMin: params.holdTimeMin,
+      co2SweepPct: params.co2SweepPct,
+      sprayCoveragePct: params.sprayCoveragePct,
       wortTempC: params.wortTempC ?? params.tempCelsius,
     });
     return {
       part: calloutLabel,
-      material: "Closed tinned vat + gooseneck cotton trap",
-      qty: "yeast",
-      value: vat.yeastActivityPct.toString(),
+      material: "Vessels A + pipe E + nozzles P + generator M M",
+      qty: "CO₂ sweep",
+      value: vat.co2SweepPct.toString(),
       unit: "%",
-      note: `${vat.logReduction} log kill on the pasteurizing hold.`,
+      note: `${vat.sprayCoveragePct}% exterior spray coverage; ${vat.wortTempC} °C is within the printed yeast-addition band. Percentages are reader controls, not patent measurements.`,
     };
   }
   if (patentId.includes("thomson") || patentId.includes("347140")) {
@@ -1086,14 +1053,6 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const coil = FrankenSimEngine.stepTeslaCoilFromControls(params);
     return [{ label: "Arc", min: 0.1, max: 4, live: coil.streamerLengthMeters, unit: "m" }];
   }
-  if (patentId.includes("diesel") || patentId.includes("542846")) {
-    const diesel = FrankenSimEngine.stepDieselEngine({
-      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
-      blastAirPressureBar: params.blastAirPressure ?? 65,
-      cutoffRatio: params.cutoffRatio ?? 1.6,
-    });
-    return [{ label: "T₂", min: 200, max: 800, live: diesel.tCompressionC, unit: "°C" }];
-  }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
     const raw = params.shutterSpeed ?? 0.05;
     const t = raw > 1 ? 1 / raw : raw;
@@ -1110,13 +1069,6 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
     const tv = FrankenSimEngine.stepFarnsworthTv(anodeKv, gauss, params.lightIntensityLux ?? 500);
     return [{ label: "r_L", min: 1, max: 40, live: tv.gyroRadiusMm, unit: "mm" }];
   }
-  if (patentId.includes("phonograph") || patentId.includes("200521")) {
-    const phono = stepEdisonPhonograph({
-      mandrelRpm: params.mandrelRpm,
-      voiceVolumeDb: params.voiceVolumeDb,
-    });
-    return [{ label: "Groove", min: 5, max: 40, live: phono.grooveDepthMicrons, unit: "µm" }];
-  }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
     const ic = stepNoyceIC({
       reverseBias: params.reverseBias,
@@ -1128,17 +1080,16 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       { label: "tpd", min: 0.8, max: 3, live: ic.propDelayNs, unit: "ns" },
     ];
   }
-  if (patentId.includes("carrier") || patentId.includes("808897")) {
+  if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: params.inletTempC,
-      inletRhPct: params.inletRhPct,
-      sprayWaterTempC: params.sprayWaterTempC,
-      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
+      sprayRatePct: params.sprayRatePct,
+      separatorFaces: params.separatorFaces,
     });
     return [
-      { label: "T_dp", min: 0, max: 30, live: carrier.dewPointInC, unit: "°C" },
-      { label: "Δω", min: 0, max: 20, live: carrier.moistureRemovedGPerKg, unit: "g/kg" },
+      { label: "Wet film", min: 0, max: 100, live: carrier.wetFilmCoveragePct, unit: "%" },
+      { label: "Dust capture", min: 0, max: 99, live: carrier.particleCapturePct, unit: "%" },
+      { label: "Droplet separation", min: 0, max: 99, live: carrier.dropletSeparationPct, unit: "%" },
     ];
   }
   if (patentId.includes("maxim") || patentId.includes("319596")) {
@@ -1231,10 +1182,19 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
   if (patentId.includes("pasteur") || patentId.includes("135245")) {
     const vat = stepPasteurFermentation({
       wortTempC: params.wortTempC ?? params.tempCelsius,
-      pasteurizationTempC: params.pasteurizationTempC,
-      holdTimeMin: params.holdTimeMin,
+      co2SweepPct: params.co2SweepPct,
+      sprayCoveragePct: params.sprayCoveragePct,
     });
-    return [{ label: "Yeast", min: 0, max: 100, live: vat.yeastActivityPct, unit: "%" }];
+    return [
+      { label: "CO₂ sweep", min: 0, max: 100, live: vat.co2SweepPct, unit: "% reader" },
+      {
+        label: "Spray coverage",
+        min: 0,
+        max: 100,
+        live: vat.sprayCoveragePct,
+        unit: "% reader",
+      },
+    ];
   }
   if (patentId.includes("thomson") || patentId.includes("347140")) {
     const weld = stepThomsonWelding({
@@ -1434,18 +1394,6 @@ export function fidelityField(
       unit: "m",
     };
   }
-  if (patentId.includes("diesel") || patentId.includes("542846")) {
-    const diesel = FrankenSimEngine.stepDieselEngine({
-      compressionRatio: params.compRatio ?? params.compressionRatio ?? 18,
-    });
-    return {
-      part: "Adiabatic T₂ vs 210 °C heavy-oil flash",
-      model: diesel.tCompressionC.toString(),
-      reference: "210",
-      residual: (diesel.tCompressionC - 210).toString(),
-      unit: "°C",
-    };
-  }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
     const raw = params.shutterSpeed ?? 0.05;
     const t = raw > 1 ? 1 / raw : raw;
@@ -1475,19 +1423,17 @@ export function fidelityField(
       unit: "nm",
     };
   }
-  if (patentId.includes("carrier") || patentId.includes("808897")) {
+  if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: params.inletTempC,
-      inletRhPct: params.inletRhPct,
-      sprayWaterTempC: params.sprayWaterTempC,
-      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
+      sprayRatePct: params.sprayRatePct,
+      separatorFaces: params.separatorFaces,
     });
     return {
-      part: "Leaving RH vs 50% comfort band",
-      model: carrier.finalRhPct.toString(),
-      reference: "50",
-      residual: (carrier.finalRhPct - 50).toString(),
+      part: "Dust capture on wet front film",
+      model: carrier.particleCapturePct.toFixed(1),
+      reference: "source relation only",
+      residual: carrier.dropletSeparationPct.toFixed(1),
       unit: "%",
     };
   }
@@ -1639,7 +1585,7 @@ export function smokePolicy(patentId: string, params: Record<string, number>): S
 }
 
 export function whitneySamples(omegaT: number): { x: number; y: number; bx: number; by: number }[] {
-  const { bx, by } = teslaBAt(omegaT, 2);
+  const { bx, by } = teslaBAt(omegaT);
   const out: { x: number; y: number; bx: number; by: number }[] = [];
   for (let i = 0; i < 8; i++) {
     const a = (i * Math.PI) / 4;
@@ -1823,10 +1769,10 @@ export function datedScenarios(patentId: string): DatedScenario[] {
   if (patentId.includes("pasteur") || patentId.includes("135245")) {
     return [
       {
-        id: "lille-1873",
-        date: "1873",
-        name: "Lille brewery closed vat",
-        writes: { wortTempC: 22, pasteurizationTempC: 58, holdTimeMin: 20 },
+        id: "source-sequence-1873",
+        date: "1873-01-28",
+        name: "Printed closed-vessel, CO₂-sweep, and spray-cooling sequence",
+        writes: { wortTempC: 21.25, co2SweepPct: 100, sprayCoveragePct: 100 },
       },
     ];
   }
@@ -1885,16 +1831,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("diesel") || patentId.includes("542846")) {
-    return [
-      {
-        id: "augsburg-1893",
-        date: "1893",
-        name: "Augsburg first fire",
-        writes: { compRatio: 18, blastAirPressure: 65, cutoffRatio: 1.6 },
-      },
-    ];
-  }
   if (patentId.includes("kodak") || patentId.includes("388850")) {
     return [
       {
@@ -1915,16 +1851,6 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("phonograph") || patentId.includes("200521")) {
-    return [
-      {
-        id: "menlo-1877",
-        date: "1877-12-06",
-        name: "Mary had a little lamb",
-        writes: { mandrelRpm: 60, voiceVolumeDb: 75 },
-      },
-    ];
-  }
   if (patentId.includes("noyce") || patentId.includes("2981877")) {
     return [
       {
@@ -1935,18 +1861,16 @@ export function datedScenarios(patentId: string): DatedScenario[] {
       },
     ];
   }
-  if (patentId.includes("carrier") || patentId.includes("808897")) {
+  if (patentId === "us-808897-carrier-air-conditioner") {
     return [
       {
         id: "carrier-filing-1904",
         date: "1904-09-16",
         name: "Filed air-purifying separator apparatus",
         writes: {
-          inletTempC: 35,
-          inletRhPct: 75,
-          sprayWaterTempC: 8,
-          reheatTempC: 22,
           airflowCfm: 15000,
+          sprayRatePct: 60,
+          separatorFaces: 6,
         },
       },
     ];
@@ -2055,15 +1979,13 @@ export function coupleLinks(patentId: string, params: Record<string, number>): C
     );
     return [{ from: "spark", to: "aerial", watts: radio.peakRfPowerKw * 1000 }];
   }
-  if (patentId.includes("carrier") || patentId.includes("808897")) {
+  if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: params.inletTempC,
-      inletRhPct: params.inletRhPct,
-      sprayWaterTempC: params.sprayWaterTempC,
-      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
+      sprayRatePct: params.sprayRatePct,
+      separatorFaces: params.separatorFaces,
     });
-    return [{ from: "spray", to: "latent sink", watts: carrier.coolingWatts }];
+    return [{ from: "fan", to: "sinuous separator", watts: carrier.airMovementWatts }];
   }
   if (patentId.includes("fermi")) {
     const kinetics = stepFermiKinetics(

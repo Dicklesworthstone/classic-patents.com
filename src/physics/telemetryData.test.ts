@@ -118,6 +118,36 @@ describe("Physics Telemetry Data Registry", () => {
     );
   });
 
+  test("keeps Pasteur telemetry on the process printed by US 135,245", () => {
+    const pasteur = PATENT_PHYSICS_REGISTRY["us-135245-pasteur-fermentation"];
+    expect(pasteur.engineMethod).toBe(
+      "Source-bounded TypeScript reader state; no quantitative process model",
+    );
+    expect(pasteur.controls.map((control) => control.id)).toEqual([
+      "co2SweepPct",
+      "sprayCoveragePct",
+      "wortTempC",
+    ]);
+    expect(pasteur.computeMetrics({})).toMatchObject([
+      { label: "CO₂ sweep", value: "100%", unit: "reader control" },
+      { label: "Spray coverage", value: "100%", unit: "reader control" },
+      { label: "Printed yeast band", value: "21.25 °C", unit: "20–22.5 °C" },
+      { label: "Sequence state", value: "Ready for yeast", unit: "source sequence" },
+    ]);
+    const publicCopy = JSON.stringify(pasteur).toLowerCase();
+    for (const unsupported of [
+      "log reduction",
+      "alcohol yield",
+      "co₂ overpressure",
+      "shelf life",
+      "pasteurization bath",
+      "thermal hold",
+      "swan-neck",
+    ]) {
+      expect(publicCopy).not.toContain(unsupported);
+    }
+  });
+
   test("routes Goddard US 1,102,653 telemetry through the de Laval kernel", () => {
     const goddard = PATENT_PHYSICS_REGISTRY["us-1102653-goddard-rocket"];
     expect(goddard.engineMethod).toContain("stepGoddardRocket");
@@ -153,13 +183,14 @@ describe("Physics Telemetry Data Registry", () => {
     ]);
   });
 
-  test("routes Diesel US 542,846 telemetry through the shared heat-engine kernel", () => {
+  test("holds Diesel US 542,846 telemetry without synthetic state", () => {
     const diesel = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
-    expect(diesel.engineMethod).toContain("stepDieselEngine");
-    expect(diesel.controls.map((control) => control.id).length).toBeGreaterThan(0);
-    const metrics = diesel.computeMetrics({});
-    expect(metrics.length).toBeGreaterThan(0);
-    expect(metrics.some((metric) => /T|comp|ignition|bar/i.test(metric.label))).toBe(true);
+    expect(diesel.engineMethod).toBe("source-edition-hold");
+    expect(diesel.controls).toEqual([]);
+    expect(diesel.computeMetrics({})).toEqual([
+      { label: "Publication state", value: "HELD", unit: "source review", badgeColor: "amber", progressPct: 0 },
+      { label: "Telemetry", value: "WITHHELD", unit: "no measured values", badgeColor: "rose", progressPct: 0 },
+    ]);
   });
 
   test("routes Carrier US 808,897 telemetry through the spray-dew-point kernel", () => {

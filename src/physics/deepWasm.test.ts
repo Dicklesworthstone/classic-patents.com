@@ -178,13 +178,17 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
     expect(snapped.cableRefused).toBe(true);
   });
 
-  test("couple edges name warp→yaw, B→shaft, I²R→radiation as ts-fallback", () => {
+  test("couple edges name source-bound mechanisms as ts-fallback", () => {
     const w = coupleEdgesFor("us-821393-wright-flyer", { wingWarp: 8, airspeed: 28, coupled: 1 });
     expect(w[0]?.from).toBe("wing warp");
     expect(w[0]?.to).toBe("adverse yaw");
     expect(w[0]?.source).toBe("ts-fallback");
     const t = coupleEdgesFor("us-381968-tesla-motor", { frequency: 60 });
-    expect(t[0]?.from).toBe("stator B");
+    expect(t[0]?.from).toBe("generator G");
+    expect(t[0]?.to).toBe("progressive pole shift");
+    expect(t[0]?.gain).toBe(60);
+    expect(t[1]?.to).toBe("disk D");
+    expect(t[1]?.gain).toBe(1);
     const e = coupleEdgesFor("us-223898-edison-lightbulb", { voltage: 110 });
     expect(e[0]?.from).toBe("I²R");
     expect(e[0]?.to).toBe("radiation");
@@ -274,7 +278,7 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
   });
 
   test("field textures write finite grids for Tesla, Noyce, Farnsworth, Spencer, Fermi, Goddard, Laser, Linde, Parsons", () => {
-    const tesla = computeTeslaRotatingBField(0.4, 2, 16);
+    const tesla = computeTeslaRotatingBField(0.4, 16);
     expect(tesla.length).toBe(256);
     let max = 0;
     for (const v of tesla) max = Math.max(max, v);

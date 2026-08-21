@@ -244,14 +244,10 @@ export function generateVectorStreamlines(
   return vertexArray;
 }
 
-/** Rotating Tesla B-field magnitude on a plane (Fig. 4 1-form, not RMS-then-opacity). */
-export function computeTeslaRotatingBField(
-  omegaT: number,
-  phaseCount: 2 | 3 = 2,
-  gridSize = 32,
-): Float32Array {
+/** Rotating Tesla B-field magnitude on a plane (Fig. 9's two circuits). */
+export function computeTeslaRotatingBField(omegaT: number, gridSize = 32): Float32Array {
   const grid = new Float32Array(gridSize * gridSize);
-  const coilCount = phaseCount === 2 ? 4 : 6;
+  const coilCount = 4;
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       const u = x / (gridSize - 1) - 0.5;
@@ -260,8 +256,8 @@ export function computeTeslaRotatingBField(
       let by = 0;
       for (let i = 0; i < coilCount; i++) {
         const a = (i * 2 * Math.PI) / coilCount - Math.PI / 2;
-        const polarity = i >= phaseCount ? -1 : 1;
-        const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+        const polarity = i >= 2 ? -1 : 1;
+        const phaseOff = (i % 2) * (Math.PI / 2);
         const current = polarity * Math.sin(omegaT + phaseOff);
         const px = 0.32 * Math.cos(a);
         const py = 0.32 * Math.sin(a);

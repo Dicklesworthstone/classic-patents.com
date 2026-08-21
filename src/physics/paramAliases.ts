@@ -17,7 +17,6 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
   "us-233692-pelton-water-wheel": { rotorRpm: same("runnerRpm") },
-  "us-542846-diesel-engine": { compressionRatio: same("compRatio") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },
   "us-105338-hyatt-celluloid": { tempCelsius: same("steamTempC") },
   "us-78317-nobel-dynamite": {
@@ -101,11 +100,9 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-3858232-boyle-smith-ccd": { clockSpeedFactor: same("clockFrequencyMhz") },
   "us-1781541-einstein-refrigerator": { auxiliaryGasRatio: same("ammoniaRatio") },
   "us-808897-carrier-air-conditioner": {
-    inletTemp: same("inletTempC"),
-    inletRh: same("inletRhPct"),
-    sprayTemp: same("sprayWaterTempC"),
-    sprayTempC: same("sprayWaterTempC"),
-    reheatTemp: same("reheatTempC"),
+    airflow: same("airflowCfm"),
+    sprayRate: same("sprayRatePct"),
+    plateFaces: same("separatorFaces"),
   },
   "us-613809-tesla-teleautomaton": {
     rudderAngleDeg: same("rudderAngle"),

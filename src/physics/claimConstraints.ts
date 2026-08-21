@@ -36,13 +36,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-381968-tesla-motor",
-      claimTitle: "Independent Polyphase Alternating Field Circuits",
+      claimTitle: "Independent Alternating-Current Motor Circuits",
       activeDescription:
-        "Claim 1 energizes stator poles with phase-shifted AC currents to produce a rotating B-field.",
+        "Claim 1 combines separate or independent motor circuits with independently connected induced circuits in an alternating-current generator, so generator rotation progressively shifts the motor poles.",
       invertedDescription:
-        "Single-phase unassisted: produces a pulsating stationary magnetic field with zero starting torque.",
-      failureModeName: "Stalled Rotor Overheating",
-      historicalPriorArt: "DC motors required spark-prone mechanical commutators and brushes.",
+        "Without the claimed corresponding independent circuits, the source-specific progressive shifting of the motor poles is not established; no torque, speed, heating, or rotor-performance result is inferred.",
+      failureModeName: "Progressive Magnetic-Shift Condition Not Established",
+      historicalPriorArt:
+        "Tesla contrasts the arrangement with mechanically commutated direct-current systems: the motor needs no commutator, while Fig. 9 uses the alternating-current generator's insulated contact or collector rings and brushes to form the corresponding circuits.",
     },
   ],
   "us-223898-edison-lamp": [
@@ -71,6 +72,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Pulse-Clipping Acoustic Intelligibility Loss",
       historicalPriorArt:
         "Reis and Bourseul attempted speech transmission using rapid intermittent on/off circuit breakers.",
+    },
+  ],
+  "us-135245-pasteur-fermentation": [
+    {
+      claimNumber: 1,
+      patentId: "us-135245-pasteur-fermentation",
+      claimTitle: "Air Expulsion Followed by Cooling",
+      activeDescription:
+        "Claim 1 subjects the wort to air expulsion and then cools it substantially by the disclosed closed-vessel gas-sweep and exterior water-spray process.",
+      invertedDescription:
+        "Removing either operation breaks the claimed combination: ordinary-air exposure remains if the sweep is omitted, while the disclosed process is incomplete if exterior cooling is omitted.",
+      failureModeName: "Claimed Two-Operation Process Incomplete",
+      historicalPriorArt:
+        "Pasteur describes the prior brewing practice as exposing wort to atmospheric air during the process, which he says impaired quality and reduced output.",
     },
   ],
   "us-1773980-farnsworth-tv": [
@@ -326,20 +341,7 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Deville's chemical sodium reduction of aluminum chloride cost $12/pound before Hall's electrolytic bath.",
     },
   ],
-  "us-542846-diesel-engine": [
-    {
-      claimNumber: 1,
-      patentId: "us-542846-diesel-engine",
-      claimTitle: "Pure-Air Compression Auto-Ignition & Gradual Injection",
-      activeDescription:
-        "Claim 1 compresses pure atmospheric air above fuel ignition temperature before injecting fuel gradually without explosive pressure rise.",
-      invertedDescription:
-        "Premature fuel premixing: fuel vapor in compression chamber detonates before Top Dead Center, causing destructive engine knock.",
-      failureModeName: "Premature Detonation Knock & Piston Seizure",
-      historicalPriorArt:
-        "Otto and Lenoir cycles required premixed air-fuel charge and external spark/flame ignition, limiting compression ratio to ~6:1.",
-    },
-  ],
+  "us-542846-diesel-engine": [],
   "us-608969-parsons-turbine": [
     {
       claimNumber: 1,
@@ -412,14 +414,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-808897-carrier-air-conditioner",
-      claimTitle: "Dew-Point Saturation & Humidity Regulation",
+      claimTitle: "Unobstructed Wet Front and Projected Rear Separator",
       activeDescription:
-        "Claim 1 regulates relative humidity by atomizing chilled water spray to saturate air at its exact dew-point temperature before reheating.",
+        "Claim 1 keeps the front portion of each upright sinuous plate unobstructed for liquid distribution, then uses projections on the succeeding portion to obstruct liquid flow and separate it from the air.",
       invertedDescription:
-        "Unregulated vapor supersaturation: sensible cooling without dew-point moisture extraction creates condensation rust and fabric molding.",
-      failureModeName: "Uncontrolled Vapor Supersaturation & Mold Precipitation",
+        "A straight or fully obstructed plate loses the source's two-stage wet-contact and liquid-separation arrangement.",
+      failureModeName: "Liquid Carryover and Missed Wet-Contact Capture",
       historicalPriorArt:
-        "Previous cooling systems only cooled dry-bulb temperature, causing erratic humidity swings in lithographic printing plants.",
+        "A simple spray or drain plate can leave droplets entrained or lose the wet surface needed to catch suspended impurities.",
     },
   ],
   "us-727650-linde-air-liquefaction": [
@@ -604,6 +606,146 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Traditional water wheels and flat impulse paddles suffered from turbulence and back-splash drag with <40% efficiency.",
     },
   ],
+  "us-319596-maxim-machine-gun": [
+    {
+      claimNumber: 1,
+      patentId: "us-319596-maxim-machine-gun",
+      claimTitle: "Barrel Recoil-Operated Automatic Breech Action & Belt Feed",
+      activeDescription:
+        "Claim 1 harnesses the kinetic recoil impulse of the discharging barrel to unlock the toggle lock, extract/eject the cartridge case, advance the ammunition belt, and recock the firing pin.",
+      invertedDescription:
+        "Manual bolt cycling / fixed barrel: recoil energy is absorbed by the mounting rather than operating the mechanism, reducing rate of fire from 600 RPM to ~15 RPM manual cycling.",
+      failureModeName: "Manual Bolt-Action Cycling Bottleneck",
+      historicalPriorArt:
+        "Prior repeating arms (Gardner, Nordenfelt, manual Gatling) required continuous manual hand-cranking or lever manipulation by human operators.",
+    },
+  ],
+  "us-36836-gatling-gun": [
+    {
+      claimNumber: 1,
+      patentId: "us-36836-gatling-gun",
+      claimTitle: "Revolving Multi-Barrel Cluster with Continuous Cam Track Reciprocation",
+      activeDescription:
+        "Claim 1 rotates a cluster of six barrels around a central shaft, each barrel having an independent lock guided by an elliptical stationary cam to load, fire, and extract continuously.",
+      invertedDescription:
+        "Single-barrel rapid fire: continuous firing through one barrel overheats the chamber (>450°C) within seconds, causing barrel rupture and dangerous round cook-off.",
+      failureModeName: "Single-Barrel Thermal Overheat & Cook-Off Rupture",
+      historicalPriorArt:
+        "Single-barrel machine and volley guns (Billinghurst-Requa, Ager Coffee Mill) suffered catastrophic overheating and frequent feed jamming.",
+    },
+  ],
+  "us-586193-marconi-radio": [
+    {
+      claimNumber: 1,
+      patentId: "us-586193-marconi-radio",
+      claimTitle: "Elevated Monopole Antenna & Ground Connection with Automatic De-Coherer",
+      activeDescription:
+        "Claim 1 connects one spark terminal to an elevated conductive aerial and the other to earth ground, pairing with an evacuated nickel-silver filings coherer and automatic mechanical tapper.",
+      invertedDescription:
+        "Ungrounded low-dipole spark without de-coherer: radiation resistance collapses by 99%, ground absorption kills range past 50m, and coherer latches permanently conductive after first pulse.",
+      failureModeName: "EM Propagation Attenuation & Coherer Latch Freeze",
+      historicalPriorArt:
+        "Hertz and Branly demonstrated laboratory electromagnetic spark resonance over mere meters without elevated aerial antennas or automatic resetting detectors.",
+    },
+  ],
+  "us-593138-tesla-coil": [
+    {
+      claimNumber: 1,
+      patentId: "us-593138-tesla-coil",
+      claimTitle: "Resonant Air-Core High-Frequency Step-Up Transformer",
+      activeDescription:
+        "Claim 1 steps up high-frequency electrical oscillations using tuned air-core primary/secondary coils ($L_1 C_1 = L_2 C_2$) without an iron core, achieving mega-volt potential.",
+      invertedDescription:
+        "Iron-core transformer at RF (100+ kHz): magnetic hysteresis and eddy-current losses saturate the core instantly, causing thermal insulation destruction and zero resonant step-up.",
+      failureModeName: "Ferromagnetic Core Saturation & RF Eddy Burnout",
+      historicalPriorArt:
+        "Conventional Ruhmkorff induction coils and closed iron-core transformers experienced severe core saturation and breakdown at radio frequencies.",
+    },
+  ],
+  "us-613809-tesla-teleautomaton": [
+    {
+      claimNumber: 1,
+      patentId: "us-613809-tesla-teleautomaton",
+      claimTitle: "Coded RF Pulse Sequence Telecontrol & Step-By-Step Commutator",
+      activeDescription:
+        "Claim 1 receives modulated radio pulses via a coherer receiver, stepping a multi-position rotary commutator to selectively actuate steering rudder motors and electric propulsion.",
+      invertedDescription:
+        "Uncoded spark receiver / direct connection: ambient electrical noise and spurious sparks randomly trip the actuators, causing wild erratic steering and teleoperation loss.",
+      failureModeName: "Spurious RF Interference & Wild Steering Oscillation",
+      historicalPriorArt:
+        "Torpedos and marine vessels had zero wireless remote guidance; early cable-steered models (Sims-Edison) required miles of physical trailing electrical wire.",
+    },
+  ],
+  "us-682690-hewitt-mercury-lamp": [
+    {
+      claimNumber: 1,
+      patentId: "us-682690-hewitt-mercury-lamp",
+      claimTitle: "Enclosed Evacuated Mercury Vapor Gas Discharge Arc",
+      activeDescription:
+        "Claim 1 generates light by passing electric current through an evacuated glass tube containing low-pressure mercury vapor with a liquid mercury cathode.",
+      invertedDescription:
+        "Non-conductive mercury vapor / cold arc: without high-voltage ignition and cathode pooling, mercury gas remains an insulator with zero electrical conductivity or light emission.",
+      failureModeName: "Gas Discharge Non-Conduction Extinction",
+      historicalPriorArt:
+        "Incandescent lamps relied entirely on resistive heating of solid carbon/metal filaments with low luminous efficiency (<3 lm/W).",
+    },
+  ],
+  "us-706737-fessenden-wireless": [
+    {
+      claimNumber: 1,
+      patentId: "us-706737-fessenden-wireless",
+      claimTitle: "Continuous Undamped High-Frequency Wave Audio Modulation",
+      activeDescription:
+        "Claim 1 generates continuous sinusoidal electromagnetic waves modulated directly by acoustic voice currents and detected by a heterodyne electrolytic receiver.",
+      invertedDescription:
+        "Damped spark pulses: intermittent broadband spark trains drown out analog acoustic signals with harsh broadband noise, limiting transmission to Morse telegraphy.",
+      failureModeName: "Damped Spark Noise Modulation Masking",
+      historicalPriorArt:
+        "Marconi and earlier systems used intermittent spark gaps that were fundamentally incapable of continuous voice or music transmission.",
+    },
+  ],
+  "us-879532-de-forest-audion": [
+    {
+      claimNumber: 1,
+      patentId: "us-879532-de-forest-audion",
+      claimTitle: "Interposed Electrostatic Control Grid Modulation",
+      activeDescription:
+        "Claim 1 interposes a wire grid electrode between the heated filament cathode and anode plate to electrostatically modulate electron flow and amplify voltage signals.",
+      invertedDescription:
+        "Two-electrode Fleming diode: without a control grid, the tube acts merely as a passive rectifier with zero voltage gain or active signal amplification ($A_v = 0$).",
+      failureModeName: "Passive Rectification & Zero Voltage Amplification",
+      historicalPriorArt:
+        "The Fleming oscillation valve was a two-electrode diode capable only of rectifying RF signals without amplification.",
+    },
+  ],
+  "us-942699-baekeland-bakelite": [
+    {
+      claimNumber: 1,
+      patentId: "us-942699-baekeland-bakelite",
+      claimTitle: "Simultaneous Heat & Pressure Autoclaved Thermoset Polycondensation",
+      activeDescription:
+        "Claim 1 applies heat ($150^\circ\text{C}-200^\circ\text{C}$) and pressure ($10-20\\text{ MPa}$) to phenol and formaldehyde prepolymers in a closed mold to synthesize insoluble, infusible Bakelite C resin.",
+      invertedDescription:
+        "Atmospheric unpressurized heating: volatile condensation water and formaldehyde boil off at 100°C, producing a porous, foamy, brittle, and mechanically useless spongy mass.",
+      failureModeName: "Volatile Boiling & Spongy Foam Collapse",
+      historicalPriorArt:
+        "Baeyer and early chemists obtained only intractable tar or porous, brittle resins when attempting phenol-formaldehyde reactions at atmospheric pressure.",
+    },
+  ],
+  "us-6162-corliss-steam-engine": [
+    {
+      claimNumber: 1,
+      patentId: "us-6162-corliss-steam-engine",
+      claimTitle: "Governor-Tripped Rotary Valve Variable Cut-Off Mechanism",
+      activeDescription:
+        "Claim 1 connects oscillating rotary steam admission valves to a flyball governor via spring/dashpot disengagement catches, cutting off steam expansion instantaneously at variable stroke positions.",
+      invertedDescription:
+        "Fixed-cutoff throttling slide valve: governor throttles steam inlet pressure, causing massive wire-drawing entropy losses and wasting 30–40% of boiler thermal energy.",
+      failureModeName: "Throttle Wire-Drawing Enthalpy Loss",
+      historicalPriorArt:
+        "Steam engines used fixed eccentric slide valves and throttle governors that restricted steam pressure throughout the entire stroke.",
+    },
+  ],
 };
 
 /**
@@ -642,14 +784,13 @@ export function applyClaimConstraintModifications(
     case "us-381968-tesla-motor": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        // Single-phase stator -> zero starting torque
-        modified.startingTorqueNm = 0;
-        modified.isSinglePhaseStall = 1;
+        // Claim 1 is an apparatus combination; do not infer modern torque,
+        // speed, thermal, or rotor behavior from its inversion.
         activeFailures.push(
-          "Stalled Rotor: Stationary pulsating field produces zero starting net torque",
+          "Source-bound Claim 1 condition absent: corresponding independent alternating-current circuits and progressive pole shifting are not established",
         );
         refusalWarning =
-          "ELECTROMAGNETIC REFUSAL: Stator field is stationary standing wave. Rotor requires manual spin.";
+          "SOURCE-BOUND REFUSAL: Tesla Claim 1 requires the stated motor/generator circuit correspondence and progressive pole shift; this inversion reports only that apparatus condition as absent.";
       }
       break;
     }
@@ -741,22 +882,6 @@ export function applyClaimConstraintModifications(
       break;
     }
 
-    case "us-542846-diesel-engine": {
-      const claim1Active = claimStates[1] ?? true;
-      if (!claim1Active) {
-        modified.compressionRatio = 6.0;
-        modified.compRatio = 6.0;
-        modified.blastAirPressure = 15.0;
-        modified.isAutoIgnition = 0;
-        activeFailures.push(
-          "Detonation Knock: Premature fuel premixing ignites at 45° BTDC, opposing piston stroke",
-        );
-        refusalWarning =
-          "THERMODYNAMIC KNOCK: Compression ratio insufficient for auto-ignition; premix charge causes catastrophic cylinder detonation.";
-      }
-      break;
-    }
-
     case "us-608969-parsons-turbine": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
@@ -802,13 +927,13 @@ export function applyClaimConstraintModifications(
     case "us-808897-carrier-air-conditioner": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.dewPointTempC = 28.0; // High uncontrolled moisture
-        modified.targetRelativeHumidityPct = 85.0; // Supersaturation
+        modified.sprayRatePct = 0.0;
+        modified.separatorFaces = 2;
         activeFailures.push(
-          "Dew-Point Saturation Failure: Ambient moisture exceeds printing room tolerance, causing sheet wrinkling",
+          "Wet-contact and gutter failure: no spray film and too few sinuous faces leave liquid and dust separation unproven",
         );
         refusalWarning =
-          "PSYCHROMETRIC INSTABILITY: Absence of dew-point spray regulation causes uncontrolled relative humidity swings.";
+          "SEPARATOR INCOMPLETE: Claim 1 requires the wet front, projected rear, and continuous sinuous passages together.";
       }
       break;
     }
@@ -995,6 +1120,146 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "IMPULSE SPLITTER LOSS: Knife-edge wedge required to divide and reverse water jet through 180°.";
+      }
+      break;
+    }
+
+    case "us-319596-maxim-machine-gun": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.rateOfFireRpm = 15.0; // Manual bolt cycling
+        modified.recoilOperatingJ = 0.0; // Rigid non-recoiling barrel
+        activeFailures.push(
+          "Manual Bolt Bottleneck: Recoil energy is absorbed into fixed mount without automatic feeding cycle",
+        );
+        refusalWarning =
+          "RECOIL DISCONNECT: Automatic cycling requires floating barrel recoil to actuate toggle lock and belt feed.";
+      }
+      break;
+    }
+
+    case "us-36836-gatling-gun": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.barrelCount = 1.0;
+        modified.barrelTempC = 480.0; // Critical single-barrel thermal runaway
+        activeFailures.push(
+          "Single-Barrel Thermal Overheat: Continuous cyclic firing causes rapid chamber heat accumulation and cook-off",
+        );
+        refusalWarning =
+          "THERMAL OVERLOAD: Multi-barrel revolving cluster required to distribute thermal load across consecutive discharges.";
+      }
+      break;
+    }
+
+    case "us-586193-marconi-radio": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.antennaElevationM = 0.5; // Low ungrounded dipole
+        modified.transmissionRangeKm = 0.04; // Range drops from 50 km to 40 meters
+        activeFailures.push(
+          "Ground Absorption & Coherer Latch: Ungrounded signal decays exponentially; coherer remains latched conductive",
+        );
+        refusalWarning =
+          "GROUNDING & ELEVATION COLLAPSE: Elevated aerial monopole and earth ground return required for long-distance propagation.";
+      }
+      break;
+    }
+
+    case "us-593138-tesla-coil": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.secondaryVoltageKv = 2.5; // Iron core hysteresis saturation collapse
+        modified.resonantQ = 1.2; // Destroyed high-Q resonance
+        activeFailures.push(
+          "Iron Core Hysteresis Saturation: Ferromagnetic core induces massive RF eddy currents and insulation burnout",
+        );
+        refusalWarning =
+          "RF CORE SATURATION: Tuned air-core quarter-wave resonance required for mega-volt high-frequency potential.";
+      }
+      break;
+    }
+
+    case "us-613809-tesla-teleautomaton": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.spuriousNoisePct = 95.0; // Errant random triggering
+        modified.steeringFidelityPct = 5.0; // Control loss
+        activeFailures.push(
+          "Spurious Interference Oscillation: Uncoded spark reception triggers errant commutator steps and wild rudder swings",
+        );
+        refusalWarning =
+          "TELECONTROL DESYNC: Multi-pulse coded sequencing and rotary commutator required for deterministic remote steering.";
+      }
+      break;
+    }
+
+    case "us-682690-hewitt-mercury-lamp": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.arcConductanceMho = 0.0; // Cold non-ignited vapor
+        modified.luminousOutputLumens = 0.0;
+        activeFailures.push(
+          "Gas Discharge Non-Conduction: Cold mercury gas acts as dielectric insulator without high-voltage arc initiation",
+        );
+        refusalWarning =
+          "ARC EXTINCTION: Liquid mercury cathode pool and high-voltage impulse required to establish conductive gas discharge.";
+      }
+      break;
+    }
+
+    case "us-706737-fessenden-wireless": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.harmonicPurityPct = 5.0; // Broadband spark noise
+        modified.audioIntelligibilityPct = 0.0; // Damped sparks mask speech
+        activeFailures.push(
+          "Damped Spark Audio Masking: Intermittent spark discharges mask analog speech modulation with acoustic noise",
+        );
+        refusalWarning =
+          "CONTINUOUS-WAVE FAILURE: Continuous undamped sinusoidal carrier required for amplitude-modulated voice telephony.";
+      }
+      break;
+    }
+
+    case "us-879532-de-forest-audion": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.voltageGainAv = 1.0; // Passive diode (no gain)
+        modified.transconductanceMicromhos = 0.0;
+        activeFailures.push(
+          "Passive Diode Rectification: Without electrostatic grid control, the tube cannot amplify weak incoming signals",
+        );
+        refusalWarning =
+          "TRIODE GAIN COLLAPSE: Interposed control grid required for electrostatic carrier modulation and voltage amplification.";
+      }
+      break;
+    }
+
+    case "us-942699-baekeland-bakelite": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.crosslinkDensityPct = 12.0; // Under-cured porous sponge
+        modified.tensileStrengthMpa = 3.5; // Collapsed from 60 MPa to 3.5 MPa
+        activeFailures.push(
+          "Unpressurized Volatile Boiling: Escape of steam and formaldehyde at 100°C produces a brittle, porous foam",
+        );
+        refusalWarning =
+          "AUTOCLAVE PRESSURE LOSS: Closed pressurized cure (>10 MPa) required to prevent volatile gas boiling during crosslinking.";
+      }
+      break;
+    }
+
+    case "us-6162-corliss-steam-engine": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.thermalEfficiencyPct = 8.5; // Throttling slide-valve baseline
+        modified.wireDrawingLossKw = 45.0;
+        activeFailures.push(
+          "Throttle Wire-Drawing Enthalpy Loss: Continuous throttling restricts cylinder admission pressure throughout stroke",
+        );
+        refusalWarning =
+          "CUT-OFF DISENGAGEMENT FAILURE: Automatic governor trip-gear required for instantaneous valve cutoff and full steam expansion.";
       }
       break;
     }

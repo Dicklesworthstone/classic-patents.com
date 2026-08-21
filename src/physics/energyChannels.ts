@@ -68,13 +68,14 @@ export function energyChannelsFor(
   }
   if (patentId === "us-808897-carrier-air-conditioner") {
     const carrier = FrankenSimEngine.stepCarrierAirConditioner({
-      inletTempC: params.inletTempC,
-      inletRhPct: params.inletRhPct,
-      sprayWaterTempC: params.sprayWaterTempC,
-      reheatTempC: params.reheatTempC,
       airflowCfm: params.airflowCfm,
+      sprayRatePct: params.sprayRatePct,
+      separatorFaces: params.separatorFaces,
     });
-    return [{ name: "Latent sink", watts: carrier.coolingWatts, tone: "useful" }];
+    return [
+      { name: "Fan work", watts: carrier.airMovementWatts, tone: "in" },
+      { name: "Separator resistance", watts: carrier.airMovementWatts, tone: "loss" },
+    ];
   }
   if (patentId === "us-586193-marconi-radio") {
     const radio = stepMarconiRadio(

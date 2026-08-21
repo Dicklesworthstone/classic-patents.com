@@ -2,7 +2,6 @@ import { describe, expect, test } from "bun:test";
 import {
   stepTeslaMotorFig9,
   TESLA_B_VECTOR_SVG_SCALE,
-  TESLA_FIELD_POLES,
   TESLA_PATENT_ID,
   TESLA_STROBE_COUNT,
   teslaBAt,
@@ -21,11 +20,10 @@ import {
   teslaStatorPole,
 } from "./teslaKernel";
 
-describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
-  test("Tesla motor constants and display speed bounds match archival spec", () => {
+describe("Tesla Fig. 9 generator circuits and progressive attraction", () => {
+  test("Tesla source-face constants and display bounds remain stable", () => {
     expect(TESLA_PATENT_ID).toBe("us-381968-tesla-motor");
     expect(TESLA_STROBE_COUNT).toBe(8);
-    expect(TESLA_FIELD_POLES).toBe(2);
     expect(TESLA_B_VECTOR_SVG_SCALE).toBe(60);
 
     const omegaRad = teslaFieldDisplayOmegaRadPerS(60);
@@ -34,18 +32,16 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     expect(omegaDeg).toBe((360 * 60) / 20);
   });
 
-  test("teslaMotorPhaseHz reads the registry frequency and the leftover frequencyHz alias", () => {
+  test("teslaMotorPhaseHz reads the Fig. 9 generator rate and its registry alias", () => {
     expect(teslaMotorPhaseHz({})).toBe(60);
     expect(teslaMotorPhaseHz({ frequency: 40 })).toBe(40);
     expect(teslaMotorPhaseHz({ frequencyHz: 80 })).toBe(80);
     expect(teslaMotorPhaseHz({ frequency: 45, frequencyHz: 80 })).toBe(45);
   });
 
-  test("stepTeslaMotorFig9 computes authentic motor-generator pair synchronization without commutators", () => {
+  test("stepTeslaMotorFig9 keeps the two-circuit generator relation source-bound", () => {
     const state60Hz = stepTeslaMotorFig9(60);
-    expect(state60Hz.generatorRpm).toBe(3600);
-    expect(state60Hz.poleShiftRpm).toBe(3600);
-    expect(state60Hz.diskRpm).toBe(3600);
+    expect(state60Hz.phaseCycleHz).toBe(60);
     expect(state60Hz.usesGeneratorContactRings).toBe(true);
     expect(state60Hz.usesMotorCommutator).toBe(false);
     expect(state60Hz.statorPoleSvgR).toBe(108);
@@ -70,31 +66,24 @@ describe("Tesla Polyphase AC & Resonant Induction Kernels", () => {
     const pole0 = teslaStatorPole(0, 4);
     expect(pole0.cx).toBeCloseTo(200, 1);
     expect(pole0.cy).toBeCloseTo(42, 1);
-    const twoPhase = teslaPhaseVectors(0, 2);
-    expect(twoPhase[0].x).toBeCloseTo(52, 1);
-    expect(twoPhase[1].y).toBeCloseTo(0, 5);
+    const circuitVectors = teslaPhaseVectors(0, 2);
+    expect(circuitVectors[0].x).toBeCloseTo(52, 1);
+    expect(circuitVectors[1].y).toBeCloseTo(0, 5);
   });
 
-  test("teslaBAt computes pure rotating magnetic field vector for 2-phase and 3-phase systems", () => {
-    // 2-phase quadrature system (4 stator poles)
-    const b2Phase0 = teslaBAt(0, 2);
-    expect(b2Phase0.coilCount).toBe(4);
-    expect(Math.hypot(b2Phase0.bx, b2Phase0.by)).toBeCloseTo(1.0, 3);
+  test("teslaBAt shows two independent circuits shifting attraction by a quarter cycle", () => {
+    const sourceAt0 = teslaBAt(0, 2);
+    expect(sourceAt0.coilCount).toBe(4);
+    expect(Math.hypot(sourceAt0.bx, sourceAt0.by)).toBeCloseTo(1.0, 3);
 
-    const b2Phase90 = teslaBAt(Math.PI / 2, 2);
-    expect(Math.hypot(b2Phase90.bx, b2Phase90.by)).toBeCloseTo(1.0, 3);
-    // 90 degree phase shift results in orthogonal field vector
-    const dotProduct = b2Phase0.bx * b2Phase90.bx + b2Phase0.by * b2Phase90.by;
+    const sourceAtQuarter = teslaBAt(Math.PI / 2, 2);
+    expect(Math.hypot(sourceAtQuarter.bx, sourceAtQuarter.by)).toBeCloseTo(1.0, 3);
+    const dotProduct = sourceAt0.bx * sourceAtQuarter.bx + sourceAt0.by * sourceAtQuarter.by;
     expect(Math.abs(dotProduct)).toBeLessThan(0.05);
-
-    // 3-phase 120-degree system (6 stator poles)
-    const b3Phase0 = teslaBAt(0, 3);
-    expect(b3Phase0.coilCount).toBe(6);
-    expect(Math.hypot(b3Phase0.bx, b3Phase0.by)).toBeCloseTo(1.0, 3);
   });
 
-  test("teslaFig4Strobe generates 8 discrete positions matching the 1888 patent diagram", () => {
-    const strobe = teslaFig4Strobe(2);
+  test("teslaFig4Strobe generates eight successive positions for the source diagram", () => {
+    const strobe = teslaFig4Strobe();
     expect(strobe.length).toBe(8);
     for (let i = 0; i < 8; i++) {
       expect(strobe[i].omegaT).toBeCloseTo((i * Math.PI) / 4, 3);

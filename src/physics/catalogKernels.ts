@@ -11,7 +11,6 @@ import {
   haberCatalystField,
   marconiSparkSpectrum,
   noyceJunctionPotential,
-  pasteurYeastField,
   peltonCavityFlow,
   spencerCavityWave,
 } from "./deepWasm";
@@ -35,7 +34,6 @@ import {
   peltonJetCrate,
   shockWaveCrate,
   wakeFluidCrate,
-  wortHeatCrate,
 } from "./genericWasm";
 import { vulcanKinetics } from "./thermochem";
 
@@ -70,7 +68,7 @@ export function fourStrokeIndexFromRad(
   return Math.floor(wrapCycleRad(cyclePhaseRad, strokeRad * strokeCount) / strokeRad) % strokeCount;
 }
 
-/** 720° crank cycle, 2:1 cam, and 0-based stroke. Shared by Otto / Daimler / Diesel 3D. */
+/** 720° crank cycle, 2:1 cam, and 0-based stroke for four-stroke studies. */
 export function fourStrokeCycle(
   crankAngleRad: number,
   cycleWrapRad = Math.PI * 4,
@@ -86,63 +84,6 @@ export function fourStrokeCycle(
     exhaustStartRad: strokeRad * 3,
     camAngleRad: crankAngleRad * camRatio,
     camEventAngleRad: wrapCycleRad(crankAngleRad * camRatio, cycleWrapRad * camRatio),
-  };
-}
-
-/** Diesel 2:1 cam windows from the 720° crank seats. Shared by 3D. */
-export function dieselCamWindows(
-  injectionStartDeg = 355,
-  injectionEndDeg = 390,
-  cycleWrapDeg = 720,
-  camRatio = 0.5,
-) {
-  return {
-    camRatio,
-    camWrapRad: degToRad(cycleWrapDeg * camRatio),
-    intakeCamEndRad: degToRad(180 * camRatio),
-    compressionCamEndRad: degToRad(360 * camRatio),
-    injectionCamStartRad: degToRad(injectionStartDeg * camRatio),
-    injectionCamEndRad: degToRad(injectionEndDeg * camRatio),
-    exhaustCamStartRad: degToRad(540 * camRatio),
-    intakeLiftAmp: 0.15,
-    injectionLiftAmp: 0.12,
-    exhaustLiftAmp: 0.15,
-    intakeRockerCoupling: 1.5,
-    injectorRockerCoupling: 1.8,
-    exhaustRockerCoupling: 1.5,
-    flameScale0: 0.7,
-    flameScaleAmp: 0.6,
-    flameEmissive0: 3,
-    flameEmissiveAmp: 3,
-    compressorSwingAmp: 0.18,
-    flyballOmegaRatio: 2,
-    fuelPumpStrokeAmp: 0.08,
-    fuelPumpOmegaRatio: 2,
-    gasTopY: 3.4,
-    gasMinHeight: 0.18,
-    pistonCrownOffset: 0.5,
-    gasIntakeColor: 0x38bdf8,
-    gasIntakeEmissive: 0x0284c7,
-    gasCompressionCold: 0x38bdf8,
-    gasCompressionHot: 0xf97316,
-    gasInjectionColor: 0xfef08a,
-    gasInjectionEmissive: 0xf97316,
-    gasExhaustColor: 0x64748b,
-    gasExhaustEmissive: 0x334155,
-    compressionEmissive0: 0.2,
-    compressionEmissiveAmp: 1.8,
-    injectionEmissive: 2.5,
-    exhaustEmissive: 0.1,
-    intakeEmissive: 0.3,
-    compressionBarAmp: 2.2,
-    injectionBar: 45,
-    idleBar: 1.5,
-    crankR: 0.55,
-    rodLen: 2.2,
-    rodMin: 0.1,
-    crankTdcPhase: Math.PI / 2,
-    pinYHome: -1.65,
-    pistonCrownLift: 1.5,
   };
 }
 
@@ -1358,93 +1299,23 @@ export function goddardSchematicStack() {
 }
 
 export function stepPasteurFermentation(params: {
-  pasteurizationTempC?: number;
-  holdTimeMin?: number;
+  co2SweepPct?: number;
+  sprayCoveragePct?: number;
   wortTempC?: number;
 }) {
-  const pTemp = params.pasteurizationTempC ?? 58;
-  const hold = params.holdTimeMin ?? 20;
-  const temp = params.wortTempC ?? 22;
-  const logReduction = Number(
-    Math.max(0, Math.min(8.0, (hold / 20) * ((pTemp - 45) / 10) * 4.5)).toFixed(1),
-  );
-  const yeastActivityPct = Math.min(100, Math.round(100 * Math.exp(-0.02 * (temp - 24) ** 2)));
+  const clampPercent = (value: number) => Math.max(0, Math.min(100, value));
+  const co2SweepPct = clampPercent(params.co2SweepPct ?? 100);
+  const sprayCoveragePct = clampPercent(params.sprayCoveragePct ?? 100);
+  const wortTempC = Math.max(20, Math.min(22.5, params.wortTempC ?? 21.25));
+  const withinPrintedYeastBand = wortTempC >= 20 && wortTempC <= 22.5;
   return {
-    logReduction,
-    yeastActivityPct,
-    survivorPct: logReduction >= 6 ? 0.0001 : Number((100 * 10 ** -logReduction).toFixed(2)),
-    alcoholAbvPct: Number((5.2 * (yeastActivityPct / 100)).toFixed(1)),
-    co2PressureBar: Number((1.8 * (yeastActivityPct / 100)).toFixed(2)),
-    shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
-    bathGlowOpacity: Number(Math.min(1, pTemp / 120).toFixed(3)),
-    ...wortHeatCrate(temp),
-    ...pasteurYeastField(yeastActivityPct),
-    microbeWobbleOmega: 3,
-    microbeWobbleAmpPx: 3,
-    microbeSvgOriginX: 230,
-    microbeSvgOriginY: 140,
-    microbeSvgPitchX: 32,
-    microbeSvgPitchY: 28,
-    microbeCols: 5,
-    microbeCount: 14,
-    yeastSvgR: 5,
-    rodDx: 10,
-    rodDy: 3,
-    rodSvgW: 10,
-    rodSvgH: 4,
-    timerWrapS: 60,
-    schematicBubbleOriginX: 145,
-    schematicBubblePitchX: 25,
-    schematicBubbleCount: 5,
-    schematicBubbleY: 160,
-    schematicBubbleR: 4,
-    schematicVesselD: "M 120 100 L 120 210 C 120 235 280 235 280 210 L 280 100 Z",
-    schematicSwanD: "M 200 100 L 200 60 C 200 35 250 35 250 65 C 250 90 290 90 290 60",
-    schematicYeastX: 130,
-    schematicYeastY: 195,
-    schematicYeastW: 140,
-    schematicYeastH: 25,
-    activityNormDivisor: 100,
-    bubbleRise0: 0.15,
-    bubbleRiseAmp: 1.4,
-    bubbleWrapY: 2.0,
-    bubbleResetY: -1.4,
-    bubbleVisibleThreshold: 0.12,
-    bubbleOpacity0: 0.2,
-    bubbleOpacityAmp: 0.75,
-    bubbleWarmC: 28,
-    bubbleWarmHex: 0xf87171,
-    bubbleCoolHex: 0xfef08a,
-  };
-}
-
-/** Yeast-bed seat on the schematic. Shared by the schematic. */
-export function pasteurSchematicYeast(x = 130, y = 195, w = 140, h = 25) {
-  return { x, y, w, h };
-}
-
-/** Anaerobic CO₂ bubble X on the schematic. Shared by the schematic. */
-export function pasteurSchematicBubbleX(index: number, originX = 145, pitchX = 25) {
-  return originX + index * pitchX;
-}
-
-/** Vat-face yeast/microbe seat. Shared by 2D. */
-export function pasteurMicrobeSvg(
-  index: number,
-  timerSeconds: number,
-  omega = 3,
-  ampPx = 3,
-  originX = 230,
-  originY = 140,
-  pitchX = 32,
-  pitchY = 28,
-  cols = 5,
-) {
-  const xPos = originX + (index % cols) * pitchX;
-  const yOffset = Math.sin(timerSeconds * omega + index) * ampPx;
-  return {
-    xPos,
-    yPos: originY + Math.floor(index / cols) * pitchY + yOffset,
+    co2SweepPct,
+    sprayCoveragePct,
+    wortTempC,
+    printedYeastBandMinC: 20,
+    printedYeastBandMaxC: 22.5,
+    withinPrintedYeastBand,
+    readyForYeast: co2SweepPct === 100 && sprayCoveragePct === 100 && withinPrintedYeastBand,
   };
 }
 
@@ -1497,31 +1368,24 @@ export function gliddenSchematicSpurX(index: number, originX = 110, pitchX = 90)
 
 export function stepEdisonPhonograph(params: { mandrelRpm?: number; voiceVolumeDb?: number }) {
   // US 200,521 specifies ten grooves and ten threads to the inch. It does not
-  // specify mandrel diameter, rotation rate, indentation depth, or bandwidth.
-  // The other quantities returned here are explicitly model-only display
-  // assumptions, not measured attributes of Edison's patented apparatus.
+  // specify a cylinder diameter, rotation rate, indentation depth, or audio
+  // response. The remaining motion values are model-only display and animation parameters,
+  // never measurements of Edison's apparatus.
   const rpm = params.mandrelRpm ?? 60;
   const vol = params.voiceVolumeDb ?? 75;
-  const modelMandrelDiameterInches = 4.0;
-  const trackSpeedInPerS = Number(((rpm / 60) * Math.PI * modelMandrelDiameterInches).toFixed(1));
-  const surfaceSpeedMps = Number((trackSpeedInPerS * 0.0254).toFixed(2));
   const leadScrewPitchMm = 2.54;
   const axialTravelMmPerS = Number(((rpm / 60) * leadScrewPitchMm).toFixed(3));
   const mandrel = rpmToOmega(rpm);
   return {
     sourceGroovesPerInch: 10,
     sourceThreadsPerInch: 10,
-    modelMandrelDiameterInches,
-    trackSpeedInPerS,
-    grooveDepthMicrons: Number(((vol / 75) * 25).toFixed(1)),
     leadScrewPitchMm,
     axialTravelMmPerS,
-    surfaceSpeedMps,
-    surfaceSpeedCmPerS: Number((surfaceSpeedMps * 100).toFixed(1)),
-    audioBandwidthHz: Math.round(surfaceSpeedMps * 4500),
     mandrelOmegaRadPerS: mandrel.omegaRadPerS,
     mandrelOmegaDegPerS: mandrel.omegaDegPerS,
-    stylusAmp: Number(((((vol / 75) * 25) / 1000) * 0.05).toFixed(5)),
+    // Illustrative diaphragm/stylus motion only; the source gives no depth or
+    // frequency-response measurement from which to derive a physical amplitude.
+    stylusAmp: Number(((vol / 75) * 0.00125).toFixed(5)),
     ...grooveWaveCrate(rpm),
     stylusOmegaRadPerS: 45,
     axialDisplayWrapMm: 40,
@@ -1804,7 +1668,7 @@ export function stepDaimlerEngine(params: {
   };
 }
 
-/** Vertical connecting-rod SVG endpoints. Shared by Diesel and Daimler 2D. */
+/** Vertical connecting-rod SVG endpoints for engine schematics. */
 export function verticalConnectingRod(
   crankAngleDeg: number,
   pistonDisplacement: number,

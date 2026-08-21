@@ -1,20 +1,21 @@
 /**
- * Tesla polyphase rotating-field samples.
- * Fig. 4 of US 381,968 is eight successive positions of the B-vector.
+ * Tesla source-bound magnetic-attraction samples.
+ * Fig. 4 of US 381,968 is eight successive positions of the resultant
+ * field; Fig. 9 supplies the generator-to-disk teaching relation.
  */
 
 import { teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
-/** US 381,968 Fig. 4 is a 2-pole field: ns = 120 f / P. */
+/** Reference pole count retained for compatibility with the shared field seat. */
 export const TESLA_FIELD_POLES = 2;
-/** Electrical ω shown at 1/20 so a 60 Hz field is visible. HUD states ns. */
+/** Display scaling keeps the source-bound field movement visible. */
 export const TESLA_FIELD_DISPLAY_SLOWDOWN = 20;
-/** 2D presentation tick that integrates the same display ω as 3D. */
+/** Legacy presentation interval retained for existing host probes. */
 export const TESLA_FIELD_DISPLAY_TICK_MS = 30;
 export const TESLA_FIELD_DISPLAY_TICK_S = TESLA_FIELD_DISPLAY_TICK_MS / 1000;
-/** SVG length of the unit B-vector on the 2D rotating-field face. */
+/** SVG length of the unit resultant vector on the 2D source face. */
 export const TESLA_B_VECTOR_SVG_SCALE = 60;
 export const TESLA_STATOR_POLE_SVG_R = 108;
 export const TESLA_TWO_PHASE_VECTOR_SVG_R = 52;
@@ -84,7 +85,7 @@ export interface TeslaFieldSample {
  * Tesla says that one revolution of the generator armature shifts the ring's
  * attractive region once around the ring and that, in this arrangement, disk
  * D follows synchronously. This is a teaching model of that illustrated
- * motor-generator pair, not a later squirrel-cage induction-motor model.
+ * motor-generator pair, not a later rotor construction outside this grant.
  */
 export interface TeslaFig9State {
   phaseCycleHz: number;
@@ -127,6 +128,7 @@ export interface TeslaFig9State {
   coilEmissiveHex: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
+  /** Internal decomposition retained for existing host probes; not visitor HUD energy. */
   hodgeExactEnergy: number;
   hodgeCoexactEnergy: number;
   hodgeHarmonicEnergy: number;
@@ -223,7 +225,7 @@ export function teslaStatorPole(
   };
 }
 
-/** Phase-contribution vectors that sum to the rotating field. Shared by 2D. */
+/** Independent-circuit contribution vectors shown by the 2D source face. */
 export function teslaPhaseVectors(omegaT: number, phaseCount: 2 | 3 = 2) {
   if (phaseCount === 2) {
     const r = TESLA_TWO_PHASE_VECTOR_SVG_R;
@@ -339,7 +341,7 @@ export function teslaSchematicStrobeOpacity(
   return Number((base + index * step).toFixed(3));
 }
 
-/** Tesla Fig. 4: eight successive rotating-field positions. */
+/** Tesla Fig. 4: eight successive resultant-field positions. */
 export function teslaFig4Strobe(phaseCount: 2 | 3 = 2): TeslaFieldSample[] {
   const samples: TeslaFieldSample[] = [];
   for (let n = 0; n < TESLA_STROBE_COUNT; n++) {

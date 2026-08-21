@@ -20,7 +20,7 @@ import {
 } from "./catalogKernels";
 import { fermiKeff } from "./fermiKinetics";
 import { stepHoweSewingMachine } from "./machineKernels";
-import { TESLA_FIELD_POLES } from "./teslaKernel";
+import { stepTeslaMotorFig9, teslaMotorPhaseHz } from "./teslaKernel";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
@@ -53,21 +53,21 @@ export function coupleEdgesFor(patentId: string, params: Record<string, number>)
     ];
   }
   if (patentId === "us-381968-tesla-motor") {
-    const poles = params.poleCount ?? TESLA_FIELD_POLES;
+    const fig9 = stepTeslaMotorFig9(teslaMotorPhaseHz(params));
     return [
       {
-        from: "stator B",
-        to: "shaft ns",
-        gain: Number((120 / Math.max(1, poles)).toFixed(3)),
+        from: "generator G",
+        to: "progressive pole shift",
+        gain: Number((fig9.poleShiftRpm / Math.max(1, fig9.phaseCycleHz)).toFixed(3)),
         unit: "rpm / Hz",
         crate: "fs-couple",
         source: "ts-fallback",
       },
       {
-        from: "frequency",
-        to: "display ω",
-        gain: Number(((2 * Math.PI) / 20).toFixed(4)),
-        unit: "rad/s / Hz",
+        from: "progressive pole shift",
+        to: "disk D",
+        gain: Number((fig9.diskRpm / Math.max(1, fig9.poleShiftRpm)).toFixed(3)),
+        unit: "rpm / rpm",
         crate: "fs-couple",
         source: "ts-fallback",
       },

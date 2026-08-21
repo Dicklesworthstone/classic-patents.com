@@ -64,24 +64,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-381968-tesla-motor": {
-      const freq = params.acFrequencyHz ?? 60.0;
-      const poles = params.poleCount ?? 4;
-      const loadTorque = params.loadTorque ?? 14.0;
-      const syncRpm = (120 * freq) / poles;
-      const rotorRpm = syncRpm * 0.97;
-      const omega = (rotorRpm * 2 * Math.PI) / 60;
-      const rotorInertia = 0.12; // kg*m^2
-
-      kinetic = 0.5 * rotorInertia * omega * omega;
-      // Stator rotating magnetic field energy
-      const bFieldTesla = 0.85;
-      const airgapVolumeM3 = 0.0015;
-      em = ((bFieldTesla * bFieldTesla) / (2 * 4 * Math.PI * 1e-7)) * airgapVolumeM3;
-
-      // Electrical input power balanced against mechanical shaft work + losses
-      const mechanicalPower = loadTorque * omega;
-      powerIn = mechanicalPower / 0.88;
-      dissipated = powerIn;
+      // US 381,968 supplies apparatus relations, not source values for
+      // inertia, field strength, current, torque, power, or losses. Keep the
+      // universal ledger empty rather than presenting later-motor estimates.
       break;
     }
 
@@ -243,24 +228,10 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-    case "us-542846-diesel-engine": {
-      const rpm = params.engineRpm ?? params.rpm ?? 150;
-      const compRatio = params.compRatio ?? params.compressionRatio ?? 18.0;
-      const cutoff = params.cutoffRatio ?? 1.6;
-      const omega = (rpm * 2 * Math.PI) / 60;
-      const flywheelInertia = 4.8; // kg*m^2 for heavy industrial single-cylinder engine
-
-      kinetic = 0.5 * flywheelInertia * omega * omega;
-      const fuelFlowGps = 0.22 * (rpm / 150);
-      powerIn = fuelFlowGps * 42500.0; // Heavy fuel oil enthalpy (Watts)
-      // True Diesel cycle thermal efficiency: 1 - (1 / r^(gamma-1)) * (rc^gamma - 1)/(gamma*(rc-1))
-      const gamma = 1.4;
-      const effFactor = (cutoff ** gamma - 1.0) / (gamma * (cutoff - 1.0));
-      const efficiency = Math.max(0.1, 1.0 - (1.0 / compRatio ** (gamma - 1.0)) * effFactor);
-      dissipated = powerIn * (1.0 - efficiency);
-      thermal = 38000.0; // Cylinder jacket & piston thermal storage
+    case "us-542846-diesel-engine":
+      // The source face is held; no energy ledger is inferred from its
+      // qualitative process description.
       break;
-    }
 
     case "us-1647-morse-telegraph": {
       const volt = params.lineVoltage ?? 24.0;
@@ -300,6 +271,20 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-706737-fessenden-wireless": {
+      const carrierFreqKhz = params.carrierFreqKhz ?? 50.0;
+      const rfCurrentAmps = params.rfCurrentAmps ?? 18.0;
+      const antennaRadiationOhms = 4.2;
+      const alternatorRpm = 10000.0;
+      const omega = (alternatorRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * 12.0 * (0.15 * omega) ** 2; // High-frequency Alexanderson-Fessenden alternator rotor
+      em = 0.5 * (1.2e-3) * rfCurrentAmps * rfCurrentAmps; // Stator multi-slot high-frequency field
+      powerIn = 3500.0; // 5 HP electric drive motor
+      dissipated = 3500.0 - (rfCurrentAmps * rfCurrentAmps * antennaRadiationOhms); // Core eddy current & bearing losses
+      thermal = 800.0;
+      break;
+    }
+
     case "us-233692-pelton-water-wheel":
     case "us-233692-pelton-wheel": {
       const headM = params.waterHeadM ?? 150.0;
@@ -322,18 +307,6 @@ export function computePortHamiltonianEnergy(
       em = (beamWatts / 3e8) * 100.0; // Stored optical photon beam radiation in transit
       dissipated = beamWatts * (1.0 - 0.08 * modulation); // Mirror absorption & selenium ohmic heating
       thermal = 0.015 * 320.0 * 25.0; // Selenium cell thermal mass
-      break;
-    }
-
-    case "us-200521-edison-phonograph": {
-      const crankRpm = params.cylinderRpm ?? 60.0;
-      const omega = (crankRpm * 2 * Math.PI) / 60.0;
-      const cylinderInertia = 0.12; // Heavy lead/brass grooved cylinder
-      kinetic = 0.5 * cylinderInertia * omega * omega;
-      potential = 0.5 * 450.0 * 25e-6 ** 2; // Stylus spring and mica diaphragm elastic strain energy
-      powerIn = 1.8; // Hand crank input mechanical power (Watts)
-      dissipated = powerIn * 0.95; // Tinfoil indentation plastic deformation + screw friction
-      thermal = 0.85 * 380.0 * 25.0; // Brass mandrel heat capacity
       break;
     }
 
@@ -600,6 +573,266 @@ export function computePortHamiltonianEnergy(
       kinetic = 0.5 * 0.45 * ((drumSpeedRpm * 2 * Math.PI) / 60) ** 2; // Rotating selenium drum
       thermal = 1800.0; // Thermal fuser roller heat (180°C)
       dissipated = powerIn * 0.92; // Fuser thermal conduction into paper
+      break;
+    }
+
+    case "us-593138-tesla-coil": {
+      const inputVoltageKv = params.inputVoltageKv ?? 15.0;
+      const primaryCapNf = params.primaryCap ?? 45.0;
+      const toploadPf = params.toploadCapacitancePf ?? 35.0;
+      const couplingK = params.couplingK ?? 0.18;
+      const vPrimary = inputVoltageKv * 1000.0;
+      const cPrimary = primaryCapNf * 1e-9;
+      const cTopload = toploadPf * 1e-12;
+      const vSecondary = vPrimary * Math.sqrt(cPrimary / cTopload) * couplingK;
+      em = 0.5 * cPrimary * vPrimary * vPrimary + 0.5 * cTopload * vSecondary * vSecondary;
+      powerIn = 0.5 * cPrimary * vPrimary * vPrimary * 120.0; // 120 breaks/sec
+      dissipated = powerIn * 0.85; // Spark gap plasma heat + coronal RF streamer dissipation
+      thermal = 450.0; // Primary tank damping resistor + spark-gap electrode thermal capacity
+      break;
+    }
+
+    case "us-586193-marconi-radio": {
+      const sparkVoltageKv = params.sparkVoltageKv ?? 25.0;
+      const aerialCapPf = params.aerialCapPf ?? 220.0;
+      const vSpark = sparkVoltageKv * 1000.0;
+      const cAerial = aerialCapPf * 1e-12;
+      em = 0.5 * cAerial * vSpark * vSpark;
+      powerIn = em * 500.0; // 500 spark discharges per second (induction coil interrupter)
+      dissipated = powerIn * 0.78; // Spark gap thermal resistance + ground return dissipation
+      thermal = 120.0;
+      break;
+    }
+
+    case "us-613809-tesla-teleautomaton": {
+      const vesselVelocityKnots = params.vesselVelocityKnots ?? 6.0;
+      const rudderAngleDeg = params.rudderAngleDeg ?? 0.0;
+      const vMps = vesselVelocityKnots * 0.514444;
+      const vesselMassKg = 120.0;
+      kinetic = 0.5 * vesselMassKg * vMps * vMps;
+      potential = 0.5 * 15.0 * (rudderAngleDeg * (Math.PI / 180)) ** 2; // Rudder steering return spring
+      powerIn = 180.0; // 24V propulsion motor current (7.5 A)
+      dissipated = 0.5 * 1025.0 * vMps ** 3 * 0.18 + 25.0; // Hull skin friction + steering solenoid heat
+      thermal = 350.0;
+      break;
+    }
+
+    case "us-879532-de-forest-audion": {
+      const plateVoltageV = params.plateVoltageV ?? 90.0;
+      const plateCurrentMa = params.plateCurrentMa ?? 4.5;
+      const filamentVoltageV = params.filamentVoltageV ?? 6.0;
+      const filamentCurrentA = params.filamentCurrentA ?? 1.1;
+      powerIn = plateVoltageV * (plateCurrentMa / 1000.0) + filamentVoltageV * filamentCurrentA;
+      em = 0.5 * 8.5e-12 * plateVoltageV * plateVoltageV; // Inter-electrode grid-plate capacitance
+      thermal = 0.0015 * 130.0 * (2100.0 - 293.15); // Tantalum filament thermal heat capacity
+      dissipated = powerIn * 0.98; // Thermionic plate dissipation + filament radiation
+      break;
+    }
+
+    case "us-319596-maxim-machine-gun": {
+      const recoilVelocityMps = params.recoilVelocityMps ?? 5.8;
+      const rateOfFireRpm = params.rateOfFireRpm ?? 600.0;
+      const movingPartsMassKg = 3.2;
+      kinetic = 0.5 * movingPartsMassKg * recoilVelocityMps * recoilVelocityMps;
+      potential = 0.5 * 450.0 * 0.025 * 0.025; // Mainspring strain energy in full battery
+      powerIn = (rateOfFireRpm / 60.0) * 3200.0; // Chemical propellant combustion power (3.2 kJ/cartridge)
+      dissipated = powerIn * 0.72; // Barrel water jacket cooling heat + muzzle gas expansion
+      thermal = 4.2 * 4184.0 * 65.0; // 4.2 liters of cooling water in water jacket
+      break;
+    }
+
+    case "us-347140-thomson-welding": {
+      const weldCurrentAmps = params.weldCurrentAmps ?? 2200.0;
+      const clampPressureMpa = params.clampPressureMpa ?? 18.0;
+      const contactResistanceOhms = 0.00045;
+      powerIn = weldCurrentAmps * weldCurrentAmps * contactResistanceOhms + 120.0; // Joule heating + core loss
+      potential = 0.5 * (clampPressureMpa * 1e6 * 0.0002) * 0.0015; // Mechanical clamping screw strain
+      em = 0.5 * 0.00012 * weldCurrentAmps * weldCurrentAmps; // Secondary step-down inductive field
+      thermal = 0.08 * 450.0 * (1350.0 - 293.15); // Steel weld nugget thermal enthalpy
+      dissipated = powerIn * 0.95;
+      break;
+    }
+
+    case "us-470918-reno-escalator": {
+      const passengerCount = params.passengerCount ?? 8;
+      const beltSpeedMps = params.beltSpeedMps ?? 0.45;
+      const inclineAngleDeg = 25.0;
+      const inclineHeightM = 4.5;
+      const totalPassengerMassKg = passengerCount * 75.0;
+      const palletChainMassKg = 420.0;
+      kinetic = 0.5 * (totalPassengerMassKg + palletChainMassKg) * beltSpeedMps * beltSpeedMps;
+      potential = totalPassengerMassKg * 9.80665 * (inclineHeightM / 2.0);
+      powerIn = totalPassengerMassKg * 9.80665 * beltSpeedMps * Math.sin((inclineAngleDeg * Math.PI) / 180) + 1200.0;
+      dissipated = 1200.0 + totalPassengerMassKg * 0.08 * 9.80665 * beltSpeedMps; // Drive sprocket friction
+      thermal = 600.0;
+      break;
+    }
+
+    case "us-307031-edison-indicator": {
+      const mainsVoltageV = params.mainsVoltageV ?? 110.0;
+      const emissionCurrentUa = params.emissionCurrentUa ?? 85.0;
+      powerIn = (mainsVoltageV * mainsVoltageV) / 110.0 + mainsVoltageV * (emissionCurrentUa / 1e6);
+      em = 0.5 * 12.0e-12 * mainsVoltageV * mainsVoltageV; // Platinum plate electrostatic field
+      thermal = 0.0008 * 710.0 * (2250.0 - 293.15); // Carbon filament thermal capacity
+      dissipated = powerIn * 0.99; // Stefan-Boltzmann thermal radiation
+      break;
+    }
+
+    case "us-36836-gatling-gun": {
+      const crankRpm = params.crankRpm ?? 80.0;
+      const barrelCount = params.barrelCount ?? 6.0;
+      const rateOfFireRpm = crankRpm * barrelCount;
+      const clusterMassKg = 18.5;
+      const omega = (crankRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * clusterMassKg * (0.08 * omega) ** 2; // Rotating 6-barrel cluster inertia
+      powerIn = 75.0 + (rateOfFireRpm / 60.0) * 2800.0; // Crank muscular work + powder combustion throughput
+      dissipated = (rateOfFireRpm / 60.0) * 2800.0 * 0.70; // 6-barrel convective & muzzle gas dissipation
+      thermal = barrelCount * 2.8 * 490.0 * (120.0 - 20.0); // Distributed thermal capacity of 6 steel barrels
+      break;
+    }
+
+    case "us-157124-glidden-barbed-wire": {
+      const twistRateTpi = params.twistRateTpi ?? 4.0;
+      const lineTensionN = params.lineTensionN ?? 850.0;
+      const wireLengthM = 100.0;
+      const wireCrossSectionM2 = Math.PI * 0.00125 * 0.00125;
+      const youngsModulusPa = 210e9;
+      const shearModulusPa = 79e9;
+      const thetaRad = twistRateTpi * (2 * Math.PI / 0.0254) * wireLengthM;
+      potential =
+        0.5 * ((youngsModulusPa * wireCrossSectionM2) / wireLengthM) * (lineTensionN / (youngsModulusPa * wireCrossSectionM2) * wireLengthM) ** 2 +
+        0.5 * ((shearModulusPa * (Math.PI * 0.00125 ** 4 / 2)) / wireLengthM) * thetaRad ** 2;
+      powerIn = 450.0; // Twisting machine drive motor
+      dissipated = 380.0; // Plastic torsion work + barb crimping friction
+      thermal = 250.0;
+      break;
+    }
+
+    case "us-200521-edison-phonograph": {
+      const mandrelRpm = params.mandrelRpm ?? 120.0;
+      const soundPressurePa = params.soundPressurePa ?? 2.0;
+      const mandrelMassKg = 0.85;
+      const omega = (mandrelRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * (0.5 * mandrelMassKg * 0.05 * 0.05) * omega * omega;
+      potential = 0.5 * 120.0 * (0.00015 * (soundPressurePa / 2.0)) ** 2; // Diaphragm compliance strain
+      powerIn = 0.5 * (soundPressurePa * soundPressurePa * 0.002) / 415.0 + 8.5; // Acoustic acoustic wave power + crank work
+      dissipated = 8.2; // Stylus drag in tinfoil/wax groove + bearing friction
+      thermal = 45.0;
+      break;
+    }
+
+    case "us-79265-sholes-typewriter":
+    case "us-184-sholes-typewriter": {
+      const typingSpeedWpm = params.typingSpeedWpm ?? 45.0;
+      const keyStrokeForceN = params.keyStrokeForceN ?? 4.5;
+      const strikesPerSecond = (typingSpeedWpm * 5.0) / 60.0;
+      const typebarMassKg = 0.018;
+      const typebarVelocityMps = 3.2;
+      kinetic = 0.5 * typebarMassKg * typebarVelocityMps * typebarVelocityMps;
+      potential = 0.5 * 85.0 * 0.015 * 0.015; // Typebar return spring potential
+      powerIn = strikesPerSecond * keyStrokeForceN * 0.015; // Finger input power
+      dissipated = powerIn * 0.95; // Ribbon inking impact dissipation + escapement friction
+      thermal = 20.0;
+      break;
+    }
+
+    case "us-4750-howe-sewing-machine": {
+      const stitchesPerMinute = params.stitchesPerMinute ?? 300.0;
+      const needleStrokeMm = params.needleStrokeMm ?? 32.0;
+      const vNeedle = (stitchesPerMinute / 60.0) * (needleStrokeMm / 1000.0) * 2.0;
+      const needleAssemblyMassKg = 0.12;
+      const flywheelInertia = 0.015;
+      const omega = (stitchesPerMinute * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * needleAssemblyMassKg * vNeedle * vNeedle + 0.5 * flywheelInertia * omega * omega;
+      potential = 0.5 * 45.0 * 0.008 * 0.008; // Thread tension spring
+      powerIn = 25.0; // Treadle mechanical input power
+      dissipated = 22.0; // Fabric penetration shear + shuttle race friction
+      thermal = 35.0;
+      break;
+    }
+
+    case "us-6162-corliss-steam-engine": {
+      const boilerPressurePsi = params.boilerPressurePsi ?? 100.0;
+      const engineRpm = params.engineRpm ?? 60.0;
+      const pistonMassKg = 85.0;
+      const strokeM = 0.914; // 3-foot stroke
+      const omega = (engineRpm * 2 * Math.PI) / 60.0;
+      const vPiston = strokeM * omega;
+      kinetic = 0.5 * pistonMassKg * vPiston * vPiston + 0.5 * 450.0 * (1.8 * omega) ** 2; // Piston + giant flywheel
+      potential = (boilerPressurePsi * 6894.76 * 0.08) / 1.3; // High-pressure steam cylinder expansion potential
+      powerIn = 45000.0; // 60 HP Corliss steam engine
+      dissipated = powerIn * 0.28; // Condenser thermal rejection + dashpot friction
+      thermal = 28000.0;
+      break;
+    }
+
+    case "us-132-davenport-electric-motor": {
+      const batteryVoltageV = params.batteryVoltageV ?? 12.0;
+      const motorCurrentA = params.motorCurrentA ?? 4.0;
+      const rotorRpm = params.rotorRpm ?? 450.0;
+      const rotorMassKg = 2.4;
+      const omega = (rotorRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * (0.5 * rotorMassKg * 0.075 * 0.075) * omega * omega;
+      em = 0.5 * 0.045 * motorCurrentA * motorCurrentA; // Armature electromagnet inductance
+      powerIn = batteryVoltageV * motorCurrentA; // Grove battery galvanic power
+      dissipated = motorCurrentA * motorCurrentA * 2.2 + 8.5; // Commutator brush resistance & arc dissipation
+      thermal = 140.0;
+      break;
+    }
+
+    case "us-120057-gramme-dynamo": {
+      const driveRpm = params.driveRpm ?? 900.0;
+      const fieldCurrentA = params.fieldCurrentA ?? 8.5;
+      const outputVoltageV = params.outputVoltageV ?? 110.0;
+      const ringCoreMassKg = 14.0;
+      const omega = (driveRpm * 2 * Math.PI) / 60.0;
+      kinetic = 0.5 * (0.5 * ringCoreMassKg * 0.12 * 0.12) * omega * omega;
+      em = 0.5 * 0.25 * fieldCurrentA * fieldCurrentA; // Ring armature toroidal magnetic field
+      powerIn = 2500.0; // Steam engine belt drive mechanical input
+      dissipated = fieldCurrentA * fieldCurrentA * 1.4 + 180.0; // Copper I^2*R losses + eddy current hysteresis
+      thermal = 850.0;
+      break;
+    }
+
+    case "us-942699-baekeland-bakelite": {
+      const autoclavePressurePsi = params.autoclavePressurePsi ?? 100.0;
+      const autoclaveTempC = params.autoclaveTempC ?? 160.0;
+      const resinMassKg = 5.0;
+      potential = (autoclavePressurePsi * 6894.76 * 0.05) / 1.4; // Autoclave gas pressure potential
+      thermal = resinMassKg * 1800.0 * (autoclaveTempC - 20.0); // Phenol-formaldehyde resin thermal capacity
+      powerIn = 3500.0; // Steam heating jacket input power
+      dissipated = 2800.0; // Autoclave convective cooling loss
+      break;
+    }
+
+    case "us-78317-nobel-dynamite": {
+      const ngMassFraction = params.ngMassFraction ?? 0.75;
+      const chargeMassGrams = params.chargeMassGrams ?? 100.0;
+      potential = (chargeMassGrams / 1000.0) * ngMassFraction * 6.3e6; // Chemical explosive potential energy (6.3 MJ/kg)
+      thermal = 450.0;
+      powerIn = 0.0;
+      dissipated = 0.0;
+      break;
+    }
+
+    case "us-1-hopkins-potash": {
+      const kilnTempC = params.kilnTempC ?? 650.0;
+      const ashMassKg = params.ashMassKg ?? 50.0;
+      thermal = ashMassKg * 850.0 * (kilnTempC - 20.0); // Leached wood ash furnace thermal capacity
+      powerIn = 8500.0; // Hardwood combustion heat input
+      dissipated = 8200.0; // Radiative furnace flue gas dissipation
+      break;
+    }
+
+    case "us-235199-bell-photophone": {
+      const solarIlluminanceLux = params.solarIlluminanceLux ?? 50000.0;
+      const seleniumResistanceOhms = params.seleniumResistanceOhms ?? 1200.0;
+      const biasVoltageV = params.biasVoltageV ?? 24.0;
+      powerIn = (solarIlluminanceLux / 100000.0) * 1.5 + (biasVoltageV * biasVoltageV) / seleniumResistanceOhms;
+      potential = 0.5 * 250.0 * (0.00008) ** 2; // Silvered glass diaphragm acoustic deflection strain
+      em = 0.5 * 15e-12 * biasVoltageV * biasVoltageV;
+      thermal = 15.0;
+      dissipated = powerIn * 0.99; // Recombination dissipation + headphone coil heat
       break;
     }
 

@@ -93,13 +93,14 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(sens?.derivativeUnit).toContain("N·m / deg");
     });
 
-    test("computes Tesla motor synchronous speed sensitivity ∂n_s/∂f", () => {
-      const sens = computeParameterSensitivity("us-381968-tesla-motor", "acFrequencyHz", {
-        acFrequencyHz: 60.0,
-        poleCount: 4,
+    test("computes Tesla Fig. 9 generator-rate sensitivity ∂n_G/∂f", () => {
+      const sens = computeParameterSensitivity("us-381968-tesla-motor", "frequency", {
+        frequency: 60.0,
       });
       expect(sens).not.toBeNull();
-      expect(sens?.derivativeValue).toBe(30.0); // 120 / 4 = 30 RPM/Hz
+      expect(sens?.metricName).toBe("Generator Rotation");
+      expect(sens?.derivativeValue).toBe(60.0); // One generator revolution per Hz
+      expect(sens?.derivativeUnit).toBe("RPM / Hz");
     });
 
     test("computes Watt separate condenser power sensitivity ∂P/∂P_boiler", () => {
@@ -151,14 +152,19 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.digestKind).toBe("host");
     });
 
-    test("computes electromagnetic energy for Tesla induction motor", () => {
+    test("does not fabricate a Tesla energy ledger beyond the Fig. 9 source", () => {
       const ledger = computePortHamiltonianEnergy("us-381968-tesla-motor", {
-        acFrequencyHz: 60.0,
-        poleCount: 4,
-        loadTorque: 14.0,
+        frequency: 60.0,
       });
-      expect(ledger.energy.electromagneticJoules).toBeGreaterThan(0);
-      expect(ledger.inputPowerWatts).toBeGreaterThan(1000);
+      expect(ledger.energy).toEqual({
+        kineticJoules: 0,
+        potentialJoules: 0,
+        electromagneticJoules: 0,
+        thermalJoules: 0,
+        totalHamiltonianJoules: 0,
+      });
+      expect(ledger.inputPowerWatts).toBe(0);
+      expect(ledger.dissipatedPowerWatts).toBe(0);
       expect(ledger.isConservative).toBe(true);
     });
 
@@ -212,14 +218,35 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(res.refusalWarning).toContain("Aerodynamic adverse yaw exceeds roll authority");
     });
 
-    test("inverting Tesla Claim 1 triggers single-phase stall refusal", () => {
+    test("inverting Tesla Claim 1 preserves the source-bound circuit refusal", () => {
+      const constraint = CATALOG_CLAIM_CONSTRAINTS["us-381968-tesla-motor"]?.[0];
+      expect(constraint).toBeDefined();
+      expect(constraint?.claimTitle).toBe("Independent Alternating-Current Motor Circuits");
+      expect(constraint?.activeDescription).toContain("independently connected induced circuits");
+      expect(constraint?.activeDescription).toContain("progressively shifts the motor poles");
+      expect(constraint?.historicalPriorArt).toContain("collector rings");
+
+      const visitorText = [
+        constraint?.claimTitle,
+        constraint?.activeDescription,
+        constraint?.invertedDescription,
+        constraint?.failureModeName,
+        constraint?.historicalPriorArt,
+      ].join(" ");
+      expect(visitorText).not.toMatch(/polyphase|rotating B-field|zero starting torque|stalled rotor|overheating|standing wave/i);
+
       const res = applyClaimConstraintModifications(
         "us-381968-tesla-motor",
-        { acFrequencyHz: 60.0 },
+        { frequency: 60.0 },
         { 1: false }, // Inverted
       );
-      expect(res.modifiedParams.startingTorqueNm).toBe(0);
-      expect(res.refusalWarning).toContain("ELECTROMAGNETIC REFUSAL");
+      expect(res.modifiedParams).toEqual({ frequency: 60.0 });
+      expect(res.modifiedParams).not.toHaveProperty("startingTorqueNm");
+      expect(res.modifiedParams).not.toHaveProperty("isSinglePhaseStall");
+      expect(res.activeFailures[0]).toContain("independent alternating-current circuits");
+      expect(res.activeFailures[0]).toContain("progressive pole shifting");
+      expect(res.refusalWarning).toContain("SOURCE-BOUND REFUSAL");
+      expect(res.refusalWarning).not.toMatch(/torque|speed|heating|rotor-performance claim/i);
     });
   });
 });

@@ -15,7 +15,6 @@ import {
   davenportSchematicArmature,
   degToRad,
   delavalSchematicDiscY,
-  dieselCamWindows,
   edisonFoilGrooveX,
   edisonLeadScrewThreadX,
   edisonSchematicGlowOpacity,
@@ -71,9 +70,6 @@ import {
   ottoStrokePhase,
   parsonsIsRotor,
   parsonsStageHeight,
-  pasteurMicrobeSvg,
-  pasteurSchematicBubbleX,
-  pasteurSchematicYeast,
   peltonSchematicBucket,
   phonographAxialTravelMm,
   pistonSvgDisplacement,
@@ -142,16 +138,6 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(fourStrokeIndexFromRad(Math.PI * 3.5)).toBe(3);
     expect(fourStrokeCycle(0).strokeIndex).toBe(0);
     expect(fourStrokeCycle(Math.PI * 4.1).cyclePhaseRad).toBeCloseTo(Math.PI * 0.1, 10);
-    expect(dieselCamWindows().intakeCamEndRad).toBeCloseTo(Math.PI / 2, 10);
-    expect(dieselCamWindows().injectionCamStartRad).toBeCloseTo(degToRad(355 * 0.5), 10);
-    expect(dieselCamWindows().injectorRockerCoupling).toBe(1.8);
-    expect(dieselCamWindows().compressorSwingAmp).toBe(0.18);
-    expect(dieselCamWindows().fuelPumpStrokeAmp).toBe(0.08);
-    expect(dieselCamWindows().injectionBar).toBe(45);
-    expect(dieselCamWindows().gasIntakeColor).toBe(0x38bdf8);
-    expect(dieselCamWindows().crankR).toBe(0.55);
-    expect(dieselCamWindows().rodLen).toBe(2.2);
-    expect(dieselCamWindows().pistonCrownLift).toBe(1.5);
     expect(farnsworthBeamFrac(-4.5)).toBe(0);
     expect(farnsworthBeamFrac(-0.5)).toBe(0.5);
     expect(farnsworthBeamFrac(3.5)).toBe(1);
@@ -459,30 +445,22 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(goddardSchematicStack().stage2SepY).toBe(7.5);
   });
 
-  test("Pasteur fermentation computes anaerobic ethanol conversion and microbial kill kinetics", () => {
+  test("Pasteur US 135,245 models only the printed gas-sweep and spray-cooling sequence", () => {
     const res = stepPasteurFermentation({
-      pasteurizationTempC: 58,
-      holdTimeMin: 20,
-      wortTempC: 22,
+      co2SweepPct: 75,
+      sprayCoveragePct: 60,
+      wortTempC: 21.25,
     });
-    expect(res.logReduction).toBeGreaterThan(4);
-    expect(res.alcoholAbvPct).toBeGreaterThan(0);
-    expect(res.microbeCount).toBe(14);
-    expect(res.microbeWobbleOmega).toBe(3);
-    const microbe = pasteurMicrobeSvg(0, 0);
-    expect(microbe.xPos).toBe(230);
-    expect(microbe.yPos).toBe(140);
-    expect(res.schematicBubbleCount).toBe(5);
-    expect(res.schematicBubbleR).toBe(4);
-    expect(pasteurSchematicBubbleX(0)).toBe(145);
-    expect(pasteurSchematicBubbleX(4)).toBe(245);
-    expect(pasteurSchematicYeast().x).toBe(130);
-    expect(res.yeastSvgR).toBe(5);
-    expect(res.rodDx).toBe(10);
-    expect(res.timerWrapS).toBe(60);
-    expect(res.bubbleRise0).toBe(0.15);
-    expect(res.bubbleWrapY).toBe(2);
-    expect(res.bubbleWarmC).toBe(28);
+    expect(res.co2SweepPct).toBe(75);
+    expect(res.sprayCoveragePct).toBe(60);
+    expect(res.wortTempC).toBe(21.25);
+    expect(res.withinPrintedYeastBand).toBe(true);
+    expect(res.readyForYeast).toBe(false);
+    expect(
+      stepPasteurFermentation({ co2SweepPct: 100, sprayCoveragePct: 100, wortTempC: 20 })
+        .readyForYeast,
+    ).toBe(true);
+    expect(JSON.stringify(res)).not.toMatch(/kill|abv|shelf|pressure|microbe|airRemaining/i);
   });
 
   test("Glidden barbed wire computes tensile yield and barb lock security", () => {
@@ -496,10 +474,9 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(gliddenSchematicSpurX(2)).toBe(290);
   });
 
-  test("Edison phonograph computes groove tracking pitch and diaphragm acoustic amplitude", () => {
+  test("Edison phonograph keeps printed pitches separate from illustrative motion", () => {
     const res = stepEdisonPhonograph({ mandrelRpm: 60, voiceVolumeDb: 75 });
-    expect(res.surfaceSpeedMps).toBeGreaterThan(0);
-    expect(res.grooveDepthMicrons).toBeGreaterThan(0);
+    expect(res.stylusAmp).toBeGreaterThan(0);
     expect(phonographAxialTravelMm(60, 2)).toBeGreaterThan(0);
     expect(res.schematicGrooveCount).toBe(8);
     expect(res.schematicMandrelW).toBe(180);

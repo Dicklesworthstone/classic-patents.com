@@ -1326,15 +1326,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     engineMethod: "FrankenSimEngine.stepTeslaMotorFig9",
     controls: [
       {
-        id: "phaseCount",
-        label: "Illustrated circuit families (2 or 3)",
-        min: 2,
-        max: 3,
-        step: 1,
-        defaultValue: 2,
-        unit: "phases",
-      },
-      {
         id: "frequency",
         label: "Generator phase-cycle rate (teaching model)",
         min: 20,
@@ -2806,107 +2797,73 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     pedagogicalInsight:
       "Waterproof bellows affixed to the steamboat hull expand downwards via geared shaft linkages, displacing hundreds of cubic feet of river water to float the grounded hull over shallow sandbars.",
   },
-  // Preserved non-public model. The exact public route is a source guide below
-  // until the scholarly edition's held publication review is complete.
+  // Preserved source-bound model. Publication remains held pending independent
+  // figure-crop review; metrics describe only the illustrated record system.
   "_legacy-unpublished-us-2292387-lamarr-frequency-hopping": {
-    domain: "semiconductor_carrier",
-    domainTitle: "Slotted Carrier Spread-Spectrum & Processing Anti-Jamming Gain",
-    equationName: "Processing Gain & Spread-Spectrum Bandwidth",
-    governingEquation:
-      "G_p = 10 \\log_{10}\\left(\\frac{\\text{BW}_{\\text{RF}}}{\\text{BW}_{\\text{signal}}}\\right) = 10 \\log_{10}\\left(\\frac{8.8\\ \\text{MHz}}{10\\ \\text{kHz}}\\right) \\approx 29.4\\ \\text{dB}",
-    engineMethod: "FrankenSimEngine.stepLamarrFrequencyHopping",
+    domain: "electromagnetics_flux",
+    domainTitle: "Synchronized record-controlled radio tuning",
+    equationName: "Record position and receiver matching",
+    governingEquation: "r_tx(t) = r_rx(t),\\quad r_tx \\in \\{A, B, C, D, E, F, G\\},\\quad r_rx \\in \\{D, E, F, G\\}",
+    engineMethod: "source-controlled Lamarr record model",
     controls: [
       {
-        id: "channels",
-        label: "Piano Roll Active Channels",
-        min: 12,
-        max: 88,
-        step: 1,
-        defaultValue: 88,
-        unit: "keys",
-      },
-      {
-        id: "hopRate",
-        label: "Tape Synchronous Hop Rate",
-        min: 1,
-        max: 30,
-        step: 0.5,
-        defaultValue: 4.0,
-        unit: "hops/s",
-      },
-      {
-        id: "isJammingActive",
-        label: "Enable Jamming",
+        id: "recordPosition",
+        label: "Matched record position",
         min: 0,
-        max: 1,
+        max: 6,
         step: 1,
-        defaultValue: 1,
-        unit: "",
+        defaultValue: 0,
+        unit: "row",
       },
       {
-        id: "jamChannel",
-        label: "Spot-Jam Channel",
-        min: 1,
-        max: 88,
-        step: 1,
-        defaultValue: 26,
-        unit: "ch",
+        id: "commandTone",
+        label: "Command tone (100 or 500 cycles)",
+        min: 100,
+        max: 500,
+        step: 400,
+        defaultValue: 100,
+        unit: "cycles",
       },
     ],
     computeMetrics: (p) => {
-      const hops = p.hopRate ?? 4.0;
-      const fh = FrankenSimEngine.stepLamarrFrequencyHopping(p.channels ?? 88, hops);
-      const rfBwMhz = fh.spreadSpectrumBandwidthMhz.toFixed(1);
-      const procGainDb = fh.processingGainDb.toFixed(1);
-      const antiJamDb = fh.antiJammingMarginDb.toFixed(1);
+      const position = Math.max(0, Math.min(6, Math.round(p.recordPosition ?? 0)));
+      const row = "ABCDEFG"[position] ?? "A";
+      const receiverTuned = position >= 3;
+      const tone = p.commandTone === 500 ? "500" : "100";
 
       return [
         {
-          label: "RF Spread Bandwidth",
-          value: rfBwMhz,
-          unit: "MHz",
+          label: "Transmitter record row",
+          value: row,
+          unit: "A–G",
           badgeColor: "indigo",
-          progressPct: clampProgress((Number(rfBwMhz) / 10) * 100),
+          progressPct: clampProgress((position / 6) * 100),
         },
         {
-          label: "Processing Gain (Gp)",
-          value: procGainDb,
-          unit: "dB",
+          label: "Receiver match",
+          value: receiverTuned ? "D–G" : "A–C false",
+          unit: "channels",
           badgeColor: "emerald",
-          progressPct: clampProgress((Number(procGainDb) / 32) * 100),
+          progressPct: receiverTuned ? 100 : 0,
         },
         {
-          label: "Anti-Jamming Margin",
-          value: antiJamDb,
-          unit: "dB",
+          label: "Command label",
+          value: tone,
+          unit: "cycles",
           badgeColor: "cyan",
-          progressPct: clampProgress((Number(antiJamDb) / 30) * 100),
+          progressPct: tone === "500" ? 100 : 20,
         },
         {
-          label: "Hop Interval",
-          value: `${fh.hopIntervalMs} ms`,
-          unit: "Δt",
+          label: "Warning lamp 43",
+          value: receiverTuned ? "off" : "on",
+          unit: "row H",
           badgeColor: "amber",
-          progressPct: clampProgress((fh.hopIntervalMs / 500) * 100),
-        },
-        {
-          label: "Jam Occupancy",
-          value: `${fh.jamOccupancyPct}%`,
-          unit: "1/N",
-          badgeColor: "purple",
-          progressPct: clampProgress(fh.jamOccupancyPct * 10),
-        },
-        {
-          label: "Hop Dwell Period",
-          value: `${fh.hopIntervalMs}`,
-          unit: "ms",
-          badgeColor: "purple",
-          progressPct: clampProgress((hops / 10) * 100),
+          progressPct: receiverTuned ? 0 : 100,
         },
       ];
     },
     pedagogicalInsight:
-      "Synchronized 88-key slotted player-piano rolls rapidly steer the radio carrier across 88 distinct frequencies, making torpedo steering signals mathematically immune to continuous-wave narrowband jamming.",
+      "The illustrated apparatus advances matched perforated records together. Rows A–G select seven transmitter tuning positions, while the receiver is effective on D–G and deliberately ineffective on A–C; a 100-cycle or 500-cycle command then advances the rudder by one discrete step.",
   },
   "_legacy-unpublished-us-3541541-engelbart-mouse": {
     domain: "continuum_elasticity",
@@ -4197,100 +4154,29 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "_legacy-unpublished-us-542846-diesel-engine": {
     domain: "thermodynamics_transport",
-    domainTitle: "Adiabatic Compression Auto-Ignition & Constant-Pressure Expansion",
-    equationName: "Adiabatic Temperature Rise & Diesel Cycle Efficiency",
-    governingEquation:
-      "T_2 = T_1 r^{\\gamma - 1} \\quad \\text{and} \\quad \\eta = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[\\frac{r_c^\\gamma - 1}{\\gamma (r_c - 1)}\\right]",
-    engineMethod: "FrankenSimEngine.stepDieselEngine",
-    controls: [
+    domainTitle: "Diesel source face held for facsimile review",
+    equationName: "No published Diesel telemetry",
+    governingEquation: "source-only: no measured state is asserted",
+    engineMethod: "source-edition-hold",
+    controls: [],
+    computeMetrics: () => [
       {
-        id: "compRatio",
-        label: "Compression Ratio (r)",
-        min: 12,
-        max: 22,
-        step: 0.5,
-        defaultValue: 18,
-        unit: ":1",
+        label: "Publication state",
+        value: "HELD",
+        unit: "source review",
+        badgeColor: "amber",
+        progressPct: 0,
       },
       {
-        id: "blastAirPressure",
-        label: "Blast-Air Injector Pressure",
-        min: 45,
-        max: 85,
-        step: 2,
-        defaultValue: 65,
-        unit: "bar",
-      },
-      {
-        id: "cutoffRatio",
-        label: "Fuel Cutoff Ratio (rc)",
-        min: 1.2,
-        max: 2.2,
-        step: 0.1,
-        defaultValue: 1.6,
-        unit: "ratio",
-      },
-      {
-        id: "engineRpm",
-        label: "Engine Shaft Speed",
-        min: 60,
-        max: 300,
-        step: 10,
-        defaultValue: 150,
-        unit: "RPM",
+        label: "Telemetry",
+        value: "WITHHELD",
+        unit: "no measured values",
+        badgeColor: "rose",
+        progressPct: 0,
       },
     ],
-    computeMetrics: (p) => {
-      const diesel = FrankenSimEngine.stepDieselEngine({
-        compressionRatio: p.compRatio ?? 18,
-        blastAirPressureBar: p.blastAirPressure ?? 65,
-        cutoffRatio: p.cutoffRatio ?? 1.6,
-        engineRpm: p.engineRpm ?? 150,
-      });
-      const tCompC = diesel.tCompressionC;
-      const pComp = diesel.pCompBar.toFixed(1);
-      const brakeEff = diesel.brakeEfficiencyPct.toFixed(1);
-
-      return [
-        {
-          label: "Compression Temperature",
-          value: `${tCompC} °C`,
-          unit: "T_comp",
-          badgeColor: tCompC > 210 ? "emerald" : "amber",
-          progressPct: clampProgress((tCompC / 800) * 100),
-        },
-        {
-          label: "Peak Cylinder Pressure",
-          value: `${pComp} bar`,
-          unit: "P_comp",
-          badgeColor: "cyan",
-          progressPct: clampProgress((Number(pComp) / 80) * 100),
-        },
-        {
-          label: "Brake Thermal Efficiency",
-          value: `${brakeEff}%`,
-          unit: "η_brake",
-          badgeColor: "emerald",
-          progressPct: clampProgress((Number(brakeEff) / 50) * 100),
-        },
-        {
-          label: "Auto-Ignition State",
-          value: diesel.isAutoIgnition ? "SELF-IGNITING" : "NO IGNITION",
-          unit: "state",
-          badgeColor: diesel.isAutoIgnition ? "emerald" : "rose",
-          progressPct: clampProgress(diesel.isAutoIgnition ? 100 : 0),
-        },
-        {
-          label: "Crank ω",
-          value: `${diesel.crankOmegaRadPerS}`,
-          unit: "rad/s",
-          badgeColor: "cyan",
-          progressPct: Math.min(100, (diesel.crankOmegaRadPerS / 30) * 100),
-        },
-      ];
-    },
     pedagogicalInsight:
-      "Compressing pure air to 18:1 generates 680°C heat, causing atomized fuel droplets injected under high pressure to self-ignite instantaneously and expand at constant pressure.",
+      "US 542,846 describes compression before fuel admission, gradual admission to cut-off, and further expansion. It does not publish a measured operating envelope for a live badge.",
   },
   "us-613809-tesla-teleautomaton": {
     domain: "electromagnetics_flux",
@@ -5483,94 +5369,79 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "us-135245-pasteur-fermentation": {
     domain: "thermal_transport",
-    domainTitle: "Biochemical Kinetics & Sterile Barrier Thermodynamics",
-    equationName: "Thermal Sterilization & Biological Inactivation",
-    governingEquation: "k = A \\cdot \\exp\\left(-\\frac{E_a}{R \\cdot T}\\right)",
-    engineMethod: "FrankenSimEngine.stepPasteurFermentation",
+    domainTitle: "Gas Displacement & External Water-Spray Cooling",
+    equationName: "Source Sequence With Printed Yeast-Addition Band",
+    governingEquation:
+      "\\text{boiling wort} \\rightarrow \\text{CO}_2\\text{ sweep} \\rightarrow \\text{external spray cooling} \\rightarrow T=20\\text{--}22.5^{\\circ}\\mathrm{C}",
+    engineMethod: "Source-bounded TypeScript reader state; no quantitative process model",
     controls: [
       {
-        id: "pasteurizationTempC",
-        label: "Pasteurization Bath Temperature",
-        min: 45,
-        max: 75,
-        step: 1,
-        defaultValue: 58,
-        unit: "°C",
+        id: "co2SweepPct",
+        label: "CO₂ Sweep Progress (Reader Aid)",
+        min: 0,
+        max: 100,
+        step: 5,
+        defaultValue: 100,
+        unit: "%",
       },
       {
-        id: "holdTimeMin",
-        label: "Thermal Hold Time",
-        min: 5,
-        max: 40,
+        id: "sprayCoveragePct",
+        label: "Exterior Spray Coverage (Reader Aid)",
+        min: 0,
+        max: 100,
         step: 5,
-        defaultValue: 20,
-        unit: "min",
+        defaultValue: 100,
+        unit: "%",
       },
       {
         id: "wortTempC",
-        label: "Fermentation Wort Temperature",
-        min: 10,
-        max: 45,
-        step: 1,
-        defaultValue: 22,
+        label: "Yeast-Addition Temperature",
+        min: 20,
+        max: 22.5,
+        step: 0.25,
+        defaultValue: 21.25,
         unit: "°C",
       },
     ],
     computeMetrics: (p) => {
       const pasteur = stepPasteurFermentation({
-        pasteurizationTempC: p.pasteurizationTempC,
-        holdTimeMin: p.holdTimeMin,
+        co2SweepPct: p.co2SweepPct,
+        sprayCoveragePct: p.sprayCoveragePct,
         wortTempC: p.wortTempC,
       });
-      const logRed = pasteur.logReduction;
-      const activity = pasteur.yeastActivityPct;
       return [
         {
-          label: "Bacterial Inactivation",
-          value: `${logRed.toFixed(1)} log reduction`,
-          unit: "log_N",
-          badgeColor: logRed >= 5 ? "emerald" : "amber",
-          progressPct: Math.min(100, (logRed / 6) * 100),
+          label: "CO₂ sweep",
+          value: `${pasteur.co2SweepPct}%`,
+          unit: "reader control",
+          badgeColor: pasteur.co2SweepPct === 100 ? "emerald" : "amber",
+          progressPct: pasteur.co2SweepPct,
         },
         {
-          label: "Yeast Culture Activity",
-          value: `${activity}%`,
-          unit: "rate",
-          badgeColor: activity > 70 ? "emerald" : "amber",
-          progressPct: clampProgress(activity),
+          label: "Spray coverage",
+          value: `${pasteur.sprayCoveragePct}%`,
+          unit: "reader control",
+          badgeColor: pasteur.sprayCoveragePct === 100 ? "emerald" : "amber",
+          progressPct: pasteur.sprayCoveragePct,
         },
         {
-          label: "ABV",
-          value: `${pasteur.alcoholAbvPct}%`,
-          unit: "abv",
-          badgeColor: "purple",
-          progressPct: clampProgress((pasteur.alcoholAbvPct / 5.2) * 100),
+          label: "Printed yeast band",
+          value: `${pasteur.wortTempC} °C`,
+          unit: "20–22.5 °C",
+          badgeColor: pasteur.withinPrintedYeastBand ? "emerald" : "amber",
+          progressPct: clampProgress(((pasteur.wortTempC - 20) / 2.5) * 100),
         },
         {
-          label: "Head CO₂",
-          value: `${pasteur.co2PressureBar} bar`,
-          unit: "P_CO2",
-          badgeColor: "cyan",
-          progressPct: clampProgress((pasteur.co2PressureBar / 1.8) * 100),
-        },
-        {
-          label: "Surviving Fraction",
-          value: `${pasteur.survivorPct}%`,
-          unit: "N/N0",
-          badgeColor: pasteur.survivorPct < 0.01 ? "emerald" : "amber",
-          progressPct: Math.min(100, pasteur.survivorPct * 10),
-        },
-        {
-          label: "Shelf Life",
-          value: `${pasteur.shelfLifeMonths} mo`,
-          unit: "t_shelf",
-          badgeColor: pasteur.shelfLifeMonths > 1 ? "emerald" : "amber",
-          progressPct: clampProgress(pasteur.shelfLifeMonths > 1 ? 100 : 10),
+          label: "Sequence state",
+          value: pasteur.readyForYeast ? "Ready for yeast" : "Process incomplete",
+          unit: "source sequence",
+          badgeColor: pasteur.readyForYeast ? "emerald" : "amber",
+          progressPct: pasteur.readyForYeast ? 100 : 50,
         },
       ];
     },
     pedagogicalInsight:
-      "Pasteur's narrow S-curved swan-neck pipe lets air enter freely while atmospheric dust and wild airborne bacteria settle in the lower bend, preserving pure yeast strains.",
+      "US 135,245 confines boiling-hot wort, uses carbonic-acid gas to expel contained air, cools the vessel exterior with water spray, and adds yeast at the printed 16°–18° Réaumur band. It states no pasteurization hold, microbial kill rate, pressure, ABV, or shelf-life measurement.",
   },
   "us-157124-glidden-barbed-wire": {
     domain: "solid_mechanics",

@@ -120,27 +120,16 @@ export function computeParameterSensitivity(
     }
 
     case "us-381968-tesla-motor": {
-      if (controlKey === "acFrequencyHz" || controlKey === "acFrequency") {
-        const _freq = params.acFrequencyHz ?? params.acFrequency ?? 60.0;
-        const poles = params.poleCount ?? 4;
-        // Synchronous speed: n_s = 120 * f / poles
-        const dNs_df = 120 / poles;
+      if (controlKey === "frequency") {
+        // Fig. 9's source relation: one generator revolution advances the
+        // magnetic attraction once around ring R.
+        const dGeneratorRpm_df = 60;
         return {
-          metricName: "Synchronous Speed",
-          derivativeSymbol: "∂n_s / ∂f",
-          derivativeValue: Number(dNs_df.toFixed(1)),
+          metricName: "Generator Rotation",
+          derivativeSymbol: "∂n_G / ∂f",
+          derivativeValue: dGeneratorRpm_df,
           derivativeUnit: "RPM / Hz",
-          interpretation: "Direct linear scaling of rotating stator magnetic flux frequency.",
-        };
-      }
-      if (controlKey === "loadTorque" || controlKey === "loadTorqueNm") {
-        const slipSlope = 0.0025; // s/Nm
-        return {
-          metricName: "Rotor Slip Ratio",
-          derivativeSymbol: "∂s / ∂τ_load",
-          derivativeValue: Number((slipSlope * 100).toFixed(3)),
-          derivativeUnit: "% / N·m",
-          interpretation: "Rotor lag required to induce electromagnetic restoring torque.",
+          interpretation: "Each generator cycle advances the Fig. 9 pole-shift relation once.",
         };
       }
       break;
@@ -384,44 +373,6 @@ export function computeParameterSensitivity(
           derivativeValue: Number((dEta_dr * 100).toFixed(2)),
           derivativeUnit: "% / ratio",
           interpretation: "Thermodynamic Carnot limit expansion from peak cycle compression.",
-        };
-      }
-      break;
-    }
-
-    case "us-542846-diesel-engine": {
-      if (controlKey === "compressionRatio" || controlKey === "cr" || controlKey === "compRatio") {
-        const r = params.compRatio ?? params.compressionRatio ?? 18.0;
-        const cutoff = params.cutoffRatio ?? 1.6;
-        const gamma = 1.4;
-        const effFactor = (cutoff ** gamma - 1.0) / (gamma * (cutoff - 1.0));
-        const dEta_dr = ((gamma - 1.0) / r ** gamma) * effFactor;
-        return {
-          metricName: "Diesel Thermal Efficiency",
-          derivativeSymbol: "∂η / ∂r",
-          derivativeValue: Number((dEta_dr * 100).toFixed(2)),
-          derivativeUnit: "% / ratio",
-          interpretation:
-            "High compression ratio increases expansion work without premature detonation.",
-        };
-      }
-      if (controlKey === "engineRpm" || controlKey === "rpm") {
-        return {
-          metricName: "Indicated Shaft Power",
-          derivativeSymbol: "∂P / ∂N",
-          derivativeValue: 0.28,
-          derivativeUnit: "kW / RPM",
-          interpretation: "Linear power scaling with crankshaft rotational frequency.",
-        };
-      }
-      if (controlKey === "blastAirPressure") {
-        return {
-          metricName: "Fuel Atomization Quality",
-          derivativeSymbol: "∂Atom / ∂P_blast",
-          derivativeValue: 0.35,
-          derivativeUnit: "% / bar",
-          interpretation:
-            "Compressed air blast kinetic energy atomizes heavy oil droplets into micro-mist.",
         };
       }
       break;
@@ -685,20 +636,6 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-200521-edison-phonograph": {
-      if (controlKey === "grooveDepthUm" || controlKey === "stylusDepth") {
-        return {
-          metricName: "Acoustic Playback Amplitude",
-          derivativeSymbol: "∂SPL / ∂d_groove",
-          derivativeValue: 1.2,
-          derivativeUnit: "dB / µm",
-          interpretation:
-            "Mica diaphragm acoustic sound pressure level scaling with tinfoil indentation depth.",
-        };
-      }
-      break;
-    }
-
     case "us-247804-delaval-separator": {
       if (controlKey === "bowlRpm" || controlKey === "rpm") {
         return {
@@ -721,6 +658,192 @@ export function computeParameterSensitivity(
           derivativeValue: 1.4,
           derivativeUnit: "W / RPM",
           interpretation: "Power scaling achieved by enclosed crankcase high rotational velocity.",
+        };
+      }
+      break;
+    }
+
+    case "us-319596-maxim-machine-gun": {
+      if (controlKey === "recoilTravelMm" || controlKey === "recoilTravel") {
+        return {
+          metricName: "Toggle Unlock Timing",
+          derivativeSymbol: "∂t_unlock / ∂x_recoil",
+          derivativeValue: 0.85,
+          derivativeUnit: "ms / mm",
+          interpretation:
+            "Short-recoil delayed unlocking buffer protecting barrel pressure drop before chamber opens.",
+        };
+      }
+      if (controlKey === "firingRateRpm" || controlKey === "rateOfFireRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Water Jacket Heat Rejection",
+          derivativeSymbol: "∂Q_jacket / ∂RPM",
+          derivativeValue: 10.5,
+          derivativeUnit: "W / RPM",
+          interpretation:
+            "Propellant heat flux rejected into 4.2-liter evaporating water jacket.",
+        };
+      }
+      break;
+    }
+
+    case "us-36836-gatling-gun": {
+      if (controlKey === "crankRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Cluster Cyclic Fire Rate",
+          derivativeSymbol: "∂ROF / ∂CrankRPM",
+          derivativeValue: 6.0,
+          derivativeUnit: "RPM / RPM",
+          interpretation:
+            "6-fold mechanical rate multiplication from 6 revolving barrel cluster cam tracks.",
+        };
+      }
+      break;
+    }
+
+    case "us-586193-marconi-radio": {
+      if (controlKey === "antennaHeightM" || controlKey === "antennaHeight") {
+        return {
+          metricName: "Radiation Resistance",
+          derivativeSymbol: "∂R_rad / ∂h",
+          derivativeValue: 3.2,
+          derivativeUnit: "Ω / m",
+          interpretation:
+            "Monopole dipole radiation resistance scaling quadratically with aerial elevation.",
+        };
+      }
+      if (controlKey === "sparkVoltageKv" || controlKey === "sparkVoltage") {
+        return {
+          metricName: "RF Pulse Radiated Power",
+          derivativeSymbol: "∂P_rad / ∂V_spark",
+          derivativeValue: 48.0,
+          derivativeUnit: "W / kV",
+          interpretation:
+            "Electrostatic discharge energy available for wireless electromagnetic propagation.",
+        };
+      }
+      break;
+    }
+
+    case "us-593138-tesla-coil": {
+      if (controlKey === "couplingK" || controlKey === "coupling") {
+        return {
+          metricName: "Resonant Secondary Voltage",
+          derivativeSymbol: "∂V_sec / ∂k",
+          derivativeValue: 650.0,
+          derivativeUnit: "kV / unit_k",
+          interpretation:
+            "Step-up voltage transformation via tuned air-core mutual magnetic flux coupling.",
+        };
+      }
+      break;
+    }
+
+    case "us-613809-tesla-teleautomaton": {
+      if (controlKey === "rudderAngleDeg" || controlKey === "rudderAngle") {
+        return {
+          metricName: "Vessel Turning Rate",
+          derivativeSymbol: "∂ω_turn / ∂θ_rudder",
+          derivativeValue: 0.35,
+          derivativeUnit: "deg/s / deg",
+          interpretation:
+            "Hydrodynamic rudder yaw turning moment from wireless pulse-stepped actuator.",
+        };
+      }
+      break;
+    }
+
+    case "us-706737-fessenden-wireless": {
+      if (controlKey === "carrierFreqKhz" || controlKey === "carrierFreq") {
+        return {
+          metricName: "Alternator Frequency Scaling",
+          derivativeSymbol: "∂f / ∂RPM",
+          derivativeValue: 0.05,
+          derivativeUnit: "kHz / RPM",
+          interpretation:
+            "High-frequency continuous wave generation via multi-pole Alexanderson alternator rotor.",
+        };
+      }
+      if (controlKey === "modDepthPct" || controlKey === "modulation") {
+        return {
+          metricName: "Audio Modulation Sideband Power",
+          derivativeSymbol: "∂P_sideband / ∂m",
+          derivativeValue: 12.5,
+          derivativeUnit: "W / %",
+          interpretation:
+            "Voice amplitude modulation depth converting microphone acoustic signals to sideband energy.",
+        };
+      }
+      break;
+    }
+
+    case "us-879532-de-forest-audion": {
+      if (controlKey === "gridVoltageV" || controlKey === "gridVoltage") {
+        return {
+          metricName: "Triode Transconductance (gm)",
+          derivativeSymbol: "∂I_p / ∂V_g",
+          derivativeValue: 420.0,
+          derivativeUnit: "µS",
+          interpretation:
+            "Electrostatic grid potential modulation of thermionic electron flow across vacuum space.",
+        };
+      }
+      if (controlKey === "plateVoltageV" || controlKey === "plateVoltage") {
+        return {
+          metricName: "Voltage Amplification Factor (µ)",
+          derivativeSymbol: "∂V_p / ∂V_g",
+          derivativeValue: 8.5,
+          derivativeUnit: "V / V",
+          interpretation:
+            "Active voltage amplification factor achieved by third-electrode electrostatic control.",
+        };
+      }
+      break;
+    }
+
+    case "us-942699-baekeland-bakelite": {
+      if (controlKey === "autoclavePressurePsi" || controlKey === "pressure") {
+        return {
+          metricName: "Polymer Void Suppression",
+          derivativeSymbol: "∂Density / ∂P",
+          derivativeValue: 0.0085,
+          derivativeUnit: "(g/cm³) / psi",
+          interpretation:
+            "Bakelizer autoclave pressure preventing condensation bubble foaming during thermoset cure.",
+        };
+      }
+      if (controlKey === "autoclaveTempC" || controlKey === "temp") {
+        return {
+          metricName: "Crosslinking Kinetics Rate",
+          derivativeSymbol: "∂k_crosslink / ∂T",
+          derivativeValue: 0.065,
+          derivativeUnit: "min⁻¹ / °C",
+          interpretation:
+            "Thermal activation accelerating phenol-formaldehyde 3D network resin solidification.",
+        };
+      }
+      break;
+    }
+
+    case "us-6162-corliss-steam-engine": {
+      if (controlKey === "cutoffPct" || controlKey === "cutoff") {
+        return {
+          metricName: "Expansion Thermal Efficiency",
+          derivativeSymbol: "∂η_th / ∂Cutoff",
+          derivativeValue: -0.42,
+          derivativeUnit: "% / %",
+          interpretation:
+            "Thermodynamic Rankine expansion gain as cut-off is shortened by governor trip-gear.",
+        };
+      }
+      if (controlKey === "boilerPressurePsi" || controlKey === "pressure") {
+        return {
+          metricName: "Indicated Cylinder Power",
+          derivativeSymbol: "∂IHP / ∂P_boiler",
+          derivativeValue: 0.75,
+          derivativeUnit: "HP / psi",
+          interpretation:
+            "Indicated horsepower scaling with full initial boiler admission pressure without throttling.",
         };
       }
       break;
