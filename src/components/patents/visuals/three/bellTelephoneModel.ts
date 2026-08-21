@@ -149,6 +149,8 @@ export function buildBellTelephoneModel(): BellTelephoneModel {
       color: 0xd97706,
       roughness: 0.22,
       metalness: 0.9,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 

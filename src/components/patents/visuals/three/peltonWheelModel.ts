@@ -94,7 +94,9 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
 
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
-    ...(castIronTex ? { map: castIronTex } : {}),
+    map: castIronTex || undefined,
+    transparent: true,
+    opacity: 1.0,
     color: 0x243242,
     roughness: 0.55,
     metalness: 0.8,
@@ -105,6 +107,8 @@ export function buildPeltonWheelModel(): PeltonWheelModel {
     color: 0x182230,
     roughness: 0.7,
     metalness: 0.65,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(darkCastIron);
 

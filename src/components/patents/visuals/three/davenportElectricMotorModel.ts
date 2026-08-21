@@ -155,7 +155,9 @@ export function buildDavenportMotorModel(): DavenportMotorModelResult {
   // --- Museum-Grade Materials ---
   const mahogany = trackMat(
     new THREE.MeshStandardMaterial({
-      ...(mahoganyTex ? { map: mahoganyTex } : {}),
+      map: mahoganyTex || undefined,
+      transparent: true,
+      opacity: 1.0,
       color: 0x4a1e0d,
       roughness: 0.45,
       metalness: 0.05,

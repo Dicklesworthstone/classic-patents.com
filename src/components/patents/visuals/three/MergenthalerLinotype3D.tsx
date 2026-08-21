@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
@@ -228,8 +228,18 @@ export function MergenthalerLinotype3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">Reset</span>
           </button>
         </div>
 

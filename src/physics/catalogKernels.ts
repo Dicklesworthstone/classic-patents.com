@@ -2607,6 +2607,10 @@ export function kevlarChainPath(
   };
 }
 
+/** Studio wrap/reset pads the hole-drift stream uses. Independent of bias; do not empty-step for them. */
+export const BARDEEN_HOLE_WRAP_PAD = 0.1;
+export const BARDEEN_HOLE_RESET_PAD = 0.05;
+
 export function stepBardeenTransistor(
   emitterCurrentMa?: number,
   collectorBiasVolts?: number,
@@ -2657,8 +2661,8 @@ export function stepBardeenTransistor(
     schematicEmitterLabelY: 64,
     schematicCollectorLabelX: 250,
     schematicCollectorLabelY: 64,
-    holeWrapPad: 0.1,
-    holeResetPad: 0.05,
+    holeWrapPad: BARDEEN_HOLE_WRAP_PAD,
+    holeResetPad: BARDEEN_HOLE_RESET_PAD,
   };
 }
 
@@ -3985,6 +3989,8 @@ export function stepHaberAmmonia(params: {
   const recycleRatio = Number(((1 - singlePassConversion) / singlePassConversion).toFixed(1));
   const compressorDisplayOmegaRadPerS = Number(((flowMolS / 50) * 4).toFixed(3));
   const loopFlowAdvance = Number(((flowMolS / 50) * 0.02).toFixed(4));
+  const catalystParticleAdvance = Number((compressorDisplayOmegaRadPerS * 10).toFixed(3));
+  const condenserDripAdvance = Number((compressorDisplayOmegaRadPerS * 15).toFixed(3));
 
   return {
     pressureAtm: pAtm,
@@ -4004,6 +4010,8 @@ export function stepHaberAmmonia(params: {
     recycleRatio,
     compressorDisplayOmegaRadPerS,
     loopFlowAdvance,
+    catalystParticleAdvance,
+    condenserDripAdvance,
   };
 }
 
@@ -4076,6 +4084,7 @@ export function stepHewittMercuryLamp(params: {
   const plasmaFlickerOmegaRadPerS = isStable ? 30 : 90;
   const cathodeSpotOmegaXRadPerS = Number((currentRatio * 8).toFixed(3));
   const cathodeSpotOmegaYRadPerS = Number((currentRatio * 11).toFixed(3));
+  const strikeJoltOmegaRadPerS = Number(((plasmaFlickerOmegaRadPerS * 4) / 3).toFixed(3));
 
   return {
     mainsVoltageV: vMains,
@@ -4101,6 +4110,7 @@ export function stepHewittMercuryLamp(params: {
     plasmaFlickerOmegaRadPerS,
     cathodeSpotOmegaXRadPerS,
     cathodeSpotOmegaYRadPerS,
+    strikeJoltOmegaRadPerS,
   };
 }
 
@@ -4137,6 +4147,7 @@ export function stepTeslaTeleautomaton(
   const propellerOmegaRadPerS = rpmToOmega(propellerRpm).omegaRadPerS;
   const steppingDiskIndex = pulseCount % 8;
   const cohererDisplayOmegaRadPerS = relayEnergized ? 1.5 : 0;
+  const rfWaveDisplayRate = Number(((cohererDisplayOmegaRadPerS * 4) / 3).toFixed(3));
 
   return {
     isResonant,
@@ -4148,6 +4159,7 @@ export function stepTeslaTeleautomaton(
     propellerOmegaRadPerS,
     steppingDiskIndex,
     cohererDisplayOmegaRadPerS,
+    rfWaveDisplayRate,
     rfFrequencyKhz: fKhz,
     rudderAngleDeg: rudderDeg,
     propellerThrottlePct: throttlePct,
@@ -4239,6 +4251,7 @@ export function stepKilbyIntegratedCircuit(params: {
   const maxClockFrequencyMhz = Number((1000.0 / (2.5 * Math.max(1.0, tauNs))).toFixed(1));
   // Leftover 6 rad/s at default Ge 60.3 MHz; silicon’s slower clock dims the switching pulse.
   const switchingDisplayOmegaRadPerS = Number(((maxClockFrequencyMhz * 6) / 60.3).toFixed(3));
+  const bondPulseAdvance = Number((switchingDisplayOmegaRadPerS * 0.25).toFixed(3));
 
   // Phase-shift oscillator resonant frequency f_osc = 1 / (2 * pi * R * C * sqrt(6))
   const fOscKhz = Number(
@@ -4280,6 +4293,7 @@ export function stepKilbyIntegratedCircuit(params: {
     maxClockFrequencyMhz,
     phaseShiftOscillatorFrequencyKhz: fOscKhz,
     switchingDisplayOmegaRadPerS,
+    bondPulseAdvance,
     componentDensityPerCuFt,
   };
 }

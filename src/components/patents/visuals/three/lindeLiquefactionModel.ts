@@ -442,7 +442,7 @@ export function updateLindeLiquefactionKinematics(
 
       if (pos[idx + 1] < -2.5) {
         const r = Math.sqrt((i + 1) / MIST_COUNT) * 0.4;
-        const a = (i + timeSec * 10) * 2.39996;
+        const a = (i + timeSec * 10 * pressureNorm) * 2.39996;
         pos[idx + 0] = Math.cos(a) * r;
         pos[idx + 1] = -1.7;
         pos[idx + 2] = Math.sin(a) * r;

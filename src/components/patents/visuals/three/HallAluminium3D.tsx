@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -46,6 +46,14 @@ export function HallAluminium3D() {
   });
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActivePreset(preset);
+    const studio = studioRef.current;
+    if (!studio) return;
+    const cfg = CAMERA_PRESETS[preset];
+    studio.controls.setView(cfg.pos, cfg.target);
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -93,12 +101,6 @@ export function HallAluminium3D() {
     };
   }, [live]);
 
-  const setView = (preset: CameraPreset) => {
-    setActivePreset(preset);
-    const targetPreset = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(targetPreset.pos, targetPreset.target);
-  };
-
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Charles Martin Hall Aluminium Reduction 3D</div>
@@ -116,7 +118,7 @@ export function HallAluminium3D() {
                 <button
                   key={preset}
                   type="button"
-                  onClick={() => setView(preset)}
+                  onClick={() => applyCameraPreset(preset)}
                   className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                     activePreset === preset
                       ? "bg-amber-600 text-white shadow-xs font-semibold"
@@ -143,8 +145,18 @@ export function HallAluminium3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("overview")}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

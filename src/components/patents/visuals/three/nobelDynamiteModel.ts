@@ -167,7 +167,9 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
   // --- Museum-Grade Materials ---
   const waxPaper = trackMat(
     new THREE.MeshStandardMaterial({
-      ...(waxPaperTex ? { map: waxPaperTex } : {}),
+      map: waxPaperTex || undefined,
+      transparent: true,
+      opacity: 1.0,
       color: 0xcd6e1a,
       roughness: 0.45,
       metalness: 0.08,
@@ -181,6 +183,8 @@ export function buildNobelDynamiteModel(): NobelDynamiteModelResult {
       metalness: 0.04,
       emissive: 0xff3300,
       emissiveIntensity: 0,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 

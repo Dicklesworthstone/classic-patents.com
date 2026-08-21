@@ -43,6 +43,8 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
     color: 0x94a3b8,
     roughness: 0.2,
     metalness: 0.9,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(weldedSteel);
 
@@ -83,6 +85,8 @@ export function buildEinsteinRefrigeratorModel(): EinsteinRefrigeratorModel {
     color: 0x475569,
     roughness: 0.3,
     metalness: 0.88,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(absorberMat);
 

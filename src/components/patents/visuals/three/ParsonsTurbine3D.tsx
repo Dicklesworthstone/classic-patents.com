@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepParsonsTurbine } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -194,7 +194,7 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {isCutaway ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
 
@@ -229,10 +229,10 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
                 ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
                 : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
             }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
             aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
 
           <button

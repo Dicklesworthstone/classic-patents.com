@@ -83,6 +83,8 @@ export function buildGoodyearRubberModel(): GoodyearRubberModelResult {
       color: 0x242d38,
       roughness: 0.52,
       metalness: 0.2,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 
@@ -109,6 +111,8 @@ export function buildGoodyearRubberModel(): GoodyearRubberModelResult {
       color: 0x334155,
       roughness: 0.22,
       metalness: 0.92,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 

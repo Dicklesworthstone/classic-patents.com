@@ -72,21 +72,20 @@ function createProceduralSkyTexture(
   if (ctx) {
     const gradient = ctx.createLinearGradient(0, 0, 0, 512);
 
-    // Signature Radiant Cerulean Blue Sky with Sunlight Horizon Haze
-    gradient.addColorStop(0.0, "#1d4ed8"); // Rich cerulean blue zenith
-    gradient.addColorStop(0.25, "#2563eb"); // Vibrant royal azure
-    gradient.addColorStop(0.55, "#3b82f6"); // Radiant sky blue
-    gradient.addColorStop(0.8, "#93c5fd"); // Soft daylight cyan
-    gradient.addColorStop(0.96, "#e0f2fe"); // Luminous golden-sun horizon haze
-    gradient.addColorStop(1.0, "#fef3c7"); // Warm sunlight horizon line
+    // Natural, luminous, realistic daylight sky with soft horizon haze
+    gradient.addColorStop(0.0, "#60a5fa"); // Soft sky blue zenith
+    gradient.addColorStop(0.28, "#93c5fd"); // Light azure mid-sky
+    gradient.addColorStop(0.65, "#bae6fd"); // Gentle airy daylight
+    gradient.addColorStop(0.88, "#e0f2fe"); // Soft luminous horizon haze
+    gradient.addColorStop(1.0, "#fef3c7"); // Subtle warm sunlit horizon line
 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 512, 512);
 
-    // Subtle sun flare on the sky canvas
-    const sunGradient = ctx.createRadialGradient(380, 80, 0, 380, 80, 180);
-    sunGradient.addColorStop(0.0, "rgba(255, 255, 240, 0.45)");
-    sunGradient.addColorStop(0.4, "rgba(254, 240, 138, 0.2)");
+    // Subtle natural sun flare on the sky canvas
+    const sunGradient = ctx.createRadialGradient(380, 80, 0, 380, 80, 200);
+    sunGradient.addColorStop(0.0, "rgba(255, 255, 245, 0.4)");
+    sunGradient.addColorStop(0.4, "rgba(254, 243, 199, 0.18)");
     sunGradient.addColorStop(1.0, "rgba(255, 255, 255, 0.0)");
     ctx.fillStyle = sunGradient;
     ctx.fillRect(0, 0, 512, 512);

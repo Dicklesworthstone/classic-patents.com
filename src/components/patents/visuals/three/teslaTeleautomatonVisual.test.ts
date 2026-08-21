@@ -124,5 +124,7 @@ describe("US 613,809 Nikola Tesla Teleautomaton visual & RF logic boundary", () 
     expect(modelSource).not.toContain("(propellerRpm * 2 * Math.PI) / 60");
     expect(modelSource).not.toContain("timeSec * 0.8");
     expect(modelSource).not.toContain("dt * 1.5");
+    expect(modelSource).not.toContain("timeSec * 2.0");
+    expect(modelSource).toContain("cohererDisplayOmegaRadPerS");
   });
 });

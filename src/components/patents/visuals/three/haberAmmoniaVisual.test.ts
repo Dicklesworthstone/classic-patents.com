@@ -34,6 +34,8 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     );
     expect(simSource).toContain("physics.compressorDisplayOmegaRadPerS");
     expect(simSource).not.toContain("time * 6)");
+    expect(simSource).toContain("physics.catalystParticleAdvance");
+    expect(simSource).toContain("physics.condenserDripAdvance");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

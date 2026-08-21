@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -197,7 +197,7 @@ export function CarlsonElectrophotography3D({
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
           <button

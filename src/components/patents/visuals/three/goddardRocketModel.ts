@@ -60,6 +60,8 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
     color: 0xe2e8f0,
     roughness: 0.22,
     metalness: 0.88,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(aluminumHullMat);
 
@@ -95,6 +97,8 @@ export function buildGoddardRocketModel(): GoddardRocketModel {
     color: 0x334155,
     roughness: 0.45,
     metalness: 0.75,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(interstageMat);
 

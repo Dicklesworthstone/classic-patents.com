@@ -67,6 +67,8 @@ export function buildZeppelinAirshipModel(): ZeppelinAirshipModelResult {
       color: 0xe6ebf2,
       roughness: 0.55,
       metalness: 0.15,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 

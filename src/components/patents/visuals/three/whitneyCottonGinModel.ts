@@ -93,6 +93,8 @@ export function buildWhitneyCottonGinModel(): WhitneyCottonGinModel {
     color: 0x5c3218,
     roughness: 0.72,
     metalness: 0.05,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(walnutWood);
 

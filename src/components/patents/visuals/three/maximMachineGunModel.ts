@@ -138,6 +138,8 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     color: 0x1e293b,
     roughness: 0.38,
     metalness: 0.88,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(gunmetal);
 
@@ -145,6 +147,8 @@ export function buildMaximMachineGunModel(): MaximMachineGunModel {
     color: 0x273549,
     roughness: 0.45,
     metalness: 0.82,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(jacketMat);
 

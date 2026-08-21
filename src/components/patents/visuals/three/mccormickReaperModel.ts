@@ -87,7 +87,9 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
 
   // --- 1. PBR MATERIALS ---
   const weatheredWood = new THREE.MeshStandardMaterial({
-    ...(woodTex ? { map: woodTex } : {}),
+    map: woodTex || undefined,
+    transparent: true,
+    opacity: 1.0,
     color: 0x6b4226,
     roughness: 0.8,
     metalness: 0.05,
@@ -98,6 +100,8 @@ export function buildMcCormickReaperModel(): McCormickReaperModel {
     color: 0xa16207,
     roughness: 0.6,
     metalness: 0.05,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(ashWood);
 

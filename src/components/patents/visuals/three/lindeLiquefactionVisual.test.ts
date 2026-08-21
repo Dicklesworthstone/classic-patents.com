@@ -29,8 +29,10 @@ describe("US 727,650 Carl von Linde Air Liquefaction visual & cryogenics boundar
     expect(threeSource).toContain("p.cutawayMode");
     expect(modelSource).toContain("timeSec * 0.4 * pressureNorm");
     expect(modelSource).toContain("timeSec * 3.0 * pressureNorm");
+    expect(modelSource).toContain("timeSec * 10 * pressureNorm");
     expect(modelSource).not.toContain("Math.sin(timeSec * 0.4)");
     expect(modelSource).not.toContain("Math.sin(timeSec * 3.0)");
+    expect(modelSource).not.toContain("(i + timeSec * 10)");
     const simSource = readFileSync(join(VISUALS_DIRECTORY, "LindeAirLiquefactionSim.tsx"), "utf8");
     expect(simSource).toContain("inletPressureAtm: params.inletPressureAtm");
     expect(simSource).not.toContain("stepLindeAirLiquefaction()");

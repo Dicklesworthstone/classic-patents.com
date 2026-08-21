@@ -141,6 +141,8 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
     color: 0xd97706,
     roughness: 0.25,
     metalness: 0.85,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(copperCoilMat);
 
@@ -152,7 +154,9 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
   disposables.push(anodeBrassMat);
 
   const mahoganyMat = new THREE.MeshStandardMaterial({
-    ...(mahoganyTex ? { map: mahoganyTex } : {}),
+    map: mahoganyTex || undefined,
+    transparent: true,
+    opacity: 1.0,
     color: 0x78350f,
     roughness: 0.35,
   });
@@ -175,6 +179,8 @@ export function buildFarnsworthTvModel(): FarnsworthTvModel {
     roughness: 0.35,
     metalness: 0.8,
     wireframe: true,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(focusCoilMat);
 

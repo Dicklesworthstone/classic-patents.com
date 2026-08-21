@@ -97,7 +97,9 @@ export function buildDaimlerEngineModel(): DaimlerEngineModel {
 
   // --- 1. MATERIALS ---
   const castIron = new THREE.MeshStandardMaterial({
-    ...(castIronTex ? { map: castIronTex } : {}),
+    map: castIronTex || undefined,
+    transparent: true,
+    opacity: 1.0,
     color: 0x334155,
     roughness: 0.55,
     metalness: 0.8,

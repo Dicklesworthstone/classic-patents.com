@@ -101,6 +101,8 @@ export function buildEdisonBulbModel(): EdisonBulbModel {
     color: 0xd97706,
     metalness: 0.92,
     roughness: 0.18,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(brassBase);
 

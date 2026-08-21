@@ -544,7 +544,7 @@ export function updateTeslaTeleautomatonKinematics(
   if (showRadioWaves) {
     materials.rfEnergy.opacity = 0.85;
     nodes.rfWaveRings.forEach((ring, i) => {
-      const phase = (timeSec * 2.0 + i * 0.5) % 2.0;
+      const phase = (timeSec * ((cohererDisplayOmegaRadPerS * 4) / 3) + i * 0.5) % 2.0;
       const scale = 1.0 + phase * 1.8;
       ring.scale.set(scale, scale, scale);
       ring.position.y = 3.5 + phase * 0.8;

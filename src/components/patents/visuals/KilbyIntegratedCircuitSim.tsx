@@ -247,7 +247,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
           : clockState
             ? 1
             : -1;
-      const pulsePos = (time * 1.5) % 1;
+      const pulsePos = (time * simState.bondPulseAdvance) % 1;
       const ppx = r1X + r1W + (t2X - r1X) * pulsePos;
       const ppy = dieY - 15 + Math.sin(pulsePos * Math.PI) * -10;
 

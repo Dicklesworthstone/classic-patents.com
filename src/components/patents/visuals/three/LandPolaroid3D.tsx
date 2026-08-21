@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -147,8 +147,18 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => handlePresetChange("overview")}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

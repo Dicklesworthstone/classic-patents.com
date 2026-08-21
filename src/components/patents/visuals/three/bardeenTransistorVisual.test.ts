@@ -42,6 +42,8 @@ describe("US 2,524,035 John Bardeen & Walter Brattain Point-Contact Transistor v
     expect(modelSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("Math.random");
     expect(threeSource).not.toContain("performance.now()");
+    expect(modelSource).not.toContain("stepBardeenTransistor()");
+    expect(modelSource).toContain("BARDEEN_HOLE_WRAP_PAD");
   });
 
   test("exposes authentic camera presets and UI overlay for transistor inspection", () => {

@@ -222,6 +222,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/zeppelin|airship|621195|621,195/, "zeppelin-airship"],
   [/de[- ]?forest|audion|879532|879,532/, "de-forest-audion"],
   [/hewitt|mercury[- ]lamp|682690|682,690/, "hewitt-mercury-lamp"],
+  [/fessenden|wireless|706737|706,737/, "fessenden-wireless"],
   [/linde|liquefaction|727650|727,650/, "linde-air-liquefaction"],
   [/carrier|condition|808897|808,897/, "carrier-air-conditioner"],
 ];

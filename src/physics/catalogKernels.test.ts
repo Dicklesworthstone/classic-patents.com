@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
+  BARDEEN_HOLE_RESET_PAD,
+  BARDEEN_HOLE_WRAP_PAD,
   bardeenHoleStream,
   bardeenLoadLine,
   bardeenSchematicDie,
@@ -722,8 +724,8 @@ describe("Catalog Kernels & Shared SI Stepping Functions", () => {
     expect(bardeenSchematicDie().labelX).toBe(200);
     expect(res.holeSvgR).toBe(3);
     expect(res.holeLabelDx).toBe(2);
-    expect(res.holeWrapPad).toBe(0.1);
-    expect(res.holeResetPad).toBe(0.05);
+    expect(res.holeWrapPad).toBe(BARDEEN_HOLE_WRAP_PAD);
+    expect(res.holeResetPad).toBe(BARDEEN_HOLE_RESET_PAD);
   });
 
   test("Marconi radio computes quarter-wave antenna radiation resistance and resonant frequency", () => {

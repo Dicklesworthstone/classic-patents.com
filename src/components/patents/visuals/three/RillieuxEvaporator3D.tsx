@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
@@ -176,7 +176,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
           <button

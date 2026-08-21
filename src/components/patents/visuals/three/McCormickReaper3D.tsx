@@ -1,10 +1,11 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { buildMcCormickReaperModel, updateMcCormickReaperKinematics } from "./mccormickReaperModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -37,7 +38,7 @@ export function McCormickReaper3D() {
 
   const { params, updateParam } = usePatentPhysics("us-x8277-mccormick-reaper");
   const groundSpeedMph = params.draftSpeedMph ?? params.forwardSpeedMph ?? 2.5;
-  const { isAudioMuted } = usePatentAudio();
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const reaper = stepMcCormickReaper({
     forwardSpeedMph: groundSpeedMph,
@@ -58,6 +59,17 @@ export function McCormickReaper3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
+
+  useEffect(() => {
+    if (!isAudioMuted && groundSpeedMph > 0.1) {
+      soundEngine.playContinuousTone(55 + groundSpeedMph * 12, "sawtooth", 0.035);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isAudioMuted, groundSpeedMph]);
 
   useEffect(() => {
     void ensureGenericWasm().then((next) => setCrateSource(next));
@@ -172,14 +184,27 @@ export function McCormickReaper3D() {
           <button
             type="button"
             onClick={() => setShowStalks(!showStalks)}
-            title="Toggle Wheat Stalks"
+            title={showStalks ? "Hide Wheat Stalks" : "Show Wheat Stalks"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showStalks
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {showStalks ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <Sparkles className="w-4 h-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleSound}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-emerald-600" />
+            )}
           </button>
 
           <button
@@ -203,7 +228,7 @@ export function McCormickReaper3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
         </div>

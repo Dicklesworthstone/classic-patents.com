@@ -95,13 +95,15 @@ export function EInkSim({ initialVoltage = 15.0, initialViscosity = 2.0 }: EInkS
           state,
         );
 
-        // Same kernel Y the 3D meshes lerp toward. Jitter is a hash of index + time.
+        // Same kernel Y the 3D meshes lerp toward. Thermal jitter drains Stokes-Einstein ω.
         for (const p of particlesRef.current) {
           const targetY = p.type === "white" ? state.whiteParticleNormY : state.blackParticleNormY;
-          const jitterY = Math.sin(p.index * 5.1 + timeSec * 2.3) * 0.04;
+          const jitterY =
+            Math.sin(p.index * 5.1 + timeSec * state.brownianJitterOmegaYRadPerS) * 0.04;
           p.y += (targetY + jitterY - p.y) * 0.18;
           p.y = Math.max(-0.88, Math.min(0.88, p.y));
-          p.x = p.restX + Math.cos(p.index * 4.3 + timeSec * 1.7) * 0.02;
+          p.x =
+            p.restX + Math.cos(p.index * 4.3 + timeSec * state.brownianJitterOmegaXRadPerS) * 0.02;
           p.x = Math.max(0.12, Math.min(0.88, p.x));
         }
       }

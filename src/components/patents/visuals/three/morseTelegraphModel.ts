@@ -202,6 +202,8 @@ export function buildMorseTelegraphModel(): MorseTelegraphModelResult {
       color: 0x5a2310,
       roughness: 0.38,
       metalness: 0.06,
+      transparent: true,
+      opacity: 1.0,
     }),
   );
 

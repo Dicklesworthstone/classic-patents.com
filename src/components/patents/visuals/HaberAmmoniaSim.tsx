@@ -229,7 +229,7 @@ export function HaberAmmoniaSim({
       // Animated Gas Particles inside Catalyst
       const particleCount = 20;
       for (let i = 0; i < particleCount; i++) {
-        const py = catY + ((time * 40 + i * 20) % catH);
+        const py = catY + ((time * physics.catalystParticleAdvance + i * 20) % catH);
         const px = rX + 28 + (Math.sin(time * physics.compressorDisplayOmegaRadPerS + i) * 20 + 20);
         const isNh3 = i < Math.floor(particleCount * (physics.ammoniaYieldPct / 100) * 4);
 
@@ -281,7 +281,7 @@ export function HaberAmmoniaSim({
       ctx.fillRect(sepX + 4, sepY + sepH - liquidH - 4, sepW - 8, liquidH);
 
       // Liquid droplet drip animation
-      const dripY = sepY + 110 + ((time * 60) % (sepH - 110 - liquidH));
+      const dripY = sepY + 110 + ((time * physics.condenserDripAdvance) % (sepH - 110 - liquidH));
       ctx.fillStyle = "#22d3ee";
       ctx.beginPath();
       ctx.arc(sepX + sepW / 2, dripY, 3, 0, Math.PI * 2);

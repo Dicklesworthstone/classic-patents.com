@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -23,8 +23,15 @@ const CAMERA_PRESETS: Record<
 export default function EdisonIndicator3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
+
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+
+  const applyCameraPreset = (preset: CameraPreset) => {
+    setActivePreset(preset);
+    const cfg = CAMERA_PRESETS[preset];
+    studioRef.current?.controls.setView(cfg.pos, cfg.target);
+  };
 
   const { params, updateParam } = usePatentPhysics("us-307031-edison-indicator");
 
@@ -78,12 +85,6 @@ export default function EdisonIndicator3D() {
     };
   }, [live]);
 
-  const setView = (preset: CameraPreset) => {
-    setActivePreset(preset);
-    const cfg = CAMERA_PRESETS[preset];
-    studioRef.current?.controls.setView(cfg.pos, cfg.target);
-  };
-
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
       <div className="sr-only">Thomas Edison Electrical Indicator 3D</div>
@@ -101,7 +102,7 @@ export default function EdisonIndicator3D() {
                 <button
                   key={preset}
                   type="button"
-                  onClick={() => setView(preset)}
+                  onClick={() => applyCameraPreset(preset)}
                   className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                     activePreset === preset
                       ? "bg-amber-600 text-white shadow-xs"
@@ -128,8 +129,18 @@ export default function EdisonIndicator3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("overview")}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

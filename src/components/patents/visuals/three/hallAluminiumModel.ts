@@ -205,21 +205,21 @@ export function updateHallAluminiumVisual(
   const positions = model.bubbleParticles.geometry.attributes.position.array as Float32Array;
   const count = positions.length / 3;
   const currentFactor = telemetry.currentAmperes / 300000;
+  // Lift / sway drain current density (300 kA → leftover 0.4 / 3). Zero current freezes the bath.
+  const bubbleLiftSpeed = 0.4 * currentFactor;
+  const bubbleSwayOmegaRadPerS = 3 * currentFactor;
 
   for (let i = 0; i < count; i++) {
     const baseBlock = i % 4;
     const blockX = [-1.2, -0.4, 0.4, 1.2][baseBlock];
 
-    // Lift speed proportional to current density
-    const speed = 0.4 * currentFactor;
-    let y = positions[i * 3 + 1] + speed * 0.016;
+    let y = positions[i * 3 + 1] + bubbleLiftSpeed * 0.016;
     if (y > 0.25) {
       y = -0.55;
     }
     positions[i * 3 + 1] = y;
 
-    // Slight lateral sway
-    positions[i * 3] = blockX + Math.sin(elapsedSeconds * 3 + i) * 0.15;
+    positions[i * 3] = blockX + Math.sin(elapsedSeconds * bubbleSwayOmegaRadPerS + i) * 0.15;
   }
   model.bubbleParticles.geometry.attributes.position.needsUpdate = true;
 
@@ -228,6 +228,7 @@ export function updateHallAluminiumVisual(
   const bathMat = model.cryoliteBath.material as THREE.MeshPhysicalMaterial;
   bathMat.emissiveIntensity = 0.35 * tempRatio;
 
-  // Gentle thermal pulsation on anode assembly
-  model.anodeAssembly.position.y = Math.sin(elapsedSeconds * 1.5) * 0.005;
+  // Anode pulse drains the same current factor (300 kA → leftover 1.5).
+  const anodePulseOmegaRadPerS = 1.5 * currentFactor;
+  model.anodeAssembly.position.y = Math.sin(elapsedSeconds * anodePulseOmegaRadPerS) * 0.005;
 }

@@ -167,7 +167,9 @@ export function buildPasteurFermentationModel(): PasteurFermentationModelResult 
   // --- Museum Materials ---
   const tinnedCopper = trackMat(
     new THREE.MeshStandardMaterial({
-      ...(copperTex ? { map: copperTex } : {}),
+      map: copperTex || undefined,
+      transparent: true,
+      opacity: 1.0,
       color: 0xc88238,
       roughness: 0.28,
       metalness: 0.9,

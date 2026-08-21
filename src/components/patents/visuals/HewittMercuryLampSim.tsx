@@ -218,7 +218,7 @@ export function HewittMercuryLampSim({
 
       // Condensed Mercury Droplets trickling down
       for (let i = 0; i < 6; i++) {
-        const dropY = bulbY - 20 + ((time * 30 + i * 18) % 45);
+        const dropY = bulbY - 20 + ((time * physics.plasmaFlickerOmegaRadPerS + i * 18) % 45);
         ctx.fillStyle = "#cbd5e1";
         ctx.beginPath();
         ctx.arc(bulbX - 10 + i * 4, dropY, 2, 0, Math.PI * 2);
@@ -248,7 +248,7 @@ export function HewittMercuryLampSim({
         for (let x = tubeStartX; x < tubeEndX; x += 20) {
           const tPos = (x - tubeStartX) / (tubeEndX - tubeStartX);
           const yBase = tubeStartY + tPos * (tubeEndY - tubeStartY);
-          const yJolt = Math.sin(x * 0.5 + time * 40) * 15;
+          const yJolt = Math.sin(x * 0.5 + time * physics.strikeJoltOmegaRadPerS) * 15;
           ctx.lineTo(x, yBase + yJolt);
         }
         ctx.lineTo(tubeEndX, tubeEndY);

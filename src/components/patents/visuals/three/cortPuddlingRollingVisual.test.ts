@@ -67,6 +67,10 @@ describe("Henry Cort Puddling & Grooved Rolling 3D WebGL Model", () => {
       new URL("./cortPuddlingRollingModel.ts", import.meta.url),
     ).text();
     expect(modelSource).not.toContain("(15 * 2 * Math.PI) / 60");
+    expect(modelSource).not.toContain("timeSec * 5");
+    expect(modelSource).not.toContain("timeSec * 10)");
+    expect(modelSource).toContain("puddleFlickerOmegaRadPerS");
+    expect(modelSource).toContain("sparkHashRate");
   });
 
   test("properly cleans up WebGL geometries and materials on disposal", () => {

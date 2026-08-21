@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -187,14 +187,14 @@ export function WhitneyCottonGin3D() {
           <button
             type="button"
             onClick={() => setShowFibers(!showFibers)}
-            title="Toggle Fiber Stream Particles"
+            title={showFibers ? "Hide Cotton Fibers" : "Show Cotton Fibers"}
             className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showFibers
                 ? "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {showFibers ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            <Sparkles className="w-4 h-4" />
           </button>
 
           <button
@@ -214,10 +214,10 @@ export function WhitneyCottonGin3D() {
                 ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
                 : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
             }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
             aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
 
           <button

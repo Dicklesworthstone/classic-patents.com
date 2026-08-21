@@ -87,7 +87,9 @@ export function buildLincolnBuoyModel(): LincolnBuoyModel {
 
   // --- 1. AUTHENTIC MATERIALS ---
   const hullWood = new THREE.MeshStandardMaterial({
-    ...(hullTex ? { map: hullTex } : {}),
+    map: hullTex || undefined,
+    transparent: true,
+    opacity: 1.0,
     color: 0x5c3a21,
     roughness: 0.55,
     metalness: 0.08,
@@ -112,6 +114,8 @@ export function buildLincolnBuoyModel(): LincolnBuoyModel {
     color: 0x334155,
     roughness: 0.65,
     metalness: 0.25,
+    transparent: true,
+    opacity: 1.0,
   });
   materialsToDispose.push(bellowsRubber);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -92,7 +92,7 @@ export function BaekelandBakelite3D() {
     };
   }, [live]);
 
-  const setPreset = (preset: CameraPreset) => {
+  const applyCameraPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
     if (preset === "mold") setCutaway(true);
     const cfg = CAMERA_PRESETS[preset];
@@ -142,7 +142,7 @@ export function BaekelandBakelite3D() {
               <button
                 key={preset}
                 type="button"
-                onClick={() => setPreset(preset)}
+                onClick={() => applyCameraPreset(preset)}
                 className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   activePreset === preset
                     ? "bg-amber-600 text-white shadow-xs"
@@ -194,8 +194,18 @@ export function BaekelandBakelite3D() {
             title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

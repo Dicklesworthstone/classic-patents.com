@@ -139,6 +139,8 @@ export function buildLamarrFrequencyHoppingModel(): LamarrFrequencyHoppingModel 
     metalness: 0.85,
     roughness: 0.35,
     side: THREE.BackSide,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(torpedoBayMat);
 

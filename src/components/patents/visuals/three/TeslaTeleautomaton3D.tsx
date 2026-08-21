@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Radio, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -229,10 +229,19 @@ export function TeslaTeleautomaton3D() {
                 ? "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
                 : "bg-amber-600 text-white border-amber-700 shadow-md ring-2 ring-amber-500/30"
             }`}
-            title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
+            title={showUiOverlay ? "Hide Overlay UI (Clean 3D View)" : "Show Overlay UI"}
             aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 

@@ -395,11 +395,13 @@ export function buildCortPuddlingRollingModel(): CortModel {
       rabbleGroup.rotation.y = rabbleAngle;
       rabbleGroup.position.x = Math.sin(timeSec * rabbleOmegaRadPerS * (4 / 3)) * 0.08;
 
-      // 2. Puddle ball growth and texture
+      // 2. Puddle ball growth and texture. Flicker drains rabble ω (15 rpm → leftover 5).
+      const millDisplayScale = 10 / Math.PI;
+      const puddleFlickerOmegaRadPerS = rabbleOmegaRadPerS * millDisplayScale;
       if (isComingToNature) {
         puddleBallMesh.scale.set(1.4, 0.85, 1.2);
         (puddleBallMesh.material as THREE.MeshStandardMaterial).emissiveIntensity =
-          0.85 + Math.sin(timeSec * 5) * 0.1;
+          0.85 + Math.sin(timeSec * puddleFlickerOmegaRadPerS) * 0.1;
       } else {
         puddleBallMesh.scale.set(0.8, 0.5, 0.8);
       }
@@ -412,15 +414,16 @@ export function buildCortPuddlingRollingModel(): CortModel {
       const studioBilletRadius = 0.4 / Math.PI;
       billetMesh.position.z = ((timeSec * rollOmegaRadPerS * studioBilletRadius) % 1.2) - 0.6;
 
-      // 5. Spark particle animation
+      // 5. Spark particle animation. Hash rate drains roll ω (30 rpm → leftover 10).
+      const sparkHashRate = rollOmegaRadPerS * millDisplayScale;
       const posAttr = sparkParticles.geometry.getAttribute("position") as THREE.BufferAttribute;
       const posArr = posAttr.array as Float32Array;
       for (let i = 0; i < sparkCount; i++) {
         posArr[i * 3 + 1] -= 0.015;
         if (posArr[i * 3 + 1] < 0.3) {
           posArr[i * 3 + 1] = 0.95;
-          const rx = (Math.sin(i * 17.13 + timeSec * 10) * 43758.5453) % 1;
-          const rz = (Math.sin(i * 91.71 + timeSec * 10) * 43758.5453) % 1;
+          const rx = (Math.sin(i * 17.13 + timeSec * sparkHashRate) * 43758.5453) % 1;
+          const rz = (Math.sin(i * 91.71 + timeSec * sparkHashRate) * 43758.5453) % 1;
           posArr[i * 3] = -0.4 + (Math.abs(rx) - 0.5) * 0.2;
           posArr[i * 3 + 2] = (Math.abs(rz) - 0.5) * 0.3;
         }

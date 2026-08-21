@@ -1,9 +1,10 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { animateHopkinsPotashModel, buildHopkinsPotashModel } from "./hopkinsPotashModel";
 import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -61,6 +62,17 @@ export function HopkinsPotash3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
+
+  useEffect(() => {
+    if (!isAudioMuted) {
+      soundEngine.playContinuousTone(80 + (roastTempC / 1000) * 40, "triangle", 0.04);
+    } else {
+      soundEngine.stopContinuousTone();
+    }
+    return () => {
+      soundEngine.stopContinuousTone();
+    };
+  }, [isAudioMuted, roastTempC]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -201,7 +213,7 @@ export function HopkinsPotash3D() {
                 : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
             }`}
           >
-            {isCutaway ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
           </button>
 

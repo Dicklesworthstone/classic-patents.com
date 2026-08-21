@@ -75,6 +75,8 @@ export function buildKwolekKevlarModel(): KwolekKevlarModel {
     color: 0x475569,
     roughness: 0.25,
     metalness: 0.92,
+    transparent: true,
+    opacity: 1.0,
   });
   disposables.push(spinneretSteelMat);
 

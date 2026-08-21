@@ -35,6 +35,10 @@ describe("US 400,766 Charles Martin Hall Aluminium Smelting Visual Boundary", ()
 
     expect(modelSource).not.toContain("Date.now()");
     expect(modelSource).not.toContain("performance.now()");
+    expect(modelSource).not.toContain("elapsedSeconds * 3");
+    expect(modelSource).not.toContain("elapsedSeconds * 1.5");
+    expect(modelSource).toContain("bubbleSwayOmegaRadPerS");
+    expect(modelSource).toContain("anodePulseOmegaRadPerS");
   });
 
   test("computes genuine Faraday electrolysis, cell voltage, and production rate in SI units", () => {
