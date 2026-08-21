@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Cpu, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepKilbyIntegratedCircuit } from "@/physics/catalogKernels";
@@ -343,10 +343,13 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Jack Kilby Miniaturized Electronic Circuit (US 3,138,743)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+          <div className="flex items-center gap-2">
+            <Cpu className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Jack Kilby Miniaturized Electronic Circuit (US 3,138,743)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
             Monolithic semiconductor integrated circuit: bulk germanium resistors, P-N junction
             capacitors, and mesa transistors.
           </p>
