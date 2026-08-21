@@ -478,7 +478,9 @@ export function WrightFlyer3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Airspeed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{airspeedMph} mph</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {airspeedMph} mph
+              </span>
             </div>
             <input
               type="range"
@@ -494,7 +496,9 @@ export function WrightFlyer3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Wing Warp Angle</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{wingWarpDeg}°</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {wingWarpDeg}°
+              </span>
             </div>
             <input
               type="range"
@@ -510,7 +514,9 @@ export function WrightFlyer3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Pitch Canard</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">{elevatorPitchDeg}°</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {elevatorPitchDeg}°
+              </span>
             </div>
             <input
               type="range"
@@ -526,7 +532,9 @@ export function WrightFlyer3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Coupled Rudder</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{rudderYawDeg}°</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {rudderYawDeg}°
+              </span>
             </div>
             <input
               type="range"
