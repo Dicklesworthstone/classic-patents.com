@@ -193,6 +193,11 @@ describe("pasteurFermentationArchivalEdition", () => {
       "pasteur-fermentation",
       "pasteur-fermentation-fig-2",
     ]);
+    expect(
+      pasteurFermentationPatent.plainEnglishExplanation.scientificPrinciples.map(
+        (principle) => principle.formula,
+      ),
+    ).toContain("\\dot{Q} = U A (T_{\\mathrm{wort}} - T_{\\mathrm{water}})");
     expect(parsePatentCatalog([pasteurFermentationPatent])).toHaveLength(1);
   });
 

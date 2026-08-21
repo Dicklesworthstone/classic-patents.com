@@ -176,30 +176,33 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
     "Uniformly distributed capacity permits a sine-wave and low resistance: Fessenden contrasts a five-volt impressed signal that can resonate above two hundred volts with uniform capacity against a twenty-five-volt limit for a parabolic wave.",
   ],
   14: [
-    "Low frequency is defined here as less than one million periods per second, preferably twenty-five thousand to one hundred thousand; the source specifically highlights reduced ground absorption and usable direct mechanical response in the receiving instrument.",
+    "The source defines large capacity by comparison with ordinary wires and uniform distribution over the radiating portion, then explains that a local area or capacity increase creates additional periodicities like a weight or spring added to a piano-wire.",
   ],
   15: [
-    "The specification defines electromagnetic waves by their long wavelength relative to radiant heat, defines a grounded conductor through its direct or reactive earth connection, and treats tuned and resonant as equivalent terms.",
+    "Low frequency is defined here as less than one million periods per second, preferably twenty-five thousand to one hundred thousand; the source specifically highlights reduced ground absorption and usable direct mechanical response in the receiving instrument.",
   ],
   16: [
-    "The invention claims the practical use of lower-frequency radiant waves and uses resonance, with the impressed electromotive force and current in phase, to obtain useful radiated energy despite the lower frequency.",
+    "The specification defines electromagnetic waves by their long wavelength relative to radiant heat, defines a grounded conductor through its direct or reactive earth connection, and treats tuned and resonant as equivalent terms.",
   ],
   17: [
-    "For a grounded vertical conductor, resistance must remain below the stated square-root relation for good oscillation and the conductor is ideally one-fourth of the fundamental wave; a ninety-thousand-period plain wire would incur the illustrated two-mile and eighty-mile resistance losses.",
+    "The invention claims the practical use of lower-frequency radiant waves and uses resonance, with the impressed electromotive force and current in phase, to obtain useful radiated energy despite the lower frequency.",
   ],
   18: [
-    "Large capacity and inductance shorten the conductor, but large inductance also increases resistance, so Fessenden favors large capacity with correspondingly small inductance and distributes that capacity across the radiating portion.",
+    "For a grounded vertical conductor, resistance must remain below the stated square-root relation for good oscillation and the conductor is ideally one-fourth of the fundamental wave; a ninety-thousand-period plain wire would incur the illustrated two-mile and eighty-mile resistance losses.",
   ],
   19: [
-    "The closing specification connects the lower-loss distributed-capacity conductor to a dynamo or other alternating source and explains how persistent low-frequency oscillations bridge the inactive intervals between spark-gap trains.",
+    "Large capacity and inductance shorten the conductor, but large inductance also increases resistance, so Fessenden favors large capacity with correspondingly small inductance and distributes that capacity across the radiating portion.",
   ],
   20: [
-    "The one-million-period comparison, the R-small continuous-stream conclusion, and the tuned-receiver benefit explain why the low-frequency train can produce practically continuous effects even when successive oscillation sets do not exactly overlap.",
+    "The closing specification connects the lower-loss distributed-capacity conductor to a dynamo or other alternating source and explains how persistent low-frequency oscillations bridge the inactive intervals between spark-gap trains.",
   ],
   21: [
+    "The one-million-period comparison, the R-small continuous-stream conclusion, and the tuned-receiver benefit explain why the low-frequency train can produce practically continuous effects even when successive oscillation sets do not exactly overlap.",
+  ],
+  22: [
     "The final source paragraph ties uniform capacity to a conductor uniform in figure, reports that upper portions have practically the same capacity as lower portions, and says capacity depends mainly on size and shape when the conductor is not close to ground.",
   ],
-  45: [
+  47: [
     "The closing paragraph records Fessenden's attestation and the two printed witnesses, W. B. Fearing and S. C. Gray.",
   ],
 };

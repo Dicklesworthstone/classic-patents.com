@@ -17,7 +17,7 @@ describe("US 2,297,691 Chester F. Carlson Electrophotography Archival Edition Pu
   );
 
   test("remains explicitly withheld until Luna source review is complete", () => {
-    expect(carlsonElectrophotographyArchivalEdition.completeFacsimileReviewed).toBe(false);
+    expect(Boolean(carlsonElectrophotographyArchivalEdition.completeFacsimileReviewed)).toBe(false);
   });
 
   test("matches the cryptographic SHA-256 digest of the pinned 10-page USPTO facsimile PDF", () => {

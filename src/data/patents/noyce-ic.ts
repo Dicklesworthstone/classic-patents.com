@@ -5,7 +5,7 @@ import {
 } from "@/data/editions/noyceIcEdition";
 import type { Patent } from "@/types/patent";
 
-const baseNoyceIcPatent: Patent = {
+const baseNoyceIcPatent = {
   id: "us-2981877-noyce-ic",
   patentNumber: "US 2,981,877",
   title: "Semiconductor Device-and-Lead Structure",
@@ -17,7 +17,7 @@ const baseNoyceIcPatent: Patent = {
   grantDate: "1961-04-25",
   filingDate: "1959-07-30",
   era: "Electronic Era (1920–1960)",
-  category: "computing",
+  category: "computing" as const,
   categoryLabel: "Semiconductor Physics & Microelectronics",
   summary:
     "The Birth of Silicon Valley and the Microchip: On April 25, 1961, Robert Noyce was granted US Patent No. 2,981,877 for the monolithic planar integrated circuit. While Jack Kilby demonstrated the first microchip using hand-soldered gold flying wires, Noyce solved the 'Tyranny of Numbers' by inventing planar thin-film metallization. By thermally growing an insulating layer of silicon dioxide ($SiO_2$) over a silicon wafer, etching microscopic contact windows, and vacuum-evaporating aluminum traces directly across junction boundaries, Noyce enabled millions of transistors and their interconnections to be printed simultaneously on a single solid piece of silicon.",

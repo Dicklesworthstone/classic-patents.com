@@ -185,12 +185,14 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
         : [],
     );
     expect(figureRefs.length).toBeGreaterThanOrEqual(10);
-    expect(figureRefs.some((ref) => ref.text === "Fig. 4" && (ref.label?.includes("top plan") ?? false))).toBe(
-      true,
-    );
-    expect(figureRefs.some((ref) => ref.text === "Fig. 5" && (ref.label?.includes("elevation") ?? false))).toBe(
-      true,
-    );
+    expect(
+      figureRefs.some((ref) => ref.text === "Fig. 4" && (ref.label?.includes("top plan") ?? false)),
+    ).toBe(true);
+    expect(
+      figureRefs.some(
+        (ref) => ref.text === "Fig. 5" && (ref.label?.includes("elevation") ?? false),
+      ),
+    ).toBe(true);
   });
 
   test("keeps the bounded pages 1-3 ledger and edition source-faithful", () => {

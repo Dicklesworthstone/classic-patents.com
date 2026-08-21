@@ -76,7 +76,9 @@ describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
     expect(figureReferences.length).toBeGreaterThan(0);
     expect(
       figureReferences.every((reference) =>
-        reference.figurePreviews?.every((preview: { src: string }) => /-v2\.png$/.test(preview.src)),
+        reference.figurePreviews?.every((preview: { src: string }) =>
+          /-v2\.png$/.test(preview.src),
+        ),
       ),
     ).toBe(true);
   });
