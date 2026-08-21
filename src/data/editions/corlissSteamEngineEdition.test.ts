@@ -40,9 +40,7 @@ describe("corlissSteamEngineArchivalEdition", () => {
       if (authoredClaim?.kind !== "claim") {
         throw new Error(`Corliss manual edition is missing claim ${claim.number}.`);
       }
-      expect(claim.originalText).toBe(
-        authoredClaim.inlines.map((inline) => inline.text).join(""),
-      );
+      expect(claim.originalText).toBe(authoredClaim.inlines.map((inline) => inline.text).join(""));
     }
   });
 
