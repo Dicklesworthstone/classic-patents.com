@@ -98,6 +98,7 @@ export function YaleLock3D({
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Linus Yale Jr Pin Tumbler Cylinder Lock 3D</div>
       {/* 3D WebGL Canvas Viewport */}
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
@@ -110,7 +111,7 @@ export function YaleLock3D({
               onClick={() => handlePresetChange("iso")}
               className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "iso"
-                  ? "bg-amber-600 text-white shadow-xs"
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
                   : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
@@ -121,7 +122,7 @@ export function YaleLock3D({
               onClick={() => handlePresetChange("cutaway")}
               className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "cutaway"
-                  ? "bg-amber-600 text-white shadow-xs"
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
                   : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
@@ -132,7 +133,7 @@ export function YaleLock3D({
               onClick={() => handlePresetChange("top")}
               className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "top"
-                  ? "bg-amber-600 text-white shadow-xs"
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
                   : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
@@ -143,7 +144,7 @@ export function YaleLock3D({
               onClick={() => handlePresetChange("keyway")}
               className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                 cameraPreset === "keyway"
-                  ? "bg-amber-600 text-white shadow-xs"
+                  ? "bg-amber-600 text-white shadow-xs font-semibold"
                   : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >
@@ -194,6 +195,15 @@ export function YaleLock3D({
           >
             <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => handlePresetChange("iso")}
+            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            title="Reset Orbit Camera"
+          >
+            <Camera className="w-3.5 h-3.5 inline" />
           </button>
         </div>
 
