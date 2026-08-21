@@ -159,29 +159,31 @@ export function HoweSewingMachine3D() {
         // Periodic Click Audio Synthesis
         if (virtualTime - lastStitchTickTime > 1 / Math.max(1, p.stitchFrequencyHz)) {
           lastStitchTickTime = virtualTime;
-          if (!p.isAudioMuted && typeof window !== "undefined") {
-            soundEngine.playLockstitchClack();
+          if (!p.isAudioMuted) {
+            soundEngine.playMechanicalClick();
           }
         }
       }
+
+      model.setCutaway?.(p.isCutaway ?? false);
 
       controls.update();
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
       model.dispose();
-      studio.cleanup();
+      studio.dispose();
       studioRef.current = null;
     };
   }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Elias Howe Jr. (US 4,750) — Sewing Machine (1846) 3D</div>
+      <div className="sr-only">Elias Howe Sewing Machine 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -193,21 +195,21 @@ export function HoweSewingMachine3D() {
             </span>
             {(
               [
-                ["iso", "Isometric"],
-                ["needle", "Needle Point"],
-                ["shuttle", "Boat Shuttle"],
-                ["flywheel", "Flywheel Crank"],
-                ["top", "Cloth Feed"],
-              ] as const
-            ).map(([id, label]) => (
+                ["iso", "Overview"],
+                ["needle", "Curved Needle"],
+                ["shuttle", "Shuttle Race"],
+                ["flywheel", "Flywheel & Cam"],
+                ["top", "Overhead"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
               <button
-                key={id}
+                key={preset}
                 type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs font-semibold"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
                 {label}
@@ -247,6 +249,19 @@ export function HoweSewingMachine3D() {
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Castings" : "Transparent Frame Cutaway"}
+            aria-label={isCutaway ? "Solid Castings" : "Transparent Frame Cutaway"}
+          >
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
           <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}

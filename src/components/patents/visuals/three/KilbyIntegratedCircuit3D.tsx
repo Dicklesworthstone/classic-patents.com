@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -50,6 +50,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-3138743-kilby-integrated-circuit");
@@ -63,10 +64,11 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
 
   const live = useLiveSimParams({
     supplyVoltageV,
+    baseDriveCurrentUa,
+    reverseBiasVoltageV,
     resistorLengthUm,
     resistorWidthUm,
-    reverseBiasVoltageV,
-    baseDriveCurrentUa,
+    isCutaway,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -102,6 +104,8 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
         substrateMaterial: "germanium",
         ...live.current,
       });
+
+      model.setCutaway?.(live.current.isCutaway ?? false);
 
       studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -166,6 +170,20 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Germanium Substrate" : "Transparent Substrate Cutaway"}
+            aria-label={isCutaway ? "Solid Germanium Substrate" : "Transparent Substrate Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button

@@ -25,6 +25,7 @@ export interface DeForestAudionModelNodes {
   externalLeads: THREE.Group;
   electronParticles: THREE.Points;
   materials: THREE.Material[];
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function buildDeForestAudionModel(): DeForestAudionModelNodes {
@@ -302,6 +303,13 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   const electronParticles = new THREE.Points(particleGeo, particleMat);
   bulbGroup.add(electronParticles);
 
+  const setCutaway = (cutaway: boolean) => {
+    glassMat.opacity = cutaway ? 0.08 : 0.4;
+    glassMat.needsUpdate = true;
+    getterMat.opacity = cutaway ? 0.15 : 0.85;
+    getterMat.needsUpdate = true;
+  };
+
   return {
     root,
     glassBulb,
@@ -315,6 +323,7 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
     externalLeads,
     electronParticles,
     materials,
+    setCutaway,
   };
 }
 

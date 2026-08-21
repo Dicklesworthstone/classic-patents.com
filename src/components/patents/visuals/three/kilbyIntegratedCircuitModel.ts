@@ -33,6 +33,7 @@ export interface KilbyModel {
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (timeSec: number, options?: KilbyModelOptions) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -331,6 +332,12 @@ export function createKilbyIntegratedCircuitModel(options: KilbyModelOptions = {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    dieMat.transparent = cutaway;
+    dieMat.opacity = cutaway ? 0.35 : 1.0;
+    dieMat.needsUpdate = true;
+  };
+
   return {
     group,
     dieGroup,
@@ -343,6 +350,7 @@ export function createKilbyIntegratedCircuitModel(options: KilbyModelOptions = {
     materials,
     geometries,
     update,
+    setCutaway,
     dispose,
   };
 }
