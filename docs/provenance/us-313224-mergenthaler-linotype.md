@@ -21,8 +21,9 @@ for this source and is not the transcription authority.
 | PDF locator | Source material | Editorial treatment |
 | --- | --- | --- |
 | pp. 1-17 | The 17 drawing sheets; printed title; figure labels 1 through 51; drawing-sheet signatures | Direct visual review; figure crop work is still in progress and is not yet visitor-facing |
-| p. 18 | Masthead, assignee, application date, purpose, overview of the matrix and casting mechanisms | Direct visual review and manual transcription in progress |
-| pp. 19-30 | Figure descriptions, matrix bars, selection, stop and adjusting mechanisms, spacing, indication, alarm, casting, pump, drive, operation, and modifications | Direct visual review and manual transcription in progress |
+| p. 18 | Masthead, assignee, August 30, 1884 application date, purpose, matrix/casting groups, bar selection, alignment, and casting cycle | Cloud-authoritative US313224A comparison plus manual source-led transcription; ledger and continuous edition now cover this page |
+| pp. 19-25 | Overlap cycle, correction, Figs. 1-51 descriptions, principal parts, matrix-bar geometry, lower-case recesses, bar connections, stop-pin frame, adjusting-pin escapement, inactive bars, spacing/justification, and indicator | Bounded cloud-only continuation slice manually reconciled into the ledger and continuous edition; every printed figure citation is authored as a typed reference (local crops remain staged only where already present) |
+| pp. 26-30 | Continuation of the specification: remaining casting, pump, drive, operating cycle, and modifications | Explicit continuation boundary: not changed by this slice and remains an independent source-completion gap |
 | pp. 31-35 | Claims 1-70, execution, signature, and witness names | Direct visual review; every claim manually transcribed and source-pinned in `mergenthalerLinotypeClaims` |
 
 ## Source observations and corrections
@@ -49,6 +50,24 @@ temperature, fixed speeds and cycle times, water cooling, and extensive later
 history. These assertions have not been carried into the source-led work. The
 pinned facsimile does not support using them as its complete primary-source
 edition.
+
+### Bounded page-18-to-25 continuation (2026-08-21)
+
+Pages 18 through 25 were authored from the pinned facsimile using the
+authoritative Google Patents US313224A text as a cloud comparison source. The
+local PDF text layer was used only to locate columns and compare spelling; it
+was not promoted as the transcription authority, and no local OCR or rendering
+was run. The reviewed ledger retains the exact page markers and page-local
+content. The React edition is continuous: its first authored source reading
+now runs from the masthead through the final indicator paragraph on PDF page
+25, with typed figure references for the cited Figs. 1 through 51 and authored
+term definitions for the source's period vocabulary.
+
+The exact continuation boundary is the final indicator paragraph on page 25.
+The next source sentence begins on PDF page 26 and is deliberately not
+represented by this bounded edit. Pages 26-30 remain an independent
+specification-completion gap; claims 1-70 and the prior drawing WIP are
+preserved but do not establish complete source acceptance.
 
 ## Published-edition boundary
 

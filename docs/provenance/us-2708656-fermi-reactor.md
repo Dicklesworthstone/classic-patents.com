@@ -148,3 +148,36 @@ period terms, references, and certificate typography. It is not a local OCR,
 render, or test run. The continuation boundary after this chunk is the
 remaining p1–27 drawing-sheet ledger boundary; no registry, shared map, binding,
 publication, commit, or deployment was performed.
+
+### Bounded cloud-source intake: PDF pages 1–27 drawing sheets (2026-08-21)
+
+This final source-boundary pass is intentionally WIP and is not a publication
+or binding decision. The first 27 PDF pages were checked against the
+authoritative cloud PDF at
+`https://patentimages.storage.googleapis.com/25/7c/5f/96bc44e6f2cc4f/US2708656.pdf`
+and the corresponding Google Patents record at
+`https://patents.google.com/patent/US2708656A/en`. The local pinned PDF and all
+27 existing source-sheet PNGs were preserved. The ledger now has one explicit
+page-marked entry for each drawing sheet, with the printed grant header, sheet
+number, every FIG. 1 through FIG. 42 label, a faithful figure-description
+inventory, and the printed “Witnesses:” / “By:” role headings. The inventor
+names Enrico Fermi and Leo Szilard are retained; illegible witness, attorney,
+and line-art numeral text is not guessed and remains in the source-sheet
+asset.
+
+The typed edition now contains 27 explicit `figure-sheet` companions, mapped
+to the existing source-sheet-01-01.png through source-sheet-27-27.png
+inventory. Figure references resolve through the established figure-to-sheet
+map: Figures 1–10 occupy sheets 1–10; Figures 11–17 occupy sheets 11–12;
+Figures 18–24 occupy sheets 13–15; Figures 25–29 occupy sheets 16–18;
+Figures 30–42 occupy sheets 19–27, with the multi-figure sheets retained as
+authored companions. This inventory is a reconciliation aid, not a claim that
+every line-art numeral is independently legible in the cloud text layer.
+
+Combined reviewed-ledger WIP coverage is now PDF pages 1–58, including all 27
+drawing sheets followed by specification pages 28–58. The edition likewise
+contains the drawing-sheet companions and continuous p28–58 source paragraphs,
+claims, references, signatures, and correction certificate. The entire record
+remains unbound and withheld pending root's visual/crop acceptance and a
+second page-by-page facsimile review. No registry, shared map, publication,
+commit, deployment, deletion, local OCR, rendering, test, or build was done.

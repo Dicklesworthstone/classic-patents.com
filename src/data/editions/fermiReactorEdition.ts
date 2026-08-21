@@ -99,6 +99,50 @@ const figure = (
   };
 };
 
+const drawingSheet = (
+  sheet: number,
+  figures: readonly number[],
+  title: string,
+): CuratedSpecificationBlock => ({
+  kind: "figure-sheet",
+  figureLabel: figures.map((number) => `FIG. ${number}`).join(", "),
+  title: `Drawing Sheet ${sheet}: ${title}`,
+  description: figures.map((number) => figure(number, `FIG. ${number}.`)),
+});
+
+// The pinned facsimile contains 27 drawing sheets before the specification.
+// Keep these source-sheet companions explicit so every printed figure label
+// resolves to the existing cloud-reviewed source-sheet inventory.
+const fermiDrawingSheetBlocks: readonly CuratedSpecificationBlock[] = [
+  drawingSheet(1, [1], "chain-reaction neutron balance"),
+  drawingSheet(2, [2], "uranium-metal spheres in graphite"),
+  drawingSheet(3, [3], "uranium-metal rods in graphite"),
+  drawingSheet(4, [4], "uranium-oxide spheres in graphite"),
+  drawingSheet(5, [5], "uranium-oxide rods in graphite"),
+  drawingSheet(6, [6], "uranium rods in heavy water"),
+  drawingSheet(7, [7], "uranium-graphite reactor perspective"),
+  drawingSheet(8, [8], "front plan and central section"),
+  drawingSheet(9, [9], "side plan and central section"),
+  drawingSheet(10, [10], "top plan and horizontal section"),
+  drawingSheet(11, [11, 12, 13, 14, 15, 17], "graphite blocks and construction measurement"),
+  drawingSheet(12, [16, 21], "neutron-density monitoring and ellipsoidal scaling"),
+  drawingSheet(13, [18, 19, 20], "safety, shim, and control rods"),
+  drawingSheet(14, [22, 23], "modified cubic and cylindrical active portions"),
+  drawingSheet(15, [24], "spherical neutron-density distribution"),
+  drawingSheet(16, [25], "deuterium-oxide moderated reactor"),
+  drawingSheet(17, [26, 27, 28], "uranium-rod details and removal seal"),
+  drawingSheet(18, [29], "horizontal section of the D2O reactor"),
+  drawingSheet(19, [30, 41], "critical size and reflector relations"),
+  drawingSheet(20, [31], "air-cooled reactor"),
+  drawingSheet(21, [32], "air-cooled reactor cross section"),
+  drawingSheet(22, [33, 35], "air system plan and loading channel"),
+  drawingSheet(23, [34, 36], "jacketed slug and channel cross section"),
+  drawingSheet(24, [37], "liquid-cooled reactor"),
+  drawingSheet(25, [38], "liquid-cooled reactor section"),
+  drawingSheet(26, [39, 40], "coolant channel and statistical weights"),
+  drawingSheet(27, [42], "ellipsoidal reactor outline"),
+];
+
 export const fermiReactorClaims = [
   {
     number: 1,
