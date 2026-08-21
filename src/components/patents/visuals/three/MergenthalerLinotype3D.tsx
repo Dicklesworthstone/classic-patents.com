@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildMergenthalerLinotypeModel,
@@ -100,13 +101,12 @@ export function MergenthalerLinotype3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       controls.update();
-      const dt = 1 / 60;
-      timeSec += dt;
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       const step = stepMergenthalerLinotype({

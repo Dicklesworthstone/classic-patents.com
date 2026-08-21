@@ -6,6 +6,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -114,14 +115,17 @@ export function FermiReactor3D() {
     let reqId: number;
     let geigerClickTimer = 0;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const { dt: delta } = clock.pump(now);
       const p = live.current;
+      const refused = Number(p.kEff) > 1.002;
 
       updateFermiReactorKinematics(
         model,
-        delta,
+        refused ? 0 : delta,
         p.controlRodWithdrawalPct,
         Number(p.kEff),
         p.moderatorPurityPct,
@@ -147,7 +151,7 @@ export function FermiReactor3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

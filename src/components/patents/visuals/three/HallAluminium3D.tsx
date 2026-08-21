@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -83,12 +84,11 @@ export function HallAluminium3D() {
     scene.add(model.root);
 
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       const currentSim = stepHallAluminium({
         currentAmperes: p.currentAmperes,
@@ -113,7 +113,7 @@ export function HallAluminium3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

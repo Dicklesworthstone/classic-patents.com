@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildDavenportMotorModel,
@@ -93,9 +94,11 @@ export function DavenportElectricMotor3D() {
     // Animation Loop
     let reqId: number;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       updateDavenportMotorKinematics(
@@ -112,7 +115,7 @@ export function DavenportElectricMotor3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

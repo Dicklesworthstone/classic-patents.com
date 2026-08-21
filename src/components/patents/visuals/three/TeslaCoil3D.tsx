@@ -16,6 +16,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -137,9 +138,11 @@ export function TeslaCoil3D() {
     let audioTick = 0;
     let reqId: number;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       model.updateKinematics(

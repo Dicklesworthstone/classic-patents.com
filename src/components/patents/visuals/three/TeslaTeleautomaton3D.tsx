@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Radio, RotateCcw, Volume2, VolumeX } from "lucide-
 import { useEffect, useRef, useState } from "react";
 import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -100,12 +101,11 @@ export function TeslaTeleautomaton3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       const out = stepTeslaTeleautomaton({
         rfFrequency: p.transmitterFreqKhz,

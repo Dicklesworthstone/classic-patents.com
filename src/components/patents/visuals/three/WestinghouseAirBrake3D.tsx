@@ -6,6 +6,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -125,9 +126,11 @@ export function WestinghouseAirBrake3D() {
     let wheelAngle = 0;
     let wasClamped = false;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
+      const { dt: delta } = clock.pump(now);
       const p = live.current;
 
       wheelAngle += (p.rollingOmegaRadPerS ?? 0) * delta;

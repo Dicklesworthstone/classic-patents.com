@@ -6,6 +6,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -114,9 +115,11 @@ export function HoweSewingMachine3D() {
     let lastStitchTickTime = 0;
     let virtualTime = 0;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       virtualTime += dt;
       const p = live.current;
 

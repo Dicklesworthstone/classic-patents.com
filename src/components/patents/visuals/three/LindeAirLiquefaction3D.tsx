@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-r
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildLindeLiquefactionModel,
@@ -90,12 +91,11 @@ export function LindeAirLiquefaction3D() {
     scene.add(liquefierModel.root);
 
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateLindeLiquefactionKinematics(
@@ -112,7 +112,7 @@ export function LindeAirLiquefaction3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildHollerithTabulatingModel,
@@ -98,12 +99,11 @@ export function HollerithTabulating3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateHollerithTabulatingKinematics(
@@ -120,7 +120,7 @@ export function HollerithTabulating3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

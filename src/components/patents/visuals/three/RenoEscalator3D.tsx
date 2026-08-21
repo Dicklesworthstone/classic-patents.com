@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildRenoEscalatorModel,
@@ -100,12 +101,11 @@ export function RenoEscalator3D() {
     scene.add(escalatorModel.root);
 
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateRenoEscalatorKinematics(
@@ -121,7 +121,7 @@ export function RenoEscalator3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

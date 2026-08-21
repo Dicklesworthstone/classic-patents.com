@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildGatlingGunModel } from "./gatlingGunModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -91,13 +92,12 @@ export function GatlingGun3D() {
 
     // Animation Loop
     let reqId: number;
-    let renderedSteps = 0;
     let lastFireTime = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (nowMs: number) => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
+      const { dt: delta, simTimeSec } = clock.pump(nowMs);
       const p = live.current;
 
       // Rotate Barrel Cluster & Drive Crank via shared SI speed
@@ -113,9 +113,8 @@ export function GatlingGun3D() {
       });
 
       // Muzzle Flash & Sound Triggering on live fire interval
-      const now = renderedSteps * delta;
-      if (now - lastFireTime > p.fireIntervalS) {
-        lastFireTime = now;
+      if (simTimeSec - lastFireTime > p.fireIntervalS) {
+        lastFireTime = simTimeSec;
         if (p.showMuzzleFlash) {
           model.materials.muzzleFlash.opacity = 1.0;
           model.muzzleFlashPoints.visible = true;
@@ -143,7 +142,7 @@ export function GatlingGun3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

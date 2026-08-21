@@ -14,6 +14,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -94,10 +95,11 @@ export function WattRotaryEngine3D() {
     modelRef.current = model;
 
     let virtualTimeSec = 0;
-    const dt = 1 / 60;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       animFrameRef.current = requestAnimationFrame(animate);
+      const { dt } = clock.pump(now);
 
       studio.controls.update();
 
@@ -121,7 +123,7 @@ export function WattRotaryEngine3D() {
       studio.renderer.render(studio.scene, studio.camera);
     };
 
-    animate();
+    animFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
       if (animFrameRef.current !== null) {

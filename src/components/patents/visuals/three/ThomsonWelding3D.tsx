@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -106,9 +107,11 @@ export function ThomsonWelding3D() {
     // Animation Loop
     let reqId: number;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       updateThomsonWeldingKinematics(

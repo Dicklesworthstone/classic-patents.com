@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -95,15 +96,13 @@ export function WozniakApple3D() {
     scene.add(model.root);
 
     let reqId: number;
-    let renderedSteps = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = 1 / 60;
+      const { dt: delta, simTimeSec: animTime } = clock.pump(now);
       const p = live.current;
 
-      const animTime = renderedSteps * delta;
       model.updateKinematics(delta, animTime, p.busDisplaySpeed, p.isCpuActive);
       model.setCutaway?.(p.isCutaway ?? false);
 
@@ -111,7 +110,7 @@ export function WozniakApple3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

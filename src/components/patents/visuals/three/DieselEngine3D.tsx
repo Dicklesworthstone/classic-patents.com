@@ -7,6 +7,7 @@ import { wrapCycleRad } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -115,12 +116,11 @@ export function DieselEngine3D() {
 
     // --- ANIMATION LOOP & KINEMATIC INTEGRATION ---
     let crankAngle = 0;
-    let _renderedSteps = 0;
     let lastSoundAngle = 0;
+    const clock = createStudioClock();
 
-    const renderLoop = () => {
-      _renderedSteps += 1;
-      const dt = 1 / 60;
+    const renderLoop = (now: number) => {
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       if (p.isPlaying) {

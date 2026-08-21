@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import {
   buildEricssonPropellerModel,
@@ -104,9 +105,11 @@ export function EricssonPropeller3D() {
     // Animation Loop
     let reqId: number;
 
-    const animate = () => {
+    const clock = createStudioClock();
+
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
+      const { dt } = clock.pump(now);
       const p = live.current;
 
       updateEricssonPropellerKinematics(

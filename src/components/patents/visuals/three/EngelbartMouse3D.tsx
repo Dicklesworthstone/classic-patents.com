@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildEngelbartMouseModel, updateEngelbartMouseKinematics } from "./engelbartMouseModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -124,12 +125,11 @@ export const EngelbartMouse3D = memo(() => {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const dt = 1 / 60;
-      timeSec += dt;
+      const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateEngelbartMouseKinematics(
@@ -150,7 +150,7 @@ export const EngelbartMouse3D = memo(() => {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
