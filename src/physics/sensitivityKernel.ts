@@ -413,6 +413,33 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-608969-parsons-turbine": {
+      if (controlKey === "rotorRpm" || controlKey === "turbineRpm" || controlKey === "rpm") {
+        return {
+          metricName: "Shaft Reaction Power",
+          derivativeSymbol: "∂P / ∂N",
+          derivativeValue: 0.42,
+          derivativeUnit: "kW / RPM",
+          interpretation:
+            "Turbine blading peripheral speed approaching optimal 0.5 steam velocity ratio.",
+        };
+      }
+      if (
+        controlKey === "inletPressurePsi" ||
+        controlKey === "steamPressureBar" ||
+        controlKey === "pressure"
+      ) {
+        return {
+          metricName: "Isentropic Enthalpy Drop",
+          derivativeSymbol: "∂Δh / ∂P",
+          derivativeValue: 6.8,
+          derivativeUnit: "kJ/kg / bar",
+          interpretation: "Expanding steam pressure differential across reaction blading stages.",
+        };
+      }
+      break;
+    }
+
     case "us-1647-morse-telegraph": {
       if (controlKey === "lineVoltage" || controlKey === "voltage") {
         const rLine = params.lineResistance ?? 120.0;

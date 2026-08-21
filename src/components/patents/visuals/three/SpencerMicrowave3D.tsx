@@ -8,7 +8,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import {
   buildSpencerMicrowaveModel,
   updateSpencerMicrowaveKinematics,
@@ -43,7 +43,7 @@ export function SpencerMicrowave3D() {
 
   // Magnetron & Cavity Resonator State
   const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const anodeVoltageVolts = params.anodeVoltage ?? 2200;
   const anodeVoltageKv = voltsToKv(anodeVoltageVolts);
