@@ -34,7 +34,7 @@ export function WozniakApple3D() {
   const [isCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const clockFrequencyMhz =
     (params.crystalFreq as number) ?? (params.masterClockMhz as number) ?? 14.31818;
