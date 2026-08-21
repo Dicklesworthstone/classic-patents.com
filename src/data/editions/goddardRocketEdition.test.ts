@@ -206,8 +206,8 @@ describe("goddardRocketArchivalEdition", () => {
     );
     expect(goddardRocketPatent.id).toBe("us-1102653-goddard-rocket");
     expect(goddardRocketPatent.patentNumber).toBe("US 1,102,653");
-    expect(goddardRocketPatent.archivalEdition).toBeUndefined();
-    expect(goddardRocketPatent.originalTextAsset).toBeUndefined();
+    expect(goddardRocketPatent.archivalEdition).toBe(goddardRocketArchivalEdition);
+    expect(goddardRocketPatent.originalTextAsset).toBeDefined();
     expect(goddardRocketPatent.stats).toEqual({ totalClaims: 8, independentClaims: 8 });
     expect(goddardRocketPatent.claims).toHaveLength(8);
     for (const claim of editionClaims) {
@@ -219,7 +219,7 @@ describe("goddardRocketArchivalEdition", () => {
     }
 
     const transcript = await Bun.file(
-      "public/patents/transcripts/us-1102653-goddard-rocket.txt",
+      "public/patents/transcripts/us-1102653-goddard-rocket-reviewed.txt",
     ).text();
     expect(validateReviewedTranscription(transcript, 4)).toEqual({ valid: true });
     for (const claim of editionClaims) {

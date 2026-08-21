@@ -30,8 +30,15 @@ export const goddardRocketPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-1102653-goddard-rocket.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US1102653A/en",
   usptoClassification: "F02K 9/00 (Rocket-engine plants)",
-  // The local ledger and manual edition remain research evidence while the
-  // repaired figure-crop closure awaits independent source review.
+  archivalEdition: goddardRocketArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-1102653-goddard-rocket-reviewed.txt",
+    pageCount: 4,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-20",
+    sourcePdfSha256: goddardRocketArchivalEdition.sourcePdfSha256,
+  },
   originalText: `UNITED STATES PATENT OFFICE.
 ROBERT H. GODDARD, OF WORCESTER, MASSACHUSETTS.
 
