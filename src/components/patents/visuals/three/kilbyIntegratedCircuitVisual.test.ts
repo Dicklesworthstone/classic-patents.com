@@ -28,6 +28,12 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Visual & Phys
     expect(studioSource).not.toContain("GLTFLoader");
     expect(studioSource).toContain('from "./useLiveSimParams"');
     expect(studioSource).toContain("...live.current");
+    const simSource = readFileSync(
+      join(rootDir, "src/components/patents/visuals/KilbyIntegratedCircuitSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("simState.switchingDisplayOmegaRadPerS");
+    expect(simSource).not.toContain("time * 8");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

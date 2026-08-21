@@ -468,11 +468,14 @@ export function animateHopkinsPotashModel(
   model.materials.ashGlow.emissiveIntensity = 0.4 + tempFraction * 0.8;
 
   // 2. Flame flicker driven deterministically by time
-  const flameScaleY = 0.8 + Math.sin(timeS * 12) * 0.15 + Math.cos(timeS * 24) * 0.08;
+  const flameScaleY =
+    0.8 +
+    Math.sin(timeS * pot.flameDisplayOmegaRadPerS) * 0.15 +
+    Math.cos(timeS * pot.flameHarmonicOmegaRadPerS) * 0.08;
   model.nodes.flameMesh.scale.set(1, flameScaleY, 1);
 
   // 3. Boiling liquor agitation
-  const boilDisplacement = Math.sin(timeS * 8) * 0.005;
+  const boilDisplacement = Math.sin(timeS * pot.boilDisplayOmegaRadPerS) * 0.005;
   model.nodes.boilingLiquor.position.y = 0.48 + boilDisplacement;
 
   // 4. Pearl ash crystals visibility scales with yield

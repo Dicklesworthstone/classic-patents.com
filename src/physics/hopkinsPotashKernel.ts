@@ -29,6 +29,9 @@ export interface HopkinsPotashOutputs {
   potashFusedVolumeLiters: number; // Cast fused potash volume
   thermalEnergyJoules: number; // Total calcination and boiling energy
   extractionEfficiencyPct: number; // Leaching extraction yield vs theoretical max
+  flameDisplayOmegaRadPerS: number;
+  flameHarmonicOmegaRadPerS: number;
+  boilDisplayOmegaRadPerS: number;
 }
 
 export const HOPKINS_DEFAULT_CONTROLS: Required<HopkinsPotashControls> = {
@@ -115,6 +118,9 @@ export function stepHopkinsPotash(controls: HopkinsPotashControls = {}): Hopkins
   const lv_water = 2.26e6; // J/kg
   const q_evap = waterVolumeLiters * 1.0 * lv_water;
   const thermalEnergyJoules = Math.round(q_roastSensible + q_evap);
+  const flameDisplayOmegaRadPerS = Number(((roastTempC / 750) * 12).toFixed(3));
+  const flameHarmonicOmegaRadPerS = Number(((roastTempC / 750) * 24).toFixed(3));
+  const boilDisplayOmegaRadPerS = Number(((waterTempC / 100) * 8).toFixed(3));
 
   return {
     roastTempKelvin: Number(T_roastK.toFixed(1)),
@@ -128,5 +134,8 @@ export function stepHopkinsPotash(controls: HopkinsPotashControls = {}): Hopkins
     potashFusedVolumeLiters,
     thermalEnergyJoules,
     extractionEfficiencyPct,
+    flameDisplayOmegaRadPerS,
+    flameHarmonicOmegaRadPerS,
+    boilDisplayOmegaRadPerS,
   };
 }

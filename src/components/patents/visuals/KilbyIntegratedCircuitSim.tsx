@@ -242,7 +242,11 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
 
       // Dynamic Signal Pulse along Gold Wire Bonds
       const oscPhase =
-        activeCircuitMode === "oscillator" ? Math.sin(time * 8) : clockState ? 1 : -1;
+        activeCircuitMode === "oscillator"
+          ? Math.sin(time * simState.switchingDisplayOmegaRadPerS)
+          : clockState
+            ? 1
+            : -1;
       const pulsePos = (time * 1.5) % 1;
       const ppx = r1X + r1W + (t2X - r1X) * pulsePos;
       const ppy = dieY - 15 + Math.sin(pulsePos * Math.PI) * -10;

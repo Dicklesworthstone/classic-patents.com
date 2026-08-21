@@ -29,6 +29,14 @@ describe("US 682,690 Peter Cooper Hewitt Mercury-Vapor Arc Lamp Visual Boundary"
     expect(studioSource).toContain('usePatentPhysics("us-682690-hewitt-mercury-lamp")');
     expect(studioSource).toContain('updateParam("mainsVoltageV"');
     expect(studioSource).not.toContain("setMainsVoltageV");
+    const simSource = readFileSync(
+      join(rootDir, "src/components/patents/visuals/HewittMercuryLampSim.tsx"),
+      "utf-8",
+    );
+    expect(simSource).toContain("physics.plasmaFlickerOmegaRadPerS");
+    expect(simSource).toContain("physics.cathodeSpotOmegaXRadPerS");
+    expect(simSource).not.toContain("time * 15");
+    expect(simSource).not.toContain("time * 8");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

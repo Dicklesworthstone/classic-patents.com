@@ -158,7 +158,7 @@ export function HewittMercuryLampSim({
         for (let x = tubeStartX + 20; x < tubeEndX - 20; x += 30) {
           const tPos = (x - tubeStartX) / (tubeEndX - tubeStartX);
           const yBase = tubeStartY + tPos * (tubeEndY - tubeStartY);
-          const yFlicker = Math.sin(time * 15 + x * 0.1) * 3;
+          const yFlicker = Math.sin(time * physics.plasmaFlickerOmegaRadPerS + x * 0.1) * 3;
           ctx.lineTo(x, yBase + yFlicker);
         }
         ctx.stroke();
@@ -178,7 +178,7 @@ export function HewittMercuryLampSim({
 
       // Cathode Emitting Hot Spot (Dancing White Pinpoint)
       if (isLit) {
-        const spotX = tubeStartX + Math.sin(time * 8) * 8;
+        const spotX = tubeStartX + Math.sin(time * physics.cathodeSpotOmegaXRadPerS) * 8;
         const spotY = tubeStartY - 2;
         ctx.fillStyle = "#ffffff";
         ctx.shadowColor = "#38bdf8";
