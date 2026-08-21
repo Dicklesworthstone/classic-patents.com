@@ -39,7 +39,8 @@ export function ThomsonWelding3D() {
 
   // Electrical Resistance Welding Parameters
   const { params, updateParam } = usePatentPhysics("us-347140-thomson-welding");
-  const weldCurrentAmps = (params.weldCurrentAmps as number) ?? (params.currentAmperes as number) ?? 4500;
+  const weldCurrentAmps =
+    (params.weldCurrentAmps as number) ?? (params.currentAmperes as number) ?? 4500;
   const clampPressureMpa = (params.clampPressureMpa as number) ?? 35;
   const weld = stepThomsonWelding({
     weldCurrentAmps,
@@ -245,8 +246,12 @@ export function ThomsonWelding3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Weld Current:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(weldCurrentAmps)} A</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Weld Current:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(weldCurrentAmps)} A
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Joule Heat Rate:</span>
@@ -254,11 +259,15 @@ export function ThomsonWelding3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Interface Temp:</span>
-              <span className="font-bold text-rose-700 dark:text-rose-400">{weldTempCelsius}°C</span>
+              <span className="font-bold text-rose-700 dark:text-rose-400">
+                {weldTempCelsius}°C
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Upset Pressure:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{clampPressureMpa} MPa</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {clampPressureMpa} MPa
+              </span>
             </div>
           </div>
         )}
@@ -293,8 +302,12 @@ export function ThomsonWelding3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Secondary Welding Current</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{Math.round(weldCurrentAmps)} A</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Secondary Welding Current
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {Math.round(weldCurrentAmps)} A
+              </span>
             </div>
             <input
               type="range"
@@ -309,8 +322,12 @@ export function ThomsonWelding3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Mechanical Upset Pressure</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{clampPressureMpa} MPa</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Mechanical Upset Pressure
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {clampPressureMpa} MPa
+              </span>
             </div>
             <input
               type="range"

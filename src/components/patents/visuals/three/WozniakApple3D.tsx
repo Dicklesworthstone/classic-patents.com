@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Cpu, Eye, EyeOff, Monitor, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -34,9 +34,10 @@ export function WozniakApple3D() {
   const [isCpuActive] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
-  const clockFrequencyMhz = (params.crystalFreq as number) ?? (params.masterClockMhz as number) ?? 14.31818;
+  const clockFrequencyMhz =
+    (params.crystalFreq as number) ?? (params.masterClockMhz as number) ?? 14.31818;
   const ramCapacityKb = (params.ramCapacityKb as number) ?? 48;
 
   const apple = stepWozniakApple({
@@ -44,10 +45,10 @@ export function WozniakApple3D() {
     ramCapacityKb,
   });
 
-  const cycleTimeNs = apple.cycleTimeNs;
+  const _cycleTimeNs = apple.cycleTimeNs;
   const phi1VideoAccessWindowNs = apple.dramWindowNs;
   const effectiveCpuThroughputPct = apple.cpuDutyPct;
-  const colorSubcarrierMhz = apple.colorSubcarrierMhz.toFixed(4);
+  const _colorSubcarrierMhz = apple.colorSubcarrierMhz.toFixed(4);
 
   const live = useLiveSimParams({
     clockFrequencyMhz,
@@ -100,12 +101,7 @@ export function WozniakApple3D() {
       const p = live.current;
 
       const animTime = renderedSteps * delta;
-      model.updateKinematics(
-        delta,
-        animTime,
-        p.busDisplaySpeed,
-        p.isCpuActive,
-      );
+      model.updateKinematics(delta, animTime, p.busDisplaySpeed, p.isCpuActive);
 
       studio.controls.update();
       renderer.render(scene, camera);
@@ -213,20 +209,30 @@ export function WozniakApple3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Apple II Bus Telemetry:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{clockFrequencyMhz.toFixed(3)} MHz</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Apple II Bus Telemetry:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {clockFrequencyMhz.toFixed(3)} MHz
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Throughput:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{effectiveCpuThroughputPct}% CPU (no DMA halt)</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {effectiveCpuThroughputPct}% CPU (no DMA halt)
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Memory Slot:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{phi1VideoAccessWindowNs} ns (Φ₁/Φ₂)</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {phi1VideoAccessWindowNs} ns (Φ₁/Φ₂)
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">RAM Bank:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{ramCapacityKb} KB (Auto-Refreshed)</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {ramCapacityKb} KB (Auto-Refreshed)
+              </span>
             </div>
           </div>
         )}
@@ -237,8 +243,12 @@ export function WozniakApple3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Master Quartz Crystal</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{clockFrequencyMhz.toFixed(3)} MHz</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Master Quartz Crystal
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {clockFrequencyMhz.toFixed(3)} MHz
+              </span>
             </div>
             <input
               type="range"
@@ -254,7 +264,9 @@ export function WozniakApple3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">RAM Capacity</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{ramCapacityKb} KB</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {ramCapacityKb} KB
+              </span>
             </div>
             <input
               type="range"

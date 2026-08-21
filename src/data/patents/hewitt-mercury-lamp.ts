@@ -142,7 +142,6 @@ export const hewittMercuryLampPatent: Patent = {
       caption:
         "Side elevation and electrode details of tubular mercury-vapor lamp with upper condensing chamber and starting circuit.",
       svgType: "hewitt-lamp-tube",
-      imageUrl: "/patents/figures/us-682690-hewitt-mercury-lamp/fig-1-source-crop-v1.png",
       callouts: [
         {
           id: "callout-tube",
@@ -192,7 +191,6 @@ export const hewittMercuryLampPatent: Patent = {
       caption:
         "Operating circuit schematic showing converter transformer, magnetic interrupter, and automatic series cutout switch.",
       svgType: "hewitt-ignition-circuit",
-      imageUrl: "/patents/figures/us-682690-hewitt-mercury-lamp/fig-4-source-crop-v1.png",
       callouts: [
         {
           id: "callout-transformer",

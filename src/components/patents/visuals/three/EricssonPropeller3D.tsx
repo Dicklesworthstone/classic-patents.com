@@ -113,11 +113,11 @@ export function EricssonPropeller3D() {
         model,
         dt,
         p.shaftOmegaRadPerS,
-        p.pitchAngleDeg,
+        p.wakeOpacity ?? 0.65,
+        p.pitchAngleDeg ?? 0,
+        p.wakeSwirlCoeff ?? 1.0,
+        p.showWake ?? true,
         p.isCutaway,
-        p.showWake,
-        p.wakeSwirlCoeff,
-        p.wakeOpacity,
       );
 
       controls.update();

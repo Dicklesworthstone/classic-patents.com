@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Compass, Eye, EyeOff, Layers, Play, Wind } from "lucide-react";
+import { Camera, Compass, Eye, EyeOff, Layers, Play, RotateCcw, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
@@ -63,7 +63,7 @@ function resetStreamlineParticle(
 
 export function WrightFlyer3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { params } = usePatentPhysics(WRIGHT_PATENT_ID);
+  const { params, updateParam } = usePatentPhysics(WRIGHT_PATENT_ID);
   const controls = readWrightControls(params);
   const si = stepWrightFlyerSi(controls);
   const {
@@ -460,10 +460,86 @@ export function WrightFlyer3D() {
             <Play className="w-3.5 h-3.5 inline sm:mr-1" />
             <span className="hidden sm:inline">{isAutoFlying ? "Live Flight" : "Freeze"}</span>
           </button>
+          <button
+            aria-label="Reset camera view"
+            type="button"
+            onClick={() => applyCameraPreset("iso")}
+            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg bg-parchment-50/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-ink-200 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-xs"
+            title="Reset Orbit Camera"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 
-      {/* The unified PhysicsTelemetryBadge now handles parameter controls globally. */}
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Airspeed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{airspeedMph} mph</span>
+            </div>
+            <input
+              type="range"
+              min="15"
+              max="45"
+              step="1"
+              value={airspeedMph}
+              onChange={(e) => updateParam("speed", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Wing Warp Angle</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{wingWarpDeg}°</span>
+            </div>
+            <input
+              type="range"
+              min="-12"
+              max="12"
+              step="0.5"
+              value={wingWarpDeg}
+              onChange={(e) => updateParam("warp", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Pitch Canard</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">{elevatorPitchDeg}°</span>
+            </div>
+            <input
+              type="range"
+              min="-15"
+              max="15"
+              step="0.5"
+              value={elevatorPitchDeg}
+              onChange={(e) => updateParam("elevator", Number.parseFloat(e.target.value))}
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Coupled Rudder</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{rudderYawDeg}°</span>
+            </div>
+            <input
+              type="range"
+              min="-20"
+              max="20"
+              step="0.5"
+              value={rudderYawDeg}
+              onChange={(e) => updateParam("rudder", Number.parseFloat(e.target.value))}
+              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

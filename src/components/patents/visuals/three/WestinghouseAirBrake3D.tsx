@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Camera, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -112,7 +112,7 @@ export function WestinghouseAirBrake3D() {
 
     // Authentic Model
     const brakeModel: WestinghouseAirBrakeModelResult = buildWestinghouseAirBrakeModel();
-    scene.add(brakeModel.rootGroup);
+    scene.add(brakeModel.root);
 
     // Animation Loop
     let reqId: number;
@@ -246,20 +246,30 @@ export function WestinghouseAirBrake3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Operating Pipe B:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{westinghouse.operatingPipePressurePsi} psi</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Operating Pipe B:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {westinghouse.operatingPipePressurePsi} psi
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Receiver Pipe B¹:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{westinghouse.reservoirPipePressurePsi} psi</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {westinghouse.reservoirPipePressurePsi} psi
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Cylinder C:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{westinghouse.brakeCylinderPressurePsi} psi</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {westinghouse.brakeCylinderPressurePsi} psi
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Clamping Force:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{clampingForceKn.toFixed(1)} kN</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {clampingForceKn.toFixed(1)} kN
+              </span>
             </div>
           </div>
         )}
@@ -297,8 +307,12 @@ export function WestinghouseAirBrake3D() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Operating Pipe (Pipe B)</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{trainPipePressurePsi} psi</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Operating Pipe (Pipe B)
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {trainPipePressurePsi} psi
+              </span>
             </div>
             <input
               type="range"
@@ -306,15 +320,21 @@ export function WestinghouseAirBrake3D() {
               max="80"
               step="5"
               value={trainPipePressurePsi}
-              onChange={(e) => updateParam("trainPipePressure", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("trainPipePressure", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Auxiliary Reservoir (Pipe B¹)</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{reservoirPipePressurePsi} psi</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Auxiliary Reservoir (Pipe B¹)
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {reservoirPipePressurePsi} psi
+              </span>
             </div>
             <input
               type="range"
@@ -322,7 +342,9 @@ export function WestinghouseAirBrake3D() {
               max="100"
               step="5"
               value={reservoirPipePressurePsi}
-              onChange={(e) => updateParam("reservoirPipePressure", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("reservoirPipePressure", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
@@ -330,7 +352,9 @@ export function WestinghouseAirBrake3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Selecting Cock d¹</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{selectingCockPos === 1 ? "Position 2 (Swapped)" : "Position 1 (Normal)"}</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {selectingCockPos === 1 ? "Position 2 (Swapped)" : "Position 1 (Normal)"}
+              </span>
             </div>
             <input
               type="range"
@@ -338,7 +362,9 @@ export function WestinghouseAirBrake3D() {
               max="1"
               step="1"
               value={selectingCockPos}
-              onChange={(e) => updateParam("selectingCockPosition", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("selectingCockPosition", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
