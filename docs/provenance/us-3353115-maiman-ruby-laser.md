@@ -55,6 +55,16 @@ reconstructs the source face against all ten PDF pages.
 
 ## 5. Source-pixel figure-crop lineage (2026-08-21)
 
+## 5a. Ledger reconciliation boundary (2026-08-21)
+
+Pages 6–10 were manually reconciled against the existing PDF text-layer
+research evidence: the continuation metadata, drawing descriptions, closing
+specification paragraph, two claims, and cited references are now represented
+in the ledger. OCR-like spelling errors were corrected where the source text
+was unambiguous. Pages 4–5 remain withheld from literal promotion because the
+workspace has no corresponding source-page render and their existing draft is
+visibly garbled; no labels or signatures were invented to fill that gap.
+
 The held edition has five authored figure occurrences. Each points to a
 versioned PNG rendered from the pinned PDF at 300 dpi, then cropped to the
 printed figure and its reference numerals. Earlier assets are preserved. These
