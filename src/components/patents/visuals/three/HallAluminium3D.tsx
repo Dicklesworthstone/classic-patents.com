@@ -1,11 +1,12 @@
 "use client";
 
-import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -79,21 +80,34 @@ export function HallAluminium3D() {
     const { scene, camera, renderer, controls } = studio;
 
     const model = createHallAluminiumModel();
-    scene.add(model.rootGroup);
+    scene.add(model.root);
 
     let reqId: number;
+    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = 1 / 60;
+      timeSec += dt;
       const p = live.current;
-
-      updateHallAluminiumVisual(model, dt, {
+      const currentSim = stepHallAluminium({
         currentAmperes: p.currentAmperes,
         bathTemperatureCelsius: p.bathTemperatureCelsius,
         aluminaConcentrationPct: p.aluminaConcentrationPct,
-        isCutaway: p.isCutaway,
       });
+
+      model.setCutaway?.(p.isCutaway ?? false);
+
+      updateHallAluminiumVisual(
+        model,
+        {
+          currentAmperes: currentSim.currentAmperes,
+          bathTemperatureCelsius: currentSim.bathTemperatureCelsius,
+          totalCellVoltage: currentSim.totalCellVoltage,
+          aluminiumProductionRateKgPerHour: currentSim.aluminiumProductionRateKgPerHour,
+        },
+        timeSec,
+      );
 
       controls.update();
       renderer.render(scene, camera);
@@ -103,7 +117,6 @@ export function HallAluminium3D() {
 
     return () => {
       cancelAnimationFrame(reqId);
-      model.dispose();
       studio.cleanup();
       studioRef.current = null;
     };
@@ -152,7 +165,7 @@ export function HallAluminium3D() {
           <ClaimConstraintToggle
             patentId="us-400766-hall-aluminium"
             claimStates={claimStates}
-            onToggleClaim={(c, active) => {
+            onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
               updateParam("currentAmperes", active ? 300000 : 15000);
             }}
@@ -251,6 +264,12 @@ export function HallAluminium3D() {
                 {sim.bathTemperatureCelsius} °C
               </span>
             </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Alumina:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {sim.aluminaConcentrationPct}%
+              </span>
+            </div>
           </div>
         )}
       </div>
@@ -262,7 +281,7 @@ export function HallAluminium3D() {
             id="cellCurrent"
             patentId="us-400766-hall-aluminium"
             paramKey="currentAmperes"
-            label="Cell DC Current"
+            label="Cell Current"
             value={currentAmperes}
             min={100000}
             max={500000}
@@ -286,34 +305,20 @@ export function HallAluminium3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Alumina (Al₂O₃) Conc
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {aluminaConcentrationPct}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2"
-              max="8"
-              step="0.5"
-              value={aluminaConcentrationPct}
-              onChange={(e) =>
-                updateParam("aluminaConcentrationPct", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="aluminaConc"
+            patentId="us-400766-hall-aluminium"
+            paramKey="aluminaConcentrationPct"
+            label="Alumina (Al₂O₃) Conc"
+            value={aluminaConcentrationPct}
+            min={2}
+            max={8}
+            step={0.5}
+            unit="%"
+            onChange={(val) => updateParam("aluminaConcentrationPct", val)}
+            allParams={params}
+          />
         </div>
-
-        <PortHamiltonianEnergyStrip
-          patentId="us-400766-hall-aluminium"
-          params={params}
-          className="mt-3"
-        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

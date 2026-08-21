@@ -187,7 +187,7 @@ Hughes Aircraft Company, Culver City, Calif., a cor-
 poration of Delaware
 
 Continuation of application Ser. No. 102,698, Apr. 13,
-1961. This application Noy. 29, 1965, Ser. No. 516,830
+1961. This application Nov. 29, 1965, Ser. No. 516,830
 
 2 Claims, (C1. 331—94.5)
 
@@ -197,7 +197,7 @@ filed Apr. 13, 1961, now abandoned.
 
 This invention relates to the generation, amplification,
 and utilization of electromagnetic waves in the infrared,
-visible and. ultraviolet portion of the spectrum, and more
+visible and ultraviolet portion of the spectrum, and more
 specifically to lasers and laser systems. A laser, the term
 being an acronym for light amplification by stimulated
 emission of radiation, is a device capable of generating
@@ -235,9 +235,9 @@ degraded, and impracticably large sources of pumping
 power are required,
 
 A laser has been proposed by Schawlow and Townes,
-sce United States Patent No. 2,929,922, issued March
+see United States Patent No. 2,929,922, issued March
 22, 1960, which suggests using as the negative tempera-
-ture medium certain gascous state materials such as al-
+ture medium certain gaseous state materials such as al-
 kali metal vapors. Such materials may be shown to have
 energy levels in their atomic systems corresponding to
 appropriate optical frequencies for absorbing optical
@@ -254,7 +254,7 @@ est as theoretical models and represent significant aca-
 demic advances, however, they have not been shown to
 provide a net generation or amplification of light. In addi-
 tion, the structure of gaseous state systems is complex and
-requires the mainttenance of critical vapor pressures and
+requires the maintenance of critical vapor pressures and
 temperatures, Impurities in the gas is another very serious
 problem. The inter-atomic spacing of the gas severely
 limits the efficiency of coupling between the stimulated
@@ -296,10 +296,10 @@ so that the many reflections required because of the low
 density gaseous material will be accomplished.
 
 It is therefore an object of the present invention to
-provide an operable, low noise. :Mcient laser.
+provide an operable, low noise, efficient laser.
 
-It is another object to provide a laser which is me--
-chanically stable and of noncritical construction.
+It is another object to provide a laser which is mechanically
+stable and of noncritical construction.
 
 It is another object to provide a laser which operates
 at room temperature or cryogenic temperatures for addi-
@@ -324,22 +324,22 @@ ance with the present invention in a system including a
 solid state negative temperature medium.
 
 In one example a segment of solid state active laser ma-
-terial such as a cylindrical ruby (Al,03 doped with
-Cr,O3) rod with reflecting coating at each end is coaxial-
+terial such as a cylindrical ruby (Al2O3 doped with
+Cr2O3) rod with reflecting coating at each end is coaxially
 ly placed in a helical flash lamp. White light or, predomi-
 nantly, the green and blue components thereof, is absorbed
 by the ruby; and red light is emitted therefrom and cou-
 pled out of the system through a hole in the reflective
 coating at one end of the rod. The reflecting coatings pro-
 vide a regeneration related to the coupling between the
-Tefiecting wave, traveling back and forth many times, and
+reflecting wave, traveling back and forth many times, and
 the emitting atoms. In other words, a resonating, stand-
 ing wave is provided which derives energy from the nega-
 tive temperature dielectric. Thus the rod may be con-
 sidered as a resonator having different Q's for different
 modes of oscillation, The mode having the highest Q
 corresponds to waves traveling nearly parallel to the rod
-axis since it supplies the highest degree of regencration.
+axis since it supplies the highest degree of regeneration.
 This effect causes the output to be an extremely parallel
 beam so that it propagates immense distances without
 spreading. Inherent in the regeneration process is the
@@ -350,7 +350,7 @@ ther objects and advantages, including uses, and of other
 examples will be presented below in connection with a
 description of the accompanying drawings in which:
 
-FIG. 1 {s an energy level diagram for the atoms of a
+FIG. 1 is an energy level diagram for the atoms of a
 substance exhibiting laser properties;
 
 FIG. 2 is a schematic diagram illustrating optical pump-
@@ -368,8 +368,7 @@ ing a hollow gas-filled cylinder for optical pumping of the
 laser material;
 
 FIG. 6 is another embodiment of the present invention
-
-9 Which utilizes a hollow cylindrical gas-filled optical pump-
+which utilizes a hollow cylindrical gas-filled optical pump-
 
 ing means which is radially separated from the active
 laser material by a fluorescent material;
@@ -414,9 +413,9 @@ system utilizing a laser.
 
 The laser to be herein below described utilizes the
 interaction of electromagnetic radiation with a material
-having an appropriate set of discrete energy levels, Con-
-sider, for example, a pair of such levels with energies E;
-and Ey where By is greater than E;. An electromagnetic
+having an appropriate set of discrete energy levels, Consider,
+for example, a pair of such levels with energies E1 and E2,
+where E2 is greater than E1. An electromagnetic
 wave of frequency
 
 y aaa F;
@@ -424,8 +423,8 @@ y aaa F;
 a h
 where h is Planck’s constant, coupled to the system stimu-
 lates both absorption and emission. In other words, atoms
-in the lower level make transitions to the upper level, cach
-absorbing energy Ex»; and similarly upper level atoms
+in the lower level make transitions to the upper level, each
+absorbing energy hν; and similarly upper level atoms
 are stimulated downwardly, each of these giving up energy
 to the wave by radiating a like quantum of energy. The
 net absorption of the radiating wave interacting with the
@@ -446,7 +445,7 @@ w=
 
 If other parameters, and, in particular, relaxation times,
 in the material are suitably related, an inverted popula-
-tion will be produced such that Ng is greater than Nj;
+tion will be produced such that N2 is greater than N1;
 then the net interaction with a radiating wave of frequency
 vq, is emission and the wave is amplified. Also, by provid-
 ing a feedback mechanism oscillation can be produced.
@@ -550,7 +549,7 @@ from the atoms in the ruby rod 10 it causes a wave to
 propagate through the rod and if the wave is parallel
 to the axis it may reflect repeatedly from the ends of the
 rod. If the rod is of an appropriate length a standing
-wave 14 may be sct up. In either event the repeated
+wave 14 may be set up. In either event the repeated
 reflections through the material stimulate the emission of
 substantially all the atoms from level 2 to their ground
 state level 1. The emission of the energy at frequency »2;

@@ -5,6 +5,8 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildGoddardRocketModel, updateGoddardRocketKinematics } from "./goddardRocketModel";
 import { StudioKernelChips } from "./StudioKernelChips";
@@ -217,7 +219,7 @@ export function GoddardRocket3D() {
           <ClaimConstraintToggle
             patentId="us-1102653-goddard-rocket"
             claimStates={claimStates}
-            onToggleClaim={(c, active) => {
+            onToggleClaim={(c: number, active: boolean) => {
               setClaimStates((prev) => ({ ...prev, [c]: active }));
               updateParam("chamberPressure", active ? 350 : 80);
             }}
