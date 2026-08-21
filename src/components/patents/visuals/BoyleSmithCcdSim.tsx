@@ -1,15 +1,19 @@
 "use client";
 
+import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 interface BoyleSmithCcdSimProps {
   interactive?: boolean;
 }
 
 export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) {
-  const { params, updateParam } = usePatentPhysics("us-3858232-boyle-smith-ccd");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-3858232-boyle-smith-ccd");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRunning, setIsRunning] = useState(true);
 
