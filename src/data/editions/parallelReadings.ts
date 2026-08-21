@@ -119,8 +119,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-586193-marconi-radio": marconiRadioParallelReadings,
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
-  "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
-  "us-621195-zeppelin-airship": zeppelinParallelReadings,
   "us-682690-hewitt-mercury-lamp": hewittMercuryLampParallelReadings,
   "us-706737-fessenden-wireless": fessendenWirelessParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,
