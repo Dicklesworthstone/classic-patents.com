@@ -429,6 +429,50 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       text("."),
     ),
     p(
+      text("Referring to "),
+      ref(
+        "FIG. 8",
+        "#figure-8",
+        "Figure 8",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(
+        ", the active laser material is a hollow cylinder within which a cylindrical flash tube is coaxially disposed. The active material is surrounded by a coolant cylinder, which may have a high index of refraction and a polished internal surface for reflecting pump energy back through the laser material. In ",
+      ),
+      ref(
+        "FIG. 9",
+        "#figure-9",
+        "Figure 9",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(
+        ", the laser material is refrigerated. A rod has plated ends and a coupling hole for the output beam; a thermally conductive rod extends into liquid nitrogen in a Dewar flask, while a coaxial flash tube and coolant cylinder surround the laser rod.",
+      ),
+    ),
+    p(
+      text(
+        "FIG. 10 illustrates a segment of laser material surrounded by a low-index material such as air. An axial ray can travel without reflecting from the side, while nonparallel rays reflect at the boundary, increasing the effective resonating length and spreading the output. In ",
+      ),
+      ref(
+        "FIG. 11",
+        "#figure-11",
+        "Figure 11",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(
+        ", a coating transparent to pump energy and absorptive near the laser output frequency absorbs nonparallel rays at the boundary. ",
+      ),
+      ref(
+        "FIG. 12",
+        "#figure-12",
+        "Figure 12",
+        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
+      ),
+      text(
+        " shows a high-index coolant in immediate contact with the active segment, transmitting nonparallel rays that would otherwise reflect. The specification gives diodomethane as a practical coolant whose refractive index is close to that of ruby and explains that coolant also controls the operating frequency by controlling temperature.",
+      ),
+    ),
+    p(
       text(
         "The invention further encompasses practical optical radar and ranging systems, termed ",
       ),
