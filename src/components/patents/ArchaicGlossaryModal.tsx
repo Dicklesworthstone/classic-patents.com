@@ -166,6 +166,13 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
       aria-labelledby="glossary-modal-title"
       className="fixed inset-0 z-50 m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[85vh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
+      onClick={(e) => {
+        // Clicks on the native <dialog> backdrop land on the dialog element.
+        if (e.target === dialogRef.current) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") onClose();
+      }}
     >
       <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Modal Header */}
@@ -190,9 +197,16 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
         </div>
 
         {/* Tab switch */}
-        <div className="flex items-center gap-2 px-5 pt-3 border-b border-parchment-200 dark:border-ink-800 text-xs font-mono">
+        <div
+          role="tablist"
+          aria-label="Glossary sections"
+          className="flex items-center gap-2 px-5 pt-3 border-b border-parchment-200 dark:border-ink-800 text-xs font-mono"
+        >
           <button
             type="button"
+            role="tab"
+            id="glossary-tab-glossary"
+            aria-selected={activeTab === "glossary"}
             onClick={() => setActiveTab("glossary")}
             className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
               activeTab === "glossary"
@@ -205,6 +219,9 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           {patent && (
             <button
               type="button"
+              role="tab"
+              id="glossary-tab-citation"
+              aria-selected={activeTab === "citation"}
               onClick={() => setActiveTab("citation")}
               className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
                 activeTab === "citation"
