@@ -1,15 +1,17 @@
 "use client";
 
-import { Radio } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { spencerPopcornSvg, voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function SpencerMicrowaveSim() {
-  const { params, updateParam } = usePatentPhysics("us-2495429-spencer-microwave");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-2495429-spencer-microwave");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const powerWatts = params.rfPowerSetting ?? 800;
   const rf = FrankenSimEngine.stepSpencerMicrowave(
     voltsToKv(params.anodeVoltage ?? 2200),
@@ -38,7 +40,9 @@ export function SpencerMicrowaveSim() {
         if (nextTemp > rf.popcornThresholdC && poppedRef.current < rf.popcornKernelCount) {
           poppedRef.current += 1;
           setPoppedCount(poppedRef.current);
-          soundEngine.playPopcornPop();
+          if (!isAudioMuted) {
+            soundEngine.playPopcornPop();
+          }
         }
       } else {
         const nextTemp = Math.min(25, tempRef.current + rf.dryIceHeatStepC);
@@ -50,6 +54,7 @@ export function SpencerMicrowaveSim() {
   }, [
     isEmitting,
     foodType,
+    isAudioMuted,
     rf.popcornHeatStepC,
     rf.dryIceHeatStepC,
     rf.popcornKernelCount,
@@ -58,29 +63,29 @@ export function SpencerMicrowaveSim() {
   ]);
 
   const resetHeating = () => {
+    resetParams();
     setTempCelsius(rf.initialTempC);
     setPoppedCount(0);
     soundEngine.playSwitchClick();
   };
 
   return (
-    <div className="rounded-xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 shadow-patent">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <Radio
-              className={`w-4 h-4 text-purple-500 ${isEmitting ? "animate-pulse" : "opacity-40"}`}
+            <Waves
+              className={`w-5 h-5 text-purple-500 ${isEmitting ? "animate-pulse" : "opacity-40"}`}
             />
             <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Spencer Cavity Magnetron &amp; Dielectric Microwave Simulator
+              Percy Spencer Microwave Cavity Magnetron (US 2,495,429)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
-            Watch polar water molecules oscillate 2.45 billion times/second to generate rapid
-            volumetric heat.
+            Polar water molecules oscillating at 2.45 GHz generating rapid volumetric heating.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-end sm:self-auto">
           <button
             aria-label={isEmitting ? "Stand by magnetron" : "Emit microwaves"}
             type="button"
@@ -94,14 +99,28 @@ export function SpencerMicrowaveSim() {
                 : "bg-parchment-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700"
             }`}
           >
-            {isEmitting ? "Magnetron: EMITTING" : "Magnetron: STANDBY"}
+            {isEmitting ? "EMITTING" : "STANDBY"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
             onClick={resetHeating}
-            className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium border border-parchment-300 dark:border-ink-700 bg-parchment-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300 hover:bg-parchment-200"
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            Cool Down Food &amp; Reset
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
