@@ -58,6 +58,33 @@ describe("pasteurFermentationArchivalEdition", () => {
         30,
       );
     }
+    expect(paragraphIndexes).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 20, 21,
+    ]);
+    expect(pasteurFermentationParallelReadings[20]?.join(" ")).toContain(
+      "execution sentence",
+    );
+    expect(pasteurFermentationParallelReadings[21]?.join(" ")).toContain(
+      "signature and then identifies",
+    );
+  });
+
+  test("keeps the continuous apparatus paragraph and source exit label", () => {
+    const apparatus = pasteurFermentationArchivalEdition.blocks[5];
+    expect(apparatus?.kind).toBe("paragraph");
+    if (apparatus?.kind !== "paragraph") {
+      throw new Error("Pasteur apparatus paragraph moved unexpectedly.");
+    }
+    const apparatusText = apparatus.inlines.map((inline) => inline.text).join("");
+    expect(apparatusText).toContain("spray-nozzles P. Upon a suitable stand");
+    expect(pasteurFermentationArchivalEdition.blocks[6]?.kind).toBe("paragraph");
+    const exitParagraph = pasteurFermentationArchivalEdition.blocks[6];
+    if (exitParagraph?.kind !== "paragraph") {
+      throw new Error("Pasteur exit paragraph moved unexpectedly.");
+    }
+    expect(exitParagraph.inlines.map((inline) => inline.text).join("")).toContain(
+      "exit or escape tubes at x",
+    );
   });
 
   test("links each source figure occurrence to an owned facsimile crop", () => {
@@ -137,6 +164,7 @@ describe("pasteurFermentationArchivalEdition", () => {
       expect(normalizedLedger).toContain(literal.trim().replace(/\s+/g, " "));
     }
     expect(ledger).toContain("exit or escape tubes at x");
+    expect(ledger).not.toContain("exit or escape tubes at a′");
     expect(ledger).toContain("16° to 18° Reaumur");
     expect(JSON.stringify(pasteurFermentationArchivalEdition)).not.toContain(
       "shows the three vessels and the spray arrangement",

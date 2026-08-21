@@ -8,7 +8,7 @@
 - SHA-256: `7c9145e813b652e9da76472a8e6d0b2fa3088aeb1cea34b5ae3163f4d673a649`.
 - Page count: 3.
 - Stable catalog record: [Google Patents, US135245A](https://patents.google.com/patent/US135245A/en).
-- Retrieved and visually reviewed: 2026-08-17.
+- Retrieved: 2026-08-17; all three source pages visually rechecked during this repair on 2026-08-21.
 - Rights basis: the 1873 U.S. patent document is in the public domain; this receipt records the source and does not claim rights in a third-party scan.
 
 ## Page locators and review boundary
@@ -16,8 +16,8 @@
 | Source PDF page | Matter manually checked | Local editorial output |
 | --- | --- | --- |
 | 1 | Drawing sheet: Fig. 1, Fig. 2, title, patent date, inventor and witness signatures | `figure-1-v3.png`, `figure-2-v3.png`; figure-sheet blocks in `pasteurFermentationEdition.ts` |
-| 2 | Masthead; opening specification through the start of the operating sequence | Reviewed transcript page 2; archival blocks 0–13 |
-| 3 | Completion of operating sequence; optional filtered/hot air; scale note; gas reuse; asserted results; sole claim; execution and witnesses | Reviewed transcript page 3; archival blocks 13–22; typed claim 1 |
+| 2 | Masthead; opening specification through the start of the operating sequence | Reviewed transcript page 2; archival blocks 0–12 |
+| 3 | Completion of operating sequence; optional filtered/hot air; scale note; gas reuse; asserted results; sole claim; execution and witnesses | Reviewed transcript page 3; archival blocks 12–23; typed claim 1 |
 
 The edition is manually authored from the facsimile. Existing
 `source-text/us-135245-pasteur-fermentation.txt` and

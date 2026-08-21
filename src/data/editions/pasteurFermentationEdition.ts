@@ -104,11 +104,6 @@ export const pasteurFermentationArchivalEdition: CuratedSpecificationEdition = {
           kind: "text",
           text: ", A A A represent three casks or tanks, which may be made of galvanized iron, wood, or other suitable material, and which are supported on suitable stands b, as represented. Above the series of cylinders or vessels A is arranged a water-supply pipe, E, from which depend branch pipes, (one over each of the vessels A,) provided with cocks r, and having attached to their lower ends flexible tubes or hoses, which in turn carry at their lower extremities spray-nozzles P. ",
         },
-      ],
-    },
-    {
-      kind: "paragraph",
-      inlines: [
         {
           kind: "text",
           text: "Upon a suitable stand or shelf, T, is located an apparatus, M M, for the generation of ",

@@ -155,7 +155,7 @@ The full manual transcription, including both figures, complete specification, o
       figureNumber: "Fig. 1",
       title: "Three-vessel carbonic-acid and spray-cooling apparatus",
       caption:
-        "The drawing sheet shows vessels A, water pipe E and nozzles P, carbonic-acid generator M M, exits a′, drainage i and c, and faucets R/R′.",
+        "The drawing sheet shows vessels A, water pipe E and nozzles P, carbonic-acid generator M M, exit tubes x, drainage i and c, and faucets R/R′.",
       svgType: "pasteur-fermentation",
       callouts: [
         {
