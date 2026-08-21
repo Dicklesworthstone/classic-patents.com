@@ -41,6 +41,7 @@ export interface WozniakAppleModel {
     busDisplaySpeed: number,
     isCpuActive: boolean,
   ) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -381,6 +382,12 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    caseBeigeMat.transparent = cutaway;
+    caseBeigeMat.opacity = cutaway ? 0.25 : 1.0;
+    caseBeigeMat.needsUpdate = true;
+  };
+
   return {
     root,
     computerGroup,
@@ -396,6 +403,7 @@ export function buildWozniakAppleModel(): WozniakAppleModel {
     busPos,
     busColors,
     updateKinematics,
+    setCutaway,
     dispose,
   };
 }
