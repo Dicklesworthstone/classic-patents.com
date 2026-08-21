@@ -3,11 +3,7 @@ import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import {
-  MULTI_TOUCH_FIGURE_DIMS,
-  multiTouchArchivalEdition,
-  multiTouchParallelReadings,
-} from "@/data/editions/multiTouchEdition";
+import { multiTouchArchivalEdition } from "@/data/editions/multiTouchEdition";
 import { multiTouchPatent } from "@/data/patents/multitouch";
 
 const PINNED_SHA256 = "9b29747e60aad27302671e1be32fda99680c474d4e3a5ce0ffc93201460bfe1c";
