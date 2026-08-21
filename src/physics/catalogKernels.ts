@@ -10,7 +10,6 @@ import {
   cycleHeatCrate,
   cyclicFlex,
   delavalCreamCrate,
-  edisonHeatCrate,
   gatlingClusterCrate,
   gatlingClusterKappa,
   grammeRingCrate,
@@ -19,7 +18,6 @@ import {
   liftHeatCrate,
   lineWaveCrate,
   lintFluidCrate,
-  marconiWaveCrate,
   meltFluidCrate,
   parsonsSteamCrate,
   peltonJetCrate,
@@ -186,6 +184,7 @@ export function stepPeltonWheel(params: { headMeters?: number; runnerRpm?: numbe
       ((0.55 + (etaPct / 93) * 0.4) * (0.85 + jetCrate.jetCrateDensity)).toFixed(3),
     ),
     ...jetCrate,
+    ...peltonCavityFlow(h),
     runnerSvgR: 75,
     hubSvgR: 18,
     bucketCount: 12,
@@ -591,6 +590,7 @@ export function stepEricssonPropeller(params: { shaftRpm?: number; bladePitchAng
     wakeSwirlCoeff: 0.08,
     wakeOpacity: Number(Math.min(0.95, 0.3 + (thrustKn / 30) * 0.65).toFixed(3)),
     ...wakeFluidCrate(rpm),
+    ...ericssonWakeCavity(rpm),
     bladeSvgRx: 10,
     forwardBladeSvgRy: 50,
     aftBladeSvgRy: 45,
@@ -1366,6 +1366,7 @@ export function stepPasteurFermentation(params: {
     shelfLifeMonths: logReduction >= 6 ? 24 : 0.5,
     bathGlowOpacity: Number(Math.min(1, pTemp / 120).toFixed(3)),
     ...wortHeatCrate(temp),
+    ...pasteurYeastField(yeastActivityPct),
     microbeWobbleOmega: 3,
     microbeWobbleAmpPx: 3,
     microbeSvgOriginX: 230,
@@ -1937,6 +1938,7 @@ export function stepNoyceIC(params: {
     clockPeriodNs: Number((1000 / Math.max(0.1, clockMhz)).toFixed(2)),
     signalDisplaySpeed: Number((clockMhz * 0.45).toFixed(3)),
     toneHz: Number((200 + clockMhz * 15).toFixed(1)),
+    ...noyceJunctionPotential(vr),
     schematicJunctionCount: 3,
     schematicJunctionOriginX: 90,
     schematicJunctionPitchX: 80,
@@ -1991,7 +1993,7 @@ export function stepEdisonBulb(params: { voltage?: number; filamentLength?: numb
     lowResistanceTempK: Math.round(300 + lowResistanceWatts ** 0.45 * 160),
     lowResistanceFeederLossWatts: Number((lowResistanceAmps ** 2 * 0.4).toFixed(1)),
     incandescenceIntensity: Number(Math.min(1, (v / 110) ** 2).toFixed(3)),
-    ...edisonHeatCrate(v),
+    ...edisonFilamentHeat(v),
     thermalJitterPerS: Number(((tempK / 300) * 0.4).toFixed(3)),
     filamentEmissiveScale: 3.5,
     schematicGlowOpacity: edisonSchematicGlowOpacity(tempK),
@@ -2467,6 +2469,7 @@ export function stepSpencerMicrowave(anodeKv?: number, magneticGauss?: number, r
     schematicOvenH: 190,
     schematicAnodeR: 42,
     schematicCavityDotR: 7,
+    ...spencerCavityWave(rf, isOscillating),
     schematicWaveguideD: "M 152 150 L 200 130 L 330 130 L 330 170 L 200 170 Z",
     schematicLoadCx: 265,
     schematicLoadCy: 150,
@@ -2663,6 +2666,7 @@ export function stepBardeenTransistor(
     schematicCollectorLabelY: 64,
     holeWrapPad: BARDEEN_HOLE_WRAP_PAD,
     holeResetPad: BARDEEN_HOLE_RESET_PAD,
+    ...bardeenPointPotential(_ie, _vc),
   };
 }
 
@@ -2742,7 +2746,7 @@ export function stepMarconiRadio(
     schematicEarthH: 20,
     mastSvgY: Number((210 - h * 1.6).toFixed(2)),
     fundamentalHz: Number((resonantFreqMhz * 1e6).toFixed(0)),
-    ...marconiWaveCrate(resonantFreqMhz),
+    ...marconiSparkSpectrum(resonantFreqMhz, gap),
   };
 }
 
@@ -2885,6 +2889,7 @@ export function stepGoodyearRubber(
       : Number(((temp / 140) * (isVulcanized ? 0.03 : 0.1)).toFixed(4)),
     clampStudioX: Number((4.5 * lambda).toFixed(4)),
     ...chainHeatCrate(temp),
+    ...goodyearVulcanizationField(sulfur, temp),
     chainStretchPx: Number(((lambda - 1) * 80).toFixed(2)),
     chainSagPx: 25,
     chainSagBezierScale: 1.5,
@@ -4021,6 +4026,7 @@ export function stepHaberAmmonia(params: {
     loopFlowAdvance,
     catalystParticleAdvance,
     condenserDripAdvance,
+    ...haberCatalystField(catActivity),
   };
 }
 

@@ -56,15 +56,17 @@ export function teslaCoilControls(params: {
   couplingK?: number;
   secondaryTurns?: number;
 }) {
+  const resonantFreqKhz = teslaCoilResonantKhz(
+    params.primaryCap ?? params.primaryCapNf,
+    params.toploadCapacitancePf,
+  );
   return {
-    resonantFreqKhz: teslaCoilResonantKhz(
-      params.primaryCap ?? params.primaryCapNf,
-      params.toploadCapacitancePf,
-    ),
+    resonantFreqKhz,
     inputKv: params.inputVoltageKv ?? 15,
     sparkGapMm: params.sparkGapDistanceMm ?? 12,
     couplingK: params.couplingK ?? 0.18,
     secondaryTurns: params.secondaryTurns ?? 850,
+    ...teslaCoilSpectrum(resonantFreqKhz),
   };
 }
 
@@ -123,6 +125,10 @@ export interface TeslaFig9State {
   coilEmissiveHex: number;
   usesGeneratorContactRings: true;
   usesMotorCommutator: false;
+  hodgeExactEnergy: number;
+  hodgeCoexactEnergy: number;
+  hodgeHarmonicEnergy: number;
+  hodgeEdgeCount: number;
 }
 
 /** Registry `frequency` (Hz). `frequencyHz` is accepted as a leftover alias. */
@@ -133,6 +139,7 @@ export function teslaMotorPhaseHz(params: { frequency?: number; frequencyHz?: nu
 export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
   const boundedHz = Math.max(1, phaseCycleHz);
   const generatorRpm = Math.round(boundedHz * 60);
+  const hodge = teslaStatorHodge(2, 0);
   return {
     phaseCycleHz: boundedHz,
     generatorRpm,
@@ -174,6 +181,10 @@ export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
     coilEmissiveHex: 0xf59e0b,
     usesGeneratorContactRings: true,
     usesMotorCommutator: false,
+    hodgeExactEnergy: hodge.hodgeExactEnergy,
+    hodgeCoexactEnergy: hodge.hodgeCoexactEnergy,
+    hodgeHarmonicEnergy: hodge.hodgeHarmonicEnergy,
+    hodgeEdgeCount: hodge.hodgeEdgeCount,
   };
 }
 

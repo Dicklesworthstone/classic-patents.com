@@ -87,6 +87,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Pre-reactor calculations lacked verified 6-group delayed neutron precursor kinetics.",
     },
   ],
+  "us-2981877-noyce-ic": [
+    {
+      claimNumber: 1,
+      patentId: "us-2981877-noyce-ic",
+      claimTitle: "Adherent Passivating Oxide & Thin-Film Interconnects",
+      activeDescription:
+        "Claim 1 forms adherent SiO₂ insulating layers with vapor-deposited aluminum leads crossing PN junctions.",
+      invertedDescription:
+        "Unpassivated flying wire bonds: fragile gold whiskers create parasitic inductance and risk junction shorts.",
+      failureModeName: "Flying Wire Bond Parasitic Short",
+      historicalPriorArt:
+        "Kilby's initial 1958 IC required manual gold wire bonding between mesa-isolated semiconductor devices.",
+    },
+  ],
 };
 
 /**
@@ -146,6 +160,20 @@ export function applyClaimConstraintModifications(
         activeFailures.push("Filament Burnout: Oxygen combustion consumed carbon filament in 1.4s");
         refusalWarning =
           "MATERIAL REFUSAL: Mean free path << envelope diameter. Filament oxidized.";
+      }
+      break;
+    }
+
+    case "us-2981877-noyce-ic": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.parasiticInductanceNh = 45.0; // Flying gold bond wire inductance
+        modified.propDelayPs = 2500.0; // Delay explodes from 400ps to 2500ps
+        activeFailures.push(
+          "Wire Bond Inductance Ringing: Unpassivated leads limit clock to < 100 MHz",
+        );
+        refusalWarning =
+          "SEMICONDUCTOR FAULT: Flying wire bond parasitic L-C ringing causes clock skew.";
       }
       break;
     }
