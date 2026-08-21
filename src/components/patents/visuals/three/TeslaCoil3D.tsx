@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureTeslaWasm } from "@/physics/teslaWasm";
@@ -36,6 +36,7 @@ export function TeslaCoil3D() {
   // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
   const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const primaryCap = params.primaryCap ?? 45;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;
   const sparkGapDistanceMm = params.sparkGapDistanceMm ?? 12;
