@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -106,13 +107,12 @@ export function MorseTelegraph3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
     let clickCooldown = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       const cycle = Math.sin(timeSec * p.keyOscillationRadPerS);
@@ -146,7 +146,7 @@ export function MorseTelegraph3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

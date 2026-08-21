@@ -6,7 +6,7 @@ import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
-import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
+import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -28,7 +28,7 @@ const CAMERA_PRESETS: Record<
 
 export function CortPuddlingRolling3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");

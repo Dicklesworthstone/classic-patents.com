@@ -128,7 +128,7 @@ export const BellTelephone3D = memo(() => {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

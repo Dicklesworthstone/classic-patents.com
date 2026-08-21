@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -49,7 +49,7 @@ export function WattRotaryEngine3D() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [cutaway, setCutaway] = useState(false);
   const [showCallouts, setShowCallouts] = useState(true);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
   const { isAudioMuted, toggleSound } = usePatentAudio();
 

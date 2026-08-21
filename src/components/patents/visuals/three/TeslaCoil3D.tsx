@@ -17,7 +17,7 @@ import { ensureTeslaWasm } from "@/physics/teslaWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -45,7 +45,7 @@ export function TeslaCoil3D() {
 
   // Interpretive high-potential-transformer controls, not a facsimile reconstruction.
   const { params, updateParam } = usePatentPhysics("us-593138-tesla-coil");
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const primaryCap = params.primaryCap ?? 45;
   const toploadCapacitancePf = params.toploadCapacitancePf ?? 35;

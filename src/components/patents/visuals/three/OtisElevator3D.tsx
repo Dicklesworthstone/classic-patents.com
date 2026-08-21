@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Scissors, Volume2, VolumeX } fr
 import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildOtisElevatorModel, updateOtisElevatorKinematics } from "./otisElevatorModel";
@@ -98,12 +99,11 @@ export function OtisElevator3D() {
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
+    const clock = createStudioClock();
 
-    const animate = () => {
+    const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      timeSec += delta;
+      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       const currentOtis = stepOtisElevator({
@@ -125,7 +125,7 @@ export function OtisElevator3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);
