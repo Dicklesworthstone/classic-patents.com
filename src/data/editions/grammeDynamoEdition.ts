@@ -35,8 +35,18 @@ const FIGURE_CROPS = {
   9: crop(9, 1100, 340, "Fig. 9"),
   10: crop(10, 620, 660, "Fig. 10"),
   11: crop(11, 650, 560, "Fig. 11"),
-  12: crop(12, 940, 720, "Fig. 12"),
-  13: crop(13, 500, 720, "Fig. 13"),
+  12: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-12-source-crop-v3.png",
+    alt: "Tight upright source-facsimile crop of Fig. 12 from US 120,057, excluding the neighboring Fig. 13 and witness lines.",
+    width: 760,
+    height: 575,
+  },
+  13: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-13-source-crop-v3.png",
+    alt: "Tight upright source-facsimile crop of Fig. 13 from US 120,057, excluding the neighboring figure and signature lines.",
+    width: 430,
+    height: 610,
+  },
   14: {
     src: "/patents/figures/us-120057-gramme-dynamo/fig-14-source-crop-v5.png",
     alt: "Upright source-facsimile apparatus crop of Fig. 14 from US 120,057, with the complete printed figure label and no witness block.",

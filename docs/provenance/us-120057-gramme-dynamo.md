@@ -21,15 +21,17 @@
 
 The complete primary PDF was visually reviewed on 2026-08-17 before preparing
 `src/data/editions/grammeDynamoEdition.ts`. Its text is an explicitly authored
-reading edition, not an OCR, HTML, or Markdown import. The former public
-`source-text` and transcript assets are preserved as legacy assets and are not
-the reviewed canonical text.
+reading edition, not an OCR, HTML, or Markdown import. The reviewed ledger
+keeps the four drawing-sheet title/figure inventories as pages 1–4 and the
+five specification pages as pages 5–9; the former public `source-text` and
+transcript assets are preserved as legacy assets and are not the reviewed
+canonical text.
 
 | PDF locator | Reviewed content | Published treatment |
 | --- | --- | --- |
 | p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; separately reviewed local crops `fig-1.png` through `fig-6.png`; Fig. 1–6 references |
 | p. 2 | Drawing sheet 2, Figs. 7–9 | Figure-sheet block; separately reviewed local crops `fig-7-source-crop.png`, `fig-8.png`, and `fig-9.png`; Fig. 7–9 references |
-| p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; separately reviewed local crops `fig-10.png` through `fig-13.png`; Fig. 10–13 references |
+| p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; separately reviewed local crops `fig-10.png`, `fig-11.png`, `fig-12-source-crop-v3.png`, and `fig-13-source-crop-v3.png`; Fig. 10–13 references |
 | p. 4 | Drawing sheet 4, Fig. 14 | Figure-sheet block; upright apparatus crop `fig-14-source-crop-v5.png` with the complete printed figure label and no witness block, plus separate label crop `fig-14-label-source-crop-v4.png`; Fig. 14 references |
 | p. 5 | Masthead, co-inventors, introduction, endless-bobbin principle | Manual edition masthead and opening paragraphs |
 | p. 6 | Figs. 1–6 constructions and continuous-current explanation | Manual edition blocks with Figs. 1–6 references |
@@ -60,7 +62,11 @@ aid, not a replacement source.
 Figure 7 and Figure 9 overlap physically on drawing sheet 2. The complete
 Figure 7 crop therefore retains the upper Figure 9 detail exactly as printed,
 rather than erasing or redrawing either figure to make an artificial isolated
-image.
+image. Figure 14's earlier rotated and witness-contaminated derivatives remain
+preserved, but the edition uses the versioned `fig-14-source-crop-v5.png`, an
+upright crop with the complete `FIG. 14.` label and no witness block; the
+separate `fig-14-label-source-crop-v4.png` remains available for the tiny label
+preview.
 
 ## Secondary checks and boundaries
 

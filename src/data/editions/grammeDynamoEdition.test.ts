@@ -51,6 +51,8 @@ describe("grammeDynamoArchivalEdition", () => {
     const expectedCropFiles = Array.from({ length: 14 }, (_, index) => `fig-${index + 1}.png`);
     expectedCropFiles[2] = "fig-3-source-crop-v2.png";
     expectedCropFiles[6] = "fig-7-source-crop.png";
+    expectedCropFiles[11] = "fig-12-source-crop-v3.png";
+    expectedCropFiles[12] = "fig-13-source-crop-v3.png";
     expectedCropFiles[13] = "fig-14-source-crop-v5.png";
     expectedCropFiles.push("fig-14-label-source-crop-v4.png");
     for (const cropFile of expectedCropFiles) {
