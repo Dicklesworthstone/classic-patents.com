@@ -375,7 +375,7 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
         "Fig. 2, modified receiving apparatus.",
       ),
       text(
-        " is shown another form of receiving apparatus. A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13. By the interaction between the currents passing along the wire 12 and the magnetic field, the wire is caused to vibrate and make and break contact with the ",
+        " is shown another form of receiving apparatus. A portion of the ground connection of the receiving-conductor 10 is formed by a piece of fine wire 12, held in tension between the poles of a magnet 13. By the interaction between the currents passing along the wire 12 and the magnetic field the wire is caused to vibrate and make and break contact with the ",
       ),
       _term(
         "microphonic contact point 14",
@@ -393,12 +393,28 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
         "Fig. 5, radiating cylinder with enlarged portion.",
       ),
       text(
-        ", with varying superficial dimensions, as by an enlargement 17, the electromagnetic waves generated from its different surfaces will have different periodicities, since the periodicity depends in part upon the capacity of the radiating portion at the sending-station. A similarly constructed conductor may be used at the receiving-station, or two simple receiving-conductors suitably tuned may be used. The effect of locally increasing the superficial area or capacity is to produce two or more sets of waves of different periodicities: the first depends on the electrical constants of the conductor as a whole, and the others on the position and amount of the local increase, as when a weight or spring attached to a piano-wire creates additional vibrations.",
+        ", with varying superficial dimensions—e.g., with a swell or enlargement 17—the electromagnetic waves generated from its different surfaces will have different periodicities, as the periodicity of electromagnetic waves depends, in part at least, on the capacity of the radiating portion at the sending-station; a similarly-constructed conductor may be used at the receiving-station, or two simple receiving-conductors suitably tuned may be used.",
       ),
     ),
     p(
       text(
-        "By the use of a sending-conductor of large capacity and having that capacity uniformly distributed certain specific advantages are obtained which cannot be obtained by any other style of conductor. When the capacity is not distributed with substantial uniformity, it is impossible to obtain a sine form of electromagnetic wave, and this form of wave gives very much better results in that it permits the voltage being increased by resonance to any extent, depending only on the resistance losses. For example, if the resistance be low it is possible with an impressed voltage of, say, five to reach a resonant voltage of two hundred or more with a capacity distributed uniformly—that is, with a sine-wave—while if the capacity be distributed so as to give a parabolic wave with a voltage of five, it is not possible to obtain by resonance a higher voltage than twenty-five. Since when the capacity is large the resistance is also low on account of the fact that the currents with these high frequencies flow over the surface of the sending-conductor, it follows that with a sending-conductor of large capacity uniformly distributed it is possible to get a sine-wave and a low resistance—that is, conditions necessary and favorable for the production of large resonant voltages from small impressed voltages, and hence conditions which permit of sending over longer distances than if the sending-conductor were of sufficient length.",
+        "By the use of a sending-conductor of large capacity and having that capacity uniformly distributed certain specific advantages are obtained which cannot be obtained by any other style of conductor. When the capacity is not distributed with substantial uniformity, it is impossible to obtain a sine form of electromagnetic wave, and this form of wave gives very much better results in that it permits the voltage being increased by resonance to any extent, depending only on the resistance losses. For example, if the resistance be low it is possible with an impressed voltage of, say, five to reach a resonant voltage of two hundred or more with a capacity distributed uniformly—that is, with a sine-wave—while if the capacity be distributed so as to give a parabolic wave with a voltage of five, it is not possible to obtain by resonance a higher voltage than twenty-five, since when the capacity is large the resistance is also low on account of the fact that the currents with these high frequencies flow over the surface of the sending-conductor it follows that with a sending-conductor of large capacity uniformly distributed it is possible to get a sine-wave and a low resistance—that is, conditions necessary and favorable for the production of large resonant voltages from small impressed voltages, and hence conditions which permit of sending over longer distances than if the sending-conductor were of large capacity not uniformly distributed or of small capacity uniformly distributed.",
+      ),
+    ),
+    p(
+      _term(
+        "large capacity",
+        "Fessenden means capacity large compared with the capacities of wires commonly used in the art, a source-defined scale rather than a modern component rating.",
+      ),
+      text(
+        " as herein used is meant a capacity large as compared with the capacities of wires heretofore commonly used in the art, and by the term ",
+      ),
+      _term(
+        "uniformly distributed",
+        "The capacity is distributed with substantial uniformity over the radiating portion, rather than concentrated at a local enlargement or isolated point.",
+      ),
+      text(
+        " is meant distributed with substantial uniformity over the radiating portion. The effect of locally increasing the superficial area of the sending-conductor or of locally increasing the capacity by any other suitable means is to produce two or more sets of waves of different periodicities, the periodicity of the first being dependent upon the electrical constants of the sending-conductor as a whole and the periodicity of the other depending upon the position and amount of localized increase of capacity in the same way as by attaching a weight or spring to a piano-wire between its extremities additional vibrations in the wire are created.",
       ),
     ),
     p(

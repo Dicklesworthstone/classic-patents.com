@@ -15,14 +15,22 @@ const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
   test("publishes valid manual archival edition and originalTextAsset", () => {
-    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+    expect(fermiReactorPatent.archivalEdition).toBe(
+      fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+    );
     expect(fermiReactorPatent.originalTextAsset).toBeDefined();
   });
 
   test("pins the 58-page facsimile and retains a structurally valid staged edition", () => {
     if (fermiReactorPatent.archivalEdition)
-      expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
-    expect(validateCuratedSpecificationEdition(fermiReactorArchivalEdition)).toEqual({
+      expect(fermiReactorPatent.archivalEdition).toBe(
+        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+      );
+    expect(
+      validateCuratedSpecificationEdition(
+        fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
+      ),
+    ).toEqual({
       valid: true,
       errors: [],
     });
@@ -79,9 +87,57 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "saturation values",
     ]) {
       expect(
-        fermiReactorArchivalEdition.blocks.some((block) =>
-          "inlines" in block &&
-          block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        fermiReactorArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("pins the bounded reviewed ledger reconciliation for PDF pages 39–41", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
+    );
+    for (const page of [39, 40, 41]) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 58 ---`);
+    }
+    expect(ledger).toContain(
+      "The reactor is capable of operation at an output as high as 10,000 kilowatts",
+    );
+    expect(ledger).toContain("The neutron-density distribution in a spherical reactor");
+    expect(ledger).toContain("BERYLLIUM METAL, DENSITY 1.85 GM./CM.3");
+    const sourceFaceText = fermiReactorArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .map((inline) => inline.text)
+      .join(" ");
+    expect(sourceFaceText).toContain("flattened rotational ellipsoid");
+    expect(sourceFaceText).toContain("liquid-moderator structure");
+    expect(sourceFaceText).toContain("unit-cell ratios");
+    for (const expectedTerm of [
+      "conductively cooled",
+      "saturation activity",
+      "flattened rotational ellipsoid",
+      "effective radius",
+      "neutron-density distribution",
+      "cosine curve",
+      "D2O reactor",
+      "critical size",
+      "liquid-moderator structure",
+      "irradiation well",
+      "Diphenyl",
+      "seed portion",
+      "resonance capture",
+      "unit-cell ratios",
+    ]) {
+      expect(
+        fermiReactorArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
         ),
       ).toBe(true);
     }
