@@ -1,23 +1,8 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Layers,
-  Radio,
-  RotateCcw,
-  Shield,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import {
-  FrankenSimEngine,
-  lamarrChannelFrequencyMhz,
-  lamarrDefaultJamChannel,
-} from "@/physics/engine";
+import { FrankenSimEngine, lamarrChannelFrequencyMhz } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -49,7 +34,7 @@ export function LamarrFrequencyHopping3D() {
   const studioRef = useRef<StudioContext | null>(null);
 
   // Spread Spectrum State Controls
-  const { params } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
+  const { params, updateParam } = usePatentPhysics("us-2292387-lamarr-frequency-hopping");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
@@ -64,7 +49,10 @@ export function LamarrFrequencyHopping3D() {
   const carrierChannelsCount = params.channels ?? params.carrierChannelsCount ?? 88;
   const hopRateHopsPerSec = params.hopRate ?? params.hopRateHopsPerSec ?? 4;
   const isJammingActive = params.isJammingActive !== 0;
-  const currentChannel = Math.max(1, Math.round(params.channel ?? 1));
+  const currentChannel = Math.max(
+    1,
+    Math.min(carrierChannelsCount, Math.round(params.channel ?? 1)),
+  );
 
   const fhPhysics = FrankenSimEngine.stepLamarrFrequencyHopping(
     carrierChannelsCount,
@@ -95,20 +83,20 @@ export function LamarrFrequencyHopping3D() {
     },
   });
 
-  const carrierFrequencyMhz = lamarrChannelFrequencyMhz(
-    currentChannel,
-    carrierChannelsCount,
-  ).toFixed(1);
+  const carrierFrequencyMhz = lamarrChannelFrequencyMhz(currentChannel, carrierChannelsCount);
 
   const live = useLiveSimParams({
+    currentChannel,
+    carrierChannelsCount,
     hopRateHopsPerSec,
     isJammingActive,
-    carrierChannelsCount,
+    jamCenter: params.jamCenter ?? 44,
     isCutaway,
-    jamChannel: params.jamChannel ?? fhPhysics.defaultJamChannel,
-    hopSoundStride: fhPhysics.hopSoundStride,
-    drumDisplayOmegaRadPerS: fhPhysics.drumDisplayOmegaRadPerS,
     isAudioMuted,
+    carrierFrequencyMhz,
+    antiJammingMarginDb: fhPhysics.antiJammingMarginDb,
+    processingGainDb: fhPhysics.processingGainDb,
+    drumDisplayOmegaRadPerS: fhPhysics.drumDisplayOmegaRadPerS,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -119,7 +107,7 @@ export function LamarrFrequencyHopping3D() {
 
   const handleToggleSound = () => {
     toggleSound(() => {
-      soundEngine.playPianoKeyHop(440);
+      soundEngine.playSwitchClick();
     });
   };
 
@@ -135,56 +123,34 @@ export function LamarrFrequencyHopping3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
+    const { scene, renderer, controls } = studio;
 
     const model = buildLamarrFrequencyHoppingModel();
     scene.add(model.root);
 
+    // Animation Loop
     let reqId: number;
-    let hopTimer = 0;
-    let activeChan = 22;
-    let rollStep = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
       const p = live.current;
-
-      hopTimer += delta;
-      const hopInterval = 1 / Math.max(1, p.hopRateHopsPerSec);
-
-      if (hopTimer >= hopInterval) {
-        hopTimer = 0;
-        rollStep += 1;
-        activeChan = (activeChan * 17 + 5) % p.carrierChannelsCount;
-
-        if (!p.isAudioMuted && rollStep % p.hopSoundStride === 0) {
-          soundEngine.playPianoKeyHop(200 + activeChan * 8);
-        }
-      }
-
-      const liveChannels = Math.max(8, Math.min(88, Math.round(p.carrierChannelsCount)));
-      const jamCenter = Math.min(
-        liveChannels - 1,
-        Math.max(0, Math.round(p.jamChannel ?? lamarrDefaultJamChannel(liveChannels)) - 1),
-      );
 
       updateLamarrFrequencyHoppingKinematics(
         model,
-        delta,
-        activeChan,
-        liveChannels,
+        1 / 60,
+        p.currentChannel,
+        p.carrierChannelsCount,
         p.isJammingActive,
-        jamCenter,
+        p.jamCenter,
         p.isCutaway,
         p.drumDisplayOmegaRadPerS,
       );
 
       controls.update();
-      renderer.render(scene, camera);
+      renderer.render(scene, studio.camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -196,56 +162,43 @@ export function LamarrFrequencyHopping3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      {/* 3D WebGL Canvas Viewport */}
+      <div className="sr-only">Hedy Lamarr & George Antheil Secret Communication System 3D</div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-        {/* Live HUD Telemetry Overlay */}
+        {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
-          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5 sm:gap-2 pointer-events-none max-w-[calc(100%-8rem)] sm:max-w-md transition-opacity duration-200">
-            <div className="bg-white/90 dark:bg-ink-900/90 backdrop-blur-md p-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm">
-              <div className="text-[10px] sm:text-[11px] font-sans text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-500 animate-pulse" />
-                Spread Spectrum Telemetry
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-0.5 sm:gap-y-1 mt-1 text-[10px] sm:text-xs font-sans">
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Carrier Freq:</span>{" "}
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    {carrierFrequencyMhz} MHz (Ch {currentChannel}/{carrierChannelsCount})
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Processing Gain:</span>{" "}
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    +{fhPhysics.processingGainDb} dB ({carrierChannelsCount} Ch)
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Anti-Jam:</span>{" "}
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    +{fhPhysics.antiJammingMarginDb} dB
-                  </span>
-                </div>
-                <div>
-                  <span className="text-ink-600 dark:text-ink-400">Hop Rate:</span>{" "}
-                  <span className="font-bold text-amber-600 dark:text-amber-400">
-                    {hopRateHopsPerSec} hops/sec
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="hidden sm:flex bg-white/90 dark:bg-ink-900/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans text-ink-700 dark:text-ink-300 items-center gap-2 max-w-full">
-              <Radio className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
-              <span className="truncate">
-                Hedy Lamarr &amp; George Antheil (US 2,292,387) — Secret Comm (1942)
-              </span>
-            </div>
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["roll", "88-Key Roll"],
+                ["waterfall", "RF Waterfall"],
+                ["escapement", "Escapement"],
+                ["torpedo", "Torpedo Bay"],
+                ["top", "Top View"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => applyCameraPreset(id)}
+                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
+                  activeCamera === id
+                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         )}
 
-        {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Cutaway, Reset) */}
+        {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
           <button
             type="button"
@@ -313,37 +266,100 @@ export function LamarrFrequencyHopping3D() {
           </button>
         </div>
 
-        {/* Camera Views Bar */}
+        {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
-          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-1.5rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
-            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
-            </span>
-            {(
-              [
-                ["iso", "Isometric"],
-                ["roll", "88-Key Roll"],
-                ["waterfall", "RF Waterfall"],
-                ["escapement", "Escapement"],
-                ["torpedo", "Torpedo Bay"],
-                ["top", "Top View"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => applyCameraPreset(id)}
-                className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
-                  activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
-                    : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
+            <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Carrier Freq:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {carrierFrequencyMhz.toFixed(1)} MHz (Ch {currentChannel}/{carrierChannelsCount})
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Processing Gain:</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                +{fhPhysics.processingGainDb} dB
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Anti-Jam Margin:</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                +{fhPhysics.antiJammingMarginDb} dB
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Hop Rate:</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {hopRateHopsPerSec} hops/sec
+              </span>
+            </div>
           </div>
         )}
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Carrier Channels</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {carrierChannelsCount} keys
+              </span>
+            </div>
+            <input
+              type="range"
+              min="16"
+              max="88"
+              step="4"
+              value={carrierChannelsCount}
+              onChange={(e) =>
+                updateParam("carrierChannelsCount", Number.parseInt(e.target.value, 10))
+              }
+              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Slotted Hop Rate</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {hopRateHopsPerSec} hops/sec
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max="16"
+              step="1"
+              value={hopRateHopsPerSec}
+              onChange={(e) =>
+                updateParam("hopRateHopsPerSec", Number.parseInt(e.target.value, 10))
+              }
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Channel Number</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                Ch {currentChannel}
+              </span>
+            </div>
+            <input
+              type="range"
+              min="1"
+              max={carrierChannelsCount}
+              step="1"
+              value={currentChannel}
+              onChange={(e) => updateParam("channel", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

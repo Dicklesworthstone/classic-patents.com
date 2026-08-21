@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -191,22 +191,45 @@ export function McCormickReaper3D() {
           >
             <RotateCcw className="w-4 h-4" />
           </button>
+
+          <button
+            type="button"
+            onClick={() => setShowUiOverlay(!showUiOverlay)}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+          >
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
+          </button>
         </div>
 
         {/* Bottom-Left Telemetry HUD */}
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Cutter Cadence:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{reaper.cutterHz.toFixed(1)} Hz</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Cutter Cadence:
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {reaper.cutterHz.toFixed(1)} Hz
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Ground Speed:</span>
-              <span className="text-amber-800 dark:text-amber-400 font-bold">{groundSpeedMph.toFixed(1)} mph</span>
+              <span className="text-amber-800 dark:text-amber-400 font-bold">
+                {groundSpeedMph.toFixed(1)} mph
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Grain Reel:</span>
-              <span className="text-cyan-800 dark:text-cyan-400 font-bold">{reaper.reelRpm.toFixed(0)} RPM</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {reaper.reelRpm.toFixed(0)} RPM
+              </span>
             </div>
           </div>
         )}
@@ -218,7 +241,9 @@ export function McCormickReaper3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Draft Ground Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{groundSpeedMph.toFixed(1)} mph</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {groundSpeedMph.toFixed(1)} mph
+              </span>
             </div>
             <input
               type="range"
@@ -233,10 +258,16 @@ export function McCormickReaper3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Kinematic Cutter Speed</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">{reaper.cutterCrankRpm.toFixed(0)} RPM</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Kinematic Cutter Speed
+              </span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
+                {reaper.cutterCrankRpm.toFixed(0)} RPM
+              </span>
             </div>
-            <div className="text-[11px] font-sans text-ink-500">Geared directly to main ground wheel</div>
+            <div className="text-[11px] font-sans text-ink-500">
+              Geared directly to main ground wheel
+            </div>
           </div>
         </div>
       </div>

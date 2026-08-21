@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Flame,
-  Layers,
-  Rocket,
-  RotateCcw,
-  Volume2,
-  VolumeX,
-  Zap,
-} from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGoddardWasm } from "@/physics/goddardWasm";
@@ -101,6 +90,7 @@ export function GoddardRocket3D() {
     chamberPressurePsi,
     fuelFlowRateKgs,
     gyroGimbalAngleDeg,
+    expansionRatio,
     showExhaustPlume,
     showCalloutPins,
     isCutaway,
@@ -109,6 +99,7 @@ export function GoddardRocket3D() {
     exhaustVelocityMps,
     specificImpulseSec,
     machExit,
+    plumeAdvancePerS: Math.min(24, Math.max(4, exhaustVelocityMps / 100)),
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -141,28 +132,25 @@ export function GoddardRocket3D() {
 
     // Build procedural 3D model
     const rocket = buildGoddardRocketModel();
-    scene.add(rocket.rootGroup);
+    scene.add(rocket.root);
 
     // Animation Loop
     let reqId: number;
-    let timeSec = 0;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
       const dt = 1 / 60;
-      timeSec += dt;
       const p = live.current;
 
       updateGoddardRocketKinematics(
         rocket,
-        timeSec,
+        dt,
         p.activeStage,
         p.gyroGimbalAngleDeg,
+        p.expansionRatio,
+        p.plumeAdvancePerS,
         p.showExhaustPlume,
-        p.showCalloutPins,
         p.isCutaway,
-        p.thrustNewtons,
-        p.chamberPressurePsi,
       );
 
       controls.update();
@@ -289,20 +277,30 @@ export function GoddardRocket3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Thrust Force:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{Math.round(thrustNewtons)} N ({Math.round(thrustLbf)} lbf)</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Thrust Force:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {Math.round(thrustNewtons)} N ({Math.round(thrustLbf)} lbf)
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Specific Impulse:</span>
-              <span className="text-cyan-800 dark:text-cyan-400 font-bold">{specificImpulseSec} s</span>
+              <span className="text-cyan-800 dark:text-cyan-400 font-bold">
+                {specificImpulseSec} s
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Exhaust Velocity:</span>
-              <span className="text-emerald-800 dark:text-emerald-400 font-bold">{exhaustVelocityMps.toLocaleString()} m/s (M{machExit.toFixed(2)})</span>
+              <span className="text-emerald-800 dark:text-emerald-400 font-bold">
+                {exhaustVelocityMps.toLocaleString()} m/s (M{machExit.toFixed(2)})
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Chamber Pressure:</span>
-              <span className="text-purple-800 dark:text-purple-400 font-bold">{chamberPressurePsi} psi</span>
+              <span className="text-purple-800 dark:text-purple-400 font-bold">
+                {chamberPressurePsi} psi
+              </span>
             </div>
           </div>
         )}
@@ -314,7 +312,9 @@ export function GoddardRocket3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Chamber Pressure</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{chamberPressurePsi} psi</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {chamberPressurePsi} psi
+              </span>
             </div>
             <input
               type="range"
@@ -330,7 +330,9 @@ export function GoddardRocket3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Fuel Flow Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{fuelFlowRateKgs.toFixed(1)} kg/s</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {fuelFlowRateKgs.toFixed(1)} kg/s
+              </span>
             </div>
             <input
               type="range"
@@ -345,8 +347,12 @@ export function GoddardRocket3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Nozzle Expansion Ratio</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{expansionRatio.toFixed(1)}:1</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Nozzle Expansion Ratio
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {expansionRatio.toFixed(1)}:1
+              </span>
             </div>
             <input
               type="range"
