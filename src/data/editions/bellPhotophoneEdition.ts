@@ -335,10 +335,9 @@ const SOURCE_PARAGRAPHS = [
       "It is obvious that the diaphragm, instead of being operated directly by the sound-waves, could be made to vibrate by electrical means, such as used for imparting vibration to the diaphragm of a receiving-telephone.",
     ),
   ),
-  p(t("It is well known that the extent of motion")),
   p(
     t(
-      "which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.",
+      "It is well known that the extent of motion which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.",
     ),
   ),
   p(
