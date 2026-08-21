@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -29,6 +29,7 @@ export default function EdisonIndicator3D() {
 
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -51,7 +52,7 @@ export default function EdisonIndicator3D() {
     });
   }, [mainsVoltage, plateBias, nullRefVoltage]);
 
-  const live = useLiveSimParams(sim);
+  const live = useLiveSimParams({ ...sim, isCutaway });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -76,6 +77,7 @@ export default function EdisonIndicator3D() {
         plateBiasPolarity: currentSim.plateBiasPolarity,
         mainsVoltageV: currentSim.mainsVoltageV,
       });
+      model.setCutaway?.(currentSim.isCutaway ?? false);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
@@ -99,7 +101,7 @@ export default function EdisonIndicator3D() {
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
             <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
-              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+              <Camera className="w-3.5 h-3.5" /> View:
             </span>
             {(["overview", "bulb", "galvanometer", "regulation"] as CameraPreset[]).map(
               (preset) => (
@@ -121,7 +123,7 @@ export default function EdisonIndicator3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => {
@@ -137,6 +139,20 @@ export default function EdisonIndicator3D() {
             ) : (
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Bulb Globe" : "Transparent Bulb Cutaway"}
+            aria-label={isCutaway ? "Solid Bulb Globe" : "Transparent Bulb Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button
