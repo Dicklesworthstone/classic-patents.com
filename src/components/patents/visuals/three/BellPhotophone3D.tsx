@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { createBellPhotophoneModel } from "./bellPhotophoneModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -275,6 +276,35 @@ export function BellPhotophone3D({
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="SELENIUM OPTICAL SPEECH TRANSMISSION"
+        chips={[
+          {
+            label: "Distance",
+            value: `${transmissionDistanceM.toFixed(0)}`,
+            unit: "m",
+            tone: "hot",
+          },
+          {
+            label: "Voice SPL",
+            value: `${voiceSplDb.toFixed(0)}`,
+            unit: "dB",
+          },
+          {
+            label: "Sunlight Flux",
+            value: `${solarIrradianceWPerM2.toFixed(0)}`,
+            unit: "W/m²",
+          },
+          { label: "Detector", value: "Crystalline Selenium (Se) Cell" },
+          {
+            label: "Modulation",
+            value: "Diaphragm Mirror Beam Deflection",
+          },
+        ]}
+      />
     </div>
   );
 }

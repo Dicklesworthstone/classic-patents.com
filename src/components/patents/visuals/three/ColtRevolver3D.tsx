@@ -25,6 +25,7 @@ import {
   type ColtRevolverModel,
   updateColtRevolverKinematics,
 } from "./coltRevolverModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -529,6 +530,45 @@ export function ColtRevolver3D() {
           </span>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="REVOLVING CYLINDER INTERNAL BALLISTICS"
+        chips={[
+          {
+            label: "v_muzzle",
+            value: `${muzzleVelocityMps.toFixed(0)}`,
+            unit: "m/s",
+            tone: "hot",
+          },
+          {
+            label: "E_muzzle",
+            value: `${muzzleEnergyJoules.toFixed(0)}`,
+            unit: "J",
+          },
+          {
+            label: "P_chamber",
+            value: `${chamberPressureMpa.toFixed(0)}`,
+            unit: "MPa",
+          },
+          {
+            label: "Hoop Stress",
+            value: `${hoopStressMpa.toFixed(0)}`,
+            unit: "MPa",
+          },
+          {
+            label: "Powder Charge",
+            value: `${powderGrains.toFixed(0)}`,
+            unit: "grains FFFg",
+          },
+          { label: "Cylinder", value: `Chamber ${currentChamberIndex} / 5` },
+          {
+            label: "Lockwork",
+            value: isFullCock ? "Locked Full Cock" : `${cockingAngleDeg.toFixed(0)}° Rotating`,
+          },
+        ]}
+      />
     </div>
   );
 }

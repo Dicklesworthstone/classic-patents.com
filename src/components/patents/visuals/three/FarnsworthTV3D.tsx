@@ -8,6 +8,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildFarnsworthTvModel, updateFarnsworthTvKinematics } from "./farnsworthTvModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 
@@ -355,6 +356,29 @@ export function FarnsworthTV3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="ELECTRON OPTICAL IMAGE DISSECTOR"
+        chips={[
+          {
+            label: "v_electron",
+            value: `${(velocityMps / 1e6).toFixed(1)}M`,
+            unit: "m/s",
+            tone: "hot",
+          },
+          { label: "Relativistic", value: `${velocityFractionC}% c` },
+          { label: "V_anode", value: `${anodeVoltageVolts.toFixed(0)}`, unit: "V" },
+          { label: "I_photo", value: `${photocathodeCurrentUa}`, unit: "µA" },
+          {
+            label: "B_deflect",
+            value: `${deflectionGauss.toFixed(1)}`,
+            unit: "Gauss",
+          },
+          { label: "Scanning", value: "All-Electronic Continuous Dissection" },
+        ]}
+      />
     </div>
   );
 }

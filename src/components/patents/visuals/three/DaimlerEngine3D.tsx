@@ -7,6 +7,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildDaimlerEngineModel, updateDaimlerEngineKinematics } from "./daimlerEngineModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -321,6 +322,32 @@ export function DaimlerEngine3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="HIGH-SPEED FOUR-STROKE INTERNAL COMBUSTION"
+        chips={[
+          {
+            label: "Power Output",
+            value: `${brakeHorsepower.toFixed(2)}`,
+            unit: "BHP",
+            tone: "hot",
+          },
+          { label: "Crank Speed", value: `${engineRpm}`, unit: "RPM" },
+          { label: "BMEP", value: `${daimler.bmepBar.toFixed(2)}`, unit: "bar" },
+          { label: "Hot-Tube Temp", value: `${hotTubeTempC}`, unit: "°C" },
+          {
+            label: "Ignition",
+            value: hotTubeTempC >= 750 ? "Incandescent Tube" : "Misfire",
+            tone: hotTubeTempC >= 750 ? "ok" : "warn",
+          },
+          {
+            label: "Architecture",
+            value: "Curved-Groove Cam Standuhr Engine",
+          },
+        ]}
+      />
     </div>
   );
 }

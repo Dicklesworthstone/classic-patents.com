@@ -7,6 +7,7 @@ import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildLincolnBuoyModel, updateLincolnBuoyKinematics } from "./lincolnBuoyModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -317,6 +318,38 @@ export function LincolnBuoy3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="HYDROSTATIC BUOYANCY & SHOAL CLEARANCE"
+        chips={[
+          {
+            label: "Draft",
+            value: `${effectiveDraftFt.toFixed(1)}'`,
+            unit: `(was ${baseDraftFt.toFixed(1)}')`,
+          },
+          {
+            label: "Buoyant Lift",
+            value: `${lincoln.liftKn.toFixed(0)}`,
+            unit: "kN",
+            tone: "hot",
+          },
+          {
+            label: "Shoal Clearance",
+            value: `${lincoln.shoalClearanceFt.toFixed(1)}'`,
+            unit: `in ${riverShoalDepthFt.toFixed(1)}' water`,
+            tone: lincoln.shoalClearanceFt > 0 ? "ok" : "warn",
+          },
+          {
+            label: "Bellows Volume",
+            value: `${lincoln.displacedVolumeCuFt.toFixed(0)}`,
+            unit: "ft³",
+          },
+          { label: "Vessel Weight", value: `${steamboatWeightTons}`, unit: "tons" },
+          { label: "Mechanism", value: "India-Rubber Expandable Air Chambers" },
+        ]}
+      />
     </div>
   );
 }

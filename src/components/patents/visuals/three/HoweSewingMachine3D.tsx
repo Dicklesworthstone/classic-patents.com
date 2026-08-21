@@ -8,6 +8,7 @@ import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -362,6 +363,32 @@ export function HoweSewingMachine3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
+        chips={[
+          {
+            label: "Stitch Rate",
+            value: stitchesPerSecond,
+            unit: "stitches/s",
+            tone: "hot",
+          },
+          {
+            label: "Feed Speed",
+            value: clothFeedRateMmPerSec,
+            unit: "mm/s",
+          },
+          { label: "Stitch Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
+          { label: "Crank Speed", value: `${stitchingSpeedRpm}`, unit: "RPM" },
+          { label: "Thread Tension", value: `${threadTensionGrams}`, unit: "g" },
+          {
+            label: "Mechanism",
+            value: "Eye-Pointed Needle & Reciprocating Shuttle",
+          },
+        ]}
+      />
     </div>
   );
 }

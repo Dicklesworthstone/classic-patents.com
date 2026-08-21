@@ -1,12 +1,15 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { createHallAluminiumModel, updateHallAluminiumVisual } from "./hallAluminiumModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "overview" | "anodes" | "molten_bath" | "siphon_tap";
 
@@ -24,6 +27,8 @@ export function HallAluminium3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activePreset, setActivePreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-400766-hall-aluminium");
 
@@ -43,6 +48,7 @@ export function HallAluminium3D() {
     currentAmperes,
     bathTemperatureCelsius,
     aluminaConcentrationPct,
+    isCutaway,
   });
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
@@ -77,6 +83,8 @@ export function HallAluminium3D() {
       rafId = requestAnimationFrame(animate);
       virtualTime += 1 / 60;
       const currentSim = stepHallAluminium(live.current);
+
+      model.setCutaway?.(live.current.isCutaway ?? false);
 
       updateHallAluminiumVisual(
         model,
@@ -134,6 +142,37 @@ export function HallAluminium3D() {
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => {
+              setIsCutaway((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Switch to Solid Pot Shell" : "Switch to Interior Cutaway"}
+            aria-label={isCutaway ? "Switch to Solid Pot Shell" : "Switch to Interior Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay((prev) => !prev)}
@@ -261,6 +300,42 @@ export function HallAluminium3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="HALL-HÉROULT ELECTROLYTIC SMELTING"
+        chips={[
+          {
+            label: "Cell Current",
+            value: `${(currentAmperes / 1000).toFixed(0)}`,
+            unit: "kA",
+            tone: "hot",
+          },
+          {
+            label: "Cell Voltage",
+            value: `${sim.totalCellVoltage.toFixed(2)}`,
+            unit: "V",
+          },
+          {
+            label: "Al Production",
+            value: `${sim.aluminiumProductionRateKgPerHour.toFixed(1)}`,
+            unit: "kg/h",
+          },
+          { label: "Faraday η", value: `${sim.currentEfficiencyPct.toFixed(1)}%` },
+          {
+            label: "Bath Temp",
+            value: `${bathTemperatureCelsius.toFixed(0)}`,
+            unit: "°C",
+          },
+          {
+            label: "Alumina (Al₂O₃)",
+            value: `${aluminaConcentrationPct.toFixed(1)}%`,
+            unit: "in Na₃AlF₆ Cryolite",
+          },
+          { label: "Process", value: "Molten Cryolite Electrolytic Reduction" },
+        ]}
+      />
     </div>
   );
 }

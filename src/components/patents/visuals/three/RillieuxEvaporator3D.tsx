@@ -1,16 +1,19 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import {
   createRillieuxEvaporatorModel,
   type RillieuxEvaporatorModelNodes,
 } from "./rillieuxEvaporatorModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 interface Rillieux3DProps {
   className?: string;
@@ -58,6 +61,8 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("overview");
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-3237-rillieux-evaporator");
   const juiceFeedRateKgPerH = params.juiceFeedRateKgPerH ?? 4500;
@@ -66,6 +71,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
   const numberOfEffects = params.numberOfEffects ?? 3;
 
   const live = useLiveSimParams({
+    isCutaway,
     juiceFeedRateKgPerH,
     initialBrixDeg,
     targetBrixDeg,
@@ -114,6 +120,7 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
         numberOfEffects: p.numberOfEffects,
       });
 
+      model.setCutaway?.(p.isCutaway ?? false);
       model.update(simState, timeRef.current);
 
       studio.controls.update();
@@ -167,6 +174,37 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
+            onClick={() => {
+              setIsCutaway((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"}
+            aria-label={isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+          </button>
+
+          <button
+            type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showUiOverlay
@@ -179,14 +217,15 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
+
           <button
             aria-label="Reset camera view"
             type="button"
             onClick={() => handlePresetChange("overview")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
@@ -287,6 +326,44 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="MULTIPLE-EFFECT VACUUM EVAPORATION"
+        chips={[
+          {
+            label: "Water Evaporated",
+            value: `${state.totalEvaporationKgPerH.toFixed(0)}`,
+            unit: "kg/h",
+            tone: "hot",
+          },
+          {
+            label: "Steam Economy",
+            value: `${state.steamEconomyRatio.toFixed(2)}`,
+            unit: "kg evap / kg steam",
+          },
+          {
+            label: "Syrup Output",
+            value: `${state.syrupOutputRateKgPerH.toFixed(0)}`,
+            unit: "kg/h",
+          },
+          {
+            label: "Feed / Target",
+            value: `${initialBrixDeg}° → ${targetBrixDeg}°`,
+            unit: "Brix",
+          },
+          {
+            label: "Steam Saved",
+            value: `${state.fuelSavingsPct.toFixed(0)}%`,
+            unit: "vs single-effect",
+          },
+          {
+            label: "Effects",
+            value: `${numberOfEffects}-Stage Latent Heat Cascade`,
+          },
+        ]}
+      />
     </div>
   );
 };

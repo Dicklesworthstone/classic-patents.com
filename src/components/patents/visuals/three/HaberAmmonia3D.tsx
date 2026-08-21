@@ -1,16 +1,19 @@
 "use client";
 
-import { Camera, Eye, EyeOff } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import {
   articulateHaberAmmoniaModel,
   buildHaberAmmoniaModel,
   type HaberAmmoniaModelNodes,
 } from "./haberAmmoniaModel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 interface HaberAmmonia3DProps {
   initialPressureAtm?: number;
@@ -43,6 +46,8 @@ export default function HaberAmmonia3D({
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [isCutaway, setIsCutaway] = useState(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-971501-haber-ammonia");
   const pressureAtm = params.pressureAtm ?? initialPressureAtm;
@@ -61,6 +66,7 @@ export default function HaberAmmonia3D({
 
   const live = useLiveSimParams({
     isRotating,
+    isCutaway,
     pressureAtm,
     temperatureCelsius,
     ammoniaYieldPct: sim.ammoniaYieldPct,
@@ -102,6 +108,8 @@ export default function HaberAmmonia3D({
         nodes.root.rotation.y += 0.0044;
       }
       studio.controls.update();
+
+      nodes.setCutaway?.(p.isCutaway ?? false);
 
       articulateHaberAmmoniaModel(
         nodes,
@@ -168,6 +176,37 @@ export default function HaberAmmonia3D({
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
+            onClick={() => {
+              setIsCutaway((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Switch to Solid Reactor Shell" : "Switch to Interior Cutaway"}
+            aria-label={isCutaway ? "Switch to Solid Reactor Shell" : "Switch to Interior Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsRotating(!isRotating)}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
@@ -198,7 +237,7 @@ export default function HaberAmmonia3D({
             className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
             title="Reset Orbit Camera"
           >
-            <Camera className="w-3.5 h-3.5 inline" />
+            <RotateCcw className="w-3.5 h-3.5 inline" />
           </button>
         </div>
 
@@ -290,6 +329,40 @@ export default function HaberAmmonia3D({
           </div>
         </div>
       )}
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="HABER-BOSCH AMMONIA EQUILIBRIUM"
+        chips={[
+          {
+            label: "Yield (NH₃)",
+            value: `${sim.ammoniaYieldPct.toFixed(1)}%`,
+            tone: "hot",
+          },
+          {
+            label: "Production",
+            value: `${sim.ammoniaProductionKgPerHour.toFixed(0)}`,
+            unit: "kg/h",
+          },
+          { label: "Pressure", value: `${pressureAtm.toFixed(0)}`, unit: "atm" },
+          {
+            label: "Temperature",
+            value: `${temperatureCelsius.toFixed(0)}`,
+            unit: "°C",
+          },
+          {
+            label: "Feed Flow",
+            value: `${feedFlowRateMolesPerSec.toFixed(0)}`,
+            unit: "mol/s",
+          },
+          { label: "Catalyst", value: "Promoted Osmium / α-Fe" },
+          {
+            label: "Thermodynamics",
+            value: "Exothermic Le Chatelier High-Pressure",
+          },
+        ]}
+      />
     </div>
   );
 }

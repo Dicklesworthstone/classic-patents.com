@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCw, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { buildWattRotaryEngineModel, type WattRotaryModelNodes } from "./wattRotaryEngineModel";
@@ -332,6 +333,37 @@ export function WattRotaryEngine3D() {
           </div>
         </div>
       </div>
+
+      {/* Bottom SI Telemetry Chip Strip */}
+      <StudioKernelChips
+        visible={true}
+        title="SUN AND PLANET ROTARY STEAM POWER"
+        chips={[
+          { label: "Stroke Rate", value: `${strokeRateSpm}`, unit: "SPM" },
+          {
+            label: "Boiler Pressure",
+            value: `${boilerPressureKpa}`,
+            unit: "kPa",
+          },
+          {
+            label: "Shaft Speed",
+            value: `${(strokeRateSpm * gearRatioNpOverNs).toFixed(0)}`,
+            unit: "RPM",
+            tone: "hot",
+          },
+          {
+            label: "Gear Ratio",
+            value: `${gearRatioNpOverNs.toFixed(1)}:1`,
+            unit: "Sun/Planet",
+          },
+          {
+            label: "Flywheel Mass",
+            value: `${flywheelMassKg.toLocaleString()}`,
+            unit: "kg",
+          },
+          { label: "Mechanism", value: "Sun and Planet Epicyclic Gearing" },
+        ]}
+      />
     </div>
   );
 }
