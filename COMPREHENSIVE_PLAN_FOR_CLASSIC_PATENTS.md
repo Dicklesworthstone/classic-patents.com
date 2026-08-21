@@ -11,7 +11,7 @@
 ## 1. Executive Summary & Mission
 
 ### 1.1 The Core Problem
-Patents represent humanity's definitive historical record of technical invention and industrial revolution. The seminal documents that birthed aviation, the electric grid, telecommunications, computing, and advanced materials—such as the Wright Brothers' 1906 Flying Machine patent, Nikola Tesla's 1888 Polyphase AC Motor patent, and Robert Noyce's 1961 Planar Integrated Circuit patent—are public domain treasures.
+Patents represent humanity's definitive historical record of technical invention and industrial revolution. The seminal documents that birthed aviation, the electric grid, telecommunications, computing, and advanced materials—such as the Wright Brothers' 1906 Flying Machine patent, Nikola Tesla's 1888 Electro-Magnetic Motor patent, and Robert Noyce's 1961 Planar Integrated Circuit patent—are public domain treasures.
 
 However, in their raw historical state, they suffer from three fatal friction points:
 1. **Degraded Digital Scans**: USPTO and Google Patents PDF archives are often low-resolution, warped, noisy scans of century-old microfilms.
@@ -22,10 +22,10 @@ However, in their raw historical state, they suffer from three fatal friction po
 **Classic Patents** is a modern, open-source digital museum and technical analysis platform that preserves, restores, and illuminates history's most consequential patents.
 
 The platform provides:
-1. **Automated Harvest & Ultra-High-Fidelity OCR**: Scripts pulling original high-res PDFs and running pure-Rust hyper-optimized OCR via `focr` (`franken_ocr`) to extract accurate, structured markdown and searchable claims text.
+1. **Pinned Sources & Cloud-Assisted Transcription**: Scripts preserve the original high-resolution PDFs. Bounded GPT-5.6 Luna cloud workers may produce checkpointed research drafts, but the published ledger and archival edition are manually reconciled against every facsimile page.
 2. **Dual-Projection Parity (The Diptych Model)**: Synchronous side-by-side or toggleable views presenting the verbatim historical patent specification alongside a lucid, rigorous **"Plain English" Engineering Breakdown**.
 3. **Deep Educational Deconstruction**: Line-by-line claim decoders, breakdown of legal scope vs prior art, mechanical & physics explanations, historical patent wars & rivalries (e.g. Wright vs Curtiss, Edison vs Swan, Farnsworth vs RCA/Sarnoff), and lasting societal legacy.
-4. **Bespoke Interactive Visuals & Real-Time Simulations**: Custom interactive SVG, Canvas, and WebGL modules allowing users to manipulate controls (e.g., twisting the Wright Flyer's wings while observing coordinated rudder deflection, or adjusting AC coil phase angles to observe the rotating magnetic stator field).
+4. **Bespoke Interactive Visuals & Real-Time Simulations**: Custom interactive SVG, Canvas, and WebGL modules allowing users to manipulate controls (e.g., twisting the Wright Flyer's wings while observing coordinated rudder deflection, or adjusting the generator rate to observe Tesla's progressive pole shift in the Fig. 9 motor-generator).
 5. **Museum-Grade Visual Aesthetics**: A bespoke aesthetic featuring vintage Parchment mode, engineering Blueprint mode, and modern Dark/Light modes with typography (Playfair Display, EB Garamond, JetBrains Mono, Inter).
 
 ---
@@ -42,14 +42,14 @@ The platform provides:
 │                     PATENT DUAL-PROJECTION ENGINE                       │
 │  ┌─────────────────────────────────┬────────────────────────────────┐  │
 │  │   Face 1: Archival Patent       │  Face 2: Plain English         │  │
-│  │   • Verbatim OCR Transcript     │  • Deep Engineering Analysis   │  │
+│  │   • Hand-Authored Source Text   │  • Deep Engineering Analysis   │  │
 │  │   • Original Scanned Facsimiles │  • Line-by-Line Claim Decoders │  │
 │  │   • Legal Claims Hierarchy      │  • Historical Patent Wars      │  │
 │  └─────────────────────────────────┴────────────────────────────────┘  │
 ├────────────────────────────────────────────────────────────────────────┤
 │                  INTERACTIVE SIMULATION RUNTIMES                       │
 │  • Wright Flyer 3-Axis Wing-Warping Aerodynamic Sim                    │
-│  • Tesla AC Induction Motor Rotating Magnetic Field Vector Sim         │
+│  • Tesla Progressive Alternating-Current Pole-Shift Vector Sim         │
 │  • Edison High-Resistance Carbon Filament Vacuum Bulb Circuit          │
 │  • Bell Liquid Transmitter Undulating Current Speech Circuit           │
 │  • Farnsworth Electronic Television Image Dissector & Electron Gun     │
@@ -60,7 +60,7 @@ The platform provides:
 │                       DATA & PIPELINE LAYER                            │
 │  • Structured TypeScript Patent Store (`src/data/patents/`)            │
 │  • Automated PDF Downloader (`scripts/download-patents.ts`)            │
-│  • Pure-Rust OCR Engine Integration (`scripts/ocr-patents.ts` / focr)   │
+│  • Bounded Cloud Luna Transcription Jobs (research drafts only)         │
 │  • Data Integrity & Verification Suite (`scripts/verify-data.ts`)      │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -97,10 +97,10 @@ The platform launches with eight of the most transformative patents across aviat
 ### 3.2 Nikola Tesla — Electro-Magnetic Motor
 - **Patent Number**: US 381,968
 - **Grant Date**: May 1, 1888 (Filed October 12, 1887)
-- **Classification**: Electrical Engineering / Polyphase AC
-- **Core Invention**: The alternating-current induction motor driven by a rotating magnetic field generated by two or more out-of-phase alternating currents, eliminating mechanical commutators and sparking brushes.
-- **Plain English Breakdown**: The mathematical elegance of two sinusoidal currents $90^\circ$ out of phase creating a constant-magnitude vector sum rotating in space, inducing rotor currents and torque without any physical electrical connection to the rotor.
-- **Interactive Visual**: Real-time rotating magnetic vector simulation. Users can toggle single-phase vs two-phase vs three-phase power, view AC sine wave phase progression, and watch magnetic flux lines induce torque in the rotor.
+- **Classification**: Electrical Engineering / Alternating-Current Motor-Generator Systems
+- **Core Invention**: A motor with two or more independently connected circuits fed by a suitable alternating-current generator, arranged so the changing magnetizing effects shift the motor's poles progressively around a ring.
+- **Plain English Breakdown**: Figure 9's generator coils B/B′ feed corresponding motor-coil pairs through collector rings and brushes. Tesla traces the changing resultant through successive positions; magnetic disk D follows the moving points of greatest attraction. Figure 13 is a separate three-coil arrangement with coils K, K′, and K″ at 60 degrees.
+- **Interactive Visual**: A source-bounded Figure 9 two-circuit motor-generator model with a generator-rate control and a shared progressive pole-shift direction. It does not infer later rotor slip, induced current, torque, power, or rotor-bar construction.
 
 ### 3.3 Thomas Alva Edison — Electric Lamp
 - **Patent Number**: US 223,898
@@ -157,7 +157,7 @@ The platform launches with eight of the most transformative patents across aviat
 Every patent page is built around a synchronized dual-projection interface:
 
 ### 4.1 Mode 1: Historical Patent Specification & Facsimile
-- **Verbatim OCR Transcript**: Cleaned, verified transcription of the complete historical patent specification, including formal introduction, description of figures, detailed mechanical specification, and all formal numbered claims.
+- **Hand-Authored Archival Edition**: A complete source-faithful reading of the historical patent specification, including formal introduction, description of figures, detailed mechanical specification, and every printed claim, manually reconciled against the pinned facsimile.
 - **Original Facsimile Drawings**: Clean SVG vectorizations and high-resolution scans of original USPTO drawings with interactive callout pins. Clicking any callout highlights the corresponding reference numeral in the legal text.
 - **Claim Tree & Legal Hierarchy**: Structured breakdown of independent vs. dependent claims, highlighting what legal scope was secured.
 
@@ -177,7 +177,7 @@ Each curated patent features a custom interactive simulation component located i
 | Patent | Component File | Interactive Capabilities |
 |---|---|---|
 | **Wright Flyer** | `WrightFlyerSim.tsx` | Wing-warping slider, rudder yaw slider, elevator pitch slider, real-time lift & drag vector display, stall warning, adverse yaw toggle. |
-| **Tesla AC Motor** | `TeslaMotorSim.tsx` | 2-Phase vs 3-Phase selector, AC frequency slider, stator coil magnetic field vector sum animation, rotor slip & induced current gauges. |
+| **Tesla Electro-Magnetic Motor** | `TeslaMotorSim.tsx` | Figure 9 two-circuit motor-generator, generator-rate slider, and source-bound progressive pole-shift animation. |
 | **Edison Light Bulb** | `EdisonBulbSim.tsx` | Voltage control, filament resistance selector (Carbon vs Platinum), vacuum level toggle, blackbody color temperature spectrum ($1800\text{K}-3000\text{K}$). |
 | **Bell Telephone** | `BellTelephoneSim.tsx` | Audio waveform frequency & amplitude controls, liquid transmitter needle immersion animation, undulating current oscilloscope. |
 | **Farnsworth TV** | `FarnsworthTVSim.tsx` | Horizontal/Vertical scan line frequency, electron beam deflection coils, image dissector aperture capture, cathode ray CRT raster reconstruction. |
@@ -187,27 +187,31 @@ Each curated patent features a custom interactive simulation component located i
 
 ---
 
-## 6. Data Pipeline & OCR Architecture
+## 6. Data Pipeline & Transcription Architecture
 
 The patent dataset is managed through structured automation scripts:
 
 ```
 scripts/
 ├── download-patents.ts    # Fetch official USPTO & Google Patents PDFs and metadata
-├── ocr-patents.ts         # Run focr (franken_ocr) on PDF pages to extract markdown & text
+├── ocr-patents.ts         # Orchestrate bounded cloud transcription drafts only
 └── verify-data.ts         # Validate patent data against strict TypeScript/Zod schemas
 ```
 
-### 6.1 `focr` Skill Integration
-Using the local `focr` binary (`/Users/jemanuel/.local/bin/focr`), the pipeline extracts clean OCR text from high-resolution PDF pages:
+### 6.1 Cloud-only transcription assistance
 
-```bash
-# OCR single patent page image to structured markdown
-focr ocr patent_page_1.png --output patent_spec.md
+OCR and machine transcription must never run on the local development host.
+Delegate each bounded page range to a GPT-5.6 Luna cloud worker, checkpoint the
+result after every chunk, and limit concurrency so drafts remain reviewable.
+Do not invoke, benchmark, resume, or monitor `focr`, Tesseract, OCRmyPDF, or
+another local recognition engine. If cloud execution is unavailable, pause the
+transcription task instead of falling back to local OCR.
 
-# Batch OCR patent multi-page documents with cached model weights
-focr ocr-batch pages/*.png --multi-page --output patent_full.md
-```
+Cloud output is research evidence only. An editor must compare every line with
+the pinned facsimile, repair ordering, punctuation, broken words, formal matter,
+figure references, and claims, then author the reviewed ledger and continuous
+React edition explicitly. No raw cloud draft, PDF text layer, or generated
+Markdown may be served as the Original Patent Text face.
 
 ### 6.2 Patent Data Schema (`src/types/patent.ts`)
 ```typescript
@@ -293,7 +297,7 @@ export interface Patent {
   - Interactive Diagram: SVG drawing viewer with interactive reference numeral pins.
   - Claims Explorer: Numbered claim tabs with side-by-side legal vs plain English decoding.
   - Historical Context & Patent Wars: Deep narrative on rivalries, court battles, and impact.
-- `/about` — **About Classic Patents**: Mission, open-source repository, editorial methodology, and OCR pipeline architecture.
+- `/about` — **About Classic Patents**: Mission, open-source repository, editorial methodology, and transcription pipeline architecture.
 
 ### 7.2 Thematic Visual Modes
 1. **Archival Parchment Mode (Default Light)**: Warm sepia/cream tones (`#f4ede2`), deep bronze borders, classic serif typography, vintage museum catalog atmosphere.
@@ -334,8 +338,8 @@ export interface Patent {
   - Master documents: `AGENTS.md`, `COMPREHENSIVE_PLAN_FOR_CLASSIC_PATENTS.md`, `README.md`, `LICENSE`.
 
 - **Phase 2: Patent Data & Simulation Engine**:
-  - Full curated dataset for all 8 historical patents with verified OCR specifications, claims, and plain English breakdowns.
-  - Bespoke interactive React/SVG simulation components for Wright Flyer, Tesla AC Motor, Edison Light Bulb, Bell Telephone, Farnsworth TV, Noyce Planar IC, Spencer Microwave, and Kwolek Kevlar.
+  - Full curated dataset for all 8 historical patents with facsimile-reviewed scholarly editions, complete claims, and plain English breakdowns.
+  - Bespoke interactive React/SVG simulation components for Wright Flyer, Tesla's Fig. 9 two-circuit motor-generator, Edison Light Bulb, Bell Telephone, Farnsworth TV, Noyce Planar IC, Spencer Microwave, and Kwolek Kevlar.
 
 - **Phase 3: Web Application & UI Polish**:
   - Home gallery, search & filtering, era timelines.

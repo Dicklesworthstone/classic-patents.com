@@ -18,10 +18,10 @@ This document serves as the single source of truth and granular task tracker for
   - [x] Gyroscopic steering vane deflection physics
 
 ### Domain 2: Electromagnetics & Resonant LC Oscillators
-- [x] **Tesla Polyphase AC Induction Motor (US 381,968)**
-  - [x] Rotating stator magnetic flux field vector $\vec{B}(t) = B_0(\cos\omega t\,\hat{i} + \sin\omega t\,\hat{j})$
-  - [x] Rotor slip calculation ($s = \frac{n_s - n}{n_s}$) and induced electromagnetic torque
-  - [x] Interactive AC frequency, pole count, and load torque controllers
+- [x] **Tesla Progressive Alternating-Current Motor-Generator (US 381,968)**
+  - [x] Figure 9's source-bound progressive magnetic pole shift from generator coils B/B′ and corresponding motor circuits
+  - [x] Four generator collector rings and brushes, ring R, disk D, and separate Figure 13 three-coil (K/K′/K″ at 60°) teaching path
+  - [x] Generator-rate control and resultant-field direction; no unprinted slip, rotor-current, torque, power, or material-performance telemetry
 - [x] **Tesla High-Potential Transformer (US 593,138)**
   - [x] Interpretive transformer visualization bound to the correct catalogue id
   - [x] Source-described quarter-wave secondary relation ($l \approx \lambda / 4$)
@@ -146,7 +146,7 @@ must render without COOP/COEP.
 | Patent | Crate that should own the law | What WASM writes each tick | How the visual uses it |
 |---|---|---|---|
 | Wright Flyer | `fs-time` + `fs-mbd` + flyer kernel | 6-DoF pose, ΔL, C_Di, yaw/pitch rates, coupling-on flag | 3D airframe follows pose; 2D wings twist from the same warp; Fig. 4 callouts light when coupling is on; badge shows adverse yaw **appearing** when Claim 1 is uncoupled |
-| Tesla motor | `fs-flux` rotating B + `fs-mbd` rotor | B-vector (Re, Im), slip, torque, ns | 3D/2D stator arrows are the B sample, not a CSS rotate; squirrel-cage spin = ω(1−s); 2-phase vs 3-phase is a kernel input, not a color swap |
+| Tesla motor | `fs-flux` progressive field + `fs-mbd` apparatus motion | source-bound B direction, generator rate, pole shift, Fig. 9 disk relation | 3D/2D arrows are the shared resultant-field sample; Fig. 9 and Fig. 13 remain separately labeled source arrangements, with no inferred later performance quantities |
 | Tesla coil | `fs-flux` dual-resonant LC | V1, V2, spark-gap state, streamer seeds | Streamer line vertices come from the seed buffer; tone frequency = 1/√(LC) sample |
 | Bell | `fs-flux` + Web Audio | instantaneous R(t), i(t) | Diaphragm displacement drives resistance; AudioWorklet reads i(t); "undulating current" is audible |
 | Marconi / Morse | `fs-flux` RLC + solenoid | spark train / armature force | Sounder click when F > spring; RF envelope from the damped train, not `playClick()` |
@@ -169,9 +169,9 @@ must render without COOP/COEP.
 
 ### 3.3 Cross-face tricks that make it feel like one instrument
 
-1. **Claim switch as a constraint.** Toggling "Claim 1 hip-cradle coupling" or
-   "commutator vs induction" is a kernel flag. The schematic, the 2D cartoon,
-   and the 3D studio must all show the illegal motion when the flag is off.
+1. **Claim switch as a constraint.** Toggling "Claim 1 hip-cradle coupling"
+   is a kernel flag. The schematic, the 2D cartoon, and the 3D studio must
+   all show the illegal motion when the flag is off.
 2. **Schematic as a field overlay.** `InteractiveDiagramViewer` already reads
    `usePatentPhysics`. Next step: warp SVG paths / flux arrows / charge packets
    from the sample buffer so Fig. 4 is a live reduction, not a static tracing.
@@ -181,8 +181,8 @@ must render without COOP/COEP.
 4. **Replay tape.** Record `{tick, controls}` and re-step. Same digest ⇒ same
    flight. Visitor-facing "replay the Kitty Hawk warp" / "replay the 88-key
    roll" is the museum version of Blake3.
-5. **Load another patent as a port.** Later, Tesla shaft torque as Howe's
-   flywheel input, Edison lamp as Tesla's electrical load. Only after each
+5. **Load another patent as a port.** Later, Tesla's authored source relation
+   may connect to Howe's flywheel input, Edison lamp as Tesla's electrical load. Only after each
    kernel is independently honest.
 6. **Reduced motion.** If `prefers-reduced-motion`, still step the kernel at
    1 Hz and update numbers; do not freeze the law just because the mesh is still.
@@ -201,12 +201,12 @@ These assume §3.1–3.3. They use crates the museum does not touch yet.
 - [x] **`fs-qty` typed HUD.** Kernel emits dimensioned quantities. The UI cannot put lbf next to tesla without a conversion. This kills the current 3D-vs-engine unit split (Wright 3D still does slug/ft while `engine.ts` is SI).
 - [x] **`fs-truss` on the guy-wires.** Wright schematic already draws diagonal wires. Color them by live axial force. Slack wire vs singing wire is Claim-adjacent structure, not decoration.
 - [x] **`fs-lbm` / `fs-airflow` smoke.** Replace cosmetic streamlines with a seed of LBM or a validity-gated airflow card over the airfoil SDF. Refuse rather than invent a pretty vortex.
-- [x] **`fs-feec` Whitney overlay on Tesla Fig. 4.** Edge fluxes on the patent's own coil graph. The rotating field is a 1-form on the drawing, not a CSS `rotate()`.
+- [x] **`fs-feec` Whitney overlay on Tesla Fig. 4.** Edge fluxes on the patent's own coil graph. The progressive attraction is a 1-form on the drawing, not a CSS `rotate()`.
 - [x] **`fs-spectral` mode scrubber.** Tesla coil, Edison filament, Wright wing: a slider through the first few eigenmodes. Resonance is something you scrub, not a caption.
 - [x] **`fs-psycho` on Bell.** Loudness in sones from the undulating current; refuse an absolute SPL claim without calibration. The telephone patent is a hearing instrument.
 - [x] **`fs-matdb` cards.** Goodyear sulfur, Kwolek PPTA, Edison carbon, Noyce Al/SiO₂: properties come from a named material card, not magic numbers in the React file.
-- [x] **Prior-art failure mode.** A toggle that inverts the independent claim (no hip-cradle coupling, commutator instead of induction, air instead of vacuum). The kernel should reproduce the named prior-art crash/spark/melt.
-- [x] **Two clocks.** Fermi prompt vs delayed neutrons; Tesla RF vs rotor RPM; Spencer 2.45 GHz vs thermal seconds. One kernel, two visible time bases, or the visitor cannot see stiffness.
+- [x] **Prior-art failure mode.** A toggle that inverts the independent claim (no hip-cradle coupling, air instead of vacuum). The kernel should reproduce the named prior-art crash or melt.
+- [x] **Two clocks.** Fermi prompt vs delayed neutrons; Tesla generator cycles vs display pole shift; Spencer 2.45 GHz vs thermal seconds. One kernel, two visible time bases, or the visitor cannot see stiffness.
 - [x] **Pointer as a source term.** Drag on the pile, cavity, or filament to add a local neutron/heat/current source. The field must respond. This is how a schematic becomes a laboratory.
 - [x] **`fs-scenario` as dated flights.** Replace generic "high torque" presets with reconstructable cards: "17 Dec 1903, 10:35, 12 s"; "CP-1, 2 Dec 1942."
 
@@ -216,8 +216,8 @@ These assume §3.1–3.3. They use crates the museum does not touch yet.
 - [x] **Spec sentences as live regions.** Highlight the clause currently true: "the side having the greater angle of incidence experiences… greater drag" lights when ΔCD_i exceeds the interval bound. The specification is a score following the kernel.
 - [x] **Diptych is one step.** Split-view must show the facsimile (or schematic) and the 3D studio driven by the same tick. Today they are separate routes with separate state.
 - [x] **Stroboscope matching the drawing.** Tesla Fig. 4 is eight successive B-vector positions. A kernel strobe samples ωt = nπ/4 and overlays those eight arrows on the granted figure. The visitor is looking at Tesla's own diagram, animated by discrete de Rham, not a new cartoon.
-- [x] **`fs-phs` energy strip.** A thin ledger under every machine: H, uᵀy, supply defect. If the defect is not ~0, the visual is lying. Tesla motor, Bell diaphragm, Lincoln bellows, Howe needle are port-Hamiltonian objects; treat them as such.
-- [x] **`fs-couple` shaft and load.** Tesla rotor torque as Howe's flywheel port; Edison lamp as Tesla's electrical load. Only after each kernel is independently honest. The Dirac interconnection is the point — energy should not appear from nowhere when two patents touch.
+- [x] **`fs-phs` energy strip.** A thin ledger under machines with authored energy quantities: H, uᵀy, supply defect. If the defect is not ~0, the visual is lying. Tesla's source apparatus remains empty because the grant supplies no authored energy quantity.
+- [x] **`fs-couple` coupling and load.** Couple only authored ports; Tesla's Fig. 9 source relation does not provide a mechanical load port. The Dirac interconnection is the point — energy should not appear from nowhere when two patents touch.
 - [x] **`fs-ad` on every slider.** Hover a control and show ∂Q/∂u for the on-screen quantity. Adverse yaw is ∂N/∂warp. Hull cutoff is ∂Bc/∂√Va. No extra lecture widget.
 - [x] **`fs-thermochem` for fire and ice.** Goddard chamber uses NASA-9 + frozen composition, not a magic Isp. Einstein–Szilard butane/ammonia partial pressures come from the same evaluator. Goodyear sulfur chemistry is a named reaction card or it is refused.
 - [x] **`fs-contact` for needle and wheels.** Howe lockstitch and Engelbart knife-edge wheels are contact events. The stitch forms when the contact flag is true; the mouse pulse fires when the wheel rolls, not when React sees a pointer move.

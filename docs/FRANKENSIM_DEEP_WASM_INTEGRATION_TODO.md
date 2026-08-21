@@ -128,10 +128,10 @@ This document tracks the end-to-end, domain-by-domain integration of the **Frank
 
 ### Domain D: Electromagnetics, RF Oscillators & Wave Propagation (`fs-flux`, `fs-fft`, `fs-wave2d`)
 
-- [x] **Nikola Tesla Polyphase AC Induction Motor (`us-381968-tesla-motor`)**
-  - [x] Bind rotating stator magnetic flux vector via `gaMotorOrbit` and `gaMotorFrameIndex` in `TeslaMotor3D.tsx`
-  - [x] Compute squirrel-cage induced rotor eddy currents $\vec{J} = \sigma(\vec{E} + \vec{v}\times\vec{B})$ and torque-slip curve
-  - [x] Real-time quadrature phase angle and pole count re-configuration
+- [x] **Nikola Tesla Progressive Alternating-Current Motor-Generator (`us-381968-tesla-motor`)**
+  - [x] Bind the Fig. 9 source-bound progressive pole-shift sample via `gaMotorOrbit` in `TeslaMotor3D.tsx`
+  - [x] Keep the four collector rings, brushes, ring R, and disk D visible without inventing rotor-current, torque, or slip telemetry
+  - [x] Keep Fig. 13's three-circuit arrangement as a separately labeled source reading, not a hybrid Fig. 9 runtime mode
 
 - [x] **Nikola Tesla High-Potential Transformer / Tesla Coil (`us-593138-tesla-coil`)**
   - [x] Calculate quarter-wave helical secondary resonant frequency $f_0 = \frac{1}{2\pi\sqrt{L_2 C_2}}$ and voltage magnification $Q = \frac{\omega L_2}{R_2}$

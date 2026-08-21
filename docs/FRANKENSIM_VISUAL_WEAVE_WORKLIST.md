@@ -68,7 +68,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P4.14 `fs-psycho` Bell sones (Stevens 2^((phon-40)/10) on voice slider)
 - [x] P4.15 `fs-matdb` material cards (Edison carbon vs platinum)
 - [x] P4.16 Prior-art failure toggle (1901 uncoupled warp on the instrument)
-- [x] P4.17 Two clocks (Fermi prompt vs delayed; Tesla field vs shaft; Spencer RF vs thermal)
+- [x] P4.17 Two clocks (Fermi prompt vs delayed; Tesla generator cycles vs display pole shift; Spencer RF vs thermal)
 - [x] P4.18 Pointer as source term (Wright schematic click sets wingWarp)
 - [x] P4.19 Dated `fs-scenario` cards (Kitty Hawk, CP-1, Auburn, Centennial)
 - [x] P4.20 Claim-satisfaction pills on ClaimsDecoder (Wright Claim 1 ↔ coupled)
@@ -156,7 +156,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.60 Einstein 2D/3D/engine wrap the catalog kernel; ammoniaRatio is on the bus
 - [x] P5.61 Corliss η comes from cutoff; Bell voice frequency is on the bus
 - [x] P5.62 Westinghouse 2D uses the triple-valve kernel; Kevlar 2D strength from draw
-- [x] P5.63 Tesla coil N_s and spark rate are on the bus; streamers scale with turns
+- [x] P5.63 Tesla coil secondary turns and spark rate are on the bus; streamers scale with turns
 - [x] P5.64 Parsons 2D/3D/badge share 48 compound stages from the kernel
 - [x] P5.65 Engelbart pulses/rev is 200 on the bus; Lamarr jam channel + hop count shared
 - [x] P5.66 Goddard altitude is on the bus; Tesla 3D spark flicker follows sparkRateHz
@@ -164,12 +164,12 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.68 Spencer 2D popcorn heat follows Hull oscillation + dielectric loss
 - [x] P5.69 Pelton / Nobel / Thomson / Otis / De Laval / Reno / Zeppelin 2D call the shared step
 - [x] P5.70 Catalog 2D honesty: Daimler, Pasteur, Gramme, Gatling, Whitney, McCormick, Hyatt, Edison phonograph/bulb, Linotype, Ericsson, Glidden, Hollerith, Kodak, Bardeen, Corliss, Davenport, Morse, Noyce, Marconi, Bell, Wozniak, Goodyear, Farnsworth call the same step as badge/3D. Otis hoist T uses hanging mass; Zeppelin keel trim is position/pitch, not fake kg.
-- [x] P5.71 Peer-reverted Otis/Pelton 2D restored onto the shared step. Tesla 2D uses stepTeslaMotor (P=2, load 38.5). Howe 2D shows stitch Hz / shear N. Lamarr 2D processing gain and jam occupancy come from stepLamarrFrequencyHopping. Morse receive gate is kernel force, not fake miles.
-- [x] P5.72 Tesla slip is Kloss low-slip (s≈10% at 38.5 N·m), not T/45. Goddard thermo and rocket step share R=365 / v_e. Energy strip for Edison / Goddard / Einstein / Tesla calls the same step as the badge.
+- [x] P5.71 Peer-reverted Otis/Pelton 2D restored onto the shared step. Tesla 2D uses the source-bound Fig. 9 generator rate and progressive pole shift; Fig. 13 is separately labeled. Howe 2D shows stitch Hz / shear N. Lamarr 2D processing gain and jam occupancy come from stepLamarrFrequencyHopping. Morse receive gate is kernel force, not fake miles.
+- [x] P5.72 Tesla's source-bound telemetry no longer presents later induction-model performance claims. Goddard thermo and rocket step share R=365 / v_e. Energy strips remain limited to patents whose kernels emit an authored energy quantity.
 - [x] P5.73 Tesla-coil resonance is teslaCoilResonantKhz (2D/3D/badge/weave). Davenport η/I from copper loss, not P/V tautology. Goddard 2D Mach is kernel machExit. Weave coupleLinks Tesla/Edison call the shared step. Goddard 2D/3D write us-1102653 (page id), not leftover us-1155986.
 - [x] P5.74 CCD 2D/3D write us-3858232 (page id), not leftover us-3923554. Wright 2D wing lift/drag bars share the kernel lift split (18.5 N per deg warp). Wozniak 3D clock is apple.cpuClockMhz.
 - [x] P5.75 Tesla 2D no longer writes omegaT onto the shared bus every 30 ms; Fig. 4 schematic animates locally. Goddard/CCD colorized equations resolve from page ids via alias.
-- [x] P5.76 Tesla 3D publishes the kernel ElectromagneticsState (1.2 T / 220 V / 87% η), not leftover 0.8 T / 110 V / 78%. Input watts from kernel η. Davenport 3D chips show I and η. Goodyear 3D HUD tensile/return from the kernel.
+- [x] P5.76 Tesla 3D stays on the source-bound Fig. 9 generator, four collector rings/brushes, ring R, and disk D; it does not publish invented performance quantities. Davenport 3D chips show I and η. Goodyear 3D HUD tensile/return from the kernel.
 - [x] P5.77 Bardeen 2D / 3D / badge share bardeenLoadLine (Av = α·80, G = 10 log10(Av·α)). No more |Vc|/0.6 or α²·Vc/1.5.
 - [x] P5.78 Farnsworth photocathode µA lives on stepFarnsworthTv (lux). 2D / 3D / badge / weave pass incident lux. Engine Bardeen wraps the catalog transport so α cannot drift.
 - [x] P5.79 Farnsworth coil→gauss is farnsworthDeflectionGauss (120 G @ 0.42 A). Otto peak compression/firing (r^1.35 and ×3.8) live on stepOttoEngine; 2D/3D read those bars.
@@ -179,7 +179,7 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.83 Glidden 950 lb Bessemer rating, barb contact stress, and line ft/min live on the kernel. Lincoln 3D draft follows hullDraftFt (weight + bellows), not 5.0 − Δd. Hyatt density / clarity / extrusion rate, Kevlar alignment + fiber UTS (engine wraps catalog), and Wozniak Φ2 duty 100% are kernel fields.
 - [x] P5.84 McCormick ground m/s and cutter Hz come from the printed wheel/gear kinematics. Zeppelin lift kg / payload live on the kernel (no private /9.81). Corliss boiler MPa and expansion ratio replace leftover psi×0.00689 and 100/cutoff; 3D η is kernel thermalEfficiencyPct, not a coal-savings guess. Otis hanging mass (400 kg cab + payload) and Hollerith 40-dial 1890 register bank are kernel fields.
 - [x] P5.85 Nobel GPa / MJ/kg, Thomson upset burr, Whitney saw tip speed, De Laval skim flow, Ericsson pitch/slip (3D η_p is 1−s, not 68+v/15), Gatling cycle ms, Otis hoist T, Pasteur survivor %, Glidden tension lb, and Zeppelin km/h all come from the shared step.
-- [x] P5.86 Tesla rotor rpm / shaft W / input W live on ElectromagneticsState (2D/3D/badge/energy/weave). Goddard thrust lbf on both TS and WASM returns. Pasteur ABV/CO₂, CCD V_out, Hollerith 7-hour card day, Whitney vs-hand, Engelbart mm/pulse, Linotype lph, and Edison high-R current come from the shared step.
+- [x] P5.86 Tesla Fig. 9 source relation lives on ElectromagneticsState (2D/3D/badge/weave). Goddard thrust lbf on both TS and WASM returns. Pasteur ABV/CO₂, CCD V_out, Hollerith 7-hour card day, Whitney vs-hand, Engelbart mm/pulse, Linotype lph, and Edison high-R current come from the shared step.
 - [x] P5.87 Otis cab lb / catch inches, Westinghouse stop feet, Noyce oxide nm / tpd ps / f_max, Tesla-coil kV, Bardeen I_c, Howe cloth feed, Pasteur shelf months, and Nobel exudation all come from the shared step.
 - [x] P5.88 Goddard nozzle match (ε* vs altitude) is goddardNozzleMatch. Zeppelin mph / prop rpm, Colt powder grains, Linotype chars/hour, phonograph cm/s, Edison feeder I²R, Thomson joule W, Westinghouse 2D stroke from pistonStrokeRatio, and Farnsworth raster advance all come from the shared step.
 - [x] P5.89 Fermi Geiger interval is kernel period (not 280/(k−0.98) or 0.4/k²). Gramme 36 junctions from the step. Wozniak demo tick, Lamarr hop/jam occupancy, Spencer popcorn ΔT, Tesla-coil streamer scale, and Westinghouse wheel decel from pistonStrokeRatio.
@@ -470,11 +470,11 @@ the visitor can see or hear the kernel change the instrument.
 - [x] P5.374 Nobel sparkOmega / shockwaveScale / matrixEmissive. 3D no longer converts leftover t×25/×8, scale 1+1.5, or 0xff3300 privately.
 - [x] P5.375 Bardeen holeWrapPad / holeResetPad. 3D no longer converts leftover gap/2+0.1 or reset −0.05 privately.
 - [x] P5.376 Zeppelin swayOmega / swayAmp / trimMinX. 3D no longer converts leftover sin(t×0.8)×0.08 or trim ±5 privately.
-- [x] P5.377 Tesla motor weave drains `stepTeslaMotorFig9`. Probe qty is n_D rpm, ghosts are disk rpm / B intensity, fidelity is disk vs generator (residual 0). No more "source guide" / "not computed" HUD on US 381,968.
-- [x] P5.378 Spec-clause captions on Tesla Fig. 9 print generator / pole-shift / disk rpm from the same step. 2D and 3D read `teslaMotorPhaseHz` so leftover `frequencyHz` aliases the registry `frequency`.
+- [x] P5.377 Tesla motor weave drains `stepTeslaMotorFig9`. Probe quantity is the progressive pole-shift rate, the source disk relation and attraction intensity remain visible, and fidelity stays bound to Fig. 9. No more "source guide" / "not computed" HUD on US 381,968.
+- [x] P5.378 Spec-clause captions on Tesla Fig. 9 print the generator relation and progressive pole shift from the same step. 2D and 3D read `teslaMotorPhaseHz` so leftover `frequencyHz` aliases the registry `frequency`.
 - [x] P5.379 Energy strips only where the kernel already owns a watt: Davenport electrical/shaft/copper, Thomson I²R nugget, Otto/Daimler brake hp, Corliss indicated hp, Pelton shaft kW. Tesla motor, Tesla coil, Diesel, Lamarr, Linotype, Hollerith, Engelbart, Kevlar stay empty.
 - [x] P5.380 Tesla coil `coupleLinks` no longer prints invented `(inputVoltageKv ?? 15) * 20` W. The coil step owns kV and streamer length, not a watt.
-- [x] P5.381 Tesla 3D HUD title is Fig. 9 motor-generator, not Source Guide. Overlay prints generator / pole-shift / disk rpm and B intensity from `stepTeslaMotorFig9`.
+- [x] P5.381 Tesla 3D HUD title is Fig. 9 motor-generator, not Source Guide. Overlay prints the generator relation, progressive pole shift, and attraction intensity from `stepTeslaMotorFig9`.
 - [x] P5.382 `coupleLinks` keeps only owned watts: Wright induced-drag · v, Edison I²R. Dropped invented CCD e⁻×e×1e12, Howe shear×Hz×3 mm, Wright adverse-yaw×2, Tesla coil kV×20.
 - [x] P5.383 Wright energy strip is thrust·v = parasitic + induced (no invented 0.08 lift work). Edison is filament I²R + feeder I²R (no invented 8% visible split).
 - [x] P5.384 Energy strips from owned watts: Reno motor kW, Maxim jacket heat, Ericsson thrust·v. Maxim `heatGeneratedWatts` is now on the step return.
@@ -547,7 +547,7 @@ modules. Every other patent should compose **generic** FrankenSim crates
 instead of waiting for a ready-made per-machine crate.
 
 - [x] P6.1 `genericWasm.ts` loads `/wasm/fs-generic/` and reports `wasm` vs `ts-fallback` honestly.
-- [x] P6.2 Tesla Fig. 9 flux particles drain `ga_motor_orbit` (fs-ga screw motor). The rotating field is a geometric-algebra motor, not hypot-rotate leftover SI.
+- [x] P6.2 Tesla Fig. 9 flux particles drain `ga_motor_orbit` (fs-ga screw motor). The progressive attraction is a geometric-algebra motor, not hypot-rotate leftover SI.
 - [x] P6.3 Edison envelope gas drains `heat_frames` (fs-sparse 5-pt Laplacian). Local jitter follows the heat sample at the molecule's (u,v).
 - [x] P6.4 Marconi wavefront opacity/scale drains `wave2d_frames` RMS. The spark field is a 2-D wave, not a leftover ring timer.
 - [ ] P6.5 Drop `fs-wasm` pkg into `public/wasm/fs-generic/` when the artifact is reviewed (5.1 MB vs ~64 KB flyer/Tesla). Loader already probes that path. Without it the host fallback is labeled `ts-*-fallback`.

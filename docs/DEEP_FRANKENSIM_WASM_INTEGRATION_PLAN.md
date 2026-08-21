@@ -27,7 +27,7 @@ This document serves as the granular, step-by-step implementation plan and livin
   - [ ] Wire 3D spatial neutron flux $\phi(x,y,z)$ from 6-group delayed neutron diffusion into graphite moderator/fuel lattice for **Enrico Fermi Nuclear Reactor (US 2,708,656)**.
 - [ ] **1.2. Zero-Copy Magnetic & Fluid Streamline Vertex Streaming**:
   - [ ] Implement zero-copy buffer mapper `streamlineBufferFromKernel(samples, nLines, pointsPerLine)` for Three.js `LineSegments` and `BufferGeometry`.
-  - [ ] Connect `fs-flux` rotating stator vector field to live streamlines in **Tesla AC Motor (US 381,968)** and **Tesla High-Potential Transformer (US 593,138)**.
+  - [ ] Connect `fs-flux` source-bound progressive field samples to **Tesla's Fig. 9 motor-generator (US 381,968)** and **Tesla High-Potential Transformer (US 593,138)**.
   - [ ] Connect `fs-airflow` vortex panel / stream-function streamlines over cambered aerofoils in **Wright Flyer (US 821,393)**.
   - [ ] Connect `fs-lbm` steam expansion streamlines across moving blade rows in **Parsons Steam Turbine (US 608,969)** and **De Laval Separator (US 247,804)**.
 
@@ -38,7 +38,7 @@ This document serves as the granular, step-by-step implementation plan and livin
   - [ ] Create `src/physics/sensitivityKernel.ts` with forward dual-number arithmetic $[x, \dot{x}]$ for live $\frac{\partial Q}{\partial u}$ evaluation.
   - [ ] Register partial derivatives for key domain parameters across all catalog patents:
     - Wright Flyer: $\frac{\partial N}{\partial \delta_{\text{warp}}}$ (adverse yaw sensitivity), $\frac{\partial L}{\partial \delta_{\text{warp}}}$ (roll authority).
-    - Tesla AC Motor: $\frac{\partial \tau}{\partial f}$ (torque-frequency slope), $\frac{\partial s}{\partial \tau_{\text{load}}}$ (slip stiffness).
+    - Tesla Fig. 9 motor-generator: $\frac{\partial n_G}{\partial f}$ (generator-rate sensitivity); the grant supplies no torque or slip data.
     - Edison Lamp: $\frac{\partial P_{\text{rad}}}{\partial V}$ (radiant power voltage sensitivity), $\frac{\partial T}{\partial V}$ (filament thermal response).
     - Spencer Microwave: $\frac{\partial B_c}{\partial V_a}$ (Hull magnetic cutoff gradient).
     - Kilby IC / Noyce Planar IC: $\frac{\partial C_j}{\partial V_r}$ (depletion capacitance voltage sensitivity).
@@ -65,7 +65,7 @@ This document serves as the granular, step-by-step implementation plan and livin
   - [ ] Implement constraint modifications:
     - Wright Flyer (US 821,393 Claim 1): Uncoupling rudder linkage $\to$ adverse yaw induces roll-reversal and stall spin.
     - Edison Lamp (US 223,898 Claim 1): Restoring atmospheric pressure $\to$ rapid carbon filament oxidation and burnout in $< 2$ seconds.
-    - Tesla AC Motor (US 381,968 Claim 1): Switching polyphase quadrature to single-phase unassisted $\to$ zero starting torque and stator heating.
+    - Tesla Fig. 9 (US 381,968 Claim 1): Removing the independent generator circuits $\to$ no progressive pole shift in the source teaching model.
     - Howe Sewing Machine (US 4,750 Claim 1): Desynchronizing feed-dog / shuttle timing $\to$ failed thread loop capture and needle jam.
     - Morse Telegraph (US 1,647 Claim 1): Removing magnetic return spring $\to$ armature stiction and continuous ground fault.
 - [ ] **4.2. Interactive Claim Toggle Chips on Visual Studios**:
@@ -88,7 +88,7 @@ This document serves as the granular, step-by-step implementation plan and livin
 ### Phase 6: Multi-Patent Coupled Laboratories (`fs-couple`)
 - [ ] **6.1. Coupled Historical Machinery Demonstrations**:
   - [ ] Couple **Watt Rotary Steam Engine** $\to$ **Arkwright Water Frame Spinning Mule** $\to$ **Howe Lockstitch Sewing Machine**.
-  - [ ] Couple **Tesla Polyphase Alternator** $\to$ **Tesla High-Potential Transformer** $\to$ **Edison Incandescent Lamp Network**.
+  - [ ] Couple **Tesla's alternating-current generator** $\to$ **Tesla High-Potential Transformer** $\to$ **Edison Incandescent Lamp Network**.
 - [ ] **6.2. Verified Tests & Production Build Gates**:
   - [ ] Add unit and deterministic replay tests for all new physics kernels, sensitivity calculations, energy ledgers, and claim switches.
   - [ ] Verify full test suite passes (`bun test`), TypeScript check (`tsc --noEmit`), Biome check (`biome check .`), and verified production deployment (`scripts/verified-production-deploy.ts`).

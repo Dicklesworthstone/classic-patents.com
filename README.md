@@ -20,12 +20,12 @@
 
 ## TL;DR
 
-**The Problem:** Original patents represent the greatest technical breakthroughs in human history—from the Wright Brothers' 3-axis flight control to Tesla's polyphase AC motor and Robert Noyce's monolithic silicon chip. However, in their historical state, they are trapped in low-resolution microfilm scans, archaic legal jargon ("*Be it known that we...*"), and static 2D lithographs that cannot convey dynamic physical mechanisms.
+**The Problem:** Original patents represent the greatest technical breakthroughs in human history—from the Wright Brothers' 3-axis flight control to Tesla's progressive two-circuit alternating-current motor-generator and Robert Noyce's monolithic silicon chip. However, in their historical state, they are trapped in low-resolution microfilm scans, archaic legal jargon ("*Be it known that we...*"), and static 2D lithographs that cannot convey dynamic physical mechanisms.
 
 **The Solution:** **Classic Patents** restores these masterpieces:
 1. **Verified Archival Transcripts & Embedded PDFs**: High-fidelity digitized text alongside complete, high-resolution original USPTO facsimile documents.
 2. **Dual-Projection (Diptych Engine)**: Side-by-side synchronized views of the verbatim legal specification and a lucid, mathematically rigorous **"Plain English" engineering breakdown**.
-3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules with vibrant atmospheric blue skies, studio lighting, and interactive controls allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting AC frequencies to witness Tesla's rotating magnetic stator field, testing nuclear reactor cadmium rod criticality, or inspecting Wozniak's two-phase shared memory multiplexing).
+3. **Interactive 3D WebGL & Physics Visualizations**: Parameterized 3D Three.js modules with vibrant atmospheric blue skies, studio lighting, and interactive controls allowing visitors to manipulate real physical parameters (e.g. twisting the Wright Flyer's wings to observe adverse yaw and vortex shedding, adjusting the generator rate to observe Tesla's progressive pole shift in the Fig. 9 motor-generator, testing nuclear reactor cadmium rod criticality, or inspecting Wozniak's two-phase shared memory multiplexing).
 4. **Historical & Legal Deconstructions**: Line-by-line claim decoders, patent litigation histories (Wright vs. Curtiss, Bell vs. Gray, Farnsworth vs. RCA, Goodyear vs. Day, SRI vs. Xerox/Apple), and civilizational impact analyses.
 
 ---
@@ -40,7 +40,7 @@
 | **[US 6,469](./src/data/patents/lincoln-buoy.ts)** | Buoying Vessels Over Shoals | Abraham Lincoln | May 22, 1849 | Synchronized expandable buoyant air chambers | ⛵ 3D River Shoal Lift Sim |
 | **[US 174,465](./src/data/patents/bell-telephone.ts)** | Improvement in Telegraphy (Telephone) | Alexander Graham Bell | Mar 7, 1876 | Variable resistance undulating acoustic speech transmission | 📞 3D Acoustic Transducer |
 | **[US 223,898](./src/data/patents/edison-lightbulb.ts)** | Electric-Lamp | Thomas A. Edison | Jan 27, 1880 | High-resistance carbon filament in high vacuum | 💡 3D Thermal Vacuum Bulb |
-| **[US 381,968](./src/data/patents/tesla-motor.ts)** | Electro-Magnetic Motor | Nikola Tesla | May 1, 1888 | Brushless polyphase AC rotating magnetic stator field | ⚡ 3D Magnetic Stator Motor |
+| **[US 381,968](./src/data/patents/tesla-motor.ts)** | Electro-Magnetic Motor | Nikola Tesla | May 1, 1888 | Progressive magnetic pole shift from independent alternating-current circuits | ⚡ 3D Fig. 9 Motor-Generator |
 | **[US 586,193](./src/data/patents/marconi-radio.ts)** | Transmitting Electrical Signals | Guglielmo Marconi | Jul 13, 1897 | Elevated monopole aerial & earth-grounded spark system | 📡 3D RF Spark Transmitter |
 | **[US 593,138](./src/data/patents/tesla-coil-593138.ts)** | Electrical Transformer | Nikola Tesla | Nov 2, 1897 | Graded spiral windings for high-potential transformation and transmission | ⚡ 3D High-Potential Transformer |
 | **[US 821,393](./src/data/patents/wright-flyer.ts)** | Flying-Machine | Orville & Wilbur Wright | May 22, 1906 | 3-axis aerodynamic flight control via wing warping | 🛩️ 3D 6-DoF Flight Sim |
@@ -79,14 +79,14 @@
 │             3D WEBGL & REAL-TIME PHYSICS SIMULATION RUNTIMES           │
 │  • Procedural Azure Sky & Drifting Volumetric Cumulus Clouds           │
 │  • 3D Wright Flyer 6-DoF Aerodynamics & Wingtip Vortex Shedding        │
-│  • 3D Tesla Induction Motor Rotating Stator Electromagnetic Flux Lines │
+│  • 3D Tesla Fig. 9 Generator-Coupled Progressive Pole Shift           │
 │  • 3D Fermi Nuclear Reactor Criticality Cascade & Cadmium Rod Damping  │
 │  • 3D Wozniak Apple II Interleaved Memory Bus & NTSC Color Burst       │
 │  • Dynamic On-Demand Code Splitting (198 kB Initial JS Payload)        │
 ├────────────────────────────────────────────────────────────────────────┤
 │              FRANKENSIM COMPUTATIONAL PHYSICS WASM CORE                │
 │  • 6-DoF Aerodynamics (`fs-flyer-wasm`, `fs-mbd`, `fs-time`)           │
-│  • Maxwell Electromagnetics & AC Induction (`fs-flux`, `fs-spectral`)  │
+│  • Maxwell Electromagnetics & Alternating-Current Fields (`fs-flux`)   │
 │  • Solid-State & Microelectronics (`fs-lattice`, `fs-exec`)            │
 │  • Thermodynamics & Dalton Refrigeration (`fs-conduction`, `fs-lbm`)   │
 │  • Reactor Criticality & Delayed Neutron Kinetics (`fs-lattice`)       │
@@ -100,7 +100,7 @@
 
 The interactive simulators are backed by **FrankenSim** WebAssembly kernels with Blake3 state digests and typed refusal boundaries:
 1. **Aerodynamics & 6-DoF MBD** (`fs-flyer-wasm`, `fs-mbd`, `fs-time`): Wright Flyer wing-warping induced drag and adverse yaw; Goddard supersonic rocket de Laval expansion.
-2. **Electromagnetics & Induction** (`fs-flux`, `fs-feec`, `fs-spectral`): Tesla rotating stator flux vectors; Bell variable-reluctance acoustic currents; Marconi spark RF wavefields.
+2. **Electromagnetics & Alternating-Current Fields** (`fs-flux`): Tesla's Fig. 9 generator-coupled progressive pole shift; Bell variable-reluctance acoustic currents; Marconi spark RF wavefields.
 3. **Solid-State & Microelectronics** (`fs-lattice`, `fs-sparse`, `fs-exec`): Bardeen point-contact hole injection; Noyce planar $\text{SiO}_2$ passivation; Wozniak two-phase interleaved memory arbitration.
 4. **Thermodynamics & Transport** (`fs-conduction`, `fs-convection`, `fs-lbm`): Edison Stefan-Boltzmann vacuum filament emission; Einstein-Szilard ternary partial-pressure absorption cooling.
 5. **Nuclear Physics** (`fs-lattice`, `fs-rand`): Fermi-Szilard 6-group delayed neutron kinetics and cadmium rod criticality index ($k_{\text{eff}}$).
