@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import {
   createThreeStudioScene,
@@ -10,8 +10,10 @@ import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimP
 import { stepPageRank } from "@/physics/pageRankKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { buildPageRankModel } from "./PageRankModel";
 import { StudioKernelChips } from "./StudioKernelChips";
+import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6285999-pagerank";
 
@@ -32,6 +34,7 @@ export function PageRank3D() {
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({ damping: 0.85, iter: 0, topRank: 0.38 });
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const dampingFactor = (params.dampingFactor as number) ?? 0.85;
   const live = useLiveSimParams({
@@ -158,6 +161,23 @@ export function PageRank3D() {
 
         {/* Top Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
