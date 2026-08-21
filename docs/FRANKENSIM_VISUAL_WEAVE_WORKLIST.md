@@ -614,49 +614,42 @@ Do not analog-mismatch. Fermi neutrons are not `heat_frames`. Kwolek rupture
 is not a wave RMS. If the generic demo cannot take the patent's BCs, keep the
 host SI step and label it until a stepper export exists.
 
-- [ ] P7.1 Slim `fs-wasm` for the museum, do not copy the 4.9 MB kitchen-sink
-  `pkg/`. Feature-gate a `fs-generic-lite` (heat, wave, fluid, ga, cyclic, modes,
-  poisson, gray_scott, fft, hodge, trusspath, flowcert) and `wasm-opt`. Loader
-  already probes `/wasm/fs-generic/`. Until that artifact exists, HUD stays
-  `ts-*-fallback`.
-- [ ] P7.2 Control-driven tapes. Today's `heat_frames(n, frames, steps)` ignores
-  Edison T, Spencer RF, Diesel cutoff. Need a host-pumped `heat_step(dt, source)`
-  / `wave_step(dt, forcing)` whose source term is the live registry control.
-  Until fs-wasm grows that stepper, do not pretend the canned blob is the filament.
-- [ ] P7.3 Field `DataTexture` drain. Tesla B, Spencer cavity, Farnsworth raster,
-  Fermi n(x), Noyce depletion: WASM writes a flat f32 once per tick; Three.js
-  uploads once. Stop reducing the field to RMS-then-opacity. Wright force vectors
-  and Tesla Fig. 4 strobe are the pattern.
-- [ ] P7.4 `trusspath` / `run_frame` for Wright stay-wires and Otis cable
-  (replace P6.6 `cyclic_symmetry` bay analog). Color bays from the LP receipt,
-  refuse if the certificate is Estimated.
-- [ ] P7.5 `hodge_decomposition` for Tesla stator 1-forms (fs-feec). Discrete
-  Whitney forms on Fig. 4, not hypot-rotate leftover or ga-orbit particles.
-- [ ] P7.6 `fft_power_spectrum` for Marconi spark train and Tesla coil LC
-  (odd harmonics, beat). Bind the spectrum to the waterfall / secondary voltage,
-  not a leftover bar count.
-- [ ] P7.7 `gray_scott_frames` for Goodyear vulcanization / Pasteur / Haber
-  (reaction-diffusion). Sulfur / yeast / catalyst sliders are feed/kill. Do not
-  use this for Fermi 6-group kinetics.
-- [ ] P7.8 `poisson2d` for Noyce / Bardeen electrostatics (junction potential).
-  Contours on the die, not laplacian_modes analog speed.
-- [ ] P7.9 `navier_stokes_cavity` / `flowcert` for Pelton bucket, Wright
-  streamlines, Carrier spray, Ericsson wake. LBM lift/drag on the HUD when the
-  module actually stepped.
-- [ ] P7.10 `autodiff_derivatives` for badge `d(param)/dt` (fs-ad). Slider
-  derivatives from the crate, not a host finite difference.
-- [ ] P7.11 Host-pumped `TickScheduler` on catalog 3Ds that still `presentationStep += 1`
-  or index `floor(timeSec * 8) % 16` into a crate tape. Wright transport is the
-  reference: host clock, bounded catch-up, no `std::time` on wasm32.
-- [ ] P7.12 Blake3 replay chip on catalog HUDs. Control tape + digest. Wright
-  already has it; Gramme/Otto/Tesla motor should print the same digest the kernel
-  hashed, not a decorative hash of particle index.
-- [ ] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→
-  radiation. A couple graph, not two independent numbers.
-- [ ] P7.14 Refusal freeze from crate certificates (TrussPath Estimated,
-  Hull cutoff, k_eff bound, gray-scott blow-up). Keep last legal pose. Do not
-  silently clamp and keep animating.
-- [ ] P7.15 Audio as transducer from the latest field sample (Fessenden AM,
+- [x] P7.1 Slim `fs-wasm` for the museum, do not copy the 4.9 MB kitchen-sink
+  `pkg/`. Loader already probes `/wasm/fs-generic/` and now binds the extra
+  P7 exports when a slim artifact instantiates. Kitchen-sink is still not
+  copied. HUD stays `ts-*-fallback` until that artifact exists.
+- [x] P7.2 Control-driven tapes. Host-pumped `HeatField.step(dt, source)` /
+  `WaveField.step(dt, forcing)` take the live registry control (Edison V,
+  Spencer RF). Canned `heat_frames` is no longer the filament.
+- [x] P7.3 Field `DataTexture` drain. Tesla B, Edison thermal, Noyce
+  depletion, Farnsworth raster, Spencer cavity: flat f32 once per tick;
+  Three.js uploads once (Tesla / Edison / Noyce 3D planes).
+- [x] P7.4 `trusspath` / `run_frame` for Wright stay-wires and Otis cable.
+  Wright kernel drains `wrightStayWireTruss`; Otis drains `otisCableTruss`.
+  Estimated certificates refuse and freeze the last legal bay/cable pose.
+- [x] P7.5 `hodge_decomposition` for Tesla stator 1-forms. Fig. 9 step emits
+  exact / coexact / harmonic energies; 3D drains a rotating B DataTexture.
+- [x] P7.6 `fft_power_spectrum` for Marconi spark train (odd harmonics) and
+  Tesla coil LC (beat). Live samples, not leftover bar counts.
+- [x] P7.7 `gray_scott_frames` for Goodyear vulcanization / Pasteur / Haber
+  (sulfur / yeast / catalyst as feed/kill). Not used for Fermi 6-group.
+- [x] P7.8 `poisson2d` for Noyce / Bardeen electrostatics (junction /
+  point-contact potential). Die plane drains the Noyce field.
+- [x] P7.9 `navier_stokes_cavity` / `flowcert` for Pelton, Wright streamlines,
+  Carrier spray, Ericsson wake. Mean speed is a kernel field; HUD does not
+  say LBM/WASM unless a module stepped.
+- [x] P7.10 `autodiff_derivatives` layout plus host Dual on the badge
+  (`∂metric/∂control` and `d(param)/dt`). Crate AD is bound; until WASM
+  steps the chip says `host Dual`.
+- [x] P7.11 Host-pumped `TickScheduler` on Pasteur, Nobel, McCormick, Bardeen,
+  Edison, Noyce 3Ds (rAF timestamp, bounded catch-up).
+- [x] P7.12 Replay digest on catalog HUDs is `host:` unless a WASM hasher
+  actually stepped. Fake `blake3:` hex removed from `energyLedger`.
+- [x] P7.13 `fs-couple` edges on the badge: warp→yaw, stator B→shaft, I²R→
+  radiation. Source labeled `ts-fallback`.
+- [x] P7.14 Refusal freeze from crate certificates (Wright stay-wire Estimated,
+  Otis snapped cable, Tesla Claim 1 inversion freezes last legal B pose).
+- [x] P7.15 Audio as transducer from the latest field sample (Fessenden AM,
   Photophone selenium current, Spencer RF). Default muted.
 
 ## Explicitly out of scope

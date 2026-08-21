@@ -101,6 +101,40 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(sens).not.toBeNull();
       expect(sens?.derivativeValue).toBe(30.0); // 120 / 4 = 30 RPM/Hz
     });
+
+    test("computes Watt separate condenser power sensitivity ∂P/∂P_boiler", () => {
+      const sens = computeParameterSensitivity(
+        "gb-913-watt-separate-condenser",
+        "boilerPressurePsi",
+        {
+          boilerPressurePsi: 14.7,
+          cylinderBoreInches: 24.0,
+          pistonStrokeFeet: 6.0,
+          strokesPerMinute: 18.0,
+        },
+      );
+      expect(sens).not.toBeNull();
+      expect(sens?.derivativeValue).toBeGreaterThan(1.0);
+      expect(sens?.derivativeUnit).toContain("HP / PSI");
+    });
+
+    test("computes Pelton wheel hydraulic power sensitivity ∂P/∂H", () => {
+      const sens = computeParameterSensitivity("us-233692-pelton-wheel", "waterHeadM", {
+        flowRateLps: 45.0,
+      });
+      expect(sens).not.toBeNull();
+      expect(sens?.derivativeValue).toBeGreaterThan(0.3);
+      expect(sens?.derivativeUnit).toContain("kW / m");
+    });
+
+    test("computes Otto engine Carnot thermal efficiency sensitivity ∂η/∂r", () => {
+      const sens = computeParameterSensitivity("us-194047-otto-engine", "compressionRatio", {
+        compressionRatio: 8.0,
+      });
+      expect(sens).not.toBeNull();
+      expect(sens?.derivativeValue).toBeGreaterThan(1.0);
+      expect(sens?.derivativeUnit).toContain("% / ratio");
+    });
   });
 
   describe("Port-Hamiltonian Energy Ledger (Phase 3)", () => {
@@ -125,6 +159,37 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       });
       expect(ledger.energy.electromagneticJoules).toBeGreaterThan(0);
       expect(ledger.inputPowerWatts).toBeGreaterThan(1000);
+      expect(ledger.isConservative).toBe(true);
+    });
+
+    test("computes steam enthalpy power balance for Watt separate condenser", () => {
+      const ledger = computePortHamiltonianEnergy("gb-913-watt-separate-condenser", {
+        boilerPressurePsi: 14.7,
+        hasSeparateCondenser: 1,
+        strokesPerMinute: 18,
+      });
+      expect(ledger.energy.thermalJoules).toBeGreaterThan(5000);
+      expect(ledger.inputPowerWatts).toBeGreaterThan(1000);
+      expect(ledger.isConservative).toBe(true);
+    });
+
+    test("computes hydraulic power and kinetic storage for Pelton wheel", () => {
+      const ledger = computePortHamiltonianEnergy("us-233692-pelton-wheel", {
+        waterHeadM: 150.0,
+        flowRateLps: 45.0,
+        wheelRpm: 320.0,
+      });
+      expect(ledger.energy.kineticJoules).toBeGreaterThan(5000);
+      expect(ledger.inputPowerWatts).toBeGreaterThan(50000);
+      expect(ledger.isConservative).toBe(true);
+    });
+
+    test("computes optical and thermal balance for Maiman ruby laser", () => {
+      const ledger = computePortHamiltonianEnergy("us-3353115-maiman-laser", {
+        pumpPowerWatts: 500.0,
+      });
+      expect(ledger.inputPowerWatts).toBe(500.0);
+      expect(ledger.energy.thermalJoules).toBeGreaterThan(100);
       expect(ledger.isConservative).toBe(true);
     });
   });
