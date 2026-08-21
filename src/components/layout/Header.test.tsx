@@ -10,6 +10,11 @@ mock.module("next/link", () => ({
   ),
 }));
 
+// Mock next/navigation (usePathname requires an mounted App Router context).
+mock.module("next/navigation", () => ({
+  usePathname: () => "/",
+}));
+
 import { Header } from "./Header";
 
 describe("Header component", () => {
