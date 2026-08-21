@@ -10,7 +10,7 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   bardeenSchematicDie,
   coltSchematicTrigger,
@@ -6063,6 +6063,7 @@ export function InteractiveDiagramViewer({
   const [activeCalloutId, setActiveCalloutId] = useState<string | null>(null);
   const [hoveredCalloutId, setHoveredCalloutId] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const viewerRef = useRef<HTMLDivElement | null>(null);
   const [teslaOmegaDeg, setTeslaOmegaDeg] = useState<number>(0);
   const isTeslaMotorSchematic = Boolean(
     patentId && /381968|tesla-motor/.test(patentId) && !/coil|533367/.test(patentId),
@@ -6108,10 +6109,18 @@ export function InteractiveDiagramViewer({
     }
   }, [callouts, currentPinIndex]);
 
-  // Keyboard navigation for pins
+  // Keyboard navigation for pins. Bound to the viewer container, not window:
+  // arrow keys must keep scrolling/caret-navigating the rest of the page.
+  // Pins and toolbar buttons inside the viewer are tabbable, so focus lands
+  // here the moment a visitor interacts with the schematic.
   useEffect(() => {
+    const container = viewerRef.current;
+    if (!container) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const target = e.target as HTMLElement | null;
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
+      if (target instanceof HTMLSelectElement) return;
+      if (target?.isContentEditable) return;
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         handlePrevPin();
@@ -6122,14 +6131,14 @@ export function InteractiveDiagramViewer({
         setActiveCalloutId(null);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    container.addEventListener("keydown", handleKeyDown);
+    return () => container.removeEventListener("keydown", handleKeyDown);
   }, [handlePrevPin, handleNextPin]);
 
   if (!activeDrawing) return null;
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5">
+    <div ref={viewerRef} className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5">
       {/* Header, Figure Switcher & Viewport Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -6338,7 +6347,7 @@ export function InteractiveDiagramViewer({
                     isSelected
                       ? "bg-amber-500 text-ink-950 ring-4 ring-amber-500/50 scale-125 z-20 shadow-amber-500/30"
                       : isHovered
-                        ? "bg-amber-600 text-white scale-115 ring-2 ring-amber-400 z-15"
+                        ? "bg-amber-600 text-white scale-110 ring-2 ring-amber-400 z-15"
                         : "bg-ink-900/90 text-amber-300 border border-amber-500/60 hover:scale-110 hover:bg-amber-600 hover:text-white z-10"
                   }`}
                   title={`${callout.label}: ${callout.description}`}

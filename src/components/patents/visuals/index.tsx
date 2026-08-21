@@ -93,6 +93,16 @@ const ThreeLoading = () => (
   </div>
 );
 
+// Neutral fallback for lazy 2D sims: no WebGL wording, same footprint.
+const SimLoading = () => (
+  <div className="w-full min-h-[420px] rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/90 dark:bg-ink-950/90 flex flex-col items-center justify-center p-6 text-center space-y-3 shadow-patent">
+    <div className="w-8 h-8 rounded-full border-2 border-amber-600 dark:border-amber-400 border-t-transparent animate-spin" />
+    <span className="font-mono text-xs font-bold text-amber-700 dark:text-amber-300 tracking-wider">
+      LOADING INTERACTIVE SIMULATION...
+    </span>
+  </div>
+);
+
 const ArkwrightWaterFrame3D = dynamic(
   () => import("./three/ArkwrightWaterFrame3D").then((mod) => mod.ArkwrightWaterFrame3D),
   { ssr: false, loading: ThreeLoading },
@@ -103,7 +113,7 @@ const DeForestAudion3D = dynamic(
 );
 const DeForestAudionSim = dynamic(
   () => import("./DeForestAudionSim").then((m) => m.DeForestAudionSim),
-  { ssr: false },
+  { ssr: false, loading: SimLoading },
 );
 const FessendenWireless3D = dynamic(
   () => import("./three/FessendenWireless3D").then((m) => m.FessendenWireless3D),

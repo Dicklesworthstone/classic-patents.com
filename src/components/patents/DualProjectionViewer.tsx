@@ -227,7 +227,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Sparkles className="w-4 h-4 text-amber-300" />
             <span>Plain English Face</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               1
             </kbd>
           </button>
@@ -245,7 +245,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Scroll className="w-4 h-4 text-amber-300" />
             <span>Original Patent Text</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               2
             </kbd>
           </button>
@@ -263,7 +263,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Activity className="w-4 h-4 text-amber-300" />
             <span>Interactive 3D Simulator</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               3
             </kbd>
           </button>
@@ -281,7 +281,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Compass className="w-4 h-4 text-amber-300" />
             <span>Schematic &amp; Pins</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               4
             </kbd>
           </button>
@@ -299,7 +299,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <FileText className="w-4 h-4 text-amber-300" />
             <span>Full Original PDF</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               5
             </kbd>
           </button>
@@ -330,7 +330,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           >
             <Columns className="w-4 h-4" />
             <span className="hidden sm:inline">Dual Split-Screen</span>
-            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.2 rounded bg-black/15 dark:bg-white/15 opacity-80">
+            <kbd className="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 rounded bg-black/15 dark:bg-white/15 opacity-80">
               6
             </kbd>
           </button>
@@ -369,7 +369,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           </div>
 
           {/* Embedded PDF Viewer */}
-          <div className="w-full h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
+          <div className="w-full h-[75vh] sm:h-[80vh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
             <object
               data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
               type="application/pdf"
@@ -457,7 +457,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
               </div>
               <KernelTickChip tick={tick} lastChange={lastChange} face="spec" />
             </div>
-            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 max-h-[700px] overflow-y-auto overscroll-contain">
+            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-4 lg:max-h-[700px] lg:overflow-y-auto lg:overscroll-contain">
               <p className="text-[11px] font-mono uppercase tracking-wider text-amber-800 dark:text-amber-400">
                 {originalTextLabel}
               </p>
