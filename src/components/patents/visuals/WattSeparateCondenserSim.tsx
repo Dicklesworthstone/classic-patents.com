@@ -402,7 +402,7 @@ export function WattSeparateCondenserSim() {
           <div>
             <div className="text-xs font-mono text-stone-400 flex items-center justify-between pb-2 border-b border-stone-800">
               <span>INDICATOR P-V DIAGRAM</span>
-              <span className="text-amber-400">Work Area = $\int P dV$</span>
+              <span className="text-amber-400">Work Area = ∫ P dV</span>
             </div>
 
             {/* Mini SVG PV Curve */}

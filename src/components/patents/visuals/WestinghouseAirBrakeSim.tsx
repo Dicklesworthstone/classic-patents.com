@@ -882,7 +882,7 @@ export function WestinghouseAirBrakeSim() {
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>Pull Cord $y$</span>
+                  <span>Pull Cord y</span>
                 </button>
               </div>
             </div>
