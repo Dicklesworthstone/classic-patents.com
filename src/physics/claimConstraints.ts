@@ -101,6 +101,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Kilby's initial 1958 IC required manual gold wire bonding between mesa-isolated semiconductor devices.",
     },
   ],
+  "us-3633-goodyear-rubber": [
+    {
+      claimNumber: 1,
+      patentId: "us-3633-goodyear-rubber",
+      claimTitle: "Thermal Sulfur Vulcanization Crosslinking",
+      activeDescription:
+        "Claim 1 crosslinks polyisoprene polymer chains with sulfur bridges under heat and pressure.",
+      invertedDescription:
+        "Raw unvulcanized gum: polymer chains slip plastically, melting into sticky tar above 35°C and shattering when cold.",
+      failureModeName: "Thermoplastic Melt & Creep Rupture",
+      historicalPriorArt:
+        "Raw natural caoutchouc softened in summer heat and turned brittle and fragile in winter frosts.",
+    },
+  ],
 };
 
 /**
@@ -174,6 +188,21 @@ export function applyClaimConstraintModifications(
         );
         refusalWarning =
           "SEMICONDUCTOR FAULT: Flying wire bond parasitic L-C ringing causes clock skew.";
+      }
+      break;
+    }
+
+    case "us-3633-goodyear-rubber": {
+      const claim1Active = claimStates[1] ?? true;
+      if (!claim1Active) {
+        modified.crossLinkDensity = 0.0; // Zero covalent sulfur crosslinks
+        modified.elasticReturnPct = 12.0; // Viscous plastic creep
+        modified.tensileStrengthPsi = 180.0; // Weak raw gum strength
+        activeFailures.push(
+          "Plastic Flow & Creep: Unvulcanized polymer chains slip permanently under tension",
+        );
+        refusalWarning =
+          "POLYMER INSTABILITY: Absence of covalent crosslinks causes unrecoverable plastic creep deformation.";
       }
       break;
     }

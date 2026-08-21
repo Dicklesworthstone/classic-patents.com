@@ -3,6 +3,8 @@
  * Fig. 4 of US 381,968 is eight successive positions of the B-vector.
  */
 
+import { teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
+
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
 /** US 381,968 Fig. 4 is a 2-pole field: ns = 120 f / P. */

@@ -4,6 +4,18 @@
  */
 
 import {
+  bardeenPointPotential,
+  edisonFilamentHeat,
+  ericssonWakeCavity,
+  goodyearVulcanizationField,
+  haberCatalystField,
+  marconiSparkSpectrum,
+  noyceJunctionPotential,
+  pasteurYeastField,
+  peltonCavityFlow,
+  spencerCavityWave,
+} from "./deepWasm";
+import {
   bellowsFluidCrate,
   bellWaveCrate,
   chainHeatCrate,

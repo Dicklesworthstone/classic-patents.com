@@ -4,6 +4,8 @@
  * Components must draw these values rather than inventing a second formula.
  */
 
+import { otisCableTruss } from "./deepWasm";
+
 export function stepCcdWells(
   phase: 1 | 2 | 3,
   lux: number,
@@ -756,10 +758,14 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
   hoistOmega: number;
   hoistAmp: number;
   sheaveAmp: number;
+  cableTrussForce: number;
+  cableCertificate: "Certified" | "Estimated";
+  cableRefused: boolean;
 } {
   const massKg = 400 + (params.cabPayloadKg ?? 650);
   const tensionPct = params.cableTensionPct ?? 100;
   const isSnapped = tensionPct < 15;
+  const cable = otisCableTruss(tensionPct);
   return {
     cabPayloadKg: params.cabPayloadKg ?? 650,
     cableTensionPct: tensionPct,
@@ -819,6 +825,9 @@ export function stepOtisElevator(params: { cabPayloadKg?: number; cableTensionPc
     hoistOmega: 1.5,
     hoistAmp: 0.25,
     sheaveAmp: 0.3,
+    cableTrussForce: cable.cableTrussForce,
+    cableCertificate: cable.cableCertificate,
+    cableRefused: cable.cableRefused,
   };
 }
 

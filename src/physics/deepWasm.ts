@@ -885,6 +885,7 @@ export function marconiSparkSpectrum(
   sparkPeakBin: number;
   sparkOddHarmonicPower: number;
   sparkSpectrumBins: number;
+  sparkWaveRms: number;
 } {
   const spec = liveFftPowerSpectrum(sparkTrain(freqMhz, gapMm));
   let peak = 0;
@@ -902,6 +903,7 @@ export function marconiSparkSpectrum(
     sparkPeakBin: peakBin,
     sparkOddHarmonicPower: Number(odd.toFixed(4)),
     sparkSpectrumBins: spec.length,
+    sparkWaveRms: Number(Math.sqrt(Math.max(0, odd)).toFixed(4)),
   };
 }
 

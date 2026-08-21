@@ -149,6 +149,108 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-3633-goodyear-rubber": {
+      const stretch = params.appliedTensileStretch ?? 1.8;
+      const tempC = params.vulcanTemp ?? 145.0;
+      const gModulusPa = 1.2e6; // 1.2 MPa shear modulus
+      const volumeM3 = 1.0e-4; // 100 cm^3 test strip
+      // Strain energy density W = 1/2 G (lambda^2 + 2/lambda - 3)
+      potential = 0.5 * gModulusPa * (stretch * stretch + 2.0 / stretch - 3.0) * volumeM3;
+      thermal = 0.1 * 1800.0 * (tempC + 273.15); // Heat content of rubber specimen
+      powerIn = 12.0 * stretch; // Mechanical stretching work input
+      dissipated = 0.8 * stretch; // Viscoelastic internal friction dissipation
+      break;
+    }
+
+    case "gb-913-watt-separate-condenser":
+    case "gb-1306-watt-rotary-engine": {
+      const boilerPsi = params.boilerPressurePsi ?? params.boilerPressureKpa ?? 14.7;
+      const spm = params.strokesPerMinute ?? params.strokeRateSpm ?? 18;
+      const boreIn = params.cylinderBoreInches ?? 24;
+      const strokeFt = params.pistonStrokeFeet ?? 6;
+      const hasCondenser = (params.hasSeparateCondenser ?? 1) > 0.5;
+
+      const areaSqIn = Math.PI * (boreIn / 2) ** 2;
+      const forceLbs = (boilerPsi - (hasCondenser ? 2.5 : 8.5)) * areaSqIn;
+      const workFtLbsPerStroke = forceLbs * strokeFt;
+      const powerHp = (workFtLbsPerStroke * spm) / 33000;
+
+      powerIn = powerHp * 745.7; // Steam thermal enthalpy flow (Watts)
+      kinetic = 0.5 * 3500.0 * ((spm * 2 * Math.PI) / 60) ** 2; // Flywheel kinetic energy
+      thermal = hasCondenser ? 12000.0 : 45000.0; // Stored thermal mass in cylinder iron
+      dissipated = powerIn * (hasCondenser ? 0.72 : 0.94); // Rejection to condenser / ambient
+      break;
+    }
+
+    case "us-194047-otto-engine":
+    case "us-542846-diesel-engine": {
+      const rpm = params.rpm ?? 180;
+      const compRatio = params.compressionRatio ?? 8.0;
+      const omega = (rpm * 2 * Math.PI) / 60;
+      const flywheelInertia = 2.4; // kg*m^2
+
+      kinetic = 0.5 * flywheelInertia * omega * omega;
+      // Air-standard thermal cycle
+      const fuelFlowGps = 0.15 * (rpm / 180);
+      powerIn = fuelFlowGps * 44000.0; // Fuel heating value input (Watts)
+      const efficiency = 1.0 - 1.0 / compRatio ** 0.4;
+      dissipated = powerIn * (1.0 - efficiency);
+      thermal = 25000.0; // Engine block thermal capacity
+      break;
+    }
+
+    case "us-233692-pelton-wheel": {
+      const headM = params.waterHeadM ?? 150.0;
+      const flowLps = params.flowRateLps ?? 45.0;
+      const rpm = params.wheelRpm ?? 320.0;
+      const omega = (rpm * 2 * Math.PI) / 60;
+
+      // Hydraulic input power P_in = rho * g * Q * H
+      powerIn = 1000.0 * 9.80665 * (flowLps / 1000.0) * headM;
+      kinetic = 0.5 * 18.5 * omega * omega; // Runner flywheel kinetic energy
+      potential = 1000.0 * (flowLps / 1000.0) * 9.80665 * 2.0; // Tailrace discharge head
+      dissipated = powerIn * 0.12; // Fluid splash & bearing friction (88% efficiency)
+      break;
+    }
+
+    case "us-608969-parsons-turbine": {
+      const steamPressureBar = params.steamPressureBar ?? 12.0;
+      const steamFlowKgS = params.steamFlowKgS ?? 4.5;
+      const rpm = params.turbineRpm ?? 3000.0;
+      const omega = (rpm * 2 * Math.PI) / 60;
+
+      powerIn = steamFlowKgS * 2800e3 * (steamPressureBar / 12.0); // Enthalpy flux
+      kinetic = 0.5 * 45.0 * omega * omega; // Multi-stage rotor kinetic energy
+      thermal = 180000.0; // Casing and blade steel thermal capacity
+      dissipated = powerIn * 0.28; // Exhaust steam enthalpy + blade friction
+      break;
+    }
+
+    case "us-3353115-maiman-laser":
+    case "us-2929922-townes-laser": {
+      const pumpWatts = params.pumpPowerWatts ?? params.flashEnergyJoules ?? 500.0;
+      const cavityQ = 1e5;
+      em = (pumpWatts / (2 * Math.PI * 4.32e14)) * cavityQ * 1e-6; // Stored optical field
+      powerIn = pumpWatts; // Flashlamp / optical pump input
+      dissipated = pumpWatts * 0.985; // Non-radiative lattice phonon relaxation (1.5% wall-plug)
+      thermal = 450.0; // Ruby crystal / laser medium heat
+      break;
+    }
+
+    case "us-1102653-goddard-rocket": {
+      const thrustN = params.thrustNewtons ?? 450.0;
+      const altM = params.altitudeMeters ?? 120.0;
+      const massKg = params.dryMassKg ?? 15.0;
+      const velocityMps = params.flightVelocityMps ?? 45.0;
+
+      kinetic = 0.5 * massKg * velocityMps * velocityMps;
+      potential = massKg * 9.80665 * altM;
+      powerIn = thrustN * velocityMps; // Mechanical thrust power
+      dissipated = 0.5 * 1.2 * velocityMps ** 3 * 0.05 + 1500.0; // Aerodynamic drag + nozzle thermal waste
+      thermal = 12000.0; // Combustion chamber heat
+      break;
+    }
+
     default: {
       kinetic = 100.0;
       potential = 50.0;

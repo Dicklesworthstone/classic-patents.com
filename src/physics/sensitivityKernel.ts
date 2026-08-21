@@ -235,6 +235,111 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3633-goodyear-rubber": {
+      if (controlKey === "appliedTensileStretch" || controlKey === "stretch") {
+        const lambda = params.appliedTensileStretch ?? params.stretch ?? 1.8;
+        const gModulus = 1.2; // MPa
+        // d(sigma)/d(lambda) = G * (1 + 2 / lambda^3)
+        const dSigma_dLambda = gModulus * (1 + 2 / lambda ** 3);
+        return {
+          metricName: "Tangent Elastic Modulus",
+          derivativeSymbol: "∂σ / ∂λ",
+          derivativeValue: Number(dSigma_dLambda.toFixed(2)),
+          derivativeUnit: "MPa / extension",
+          interpretation:
+            "Conformational entropy restoring force rate under uniaxial polymer elongation.",
+        };
+      }
+      break;
+    }
+
+    case "gb-913-watt-separate-condenser":
+    case "gb-1306-watt-rotary-engine": {
+      if (controlKey === "boilerPressurePsi" || controlKey === "boilerPressure") {
+        const _psi = params.boilerPressurePsi ?? params.boilerPressure ?? 14.7;
+        const bore = params.cylinderBoreInches ?? 24.0;
+        const areaSqIn = Math.PI * (bore / 2) ** 2;
+        const strokeFt = params.pistonStrokeFeet ?? 6.0;
+        const spm = params.strokesPerMinute ?? 18.0;
+        // P_hp = (dF * S * spm) / 33000 -> dP/dpsi = (A * S * spm) / 33000
+        const dHp_dpsi = (areaSqIn * strokeFt * spm) / 33000.0;
+        return {
+          metricName: "Engine Power Output",
+          derivativeSymbol: "∂P / ∂P_boiler",
+          derivativeValue: Number(dHp_dpsi.toFixed(2)),
+          derivativeUnit: "HP / PSI",
+          interpretation: "Direct linear power scaling with boiler effective gauge pressure.",
+        };
+      }
+      break;
+    }
+
+    case "us-194047-otto-engine":
+    case "us-542846-diesel-engine": {
+      if (controlKey === "compressionRatio" || controlKey === "cr") {
+        const r = params.compressionRatio ?? params.cr ?? 8.0;
+        const gamma = 1.4;
+        // eta = 1 - 1/r^(gamma-1) -> deta/dr = (gamma - 1) / r^gamma
+        const dEta_dr = (gamma - 1.0) / r ** gamma;
+        return {
+          metricName: "Thermal Efficiency",
+          derivativeSymbol: "∂η / ∂r",
+          derivativeValue: Number((dEta_dr * 100).toFixed(2)),
+          derivativeUnit: "% / ratio",
+          interpretation: "Thermodynamic Carnot limit expansion from peak cycle compression.",
+        };
+      }
+      break;
+    }
+
+    case "us-233692-pelton-wheel": {
+      if (controlKey === "waterHeadM" || controlKey === "head") {
+        const flowLps = params.flowRateLps ?? 45.0;
+        // P = rho * g * Q * H * eta -> dP/dH = rho * g * Q * eta
+        const dP_dH = 1000.0 * 9.80665 * (flowLps / 1000.0) * 0.88;
+        return {
+          metricName: "Hydraulic Shaft Power",
+          derivativeSymbol: "∂P / ∂H",
+          derivativeValue: Number((dP_dH / 1000.0).toFixed(2)),
+          derivativeUnit: "kW / m",
+          interpretation: "Gravitational potential energy conversion gradient per meter head.",
+        };
+      }
+      break;
+    }
+
+    case "us-3353115-maiman-laser":
+    case "us-2929922-townes-laser": {
+      if (controlKey === "pumpPowerWatts" || controlKey === "pumpPower") {
+        const slopeEfficiency = 0.015; // 1.5% optical slope efficiency
+        return {
+          metricName: "Laser Coherent Emission",
+          derivativeSymbol: "∂P_out / ∂P_pump",
+          derivativeValue: Number((slopeEfficiency * 1000).toFixed(1)),
+          derivativeUnit: "mW / W",
+          interpretation: "Stimulated emission quantum yield beyond lasing threshold.",
+        };
+      }
+      break;
+    }
+
+    case "us-1102653-goddard-rocket": {
+      if (controlKey === "chamberPressurePsi" || controlKey === "chamberPressure") {
+        const throatAreaSqIn = 0.785;
+        const cf = 1.45; // Thrust coefficient
+        // F = Cf * At * Pc -> dF/dPc = Cf * At
+        const dF_dPc = cf * throatAreaSqIn * 4.44822; // N / PSI
+        return {
+          metricName: "Rocket Thrust",
+          derivativeSymbol: "∂F_thrust / ∂P_c",
+          derivativeValue: Number(dF_dPc.toFixed(2)),
+          derivativeUnit: "N / PSI",
+          interpretation: "De Laval supersonic nozzle momentum thrust growth rate.",
+        };
+      }
+      break;
+    }
+
     default:
       break;
   }

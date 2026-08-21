@@ -243,3 +243,107 @@ export function generateVectorStreamlines(
 
   return vertexArray;
 }
+
+/** Rotating Tesla B-field magnitude on a plane (Fig. 4 1-form, not RMS-then-opacity). */
+export function computeTeslaRotatingBField(
+  omegaT: number,
+  phaseCount: 2 | 3 = 2,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const coilCount = phaseCount === 2 ? 4 : 6;
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1) - 0.5;
+      const v = y / (gridSize - 1) - 0.5;
+      let bx = 0;
+      let by = 0;
+      for (let i = 0; i < coilCount; i++) {
+        const a = (i * 2 * Math.PI) / coilCount - Math.PI / 2;
+        const polarity = i >= phaseCount ? -1 : 1;
+        const phaseOff = (i % phaseCount) * (phaseCount === 2 ? Math.PI / 2 : (2 * Math.PI) / 3);
+        const current = polarity * Math.sin(omegaT + phaseOff);
+        const px = 0.32 * Math.cos(a);
+        const py = 0.32 * Math.sin(a);
+        const dx = u - px;
+        const dy = v - py;
+        const r2 = Math.max(0.008, dx * dx + dy * dy);
+        bx += current * (-dy / r2);
+        by += current * (dx / r2);
+      }
+      const mag = Math.hypot(bx, by);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, mag / 8));
+    }
+  }
+  return grid;
+}
+
+/** Noyce planar junction potential from a live reverse-bias blob. */
+export function computeNoyceDepletionField(reverseBiasV: number, gridSize = 32): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const w = Math.max(0.08, Math.min(0.45, 0.12 * Math.sqrt(0.7 + reverseBiasV)));
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1);
+      const v = y / (gridSize - 1);
+      const well = Math.exp(-((u - 0.5) ** 2) / (2 * w * w)) * Math.exp(-((v - 0.5) ** 2) / 0.08);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, well));
+    }
+  }
+  return grid;
+}
+
+/** Farnsworth dissector raster potential along the scanned line. */
+export function computeFarnsworthRasterField(beamFrac: number, gridSize = 32): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const cx = Math.max(0, Math.min(1, beamFrac));
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1);
+      const v = y / (gridSize - 1);
+      const line = Math.exp(-((v - 0.5) ** 2) / 0.01);
+      const spot = Math.exp(-((u - cx) ** 2) / 0.004);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, 0.25 * line + 0.75 * line * spot));
+    }
+  }
+  return grid;
+}
+
+/** Spencer cavity standing-wave envelope from live RF amplitude. */
+export function computeSpencerCavityField(
+  rfWatts: number,
+  oscillating: boolean,
+  timeSec: number,
+  gridSize = 32,
+): Float32Array {
+  const grid = new Float32Array(gridSize * gridSize);
+  const amp = oscillating ? Math.max(0, Math.min(1, rfWatts / 800)) : 0;
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      const u = x / (gridSize - 1);
+      const v = y / (gridSize - 1);
+      const mode = Math.sin(Math.PI * u) * Math.sin(2 * Math.PI * v + timeSec * 4);
+      grid[y * gridSize + x] = Math.max(0, Math.min(1, 0.5 + 0.5 * amp * mode));
+    }
+  }
+  return grid;
+}
+
+/** Rewrite a colormapped RGBA buffer in place for a live DataTexture drain. */
+export function writeColormappedField(
+  rgba: Uint8Array,
+  scalarField: Float32Array | Float64Array,
+  width: number,
+  height: number,
+): void {
+  const pixelCount = width * height;
+  for (let i = 0; i < pixelCount; i++) {
+    const val = Math.max(0, Math.min(1, scalarField[i] ?? 0));
+    const [r, g, b] = sampleThermalColormap(val);
+    const idx = i * 4;
+    rgba[idx] = Math.round(r * 255);
+    rgba[idx + 1] = Math.round(g * 255);
+    rgba[idx + 2] = Math.round(b * 255);
+    rgba[idx + 3] = 255;
+  }
+}
