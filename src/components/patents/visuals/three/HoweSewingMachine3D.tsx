@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
@@ -32,6 +32,7 @@ export function HoweSewingMachine3D() {
   // Mechanical Stitching State Controls
   const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const stitchingSpeedRpm = (params.crankRpm as number) ?? 240;
   const stitchPitchMm = (params.stitchPitchMm as number) ?? 3.5;
   const threadTensionGrams = (params.threadTensionGrams as number) ?? 45;
@@ -78,6 +79,7 @@ export function HoweSewingMachine3D() {
     clothStudioAdvancePerS: stitchState.clothStudioAdvancePerS,
     clothStudioWrap: stitchState.clothStudioWrap,
     stitchFrequencyHz: stitchState.stitchFrequencyHz,
+    isCutaway,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
