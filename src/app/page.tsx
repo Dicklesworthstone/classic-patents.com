@@ -49,14 +49,14 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
           <a
             href="#catalog"
-            className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-sans font-bold transition-colors shadow-sm flex items-center gap-2"
+            className="px-5 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-sans font-bold transition-colors shadow-sm flex items-center gap-2"
           >
             <span>Explore All {allPatents.length} Inventions</span>
             <ArrowRight className="w-4 h-4" />
           </a>
           <Link
             href="/timeline"
-            className="px-5 py-2.5 rounded-xl bg-parchment-100 hover:bg-parchment-200 dark:bg-ink-900 dark:hover:bg-ink-800 border border-parchment-300 dark:border-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-sans font-bold transition-colors shadow-2xs flex items-center gap-2"
+            className="px-5 py-3 rounded-xl bg-parchment-100 hover:bg-parchment-200 dark:bg-ink-900 dark:hover:bg-ink-800 border border-parchment-300 dark:border-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-sans font-bold transition-colors shadow-2xs flex items-center gap-2"
           >
             <Compass className="w-4 h-4 text-amber-600" />
             <span>

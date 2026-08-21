@@ -162,7 +162,7 @@ export function PatentTimeline() {
                 </div>
                 <div
                   className={`text-[11px] font-mono mt-2 truncate ${
-                    isSelected ? "text-amber-100" : "text-ink-500"
+                    isSelected ? "text-amber-100" : "text-ink-600 dark:text-ink-400"
                   }`}
                 >
                   {p.patentNumber}
@@ -181,10 +181,10 @@ export function PatentTimeline() {
               <span className="px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-mono text-xs font-bold border border-amber-300 dark:border-amber-700">
                 {formatPatentDate(selectedPatent.grantDate)}
               </span>
-              <span className="font-mono text-xs text-ink-500 font-semibold">
+              <span className="font-mono text-xs text-ink-500 dark:text-ink-400 font-semibold">
                 {selectedPatent.patentNumber}
               </span>
-              <span className="font-mono text-xs text-ink-500 uppercase">
+              <span className="font-mono text-xs text-ink-500 dark:text-ink-400 uppercase">
                 · {selectedPatent.categoryLabel}
               </span>
               <span className="font-mono text-[11px] text-amber-800 dark:text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
