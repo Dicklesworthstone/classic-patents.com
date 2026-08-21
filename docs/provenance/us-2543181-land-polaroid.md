@@ -13,7 +13,7 @@
 - **Primary Public Record URL**: https://patents.google.com/patent/US2543181A/en
 - **Local PDF Path**: `public/patents/pdfs/us-2543181-land-polaroid.pdf`
 - **Retrieval Date**: 2026-08-19
-- **Current Review State**: The PDF identity and its 32-page count have been checked. Pages 9–12 received a fresh cloud-raster visual literal pass on 2026-08-21, with corresponding ledger paragraphs and continuous-edition blocks reconciled below. Pages 9–24 otherwise remain source-grounded WIP ledger bodies and continuous-edition blocks, and pages 25–32 now have an explicit claim-by-claim reconciliation against the cloud-hosted primary facsimile, including the signature and references. Page 21 has since received a manual cleanup of obvious line-wrap and character substitutions, but pages 22–24 still require a fresh literal artifact pass. Pages 1–8 remain drawing-sheet literal transcription blockers. The staged ledger and edition are not publication-ready.
+- **Current Review State**: The PDF identity and its 32-page count have been checked. Pages 9–12 received a fresh cloud-raster visual literal pass on 2026-08-21, with corresponding ledger paragraphs and continuous-edition blocks reconciled below. Pages 9–24 remain source-grounded WIP ledger bodies and continuous-edition blocks; pages 21–24 have received a cloud-raster claim pass covering claims 1–20. Pages 25–32 now have a bounded cloud-raster claim reconciliation against the primary facsimile, including claims 78–116, the inventor signature, and the references cited. Pages 1–8 remain drawing-sheet literal transcription blockers. The staged ledger and edition are not publication-ready.
 - **Rights Basis**: Historical United States Patent Document (Public Domain)
 - **Source PDF SHA-256**: `4ee20338289f545608f472c50aa6ba8a7134f08fa377f1887e81f1e9bb5d4013`
 - **PDF Page Count**: 32 pages
@@ -264,11 +264,11 @@ claim 116 retains “one long edge thereof” and “being adhesively secured.�
 
 This is a cloud-primary text reconciliation, not an image-level acceptance.
 The edition remains `completeFacsimileReviewed: false` and unbound. Remaining
-blockers are: literal drawing-sheet review and crop correction for pages 1–8;
-the pages 29–32 claim continuation; and independent visual confirmation of any
-small glyph or ligature not resolved by the remote primary record. No witness or certificate
-is printed after the inventor signature on the final sheet. No uncertainty was
-silently filled, and no publication gate was changed.
+blockers are literal drawing-sheet review and crop correction for pages 1–8,
+the earlier specification pages, and independent visual confirmation of any
+small glyph or ligature not resolved by the remote primary record. No witness
+or certificate is printed after the inventor signature on the final sheet. No
+uncertainty was silently filled, and no publication gate was changed.
 
 ### Pages 25–28 cloud claim checkpoint
 
@@ -280,11 +280,10 @@ page-end continuation; page 27 begins that claim 47 continuation and carries
 claims 48–64 plus the start of claim 65; and page 28 begins claim 65's
 continuation and carries claims 66–77 plus the start of claim 78. The edition
 already contains explicit claim nodes for claims 21–78; claim 66's duplicated
-line-wrap residue was removed from both literal layers. The next physical page
-still requires its own reconciliation: the pre-existing page-29 WIP begins at
-claim 75 and therefore must be treated as an unresolved overlap until the next
-lane rewrites pages 29–32. No claim was marked complete, and the edition
-remains unbound with `completeFacsimileReviewed: false`.
+line-wrap residue was removed from both literal layers. The former page-29 WIP
+overlap was subsequently repaired in the final pages 29–32 cloud checkpoint
+below; no claim was marked complete, and the edition remains unbound with
+`completeFacsimileReviewed: false`.
 
 The punctuation parity pass then checked all 116 claim nodes and their ledger
 counterparts against the remote primary claim text. Every printed claim now has
@@ -301,6 +300,27 @@ claim-start line lacking terminal punctuation, and no remaining target residue
 (`photosen- sitive`, `ma- terial`, `open 48`, `thsreof`, `Seing`, or
 `sheet- like lamination`). These checks are source-edit evidence only; they do
 not change the false/unbound state.
+
+### Pages 29–32 final cloud claim checkpoint
+
+PDF pages 29–32 were visually reconciled from the cloud page rasters
+`US2543181-28.png` through `US2543181-31.png`. The page-29 overlap was repaired:
+page 28 ends in the printed continuation of claim 78, and page 29 begins with
+the corresponding `ing areas` continuation before carrying claims 79–86 and
+the printed beginning of claim 87. Page 30 begins with claim 87's continuation,
+carries claims 88–98, and ends in the printed continuation of claim 99. Page 31
+begins with that claim-99 continuation and carries claims 100–110. Page 32
+carries claims 111–116, then `EDWIN H. LAND.`, `REFERENCES CITED`, all 24
+United States patent references, and all 9 foreign patent references exactly
+as listed on the final sheet. Claims 78–116 remain explicit edition claim
+nodes; no generated or duplicate legal nodes were introduced.
+
+This final lane used cloud-hosted page images and manual visual comparison only:
+no local OCR, rendering, or crop work was performed. All Land v2 figure crops
+remain rejected and unreferenced. This is source-edit evidence, not publication
+acceptance: the edition remains unbound with
+`completeFacsimileReviewed: false`, canonical bindings remain absent, and no
+registry, test, build, or deployment gate was changed.
 
 ## 9. Claim decoder completion checkpoint
 

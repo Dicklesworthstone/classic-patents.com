@@ -2596,9 +2596,8 @@ const fermiSourceSpecificParallelReadings: Readonly<Record<number, readonly stri
 
 /** Every key is a final-edition paragraph block index, never a claim or heading. */
 export const fermiReconciledParagraphIndices = Object.freeze(
-  fermiReactorArchivalEdition.blocks.flatMap(
-    (block: CuratedSpecificationBlock, index: number) =>
-      block.kind === "paragraph" ? [index] : [],
+  fermiReactorArchivalEdition.blocks.flatMap((block: CuratedSpecificationBlock, index: number) =>
+    block.kind === "paragraph" ? [index] : [],
   ),
 );
 
