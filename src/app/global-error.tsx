@@ -11,16 +11,18 @@ export default function GlobalErrorBoundary({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#FAF7F0] text-[#1A1A1A] dark:bg-[#0D1117] dark:text-[#E6EDF3]">
+      <body className="bg-[#fbf9f5] text-[#2a1f18] antialiased">
         <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-4">
           <div className="p-3 rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-800">
             <AlertTriangle className="w-8 h-8" />
           </div>
           <h2 className="font-serif text-2xl font-bold">Critical Application Error</h2>
-          <p className="font-sans text-sm text-ink-600 dark:text-ink-300 max-w-md">
-            {error.message ||
-              "A critical error occurred while rendering the digital museum application."}
+          <p className="font-sans text-sm text-ink-600 max-w-md">
+            A critical error occurred while rendering the digital museum application.
           </p>
+          {error.digest ? (
+            <p className="font-mono text-[11px] text-ink-500">Reference: {error.digest}</p>
+          ) : null}
           <button
             type="button"
             onClick={() => reset()}

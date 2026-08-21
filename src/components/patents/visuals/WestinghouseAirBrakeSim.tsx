@@ -870,7 +870,7 @@ export function WestinghouseAirBrakeSim() {
                   }`}
                 >
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>Trip Stem $i^1$</span>
+                  <span>Trip Stem i¹</span>
                 </button>
                 <button
                   type="button"

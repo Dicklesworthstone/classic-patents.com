@@ -170,14 +170,16 @@ export function WrightFlyerSim() {
           {isAdverseYawCrash && (
             <div className="px-3 py-1 bg-red-950/90 border border-red-700 text-red-300 text-xs font-mono rounded-lg flex items-center gap-1.5 animate-pulse">
               <span className="text-left">
-                ⚠ ADVERSE YAW: The rising wing&apos;s extra induced drag yaws the nose opposite
-                the roll!
+                ⚠ ADVERSE YAW: The rising wing&apos;s extra induced drag yaws the nose opposite the
+                roll!
               </span>
             </div>
           )}
           {isCoordinatedTurn && (
             <div className="px-3 py-1 bg-emerald-950/90 border border-emerald-700 text-emerald-300 text-xs font-mono rounded-lg flex items-center gap-1.5">
-              <span className="text-left">✓ COORDINATED TURN: Rudder counter-torque neutralizes adverse yaw!</span>
+              <span className="text-left">
+                ✓ COORDINATED TURN: Rudder counter-torque neutralizes adverse yaw!
+              </span>
             </div>
           )}
           {!isAdverseYawCrash && !isCoordinatedTurn && (
@@ -192,7 +194,12 @@ export function WrightFlyerSim() {
         </div>
 
         {/* Dynamic Vector Biplane Illustration */}
-        <svg viewBox="0 0 500 240" role="img" aria-label="Interactive side-view diagram of the 1903 Wright Flyer responding to wing warp, rudder, and canard inputs" className="w-full max-w-lg h-auto select-none relative z-10">
+        <svg
+          viewBox="0 0 500 240"
+          role="img"
+          aria-label="Interactive side-view diagram of the 1903 Wright Flyer responding to wing warp, rudder, and canard inputs"
+          className="w-full max-w-lg h-auto select-none relative z-10"
+        >
           <defs>
             <linearGradient id="wingCanvasGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#fef3c7" />

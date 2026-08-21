@@ -99,7 +99,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="p-1 rounded-md text-ink-400 hover:text-ink-700 dark:hover:text-ink-200 transition-colors cursor-pointer"
+              className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-md text-ink-400 hover:text-ink-700 dark:hover:text-ink-200 transition-colors cursor-pointer"
               title="Clear search"
             >
               <X className="w-4 h-4" />
