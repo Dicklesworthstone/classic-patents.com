@@ -3,6 +3,7 @@ import * as THREE from "three";
 export interface HallAluminiumModelNodes {
   root: THREE.Group;
   potShell: THREE.Mesh;
+  cutawayPotShell?: THREE.Mesh;
   refractoryInsulation: THREE.Mesh;
   carbonCathode: THREE.Mesh;
   cryoliteBath: THREE.Mesh;
@@ -13,6 +14,7 @@ export interface HallAluminiumModelNodes {
   bubbleParticles: THREE.Points;
   feederHopper: THREE.Mesh;
   siphonSpout: THREE.Mesh;
+  setCutaway?: (cutaway: boolean) => void;
 }
 
 export function createHallAluminiumModel(): HallAluminiumModelNodes {
@@ -24,6 +26,16 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     color: 0x334155,
     roughness: 0.7,
     metalness: 0.6,
+  });
+
+  const cutawayPotShellMaterial = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.7,
+    metalness: 0.6,
+    transparent: true,
+    opacity: 0.25,
+    wireframe: false,
+    side: THREE.DoubleSide,
   });
 
   const refractoryMaterial = new THREE.MeshStandardMaterial({
@@ -175,6 +187,16 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
   siphonSpout.name = "siphon_tap_spout";
   root.add(siphonSpout);
 
+  const setCutaway = (cutaway: boolean) => {
+    if (cutaway) {
+      potShell.material = cutawayPotShellMaterial;
+      refractoryInsulation.visible = false;
+    } else {
+      potShell.material = potShellMaterial;
+      refractoryInsulation.visible = true;
+    }
+  };
+
   return {
     root,
     potShell,
@@ -188,6 +210,7 @@ export function createHallAluminiumModel(): HallAluminiumModelNodes {
     bubbleParticles,
     feederHopper,
     siphonSpout,
+    setCutaway,
   };
 }
 

@@ -14,6 +14,7 @@ export interface RillieuxEvaporatorModelNodes {
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (state: RillieuxEvaporatorState, timeSec: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -24,6 +25,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
   const vessels: THREE.Group[] = [];
   const tubeBundles: THREE.Group[] = [];
   const vaporTrunks: THREE.Mesh[] = [];
+  const shells: THREE.Mesh[] = [];
 
   // PBR Materials
   const castIronMat = new THREE.MeshStandardMaterial({
@@ -32,6 +34,16 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     roughness: 0.35,
   });
   materials.push(castIronMat);
+
+  const cutawayCastIronMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    metalness: 0.8,
+    roughness: 0.35,
+    transparent: true,
+    opacity: 0.25,
+    side: THREE.DoubleSide,
+  });
+  materials.push(cutawayCastIronMat);
 
   const copperMat = new THREE.MeshStandardMaterial({
     color: 0xd97706,
@@ -132,6 +144,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     geometries.push(shellGeo);
     const shellMesh = new THREE.Mesh(shellGeo, castIronMat);
     vesselGroup.add(shellMesh);
+    shells.push(shellMesh);
 
     // End Caps (Flanged Hemispheres)
     for (const capZ of [-1.8, 1.8]) {
@@ -141,6 +154,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
       const capMesh = new THREE.Mesh(capGeo, castIronMat);
       capMesh.position.z = capZ;
       vesselGroup.add(capMesh);
+      shells.push(capMesh);
     }
 
     // Upper Vapor Dome (Vertical cylinder on top)
@@ -380,6 +394,13 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    const mat = cutaway ? cutawayCastIronMat : castIronMat;
+    shells.forEach((s) => {
+      s.material = mat;
+    });
+  };
+
   return {
     group,
     vessels,
@@ -393,6 +414,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     materials,
     geometries,
     update,
+    setCutaway,
     dispose,
   };
 }
