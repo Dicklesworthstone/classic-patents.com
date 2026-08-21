@@ -217,7 +217,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
                     );
                   }
                 }}
-                className="px-2 py-1 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"
+                className="min-h-11 px-3 py-2 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"
               >
                 {m.name} · {(m.freqHz / 1000).toFixed(0)} kHz
               </button>
@@ -293,7 +293,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
                   soundEngine.playContinuousTone(r.hz, "sine", 0.08);
                   setTimeout(() => soundEngine.stopContinuousTone(), 900);
                 }}
-                className="px-2 py-1 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"
+                className="min-h-11 px-3 py-2 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"
               >
                 {r.name}
               </button>
@@ -301,7 +301,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
             <button
               type="button"
               onClick={() => void sampleVoice()}
-              className="px-2 py-1 rounded-lg bg-amber-700 text-white text-[10px] font-sans"
+              className="min-h-11 px-3 py-2 rounded-lg bg-amber-700 text-white text-[10px] font-sans"
             >
               Speak 4 s
             </button>
