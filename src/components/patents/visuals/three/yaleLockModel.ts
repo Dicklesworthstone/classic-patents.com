@@ -8,6 +8,7 @@ export interface YaleLockModelNodes {
   keyGroup: THREE.Group;
   camGroup: THREE.Group;
   boltMesh: THREE.Mesh;
+  shearLinePlane: THREE.Mesh;
   pinStacks: Array<{
     driverMesh: THREE.Mesh;
     keyPinMesh: THREE.Mesh;
@@ -65,7 +66,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
 
   const steelKeyMat = new THREE.MeshStandardMaterial({
     color: 0xe2e8f0,
-    metalness: 0.9,
+    metalness: 0.92,
     roughness: 0.15,
   });
   materials.push(steelKeyMat);
@@ -76,6 +77,14 @@ export function createYaleLockModel(): YaleLockModelNodes {
     roughness: 0.3,
   });
   materials.push(deadboltMat);
+
+  const shearLineMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.35,
+    side: THREE.DoubleSide,
+  });
+  materials.push(shearLineMat);
 
   // 1. Outer Cylinder Housing (Casing C)
   const housingGroup = new THREE.Group();
@@ -93,18 +102,26 @@ export function createYaleLockModel(): YaleLockModelNodes {
   flangeMesh.position.x = -1.9;
   housingGroup.add(flangeMesh);
 
+  // Housing Bible (Top chamber housing the pin chambers)
+  const bibleGeo = new THREE.BoxGeometry(3.6, 1.4, 0.8);
+  geometries.push(bibleGeo);
+  const bibleMesh = new THREE.Mesh(bibleGeo, brassHousingMat);
+  bibleMesh.position.set(0, 1.1, 0);
+  housingGroup.add(bibleMesh);
+
   group.add(housingGroup);
 
   // 2. Revolving Plug Cylinder (Core D)
   const plugGroup = new THREE.Group();
   plugGroup.position.set(0, -0.4, 0); // Mounted eccentrically in the lower half
+
   const plugGeo = new THREE.CylinderGeometry(0.85, 0.85, 4.2, 32);
   plugGeo.rotateZ(Math.PI / 2);
   geometries.push(plugGeo);
   const plugMesh = new THREE.Mesh(plugGeo, plugBrassMat);
   plugGroup.add(plugMesh);
 
-  // Keyway slot cutout visual (dark inset)
+  // Keyway slot cutout visual (paracentric warding slot)
   const slotGeo = new THREE.BoxGeometry(4.25, 0.9, 0.14);
   geometries.push(slotGeo);
   const slotMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
@@ -113,6 +130,14 @@ export function createYaleLockModel(): YaleLockModelNodes {
   plugGroup.add(slotMesh);
 
   group.add(plugGroup);
+
+  // Luminous Shear Line Alignment Plane
+  const shearGeo = new THREE.PlaneGeometry(3.8, 1.7);
+  shearGeo.rotateX(Math.PI / 2);
+  geometries.push(shearGeo);
+  const shearLinePlane = new THREE.Mesh(shearGeo, shearLineMat);
+  shearLinePlane.position.set(0, 0.45, 0);
+  group.add(shearLinePlane);
 
   // 3. 5 Pin Tumbler Stacks
   const pinStacks: Array<{
@@ -128,29 +153,35 @@ export function createYaleLockModel(): YaleLockModelNodes {
   for (let i = 0; i < numPins; i++) {
     const px = -1.3 + i * pinSpacing;
 
-    // Driver Pin Geometry
+    // Driver Pin Geometry (Spool pin profile)
     const driverGeo = new THREE.CylinderGeometry(pinRadius, pinRadius, 0.9, 16);
     geometries.push(driverGeo);
     const driverMesh = new THREE.Mesh(driverGeo, driverPinMat);
     driverMesh.position.set(px, 0.45, 0);
     group.add(driverMesh);
 
-    // Key Pin Geometry
-    const keyPinGeo = new THREE.CylinderGeometry(pinRadius, pinRadius, 0.8, 16);
+    // Key Pin Geometry (Conical contact tip)
+    const keyPinGeo = new THREE.CylinderGeometry(pinRadius, pinRadius * 0.7, 0.8, 16);
     geometries.push(keyPinGeo);
     const keyPinMesh = new THREE.Mesh(keyPinGeo, keyPinMat);
     keyPinMesh.position.set(px, -0.4, 0);
     group.add(keyPinMesh);
 
-    // Compression Spring Geometry
-    const springGeo = new THREE.CylinderGeometry(
-      pinRadius * 0.9,
-      pinRadius * 0.9,
-      0.6,
-      12,
-      6,
-      true,
-    );
+    // Helical Coiled Compression Spring
+    const springTurns = 6;
+    const springHeight = 0.6;
+    const points: THREE.Vector3[] = [];
+    const samples = 36;
+    for (let s = 0; s <= samples; s++) {
+      const t = s / samples;
+      const angle = t * springTurns * Math.PI * 2;
+      const sx = Math.cos(angle) * (pinRadius * 0.8);
+      const sy = -springHeight / 2 + t * springHeight;
+      const sz = Math.sin(angle) * (pinRadius * 0.8);
+      points.push(new THREE.Vector3(sx, sy, sz));
+    }
+    const springCurve = new THREE.CatmullRomCurve3(points);
+    const springGeo = new THREE.TubeGeometry(springCurve, 32, 0.02, 6, false);
     geometries.push(springGeo);
     const springMesh = new THREE.Mesh(springGeo, springMat);
     springMesh.position.set(px, 1.15, 0);
@@ -159,7 +190,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
     pinStacks.push({ driverMesh, keyPinMesh, springMesh });
   }
 
-  // 4. Flat Serrated Key Blade
+  // 4. Flat Serrated Key Blade with Precision Bitting Ramps
   const keyGroup = new THREE.Group();
   // Key Blade body
   const keyBladeGeo = new THREE.BoxGeometry(3.6, 0.7, 0.1);
@@ -168,7 +199,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
   keyBladeMesh.position.set(1.8, 0, 0);
   keyGroup.add(keyBladeMesh);
 
-  // Key Bow (Grip Ring)
+  // Key Bow (Turned brass grip ring with Yale logo stamp)
   const bowGeo = new THREE.TorusGeometry(0.7, 0.18, 16, 32);
   bowGeo.rotateY(Math.PI / 2);
   geometries.push(bowGeo);
@@ -196,7 +227,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
 
   group.add(camGroup);
 
-  // Deadbolt Block
+  // Deadbolt Block with Strike Plate Bevel
   const boltGeo = new THREE.BoxGeometry(0.8, 1.4, 0.6);
   geometries.push(boltGeo);
   const boltMesh = new THREE.Mesh(boltGeo, deadboltMat);
@@ -206,11 +237,11 @@ export function createYaleLockModel(): YaleLockModelNodes {
   // Animation / State update handler
   const update = (state: YaleLockState, keyInsertion: number) => {
     // 1. Key position: slides along X into keyway
-    // keyInsertion = 0 (x = -4.5), keyInsertion = 1 (x = -2.1)
     const targetKeyX = -4.5 + keyInsertion * 2.4;
     keyGroup.position.x = targetKeyX;
 
     // 2. Pin stacks update (Shear line boundary at y = 0.45)
+    let allAligned = true;
     state.pins.forEach((pin, i) => {
       const stack = pinStacks[i];
       if (!stack) return;
@@ -223,11 +254,19 @@ export function createYaleLockModel(): YaleLockModelNodes {
       stack.keyPinMesh.position.y = keyPinY;
       stack.driverMesh.position.y = driverPinY;
 
+      if (!pin.isAtShearLine) {
+        allAligned = false;
+      }
+
       // Spring compression
       const springHeight = Math.max(0.2, 1.6 - driverPinY);
       stack.springMesh.scale.y = springHeight / 0.6;
       stack.springMesh.position.y = driverPinY + springHeight / 2 + 0.1;
     });
+
+    // Modulate shear line plane glow when unlocked
+    shearLineMat.opacity = allAligned ? 0.75 : 0.25;
+    shearLineMat.color.setHex(allAligned ? 0x10b981 : 0x38bdf8);
 
     // 3. Plug & Cam Rotation
     if (state.isUnlocked && state.plugAngleRad !== undefined) {
@@ -258,6 +297,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
     keyGroup,
     camGroup,
     boltMesh,
+    shearLinePlane,
     pinStacks,
     materials,
     geometries,

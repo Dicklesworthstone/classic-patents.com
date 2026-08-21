@@ -9,6 +9,9 @@ export interface BellPhotophoneModelNodes {
   diaphragmMesh: THREE.Mesh;
   seleniumCellGroup: THREE.Group;
   telephoneGroup: THREE.Group;
+  waterFilter: THREE.Group;
+  batteryBank: THREE.Group;
+  circuitWires: THREE.Group;
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (state: BellPhotophoneState, timeSec: number) => void;
@@ -45,6 +48,16 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   });
   materials.push(glassLensMat);
 
+  const waterMat = new THREE.MeshPhysicalMaterial({
+    color: 0x67e8f9,
+    transmission: 0.92,
+    opacity: 0.7,
+    transparent: true,
+    roughness: 0.05,
+    ior: 1.33,
+  });
+  materials.push(waterMat);
+
   const beamMat = new THREE.MeshBasicMaterial({
     color: 0xfef08a,
     transparent: true,
@@ -63,11 +76,25 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   materials.push(seleniumGreenMat);
 
   const mahoganyWoodMat = new THREE.MeshStandardMaterial({
-    color: 0x581c87, // Dark velvet / mahogany base
+    color: 0x451a03, // Turned mahogany wood
     metalness: 0.1,
-    roughness: 0.6,
+    roughness: 0.5,
   });
   materials.push(mahoganyWoodMat);
+
+  const copperWireMat = new THREE.MeshStandardMaterial({
+    color: 0xb45309,
+    metalness: 0.9,
+    roughness: 0.25,
+  });
+  materials.push(copperWireMat);
+
+  const batteryJarMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.3,
+    metalness: 0.7,
+  });
+  materials.push(batteryJarMat);
 
   // 1. TRANSMITTER STATION GROUP (Mounted at X = -5.0)
   const transmitterGroup = new THREE.Group();
@@ -80,20 +107,42 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   baseMesh.position.y = -2.0;
   transmitterGroup.add(baseMesh);
 
-  // Vertical brass support pillar
+  // Vertical brass support pillar with thumb screws
   const pillarGeo = new THREE.CylinderGeometry(0.08, 0.08, 3.8, 16);
   geometries.push(pillarGeo);
   const pillarMesh = new THREE.Mesh(pillarGeo, polishedBrassMat);
   pillarMesh.position.y = 0;
   transmitterGroup.add(pillarMesh);
 
-  // Heliostat mirror
+  // Heliostat mirror with clockwork gimbal bracket
   const helioGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.06, 32);
   helioGeo.rotateX(Math.PI / 4);
   geometries.push(helioGeo);
   const helioMesh = new THREE.Mesh(helioGeo, silverMirrorMat);
-  helioMesh.position.set(-0.8, 1.2, 0);
+  helioMesh.position.set(-1.2, 1.2, 0);
   transmitterGroup.add(helioMesh);
+
+  // Heliostat azimuth/elevation brass adjusting quadrant
+  const quadGeo = new THREE.TorusGeometry(0.4, 0.03, 8, 16, Math.PI / 2);
+  geometries.push(quadGeo);
+  const quadMesh = new THREE.Mesh(quadGeo, polishedBrassMat);
+  quadMesh.position.set(-1.2, 1.0, 0);
+  transmitterGroup.add(quadMesh);
+
+  // Water-Cell Heat Absorbing Filter Tank (Absorbs infrared heating of diaphragm)
+  const waterFilter = new THREE.Group();
+  const tankGlassGeo = new THREE.BoxGeometry(0.2, 0.8, 0.8);
+  geometries.push(tankGlassGeo);
+  const tankMesh = new THREE.Mesh(tankGlassGeo, waterMat);
+  tankMesh.position.set(-0.7, 1.2, 0);
+  waterFilter.add(tankMesh);
+
+  const tankFrameGeo = new THREE.BoxGeometry(0.24, 0.84, 0.84);
+  geometries.push(tankFrameGeo);
+  const tankFrameMesh = new THREE.Mesh(tankFrameGeo, polishedBrassMat);
+  tankFrameMesh.position.set(-0.7, 1.2, 0);
+  waterFilter.add(tankFrameMesh);
+  transmitterGroup.add(waterFilter);
 
   // Primary Condenser Lens (b)
   const lensGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.08, 24);
@@ -111,7 +160,7 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   mouthMesh.position.set(0.6, 1.2, 0);
   transmitterGroup.add(mouthMesh);
 
-  // Flexible mirror diaphragm disc
+  // Flexible silvered glass mirror diaphragm disc
   const diaGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.02, 32);
   diaGeo.rotateZ(Math.PI / 2);
   geometries.push(diaGeo);
@@ -147,7 +196,6 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   receiverGroup.add(recvPillarMesh);
 
   // Large Parabolic Reflector Collector Dish (C)
-  // Approximated by an open hemisphere / revolved paraboloid
   const dishGeo = new THREE.SphereGeometry(1.6, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2.2);
   dishGeo.rotateZ(Math.PI / 2);
   geometries.push(dishGeo);
@@ -170,7 +218,7 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   const seleniumCellGroup = new THREE.Group();
   seleniumCellGroup.position.set(-0.7, 1.2, 0);
 
-  // Stack of brass disks and selenium seams
+  // Stack of brass disks and selenium seams (interleaved radial discs)
   const numDisks = 14;
   for (let d = 0; d < numDisks; d++) {
     const dx = -0.3 + (d * 0.6) / numDisks;
@@ -191,6 +239,24 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
   }
   receiverGroup.add(seleniumCellGroup);
 
+  // Bichromate Wet-Cell Battery Bank (Power source for selenium circuit)
+  const batteryBank = new THREE.Group();
+  batteryBank.position.set(0.6, -1.5, 0.6);
+  for (let b = 0; b < 2; b++) {
+    const jarGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.6, 16);
+    geometries.push(jarGeo);
+    const jarMesh = new THREE.Mesh(jarGeo, batteryJarMat);
+    jarMesh.position.set(b * 0.5, 0, 0);
+    batteryBank.add(jarMesh);
+
+    const termGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.2, 8);
+    geometries.push(termGeo);
+    const termMesh = new THREE.Mesh(termGeo, polishedBrassMat);
+    termMesh.position.set(b * 0.5, 0.35, 0);
+    batteryBank.add(termMesh);
+  }
+  receiverGroup.add(batteryBank);
+
   // Telephone Receiver Earpiece
   const telephoneGroup = new THREE.Group();
   telephoneGroup.position.set(0.8, 0.2, 0);
@@ -207,6 +273,27 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
 
   receiverGroup.add(telephoneGroup);
 
+  // Copper Circuit Wires linking Selenium cell, Battery, and Telephone
+  const circuitWires = new THREE.Group();
+  const wireCurve1 = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-0.7, 1.0, 0),
+    new THREE.Vector3(-0.2, 0.2, 0.4),
+    new THREE.Vector3(0.6, -1.2, 0.6),
+  ]);
+  const wireTube1 = new THREE.TubeGeometry(wireCurve1, 16, 0.02, 6, false);
+  geometries.push(wireTube1);
+  circuitWires.add(new THREE.Mesh(wireTube1, copperWireMat));
+
+  const wireCurve2 = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(1.1, -1.2, 0.6),
+    new THREE.Vector3(1.0, -0.4, 0.3),
+    new THREE.Vector3(0.8, 0.0, 0),
+  ]);
+  const wireTube2 = new THREE.TubeGeometry(wireCurve2, 16, 0.02, 6, false);
+  geometries.push(wireTube2);
+  circuitWires.add(new THREE.Mesh(wireTube2, copperWireMat));
+
+  receiverGroup.add(circuitWires);
   group.add(receiverGroup);
 
   // 3. GOLDEN MODULATED LIGHT BEAM (Connecting X = -3.8 to X = 4.3)
@@ -252,6 +339,9 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
     diaphragmMesh,
     seleniumCellGroup,
     telephoneGroup,
+    waterFilter,
+    batteryBank,
+    circuitWires,
     materials,
     geometries,
     update,
