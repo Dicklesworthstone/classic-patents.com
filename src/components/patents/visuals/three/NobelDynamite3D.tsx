@@ -34,9 +34,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
   // Chemical Explosives Parameters
   const { params, updateParam } = usePatentPhysics("us-78317-nobel-dynamite");
   const ngPercentage =
-    (params.ngConcentrationPct as number) ??
-    (params.ngConcentration as number) ??
-    75;
+    (params.ngConcentrationPct as number) ?? (params.ngConcentration as number) ?? 75;
   const capEnergyJoules = (params.capEnergyJoules as number) ?? 1.2;
 
   const nobel = stepNobelDynamite({
@@ -266,20 +264,30 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Detonation Velocity:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{detonationVelocityMps} m/s</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Detonation Velocity:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {detonationVelocityMps} m/s
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Blast Overpressure:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{nobel.blastOverpressureMpa} MPa</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {nobel.blastOverpressureMpa} MPa
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Specific Energy:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{nobel.energyMjPerKg} MJ/kg</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {nobel.energyMjPerKg} MJ/kg
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">State:</span>
-              <span className={`font-bold ${isFuseLit ? "text-rose-700 dark:text-rose-400" : "text-purple-800 dark:text-purple-400"}`}>
+              <span
+                className={`font-bold ${isFuseLit ? "text-rose-700 dark:text-rose-400" : "text-purple-800 dark:text-purple-400"}`}
+              >
                 {isFuseLit ? "DETONATION WAVE" : "STABLE ABSORPTION"}
               </span>
             </div>
@@ -311,8 +319,12 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Nitroglycerin Absorption</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{ngPercentage}%</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Nitroglycerin Absorption
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {ngPercentage}%
+              </span>
             </div>
             <input
               type="range"
@@ -320,15 +332,21 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
               max="85"
               step="5"
               value={ngPercentage}
-              onChange={(e) => updateParam("ngConcentrationPct", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("ngConcentrationPct", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Blasting Cap Shock Energy</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{capEnergyJoules.toFixed(1)} J</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Blasting Cap Shock Energy
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {capEnergyJoules.toFixed(1)} J
+              </span>
             </div>
             <input
               type="range"

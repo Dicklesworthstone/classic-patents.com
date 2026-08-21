@@ -249,22 +249,32 @@ export function OtisElevator3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Cable Tension:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{cableTensionPct}%</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Cable Tension:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {cableTensionPct}%
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Pawl Engagement:</span>
-              <span className={`font-bold ${isRopeSevered ? "text-rose-700 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}>
+              <span
+                className={`font-bold ${isRopeSevered ? "text-rose-700 dark:text-rose-400" : "text-emerald-700 dark:text-emerald-400"}`}
+              >
                 {isRopeSevered ? `ENGAGED (${pawlEngagementMs} ms)` : "STOWED (TAUT)"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Stopping Distance:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{stoppingDistanceInches} in</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {stoppingDistanceInches} in
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Hoist Tension:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{otis.hoistTensionKn.toFixed(1)} kN</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {otis.hoistTensionKn.toFixed(1)} kN
+              </span>
             </div>
           </div>
         )}
@@ -304,8 +314,12 @@ export function OtisElevator3D() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Elevator Cab Payload</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{cabPayloadKg} kg</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Elevator Cab Payload
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {cabPayloadKg} kg
+              </span>
             </div>
             <input
               type="range"
@@ -320,8 +334,12 @@ export function OtisElevator3D() {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Hoisting Cable Tension</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{cableTensionPct}%</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Hoisting Cable Tension
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {cableTensionPct}%
+              </span>
             </div>
             <input
               type="range"

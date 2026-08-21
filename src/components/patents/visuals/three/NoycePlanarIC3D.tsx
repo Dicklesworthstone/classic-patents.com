@@ -40,8 +40,7 @@ export const NoycePlanarIC3D = memo(() => {
 
   // Semiconductor Microfabrication Parameters
   const { params, updateParam } = usePatentPhysics("us-2981877-noyce-ic");
-  const reverseBias =
-    (params.reverseBias as number) ?? (params.supplyVoltageV as number) ?? 5.0;
+  const reverseBias = (params.reverseBias as number) ?? (params.supplyVoltageV as number) ?? 5.0;
   const oxideThickness = (params.oxideThickness as number) ?? 0.5;
   const clockFrequencyMhz = (params.clockFrequencyMhz as number) ?? 10;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -228,20 +227,30 @@ export const NoycePlanarIC3D = memo(() => {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Clock Frequency:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{clockFrequencyMhz} MHz</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Clock Frequency:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {clockFrequencyMhz} MHz
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Depletion Barrier:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{noyce.depletionWidthUm.toFixed(2)} µm</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {noyce.depletionWidthUm.toFixed(2)} µm
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Junction Capacitance:</span>
-              <span className="font-bold text-emerald-700 dark:text-emerald-400">{noyce.junctionCapPfPerMm2.toFixed(1)} pF/mm²</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {noyce.junctionCapPfPerMm2.toFixed(1)} pF/mm²
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Propagation Delay:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{noyce.propDelayPs.toFixed(0)} ps</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {noyce.propDelayPs.toFixed(0)} ps
+              </span>
             </div>
           </div>
         )}
@@ -273,8 +282,12 @@ export const NoycePlanarIC3D = memo(() => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Reverse Bias Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{reverseBias.toFixed(1)} V</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                Reverse Bias Voltage
+              </span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {reverseBias.toFixed(1)} V
+              </span>
             </div>
             <input
               type="range"
@@ -289,8 +302,12 @@ export const NoycePlanarIC3D = memo(() => {
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">SiO₂ Oxide Thickness</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{oxideThickness.toFixed(2)} µm</span>
+              <span className="text-ink-700 dark:text-ink-300 font-medium">
+                SiO₂ Oxide Thickness
+              </span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
+                {oxideThickness.toFixed(2)} µm
+              </span>
             </div>
             <input
               type="range"
@@ -306,7 +323,9 @@ export const NoycePlanarIC3D = memo(() => {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Clock Frequency</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">{clockFrequencyMhz} MHz</span>
+              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
+                {clockFrequencyMhz} MHz
+              </span>
             </div>
             <input
               type="range"
@@ -314,7 +333,9 @@ export const NoycePlanarIC3D = memo(() => {
               max="50"
               step="1"
               value={clockFrequencyMhz}
-              onChange={(e) => updateParam("clockFrequencyMhz", Number.parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                updateParam("clockFrequencyMhz", Number.parseInt(e.target.value, 10))
+              }
               className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
             />
           </div>

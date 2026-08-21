@@ -176,12 +176,18 @@ export function PageRank3D() {
         {showUiOverlay && (
           <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 p-3 bg-parchment-50/95 dark:bg-ink-950/95 backdrop-blur-md rounded-xl border border-parchment-300 dark:border-ink-800 pointer-events-none text-xs font-mono flex flex-col gap-1.5 shadow-md max-w-xs text-ink-900 dark:text-parchment-100">
             <div className="flex items-center justify-between gap-2 border-b border-parchment-200 dark:border-ink-800/80 pb-1">
-              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">Damping Factor:</span>
-              <span className="font-bold text-amber-700 dark:text-amber-400">{dampingFactor.toFixed(2)}</span>
+              <span className="text-ink-600 dark:text-ink-400 font-sans font-semibold">
+                Damping Factor:
+              </span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {dampingFactor.toFixed(2)}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Max Centrality:</span>
-              <span className="font-bold text-cyan-800 dark:text-cyan-400">{hud.topRank.toFixed(3)}</span>
+              <span className="font-bold text-cyan-800 dark:text-cyan-400">
+                {hud.topRank.toFixed(3)}
+              </span>
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Iteration:</span>
@@ -189,7 +195,9 @@ export function PageRank3D() {
             </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-ink-600 dark:text-ink-400">Random Jump:</span>
-              <span className="font-bold text-purple-800 dark:text-purple-400">{((1 - dampingFactor) * 100).toFixed(1)}%</span>
+              <span className="font-bold text-purple-800 dark:text-purple-400">
+                {((1 - dampingFactor) * 100).toFixed(1)}%
+              </span>
             </div>
           </div>
         )}
@@ -212,7 +220,9 @@ export function PageRank3D() {
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
               <span className="text-ink-700 dark:text-ink-300 font-medium">Damping Factor (d)</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{dampingFactor.toFixed(2)}</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
+                {dampingFactor.toFixed(2)}
+              </span>
             </div>
             <input
               type="range"
