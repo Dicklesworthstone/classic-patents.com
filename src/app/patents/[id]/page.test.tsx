@@ -18,6 +18,7 @@ describe("PatentDetailPage component", () => {
     const params = await generateStaticParams();
     expect(params.length).toBeGreaterThanOrEqual(54);
     expect(params.some((p) => p.id === "us-821393-wright-flyer")).toBe(true);
+    expect(params.some((p) => p.id === "us-727650-fessenden-wireless")).toBe(true);
   });
 
   test("generates authentic metadata for Wright Flyer", async () => {
@@ -47,5 +48,14 @@ describe("PatentDetailPage component", () => {
     const html = renderToStaticMarkup(PageJsx);
     expect(html).toContain("This patent record has moved to its verified catalog identity.");
     expect(html).toContain("/patents/us-593138-tesla-coil");
+  });
+
+  test("routes the former Fessenden number alias to the source-correct record", async () => {
+    const PageJsx = await PatentDetailPage({
+      params: Promise.resolve({ id: "us-727650-fessenden-wireless" }),
+    });
+    const html = renderToStaticMarkup(PageJsx);
+    expect(html).toContain("This patent record has moved to its verified catalog identity.");
+    expect(html).toContain("/patents/us-706737-fessenden-wireless");
   });
 });

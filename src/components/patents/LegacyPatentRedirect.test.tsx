@@ -9,4 +9,12 @@ describe("LegacyPatentRedirect component", () => {
     expect(html).toContain("This patent record has moved to its verified catalog identity.");
     expect(html).toContain("/patents/us-821393-wright-flyer");
   });
+
+  test("renders the source-correct Fessenden target used by the legacy alias", () => {
+    const html = renderToStaticMarkup(
+      <LegacyPatentRedirect targetId="us-706737-fessenden-wireless" />,
+    );
+
+    expect(html).toContain("/patents/us-706737-fessenden-wireless");
+  });
 });
