@@ -138,7 +138,8 @@ describe("hollerithTabulatingArchivalEdition", () => {
     const figureReferences = hollerithTabulatingArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
-            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+            (inline): inline is Extract<typeof inline, { kind: "reference" }> =>
+              inline.kind === "reference" && inline.referenceType === "figure",
           )
         : [],
     );

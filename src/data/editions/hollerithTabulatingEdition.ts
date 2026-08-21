@@ -840,15 +840,6 @@ export const hollerithTabulatingSourcePages10To14Draft: readonly CuratedSpecific
     inlines: [
       {
         kind: "text",
-        text: "This system is based upon the use of two independent series of circuits—primary and secondary—one governed by the index-points for controlling the relays and the other governed by the relay-contacts to control the operation of the distributing or counting devices, each of said series of circuits being provided with a separate generator or generators of electricity, so that a battery of low electro-motive force may be employed for the primary circuits, which merely operate the relays, while a stronger battery may be employed in the secondary circuit, where the most work is to be done.",
-      },
-    ],
-  },
-  {
-    kind: "paragraph",
-    inlines: [
-      {
-        kind: "text",
         text: "Two modifications of the single-battery system as arranged for counting items represented by two index-points are shown in ",
       },
       figureReference(
@@ -1048,27 +1039,24 @@ export const hollerithTabulatingPages10To14ParallelReadings: Readonly<
     "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method.",
   ],
   40: [
-    "Figures 10 and 11 divide two-index-point combinations into a group selection and a relay-selected member, avoiding the delicate current and resistance adjustment of the earlier single-battery method.",
-  ],
-  41: [
     "Figure 12 uses one direct and one relay branch for each pair of four index-points, so every two-item combination closes its operating magnet through two contacts.",
   ],
-  42: [
+  41: [
     "Proper resistance proportions prevent working circuits from short-circuiting relays when closed, and the circuitry easily adapts to closed-circuit or mixed relay systems.",
   ],
-  43: [
+  42: [
     "The sorting pass is successive: white and colored first, native and foreign next, then male and female, while counters may register each intermediate or final division.",
   ],
-  44: [
+  43: [
     "Figures 14 through 17 add representative record-media and contact arrangements, including impediment wafers and both open-circuit and closed-circuit forms.",
   ],
-  45: [
+  44: [
     "Figure 14 uses perforations plus impediments to represent selected items, while Figure 15 puts the circuit-closing contacts on spring-mounted pins separate from the card-sensing pins.",
   ],
-  46: [
+  45: [
     "Figure 16 insulates the sensing pins and uses conducting collars for either open or closed circuits, with the Figure 14 interceptors breaking selected paths.",
   ],
-  47: [
+  46: [
     "Figure 17 moves the closed-circuit contacts below the card; perforations press them away from a common plate, and relay contacts reverse their normal open-circuit action.",
   ],
 };
@@ -1307,7 +1295,7 @@ export const hollerithTabulatingSignatureDraft: readonly CuratedSpecificationBlo
 export const hollerithTabulatingSignatureParallelReading: Readonly<
   Record<number, readonly string[]>
 > = {
-  70: [
+  69: [
     "Herman Hollerith signs the completed claim set; John R. Floyd and Edward N. Hill appear as the printed witnesses.",
   ],
 };

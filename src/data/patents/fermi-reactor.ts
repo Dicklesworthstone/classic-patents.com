@@ -629,6 +629,7 @@ export const fermiReactorPatent: Patent = {
     url: "/patents/source-text/us-2708656-fermi-reactor.txt",
     pageCount: 58,
     kind: "source-pdf-text-layer",
+    sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   },
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656
