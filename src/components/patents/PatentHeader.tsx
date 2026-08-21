@@ -16,11 +16,24 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
   const [copied, setCopied] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
 
-  const handleShare = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    // Native sheet on mobile / supported desktops; clipboard elsewhere.
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: document.title, url });
+        return;
+      } catch {
+        // User dismissed the sheet or the share was aborted; fall through.
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard permission denied: leave state unchanged rather than lying.
     }
   };
 
