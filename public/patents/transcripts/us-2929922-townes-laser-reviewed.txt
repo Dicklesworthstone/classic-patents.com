@@ -716,132 +716,31 @@ means for directing said replica at said detector,
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---
 
-7
+What is claimed is:
 
-frared, visible, or ultraviolet regions of the electromag-
+1. 1. An optical maser comprising an active medium characterized by a plurality of energy states including a first state and a second higher state between which transitions can occur accompanied by the emission of radiation of a characteristic optical frequency, pumping means for establishing a population inversion between said first and second states, and an optical cavity resonator containing said medium, said resonator being bounded by a pair of spaced reflecting surfaces arranged to reflect optical radiation back and forth through said medium, the dimensions of said reflecting surfaces and the spacing therebetween being large compared to the wavelength of said characteristic optical frequency, and the side boundaries of said resonator being substantially non-reflecting for radiation of said characteristic optical frequency.
 
-netic wave spectrum. comprising a monochromatic maser
+2. 2. An optical maser according to claim 1, in which said spaced reflecting surfaces are substantially planar and parallel to each other.
 
-generator, a coherent modulated maser amplifier, a modu-.
-including -
+3. 3. An optical maser according to claim 2, in which at least one of said reflecting surfaces is partially transmitting to allow extraction of a portion of the coherent optical radiation generated within said resonator.
 
-lating. source, and a. detector; said amplifier
-means defining an amplifying chamber, and means for
-establishing a. magnetic field parallel to the longitudinal
+4. 4. An optical maser according to claim 1, in which said active medium comprises an atomic vapor.
 
-axis of said. chamber, said modulating source being coupled:
+5. 5. An optical maser according to claim 4, in which said atomic vapor comprises potassium vapor and said pumping means comprises a source of optical radiation of a frequency corresponding to transitions from the ground state of potassium to an excited state above said second state.
 
-to said magnetic means, the radiative output of said gen-
-erator being directed at said amplifier, and. the radiative
-output of said amplifier, constituting an amplified and
-modulated counterpart of the energy radiated thereinto,
-being directed at said detector.
+6. 6. An optical maser according to claim 1, in which said active medium comprises a solid-state host lattice containing paramagnetic activator ions.
 
-4. A maser generator comprising a
-reflective parallel members and side members,
-temperature medium disposed within said chamber,
-means. arranged about said chamber for pumping. said
-niedium, said side members being transparent to the pump-
-ing.energy and transparent to or absorptive of other energy
-radiated. thereat. ;
+7. 7. An optical maser amplifier comprising an elongated active medium having two energy states with an inverted population distribution, optical pumping means for maintaining said population inversion, optical input means for introducing an optical signal wave into one end of said active medium, and optical output means for extracting an amplified optical signal wave from the opposite end of said medium.
 
-5. A. maser generator for operation in: the. infrared,
-visible or ultraviolet: regions of the electromagnetic wave
-spectrum comprising a chamber having a-length. which: is
-substantially greater than its transverse dimension and
-having partially reflective parallel end members and non-
-reflective side members, a negative. temperature medium
-disposed within said chamber and characterized by at least
-three distinct energy levels, two of which have a separa-
-tion in the frequency range of interest, means for pumping
-said medium so that a population inversion. is produced
-therein between said two separated energy levels, and
-means for abstracting from said chamber and directing at
-an amplifier input the energy of a particular mode of
-electromagnetic vibration.
+8. 8. An optical communication system comprising an optical maser generator for producing a coherent optical carrier wave, modulating means for impressing information signals upon said coherent optical carrier wave, optical transmission means for directing said modulated carrier wave toward a distant receiver, and optical detector means at said receiver for recovering said information signals.
 
-chamber having end
-a negative
+9. 9. An optical maser according to claim 1, in which said spaced reflecting surfaces have a lateral dimension d and a spacing L such that d^2 / (L * lambda) is greater than unity, where lambda is the wavelength of said optical radiation.
 
-6. A maser generator as in claim 5 wherein said mode”
+10. 10. An optical maser according to claim 1, in which the reflectivity of each of said reflecting surfaces is at least 90 percent at said characteristic optical frequency.
 
-selecting means includes an absorptive member having an
-opening therethrough, said absorptive member being posi-
-tioned adjacent to one end of said: chamber, and means
+11. 11. An optical maser according to claim 1, in which the side boundaries of said resonator comprise an absorbing medium for suppressing off-axis optical modes.
 
-for directing a selected portion of the energy radiated by
+12. 12. The method of generating coherent optical radiation which comprises establishing a population inversion between two atomic energy states of an active medium positioned within an open optical resonator bounded by parallel reflecting end surfaces and non-reflecting sides, and sustaining stimulated emission oscillations along the axis between said end surfaces.
 
-said generator through said opening.
+13. 13. The method according to claim 12, further comprising extracting a portion of the coherent optical radiation through one of said reflecting end surfaces as a diffraction-limited optical beam.
 
-4A maser generator as in claim 5 wherejn said nega-
-tive temperature medium. comprises potassium, and said
-pumping means comprises an assembly of potassium
-lamps.
-
-and.
-
-2,929,922-
-
-8. A maser amplifier comprising a chamber having end
-reflective parallel members and said members, a negative
-temperature medium disposed within said chamber, means
-
-arranged about said chamber for pumping said medium,
-
-10
-
-15
-
-20-
-
-30
-
-35
-
-40
-
-. said side members being transparent
-
-to the pumping en-
-ergy and non-reflective of other energy. radiated thereat,
-and coupling means for abstracting from one end of said
-chamber an amplified counterpart of the energy directed
-into the other end thereof.
-
-9. A maser amplifier for operation in the infrared,
-visible or ultraviolet regions of the electromagnetic wave
-spectrum comprising a chamber having a length which
-is substantially greater than its transverse dimension and
-having partially reflective parallel end members and non-
-reflective side members, a negative temperature medium
-disposed within said. chamber and characterized by at least
-three distinct energy levels, two of which have a sepa-.
-ration inthe frequency range of interest, means for pump-
-ing said medium so that a population inversion is pro-'
-duced therein between said: two separated energy levels,
-and means for abstracting from said chamber and direct-
-ing at a detector the energy of a particular mode of: elec-
-tromagnetic vibration. : . ; .
-
-10. A maser amplifier as in claim 9 wherein said nega~
-tive temperature medium comprises potassium, and said
-pumping. means comprises an assembly of potassium
-lamps.
-
-11. A modulated maser amplifier comprising a cham-
-ber having end reflective parallel members, a negative tem-
-perature medium disposed within said chamber, means
-arranged about said chamber for pumping said medium,
-means coupled to and under the control of a modulating
-source for establishing a magnetic field parallel to the
-longitudinal axis of said chamber, and means for abstract*
-ing from one end of said chamber an amplified counter-
-part of the energy directed into the other. end: thereof,
-which counterpart is modulatable in accordance with the
-output of said source,
-
-References Cited in the file of this patent
-
-UNITED STATES PATENTS
-
-2,836,722  Dicke et al, ---.---.- --. May 27, 1958
