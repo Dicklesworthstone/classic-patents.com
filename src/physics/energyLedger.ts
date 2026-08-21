@@ -25,7 +25,9 @@ export interface PortHamiltonianReport {
   netPowerRateWatts: number;
   supplyDefectWatts: number;
   isConservative: boolean;
+  /** Host multiply-xor unless a WASM module actually hashed. Never fake `blake3:`. */
   stateDigest: string;
+  digestKind: "host" | "blake3";
 }
 
 /**
@@ -123,6 +125,30 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-3858232-boyle-smith-ccd": {
+      const vg = params.gateVoltageV ?? 10.0;
+      const fMhz = params.clockFrequencyMhz ?? 5.0;
+      const cPixelFarads = 1.5e-13; // 150 fF per MOS gate
+      const pixelCount = 1024;
+      em = 0.5 * cPixelFarads * pixelCount * vg * vg; // MOS gate potential well energy
+      powerIn = pixelCount * cPixelFarads * (vg * vg) * (fMhz * 1e6); // Dynamic switching power
+      dissipated = powerIn; // Thermal dissipation in silicon substrate
+      thermal = 0.05 * 700.0 * 25.0; // Silicon chip heat capacity
+      break;
+    }
+
+    case "us-2981877-noyce-ic": {
+      const vSupply = params.reverseBias ?? params.supplyVoltageV ?? 5.0;
+      const fClockMhz = params.clockFrequencyMhz ?? 10.0;
+      const gateCount = 64;
+      const cGateFarads = 2.0e-12; // 2 pF total interconnect + junction capacitance
+      em = 0.5 * gateCount * cGateFarads * vSupply * vSupply; // Stored PN junction & oxide energy
+      powerIn = gateCount * cGateFarads * (vSupply * vSupply) * (fClockMhz * 1e6); // CV^2 f dynamic power
+      dissipated = powerIn; // Silicon substrate Joule heat
+      thermal = 0.02 * 700.0 * 25.0; // Monolithic die heat capacity
+      break;
+    }
+
     default: {
       kinetic = 100.0;
       potential = 50.0;
@@ -138,10 +164,9 @@ export function computePortHamiltonianEnergy(
   const netPower = powerIn - dissipated;
   const supplyDefect = Math.abs(netPower * 0.015); // Bounded discrepancy
 
-  // Deterministic Blake3-style digest computation
   const seed = Math.round(totalH * 100 + simTimeSec * 1000);
   const hashVal = ((seed * 2654435761) ^ (seed >> 16)) >>> 0;
-  const stateDigest = `blake3:${hashVal.toString(16).padStart(8, "0")}`;
+  const stateDigest = `host:${hashVal.toString(16).padStart(8, "0")}`;
 
   return {
     energy: {
@@ -157,5 +182,6 @@ export function computePortHamiltonianEnergy(
     supplyDefectWatts: Number(supplyDefect.toFixed(3)),
     isConservative: supplyDefect < 5.0,
     stateDigest,
+    digestKind: "host",
   };
 }

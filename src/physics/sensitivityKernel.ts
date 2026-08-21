@@ -218,6 +218,23 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-3858232-boyle-smith-ccd": {
+      if (controlKey === "gateVoltageV" || controlKey === "gateVoltage") {
+        const _vg = params.gateVoltageV ?? params.gateVoltage ?? 10.0;
+        // Full well charge sensitivity: d(N_well)/d(Vg) = C_ox / q_e ~ 1.5e-13 / 1.602e-19 ~ 936,000 e/V
+        const dN_dvg = 93630.0; // e- / V
+        return {
+          metricName: "Full Well Sensitivity",
+          derivativeSymbol: "∂N_well / ∂V_g",
+          derivativeValue: Number(dN_dvg.toFixed(0)),
+          derivativeUnit: "e⁻ / V",
+          interpretation:
+            "Linear growth of MOS potential well electron storage capacity per gate volt.",
+        };
+      }
+      break;
+    }
+
     default:
       break;
   }

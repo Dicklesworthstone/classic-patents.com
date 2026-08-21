@@ -77,10 +77,13 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
         </span>
       </div>
 
-      {/* Blake3 State Digest */}
       <div
         className="text-[10px] text-ink-400 dark:text-ink-500 truncate max-w-[120px] sm:max-w-none"
-        title="FrankenSim Blake3 Deterministic Replay Digest"
+        title={
+          ledger.digestKind === "blake3"
+            ? "Blake3 replay digest from a stepped WASM module"
+            : "Host digest. Not Blake3: no WASM hasher stepped."
+        }
       >
         {ledger.stateDigest}
       </div>

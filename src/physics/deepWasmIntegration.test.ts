@@ -113,7 +113,8 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
       expect(ledger.energy.totalHamiltonianJoules).toBeGreaterThan(10000);
       expect(ledger.inputPowerWatts).toBeGreaterThan(5000);
       expect(ledger.isConservative).toBe(true);
-      expect(ledger.stateDigest).toMatch(/^blake3:[0-9a-f]{8}$/);
+      expect(ledger.stateDigest).toMatch(/^host:[0-9a-f]{8}$/);
+      expect(ledger.digestKind).toBe("host");
     });
 
     test("computes electromagnetic energy for Tesla induction motor", () => {

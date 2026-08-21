@@ -1,6 +1,5 @@
 import { Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { voltsToKv } from "@/physics/catalogKernels";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
