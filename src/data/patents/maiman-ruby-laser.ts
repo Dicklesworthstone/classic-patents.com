@@ -14,8 +14,8 @@ const claims: PatentClaim[] = [
     keyInnovations: [
       "Solid-state chromium-doped ruby crystal three-level quantum active medium",
       "Broadband xenon optical pumping exciting atoms into high absorption bands",
-      "Sub-microsecond radiationless transition to long-lived metastable state creating population inversion (N2 > N1)",
-      "Fabry-Perot resonant interferometer cavity tuned to the 694.3 nm atomic transition",
+      "Radiationless transition to a discrete upper state creating population inversion (N2 > N1)",
+      "Resonant optical path repeatedly reflecting the transition frequency through the ruby",
       "Output coupling aperture/partial reflector for extracting the collimated coherent laser beam",
     ],
     legalSignificance:
@@ -28,7 +28,7 @@ const claims: PatentClaim[] = [
     plainEnglish:
       "Claim 2 protects the complete ruby laser system comprising a three-level ruby crystal with ground state, discrete second level, and broad third absorption region, broadband optical pumping means directly coupled to the ruby to excite ground-state atoms into the third region for non-radiative transfer into the second level to establish population inversion, and light-resonating means coupled to and forming a regenerative optical feedback path through the ruby to stimulate radiant transitions from the second level back to ground, emitting a coherent monochromatic beam corresponding to that exact energy difference.",
     keyInnovations: [
-      "Directly coupled broadband optical pumping engine driving three-level atomic excitation",
+      "Directly coupled broadband optical pumping source driving three-level atomic excitation",
       "Radiationless phonon energy transition populating the metastable state",
       "Regenerative optical feedback path through the crystal sustaining stimulated emission avalanche",
       "Stimulated emission transitions producing coherent monochromatic deep-red light",
@@ -41,10 +41,10 @@ const claims: PatentClaim[] = [
 export const maimanRubyLaserPatent: Patent = {
   id: "us-3353115-maiman-ruby-laser",
   patentNumber: "US 3,353,115",
-  title: "Ruby Laser System",
+  title: "Ruby Laser Systems",
   shortTitle: "Maiman Ruby Laser & Solid-State Optical Maser",
   subtitle:
-    "Synthetic Chromium-Doped Sapphire Crystal, Xenon Flash Pumping, Three-Level Population Inversion, and 694.3 nm Coherent Stimulated Emission",
+    "Synthetic Ruby, Optical Pumping, Three-Level Population Inversion, and Coherent Stimulated Emission",
   inventors: ["Theodore H. Maiman"],
   inventorLocation: "Pacific Palisades, California",
   grantDate: "1967-11-14",
@@ -53,7 +53,7 @@ export const maimanRubyLaserPatent: Patent = {
   category: "optics",
   categoryLabel: "Quantum Electronics & Coherent Optics",
   summary:
-    "United States Patent 3,353,115 discloses the world's first operational laser (optical maser), developed by Theodore H. Maiman. The system utilizes a synthetic pink ruby crystal rod (single-crystal Al2O3 doped with approximately 0.05% Cr3+ ions) positioned along the axis of a high-intensity helical xenon flash tube within a reflective cylindrical housing. Broadband optical pumping in the green (560 nm) and violet (410 nm) absorption bands excites chromium ground-state ions into broad pump bands, from which they undergo rapid sub-microsecond non-radiative phonon relaxation into the long-lived metastable 2E energy level. By delivering sufficient optical pump power to transfer more than half the chromium ions into this metastable level, Maiman overcame the formidable hurdle of three-level population inversion (N2 > N1). Precision polished, mutually parallel silvered end faces formed a Fabry-Perot optical resonant cavity that recirculated spontaneously emitted photons along the crystal axis, triggering a massive stimulated emission cascade that emerged as a powerful, monochromatic, highly collimated beam of deep red coherent light at 694.3 nanometers (6943 Å).",
+    "United States Patent 3,353,115 describes laser systems using a solid-state negative-temperature medium. In one example, a ruby rod is placed coaxially in a helical gas-filled flash tube. Broadband light pumps the active material from a ground level into a broad higher region, from which a radiationless transition feeds a discrete upper level. When the upper-state population exceeds the ground-state population, repeated reflections through the active material stimulate coherent monochromatic light, which is coupled out as a beam.",
   heroQuote:
     "A laser system in which the active laser substance is solid state and which provides coherent monochromatic amplification and generation of electromagnetic wave energy in the optical or visible spectrum.",
   originalPdfUrl: "/patents/pdfs/us-3353115-maiman-ruby-laser.pdf",
@@ -64,8 +64,8 @@ export const maimanRubyLaserPatent: Patent = {
     url: "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
+    reviewedBy: "Classic Patents editorial agent (GPT-5.6 Luna)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: maimanRubyLaserArchivalEdition.sourcePdfSha256,
   },
   originalText:
@@ -73,35 +73,35 @@ export const maimanRubyLaserPatent: Patent = {
   drawings: [
     {
       figureNumber: "Figure 1",
-      title: "Helical Flash Lamp Optical Pumping Assembly",
+      title: "Energy-Level Diagram",
       caption:
-        "Perspective view of Maiman's complete ruby laser head assembly, showing the cylindrical pink ruby rod mounted axially inside a coiled helical xenon quartz flash lamp surrounded by a polished cylindrical aluminum reflector housing.",
+        "Energy-level diagram showing a ground level, a broad higher energy region, and a discrete intermediate level used to explain optical pumping and stimulated emission.",
       svgType: "maiman-laser-head",
       callouts: [
         {
-          id: "callout-flash-lamp",
+          id: "callout-region-3",
           figureRef: "Fig. 1",
-          label: "10",
-          element: "10",
-          description: "Helical quartz xenon flash tube.",
+          label: "3",
+          element: "3",
+          description: "Broad higher energy region.",
           x: 48,
           y: 46,
         },
         {
-          id: "callout-housing",
+          id: "callout-level-2",
           figureRef: "Fig. 1",
-          label: "12",
-          element: "12",
-          description: "Reflective aluminum cylindrical housing.",
+          label: "2",
+          element: "2",
+          description: "Discrete intermediate energy level.",
           x: 78,
           y: 35,
         },
         {
-          id: "callout-ruby-rod",
+          id: "callout-level-1",
           figureRef: "Fig. 1",
-          label: "14",
-          element: "14",
-          description: "Synthetic pink ruby crystal cylinder (Cr3+:Al2O3).",
+          label: "1",
+          element: "1",
+          description: "Ground energy level.",
           x: 42,
           y: 52,
         },
@@ -109,9 +109,9 @@ export const maimanRubyLaserPatent: Patent = {
     },
     {
       figureNumber: "Figure 2",
-      title: "Three-Level Quantum Energy State Diagram",
+      title: "Optical Pumping Schematic",
       caption:
-        "Quantum mechanical three-level energy state diagram of trivalent chromium ions in corundum sapphire (Al2O3), showing broadband optical absorption into the 4F1/4F2 bands (Level 3), rapid non-radiative relaxation to the 2E metastable level (Level 2), and stimulated emission back to the 4A2 ground state (Level 1) at 694.3 nm.",
+        "Schematic of a light pump illuminating a ruby rod, with repeated reflections establishing a standing wave and a coherent output beam.",
       svgType: "maiman-energy-levels",
       callouts: [
         {
@@ -119,7 +119,7 @@ export const maimanRubyLaserPatent: Patent = {
           figureRef: "Fig. 2",
           label: "1",
           element: "1",
-          description: "Ground State 4A2 (Level 1).",
+          description: "Ruby rod ground-state level reference.",
           x: 50,
           y: 88,
         },
@@ -128,7 +128,7 @@ export const maimanRubyLaserPatent: Patent = {
           figureRef: "Fig. 2",
           label: "2",
           element: "2",
-          description: "Metastable 2E Level (Level 2) with ~3 ms lifetime.",
+          description: "Ruby rod intermediate-level reference.",
           x: 75,
           y: 56,
         },
@@ -137,7 +137,7 @@ export const maimanRubyLaserPatent: Patent = {
           figureRef: "Fig. 2",
           label: "3",
           element: "3",
-          description: "Broadband Pump Bands 4F1/4F2 (Level 3).",
+          description: "Broad higher energy region reference.",
           x: 35,
           y: 22,
         },
