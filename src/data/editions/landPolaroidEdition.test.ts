@@ -1,6 +1,52 @@
 import { describe, expect, it } from "bun:test";
+import { readFileSync } from "node:fs";
 import { landPolaroidPatent } from "@/data/patents/land-polaroid";
 import { landPolaroidArchivalEdition, manualLandClaimText } from "./landPolaroidEdition";
+
+const reviewedLedger = readFileSync(
+  new URL(
+    "../../../public/patents/transcripts/us-2543181-land-polaroid-reviewed.txt",
+    import.meta.url,
+  ),
+  "utf8",
+);
+
+function normalizeClaimText(text: string): string {
+  return text
+    .replace(/--- REVIEWED TRANSCRIPTION PAGE \d+ OF 32 ---/g, "")
+    .replace(/-\s+(?=[a-z])/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function reconstructLedgerClaims(): { numbers: number[]; textByNumber: Map<number, string> } {
+  const numbers: number[] = [];
+  const textByNumber = new Map<number, string>();
+  let currentNumber: number | undefined;
+  let currentParts: string[] = [];
+
+  const flush = () => {
+    if (currentNumber === undefined) return;
+    textByNumber.set(currentNumber, currentParts.join(" "));
+  };
+
+  for (const line of reviewedLedger.split(/\r?\n/)) {
+    const claimHeader = line.match(/^(\d+)\.\s+(.+)$/);
+    if (claimHeader) {
+      flush();
+      currentNumber = Number(claimHeader[1]);
+      numbers.push(currentNumber);
+      currentParts = [claimHeader[2]];
+      continue;
+    }
+    if (currentNumber !== undefined && !line.startsWith("--- REVIEWED TRANSCRIPTION PAGE ")) {
+      const trimmed = line.trim();
+      if (trimmed) currentParts.push(trimmed);
+    }
+  }
+  flush();
+  return { numbers, textByNumber };
+}
 
 describe("US 2,543,181 Edwin Land Polaroid source-draft hold", () => {
   it("pins the draft to the correct PDF but keeps it out of the public source face", () => {
@@ -18,6 +64,21 @@ describe("US 2,543,181 Edwin Land Polaroid source-draft hold", () => {
       const claimText = manualLandClaimText(c);
       expect(claimText).toBeDefined();
       expect(claimText.length).toBeGreaterThan(10);
+    }
+  });
+
+  it("has exactly one ledger header per printed claim and matches the edition text", () => {
+    const { numbers, textByNumber } = reconstructLedgerClaims();
+    expect(numbers).toHaveLength(116);
+    expect(new Set(numbers).size).toBe(116);
+    expect(numbers).toEqual(Array.from({ length: 116 }, (_, index) => index + 1));
+
+    for (let claimNumber = 1; claimNumber <= 116; claimNumber++) {
+      const ledgerText = textByNumber.get(claimNumber);
+      expect(ledgerText).toBeDefined();
+      expect(normalizeClaimText(ledgerText ?? "")).toBe(
+        normalizeClaimText(manualLandClaimText(claimNumber)),
+      );
     }
   });
 
