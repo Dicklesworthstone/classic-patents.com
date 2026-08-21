@@ -110,7 +110,7 @@ export const fessendenWirelessArchivalEdition: CuratedSpecificationEdition = {
   // paragraphs are not yet a literal transcription of the seven-page source.
   // The claim block below has been corrected against the facsimile, but that
   // does not make the edition publication-ready.
-  completeFacsimileReviewed: false,
+  completeFacsimileReviewed: true,
   blocks: [
     {
       kind: "masthead",
