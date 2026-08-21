@@ -57,31 +57,58 @@ describe("US 235,199 Alexander Graham Bell Photophone Archival Edition Contract"
       expect(fs.existsSync(fullPath)).toBe(true);
       expect(preview.width).toBeGreaterThan(0);
       expect(preview.height).toBeGreaterThan(0);
+
+      const png = fs.readFileSync(fullPath);
+      expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+      expect(png.readUInt32BE(16)).toBe(preview.width);
+      expect(png.readUInt32BE(20)).toBe(preview.height);
     }
   });
 
-  test("uses the clockwise source-faithful revision for the sideways Figure 21 crop", () => {
-    const figureTwentyOne = bellPhotophoneArchivalEdition.blocks
-      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
-      .find(
-        (inline) =>
-          inline.kind === "reference" &&
-          inline.referenceType === "figure" &&
-          inline.figurePreviews?.some((preview) =>
-            preview.src.includes("fig-21-source-crop-v2.png"),
-          ),
-      );
-
-    expect(figureTwentyOne).toBeDefined();
-    if (figureTwentyOne?.kind !== "reference") return;
-
-    expect(figureTwentyOne.figurePreviews).toContainEqual(
-      expect.objectContaining({
-        src: "/patents/figures/us-235199-bell-photophone/fig-21-source-crop-v2.png",
-        width: 500,
-        height: 650,
-      }),
+  test("uses upright source-faithful crops for every drawing-sheet-3 figure", () => {
+    const figureReferences = bellPhotophoneArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
     );
+    const figurePreviews = figureReferences.flatMap((reference) => reference.figurePreviews ?? []);
+
+    expect(figurePreviews).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          src: "/patents/figures/us-235199-bell-photophone/figs-16-and-17-source-crop-v5.png",
+          width: 360,
+          height: 560,
+        }),
+        ...([
+          [18, 500, 510],
+          [19, 310, 480],
+          [20, 280, 480],
+          [21, 320, 480],
+          [22, 260, 340],
+          [23, 200, 340],
+          [24, 230, 470],
+        ] as const).map(([number, width, height]) =>
+          expect.objectContaining({
+            src: `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`,
+            width,
+            height,
+          }),
+        ),
+      ]),
+    );
+
+    expect(
+      figureReferences.some(
+        (reference) =>
+          reference.text.includes("24") &&
+          reference.figurePreviews?.some((preview) =>
+            preview.src.endsWith("fig-24-source-crop-v5.png"),
+          ),
+      ),
+    ).toBe(true);
   });
 
   test("uses individually reviewed upright source crops for Figures 14 and 15", () => {
