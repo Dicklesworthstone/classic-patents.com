@@ -20,6 +20,7 @@ export interface LandPolaroidModelNodes {
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (timeSec: number, input: LandPolaroidInput) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -35,6 +36,16 @@ export function createLandPolaroidModel(_initialInput?: LandPolaroidInput): Land
     roughness: 0.3,
   });
   materials.push(cameraBodyMat);
+
+  const cutawayCameraBodyMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    metalness: 0.85,
+    roughness: 0.3,
+    transparent: true,
+    opacity: 0.25,
+    side: THREE.DoubleSide,
+  });
+  materials.push(cutawayCameraBodyMat);
 
   const leatherMat = new THREE.MeshStandardMaterial({
     color: 0x78350f,
@@ -291,6 +302,11 @@ export function createLandPolaroidModel(_initialInput?: LandPolaroidInput): Land
     gelMat.opacity = gelAlpha;
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    cameraBody.material = cutaway ? cutawayCameraBodyMat : cameraBodyMat;
+    bellows.visible = !cutaway;
+  };
+
   const dispose = () => {
     for (const g of geometries) g.dispose();
     for (const m of materials) m.dispose();
@@ -315,6 +331,7 @@ export function createLandPolaroidModel(_initialInput?: LandPolaroidInput): Land
     materials,
     geometries,
     update,
+    setCutaway,
     dispose,
   };
 }

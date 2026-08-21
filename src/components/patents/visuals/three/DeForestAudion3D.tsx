@@ -1,13 +1,15 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "isometric" | "gridControl" | "filament" | "plateAnode";
 
@@ -27,6 +29,7 @@ export function DeForestAudion3D() {
   const [showUiOverlay, setShowUiOverlay] = useState(true);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
   const [isRotating, setIsRotating] = useState(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-879532-de-forest-audion");
 
@@ -152,6 +155,23 @@ export function DeForestAudion3D() {
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
+
+          <button
+            type="button"
             onClick={() => setIsRotating(!isRotating)}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
@@ -175,7 +195,6 @@ export function DeForestAudion3D() {
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
-
           <button
             aria-label="Reset camera view"
             type="button"

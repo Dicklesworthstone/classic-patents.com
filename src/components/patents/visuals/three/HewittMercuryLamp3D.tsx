@@ -1,9 +1,10 @@
 "use client";
 
-import { Camera, Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import {
   articulateHewittMercuryLampModel,
   buildHewittMercuryLampModel,
@@ -12,6 +13,7 @@ import {
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 interface HewittMercuryLamp3DProps {
   initialMainsVoltageV?: number;
@@ -46,6 +48,7 @@ export function HewittMercuryLamp3D({
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-682690-hewitt-mercury-lamp");
   const mainsVoltageV = params.mainsVoltageV ?? initialMainsVoltageV;
@@ -158,7 +161,7 @@ export function HewittMercuryLamp3D({
                   type="button"
                   key={preset}
                   onClick={() => handlePresetChange(preset)}
-                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
                     cameraPreset === preset
                       ? "bg-amber-600 text-white shadow-xs font-semibold"
                       : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -173,6 +176,22 @@ export function HewittMercuryLamp3D({
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}

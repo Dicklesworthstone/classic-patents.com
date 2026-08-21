@@ -1,13 +1,15 @@
 "use client";
 
-import { Eye, EyeOff, RotateCcw } from "lucide-react";
+import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { soundEngine } from "@/utils/soundEngine";
 import { createLandPolaroidModel, type LandPolaroidModelNodes } from "./landPolaroidModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 interface LandPolaroid3DProps {
   className?: string;
@@ -48,6 +50,8 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
   const animFrameRef = useRef<number | null>(null);
   const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-2543181-land-polaroid");
   const developmentTimeSec = params.developmentTimeSec ?? 30;
@@ -64,6 +68,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     reagentViscosityCp,
     rollerGapUm,
     alkaliPh,
+    isCutaway,
   });
 
   const handlePresetChange = (preset: CameraPreset) => {
@@ -91,6 +96,7 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     const animate = () => {
       timeRef.current += 0.016;
       studio.controls.update();
+      model.setCutaway?.(live.current.isCutaway ?? false);
       model.update(timeRef.current, live.current);
       studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
@@ -118,6 +124,9 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
         {/* Top-Left Camera Preset Toolbar */}
         {showUiOverlay && (
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3.5 h-3.5" /> View:
+            </span>
             {(Object.keys(CAMERA_PRESETS) as CameraPreset[]).map((key) => (
               <button
                 key={key}
@@ -137,6 +146,41 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
 
         {/* Top-Right Action Controls */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+          <button
+            type="button"
+            onClick={() => {
+              setIsCutaway((prev) => !prev);
+              soundEngine.playSwitchClick();
+            }}
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+              isCutaway
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Switch to Solid Camera Body" : "Switch to Interior Cutaway"}
+            aria-label={isCutaway ? "Switch to Solid Camera Body" : "Switch to Interior Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+            <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+          >
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}

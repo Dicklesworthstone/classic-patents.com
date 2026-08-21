@@ -184,7 +184,9 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
             title={isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"}
-            aria-label={isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"}
+            aria-label={
+              isCutaway ? "Switch to Solid Evaporator Shells" : "Switch to Interior Cutaway"
+            }
           >
             <Layers className="w-4 h-4" />
             <span className="hidden sm:inline">{isCutaway ? "Cutaway" : "Solid"}</span>
@@ -200,7 +202,11 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
 
           <button

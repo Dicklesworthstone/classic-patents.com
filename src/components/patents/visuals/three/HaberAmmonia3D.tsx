@@ -202,7 +202,11 @@ export default function HaberAmmonia3D({
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+            {isAudioMuted ? (
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            )}
           </button>
 
           <button
