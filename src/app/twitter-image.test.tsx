@@ -9,8 +9,8 @@ describe("Root Twitter Image Generator", () => {
     expect(alt).toContain("Classic Patents");
   });
 
-  test("generates valid ImageResponse instance", () => {
-    const res = Image();
+  test("generates valid ImageResponse instance", async () => {
+    const res = await Image();
     expect(res).toBeDefined();
     expect(res.headers.get("content-type")).toContain("image/png");
   });
