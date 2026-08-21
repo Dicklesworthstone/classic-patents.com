@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
@@ -228,7 +228,7 @@ export function WestinghouseAirBrake3D() {
             title={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
             aria-label={showUiOverlay ? "Hide Overlay UI" : "Show Overlay UI"}
           >
-            <Zap className="w-4 h-4" />
+            {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
 
           <button
