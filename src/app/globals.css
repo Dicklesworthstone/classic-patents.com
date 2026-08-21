@@ -27,27 +27,27 @@
     }
   }
 
-/* Visitors who ask the OS for reduced motion get a still museum: loading
+  /* Visitors who ask the OS for reduced motion get a still museum: loading
    spinners freeze into static rings, pulses and kinetic hovers stop, and
    state changes become instant. Layout/color transitions collapsing to
    0.01ms is the standard accessible pattern; no JS waits on the events. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
-    animation-duration: 0.01ms !important;
-    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
-    animation-iteration-count: 1 !important;
-    /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
-    transition-duration: 0.01ms !important;
-  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
+      animation-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
+      animation-iteration-count: 1 !important;
+      /* biome-ignore lint/complexity/noImportantStyles: the reset must beat utility classes regardless of specificity */
+      transition-duration: 0.01ms !important;
+    }
 
-  html {
-    /* biome-ignore lint/complexity/noImportantStyles: must override the no-preference smooth-scroll rule above */
-    scroll-behavior: auto !important;
+    html {
+      /* biome-ignore lint/complexity/noImportantStyles: must override the no-preference smooth-scroll rule above */
+      scroll-behavior: auto !important;
+    }
   }
-}
 
   html.dark {
     color-scheme: dark;
