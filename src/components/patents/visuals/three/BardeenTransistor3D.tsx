@@ -36,17 +36,20 @@ const CAMERA_PRESETS: Record<
 export const BardeenTransistor3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   const { params, updateParam } = usePatentPhysics("us-2524035-bardeen-transistor");
   const operatingSample = Math.min(3, Math.max(1, Math.round(params.operatingSample ?? 1)));
   const pointSpacingMils = params.pointSpacingMils ?? 2;
   const claim1Active = (params.claim1Active ?? 1) >= 0.5;
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({
+    1: claim1Active,
+  });
   const sourceState = stepBardeenPointContact({
     operatingSample,
     pointSpacingMils,
-    claim1Active,
+    claim1Active: claimStates[1] ?? true,
   });
   const sample = sourceState.sample;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
@@ -269,18 +272,22 @@ export const BardeenTransistor3D = memo(() => {
             allParams={params}
           />
         </div>
-        <button
-          type="button"
-          aria-pressed={claim1Active}
-          onClick={() => updateParam("claim1Active", claim1Active ? 0 : 1)}
-          className={`mt-3 w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
-            claim1Active
-              ? "border-blue-600 bg-blue-600 text-white"
-              : "border-parchment-300 dark:border-ink-700 text-ink-800 dark:text-parchment-200"
-          }`}
-        >
-          Claim 1 collection topology: {claim1Active ? "complete" : "collector path removed"}
-        </button>
+
+        <ClaimConstraintToggle
+          patentId="us-2524035-bardeen-transistor"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) => {
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }));
+            updateParam("claim1Active", active ? 1 : 0);
+          }}
+          className="mt-3"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2524035-bardeen-transistor"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

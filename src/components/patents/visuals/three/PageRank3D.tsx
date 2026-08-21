@@ -38,6 +38,7 @@ export function PageRank3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({ damping: 0.85, iter: 0, topRank: 0.38 });
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const dampingFactor = (params.dampingFactor as number) ?? 0.85;
   const live = useLiveSimParams({
@@ -285,6 +286,21 @@ export function PageRank3D() {
             />
           </div>
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6285999-pagerank"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-6285999-pagerank"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );
