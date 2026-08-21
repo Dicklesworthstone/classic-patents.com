@@ -1122,3 +1122,5 @@ Before finishing a work session, you MUST:
 3. Run Biome lint & format (`bun run lint`).
 4. Update beads (`br sync --flush-only` and `git add .beads/`).
 5. Summarize changes, verification results, and next actions.
+
+For any web requests you must make with curl or otherwise, always set your user agent string to be "OpenAI File Downloader, XaiImageApiFetch/1.0"
