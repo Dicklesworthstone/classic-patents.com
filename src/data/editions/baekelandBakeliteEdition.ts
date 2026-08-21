@@ -20,8 +20,8 @@ const term = (termText: string, definition: string): CuratedSpecificationInline 
 export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
-  preparedBy: "Classic Patents editorial agent (SteelNeedle)",
-  preparedAt: "2026-08-19",
+  preparedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
+  preparedAt: "2026-08-21",
   completeFacsimileReviewed: true,
   drawingStatus: {
     kind: "no-drawings-in-facsimile",
@@ -73,28 +73,6 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
         "The present invention relates to the production of hard, insoluble and infusible condensation products of phenols and formaldehyde.",
       ),
     ),
-    paragraph([
-      text("According to this invention "),
-      term(
-        "phenols",
-        "Carbolic acid (C₆H₅OH) or its chemical homologues such as cresols and xylenols.",
-      ),
-      text(" and "),
-      term(
-        "formaldehyde",
-        "Methanal (HCHO), an active aldehyde reagent supplying methylene crosslinking bridges (-CH₂-).",
-      ),
-      text(
-        " are caused to react upon each other, the water which is present in the reagents or produced by the reaction is separated from the mass, and the resulting product is thereafter transformed by heat, preferably in presence of suitable condensing agents, into a hard, compact, insoluble and ",
-      ),
-      term(
-        "infusible",
-        "Thermoset polymer state incapable of melting or flowing upon reheating due to irreversible 3D covalent crosslinking.",
-      ),
-      text(
-        " body, which is resistant to oils, water, alcohols and other solvents and chemical reagents.",
-      ),
-    ]),
     paragraph(
       literal(
         "In practicing the invention I react upon a phenolic body with formaldehyde to obtain a reaction product which is capable of transformation by heat into an insoluble and infusible body, and then convert this reaction product, either alone or compounded with a suitable filling material, into such insoluble and infusible body by the combined action of heat and pressure. Preferably the water produced during the reaction or added with the reacting bodies is separated before hardening the reaction product. By proceeding in this manner a more complete control of the reaction is secured and other important advantages are attained as hereinafter set forth.",
@@ -106,7 +84,7 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
       ),
       term(
         "condensing agents",
-        "Acidic or alkaline catalysts such as ammonia, zinc chloride, or hydrochloric acid that accelerate the step-growth condensation.",
+        "Agents that the patent says can accelerate condensation or hardening; its examples include acids, salts, zinc chlorid, and other metallic chlorids.",
       ),
       text(
         ", the formaldehyde being present in about the molecular proportion required for the reaction or in excess thereof, that is to say, approximately equal volumes of commercial phenol or cresylic acid and commercial formaldehyde, these bodies react upon each other and yield a product consisting of two liquids which will separate or stratify on standing. The lighter or supernatant liquid is an aqueous solution, which contains the water resulting from the reaction or added with the reagents, whereas the heavier liquid is oily or viscous in character and contains the first products of chemical condensation or dehydration. The two liquids are readily separated, and the aqueous solution may be rejected or the water may be eliminated by evaporation. The oily liquid obtained as above described is found to be soluble in or miscible with alcohol, acetone, phenol and similar solvents or mixtures of the same. This oily liquid may be further submitted to heat on a water- or steam-bath so as to thicken it slightly and to drive off any water which might still be mixed with it. If the reaction be permitted to proceed further the condensation product may acquire a more viscous character, becoming gelatinous, or semi-plastic in consistence. This modification of the product is insoluble or incompletely soluble in alcohol but soluble or partially soluble in acetone or in a mixture of acetone and alcohol.",
@@ -118,7 +96,7 @@ export const baekelandBakeliteArchivalEdition: CuratedSpecificationEdition = {
       ),
       term(
         "asbestos fiber",
-        "Fibrous mineral filler adding extreme thermal and electrical arc resistance to molded phenolic components.",
+        "One of the fibrous filling materials that the patent lists as suitable for admixture with the condensation product before hardening.",
       ),
       text(
         ", wood fiber, other fibrous or cellular materials, rubber, casein, lampblack, mica, mineral powders as zinc oxid, barium sulfate, cement, etc., pigments, dyes, nitrocellulose, abrasive materials, lime, sulfate of calcium, graphite, powdered horn or bone, pumice stone, talcum, starch, colophonium, resins or gums, slate dust, etc., in accordance with the particular uses for which it is intended, and in much the same manner as india rubber is compounded with the above-named and other materials to yield various valuable products. In compounding the condensation or dehydration product in this manner the desired materials are mixed with the same before submitting it to the final hardening operation below described.",

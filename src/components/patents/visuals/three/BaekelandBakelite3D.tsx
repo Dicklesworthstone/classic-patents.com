@@ -129,17 +129,17 @@ export function BaekelandBakelite3D() {
       tone: sim.conversionP >= 0.85 ? "ok" : undefined,
     },
     {
-      label: "P_auto",
+      label: "P_model",
       value: `${pressPsi} psi`,
       tone: sim.isFoamingSuppressed ? "ok" : "warn",
     },
     {
-      label: "Tensile",
+      label: "Tensile (model)",
       value: `${sim.tensileStrengthMpa} MPa`,
       tone: "ok",
     },
     {
-      label: "Dielectric",
+      label: "Dielectric (model)",
       value: `${sim.dielectricBreakdownKvPerMm} kV/mm`,
       tone: "ok",
     },
@@ -147,7 +147,10 @@ export function BaekelandBakelite3D() {
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
-      <div className="sr-only">Leo Baekeland Bakelite Synthesis 3D</div>
+      <div className="sr-only">
+        Leo Baekeland phenol-formaldehyde process, editorial 3D model. The closed vessel and
+        molecular network are modern interpretations, not historical drawings.
+      </div>
       <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
@@ -273,7 +276,7 @@ export function BaekelandBakelite3D() {
             id="autoclavePressure"
             patentId="us-942699-baekeland-bakelite"
             paramKey="autoclavePressurePsi"
-            label="Autoclave Pressure"
+              label="Closed-Vessel Pressure (model)"
             value={pressPsi}
             min={25}
             max={150}

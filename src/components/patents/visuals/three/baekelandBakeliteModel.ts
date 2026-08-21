@@ -5,10 +5,13 @@
  * (US Patent 942,699 - "Method of Making Insoluble Products of Phenol and Formaldehyde").
  *
  * Procedurally models:
- * 1. The Bakelizer Autoclave: Cast-iron pressure vessel with steam jacket, bolted door flange, and pipe manifold.
+ * 1. Editorial closed-vessel model: cast-iron pressure vessel with a steam-jacket analogue,
+ *    bolted door flange, and pipe manifold. The source names a closed vessel under pressure,
+ *    not a specific apparatus.
  * 2. Hydraulic Mold Press: Inner compression mold cavity with upper clamping ram.
- * 3. Cured Bakelite Specimen: Dynamic material changing from liquid golden resole to deep mahogany C-stage thermoset.
- * 4. 3D Macromolecular Crosslink Lattice: Spatial array of phenolic rings and methylene covalent bridges.
+ * 3. Editorial specimen state: modern visual interpretation of the source's hard, insoluble,
+ *    and infusible body.
+ * 4. Modern molecular interpretation: deterministic spatial network, not a source drawing.
  * 5. Pressure & Temperature Gauges: Bourdon tube pressure dial and bimetallic temperature dial.
  */
 

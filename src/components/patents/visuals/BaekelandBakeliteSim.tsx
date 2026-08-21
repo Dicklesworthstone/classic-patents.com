@@ -379,7 +379,7 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
                 textAnchor="middle"
                 fontWeight="bold"
               >
-                Crosslink Density: {sim.crosslinkDensity} × 10²¹ / cm³
+                Model crosslink index: {sim.crosslinkDensity} (illustrative)
               </text>
             </g>
           </svg>
@@ -388,41 +388,41 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
         {/* Telemetry Metrics Readout */}
         <div className="lg:col-span-5 grid grid-cols-2 gap-3">
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800">
-            <span className="text-xs text-stone-400 font-mono">Polymer Conversion (p)</span>
+            <span className="text-xs text-stone-400 font-mono">Model Conversion (p)</span>
             <div className="text-xl font-bold text-amber-400 font-mono mt-0.5">
               {(sim.conversionP * 100).toFixed(1)}%
             </div>
-            <div className="text-[10px] text-stone-500 mt-1">Carothers threshold: 66.7%</div>
+            <div className="text-[10px] text-stone-500 mt-1">Teaching threshold, not a grant value</div>
           </div>
 
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800">
-            <span className="text-xs text-stone-400 font-mono">Tensile Strength</span>
+            <span className="text-xs text-stone-400 font-mono">Tensile (model)</span>
             <div className="text-xl font-bold text-emerald-400 font-mono mt-0.5">
               {sim.tensileStrengthMpa} MPa
             </div>
-            <div className="text-[10px] text-stone-500 mt-1">Filler reinforced</div>
+            <div className="text-[10px] text-stone-500 mt-1">Illustrative filler response</div>
           </div>
 
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800">
-            <span className="text-xs text-stone-400 font-mono">Dielectric Breakdown</span>
+            <span className="text-xs text-stone-400 font-mono">Dielectric (model)</span>
             <div className="text-xl font-bold text-cyan-400 font-mono mt-0.5">
               {sim.dielectricBreakdownKvPerMm} kV/mm
             </div>
-            <div className="text-[10px] text-stone-500 mt-1">High-voltage rating</div>
+            <div className="text-[10px] text-stone-500 mt-1">Not measured in US 942,699</div>
           </div>
 
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800">
-            <span className="text-xs text-stone-400 font-mono">Moisture Vapor P</span>
+            <span className="text-xs text-stone-400 font-mono">Vapor P (model)</span>
             <div className="text-xl font-bold text-rose-400 font-mono mt-0.5">
               {sim.waterVaporPressurePsi} psi
             </div>
-            <div className="text-[10px] text-stone-500 mt-1">Internal boiling pressure</div>
+            <div className="text-[10px] text-stone-500 mt-1">Illustrative saturation estimate</div>
           </div>
 
           <div className="bg-stone-950/60 p-3 rounded-lg border border-stone-800 col-span-2">
             <div className="flex justify-between items-center text-xs text-stone-400 font-mono">
-              <span>Void Porosity: {sim.voidPorosityPct}%</span>
-              <span>HDT: {sim.heatDeflectionTempC} °C</span>
+              <span>Porosity (model): {sim.voidPorosityPct}%</span>
+              <span>HDT (model): {sim.heatDeflectionTempC} °C</span>
             </div>
             <div className="w-full bg-stone-800 rounded-full h-2 mt-1.5 overflow-hidden">
               <div

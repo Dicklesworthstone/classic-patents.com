@@ -36,8 +36,8 @@ export const baekelandBakelitePatent: Patent = {
     url: "/patents/transcripts/us-942699-baekeland-bakelite-reviewed.txt",
     pageCount: 3,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (SteelNeedle)",
-    reviewedAt: "2026-08-19",
+    reviewedBy: "Classic Patents editorial agent (MossyCat; cloud-Luna visual review pending)",
+    reviewedAt: "2026-08-21",
     sourcePdfSha256: "91b63f1cfe7c4a24739ea63c9d45caa8059e74010ae3a2191bed97616a384dc5",
     pageAnchors: [
       {
