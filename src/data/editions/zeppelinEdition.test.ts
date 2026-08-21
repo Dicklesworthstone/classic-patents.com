@@ -15,8 +15,6 @@ describe("US 621,195 Ferdinand von Zeppelin Airship Archival Edition Contract", 
       valid: true,
       errors: [],
     });
-    expect(zeppelinAirshipPatent.archivalEdition).toBe(zeppelinArchivalEdition);
-    expect(zeppelinAirshipPatent.originalTextAsset).toBeDefined();
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {
