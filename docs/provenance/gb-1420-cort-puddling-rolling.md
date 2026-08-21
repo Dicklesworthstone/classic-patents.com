@@ -1,37 +1,38 @@
-# Provenance Receipt: Henry Cort — Reverberatory Puddling Furnace & Grooved Rolling Mill (GB 1420)
+# Provenance Receipt: Henry Cort — Manufacture of Iron (GB 1420)
 
 ## 1. Source Identity
 
 - **Catalogue ID**: `gb-1420-cort-puddling-rolling`
-- **Patent Title**: *Method of Shingling, Welding, and Manufacturing Iron and Steel into Bars, Plates, and Rods of Purer Quality and in Larger Quantities by More Effectual and Expeditious Methods and with Fewer Fires Than Heretofore Used*
-- **Short Title**: Henry Cort Reverberatory Puddling Furnace & Grooved Rolling Mill
+- **Patent Title (as indexed by the British Patent Office)**: *Shingling, welding, and manufacturing iron and steel into bars, plates, rods, etc.; by the use of fire and machinery*
+- **Short Title**: Henry Cort's dry-puddling process
 - **Inventor**: Henry Cort (1740–1800), of Fontley, Parish of Titchfield, County of Southampton (Hampshire), England
-- **Grant Date**: February 13, 1784 (A.D. 1784, 24 George III, No. 1420)
-- **Filing Date**: February 13, 1784
-- **Primary Public Record URL**: [Google Patents GB178401420A](https://patents.google.com/patent/GB178401420A/en) / Great Seal Patent Office Chancery Enrollment Records
-- **Local reconstruction path**: `public/patents/pdfs/gb-1420-cort-puddling-rolling.pdf`
-- **Reconstruction review date**: 2026-08-20
-- **Rights Basis**: Historical British Crown Letters Patent granted prior to 1900; public domain worldwide.
+- **Patent sealing date**: February 13, 1784 (A.D. 1784, 24 George III, No. 1420)
+- **Specification enrolment date**: June 12, 1784 (the sealing and enrolment dates are not interchangeable)
+- **Filing date**: Not established from the checked primary-facing sources
+- **Primary record locator**: The National Archives, Chancery specification records (C 54/C 73 finding aids); no digital facsimile was located in this pass
+- **Secondary printed witness**: [British Patent Office, *Patents for Inventions: A.D. 1620–1866*, p. 21](https://books.google.com/books?id=jV0WAAAAYAAJ&pg=PA21)
+- **Local reconstruction path**: `public/patents/pdfs/gb-1420-cort-puddling-rolling.pdf` (research reconstruction, not a facsimile)
+- **Reconstruction review date**: 2026-08-21
+- **Rights Basis**: The historical patent and the 1854 Patent Office abridgment are public-domain government records; this does not make the local reconstruction an original source.
 - **Pinned reconstruction SHA-256 Digest**: `b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f`
-- **PDF Page Count**: 2
+- **PDF Page Count**: 2 (synthetic reconstruction; not the page count of the enrolled specification)
 
 ## 2. Facsimile Map
 
 | PDF Page | Historical Content | Quality & Review Notes |
 | :--- | :--- | :--- |
-| Page 1 | Chancery Enrollment masthead, royal grant by King George III, full technical specification of reverberatory puddling furnace, rabbling decarb reaction, and grooved roller shingling. | Fully transcribed and verified against Great Seal Patent Office records. |
-| Page 2 | Enumerated patent claims 1–4, annexed technical drawing plate (Fig. 1 furnace longitudinal section, Fig. 2 grooved rolling mill elevation, Fig. 3 roll pass profiles), inventor signature and Chancery testatum. | Verified against Great Seal Patent Office Chancery enrollment plate. |
+| Page 1 | Modern reconstruction page carrying an editorial paraphrase of the furnace process. | Not evidence of the enrolled specification; no facsimile review credit. |
+| Page 2 | Modern reconstruction page carrying an editorial paraphrase of rolling and a fabricated claim/drawing section. | Rejected: the 1854 Patent Office abridgment records no drawings and no numbered claims. |
 
 ## 3. Editorial and Preservation Boundaries
 
-- **Visitor-Facing Archival Edition**: `src/data/editions/cortPuddlingRollingEdition.ts`
-- **Reviewed Comparison Ledger**: `public/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt`
-- **Enrolled Figure Sheet Crop**: `public/patents/figures/gb-1420-cort-puddling-rolling/fig-1-source-crop-v1.png`
-- **Number of Formal Claims**: 4
-- **Physics Kernel**: `src/physics/cortKernel.ts` (`stepCortPuddlingRolling`)
-- **3D WebGL Simulation Model**: `src/components/patents/visuals/three/cortPuddlingRollingModel.ts` and `CortPuddlingRolling3D.tsx`
-- **2D Simulation Instrument**: `src/components/patents/visuals/CortPuddlingRollingSim.tsx`
+- **Visitor-facing archival edition**: withheld; the current TypeScript file is a research draft only
+- **Comparison ledger**: `public/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt` (retained evidence, not accepted as a reviewed transcription)
+- **Figure crops**: none accepted. The existing PNG is retained as rejected reconstruction evidence and must not be presented as a source preview.
+- **Formal claims**: no separately enumerated claims in the checked Patent Office abridgment; the four numbered claims previously staged here were editorial inventions and have been removed from the canonical record.
+- **Physics kernel**: `src/physics/cortKernel.ts` (`stepCortPuddlingRolling`), an explicitly editorial process model, not a measurement of GB 1420
+- **3D/2D visuals**: editorial teaching instruments only; neither is an archival drawing
 
-## 4. Root Source-Identity Hold (2026-08-20)
+## 4. Root Source-Identity Hold (2026-08-21)
 
-The pinned PDF is not a historical Great Seal or Chancery facsimile. `pdfinfo` identifies `Typst 0.14.2` as its creator and gives creation and modification time `2026-08-19 21:47:26`; both A4 pages are visibly modern typesetting, and page 2 embeds modern color reconstructions. The page table above inventories only what this reconstruction asserts and is not primary-source proof. The canonical record therefore has no `archivalEdition` or `originalTextAsset` binding. The PDF, ledger, edition, and crop remain preserved as research evidence until a genuine primary facsimile is pinned and reviewed.
+The pinned PDF is not a historical Great Seal or Chancery facsimile. `pdfinfo` identifies `Typst 0.14.2` as its creator and gives creation and modification time `2026-08-19 21:47:26`; both A4 pages are modern typesetting, and page 2 embeds modern color reconstructions. The staged ledger repeats that reconstruction and invents claims and drawings. The checked Patent Office abridgment says `[Printed, 3d. No Drawings.]` after the GB 1420 description, so the old Fig. 1/2/3 references cannot be retained. The canonical record therefore remains unbound (`archivalEdition` and `originalTextAsset` absent) until a genuine primary facsimile or an independently accepted archival witness is obtained and reviewed by a cloud Luna worker. No local OCR, rendering, or crop generation is evidence for release.
