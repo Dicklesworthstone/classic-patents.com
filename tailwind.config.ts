@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: "420px",
+      },
       colors: {
         parchment: {
           50: "#faf8f5",

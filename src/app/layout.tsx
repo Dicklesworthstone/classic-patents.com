@@ -110,6 +110,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static inline theme bootstrap string, no user input */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <AudioCleanupProvider />
         <div className="flex flex-col min-h-screen">

@@ -40,7 +40,6 @@ export function PatentTimeline() {
     filteredPatents.find((p) => p.id === selectedPatentId) ||
     sortedPatents.find((p) => p.id === selectedPatentId) ||
     sortedPatents[0];
-  const currentIndex = sortedPatents.findIndex((p) => p.id === selectedPatent.id);
   const currentFilteredIndex = filteredPatents.findIndex((p) => p.id === selectedPatent.id);
 
   // Sync selected patent to filtered set on era tab switch
@@ -133,7 +132,7 @@ export function PatentTimeline() {
 
       {/* Interactive Timeline Milestone Cards Grid */}
       <div className="relative py-1">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 relative z-10">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 relative z-10">
           {filteredPatents.map((p) => {
             const isSelected = p.id === selectedPatent.id;
             const year = p.grantDate.split("-")[0];

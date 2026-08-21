@@ -53,11 +53,7 @@ export function Header() {
       if (e.key === "Escape") setMobileOpen(false);
     };
     const onPointerDown = (e: PointerEvent) => {
-      if (
-        headerRef.current &&
-        e.target instanceof Node &&
-        !headerRef.current.contains(e.target)
-      ) {
+      if (headerRef.current && e.target instanceof Node && !headerRef.current.contains(e.target)) {
         setMobileOpen(false);
       }
     };
@@ -81,7 +77,7 @@ export function Header() {
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-700 dark:bg-amber-600 flex items-center justify-center text-amber-50 shadow-xs group-hover:scale-105 transition-transform border border-amber-800/20 dark:border-amber-500/40">
               <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-amber-100 dark:text-amber-50 group-hover:rotate-45 transition-transform duration-500" />
             </div>
-            <div className="flex flex-col">
+            <div className="hidden xs:flex flex-col min-w-0">
               <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-ink-950 dark:text-parchment-50 group-hover:text-amber-800 dark:group-hover:text-amber-400 transition-colors leading-tight">
                 CLASSIC PATENTS
               </span>
