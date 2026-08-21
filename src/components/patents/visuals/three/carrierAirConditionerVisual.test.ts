@@ -41,6 +41,8 @@ describe("US 808,897 Willis Carrier Air Conditioning visual & psychrometrics bou
       expect(threeSource).not.toContain(forbidden);
       expect(modelSource).not.toContain(forbidden);
     }
+    expect(modelSource).not.toContain("dt * 100");
+    expect(modelSource).toContain("airflowCfm / 150");
   });
 
   test("exposes authentic camera presets and cutaway mode for psychrometric process observation", () => {

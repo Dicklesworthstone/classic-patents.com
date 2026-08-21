@@ -29,6 +29,16 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(model.edges.length).toBe(7);
       expect(() => model.dispose()).not.toThrow();
     });
+
+    test("surfer ω drains the kernel (0.85 damping → leftover 0.8)", async () => {
+      const atDefault = stepPageRank({ dampingFactor: 0.85 });
+      const frozen = stepPageRank({ dampingFactor: 0 });
+      expect(atDefault.omegaRadPerSec).toBeCloseTo(0.8, 3);
+      expect(frozen.omegaRadPerSec).toBe(0);
+      const modelSource = await Bun.file(new URL("./PageRankModel.ts", import.meta.url)).text();
+      expect(modelSource).not.toContain("timeSec * 0.8");
+      expect(modelSource).toContain("omegaRadPerSec");
+    });
   });
 
   describe("US 6,594,844 iRobot Roomba", () => {
@@ -98,6 +108,12 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(model.mainGroup).toBeDefined();
       expect(() => model.updateTrail(0.5, 0.5)).not.toThrow();
       expect(() => model.dispose()).not.toThrow();
+    });
+
+    test("side-brush ω drains wheel speed instead of leftover 18 rad/s", async () => {
+      const modelSource = await Bun.file(new URL("./RoombaModel.ts", import.meta.url)).text();
+      expect(modelSource).not.toContain("delta * 18.0");
+      expect(modelSource).toContain("sideBrushOmegaRadPerS");
     });
   });
 
@@ -171,6 +187,9 @@ describe("2000s Breakthrough Patents 3D Visual & Physics Boundaries", () => {
       expect(simSource).toContain("brownianJitterOmegaYRadPerS");
       expect(simSource).not.toContain("timeSec * 2.3");
       expect(simSource).not.toContain("timeSec * 1.7");
+      const modelSource = await Bun.file(new URL("./EInkModel.ts", import.meta.url)).text();
+      expect(modelSource).not.toContain("timeSec * 2 +");
+      expect(modelSource).toContain("jitterOmega");
     });
 
     test("Stokes-Einstein thermal jitter slows in thicker fluid", () => {

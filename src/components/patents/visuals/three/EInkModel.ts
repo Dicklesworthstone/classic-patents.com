@@ -192,8 +192,7 @@ export function buildEInkModel(): EInkModel {
     const targetYWhite = normV >= 0 ? 0.8 : -0.8;
     const targetYBlack = normV >= 0 ? -0.8 : 0.8;
     const eink = stepEInk({ electrodeVoltageVolts: voltage, fluidViscosityCp: 2.0 }, 0);
-    const jitterOmega =
-      (eink.brownianJitterOmegaYRadPerS + eink.brownianJitterOmegaXRadPerS) / 2;
+    const jitterOmega = (eink.brownianJitterOmegaYRadPerS + eink.brownianJitterOmegaXRadPerS) / 2;
 
     whiteParticleMeshes.forEach((wp, idx) => {
       const init = whiteInitialOffsets[idx];

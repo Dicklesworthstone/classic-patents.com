@@ -1,5 +1,4 @@
 import type { Patent } from "@/types/patent";
-import { zeppelinAirshipArchivalEdition } from "../editions/zeppelinAirshipEdition";
 
 export const zeppelinAirshipPatent: Patent = {
   id: "us-621195-zeppelin-airship",
@@ -22,15 +21,6 @@ export const zeppelinAirshipPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
-  archivalEdition: zeppelinAirshipArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
-    pageCount: 7,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
-    sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
-  },
   originalText: `UNITED STATES PATENT OFFICE.
 FERDINAND GRAF VON ZEPPELIN, OF STUTTGART, GERMANY.
 
@@ -235,7 +225,7 @@ This invention relates to a navigable balloon which is characterized essentially
       number: 4,
       isIndependent: true,
       originalText:
-        "An air-craft comprising a series of balloons coupled together and provided with rigid casings, the foremost of said balloons being provided with driving mechanism, and the remainder adapted to carry the load or freight, and extensible covers secured to the rigid casings and covering the intermediate spaces between two adjacent balloons. In testimony that I claim the foregoing as my invention I have signed my name in presence of two subscribing witnesses. FERDINAND GRAF ZEPPELIN. [L. S.] Witnesses: WM. HAHN, H. WAGNER.",
+        "An air-craft comprising a series of balloons coupled together and provided with rigid casings, the foremost of said balloons being provided with driving mechanism, and the remainder adapted to carry the load or freight, and extensible covers secured to the rigid casings and covering the intermediate spaces between two adjacent balloons.",
       plainEnglish: "An air-craft comprising a series of balloons coupled together in a train.",
       keyInnovations: [
         "Articulated airship train",

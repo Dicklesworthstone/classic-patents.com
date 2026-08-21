@@ -22,9 +22,9 @@ const crop = (number: number, width: number, height: number) => ({
 });
 
 const FIGURES = {
-  "Fig. 1": [crop(1, 500, 1620)],
-  "Fig. 2": [crop(2, 600, 440)],
-  "Fig. 3": [crop(3, 800, 700)],
+  "Fig. 1": [crop(1, 1856, 2385)],
+  "Fig. 2": [crop(2, 1856, 2385)],
+  "Fig. 3": [crop(3, 1856, 2385)],
   "Fig. 4": [crop(4, 800, 700)],
   "Fig. 5": [crop(5, 800, 400)],
   "Fig. 6": [crop(6, 800, 720)],

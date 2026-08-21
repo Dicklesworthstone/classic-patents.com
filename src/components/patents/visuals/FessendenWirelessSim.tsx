@@ -209,7 +209,8 @@ export function FessendenWirelessSim() {
       for (let x = 0; x <= traceW; x++) {
         const xNorm = x / traceW;
         const audioEnv =
-          1 + (audioModPct / 100) * Math.sin(t * sim.audioEnvelopeOmegaRadPerS + xNorm * Math.PI * 4);
+          1 +
+          (audioModPct / 100) * Math.sin(t * sim.audioEnvelopeOmegaRadPerS + xNorm * Math.PI * 4);
         const rfOsc = Math.sin(t * sim.rfTraceDisplayOmegaRadPerS + xNorm * Math.PI * 30);
         const yVal = traceY + rfOsc * audioEnv * 20 * (sim.radiatedPowerWatts / 1000);
         if (x === 0) ctx.moveTo(traceX + x, yVal);
@@ -265,7 +266,13 @@ export function FessendenWirelessSim() {
       if (sim.receivedPowerMicrowatts > 0.05) {
         ctx.fillStyle = "rgba(251, 191, 36, 0.8)";
         ctx.beginPath();
-        ctx.arc(cupX, cupY + 14, 3 + Math.sin(t * sim.barretterGlowOmegaRadPerS) * 1.5, 0, Math.PI * 2);
+        ctx.arc(
+          cupX,
+          cupY + 14,
+          3 + Math.sin(t * sim.barretterGlowOmegaRadPerS) * 1.5,
+          0,
+          Math.PI * 2,
+        );
         ctx.fill();
       }
 
