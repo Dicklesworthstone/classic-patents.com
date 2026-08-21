@@ -46,9 +46,6 @@ export const multiTouchPatent: Patent = {
       title: "Block Diagram of Multi-Touch Device Architecture",
       caption: "FIG. 1: Block diagram of portable multi-touch device architecture",
       svgType: "multitouch",
-      imageUrl: "/patents/figures/us-7479949-multitouch/fig-1-source-crop-v1.png",
-      description:
-        "Architecture showing processor, touch screen controller, memory, and peripheral subsystems.",
       callouts: [
         {
           id: "mt-cpu",
@@ -76,9 +73,6 @@ export const multiTouchPatent: Patent = {
       caption:
         "FIG. 2: Portable multifunction device with graphical user interface application grid",
       svgType: "multitouch",
-      imageUrl: "/patents/figures/us-7479949-multitouch/fig-2-source-crop-v1.png",
-      description:
-        "Graphical user interface presenting icons for phone, email, browser, and photo applications.",
       callouts: [
         {
           id: "mt-icons",
@@ -96,9 +90,6 @@ export const multiTouchPatent: Patent = {
       title: "Touch Gesture Recognition & Trajectory Angle Heuristics",
       caption: "FIG. 3: Touch gesture recognition and trajectory angle heuristics",
       svgType: "multitouch",
-      imageUrl: "/patents/figures/us-7479949-multitouch/fig-3-source-crop-v1.png",
-      description:
-        "Diagram of finger contact motion angle thresholds differentiating vertical scroll from 2D pan.",
       callouts: [
         {
           id: "mt-angle",
