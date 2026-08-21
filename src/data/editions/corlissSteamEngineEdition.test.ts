@@ -32,6 +32,16 @@ describe("corlissSteamEngineArchivalEdition", () => {
     expect(corlissSteamEnginePatent.claims.every((claim) => claim.plainEnglish.length > 180)).toBe(
       true,
     );
+
+    for (const claim of corlissSteamEnginePatent.claims) {
+      const authoredClaim = claims.find(
+        (candidate) => candidate.kind === "claim" && candidate.number === claim.number,
+      );
+      expect(authoredClaim?.kind).toBe("claim");
+      expect(claim.originalText).toBe(
+        authoredClaim?.inlines.map((inline) => inline.text).join(""),
+      );
+    }
   });
 
   test("makes every printed figure group an explicit preview reference", () => {

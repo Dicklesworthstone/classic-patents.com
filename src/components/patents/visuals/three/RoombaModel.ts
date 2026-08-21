@@ -298,6 +298,15 @@ export function buildRoombaModel(): RoombaModel {
     dustGeo.attributes.position.needsUpdate = true;
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    bodyMat.transparent = cutaway;
+    bodyMat.opacity = cutaway ? 0.35 : 1.0;
+    bodyMat.needsUpdate = true;
+    bumperMat.transparent = cutaway;
+    bumperMat.opacity = cutaway ? 0.45 : 1.0;
+    bumperMat.needsUpdate = true;
+  };
+
   return {
     root,
     mainGroup,
@@ -307,6 +316,7 @@ export function buildRoombaModel(): RoombaModel {
     dustPoints,
     updateTrail,
     updateKinematics,
+    setCutaway,
     dispose: () => {
       for (const g of geometriesToDispose) g.dispose();
       for (const m of materialsToDispose) m.dispose();
