@@ -30,10 +30,16 @@ export function ThemeToggle() {
     const saved = localStorage.getItem("classic-patents-theme");
     if (saved === "dark") {
       setMode(true);
-    } else {
-      // Default to Light Mode as requested
-      setMode(false);
+      return;
     }
+    if (saved === "light") {
+      setMode(false);
+      return;
+    }
+    // No explicit choice stored: the pre-paint bootstrap in layout.tsx already
+    // applied the OS preference to <html>. Mirror it instead of forcing light,
+    // which would flash dark-then-light for OS-dark visitors on every load.
+    setIsDark(document.documentElement.classList.contains("dark"));
   }, [setMode]);
 
   if (!mounted) {
