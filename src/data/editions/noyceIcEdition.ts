@@ -116,7 +116,12 @@ export const noyceIcArchivalEdition: CuratedSpecificationEdition = {
         figure("Fig. 7"),
         {
           kind: "text",
-          text: ". Every preview is cropped directly from the pinned facsimile. Fig. 5 is presented as two adjacent source panels because its printed caption shares a sheet band with the inventor and attorney signatures; no signature pixels are included.",
+          text: ". Every preview is cropped directly from the pinned facsimile. ",
+        },
+        figure("Fig. 5"),
+        {
+          kind: "text",
+          text: " is presented as two adjacent source panels because its printed caption shares a sheet band with the inventor and attorney signatures; no signature pixels are included.",
         },
       ],
     },

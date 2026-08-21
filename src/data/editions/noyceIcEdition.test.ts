@@ -185,7 +185,7 @@ describe("US 2,981,877 manual source edition", () => {
       "Fig. 2": 2,
       "Fig. 3": 3,
       "Fig. 4": 2,
-      "Fig. 5": 15,
+      "Fig. 5": 16,
       "Fig. 6": 3,
       "Fig. 7": 2,
       "Figs. 1": 4,
@@ -259,7 +259,7 @@ describe("US 2,981,877 manual source edition", () => {
         },
       ],
     };
-    expect(figures).toHaveLength(54);
+    expect(figures).toHaveLength(55);
     expect(
       Object.fromEntries(
         Object.entries(literalCounts).map(([literal]) => [
