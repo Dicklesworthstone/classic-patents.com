@@ -39,6 +39,9 @@ describe("Patents Index & Search Helper Methods", () => {
     expect(legacyPatentRedirectFor("us-3923554-boyle-smith-ccd")).toBe(
       "us-3858232-boyle-smith-ccd",
     );
+    expect(legacyPatentRedirectFor("us-727650-fessenden-wireless")).toBe(
+      "us-706737-fessenden-wireless",
+    );
     expect(legacyPatentRedirectFor("unknown-alias")).toBeUndefined();
   });
 

@@ -505,6 +505,16 @@ const fermiPages51To58Blocks: readonly CuratedSpecificationBlock[] = [
       "The exact printed Claims 1–8 are represented by the claim blocks above and are repeated in the reviewed ledger on PDF pages 56–57. The cited prior patent is Fermi et al., U.S. Patent 2,206,634 (July 2, 1940). Foreign references are Australia 14,150 and 14,151, Switzerland 233,011, France 861,390, and Great Britain 648,293. Other references are Power (July 1940, page 58), Kelly et al., Physical Review 73, 1135–1139 (1948), and Flügge, Naturwissenschaften 27, 402–410 (1939). The signed correction certificate dated July 26, 1955 corrects the printed specification's entries for A, fraction, thermal-neutron placement, representation, 1945, 11.9, protecting, ether-water, .015, K, K − 1.005..., as, and CS; it is retained verbatim in the p58 ledger boundary.",
     ),
   ]),
+  paragraph(
+    literal(
+      "References Cited in the file of this patent: United States Patent 2,206,634, Fermi et al., July 2, 1940; Foreign Patents 14,150, Australia, May 2, 1940; 14,151, Australia, May 3, 1940; 233,011, Switzerland, October 2, 1944; 861,390, France, October 28, 1940; 648,293, Great Britain, January 3, 1951; Other References: Power, July 1940, page 58. Copy in 204-154.2. Kelly et al., Physical Review 73, 1135–1139 (1948). Copy in Patent Office Library (204/154.2). Flügge, Naturwissenschaften, volume 27, pages 402–410 (1939). Copy in Patent Office Library (204/154.2).",
+    ),
+  ),
+  paragraph(
+    literal(
+      "UNITED STATES PATENT OFFICE. CERTIFICATE OF CORRECTION. Patent No. 2,708,656, May 17, 1955, Enrico Fermi et al. It is hereby certified that error appears in the printed specification of the above numbered patent requiring correction and that the said Letters Patent should read as corrected below. Column 4, line 51, both occurrences, and line 53, both occurrences, for BT read -- A --; column 5, line 31, for friction read -- fraction --; column 6, line 46, strike out thermal neutron and insert the same before fissionable in line 47; column 19, line 52, for represensation read -- representation --; column 23, line 52, for 945 read -- 1945 --; column 25, line 45, for l'9 read -- 11.9 --; line 64, for protectting read -- protecting --; column 34, line 23, for either-water read -- ether-water --; column 38, line 16, for ...lib read -- .015 --; column 45, line 75, for K read -- K --; column 48, line 56, for formula portion K=1.0052 read -- K-1.005... --; column 51, line 35, for and read -- as --; column 53, line 72, for CC read -- CS --. Signed and sealed this 26th day of July, 1955. (SEAL) Attest: E. J. MURRY, Attesting Officer. ROBERT C. WATSON, Commissioner of Patents.",
+    ),
+  ),
 ];
 
 export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
@@ -819,5 +829,8 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
   ],
   54: [
     "Claims 1-8, the cited patent and literature, signatures, and the correction certificate are preserved in the reviewed ledger pages 56-58 while the claim blocks remain the edition's canonical legal text.",
+  ],
+  55: [
+    "The edition preserves the printed reference list, correction certificate, date, attesting officer, and Commissioner of Patents as source-face matter; the reviewed ledger supplies the page-marked comparison boundary.",
   ],
 };

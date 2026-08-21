@@ -187,6 +187,10 @@ export const LEGACY_PATENT_REDIRECTS = {
   "us-533367-tesla-coil": "us-593138-tesla-coil",
   "us-2569347-bardeen-transistor": "us-2524035-bardeen-transistor",
   "us-3923554-boyle-smith-ccd": "us-3858232-boyle-smith-ccd",
+  // A prior Fessenden route carried Linde's US 727,650 number. Keep that
+  // inbound URL alive, but resolve it only to the source-correct Fessenden
+  // record. US 727,650 remains independently catalogued as Linde.
+  "us-727650-fessenden-wireless": "us-706737-fessenden-wireless",
 } as const;
 
 export function legacyPatentRedirectFor(id: string): string | undefined {
