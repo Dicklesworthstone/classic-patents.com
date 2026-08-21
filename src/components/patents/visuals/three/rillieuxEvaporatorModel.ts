@@ -7,6 +7,10 @@ export interface RillieuxEvaporatorModelNodes {
   tubeBundles: THREE.Group[];
   vaporTrunks: THREE.Mesh[];
   condenserGroup: THREE.Group;
+  boilingParticles: THREE.Points;
+  syrupPipes: THREE.Group;
+  condensateDrains: THREE.Group;
+  manometers: THREE.Group;
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (state: RillieuxEvaporatorState, timeSec: number) => void;
@@ -51,6 +55,13 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     roughness: 0.1,
   });
   materials.push(glassMat);
+
+  const mercuryMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    metalness: 0.95,
+    roughness: 0.1,
+  });
+  materials.push(mercuryMat);
 
   const juiceMats = [
     new THREE.MeshStandardMaterial({
@@ -206,7 +217,60 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     vaporTrunks.push(trunkMesh);
   }
 
-  // 3. ENGINE EXHAUST & WEIGHTED REGULATOR VALVE (Left)
+  // 3. INTERCONNECTING SYRUP PIPES & BRASS REGULATOR COCKS (Cascading Juice 1 -> 2 -> 3)
+  const syrupPipes = new THREE.Group();
+  for (let i = 0; i < numVessels - 1; i++) {
+    const startX = (i - 1) * spacing + 0.8;
+    const endX = i * spacing - 0.8;
+    const pipeCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(startX, -1.1, 1.4),
+      new THREE.Vector3((startX + endX) / 2, -1.4, 1.6),
+      new THREE.Vector3(endX, -1.1, 1.4),
+    ]);
+    const pipeGeo = new THREE.TubeGeometry(pipeCurve, 16, 0.05, 8, false);
+    geometries.push(pipeGeo);
+    syrupPipes.add(new THREE.Mesh(pipeGeo, copperMat));
+
+    // Brass cock valve handle
+    const valveGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.2, 12);
+    geometries.push(valveGeo);
+    const valveMesh = new THREE.Mesh(valveGeo, polishedBrassMat);
+    valveMesh.position.set((startX + endX) / 2, -1.3, 1.6);
+    syrupPipes.add(valveMesh);
+  }
+  group.add(syrupPipes);
+
+  // 4. CONDENSATE DRAIN PIPES UNDER EACH EFFECT
+  const condensateDrains = new THREE.Group();
+  for (let i = 0; i < numVessels; i++) {
+    const posX = (i - 1) * spacing;
+    const drainGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.8, 8);
+    geometries.push(drainGeo);
+    const drainMesh = new THREE.Mesh(drainGeo, castIronMat);
+    drainMesh.position.set(posX, -1.8, -1.4);
+    condensateDrains.add(drainMesh);
+  }
+  group.add(condensateDrains);
+
+  // 5. MERCURY U-TUBE VACUUM MANOMETERS
+  const manometers = new THREE.Group();
+  for (let i = 0; i < numVessels; i++) {
+    const posX = (i - 1) * spacing;
+    const manoGeo = new THREE.BoxGeometry(0.12, 0.6, 0.08);
+    geometries.push(manoGeo);
+    const manoMesh = new THREE.Mesh(manoGeo, polishedBrassMat);
+    manoMesh.position.set(posX - 0.9, 0.6, 1.85);
+    manometers.add(manoMesh);
+
+    const tubeU = new THREE.CylinderGeometry(0.02, 0.02, 0.45, 8);
+    geometries.push(tubeU);
+    const tubeMesh = new THREE.Mesh(tubeU, mercuryMat);
+    tubeMesh.position.set(posX - 0.9, 0.6, 1.89);
+    manometers.add(tubeMesh);
+  }
+  group.add(manometers);
+
+  // 6. ENGINE EXHAUST & WEIGHTED REGULATOR VALVE (Left)
   const exhaustCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(-7.2, 0, 0),
     new THREE.Vector3(-6.0, 2.0, 0),
@@ -218,7 +282,7 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
   const exhaustMesh = new THREE.Mesh(exhaustGeo, polishedBrassMat);
   group.add(exhaustMesh);
 
-  // 4. BAROMETRIC CONDENSER & VACUUM WATER COLUMN (Right)
+  // 7. BAROMETRIC CONDENSER & VACUUM WATER COLUMN (Right)
   const condenserGroup = new THREE.Group();
   condenserGroup.position.set(6.4, 1.5, 0);
 
@@ -257,6 +321,31 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
 
   group.add(condenserGroup);
 
+  // 8. DYNAMIC BOILING STEAM BUBBLE PARTICLES
+  const bubbleCount = 90;
+  const bubblePositions = new Float32Array(bubbleCount * 3);
+  for (let b = 0; b < bubbleCount; b++) {
+    const vesselIdx = b % 3;
+    const vx = (vesselIdx - 1) * spacing + (Math.random() - 0.5) * 1.6;
+    const vy = -0.8 + Math.random() * 0.9;
+    const vz = (Math.random() - 0.5) * 1.6;
+    bubblePositions[b * 3] = vx;
+    bubblePositions[b * 3 + 1] = vy;
+    bubblePositions[b * 3 + 2] = vz;
+  }
+  const bubbleGeo = new THREE.BufferGeometry();
+  geometries.push(bubbleGeo);
+  bubbleGeo.setAttribute("position", new THREE.BufferAttribute(bubblePositions, 3));
+  const bubbleMat = new THREE.PointsMaterial({
+    color: 0xfef08a,
+    size: 0.05,
+    transparent: true,
+    opacity: 0.75,
+  });
+  materials.push(bubbleMat);
+  const boilingParticles = new THREE.Points(bubbleGeo, bubbleMat);
+  group.add(boilingParticles);
+
   // Update loop
   const update = (state: RillieuxEvaporatorState, timeSec: number) => {
     // Thermal vibration and boiling bubbling
@@ -266,6 +355,17 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
       const intensity = eff ? eff.heatTransferKw / 2000.0 : 1.0;
       tb.position.y = -0.4 + Math.sin(timeSec * boilSpeed + idx) * 0.015 * intensity;
     });
+
+    // Boiling bubble motion in each vessel
+    const bPos = bubbleGeo.attributes.position;
+    for (let b = 0; b < bubbleCount; b++) {
+      let by = bPos.getY(b) + 0.012 * (boilSpeed / 5.0);
+      if (by > 0.3) {
+        by = -0.8;
+      }
+      bPos.setY(b, by);
+    }
+    bPos.needsUpdate = true;
   };
 
   const dispose = () => {
@@ -283,6 +383,10 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
     tubeBundles,
     vaporTrunks,
     condenserGroup,
+    boilingParticles,
+    syrupPipes,
+    condensateDrains,
+    manometers,
     materials,
     geometries,
     update,

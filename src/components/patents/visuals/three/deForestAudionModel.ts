@@ -19,6 +19,10 @@ export interface DeForestAudionModelNodes {
   filamentLight: THREE.PointLight;
   gridMesh: THREE.Mesh;
   plateMesh: THREE.Mesh;
+  getterMirror: THREE.Mesh;
+  pinchSeal: THREE.Mesh;
+  potentialRings: THREE.Group;
+  externalLeads: THREE.Group;
   electronParticles: THREE.Points;
   materials: THREE.Material[];
 }
@@ -40,6 +44,16 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
     opacity: 0.4,
   });
   materials.push(glassMat);
+
+  const getterMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    metalness: 0.95,
+    roughness: 0.1,
+    transparent: true,
+    opacity: 0.85,
+    side: THREE.BackSide,
+  });
+  materials.push(getterMat);
 
   const filamentMat = new THREE.MeshStandardMaterial({
     color: 0xfbbf24,
@@ -71,6 +85,13 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   });
   materials.push(brassMat);
 
+  const copperMat = new THREE.MeshStandardMaterial({
+    color: 0xb45309,
+    metalness: 0.9,
+    roughness: 0.25,
+  });
+  materials.push(copperMat);
+
   const baseMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
     metalness: 0.4,
@@ -78,17 +99,33 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   });
   materials.push(baseMat);
 
+  const potentialRingMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.3,
+    wireframe: true,
+  });
+  materials.push(potentialRingMat);
+
   // ==========================================
   // 1. BASEBOARD & BRASS CANDELABRA BASE
   // ==========================================
   const baseGroup = new THREE.Group();
   root.add(baseGroup);
 
-  // Hardwood mounting block
+  // Hardwood mounting block with binding posts
   const blockGeo = new THREE.BoxGeometry(2.0, 0.3, 2.0);
   const blockMesh = new THREE.Mesh(blockGeo, baseMat);
   blockMesh.position.y = -1.65;
   baseGroup.add(blockMesh);
+
+  // Brass Binding Post Terminals (Filament, Grid, Plate)
+  for (let b = 0; b < 3; b++) {
+    const postGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.25, 12);
+    const postMesh = new THREE.Mesh(postGeo, brassMat);
+    postMesh.position.set(-0.6 + b * 0.6, -1.4, 0.8);
+    baseGroup.add(postMesh);
+  }
 
   // Threaded brass screw shell
   const socketGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.7, 24);
@@ -102,6 +139,12 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   stemFlange.position.y = -0.65;
   baseGroup.add(stemFlange);
 
+  // Glass Pinch Seal Mount
+  const pinchGeo = new THREE.BoxGeometry(0.4, 0.3, 0.15);
+  const pinchSeal = new THREE.Mesh(pinchGeo, glassMat);
+  pinchSeal.position.y = -0.3;
+  baseGroup.add(pinchSeal);
+
   // ==========================================
   // 2. EVACUATED GLASS BULB ENVELOPE
   // ==========================================
@@ -114,7 +157,13 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   const glassBulb = new THREE.Mesh(bulbGeo, glassMat);
   bulbGroup.add(glassBulb);
 
-  // Top Exhaust Glass Tip
+  // Metallic Silver Getter Mirror Deposit on top inner dome
+  const getterGeo = new THREE.SphereGeometry(1.18, 24, 16, 0, Math.PI * 2, 0, Math.PI / 4);
+  const getterMirror = new THREE.Mesh(getterGeo, getterMat);
+  getterMirror.position.y = 0.02;
+  bulbGroup.add(getterMirror);
+
+  // Top Exhaust Glass Tip (Fire-sealed vacuum evacuation pip)
   const tipGeo = new THREE.ConeGeometry(0.12, 0.3, 12);
   const tipMesh = new THREE.Mesh(tipGeo, glassMat);
   tipMesh.position.y = 1.32;
@@ -127,7 +176,7 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   filGroup.position.set(-0.35, 0, 0);
   bulbGroup.add(filGroup);
 
-  // Hairpin Filament Loop
+  // Hairpin Filament Loop (Tantalum/Carbon wire)
   const filGeo = new THREE.TorusGeometry(0.22, 0.025, 12, 24, Math.PI);
   const filamentMesh = new THREE.Mesh(filGeo, filamentMat);
   filamentMesh.rotation.z = Math.PI;
@@ -197,9 +246,37 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
   plateGroup.add(platePost);
 
   // ==========================================
-  // 6. ANIMATED THERMIONIC ELECTRON PARTICLES
+  // 6. ELECTROSTATIC POTENTIAL FIELD RINGS
   // ==========================================
-  const particleCount = 60;
+  const potentialRings = new THREE.Group();
+  for (let r = 0; r < 3; r++) {
+    const ringGeo = new THREE.TorusGeometry(0.45 + r * 0.15, 0.01, 8, 24);
+    ringGeo.rotateY(Math.PI / 2);
+    const ringMesh = new THREE.Mesh(ringGeo, potentialRingMat);
+    ringMesh.position.set(-0.1 + r * 0.25, 0.15, 0);
+    potentialRings.add(ringMesh);
+  }
+  bulbGroup.add(potentialRings);
+
+  // ==========================================
+  // 7. EXTERNAL COPPER LEADS TO BINDING POSTS
+  // ==========================================
+  const externalLeads = new THREE.Group();
+  for (let c = 0; c < 3; c++) {
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.2 + c * 0.2, -0.4, 0),
+      new THREE.Vector3(-0.4 + c * 0.4, -0.9, 0.4),
+      new THREE.Vector3(-0.6 + c * 0.6, -1.3, 0.8),
+    ]);
+    const leadTube = new THREE.TubeGeometry(curve, 16, 0.015, 6, false);
+    externalLeads.add(new THREE.Mesh(leadTube, copperMat));
+  }
+  baseGroup.add(externalLeads);
+
+  // ==========================================
+  // 8. ANIMATED THERMIONIC ELECTRON PARTICLES
+  // ==========================================
+  const particleCount = 80;
   const particleGeo = new THREE.BufferGeometry();
   const particlePositions = new Float32Array(particleCount * 3);
 
@@ -232,6 +309,10 @@ export function buildDeForestAudionModel(): DeForestAudionModelNodes {
     filamentLight,
     gridMesh,
     plateMesh,
+    getterMirror,
+    pinchSeal,
+    potentialRings,
+    externalLeads,
     electronParticles,
     materials,
   };
