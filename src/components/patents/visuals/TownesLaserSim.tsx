@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -411,10 +411,13 @@ export function TownesLaserSim({
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
-          <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-            Townes & Schawlow Optical Maser / Laser (US 2,929,922)
-          </h3>
-          <p className="font-sans text-xs text-ink-500 dark:text-ink-400">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
+              Charles Townes &amp; Arthur Schawlow Optical Maser / Laser (US 2,929,922)
+            </h3>
+          </div>
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
             Fabry-Pérot resonant cavity, optical pumping threshold, and stimulated emission mode
             selection.
           </p>

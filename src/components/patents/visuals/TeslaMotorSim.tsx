@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   stepTeslaMotorFig9,
@@ -14,12 +14,14 @@ import {
 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { usePatentAudio } from "./three/usePatentAudio";
 
 export function TeslaMotorSim() {
-  const { params, updateParam } = usePatentPhysics("us-381968-tesla-motor");
+  const { params, updateParam, resetParams } = usePatentPhysics("us-381968-tesla-motor");
+  const { isAudioMuted, toggleSound } = usePatentAudio();
   const phaseCount = (params.phaseCount as 2 | 3) ?? 2;
   const frequencyHz = teslaMotorPhaseHz(params);
-  const isPlayingAudio = (params.acHum ?? 0) === 1;
+  const isPlayingAudio = !isAudioMuted && (params.acHum ?? 1) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
 
@@ -48,6 +50,7 @@ export function TeslaMotorSim() {
 
   const _applyPedagogyStep = (step: number) => {
     setActivePedagogyStep(step);
+    soundEngine.playSwitchClick();
     if (step === 1) {
       // Step 1: Low frequency 2-phase demonstration
       updateParam("frequency", 30);
@@ -70,57 +73,84 @@ export function TeslaMotorSim() {
   const bVectorY = field.bySvg;
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
       {/* Simulation Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-500 animate-pulse" />
-            <h3 className="font-serif text-xl font-bold text-ink-900 dark:text-parchment-100">
-              Tesla Polyphase AC Rotating Magnetic Field Motor (US 381,968)
+            <h3 className="font-serif text-lg sm:text-xl font-bold text-ink-900 dark:text-parchment-100">
+              Nikola Tesla Polyphase AC Induction Motor (US 381,968)
             </h3>
           </div>
           <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
-            Fig. 9 routes two generator circuits through{" "}
-            <strong>collector rings and brushes</strong>
-            to matching motor-coil pairs; the motor itself needs no commutator.
+            Rotating magnetic stator field driving a brushless copper rotor disk without
+            commutators.
           </p>
         </div>
 
-        {/* Guided Learning Stepper */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+          {/* Guided Learning Stepper */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
+            <button
+              type="button"
+              onClick={() => _applyPedagogyStep(1)}
+              className={`px-2.5 py-1 rounded-lg transition-colors ${
+                _activePedagogyStep === 1
+                  ? "bg-amber-600 text-white font-bold"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+            >
+              1. 2-Phase 30Hz
+            </button>
+            <button
+              type="button"
+              onClick={() => _applyPedagogyStep(2)}
+              className={`px-2.5 py-1 rounded-lg transition-colors ${
+                _activePedagogyStep === 2
+                  ? "bg-amber-600 text-white font-bold"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+            >
+              2. 2-Phase 60Hz
+            </button>
+            <button
+              type="button"
+              onClick={() => _applyPedagogyStep(3)}
+              className={`px-2.5 py-1 rounded-lg transition-colors ${
+                _activePedagogyStep === 3
+                  ? "bg-emerald-600 text-white font-bold"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
+              }`}
+            >
+              3. 3-Phase 60Hz
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => _applyPedagogyStep(1)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
-              _activePedagogyStep === 1
-                ? "bg-amber-600 text-white font-bold"
-                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-            }`}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
-            1. Fig. 9 phase sequence
+            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
           <button
             type="button"
-            onClick={() => _applyPedagogyStep(2)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
-              _activePedagogyStep === 2
-                ? "bg-amber-600 text-white font-bold"
-                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-            }`}
+            onClick={() => {
+              resetParams();
+              setActivePedagogyStep(1);
+              soundEngine.playSwitchClick();
+            }}
+            aria-label="Reset Simulation"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            title="Reset Simulation"
           >
-            2. Faster generator sequence
-          </button>
-          <button
-            type="button"
-            onClick={() => _applyPedagogyStep(3)}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
-              _activePedagogyStep === 3
-                ? "bg-emerald-600 text-white font-bold"
-                : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
-            }`}
-          >
-            3. Fig. 13 three-circuit comparison
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
