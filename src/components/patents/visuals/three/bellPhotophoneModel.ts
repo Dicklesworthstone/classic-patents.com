@@ -15,6 +15,7 @@ export interface BellPhotophoneModelNodes {
   materials: THREE.Material[];
   geometries: THREE.BufferGeometry[];
   update: (state: BellPhotophoneState, timeSec: number) => void;
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -331,6 +332,15 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
     }
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    polishedBrassMat.transparent = cutaway;
+    polishedBrassMat.opacity = cutaway ? 0.35 : 1.0;
+    polishedBrassMat.needsUpdate = true;
+    mahoganyWoodMat.transparent = cutaway;
+    mahoganyWoodMat.opacity = cutaway ? 0.45 : 1.0;
+    mahoganyWoodMat.needsUpdate = true;
+  };
+
   return {
     group,
     transmitterGroup,
@@ -345,6 +355,7 @@ export function createBellPhotophoneModel(): BellPhotophoneModelNodes {
     materials,
     geometries,
     update,
+    setCutaway,
     dispose,
   };
 }
