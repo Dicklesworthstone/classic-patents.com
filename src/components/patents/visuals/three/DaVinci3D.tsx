@@ -12,7 +12,7 @@ import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildDaVinciModel } from "./DaVinciModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
 
 const EXHIBIT_ID = "us-6331181-davinci";
@@ -31,7 +31,7 @@ const CAMERA_PRESETS: Record<
 
 export function DaVinci3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({
