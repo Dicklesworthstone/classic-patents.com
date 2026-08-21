@@ -251,7 +251,6 @@ export const PasteurFermentation3D = memo(() => {
           }
           className="mt-2"
         />
-
       </div>
     </div>
   );

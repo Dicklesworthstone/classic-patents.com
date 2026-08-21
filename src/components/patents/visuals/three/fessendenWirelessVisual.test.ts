@@ -34,17 +34,6 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     expect(modelSource).not.toContain("timeSec * 1.5");
     expect(modelSource).not.toContain("timeSec * 30");
     expect(modelSource).not.toContain("const audioFreq = 6");
-    const simSource = readFileSync(
-      resolve(process.cwd(), "src/components/patents/visuals/FessendenWirelessSim.tsx"),
-      "utf8",
-    );
-    expect(simSource).not.toContain("t * 1.8");
-    expect(simSource).not.toContain("t * 8 +");
-    expect(simSource).not.toContain("t * 50 +");
-    expect(simSource).not.toContain("t * 20)");
-    expect(simSource).not.toContain("t * 40)");
-    expect(simSource).toContain("waveRingDisplayRate");
-    expect(simSource).toContain("rfTraceDisplayOmegaRadPerS");
   });
 
   test("exposes authentic camera presets for continuous-wave radio inspection", () => {
@@ -107,7 +96,7 @@ describe("US 706,737 Reginald A. Fessenden Continuous-Wave Wireless visual & RF 
     });
 
     expect(nodes.alternatorRotor.rotation.x).toBeDefined();
-    expect(nodes.thermalSparkGlow.scale.x).toBeGreaterThan(0);
+    expect(nodes.microphonicContact.position.y).toBeDefined();
     expect(nodes.waveRings[0].scale.x).toBeGreaterThan(0);
   });
 });

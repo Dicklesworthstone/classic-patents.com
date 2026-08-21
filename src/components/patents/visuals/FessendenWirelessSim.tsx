@@ -1,15 +1,11 @@
 "use client";
 
-import { Pause, Play, Radio, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
-import { usePatentAudio } from "./three/usePatentAudio";
 
 export function FessendenWirelessSim() {
-  const { params, updateParam, resetParams } = usePatentPhysics("us-706737-fessenden-wireless");
-  const { isAudioMuted, toggleSound } = usePatentAudio();
+  const { params, updateParam } = usePatentPhysics("us-706737-fessenden-wireless");
   const carrierFreqKhz = params.carrierFrequencyKhz ?? 75;
   const audioModPct = params.audioModulationPct ?? 65;
   const antennaTuningUh = params.antennaTuningUh ?? 450;
@@ -328,71 +324,40 @@ export function FessendenWirelessSim() {
   }, [carrierFreqKhz, audioModPct, antennaTuningUh, isPlaying, sim]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-slate-800 bg-parchment-50 dark:bg-slate-950 p-4 sm:p-6 text-ink-900 dark:text-slate-100 shadow-md transition-colors">
+    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
       {/* HUD Header */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Radio className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-            <h3 className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">
-              Reginald Fessenden Continuous-Wave Radio &amp; Barretter (US 706,737)
-            </h3>
-          </div>
-          <p className="font-sans text-xs text-ink-500 dark:text-slate-400 mt-0.5">
-            Uninterrupted sinusoidal radiation, low-loss cage aerials, and liquid barretter
-            detector.
+          <h2 className="text-xl font-bold tracking-wide text-cyan-400">
+            Reginald Fessenden Continuous-Wave Radio & Electrolytic Detector
+          </h2>
+          <p className="text-sm text-slate-400">
+            US Patent 706,737 • Uninterrupted Sinusoidal Radiation, Low-Loss Cage Aerials & Liquid
+            Barretter
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
+        <div className="flex items-center gap-3">
           <span
-            className={`px-3 py-1 text-xs font-mono font-semibold rounded-lg uppercase tracking-wider ${
+            className={`px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider ${
               sim.isResonant
-                ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700"
-                : "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700"
+                ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
+                : "bg-amber-950 text-amber-300 border border-amber-700"
             }`}
           >
-            {sim.isResonant ? "✓ Resonant Lock" : "⚠ Detuned"}
+            {sim.isResonant ? "✓ Resonant Lock" : "⚠ Detuned (Off-Resonance)"}
           </span>
           <button
             type="button"
-            onClick={() => {
-              setIsPlaying(!isPlaying);
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isPlaying ? "Pause Simulation" : "Resume Simulation"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="px-4 py-1.5 bg-cyan-700 hover:bg-cyan-600 text-white rounded-lg text-sm font-medium transition"
           >
-            {isPlaying ? <Pause className="w-4 h-4 text-cyan-600" /> : <Play className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              toggleSound();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-          >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              resetParams();
-              soundEngine.playSwitchClick();
-            }}
-            aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
-            title="Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
+            {isPlaying ? "Pause Simulation" : "Resume"}
           </button>
         </div>
       </div>
 
       {/* Interactive 2D Canvas */}
-      <div className="relative w-full aspect-[16/9] bg-slate-900 rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800">
+      <div className="relative w-full aspect-[16/9] bg-slate-900 rounded-lg overflow-hidden border border-slate-800">
         <canvas ref={canvasRef} width={880} height={495} className="w-full h-full block" />
       </div>
 

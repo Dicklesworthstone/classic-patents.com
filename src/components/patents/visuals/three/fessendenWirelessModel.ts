@@ -28,13 +28,44 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
   const root = new THREE.Group();
   root.name = "fessenden-wireless-root";
   const materials: THREE.Material[] = [];
-  const woodMat = new THREE.MeshStandardMaterial({ color: 0x4a2e18, roughness: 0.8, metalness: 0.1 });
-  const castIronMat = new THREE.MeshStandardMaterial({ color: 0x24272c, roughness: 0.6, metalness: 0.8 });
-  const copperMat = new THREE.MeshStandardMaterial({ color: 0xc86d3b, roughness: 0.3, metalness: 0.9 });
-  const brassMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.35, metalness: 0.85 });
-  const porcelainMat = new THREE.MeshStandardMaterial({ color: 0xededed, roughness: 0.2, metalness: 0.1 });
-  const wireMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.4, metalness: 0.8, emissive: 0x0284c7, emissiveIntensity: 0.4 });
-  const waveMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.3, wireframe: true });
+  const woodMat = new THREE.MeshStandardMaterial({
+    color: 0x4a2e18,
+    roughness: 0.8,
+    metalness: 0.1,
+  });
+  const castIronMat = new THREE.MeshStandardMaterial({
+    color: 0x24272c,
+    roughness: 0.6,
+    metalness: 0.8,
+  });
+  const copperMat = new THREE.MeshStandardMaterial({
+    color: 0xc86d3b,
+    roughness: 0.3,
+    metalness: 0.9,
+  });
+  const brassMat = new THREE.MeshStandardMaterial({
+    color: 0xd4af37,
+    roughness: 0.35,
+    metalness: 0.85,
+  });
+  const porcelainMat = new THREE.MeshStandardMaterial({
+    color: 0xededed,
+    roughness: 0.2,
+    metalness: 0.1,
+  });
+  const wireMat = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    roughness: 0.4,
+    metalness: 0.8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.4,
+  });
+  const waveMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.3,
+    wireframe: true,
+  });
   materials.push(woodMat, castIronMat, copperMat, brassMat, porcelainMat, wireMat, waveMat);
 
   const bench = new THREE.Mesh(new THREE.BoxGeometry(6, 0.2, 3), woodMat);
@@ -108,7 +139,7 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
     cageAntenna.add(wire);
     cageWires.push(wire);
     const lead = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.45, 8), copperMat);
-    lead.position.set(Math.cos(angle) * cageRadius / 2, 0.4, Math.sin(angle) * cageRadius / 2);
+    lead.position.set((Math.cos(angle) * cageRadius) / 2, 0.4, (Math.sin(angle) * cageRadius) / 2);
     lead.lookAt(0, 0.25, 0);
     lead.rotateX(Math.PI / 2);
     cageAntenna.add(lead);
@@ -169,15 +200,63 @@ export function buildFessendenWirelessModel(): FessendenWirelessModelNodes {
     woodMat.opacity = cutaway ? 0.45 : 1;
     woodMat.needsUpdate = true;
   };
-  return { root, alternatorRotor, tuningCoil, cageAntenna, cageWires, waveRings, receivingConductor, fineWire, magneticField, microphonicContact, sourceRelay, receiverInstrument, materials, setCutaway };
+  return {
+    root,
+    alternatorRotor,
+    tuningCoil,
+    cageAntenna,
+    cageWires,
+    waveRings,
+    receivingConductor,
+    fineWire,
+    magneticField,
+    microphonicContact,
+    sourceRelay,
+    receiverInstrument,
+    materials,
+    setCutaway,
+  };
 }
 
-export function articulateFessendenWireless(nodes: FessendenWirelessModelNodes, params: { timeSec?: number; sourcePeriodMatch?: number; distributedCapacity?: number; radiatingPortionFraction?: number; directResponse?: boolean }) {
+export function articulateFessendenWireless(
+  nodes: FessendenWirelessModelNodes,
+  params: {
+    timeSec?: number;
+    carrierFrequencyKhz?: number;
+    radiatedPowerWatts?: number;
+    audioModulationPct?: number;
+    isResonant?: boolean;
+    waveRingDisplayRate?: number;
+    headsetDisplayOmegaRadPerS?: number;
+    audioEnvelopeOmegaRadPerS?: number;
+    sourcePeriodMatch?: number;
+    distributedCapacity?: number;
+    radiatingPortionFraction?: number;
+    directResponse?: boolean;
+  },
+) {
   const timeSec = params.timeSec ?? 1;
-  const sourcePeriodMatch = Math.max(0, Math.min(1, params.sourcePeriodMatch ?? 0.92));
-  const distributedCapacity = Math.max(0, Math.min(1, params.distributedCapacity ?? 0.8));
-  const radiatingPortionFraction = Math.max(0, Math.min(1, params.radiatingPortionFraction ?? 0.75));
-  const directResponse = params.directResponse ?? true;
+  const sourcePeriodMatch = Math.max(
+    0,
+    Math.min(
+      1,
+      params.sourcePeriodMatch ??
+        (params.isResonant ? 0.95 : (params.carrierFrequencyKhz ?? 75) / 100),
+    ),
+  );
+  const distributedCapacity = Math.max(
+    0,
+    Math.min(
+      1,
+      params.distributedCapacity ??
+        (params.radiatedPowerWatts ? Math.min(1, params.radiatedPowerWatts / 800) : 0.8),
+    ),
+  );
+  const radiatingPortionFraction = Math.max(
+    0,
+    Math.min(1, params.radiatingPortionFraction ?? 0.75),
+  );
+  const directResponse = params.directResponse ?? params.isResonant ?? true;
   const phase = (timeSec * (0.5 + sourcePeriodMatch)) % (Math.PI * 2);
   nodes.alternatorRotor.rotation.x = (timeSec * (0.35 + sourcePeriodMatch * 0.65)) % (Math.PI * 2);
   const wireGlow = 0.2 + 0.55 * distributedCapacity * Math.abs(Math.sin(phase));
@@ -188,7 +267,8 @@ export function articulateFessendenWireless(nodes: FessendenWirelessModelNodes, 
   }
   for (let r = 0; r < nodes.waveRings.length; r++) {
     const ring = nodes.waveRings[r];
-    const ringPhase = (timeSec * (0.25 + radiatingPortionFraction * 0.5) + r / nodes.waveRings.length) % 1;
+    const ringPhase =
+      (timeSec * (0.25 + radiatingPortionFraction * 0.5) + r / nodes.waveRings.length) % 1;
     const scale = 0.5 + ringPhase * 2.5;
     ring.scale.set(scale, scale, scale);
     const material = ring.material as THREE.MeshBasicMaterial;
