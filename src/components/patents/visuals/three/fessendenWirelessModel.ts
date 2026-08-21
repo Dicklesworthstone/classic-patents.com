@@ -241,7 +241,11 @@ export function articulateFessendenWireless(
     Math.min(
       1,
       params.sourcePeriodMatch ??
-        (params.isResonant ? 0.95 : (params.carrierFrequencyKhz ?? 75) / 100),
+        (params.isResonant !== undefined
+          ? params.isResonant
+            ? 0.95
+            : 0.4
+          : (params.carrierFrequencyKhz ?? 75) / 100),
     ),
   );
   const distributedCapacity = Math.max(
