@@ -6,7 +6,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -38,7 +38,7 @@ const CAMERA_PRESETS: Record<
 
 export function WestinghouseAirBrake3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Pneumatic Simulation Parameters from Shared Hook

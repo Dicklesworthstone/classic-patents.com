@@ -39,7 +39,6 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
-  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   // Steam Turbomachinery Parameters
   const { params, updateParam } = usePatentPhysics("us-608969-parsons-turbine");
@@ -278,44 +277,47 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Rotor Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {Math.round(turbineRpm)} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1000"
-              max="6000"
-              step="100"
-              value={turbineRpm}
-              onChange={(e) => updateParam("rotorRpm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="parsonsRotorRpm"
+            patentId="us-608969-parsons-turbine"
+            paramKey="rotorRpm"
+            label="Rotor Speed"
+            value={turbineRpm}
+            min={1000}
+            max={6000}
+            step={100}
+            unit=" RPM"
+            onChange={(val) => updateParam("rotorRpm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Inlet Steam Pressure
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {inletPressurePsi} psi
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="300"
-              step="10"
-              value={inletPressurePsi}
-              onChange={(e) => updateParam("inletPressurePsi", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="parsonsInletPressurePsi"
+            patentId="us-608969-parsons-turbine"
+            paramKey="inletPressurePsi"
+            label="Inlet Steam Pressure"
+            value={inletPressurePsi}
+            min={50}
+            max={300}
+            step={10}
+            unit=" psi"
+            onChange={(val) => updateParam("inletPressurePsi", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-608969-parsons-turbine"
+          params={params}
+          onUpdateParam={updateParam}
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-608969-parsons-turbine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       <StudioKernelChips

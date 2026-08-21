@@ -6,7 +6,7 @@ import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { buildBaekelandBakeliteModel } from "./baekelandBakeliteModel";
-import { type KernelChip, StudioKernelChips } from "./StudioKernelChips";
+import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -36,7 +36,7 @@ const PRESET_LABELS: Record<CameraPreset, string> = {
 
 export function BaekelandBakelite3D() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutaway, setCutaway] = useState(true);
   const [showCallouts, setShowCallouts] = useState(true);
   const [activePreset, setActivePreset] = useState<CameraPreset>("iso");

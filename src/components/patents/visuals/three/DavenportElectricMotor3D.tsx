@@ -10,7 +10,7 @@ import {
   buildDavenportMotorModel,
   updateDavenportMotorKinematics,
 } from "./davenportElectricMotorModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
@@ -21,7 +21,7 @@ const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
-  iso: { pos: [9.0, 7.5, 10.5], target: [0, 0, 0] },
+  iso: { pos: [9.5, 6.5, 10.5], target: [0, 0, 0] },
   commutator: { pos: [0, 2.5, 3.8], target: [0, 1.2, 0] },
   stator_magnets: { pos: [3.2, 1.5, 3.5], target: [1.5, 0, 0] },
   rotor: { pos: [0, 4.0, 1.5], target: [0, 0, 0] },
@@ -32,7 +32,7 @@ const CAMERA_PRESETS: Record<
 export function DavenportElectricMotor3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
 
   // Electromechanical Parameters
