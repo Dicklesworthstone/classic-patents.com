@@ -553,7 +553,7 @@ rod. If the rod is of an appropriate length a standing
 wave 14 may be sct up. In either event the repeated
 reflections through the material stimulate the emission of
 substantially all the atoms from level 2 to their ground
-state level 1. The emission of the enregy at frequency »2;
+state level 1. The emission of the energy at frequency »2;
 combines in phase with the stimulating wave 14 thus
 adding coherently with it. This energy may then be
 coupled out of the rod as a beam 16 which is mono-
