@@ -44,7 +44,7 @@ export function OttoEngine3D() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Four-Stroke Thermodynamic Parameters from Physics Bus
-  const { params } = usePatentPhysics("us-194047-otto-engine");
+  const { params, updateParam } = usePatentPhysics("us-194047-otto-engine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const engineRpm = params.engineRpm ?? 180;
@@ -101,82 +101,71 @@ export function OttoEngine3D() {
     });
     studioRef.current = studio;
 
-    const { scene, camera, renderer, controls } = studio;
+    const { scene, renderer, controls } = studio;
 
-    // Procedural 1877 Deutz Otto Model Assembly
+    // Build procedural 3D model
     const engineModel: OttoEngineModelResult = buildOttoEngineModel();
     scene.add(engineModel.root);
 
-    // Ignition Spark / Flame Flash Particle
+    // Dynamic combustion flame mesh inside cylinder
+    const flameGeo = new THREE.SphereGeometry(0.5, 16, 16);
     const flameGlowTex = createGlowPointTexture();
-    const flameMat = new THREE.PointsMaterial({
-      size: 0.9,
-      map: flameGlowTex,
+    const flameMat = new THREE.MeshBasicMaterial({
+      color: 0xff6600,
       transparent: true,
       opacity: 0,
+      map: flameGlowTex,
       blending: THREE.AdditiveBlending,
-      color: 0xff6600,
     });
-    const flameGeo = new THREE.BufferGeometry();
-    flameGeo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array([-3.45, 0.5, 0.7]), 3),
-    );
-    const flamePoint = new THREE.Points(flameGeo, flameMat);
-    scene.add(flamePoint);
+    const flameMesh = new THREE.Mesh(flameGeo, flameMat);
+    flameMesh.position.set(-2.5, 0.4, 0);
+    scene.add(flameMesh);
 
-    // Animation Loop
     let reqId: number;
     let crankAngle = 0;
-    let lastAudioFireCycle = -1;
+    let lastSoundStroke = -1;
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const delta = 1 / 60;
-      const currentRpm = live.current.isRunning ? live.current.engineRpm : 0;
-      const omega = live.current.isRunning ? live.current.crankOmegaRadPerS : 0;
+      const dt = 1 / 60;
+      const p = live.current;
 
-      if (currentRpm > 0) {
-        crankAngle = wrapCycleRad(crankAngle + omega * delta, live.current.cycleWrapRad);
-      }
+      if (p.isRunning) {
+        crankAngle = wrapCycleRad(crankAngle + p.crankOmegaRadPerS * dt, p.cycleWrapRad);
 
-      // Kinematic update
-      updateOttoEngineKinematics(
-        engineModel.nodes,
-        engineModel.materials,
-        crankAngle,
-        live.current.compressionRatio,
-        live.current.cutawayMode,
-        Boolean(live.current.isRunning),
-        delta,
-        live.current.govDisplayOmegaRadPerS,
-        live.current.flyballRadius,
-        currentRpm,
-      );
-
-      // Deflagration flame flash at ignition (start of power stroke at 360 deg = 2pi rad)
-      const cyclePhase = crankAngle;
-      const isPowerStart = cyclePhase >= Math.PI * 2 && cyclePhase < Math.PI * 2.3;
-      if (isPowerStart && currentRpm > 0) {
-        flameMat.opacity = THREE.MathUtils.lerp(flameMat.opacity, 0.95, 0.35);
-      } else {
-        flameMat.opacity = THREE.MathUtils.lerp(flameMat.opacity, 0.0, 0.2);
-      }
-
-      // Audio Transducer: Fire ignition combustion beat once per 4-stroke cycle
-      const currentCycle = Math.floor(crankAngle / (Math.PI * 2));
-      if (currentCycle !== lastAudioFireCycle && !live.current.isAudioMuted && currentRpm > 0) {
-        lastAudioFireCycle = currentCycle;
-        if (cyclePhase >= Math.PI * 2 && cyclePhase < Math.PI * 2.5) {
-          soundEngine.playPneumaticPuff();
+        const currentStroke = Math.floor((crankAngle / (Math.PI * 4)) * 4);
+        if (currentStroke === 2 && lastSoundStroke !== 2 && !p.isAudioMuted) {
+          soundEngine.playExplosionThud(0.8);
         }
+        lastSoundStroke = currentStroke;
+
+        const isPowerStroke = currentStroke === 2;
+        flameMesh.visible = isPowerStroke && p.cutawayMode;
+        if (isPowerStroke) {
+          const strokePhase = (crankAngle % (Math.PI * 4) - Math.PI * 2) / Math.PI;
+          flameMat.opacity = Math.sin(strokePhase * Math.PI) * 0.8;
+          flameMesh.scale.setScalar(1 + Math.sin(strokePhase * Math.PI) * 0.5);
+        }
+
+        updateOttoEngineKinematics(
+          engineModel.nodes,
+          engineModel.materials,
+          crankAngle,
+          p.compressionRatio,
+          p.cutawayMode,
+          Boolean(p.isRunning),
+          dt,
+          p.govDisplayOmegaRadPerS,
+          p.flyballRadius,
+          p.engineRpm,
+        );
       }
 
       controls.update();
-      renderer.render(scene, camera);
+      renderer.render(scene, studio.camera);
     };
 
-    reqId = requestAnimationFrame(animate);
+    animate();
 
     return () => {
       cancelAnimationFrame(reqId);
@@ -190,78 +179,118 @@ export function OttoEngine3D() {
   }, [live]);
 
   return (
-    <div className="relative w-full h-[620px] bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent flex flex-col">
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+    <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
+      <div className="sr-only">Otto Four-Stroke Engine 3D</div>
+      <div className="relative flex-1 min-h-[380px] sm:min-h-[460px] w-full cursor-grab active:cursor-grabbing">
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Top HUD Controls */}
-      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-3 pointer-events-none z-10">
-        <div className="flex items-center gap-2 bg-parchment-950/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto text-parchment-100">
-          <Activity className="w-4 h-4 text-amber-400 animate-pulse" />
-          <span className="text-xs font-mono font-bold text-parchment-100 uppercase tracking-wider">
-            Otto Four-Stroke Engine 3D
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-            US Patent 194,047 (1877)
-          </span>
-        </div>
+        {/* Top-Left Camera Preset Toolbar */}
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none max-w-[calc(100%-14rem)] sm:max-w-none gap-1 sm:gap-1.5 bg-white/85 dark:bg-ink-900/85 backdrop-blur-md p-1 sm:p-1.5 rounded-xl border border-parchment-300 dark:border-ink-700 shadow-sm text-[10px] sm:text-xs transition-opacity duration-200">
+            <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-ink-500 font-sans flex items-center gap-1 shrink-0">
+              <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> View:
+            </span>
+            {(
+              [
+                ["iso", "Isometric"],
+                ["slide_valve", "Slide Valve"],
+                ["cylinder_piston", "Cylinder"],
+                ["lay_shaft", "2:1 Lay Shaft"],
+                ["governor", "Governor"],
+                ["flywheels", "Flywheels"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white shadow-xs"
+                    : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Camera Toolbar */}
-        <div className="flex items-center gap-1.5 bg-parchment-950/80 backdrop-blur-md p-1.5 rounded-xl border border-parchment-700/60 shadow-lg pointer-events-auto">
-          <Camera className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1" />
-          {(
-            [
-              ["iso", "Isometric"],
-              ["slide_valve", "Slide Valve"],
-              ["cylinder_piston", "Cylinder"],
-              ["lay_shaft", "2:1 Lay Shaft"],
-              ["governor", "Governor"],
-              ["flywheels", "Flywheels"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-sans rounded-lg transition-colors ${
-                activeCamera === preset
-                  ? "bg-amber-600 text-white font-semibold shadow-sm"
-                  : "text-slate-300 hover:text-white hover:bg-slate-800/60"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Toggles */}
-        <div className="flex items-center gap-1.5 bg-slate-900/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/60 shadow-lg pointer-events-auto">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
           <button
             type="button"
             onClick={() => setCutawayMode(!cutawayMode)}
             title={cutawayMode ? "Switch to Solid Shell" : "Switch to Cutaway Interior"}
-            className={`p-1.5 rounded-lg text-xs transition-colors ${
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               cutawayMode
-                ? "bg-amber-600 text-white font-semibold shadow-sm"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+                : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
             }`}
           >
-            {cutawayMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {cutawayMode ? <Eye className="w-3.5 h-3.5 inline sm:mr-1" /> : <EyeOff className="w-3.5 h-3.5 inline sm:mr-1" />}
+            <span className="hidden md:inline">{cutawayMode ? "Cutaway Active" : "Full Exterior"}</span>
           </button>
           <button
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 inline" /> : <Volume2 className="w-3.5 h-3.5 inline text-emerald-600 dark:text-emerald-400" />}
           </button>
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className="p-1.5 rounded-lg text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+              showUiOverlay
+                ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
+                : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-600"
+            }`}
+            title={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
+            aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
-            <Zap className="w-4 h-4 text-amber-400" />
+            <Zap className="w-3.5 h-3.5 inline sm:mr-1" />
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
+        </div>
+      </div>
+
+      {/* Interactive Controls Bar */}
+      <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Engine Speed</span>
+              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">{engineRpm} RPM</span>
+            </div>
+            <input
+              type="range"
+              min="60"
+              max="300"
+              step="10"
+              value={engineRpm}
+              onChange={(e) => updateParam("engineRpm", Number.parseInt(e.target.value, 10))}
+              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between text-xs font-sans">
+              <span className="text-ink-700 dark:text-ink-300 font-medium">Compression Ratio</span>
+              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">{compressionRatio.toFixed(1)}:1</span>
+            </div>
+            <input
+              type="range"
+              min="3"
+              max="7"
+              step="0.5"
+              value={compressionRatio}
+              onChange={(e) => updateParam("compressionRatio", Number.parseFloat(e.target.value))}
+              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
+            />
+          </div>
         </div>
       </div>
 
