@@ -111,7 +111,8 @@ direct visual review of the pinned PDF page.
 FIG. 12 is a diagram of a segment of laser material which is surrounded by a
 coolant having a high index of refraction.
 | “se Vas \
-! 5b
+FIG. 13 is a schematic diagram of a portion of a laser system illustrating the
+use of an interferometer.
 _”7 \ LU 13.
 y a 8 \
 ar) _
