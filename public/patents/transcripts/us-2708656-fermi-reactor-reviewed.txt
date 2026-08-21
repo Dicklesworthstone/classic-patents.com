@@ -1107,7 +1107,23 @@ It can readily be seen from the above tabulation that
 
 --- REVIEWED TRANSCRIPTION PAGE 32 OF 58 ---
 
-Sheet 32 of 58
+2,708,656
+
+10
+
+The total danger sum for impurities in both the uranium and moderator must be less than about .3 in order that the K factor remain equal to or greater than unity with a deuterium moderator, about .11 with a beryllium moderator, and about .1 with a graphite moderator. Light water can be used as a moderator, at least in part of a reactor, as will be pointed out later.
+
+In the chain reaction outlined in Fig. 1 for a natural uranium reactor of practical size, a small percentage of neutrons can be absorbed by impurities without reducing the neutron reproduction ratio below unity. Not all of these neutrons, however, should be absorbed by the residual impurities in the uranium and the moderator, because if this were so the system would always just be self-sustaining and no exponential rise in neutron density could be obtained. Some means must be provided to release additional neutrons to enter the chain.
+
+For example, in Fig. 1, it may be considered that only half of the neutrons that can be absorbed by impurities are absorbed by materials actually present as impurities in the uranium and the moderator, and that the other half are absorbed by a strong neutron absorbing material, such as cadmium, that is wholly or partially removable from the system. Under these conditions, with the chain reaction in balance, if the amount of cadmium is reduced to a point where fewer neutrons are absorbed, the neutron density will rise exponentially when the system is large enough. To stabilize the reaction at any desired neutron density, the absorbing material is reinserted until the total permissible absorption is restored; to reduce density, more absorber is introduced. The reaction is stopped by leaving sufficient absorber in the system to prevent the reaction from building up.
+
+4. Exterior neutron loss in a neutronic reactor of practical size
+
+In an infinite-size system there is no exterior leakage. In a finite reactor, fast neutrons can escape while slowing in the moderator near the periphery, and slow neutrons can escape while diffusing near the periphery. The smaller the reactor, the greater this exterior loss. A reflector of low absorption-to-scattering ratio can reduce the loss.
+
+MEASUREMENT OF NEUTRON LOSSES
+
+An exponential pile is a deliberately non-operating pile of known uranium-graphite geometry. A neutron source at the bottom produces a density distribution that declines exponentially with distance. The slope measures the effects of geometry, moderator, uranium composition, and impurities on the reproduction constant K.
 
 --- REVIEWED TRANSCRIPTION PAGE 33 OF 58 ---
 

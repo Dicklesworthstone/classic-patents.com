@@ -881,3 +881,14 @@ export const fermiReactorParallelReadings: Readonly<Record<number, readonly stri
     "The final typed paragraph records each certificate correction and the July 26, 1955 attestation, including E. J. Murry and Commissioner Robert C. Watson, without changing the separate legal claim blocks.",
   ],
 };
+
+/** Read a printed claim from the authored edition blocks only. */
+export function fermiReactorManualClaimText(number: number): string {
+  const block = fermiReactorArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`Fermi manual edition is missing claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
