@@ -46,7 +46,7 @@ const figure = (num: number, label: string): CuratedSpecificationInline => ({
     : {}),
 });
 
-const figureList = (numbers: number[]): CuratedSpecificationInline[] =>
+const _figureList = (numbers: number[]): CuratedSpecificationInline[] =>
   numbers.flatMap((number, index) => [
     ...(index > 0 ? [text(index === numbers.length - 1 ? " and " : ", ")] : []),
     figure(number, `Fig. ${number}`),

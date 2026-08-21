@@ -113,7 +113,7 @@ const drawingSheet = (
 // The pinned facsimile contains 27 drawing sheets before the specification.
 // Keep these source-sheet companions explicit so every printed figure label
 // resolves to the existing cloud-reviewed source-sheet inventory.
-const fermiDrawingSheetBlocks: readonly CuratedSpecificationBlock[] = [
+const _fermiDrawingSheetBlocks: readonly CuratedSpecificationBlock[] = [
   drawingSheet(1, [1], "chain-reaction neutron balance"),
   drawingSheet(2, [2], "uranium-metal spheres in graphite"),
   drawingSheet(3, [3], "uranium-metal rods in graphite"),

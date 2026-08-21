@@ -11,7 +11,6 @@ import {
   Target,
   Volume2,
   VolumeX,
-  Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ClaimConstraintToggle } from "@/components/patents/visuals/ClaimConstraintToggle";
@@ -614,7 +613,14 @@ export function ColtRevolverSim() {
                 {/* Rotating Cylinder Group */}
                 <g transform={`translate(120, 120) rotate(${faceAngleDeg})`}>
                   {/* Outer Drum Rim */}
-                  <circle cx="0" cy="0" r="82" fill="url(#cylSteelGrad)" stroke="#cbd5e1" strokeWidth="2.5" />
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r="82"
+                    fill="url(#cylSteelGrad)"
+                    stroke="#cbd5e1"
+                    strokeWidth="2.5"
+                  />
 
                   {/* 5 Radial Flash-Barrier Partition Walls (Colt Claim 3) */}
                   {[0, 1, 2, 3, 4].map((i) => {
@@ -662,20 +668,28 @@ export function ColtRevolverSim() {
                                 : "#090d16"
                           }
                           stroke={
-                            isBattery
-                              ? "#f59e0b"
-                              : status === "loaded"
-                                ? "#38bdf8"
-                                : "#64748b"
+                            isBattery ? "#f59e0b" : status === "loaded" ? "#38bdf8" : "#64748b"
                           }
                           strokeWidth={isBattery ? 3 : 1.5}
                         />
                         {/* Seated Lead Ball */}
                         {status === "loaded" && (
-                          <circle cx="0" cy="0" r="10" fill="#94a3b8" stroke="#cbd5e1" strokeWidth="1" />
+                          <circle
+                            cx="0"
+                            cy="0"
+                            r="10"
+                            fill="#94a3b8"
+                            stroke="#cbd5e1"
+                            strokeWidth="1"
+                          />
                         )}
                         {/* Threaded Percussion Nipple / Primer Core */}
-                        <circle cx="0" cy="0" r="4" fill={status === "loaded" ? "#d97706" : "#475569"} />
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r="4"
+                          fill={status === "loaded" ? "#d97706" : "#475569"}
+                        />
 
                         {/* Chamber Label */}
                         <text

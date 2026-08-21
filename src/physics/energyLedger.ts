@@ -315,8 +315,6 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
-
-
     case "us-235199-bell-photophone": {
       const beamWatts = params.beamPowerWatts ?? 2.5; // Concentrated sunlight optical beam
       const modulation = params.modulationDepth ?? 0.35;
@@ -341,7 +339,7 @@ export function computePortHamiltonianEnergy(
 
     case "us-247804-delaval-separator": {
       const rpm = params.bowlRpm ?? 6000.0;
-      const feedLph = params.feedRateLph ?? 250.0;
+      const _feedLph = params.feedRateLph ?? 250.0;
       const omega = (rpm * 2 * Math.PI) / 60.0;
       const bowlInertia = 0.085; // Forged steel centrifuge bowl
       kinetic = 0.5 * bowlInertia * omega * omega;
@@ -359,7 +357,7 @@ export function computePortHamiltonianEnergy(
       kinetic = 0.5 * twinFlywheelsInertia * omega * omega;
       powerIn = 1.1 * 745.7; // 1.1 Brake Horsepower gasoline combustion rate
       thermal = 18000.0; // Enclosed aluminium/iron crankcase thermal mass
-      dissipated = powerIn * 0.80; // Cylinder cooling air + exhaust enthalpy
+      dissipated = powerIn * 0.8; // Cylinder cooling air + exhaust enthalpy
       break;
     }
 
