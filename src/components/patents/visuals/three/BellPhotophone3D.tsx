@@ -123,7 +123,7 @@ export function BellPhotophone3D({
       <PortHamiltonianEnergyStrip
         patentId="us-235199-bell-photophone"
         params={{
-          beamPowerWatts: (solarIrradianceWPerM2 * 0.05 * 0.8),
+          beamPowerWatts: solarIrradianceWPerM2 * 0.05 * 0.8,
           voiceSplDb,
         }}
       />
