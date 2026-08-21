@@ -118,7 +118,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
-  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-400766-hall-aluminium": HALL_ALUMINIUM_PARALLEL_READINGS,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
