@@ -4,7 +4,10 @@
  * Canonical Patent Record for Alexander Graham Bell's Photophone (US Patent 235,199).
  */
 
-import { manualPhotophoneClaimText } from "@/data/editions/bellPhotophoneEdition";
+import {
+  bellPhotophoneArchivalEdition,
+  manualPhotophoneClaimText,
+} from "@/data/editions/bellPhotophoneEdition";
 import type { Patent } from "@/types/patent";
 
 export const bellPhotophonePatent: Patent = {
@@ -28,6 +31,15 @@ export const bellPhotophonePatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-235199-bell-photophone.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US235199A/en",
   usptoClassification: "398/118",
+  archivalEdition: bellPhotophoneArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-235199-bell-photophone-reviewed.txt",
+    pageCount: 13,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-20",
+    sourcePdfSha256: "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85",
+  },
 
   originalText:
     "Be it known that I, ALEXANDER GRAHAM BELL, of Washington, District of Columbia, have invented certain new and useful Improvements in Apparatus for Signaling and Communicating, called Photophone, of which the following is a specification... In an application for Letters Patent filed by me and Charles Sumner Tainter, of even date herewith, is described an invention based on the discovery that certain substances—such, for example, as selenium, gold, silver, platinum, German silver, steel, hard rubber, &c.—when placed in the path of a beam of rays, are affected by variations in the rays falling on them in such a way that if they form part of an electric circuit the resistance of the circuit is varied in accordance with the variations in the rays, and if they are in the form of a plate or diaphragm they emit sound under the influence of an intermittent or undulatory beam of rays.",

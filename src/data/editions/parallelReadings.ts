@@ -8,6 +8,7 @@
 
 import { baekelandBakeliteParallelReadings } from "./baekelandBakeliteEdition";
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
+import { bellPhotophoneParallelReadings } from "./bellPhotophoneEdition";
 import { bellTelephoneParallelReadings } from "./bellTelephoneEdition";
 import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carlsonElectrophotographyParallelReadings } from "./carlsonElectrophotographyEdition";
@@ -105,6 +106,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-200521-edison-phonograph": edisonPhonographParallelReadings,
   "us-223898-edison-lightbulb": edisonLightbulbParallelReadings,
   "us-233692-pelton-water-wheel": peltonWaterWheelParallelReadings,
+  "us-235199-bell-photophone": bellPhotophoneParallelReadings,
   "us-247804-delaval-separator": delavalSeparatorParallelReadings,
   "us-307031-edison-indicator": edisonIndicatorParallelReadings,
   "us-313224-mergenthaler-linotype": mergenthalerLinotypeParallelReadings,
