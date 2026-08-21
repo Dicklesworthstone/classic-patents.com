@@ -149,6 +149,15 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
+  // iOS Safari renders no inline plugin for <object type="application/pdf">,
+  // so the facsimile face swaps the empty frame for a purpose-built panel.
+  const [pdfEmbedUnsupported, setPdfEmbedUnsupported] = useState(false);
+  useEffect(() => {
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    setPdfEmbedUnsupported(isIOS);
+  }, []);
   // A raw PDF text layer is private comparison evidence, never a public
   // publication source. The optional edition is already hand-authored in
   // semantic nodes; this component intentionally performs no text cleanup.
@@ -190,7 +199,8 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target instanceof HTMLSelectElement) return;
+      if (e.target instanceof HTMLElement && e.target.isContentEditable) return;
       if (e.key === "1") setViewMode("plain-english");
       else if (e.key === "2") setViewMode("original-spec");
       else if (e.key === "3") setViewMode("interactive-sim");
@@ -369,23 +379,56 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
           </div>
 
           {/* Embedded PDF Viewer */}
-          <div className="w-full h-[75vh] sm:h-[80vh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
-            <object
-              data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
-              type="application/pdf"
-              aria-label={`${patent.patentNumber} PDF Facsimile`}
-              className="w-full h-full border-none bg-ink-900"
-            >
-              <a
-                href={patent.originalPdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
+          {pdfEmbedUnsupported ? (
+            <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-100/70 dark:bg-ink-900/70 p-8 sm:p-10 flex flex-col items-center text-center gap-4">
+              <FileText className="w-10 h-10 text-amber-700 dark:text-amber-400" aria-hidden />
+              <div className="space-y-2 max-w-md">
+                <h4 className="font-serif text-xl font-bold text-ink-950 dark:text-parchment-100">
+                  iOS does not display PDFs inline
+                </h4>
+                <p className="font-sans text-sm text-ink-700 dark:text-parchment-300 leading-relaxed">
+                  Open the scanned {patent.patentNumber} facsimile in a new tab, or download
+                  it for offline reading. The complete document is the authoritative
+                  primary source for this record.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href={patent.originalPdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-mono font-bold transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <FileText className="w-4 h-4" /> Open Facsimile PDF
+                </a>
+                <a
+                  href={patent.originalPdfUrl}
+                  download
+                  className="px-4 py-2.5 rounded-xl bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-ink-700 text-ink-900 dark:text-parchment-100 text-sm font-mono font-semibold transition-colors flex items-center gap-2 border border-parchment-300 dark:border-ink-700"
+                >
+                  <Download className="w-4 h-4" /> Download
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-[75vh] sm:h-[80vh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
+              <object
+                data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
+                type="application/pdf"
+                aria-label={`${patent.patentNumber} PDF Facsimile`}
+                className="w-full h-full border-none bg-ink-900"
               >
-                Open the {patent.patentNumber} PDF facsimile
-              </a>
-            </object>
-          </div>
+                <a
+                  href={patent.originalPdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-full items-center justify-center text-sm font-sans text-parchment-100 underline"
+                >
+                  Open the {patent.patentNumber} PDF facsimile
+                </a>
+              </object>
+            </div>
+          )}
         </div>
       )}
 
