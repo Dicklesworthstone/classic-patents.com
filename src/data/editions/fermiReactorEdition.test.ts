@@ -366,6 +366,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "utf8",
     );
     expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
-    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
+    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
   });
 });
