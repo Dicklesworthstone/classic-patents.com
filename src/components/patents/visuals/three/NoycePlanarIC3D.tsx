@@ -186,14 +186,18 @@ export const NoycePlanarIC3D = memo(() => {
           </button>
           <button
             type="button"
-            onClick={toggleSound}
-            title={isPlayingAudio ? "Mute Clock Tone" : "Play Clock Tone"}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
+            title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
+            aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             className="p-1.5 sm:p-2 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
           >
-            {isPlayingAudio ? (
-              <Volume2 className="w-4 h-4 text-sky-500" />
-            ) : (
+            {isAudioMuted ? (
               <VolumeX className="w-4 h-4" />
+            ) : (
+              <Volume2 className="w-4 h-4 text-sky-500" />
             )}
           </button>
           <button
