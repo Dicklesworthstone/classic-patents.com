@@ -956,7 +956,7 @@ plan position indicator types, include the fact that the
 transmitted beam is extremely narrow and may be sent
 over great distances with very little beam spreading. Also
 the wavelength is so small that extremely high resolu-
-tion is obtained. It may also be scen that it is substantially
+tion is obtained. It may also be seen that it is substantially
 impossible to jam a laser radar system because the jam-
 ming equipment would have to be placed precisely in
 line with the transmitter and the target would have to be
