@@ -3,11 +3,14 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEngelbartMouseModel, updateEngelbartMouseKinematics } from "./engelbartMouseModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -44,6 +47,7 @@ export const EngelbartMouse3D = memo(() => {
   const pulsesPerRev = (params.pulsesPerRev as number) ?? 200;
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const [crateSource, setCrateSource] = useState(genericKernelSource());
 
   const mouse = stepEngelbartMouse({
@@ -316,62 +320,63 @@ export const EngelbartMouse3D = memo(() => {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Tracking Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {mouseSpeedMmPerS} mm/s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="800"
-              step="25"
-              value={mouseSpeedMmPerS}
-              onChange={(e) => updateParam("mouseSpeed", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="engelbartSpeed"
+            patentId="us-3541541-engelbart-mouse"
+            paramKey="mouseSpeed"
+            label="Tracking Speed"
+            value={mouseSpeedMmPerS}
+            min={100}
+            max={800}
+            step={25}
+            unit=" mm/s"
+            onChange={(val) => updateParam("mouseSpeed", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Wheel Radius</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {wheelRadiusMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="6"
-              max="18"
-              step="0.5"
-              value={wheelRadiusMm}
-              onChange={(e) => updateParam("wheelRadius", Number.parseFloat(e.target.value))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="engelbartRadius"
+            patentId="us-3541541-engelbart-mouse"
+            paramKey="wheelRadius"
+            label="Wheel Radius"
+            value={wheelRadiusMm}
+            min={6}
+            max={18}
+            step={0.5}
+            unit=" mm"
+            onChange={(val) => updateParam("wheelRadius", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Resolver Pulses / Rev
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {pulsesPerRev} PPR
-              </span>
-            </div>
-            <input
-              type="range"
-              min="50"
-              max="400"
-              step="10"
-              value={pulsesPerRev}
-              onChange={(e) => updateParam("pulsesPerRev", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="engelbartPpr"
+            patentId="us-3541541-engelbart-mouse"
+            paramKey="pulsesPerRev"
+            label="Resolver Pulses / Rev"
+            value={pulsesPerRev}
+            min={50}
+            max={400}
+            step={10}
+            unit=" PPR"
+            onChange={(val) => updateParam("pulsesPerRev", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-3541541-engelbart-mouse"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-3541541-engelbart-mouse"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

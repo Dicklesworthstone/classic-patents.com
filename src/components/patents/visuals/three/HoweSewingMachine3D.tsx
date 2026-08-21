@@ -2,12 +2,15 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { stepHoweLockstitch } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildHoweSewingMachineModel } from "./howeSewingMachineModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -34,6 +37,7 @@ export function HoweSewingMachine3D() {
   const { params, updateParam } = usePatentPhysics("us-4750-howe-sewing-machine");
   const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const stitchingSpeedRpm = (params.crankRpm as number) ?? 240;
   const stitchPitchMm = (params.stitchPitchMm as number) ?? 3.5;
   const threadTensionGrams = (params.threadTensionGrams as number) ?? 45;
@@ -216,7 +220,15 @@ export function HoweSewingMachine3D() {
         )}
 
         {/* Top Right Tool Bar (Toggle UI, Audio, Pins, Reset) */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-4750-howe-sewing-machine"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("crankRpm", active ? 240 : 0);
+            }}
+          />
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -329,62 +341,54 @@ export function HoweSewingMachine3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Drive Crank Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {stitchingSpeedRpm} RPM
-              </span>
-            </div>
-            <input
-              type="range"
-              min="60"
-              max="420"
-              step="10"
-              value={stitchingSpeedRpm}
-              onChange={(e) => updateParam("crankRpm", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="howeSpeed"
+            patentId="us-4750-howe-sewing-machine"
+            paramKey="crankRpm"
+            label="Drive Crank Speed"
+            value={stitchingSpeedRpm}
+            min={60}
+            max={420}
+            step={10}
+            unit="RPM"
+            onChange={(val) => updateParam("crankRpm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Stitch Pitch</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {stitchPitchMm.toFixed(1)} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1.0"
-              max="6.0"
-              step="0.1"
-              value={stitchPitchMm}
-              onChange={(e) => updateParam("stitchPitchMm", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="howePitch"
+            patentId="us-4750-howe-sewing-machine"
+            paramKey="stitchPitchMm"
+            label="Stitch Pitch"
+            value={stitchPitchMm}
+            min={1.0}
+            max={6.0}
+            step={0.1}
+            unit="mm"
+            onChange={(val) => updateParam("stitchPitchMm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Thread Tension</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {threadTensionGrams} g
-              </span>
-            </div>
-            <input
-              type="range"
-              min="20"
-              max="90"
-              step="1"
-              value={threadTensionGrams}
-              onChange={(e) =>
-                updateParam("threadTensionGrams", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="howeTension"
+            patentId="us-4750-howe-sewing-machine"
+            paramKey="threadTensionGrams"
+            label="Thread Tension"
+            value={threadTensionGrams}
+            min={20}
+            max={90}
+            step={1}
+            unit="g"
+            onChange={(val) => updateParam("threadTensionGrams", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-4750-howe-sewing-machine"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

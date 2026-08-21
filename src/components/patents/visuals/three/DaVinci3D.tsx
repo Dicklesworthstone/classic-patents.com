@@ -7,10 +7,13 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type DaVinciState, stepDaVinci } from "@/physics/daVinciKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildDaVinciModel } from "./DaVinciModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
@@ -40,6 +43,7 @@ export function DaVinci3D() {
     tipVelocity: 0,
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const motionScaleRatio = (params.motionScaleRatio as number) ?? 3.0;
   const tremorFilterEnabled = (params.tremorFilterEnabled as number) ?? 1;
@@ -287,66 +291,63 @@ export function DaVinci3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Motion Scale (Master:Slave)
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {motionScaleRatio}:1
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              step="1"
-              value={motionScaleRatio}
-              onChange={(e) => updateParam("motionScaleRatio", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="davinciScaleRatio"
+            patentId="us-6331181-davinci"
+            paramKey="motionScaleRatio"
+            label="Motion Scale (Master:Slave)"
+            value={motionScaleRatio}
+            min={1}
+            max={10}
+            step={1}
+            unit=":1"
+            onChange={(val) => updateParam("motionScaleRatio", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Surgeon Hand Speed</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {masterInputSpeedMps.toFixed(2)} m/s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.2"
-              max="1.5"
-              step="0.05"
-              value={masterInputSpeedMps}
-              onChange={(e) =>
-                updateParam("masterInputSpeedMps", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="davinciHandSpeed"
+            patentId="us-6331181-davinci"
+            paramKey="masterInputSpeedMps"
+            label="Surgeon Hand Speed"
+            value={masterInputSpeedMps}
+            min={0.2}
+            max={1.5}
+            step={0.05}
+            unit=" m/s"
+            onChange={(val) => updateParam("masterInputSpeedMps", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                EndoWrist Grip Angle
-              </span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {gripAngleDeg}°
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="60"
-              step="5"
-              value={gripAngleDeg}
-              onChange={(e) => updateParam("gripAngleDeg", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="davinciGripAngle"
+            patentId="us-6331181-davinci"
+            paramKey="gripAngleDeg"
+            label="EndoWrist Grip Angle"
+            value={gripAngleDeg}
+            min={0}
+            max={60}
+            step={5}
+            unit="°"
+            onChange={(val) => updateParam("gripAngleDeg", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6331181-davinci"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-6331181-davinci"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

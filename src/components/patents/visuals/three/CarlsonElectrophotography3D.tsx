@@ -2,9 +2,12 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   articulateCarlsonElectrophotographyModel,
   buildCarlsonElectrophotographyModel,
@@ -56,6 +59,7 @@ export function CarlsonElectrophotography3D({
 
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const { params, updateParam } = usePatentPhysics("us-2297691-carlson-electrophotography");
   const coronaVoltageKv = (params.coronaVoltageKv as number) ?? initialCoronaVoltageKv;
@@ -184,7 +188,15 @@ export function CarlsonElectrophotography3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-2297691-carlson-electrophotography"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("coronaVoltageKv", active ? 6.5 : 0.5);
+            }}
+          />
           <button
             type="button"
             onClick={() => {
@@ -296,78 +308,68 @@ export function CarlsonElectrophotography3D({
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Corona Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {coronaVoltageKv.toFixed(2)} kV
-              </span>
-            </div>
-            <input
-              type="range"
-              min="4.0"
-              max="8.0"
-              step="0.25"
-              value={coronaVoltageKv}
-              onChange={(e) => updateParam("coronaVoltageKv", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carlsonCorona"
+            patentId="us-2297691-carlson-electrophotography"
+            paramKey="coronaVoltageKv"
+            label="Corona Voltage"
+            value={coronaVoltageKv}
+            min={4.0}
+            max={8.0}
+            step={0.25}
+            unit="kV"
+            onChange={(val) => updateParam("coronaVoltageKv", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Exposure</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {exposureLuxSec} lx·s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="30"
-              step="1"
-              value={exposureLuxSec}
-              onChange={(e) => updateParam("exposureLuxSec", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carlsonExposure"
+            patentId="us-2297691-carlson-electrophotography"
+            paramKey="exposure"
+            label="Optical Exposure"
+            value={exposureLuxSec}
+            min={0}
+            max={30}
+            step={1}
+            unit="lx·s"
+            onChange={(val) => updateParam("exposureLuxSec", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Layer Thickness</span>
-              <span className="text-purple-700 dark:text-purple-400 font-mono font-bold">
-                {layerThicknessUm} µm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="60"
-              step="5"
-              value={layerThicknessUm}
-              onChange={(e) => updateParam("layerThicknessUm", Number.parseFloat(e.target.value))}
-              className="w-full accent-purple-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carlsonThickness"
+            patentId="us-2297691-carlson-electrophotography"
+            paramKey="thickness"
+            label="Layer Thickness"
+            value={layerThicknessUm}
+            min={10}
+            max={60}
+            step={5}
+            unit="µm"
+            onChange={(val) => updateParam("layerThicknessUm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Fuser Temp</span>
-              <span className="text-rose-700 dark:text-rose-400 font-mono font-bold">
-                {fuserTemperatureC} °C
-              </span>
-            </div>
-            <input
-              type="range"
-              min="120"
-              max="220"
-              step="5"
-              value={fuserTemperatureC}
-              onChange={(e) => updateParam("fuserTemperatureC", Number.parseFloat(e.target.value))}
-              className="w-full accent-rose-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="carlsonFuser"
+            patentId="us-2297691-carlson-electrophotography"
+            paramKey="temperature"
+            label="Fuser Temp"
+            value={fuserTemperatureC}
+            min={120}
+            max={220}
+            step={5}
+            unit="°C"
+            onChange={(val) => updateParam("fuserTemperatureC", val)}
+            allParams={params}
+          />
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2297691-carlson-electrophotography"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

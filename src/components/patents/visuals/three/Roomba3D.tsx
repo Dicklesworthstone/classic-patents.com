@@ -7,10 +7,13 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ROOMBA_ROOM, type RoombaState, stepRoomba } from "@/physics/roombaKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildRoombaModel } from "./RoombaModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
@@ -36,6 +39,7 @@ export function Roomba3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [hud, setHud] = useState({ mode: "spiral", speed: 0.3 });
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const wheelSpeedMps = (params.wheelSpeedMps as number) ?? 0.3;
   const turnRateRadSec = (params.turnRateRadSec as number) ?? 1.5;
@@ -272,44 +276,45 @@ export function Roomba3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Drive Speed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {wheelSpeedMps.toFixed(2)} m/s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.1"
-              value={wheelSpeedMps}
-              onChange={(e) => updateParam("wheelSpeedMps", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="roombaDriveSpeed"
+            patentId="us-6594844-roomba"
+            paramKey="wheelSpeedMps"
+            label="Drive Speed"
+            value={wheelSpeedMps}
+            min={0.1}
+            max={1.0}
+            step={0.1}
+            unit=" m/s"
+            onChange={(val) => updateParam("wheelSpeedMps", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Turn Deflection Rate
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {turnRateRadSec.toFixed(1)} rad/s
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.5"
-              max="3.0"
-              step="0.5"
-              value={turnRateRadSec}
-              onChange={(e) => updateParam("turnRateRadSec", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="roombaTurnRate"
+            patentId="us-6594844-roomba"
+            paramKey="turnRateRadSec"
+            label="Turn Deflection Rate"
+            value={turnRateRadSec}
+            min={0.5}
+            max={3.0}
+            step={0.5}
+            unit=" rad/s"
+            onChange={(val) => updateParam("turnRateRadSec", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6594844-roomba"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip patentId="us-6594844-roomba" params={params} className="mt-3" />
       </div>
     </div>
   );

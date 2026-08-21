@@ -4,6 +4,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createBoyleSmithCcdModel } from "./boyleSmithCcdModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -31,6 +32,7 @@ export function BoyleSmithCcd3D() {
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isRunning, setIsRunning] = useState(true);
   const [isCutaway, setIsCutaway] = useState(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const gateVoltage = params.gateVoltageV ?? 10;
@@ -151,7 +153,15 @@ export function BoyleSmithCcd3D() {
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-3858232-boyle-smith-ccd"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("gateVoltageV", active ? 10 : 0.5);
+            }}
+          />
           <button
             type="button"
             onClick={() => {

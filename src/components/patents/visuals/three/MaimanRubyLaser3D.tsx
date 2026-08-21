@@ -6,6 +6,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createMaimanRubyLaserModel } from "./maimanRubyLaserModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
@@ -37,6 +38,7 @@ export function MaimanRubyLaser3D() {
 
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [isFiring, setIsFiring] = useState(false);
   const isFiringRef = useRef(false);
@@ -171,8 +173,16 @@ export function MaimanRubyLaser3D() {
           </div>
         )}
 
-        {/* Top Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-3353115-maiman-ruby-laser"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("pumpEnergyJoules", active ? 150 : 20);
+            }}
+          />
           <button
             type="button"
             onClick={triggerLaserPulse}
@@ -291,53 +301,37 @@ export function MaimanRubyLaser3D() {
             allParams={params}
           />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Crystal Temperature
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {crystalTemperatureKelvin} K
-              </span>
-            </div>
-            <input
-              type="range"
-              min="77"
-              max="400"
-              step="5"
-              value={crystalTemperatureKelvin}
-              onChange={(e) =>
-                updateParam("crystalTemperatureKelvin", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="maimanTemp"
+            patentId="us-3353115-maiman-ruby-laser"
+            paramKey="temperature"
+            label="Crystal Temperature"
+            value={crystalTemperatureKelvin}
+            min={77}
+            max={400}
+            step={5}
+            unit="K"
+            onChange={(val) => updateParam("crystalTemperatureKelvin", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Coupler Reflectivity
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {(outputMirrorReflectivity * 100).toFixed(0)}%
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.70"
-              max="0.98"
-              step="0.01"
-              value={outputMirrorReflectivity}
-              onChange={(e) =>
-                updateParam("outputMirrorReflectivity", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="maimanMirror"
+            patentId="us-3353115-maiman-ruby-laser"
+            paramKey="reflectivity"
+            label="Coupler Reflectivity"
+            value={outputMirrorReflectivity}
+            min={0.7}
+            max={0.98}
+            step={0.01}
+            unit=""
+            onChange={(val) => updateParam("outputMirrorReflectivity", val)}
+            allParams={params}
+          />
         </div>
 
         <PortHamiltonianEnergyStrip
-          patentId="us-3353115-maiman-laser"
+          patentId="us-3353115-maiman-ruby-laser"
           params={params}
           className="mt-3"
         />

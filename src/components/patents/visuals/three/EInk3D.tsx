@@ -7,10 +7,13 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type EInkState, stepEInk } from "@/physics/eInkKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEInkModel } from "./EInkModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
@@ -41,6 +44,7 @@ export function EInk3D() {
     stateLabel: "White State",
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const electrodeVoltageVolts = (params.electrodeVoltageVolts as number) ?? 15;
   const fluidViscosityCp = (params.fluidViscosityCp as number) ?? 2.0;
@@ -273,46 +277,45 @@ export function EInk3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Electrode Potential
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {electrodeVoltageVolts > 0 ? `+${electrodeVoltageVolts}` : electrodeVoltageVolts} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="-15"
-              max="15"
-              step="1"
-              value={electrodeVoltageVolts}
-              onChange={(e) =>
-                updateParam("electrodeVoltageVolts", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="einkElectrodeVoltage"
+            patentId="us-6120588-eink"
+            paramKey="electrodeVoltageVolts"
+            label="Electrode Potential"
+            value={electrodeVoltageVolts}
+            min={-15}
+            max={15}
+            step={1}
+            unit=" V"
+            onChange={(val) => updateParam("electrodeVoltageVolts", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Fluid Viscosity</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {fluidViscosityCp.toFixed(1)} cP
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0.5"
-              max="5.0"
-              step="0.5"
-              value={fluidViscosityCp}
-              onChange={(e) => updateParam("fluidViscosityCp", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="einkViscosity"
+            patentId="us-6120588-eink"
+            paramKey="fluidViscosityCp"
+            label="Fluid Viscosity"
+            value={fluidViscosityCp}
+            min={0.5}
+            max={5.0}
+            step={0.5}
+            unit=" cP"
+            onChange={(val) => updateParam("fluidViscosityCp", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-6120588-eink"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip patentId="us-6120588-eink" params={params} className="mt-3" />
       </div>
     </div>
   );

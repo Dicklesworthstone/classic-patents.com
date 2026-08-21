@@ -2,12 +2,15 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine, lamarrChannelFrequencyMhz } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   buildLamarrFrequencyHoppingModel,
   updateLamarrFrequencyHoppingKinematics,
@@ -42,6 +45,7 @@ export function LamarrFrequencyHopping3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const [_crateSource, setCrateSource] = useState(genericKernelSource());
 
   useEffect(() => {
@@ -306,64 +310,63 @@ export function LamarrFrequencyHopping3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Carrier Channels</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {carrierChannelsCount} keys
-              </span>
-            </div>
-            <input
-              type="range"
-              min="16"
-              max="88"
-              step="4"
-              value={carrierChannelsCount}
-              onChange={(e) =>
-                updateParam("carrierChannelsCount", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lamarrCarrierChannels"
+            patentId="us-2292387-lamarr-frequency-hopping"
+            paramKey="carrierChannelsCount"
+            label="Carrier Channels (N)"
+            value={carrierChannelsCount}
+            min={16}
+            max={88}
+            step={4}
+            unit=" channels"
+            onChange={(val) => updateParam("carrierChannelsCount", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Slotted Hop Rate</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {hopRateHopsPerSec} hops/sec
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="16"
-              step="1"
-              value={hopRateHopsPerSec}
-              onChange={(e) =>
-                updateParam("hopRateHopsPerSec", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lamarrHopRate"
+            patentId="us-2292387-lamarr-frequency-hopping"
+            paramKey="hopRateHopsPerSec"
+            label="Slotted Hop Rate"
+            value={hopRateHopsPerSec}
+            min={1}
+            max={16}
+            step={1}
+            unit=" hops/s"
+            onChange={(val) => updateParam("hopRateHopsPerSec", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Channel Number</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                Ch {currentChannel}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max={carrierChannelsCount}
-              step="1"
-              value={currentChannel}
-              onChange={(e) => updateParam("channel", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="lamarrCurrentChannel"
+            patentId="us-2292387-lamarr-frequency-hopping"
+            paramKey="channel"
+            label="Channel Number"
+            value={currentChannel}
+            min={1}
+            max={carrierChannelsCount}
+            step={1}
+            unit={` / ${carrierChannelsCount}`}
+            onChange={(val) => updateParam("channel", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-2292387-lamarr-frequency-hopping"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-2292387-lamarr-frequency-hopping"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

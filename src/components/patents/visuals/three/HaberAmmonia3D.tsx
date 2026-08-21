@@ -2,9 +2,12 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import {
   articulateHaberAmmoniaModel,
   buildHaberAmmoniaModel,
@@ -47,6 +50,7 @@ export default function HaberAmmonia3D({
   const timeRef = useRef<number>(0);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const { params, updateParam } = usePatentPhysics("us-971501-haber-ammonia");
@@ -173,7 +177,15 @@ export default function HaberAmmonia3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%] pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-971501-haber-ammonia"
+            claimStates={claimStates}
+            onToggleClaim={(c: number, active: boolean) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("pressureAtm", active ? 175 : 1);
+            }}
+          />
           <button
             type="button"
             onClick={() => {
@@ -285,52 +297,56 @@ export default function HaberAmmonia3D({
       </div>
 
       {showUiOverlay && (
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 border-t border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/60 rounded-b-2xl text-xs font-mono">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="pressure3d" className="text-ink-700 dark:text-parchment-300">
-              System Pressure: {pressureAtm} atm
-            </label>
-            <input
-              id="pressure3d"
-              type="range"
-              min="50"
-              max="300"
-              step="5"
+        <div className="p-4 border-t border-parchment-300 dark:border-ink-800 bg-parchment-100/80 dark:bg-ink-900/60 rounded-b-2xl text-xs font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <SensitivitySlider
+              id="haberPressure"
+              patentId="us-971501-haber-ammonia"
+              paramKey="synthesisPressureBar"
+              label="System Pressure"
               value={pressureAtm}
-              onChange={(e) => updateParam("pressureAtm", Number(e.target.value))}
-              className="h-1.5 w-36 accent-amber-500"
+              min={50}
+              max={300}
+              step={5}
+              unit="atm"
+              onChange={(val) => updateParam("pressureAtm", val)}
+              allParams={params}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="tempHaber3d" className="text-ink-700 dark:text-parchment-300">
-              Catalyst Temp: {temperatureCelsius} °C
-            </label>
-            <input
-              id="tempHaber3d"
-              type="range"
-              min="350"
-              max="650"
-              step="5"
+
+            <SensitivitySlider
+              id="haberTemp"
+              patentId="us-971501-haber-ammonia"
+              paramKey="synthesisTempC"
+              label="Catalyst Temp"
               value={temperatureCelsius}
-              onChange={(e) => updateParam("temperatureCelsius", Number(e.target.value))}
-              className="h-1.5 w-32 accent-amber-500"
+              min={350}
+              max={650}
+              step={5}
+              unit="°C"
+              onChange={(val) => updateParam("temperatureCelsius", val)}
+              allParams={params}
             />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="flowRate3d" className="text-ink-700 dark:text-parchment-300">
-              Feed Flow Rate: {feedFlowRateMolesPerSec} mol/s
-            </label>
-            <input
-              id="flowRate3d"
-              type="range"
-              min="10"
-              max="100"
-              step="5"
+
+            <SensitivitySlider
+              id="haberFlowRate"
+              patentId="us-971501-haber-ammonia"
+              paramKey="pressure"
+              label="Feed Flow Rate"
               value={feedFlowRateMolesPerSec}
-              onChange={(e) => updateParam("feedFlowRateMolesPerSec", Number(e.target.value))}
-              className="h-1.5 w-32 accent-amber-500"
+              min={10}
+              max={100}
+              step={5}
+              unit="mol/s"
+              onChange={(val) => updateParam("feedFlowRateMolesPerSec", val)}
+              allParams={params}
             />
           </div>
+
+          <PortHamiltonianEnergyStrip
+            patentId="us-971501-haber-ammonia"
+            params={params}
+            className="mt-3"
+          />
         </div>
       )}
 

@@ -7,10 +7,13 @@ import {
   type StudioContext,
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type MultiTouchState, stepMultiTouch } from "@/physics/multiTouchKernel";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildMultiTouchModel } from "./MultiTouchModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { usePatentAudio } from "./usePatentAudio";
@@ -41,6 +44,7 @@ export function MultiTouch3D() {
     deltaC: "0.68",
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { params, updateParam } = usePatentPhysics(EXHIBIT_ID);
   const fingerSeparationMm = (params.fingerSeparationMm as number) ?? 50;
   const fingerCount = (params.fingerCount as number) ?? 2;
@@ -289,48 +293,49 @@ export function MultiTouch3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Contact Separation Distance
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {fingerSeparationMm} mm
-              </span>
-            </div>
-            <input
-              type="range"
-              min="15"
-              max="120"
-              step="5"
-              value={fingerSeparationMm}
-              onChange={(e) =>
-                updateParam("fingerSeparationMm", Number.parseInt(e.target.value, 10))
-              }
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="multiTouchSeparation"
+            patentId="us-7479949-multitouch"
+            paramKey="fingerSeparationMm"
+            label="Contact Separation Distance"
+            value={fingerSeparationMm}
+            min={15}
+            max={120}
+            step={5}
+            unit=" mm"
+            onChange={(val) => updateParam("fingerSeparationMm", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Active Touch Contacts
-              </span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {fingerCount} pts
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="2"
-              step="1"
-              value={fingerCount}
-              onChange={(e) => updateParam("fingerCount", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="multiTouchCount"
+            patentId="us-7479949-multitouch"
+            paramKey="fingerCount"
+            label="Active Touch Contacts"
+            value={fingerCount}
+            min={0}
+            max={2}
+            step={1}
+            unit=" pts"
+            onChange={(val) => updateParam("fingerCount", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-7479949-multitouch"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-7479949-multitouch"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
@@ -38,6 +41,7 @@ export function WozniakApple3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const clockFrequencyMhz =
     (params.crystalFreq as number) ?? (params.masterClockMhz as number) ?? 14.31818;
@@ -258,44 +262,49 @@ export function WozniakApple3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Master Quartz Crystal
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {clockFrequencyMhz.toFixed(3)} MHz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="7.0"
-              max="28.0"
-              step="0.1"
-              value={clockFrequencyMhz}
-              onChange={(e) => updateParam("crystalFreq", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="wozniakCrystalFreq"
+            patentId="us-4136359-wozniak-apple"
+            paramKey="crystalFreq"
+            label="Master Quartz Crystal"
+            value={clockFrequencyMhz}
+            min={7.0}
+            max={28.0}
+            step={0.1}
+            unit=" MHz"
+            onChange={(val) => updateParam("crystalFreq", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">RAM Capacity</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {ramCapacityKb} KB
-              </span>
-            </div>
-            <input
-              type="range"
-              min="4"
-              max="48"
-              step="4"
-              value={ramCapacityKb}
-              onChange={(e) => updateParam("ramCapacityKb", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="wozniakRamCapacity"
+            patentId="us-4136359-wozniak-apple"
+            paramKey="ramCapacityKb"
+            label="RAM Capacity"
+            value={ramCapacityKb}
+            min={4}
+            max={48}
+            step={4}
+            unit=" KB"
+            onChange={(val) => updateParam("ramCapacityKb", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-4136359-wozniak-apple"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-4136359-wozniak-apple"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

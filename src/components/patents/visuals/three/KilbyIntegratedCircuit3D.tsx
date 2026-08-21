@@ -3,8 +3,11 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { createKilbyIntegratedCircuitModel, type KilbyModel } from "./kilbyIntegratedCircuitModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -52,6 +55,7 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState<boolean>(false);
   const { isAudioMuted, toggleSound } = usePatentAudio();
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
 
   const { params, updateParam } = usePatentPhysics("us-3138743-kilby-integrated-circuit");
   const supplyVoltageV = params.supplyVoltageV ?? 6.0;
@@ -228,64 +232,63 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">DC Supply Voltage</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {supplyVoltageV.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="2"
-              max="12"
-              step="0.5"
-              value={supplyVoltageV}
-              onChange={(e) => updateParam("supplyVoltageV", Number.parseFloat(e.target.value))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="kilbySupplyVoltage"
+            patentId="us-3138743-kilby-integrated-circuit"
+            paramKey="supplyVoltageV"
+            label="DC Supply Voltage"
+            value={supplyVoltageV}
+            min={2}
+            max={12}
+            step={0.5}
+            unit=" V"
+            onChange={(val) => updateParam("supplyVoltageV", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Base Drive Current</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {baseDriveCurrentUa} µA
-              </span>
-            </div>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              step="5"
-              value={baseDriveCurrentUa}
-              onChange={(e) => updateParam("baseDriveCurrentUa", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="kilbyBaseCurrent"
+            patentId="us-3138743-kilby-integrated-circuit"
+            paramKey="baseDriveCurrentUa"
+            label="Base Drive Current"
+            value={baseDriveCurrentUa}
+            min={10}
+            max={100}
+            step={5}
+            unit=" µA"
+            onChange={(val) => updateParam("baseDriveCurrentUa", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Capacitor Reverse Bias
-              </span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">
-                {reverseBiasVoltageV.toFixed(1)} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="10"
-              step="0.5"
-              value={reverseBiasVoltageV}
-              onChange={(e) =>
-                updateParam("reverseBiasVoltageV", Number.parseFloat(e.target.value))
-              }
-              className="w-full accent-emerald-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="kilbyReverseBias"
+            patentId="us-3138743-kilby-integrated-circuit"
+            paramKey="reverseBiasVoltageV"
+            label="Capacitor Reverse Bias"
+            value={reverseBiasVoltageV}
+            min={1}
+            max={10}
+            step={0.5}
+            unit=" V"
+            onChange={(val) => updateParam("reverseBiasVoltageV", val)}
+            allParams={params}
+          />
         </div>
+
+        <ClaimConstraintToggle
+          patentId="us-3138743-kilby-integrated-circuit"
+          claimStates={claimStates}
+          onToggleClaim={(claimNo, active) =>
+            setClaimStates((prev) => ({ ...prev, [claimNo]: active }))
+          }
+          className="mt-2"
+        />
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-3138743-kilby-integrated-circuit"
+          params={params}
+          className="mt-3"
+        />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}
