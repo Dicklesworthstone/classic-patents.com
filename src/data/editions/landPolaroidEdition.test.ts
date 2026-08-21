@@ -42,6 +42,11 @@ function reconstructLedgerClaims(): {
       currentParts = [claimHeader[2]];
       continue;
     }
+    if (line.trim() === "EDWIN H. LAND." || line.startsWith("REFERENCES CITED")) {
+      flush();
+      currentNumber = undefined;
+      break;
+    }
     if (currentNumber !== undefined && !line.startsWith("--- REVIEWED TRANSCRIPTION PAGE ")) {
       const trimmed = line.trim();
       if (trimmed) currentParts.push(trimmed);
