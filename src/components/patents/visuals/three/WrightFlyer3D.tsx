@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -25,6 +26,8 @@ import {
   wrightHoverY,
 } from "@/physics/wrightKernel";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips } from "./StudioKernelChips";
 import {
   createGlowPointTexture,
@@ -94,6 +97,7 @@ export function WrightFlyer3D() {
   const [showStreamlines, setShowStreamlines] = useState<boolean>(true);
   const [showVectors, setShowVectors] = useState<boolean>(true);
   const [isAutoFlying, setIsAutoFlying] = useState<boolean>(true);
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: isCoupled });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [kernelLabel, setKernelLabel] = useState(flyerKernelSource());
   const [aeroLabel, setAeroLabel] = useState(flyerAeroSource());
@@ -407,8 +411,16 @@ export function WrightFlyer3D() {
           </div>
         )}
 
-        {/* Camera & Toggle Controls (Top-Right) */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end items-center gap-1.5 sm:gap-2 max-w-[90%]">
+          <ClaimConstraintToggle
+            patentId="us-821393-wright-flyer"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => {
+              setClaimStates((prev) => ({ ...prev, [c]: active }));
+              updateParam("coupled", active ? 1 : 0);
+            }}
+          />
           <button
             type="button"
             onClick={() => {
@@ -520,41 +532,34 @@ export function WrightFlyer3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Airspeed</span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {airspeedMph} mph
-              </span>
-            </div>
-            <input
-              type="range"
-              min="15"
-              max="45"
-              step="1"
-              value={airspeedMph}
-              onChange={(e) => updateParam("speed", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="airspeed"
+            patentId={WRIGHT_PATENT_ID}
+            paramKey="airspeedKts"
+            label="Airspeed"
+            value={airspeedMph}
+            min={15}
+            max={45}
+            step={1}
+            unit="mph"
+            onChange={(val) => updateParam("speed", val)}
+            allParams={params}
+          />
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">Wing Warp Angle</span>
-              <span className="text-cyan-700 dark:text-cyan-400 font-mono font-bold">
-                {wingWarpDeg}°
-              </span>
-            </div>
-            <input
-              type="range"
-              min="-12"
-              max="12"
-              step="0.5"
-              value={wingWarpDeg}
-              onChange={(e) => updateParam("warp", Number.parseFloat(e.target.value))}
-              className="w-full accent-cyan-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="wingWarp"
+            patentId={WRIGHT_PATENT_ID}
+            paramKey="wingWarp"
+            label="Wing Warp Angle"
+            value={wingWarpDeg}
+            min={-12}
+            max={12}
+            step={0.5}
+            unit="°"
+            colorClass="accent-cyan-600"
+            onChange={(val) => updateParam("warp", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -592,6 +597,8 @@ export function WrightFlyer3D() {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip patentId={WRIGHT_PATENT_ID} params={params} className="mt-3" />
       </div>
 
       {/* Bottom SI Telemetry Chip Strip */}

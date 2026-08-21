@@ -409,6 +409,75 @@ class SoundEngine {
   public playSparks() {
     this.playGunshot();
   }
+
+  /**
+   * Bell Undulating Electrical Speech Current Synthesizer (US 174,465)
+   * Synthesizes human vocal formant harmonics driven by microphonic variable carbon resistance.
+   */
+  public playBellSpeechCurrent(amplitude = 0.15, fundamentalHz = 220) {
+    if (this.isMuted) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(fundamentalHz, ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(fundamentalHz * 1.08, ctx.currentTime + 0.05);
+      osc.frequency.linearRampToValueAtTime(fundamentalHz * 0.96, ctx.currentTime + 0.12);
+
+      gain.gain.setValueAtTime(amplitude * 0.1, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(amplitude * 0.8, ctx.currentTime + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
+      return 0.16;
+    });
+  }
+
+  /**
+   * Marconi Damped Spark Wave Train (US 586,193) & Tesla High-Potential Spark
+   * Generates exponentially decaying high-frequency RF spark burst.
+   */
+  public playMarconiSparkTrain(rfFreqHz = 850, dampingRate = 28) {
+    if (this.isMuted) return;
+    const decaySec = Math.max(0.02, Math.min(0.2, 1 / Math.max(1, dampingRate)));
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(rfFreqHz, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(rfFreqHz * 0.6, ctx.currentTime + decaySec);
+
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + decaySec);
+      return decaySec + 0.02;
+    });
+  }
+
+  /**
+   * Enrico Fermi Chicago Pile-1 Stochastic Geiger Radiation Click Train (US 2,708,656)
+   * Plays a sharp ionization discharge click whose probability scales with neutron flux.
+   */
+  public playFermiRadiationClicks(fluxScale = 1.0) {
+    if (this.isMuted) return;
+    this.playTransientVoice((osc, gain, ctx) => {
+      osc.type = "square";
+      const clickPitch = 1200 + ((Math.sin(ctx.currentTime * 1000) * 400 + 400) % 600);
+      osc.frequency.setValueAtTime(clickPitch, ctx.currentTime);
+
+      const vol = Math.min(0.2, 0.05 + fluxScale * 0.05);
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.008);
+      return 0.015;
+    });
+  }
+
+  /**
+   * Wright Flyer Twin Contra-Rotating Propeller Harmonic (US 821,393)
+   * Blade passage frequency tone modulated by engine RPM and airspeed Doppler.
+   */
+  public playWrightPropellerPass(engineRpm = 1020, airspeedKts = 28) {
+    if (this.isMuted) return;
+    const gearRatio = 12 / 33; // Sprocket reduction
+    const propRpm = engineRpm * gearRatio;
+    const bpfHz = (propRpm * 2) / 60; // 2-bladed propeller BPF (~ 12.3 Hz fundamental)
+    const dopplerShift = 1 + (airspeedKts / 60) * 0.08;
+
+    this.playTone(bpfHz * 4 * dopplerShift, 0.08, "triangle", 0.06);
+  }
 }
 
 export const soundEngine = new SoundEngine();

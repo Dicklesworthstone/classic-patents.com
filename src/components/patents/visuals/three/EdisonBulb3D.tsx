@@ -2,10 +2,13 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEdisonBulb } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildEdisonBulbModel, updateEdisonBulbKinematics } from "./edisonBulbModel";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
@@ -45,6 +48,7 @@ export const EdisonBulb3D = memo(() => {
   const [showGasMolecules] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
 
   const bulb = stepEdisonBulb({
@@ -179,6 +183,11 @@ export const EdisonBulb3D = memo(() => {
 
         {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-223898-edison-lamp"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => setClaimStates((prev) => ({ ...prev, [c]: active }))}
+          />
           <button
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
@@ -288,25 +297,19 @@ export const EdisonBulb3D = memo(() => {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Applied Terminal Voltage
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {appliedVoltage} V
-              </span>
-            </div>
-            <input
-              type="range"
-              min="40"
-              max="130"
-              step="1"
-              value={appliedVoltage}
-              onChange={(e) => updateParam("voltage", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="voltage"
+            patentId="us-223898-edison-lamp"
+            paramKey="mainsVoltageV"
+            label="Applied Terminal Voltage"
+            value={appliedVoltage}
+            min={40}
+            max={130}
+            step={1}
+            unit="V"
+            onChange={(val) => updateParam("voltage", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -328,6 +331,12 @@ export const EdisonBulb3D = memo(() => {
             />
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-223898-edison-lamp"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );

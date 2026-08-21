@@ -4,10 +4,13 @@ import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-re
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { HudText } from "@/components/ui/LatexRenderer";
+import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
+import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
+import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaMotorModel, updateTeslaMotorKinematics } from "./teslaMotorModel";
@@ -41,6 +44,7 @@ export function TeslaMotor3D() {
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+  const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const { isAudioMuted, toggleSound } = usePatentAudio();
 
   const apparatus = stepTeslaMotorFig9(acFrequencyHz);
@@ -210,8 +214,13 @@ export function TeslaMotor3D() {
           </div>
         )}
 
-        {/* Top-right overlay and audio controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex gap-1.5 sm:gap-2">
+        {/* Top-Right Action Controls */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+          <ClaimConstraintToggle
+            patentId="us-381968-tesla-motor"
+            claimStates={claimStates}
+            onToggleClaim={(c, active) => setClaimStates((prev) => ({ ...prev, [c]: active }))}
+          />
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -355,25 +364,19 @@ export function TeslaMotor3D() {
       {/* Interactive Controls Bar */}
       <div className="p-4 bg-parchment-100/90 dark:bg-ink-900/90 border-t border-parchment-300 dark:border-ink-800">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between text-xs font-sans">
-              <span className="text-ink-700 dark:text-ink-300 font-medium">
-                Generator AC Frequency
-              </span>
-              <span className="text-amber-700 dark:text-amber-400 font-mono font-bold">
-                {acFrequencyHz} Hz
-              </span>
-            </div>
-            <input
-              type="range"
-              min="20"
-              max="120"
-              step="5"
-              value={acFrequencyHz}
-              onChange={(e) => updateParam("frequency", Number.parseInt(e.target.value, 10))}
-              className="w-full accent-amber-600 bg-parchment-300 dark:bg-ink-700 rounded-lg h-2 cursor-pointer"
-            />
-          </div>
+          <SensitivitySlider
+            id="acFrequency"
+            patentId="us-381968-tesla-motor"
+            paramKey="acFrequencyHz"
+            label="Generator AC Frequency"
+            value={acFrequencyHz}
+            min={20}
+            max={120}
+            step={5}
+            unit="Hz"
+            onChange={(val) => updateParam("frequency", val)}
+            allParams={params}
+          />
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between text-xs font-sans">
@@ -410,6 +413,12 @@ export function TeslaMotor3D() {
             </div>
           </div>
         </div>
+
+        <PortHamiltonianEnergyStrip
+          patentId="us-381968-tesla-motor"
+          params={params}
+          className="mt-3"
+        />
       </div>
     </div>
   );
