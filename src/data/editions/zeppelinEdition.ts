@@ -16,9 +16,9 @@ const _term = (
 });
 
 export const ZEPPELIN_FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 500, height: 1620 },
-  2: { width: 600, height: 440 },
-  3: { width: 800, height: 700 },
+  1: { width: 1856, height: 2385 },
+  2: { width: 1856, height: 2385 },
+  3: { width: 1856, height: 2385 },
 };
 
 function figureAssetPath(number: number): string {
