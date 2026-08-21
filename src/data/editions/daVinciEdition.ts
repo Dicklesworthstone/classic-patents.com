@@ -227,7 +227,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an identifier signal included in a table accessible to the processor for comparison 10 15 20 25 30 40 45 55 60 18 with the signal, the table comprising a plurality of compatible tool identification signals.",
+          text: "A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an identifier signal included in a table accessible to the processor for comparison with the signal, the table comprising a plurality of compatible tool identification signals.",
         },
       ],
     },
@@ -407,7 +407,7 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the 10 15 20 25 30 20 interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+          text: "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
         },
       ],
     },
@@ -505,3 +505,11 @@ export const davinciArchivalEdition: CuratedSpecificationEdition = {
 };
 
 export const davinciEdition = davinciArchivalEdition;
+
+export function davinciClaimText(number: number): string {
+  const claim = davinciArchivalEdition.blocks.find(
+    (b): b is Extract<typeof b, { kind: "claim" }> => b.kind === "claim" && b.number === number,
+  );
+  if (!claim) throw new Error(`US 6,331,181 claim ${number} not found in edition`);
+  return claim.inlines.map((i) => i.text).join("");
+}

@@ -1,5 +1,5 @@
 import type { Patent } from "@/types/patent";
-import { davinciArchivalEdition } from "../editions/daVinciEdition";
+import { davinciArchivalEdition, davinciClaimText } from "../editions/daVinciEdition";
 
 export const daVinciPatent: Patent = {
   id: "us-6331181-davinci",
@@ -193,8 +193,7 @@ CLAIMS
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an identifier signal included in a table accessible to the processor for comparison 10 15 20 25 30 40 45 55 60 18 with the signal, the table comprising a plurality of compatible tool identification signals.",
+      originalText: davinciClaimText(1),
       plainEnglish:
         "A robotic surgical tool comprising a probe, surgical end effector, interface, and circuitry transmitting tool calibration or compatibility signals.",
       keyInnovations: [
@@ -206,16 +205,14 @@ CLAIMS
     {
       number: 2,
       isIndependent: false,
-      originalText:
-        "The tool of claim 1, wherein the signal indicates tool calibration offsets of the tool.",
+      originalText: davinciClaimText(2),
       plainEnglish: "Signal indicating tool calibration offsets.",
       keyInnovations: ["Factory tool calibration", "Kinematic offset compensation"],
     },
     {
       number: 3,
       isIndependent: false,
-      originalText:
-        "The tool of claim 1, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.",
+      originalText: davinciClaimText(3),
       plainEnglish:
         "End effector having a strength capability indicated by the transmitted signal.",
       keyInnovations: ["Grip strength rating", "Dynamic force limits"],
@@ -223,16 +220,14 @@ CLAIMS
     {
       number: 4,
       isIndependent: false,
-      originalText:
-        "The tool of claim 1, wherein the signal indicates a range of motion of the end effectors.",
+      originalText: davinciClaimText(4),
       plainEnglish: "Signal indicating a range of motion of the tool degrees of freedom.",
       keyInnovations: ["Joint range limits", "Workspace boundary transmission"],
     },
     {
       number: 5,
       isIndependent: false,
-      originalText:
-        "The tool of claim 1, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.",
+      originalText: davinciClaimText(5),
       plainEnglish:
         "End effectors coupled to probe via a wrist with axis geometry indicated by the signal.",
       keyInnovations: ["Wrist kinematic geometry", "Multi-axis DH parameters"],
@@ -240,8 +235,7 @@ CLAIMS
     {
       number: 6,
       isIndependent: true,
-      originalText:
-        "A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an arbitrary compatibility data string.",
+      originalText: davinciClaimText(6),
       plainEnglish:
         "Robotic surgical tool with interface driven elements and memory storing calibration offsets.",
       keyInnovations: ["Driven engagement elements", "Onboard calibration memory"],
@@ -249,16 +243,14 @@ CLAIMS
     {
       number: 7,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the signal indicates a range of motion of the end effectors.",
+      originalText: davinciClaimText(7),
       plainEnglish: "Signal indicating range of motion of driven elements.",
       keyInnovations: ["Actuator motion bounds", "Drive disk limits"],
     },
     {
       number: 8,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.",
+      originalText: davinciClaimText(8),
       plainEnglish:
         "End effectors coupled to probe via a wrist with geometry transmitted to processor.",
       keyInnovations: ["Wrist axis geometry transmission", "Slave arm inverse kinematics"],
@@ -266,8 +258,7 @@ CLAIMS
     {
       number: 9,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the signal indicates tool calibration offsets of the tool.",
+      originalText: davinciClaimText(9),
       plainEnglish:
         "Signal indicating tool calibration offsets between nominal and measured positions.",
       keyInnovations: ["Deviation offset calibration", "Sub-millimeter backlash tuning"],
@@ -275,15 +266,14 @@ CLAIMS
     {
       number: 10,
       isIndependent: false,
-      originalText: "The tool of claim 6, wherein the signal indicates a tool-type of the tool.",
+      originalText: davinciClaimText(10),
       plainEnglish: "Signal indicating a tool-type code for automated arm configuration.",
       keyInnovations: ["Tool type automated detection", "Hot-swap tool configuration"],
     },
     {
       number: 11,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.",
+      originalText: davinciClaimText(11),
       plainEnglish:
         "Joint disposed between interface and end effector with axis geometry transmitted in signal.",
       keyInnovations: ["Intermediate joint parameterization", "Multi-segment kinematics"],
@@ -291,40 +281,35 @@ CLAIMS
     {
       number: 12,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the probe comprises an elongate shaft suitable for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.",
+      originalText: davinciClaimText(12),
       plainEnglish: "Probe comprising an elongate shaft for minimally invasive insertion.",
       keyInnovations: ["8mm laparoscopy trocar shaft", "Minimally invasive cannula insertion"],
     },
     {
       number: 13,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.",
+      originalText: davinciClaimText(13),
       plainEnglish: "End effector having strength capability transmitted to processor.",
       keyInnovations: ["Tissue grip force limits", "Over-torque protection"],
     },
     {
       number: 14,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the signal further indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of cal- endar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.",
+      originalText: davinciClaimText(14),
       plainEnglish: "Signal indicating tool life, serial number, and procedure counts.",
       keyInnovations: ["Tool life tracking", "Single-use sterility interlocks"],
     },
     {
       number: 15,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, wherein the end effector comprises an image capture device to define a field of view.",
+      originalText: davinciClaimText(15),
       plainEnglish: "End effector comprising an image capture device.",
       keyInnovations: ["Integrated endoscopic camera", "Distal chip-on-tip vision"],
     },
     {
       number: 16,
       isIndependent: false,
-      originalText:
-        "The tool of claim 6, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.",
+      originalText: davinciClaimText(16),
       plainEnglish:
         "Wrist joint coupling end effector to probe for orientation variation inside body cavity.",
       keyInnovations: ["EndoWrist 7-DOF articulation", "Internal pitch and yaw"],
@@ -332,8 +317,7 @@ CLAIMS
     {
       number: 17,
       isIndependent: true,
-      originalText:
-        "A robotic surgical component for use in a robotic surgical system having a processor and a component holder, the component comprising: a component body having an interface mountable to the component holder, the body supporting a surgical end effector; a drive system coupled to the body, the drive system moving the end effector in response to commands from the processor; and circuitry mounted on the body, the circuitry defining a signal for transmitting to the processor, the signal comprising at least one member selected from the group consisting of compatibility of the component with the system, a component-type of the component, coupling of the component to the system, and calibration of the component; wherein the component comprises a tool including a shaft having a proximal end and a distal end, the end effector disposed adjacent the distal end of the shaft, with a plurality of degrees of motion relative to the proximal end of the shaft, and wherein the interface comprises a plurality of driven elements, and further comprising a tool drive system coupling the driven elements to the degrees of motion of the end effector, the tool drive system having one or more calibration offsets between a nominal position of the end effector relative to the driven elements and a measured position of the end effector relative to the driven elements; wherein the circuitry comprises a memory storing data indicating the offsets, the memory coupled to the interface so as to transmit the offsets to the processor.",
+      originalText: davinciClaimText(17),
       plainEnglish:
         "Robotic surgical component with body, drive system, and circuitry transmitting component status.",
       keyInnovations: ["Modular surgical component", "Drive system interface"],
@@ -341,8 +325,7 @@ CLAIMS
     {
       number: 18,
       isIndependent: false,
-      originalText:
-        "The component of claim 17, wherein the component body comprises an elongate shaft for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.",
+      originalText: davinciClaimText(18),
       plainEnglish:
         "Component body comprising an elongate shaft for minimally invasive aperture insertion.",
       keyInnovations: ["Trocar entry cannula", "Peritoneal port access"],
@@ -350,8 +333,7 @@ CLAIMS
     {
       number: 19,
       isIndependent: true,
-      originalText:
-        "A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the 10 15 20 25 30 20 interface comprising a magnet positioned so as to actuate the circuitry of the holder.",
+      originalText: davinciClaimText(19),
       plainEnglish:
         "Robotic surgical tool for manipulator with magnetically actuatable circuitry and magnet interface.",
       keyInnovations: ["Magnetic proximity latching", "Non-contact sensor engagement"],
@@ -359,40 +341,35 @@ CLAIMS
     {
       number: 20,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 19, wherein the circuitry defines a signal for transmitting to a processor.",
+      originalText: davinciClaimText(20),
       plainEnglish: "Circuitry defining a signal transmitting to a central processor.",
       keyInnovations: ["Central processor telemetry", "Digital tool handshake"],
     },
     {
       number: 21,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 20, wherein the signal comprises an unique tool identifier.",
+      originalText: davinciClaimText(21),
       plainEnglish: "Signal comprising a unique tool identifier.",
       keyInnovations: ["Cryptographic tool ID", "Authenticity verification"],
     },
     {
       number: 22,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 20, wherein the signal comprises tool calibration offsets of the tool.",
+      originalText: davinciClaimText(22),
       plainEnglish: "Signal comprising tool calibration offsets.",
       keyInnovations: ["Factory offset mapping", "Pre-calibrated instrument replacement"],
     },
     {
       number: 23,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 20, wherein the signal indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of calendar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.",
+      originalText: davinciClaimText(23),
       plainEnglish: "Signal indicating tool life and cumulative use measurements.",
       keyInnovations: ["Procedure countdown counter", "Actuation cycle logging"],
     },
     {
       number: 24,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 19, wherein the robotic manipulator comprises a drive system coupled to the probe, the drive system moving the end effector in response to commands from a processor.",
+      originalText: davinciClaimText(24),
       plainEnglish:
         "Robotic manipulator drive system moving end effector in response to processor commands.",
       keyInnovations: ["Master-slave teleoperation", "Real-time servo motion"],
@@ -400,32 +377,28 @@ CLAIMS
     {
       number: 25,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 19, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.",
+      originalText: davinciClaimText(25),
       plainEnglish: "Wrist joint coupling end effector to probe for orientation variation.",
       keyInnovations: ["Articulated wrist orientation", "Internal dexterous maneuvering"],
     },
     {
       number: 26,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 19, wherein the end effector comprises an image capture device to define a field of view.",
+      originalText: davinciClaimText(26),
       plainEnglish: "End effector comprising an image capture device to define a field of view.",
       keyInnovations: ["Stereoscopic endoscope", "Illuminated surgical imaging"],
     },
     {
       number: 27,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 20, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.",
+      originalText: davinciClaimText(27),
       plainEnglish: "Joint geometry transmitted to processor for kinematic transformation.",
       keyInnovations: ["Kinematic forward mapping", "Coordinate frame alignment"],
     },
     {
       number: 28,
       isIndependent: false,
-      originalText:
-        "The robotic surgical tool of claim 19, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.",
+      originalText: davinciClaimText(28),
       plainEnglish:
         "End effectors coupled with a wrist whose axis geometry is indicated by the signal.",
       keyInnovations: ["Wrist kinematic transformation", "Robotic telepresence control"],

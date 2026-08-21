@@ -300,7 +300,9 @@ FIG. 1
 
 --- REVIEWED TRANSCRIPTION PAGE 4 OF 34 ---
 
+U.S. Patent Dec. 18, 2001 Sheet 2 of 22 US 6,331,181 B1
 
+FIG. 2.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 34 ---
 
@@ -2096,307 +2098,122 @@ interface 110 of tool 54 into engagement with a mounted
 
 --- REVIEWED TRANSCRIPTION PAGE 33 OF 34 ---
 
-US 6,331,181 B1
-
-17
-
-adapter, as illustrated in FIG. 14C. The tool can be removed
-and replaced by reversing the tool mounting procedure
-illustrated in FIG. 14C and mounting an alternative tool in
-its place.
-
-Referring now to FIG. 15, an exemplary system and
-method for verifying compatibility of a tool with a robotic
-surgical system makes use of a unique identification data
-string that is irreversibly stored on an integrated circuit
-included in the circuitry of a tool or other component of the
-robotic surgical system. Advantageously, producers of such
-integrated circuits can include this unique identification data
-string on each integrated circuit such that no two integrated
-circuits include the same identification data. For example,
-Dallas DS 2505 may include a unique 64 bit identification
-data string which differs from the data strings of every other
-circuit of that part number.
-
-The identification data string could be downloaded
-directly to the processor and compared with a table listing all
-identification data strings of circuits included in compatible
-tools. Such a table could then be updated each time addi-
-tional tools were fabricated or outdated tools were retired.
-
-To avoid continuously updating a compatible tool table, a
-verification data string 164 may be calculated from the
-unique identification data according to an algorithm 166.
-Algorithm 166 may be used as an encryption mechanism,
-typically using an arbitrary function which cannot easily be
-determined by sampling verification data and identification
-data from a few tools. Verification data string 164 may then
-be stored in a memory of the tool or other robotic component
-during tool production, typically using a non-volatile
-memory.
-
-When the tool having identification data 162 and verifi-
-cation data 164 is coupled to the robotic surgical system, a
-signal 168 including these data strings may be transmitted to
-processor 152 as described above. By including a tangible
-media with method steps for performing algorithm 166 in a
-system accessible by processor 152, the processor can also
-perform the algorithm on the unique identification data so as
-to derive a conformation data string 170. This can be
-compared with the verification data, thereby confirming
-compatibility of the tool with the robotic system. Algorithm
-166 may include any of a wide variety of known encryption
-algorithms, or may be developed specifically for use in the
-robotic surgical system of the present invention.
-
-The descriptions given above regarding the exemplary
-devices, systems, and methods of the present invention are
-provided by way of an example, and for clarity of under-
-standing. A wide variety of changes, modifications, and
-adaptations of these specific embodiments will be obvious to
-those of skill in the art. Hence, the invention is limited solely
-by the following claims.
-
 What is claimed is:
 
-1. A robotic surgical tool for use in a robotic surgical
-system having a processor which directs movement of a tool
-holder, the tool comprising:
+1. A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an identifier signal included in a table accessible to the processor for comparison 10 15 20 25 30 40 45 55 60 18 with the signal, the table comprising a plurality of compatible tool identification signals.
 
-a probe having a proximal end and a distal end;
+2. The tool of claim 1, wherein the signal indicates tool calibration offsets of the tool.
 
-a surgical end effector disposed adjacent the distal end of
+3. The tool of claim 1, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.
 
-the probe;
+4. The tool of claim 1, wherein the signal indicates a range of motion of the end effectors.
 
-an interface disposed adjacent the proximal end of the
+5. The tool of claim 1, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.
 
-probe, the interface releasably coupleable with the tool
-holder; and
+6. A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an arbitrary compatibility data string.
 
-circuitry mounted on the probe, the circuitry defining a
+7. The tool of claim 6, wherein the signal indicates a range of motion of the end effectors.
 
-signal for transmitting to the processor so as to indicate
-compatibility of the tool with the system;
+8. The tool of claim 6, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.
 
-wherein the signal comprises an identifier signal included
+9. The tool of claim 6, wherein the signal indicates tool calibration offsets of the tool.
 
-in a table accessible to the processor for comparison
+10. The tool of claim 6, wherein the signal indicates a tool-type of the tool.
 
-10
+11. The tool of claim 6, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.
 
-15
+12. The tool of claim 6, wherein the probe comprises an elongate shaft suitable for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.
 
-20
+13. The tool of claim 6, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.
 
-25
+14. The tool of claim 6, wherein the signal further indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of cal- endar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.
 
-30
+15. The tool of claim 6, wherein the end effector comprises an image capture device to define a field of view.
 
-40
+16. The tool of claim 6, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.
 
-45
+17. A robotic surgical component for use in a robotic surgical system having a processor and a component holder, the component comprising: a component body having an interface mountable to the component holder, the body supporting a surgical end effector; a drive system coupled to the body, the drive system moving the end effector in response to commands from the processor; and circuitry mounted on the body, the circuitry defining a signal for transmitting to the processor, the signal comprising at least one member selected from the group consisting of compatibility of the component with the system, a component-type of the component, coupling of the component to the system, and calibration of the component; wherein the component comprises a tool including a shaft having a proximal end and a distal end, the end effector disposed adjacent the distal end of the shaft, with a plurality of degrees of motion relative to the proximal end of the shaft, and wherein the interface comprises a plurality of driven elements, and further comprising a tool drive system coupling the driven elements to the degrees of motion of the end effector, the tool drive system having one or more calibration offsets between a nominal position of the end effector relative to the driven elements and a measured position of the end effector relative to the driven elements; wherein the circuitry comprises a memory storing data indicating the offsets, the memory coupled to the interface so as to transmit the offsets to the processor.
 
-55
+18. The component of claim 17, wherein the component body comprises an elongate shaft for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.
 
-60
+19. A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising; a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the 10 15 20 25 30 20 interface comprising a magnet positioned so as to actuate the circuitry of the holder.
 
-18
+20. The robotic surgical tool of claim 19, wherein the circuitry defines a signal for transmitting to a processor.
 
-with the signal, the table comprising a plurality of
-compatible tool identification signals.
+21. The robotic surgical tool of claim 20, wherein the signal comprises an unique tool identifier.
 
-2. The tool of claim 1, wherein the signal indicates tool
-calibration offsets of the tool.
+22. The robotic surgical tool of claim 20, wherein the signal comprises tool calibration offsets of the tool.
 
-3. The tool of claim 1, wherein the end effector has a
-strength, and wherein the signal indicates the strength of the
-end effector to the processor.
+23. The robotic surgical tool of claim 20, wherein the signal indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of calendar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.
 
-4. The tool of claim 1, wherein the signal indicates a range
-of motion of the end effectors.
+24. The robotic surgical tool of claim 19, wherein the robotic manipulator comprises a drive system coupled to the probe, the drive system moving the end effector in response to commands from a processor.
 
-5. The tool of claim 1, wherein the end effectors are
-coupled to the probe with a wrist, wherein the signal
-indicates a wrist axis geometry.
+25. The robotic surgical tool of claim 19, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.
 
-6. A robotic surgical tool for use in a robotic surgical
-system having a processor which directs movement of a tool
-holder, the tool comprising:
+26. The robotic surgical tool of claim 19, wherein the end effector comprises an image capture device to define a field of view.
 
-a probe having a proximal end and a distal end;
+27. The robotic surgical tool of claim 20, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.
 
-a surgical end effector disposed adjacent the distal end of
+28. The robotic surgical tool of claim 19, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.
 
-the probe;
 
-an interface disposed adjacent the proximal end of the
-probe, the interface releasably coupleable with the tool
-holder; and
-
-circuitry mounted on the probe, the circuitry defining a
-signal for transmitting to the processor so as to indicate
-compatibility of the tool with the system;
-
-wherein the signal comprises an arbitrary compatibility
-data string.
-
-7. The tool of claim 6, wherein the signal indicates a range
-
-of motion of the end effectors.
-
-8. The tool of claim 6, wherein the end effectors are
-coupled to the probe with a wrist, wherein the signal
-indicates a wrist axis geometry.
-
-9. The tool of claim 6, wherein the signal indicates tool
-calibration offsets of the tool.
-
-10. The tool of claim 6, wherein the signal indicates a
-tool-type of the tool.
-
-11. The tool of claim 6, further comprising at least one
-joint disposed between the interface and end effector, the
-joint defining a joint axis geometry, wherein the signal
-indicates the joint geometry of the tool to the processor.
-
-12. The tool of claim 6, wherein the probe comprises an
-elongate shaft suitable for distal insertion via a minimally
-invasive aperture to an internal surgical site of a patient
-body.
-
-13. The tool of claim 6, wherein the end effector has a
-strength, and wherein the signal indicates the strength of the
-end effector to the processor.
-
-14. The tool of claim 6, wherein the signal further
-indicates at least one of tool life and cumulative tool use by
-a measurement selected from the group consisting of cal-
-endar date, clock time, number of surgical procedures,
-number of times the tool has been coupled to the system, and
-number of end effector actuations.
-
-15. The tool of claim 6, wherein the end effector com-
-prises an image capture device to define a field of view.
-
-16. The tool of claim 6, further comprising a wrist joint
-coupling the end effector to the probe for varying an
-orientation of the end effector within an internal surgical
-site.
-
-17. A robotic surgical component for use in a robotic
-surgical system having a processor and a component holder,
-the component comprising:
-
-a component body having an interface mountable to the
-component holder, the body supporting a surgical end
-effector;
-
-a drive system coupled to the body, the drive system
-moving the end effector in response to commands from
-the processor; and
 
 --- REVIEWED TRANSCRIPTION PAGE 34 OF 34 ---
 
-US 6,331,181 B1
+What is claimed is:
 
-19
+1. A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an identifier signal included in a table accessible to the processor for comparison with the signal, the table comprising a plurality of compatible tool identification signals.
 
-circuitry mounted on the body, the circuitry defining a
-signal for transmitting to the processor, the signal
-comprising at least one member selected from the
-group consisting of compatibility of the component
-with the system, a component-type of the component,
-coupling of the component to the system, and calibra-
-tion of the component;
+2. The tool of claim 1, wherein the signal indicates tool calibration offsets of the tool.
 
-wherein the component comprises a tool including a shaft
-having a proximal end and a distal end, the end effector
-disposed adjacent the distal end of the shaft, with a
-plurality of degrees of motion relative to the proximal
-end of the shaft, and wherein the interface comprises a
-plurality of driven elements, and further comprising a
-tool drive system coupling the driven elements to the
-degrees of motion of the end effector, the tool drive
-system having one or more calibration offsets between
-a nominal position of the end effector relative to the
-driven elements and a measured position of the end
-effector relative to the driven elements;
+3. The tool of claim 1, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.
 
-wherein the circuitry comprises a memory storing data
+4. The tool of claim 1, wherein the signal indicates a range of motion of the end effectors.
 
-indicating the offsets, the memory coupled to the inter-
-face so as to transmit the offsets to the processor.
+5. The tool of claim 1, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.
 
-18. The component of claim 17, wherein the component
-body comprises an elongate shaft for distal insertion via a
-minimally invasive aperture to an internal surgical site of a
-patient body.
+6. A robotic surgical tool for use in a robotic surgical system having a processor which directs movement of a tool holder, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector disposed adjacent the distal end of the probe; an interface disposed adjacent the proximal end of the probe, the interface releasably coupleable with the tool holder; and circuitry mounted on the probe, the circuitry defining a signal for transmitting to the processor so as to indicate compatibility of the tool with the system; wherein the signal comprises an arbitrary compatibility data string.
 
-19. A robotic surgical tool for use with a robotic manipu-
-lator having a tool holder, the tool holder having magneti-
-cally actuatable circuitry, the tool comprising;
+7. The tool of claim 6, wherein the signal indicates a range of motion of the end effectors.
 
-a probe having a proximal end and a distal end;
+8. The tool of claim 6, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.
 
-a surgical end effector adjacent the distal end of the probe;
+9. The tool of claim 6, wherein the signal indicates tool calibration offsets of the tool.
 
-an interface adjacent the proximal end of the probe, the
-interface releasably coupleable with the holder, the
+10. The tool of claim 6, wherein the signal indicates a tool-type of the tool.
 
-10
+11. The tool of claim 6, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.
 
-15
+12. The tool of claim 6, wherein the probe comprises an elongate shaft suitable for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.
 
-20
+13. The tool of claim 6, wherein the end effector has a strength, and wherein the signal indicates the strength of the end effector to the processor.
 
-25
+14. The tool of claim 6, wherein the signal further indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of calendar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.
 
-30
+15. The tool of claim 6, wherein the end effector comprises an image capture device to define a field of view.
 
-20
+16. The tool of claim 6, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.
 
-interface comprising a magnet positioned so as to
-actuate the circuitry of the holder.
+17. A robotic surgical component for use in a robotic surgical system having a processor and a component holder, the component comprising: a component body having an interface mountable to the component holder, the body supporting a surgical end effector; a drive system coupled to the body, the drive system moving the end effector in response to commands from the processor; and circuitry mounted on the body, the circuitry defining a signal for transmitting to the processor, the signal comprising at least one member selected from the group consisting of compatibility of the component with the system, a component-type of the component, coupling of the component to the system, and calibration of the component; wherein the component comprises a tool including a shaft having a proximal end and a distal end, the end effector disposed adjacent the distal end of the shaft, with a plurality of degrees of motion relative to the proximal end of the shaft, and wherein the interface comprises a plurality of driven elements, and further comprising a tool drive system coupling the driven elements to the degrees of motion of the end effector, the tool drive system having one or more calibration offsets between a nominal position of the end effector relative to the driven elements and a measured position of the end effector relative to the driven elements; wherein the circuitry comprises a memory storing data indicating the offsets, the memory coupled to the interface so as to transmit the offsets to the processor.
 
-20. The robotic surgical tool of claim 19, wherein the
-circuitry defines a signal for transmitting to a processor.
+18. The component of claim 17, wherein the component body comprises an elongate shaft for distal insertion via a minimally invasive aperture to an internal surgical site of a patient body.
 
-21. The robotic surgical tool of claim 20, wherein the
-signal comprises an unique tool identifier.
+19. A robotic surgical tool for use with a robotic manipulator having a tool holder, the tool holder having magnetically actuatable circuitry, the tool comprising: a probe having a proximal end and a distal end; a surgical end effector adjacent the distal end of the probe; an interface adjacent the proximal end of the probe, the interface releasably coupleable with the holder, the interface comprising a magnet positioned so as to actuate the circuitry of the holder.
 
-22. The robotic surgical tool of claim 20, wherein the
-signal comprises tool calibration offsets of the tool.
+20. The robotic surgical tool of claim 19, wherein the circuitry defines a signal for transmitting to a processor.
 
-23. The robotic surgical tool of claim 20, wherein the
-signal indicates at least one of tool life and cumulative tool
-use by a measurement selected from the group consisting of
-calendar date, clock time, number of surgical procedures,
-number of times the tool has been coupled to the system, and
-number of end effector actuations.
+21. The robotic surgical tool of claim 20, wherein the signal comprises an unique tool identifier.
 
-24. The robotic surgical tool of claim 19, wherein the
-robotic manipulator comprises a drive system coupled to the
-probe, the drive system moving the end effector in response
-to commands from a processor.
+22. The robotic surgical tool of claim 20, wherein the signal comprises tool calibration offsets of the tool.
 
-25. The robotic surgical tool of claim 19, further com-
-prising a wrist joint coupling the end effector to the probe for
-varying an orientation of the end effector within an internal
-surgical site.
+23. The robotic surgical tool of claim 20, wherein the signal indicates at least one of tool life and cumulative tool use by a measurement selected from the group consisting of calendar date, clock time, number of surgical procedures, number of times the tool has been coupled to the system, and number of end effector actuations.
 
-26. The robotic surgical tool of claim 19, wherein the end
-effector comprises an image capture device to define a field
-of view.
+24. The robotic surgical tool of claim 19, wherein the robotic manipulator comprises a drive system coupled to the probe, the drive system moving the end effector in response to commands from a processor.
 
-27. The robotic surgical tool of claim 20, further com-
-prising at least one joint disposed between the interface and
-end effector, the joint defining a joint axis geometry, wherein
-the signal indicates the joint geometry of the tool to the
-processor.
+25. The robotic surgical tool of claim 19, further comprising a wrist joint coupling the end effector to the probe for varying an orientation of the end effector within an internal surgical site.
 
-28. The robotic surgical tool of claim 19, wherein the end
-effectors are coupled to the probe with a wrist, wherein the
-signal indicates a wrist axis geometry.
+26. The robotic surgical tool of claim 19, wherein the end effector comprises an image capture device to define a field of view.
 
-ee oe OR
+27. The robotic surgical tool of claim 20, further comprising at least one joint disposed between the interface and end effector, the joint defining a joint axis geometry, wherein the signal indicates the joint geometry of the tool to the processor.
+
+28. The robotic surgical tool of claim 19, wherein the end effectors are coupled to the probe with a wrist, wherein the signal indicates a wrist axis geometry.

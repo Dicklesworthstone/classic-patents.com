@@ -32,6 +32,7 @@ import { farnsworthTvParallelReadings } from "./farnsworthTvEdition";
 import { fessendenWirelessParallelReadings } from "./fessendenWirelessEdition";
 import { gatlingGunParallelReadings } from "./gatlingGunEdition";
 import { gliddenBarbedWireParallelReadings } from "./gliddenBarbedWireEdition";
+import { goddardRocketParallelReadings } from "./goddardRocketEdition";
 import { goodyearRubberParallelReadings } from "./goodyearRubberEdition";
 import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
@@ -50,6 +51,7 @@ import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
+import { multiTouchParallelReadings } from "./multiTouchEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { noyceIcParallelReadings } from "./noyceIcEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
@@ -112,7 +114,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
-  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-400766-hall-aluminium": HALL_ALUMINIUM_PARALLEL_READINGS,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
@@ -126,6 +127,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-879532-de-forest-audion": deForestAudionParallelReadings,
   "us-942699-baekeland-bakelite": baekelandBakeliteParallelReadings,
   "us-971501-haber-ammonia": haberAmmoniaParallelReadings,
+  "us-1102653-goddard-rocket": goddardRocketParallelReadings,
   "us-1773980-farnsworth-tv": farnsworthTvParallelReadings,
   "us-1781541-einstein-refrigerator": einsteinRefrigeratorParallelReadings,
   "us-2292387-lamarr-frequency-hopping": lamarrFrequencyHoppingParallelReadings,
@@ -142,6 +144,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-6285999-pagerank": pagerankParallelReadings,
   "us-6331181-davinci": davinciParallelReadings,
   "us-6594844-roomba": roombaParallelReadings,
+  "us-7479949-multitouch": multiTouchParallelReadings,
 
   "us-821393-wright-flyer": {
     4: [
