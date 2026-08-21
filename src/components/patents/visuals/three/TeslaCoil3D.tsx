@@ -11,6 +11,7 @@ import { StudioKernelChips } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { buildTeslaCoilModel } from "./teslaCoilModel";
 import { useLiveSimParams } from "./useLiveSimParams";
+import { usePatentAudio } from "./usePatentAudio";
 
 type CameraPreset = "iso" | "toroid_breakout" | "primary_spiral" | "spark_gap" | "top";
 
@@ -44,7 +45,7 @@ export function TeslaCoil3D() {
   const [showLightningStreamers, _setShowLightningStreamers] = useState<boolean>(true);
   const [showCalloutPins, setShowCalloutPins] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
-  const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
+  const { isAudioMuted, toggleSound } = usePatentAudio();
 
   // Interpretive coupled-LC host-model calculations.
   const coilPhysics = FrankenSimEngine.stepTeslaCoilFromControls({
@@ -92,6 +93,7 @@ export function TeslaCoil3D() {
     streamerLengthInches: coilPhysics.streamerLengthInches,
     streamerStudioLength: coilPhysics.streamerStudioLength,
     sparkRateHz: params.sparkRateHz ?? 120,
+    isAudioMuted,
   });
 
   const studioRef = useRef<StudioContext | null>(null);
@@ -135,7 +137,7 @@ export function TeslaCoil3D() {
         Number.parseFloat(p.secondaryVoltageMv),
       );
 
-      if (isPlayingAudio) {
+      if (!p.isAudioMuted) {
         audioTick += 1;
         if (audioTick % Math.max(1, Math.round(60 / (p.sparkRateHz / 10))) === 0) {
           soundEngine.playSparkDischarge(0.2);
@@ -154,7 +156,7 @@ export function TeslaCoil3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [isPlayingAudio, live]);
+  }, [live]);
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">
