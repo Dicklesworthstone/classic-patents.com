@@ -788,10 +788,7 @@ const BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE: Readonly<Record<number, readonly
     "This companion preserves the source proposition: It is obvious that the diaphragm, instead of being operated directly by the sound-waves, could be made to vibrate by electrical means, such as used for imparting vibration to the diaphragm of a receiving-telephone.",
   ],
   42: [
-    "This companion preserves the source proposition: It is well known that the extent of motion",
-  ],
-  43: [
-    "This companion preserves the source proposition: which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.",
+    "This companion preserves the source proposition: It is well known that the extent of motion which can be given by the voice to a diaphragm and the parts directly connected with it is quite small. By making the slits or openings in the screen small, a slight extent of motion will cause a great percentage of change—i. e., from an almost total interruption to the passage of one-half the rays—and by suitable means the rays can be so concentrated that this range of variation will produce a great absolute change in the radiant energy falling on the sensitive body. In passing the rays through fine slits, however, some difficulties arise in the nature of interference. I have obviated these by another form of articulate-speech transmitter, which I will presently describe.",
   ],
   44: [
     "This companion preserves the source proposition: In Fig. 8 the radiant body is shown as the flame of a candle, p, and the lens brings the divergent rays thereof to the condition of a parallel beam, which is controlled by the gratings kl.",
@@ -887,10 +884,7 @@ const BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE: Readonly<Record<number, readonly
     "This companion preserves the source proposition: In order to insure a more perfect connection between the plates a⁵ and cylinders f⁵, and the plates b⁵ and cylinders g⁵, the said cylinders are made tubular and one or more slots, 40, cut longitudinally through their sides. Washers c⁶, of insulating material, are placed within the large holes 30 31 in the conducting-disks, so that the said washers completely insulate and separate that portion of the said disks from the cylinders.",
   ],
   75: [
-    "This companion preserves the source proposition: Melted conducting material—as, for example, type-metal—is poured into the tubes f⁵ g⁵, and, passing through the longitudinal slots,",
-  ],
-  76: [
-    "This companion preserves the source proposition: makes a perfect connection with the plates having small holes 32 33 around the said tubes, as shown in Fig. 23, where the type-metal is indicated by the letter f⁷; but is prevented by the washers c⁶ from making a contact with the plates having the large holes adjacent to it, as shown in Fig. 22.",
+    "This companion preserves the source proposition: Melted conducting material—as, for example, type-metal—is poured into the tubes f⁵ g⁵, and, passing through the longitudinal slots, makes a perfect connection with the plates having small holes 32 33 around the said tubes, as shown in Fig. 23, where the type-metal is indicated by the letter f⁷; but is prevented by the washers c⁶ from making a contact with the plates having the large holes adjacent to it, as shown in Fig. 22.",
   ],
   77: [
     "This companion preserves the source proposition: Instead of the washers c⁶, of insulating material, smaller washers or rings of any material—as, for instance, metal—may be used to confine the molten metal and prevent its contact with the plates at the large holes, the said rings themselves being too small in diameter to touch the said disks.",
@@ -917,10 +911,7 @@ const BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE: Readonly<Record<number, readonly
     "This companion preserves the source proposition: I have also employed with the selenium cell the rays of gas, of a petroleum-lamp, and of a candle, and of the lime-light. For many purposes, an artificial source of light the position of which can be adjusted at pleasure, and kept unchanged and unaffected by night or weather, is more convenient than sunlight.",
   ],
   85: [
-    "This companion preserves the source proposition: I have employed prepared selenium as a type of one class of sensitive bodies whose changed condition is manifested by the variation in the resistance they afford to a constant current, and a disk of hard rubber as a type",
-  ],
-  86: [
-    "This companion preserves the source proposition: of another class of bodies the changes in which can become directly audible as sound.",
+    "This companion preserves the source proposition: I have employed prepared selenium as a type of one class of sensitive bodies whose changed condition is manifested by the variation in the resistance they afford to a constant current, and a disk of hard rubber as a type of another class of bodies the changes in which can become directly audible as sound.",
   ],
   87: [
     "This companion preserves the source proposition: I have described forms of apparatus in which the radiant energy falling upon a sensitive body operates to vary the resistance of the circuit of which it forms part, others to vary the electro-motive force of current in the circuit.",
@@ -950,10 +941,7 @@ const BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE: Readonly<Record<number, readonly
     "This companion preserves the source proposition: If the transmitter be operated by an electric current, the circuit which carries that current may be of any desired length and arranged in any appropriate way known to electricians.",
   ],
   96: [
-    "This companion preserves the source proposition: If an electrically-sensitive receiver be used—as, for example, a selenium cell—the circuit which contains it may be extended to any suitable distance, or may be connected with another circuit by induction-coils, in a manner and for purposes well known to electricians,",
-  ],
-  97: [
-    "This companion preserves the source proposition: and to those who are familiar with variable-resistance electric speaking-telephones.",
+    "This companion preserves the source proposition: If an electrically-sensitive receiver be used—as, for example, a selenium cell—the circuit which contains it may be extended to any suitable distance, or may be connected with another circuit by induction-coils, in a manner and for purposes well known to electricians, and to those who are familiar with variable-resistance electric speaking-telephones.",
   ],
   98: [
     "This companion preserves the source proposition: Inasmuch as the rays have no inertia and are inflexible, a slight motion of a reflector—such, for example, as it will receive if attached to the diaphragm of a receiving-telephone—can not only be made to manifest itself as light, (as in a reflecting-galvanometer,) but also as sound, or as a variation of an electric current in a secondary or local circuit supplied with its own battery.",
@@ -980,17 +968,6 @@ const parallelReadingLead = (source: string): string => {
     return "This formal matter identifies the legal instrument and its printed claim boundary";
   return "Bell explains the role of this source passage in the photophonic signaling chain";
 };
-export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> =
-  Object.fromEntries(
-    Object.entries(BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE).map(([index, readings]) => [
-      Number(index),
-      readings.map((reading) => {
-        const source = reading.replace(/^This companion preserves the source proposition:\s*/, "");
-        return `${parallelReadingLead(source)}. The source details are retained without loss: ${source}`;
-      }),
-    ]),
-  ) as Readonly<Record<number, readonly string[]>>;
-export const bellPhotophoneParallelReadings = BELL_PHOTOPHONE_PARALLEL_READINGS;
 export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "924fc983c2b53e84e122b7fb84014b5d37cf2461eae4132ea235211364f25e85",
@@ -1178,6 +1155,28 @@ export const bellPhotophoneArchivalEdition: CuratedSpecificationEdition = {
   ],
 };
 export const bellPhotophoneEdition = bellPhotophoneArchivalEdition;
+
+export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> =
+  Object.fromEntries(
+    bellPhotophoneArchivalEdition.blocks.flatMap((block, index) => {
+      if (block.kind !== "paragraph") return [];
+      const inlineText = block.inlines.map((i) => i.text).join(" ");
+      const raw = BELL_PHOTOPHONE_PARALLEL_READINGS_SOURCE[index]?.[0];
+      const source = raw
+        ? raw.replace(/^This companion preserves the source proposition:\s*/, "")
+        : inlineText;
+      return [
+        [
+          index,
+          [
+            `${parallelReadingLead(source)}. The source details are retained without loss: ${source}`,
+          ],
+        ],
+      ];
+    }),
+  ) as Readonly<Record<number, readonly string[]>>;
+export const bellPhotophoneParallelReadings = BELL_PHOTOPHONE_PARALLEL_READINGS;
+
 export function manualPhotophoneClaimText(claimNumber: number): string {
   const claim = bellPhotophoneArchivalEdition.blocks.find(
     (block) => block.kind === "claim" && block.number === claimNumber,

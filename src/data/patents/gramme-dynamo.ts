@@ -1,6 +1,16 @@
 import type { Patent } from "@/types/patent";
 import { grammeDynamoArchivalEdition } from "../editions/grammeDynamoEdition";
 
+function manualClaimText(number: number): string {
+  const block = grammeDynamoArchivalEdition.blocks.find(
+    (candidate) => candidate.kind === "claim" && candidate.number === number,
+  );
+  if (block?.kind !== "claim") {
+    throw new Error(`US 120,057 manual edition is missing Claim ${number}.`);
+  }
+  return block.inlines.map((inline) => inline.text).join("");
+}
+
 // Preserved only as an audit trail for the superseded catalogue copy. The
 // canonical exported record below is the manually reviewed edition.
 export const grammeDynamoSupersededCatalogueRecord: Patent = {
@@ -364,8 +374,7 @@ export const grammeDynamoPatent: Patent = {
     {
       number: 1,
       isIndependent: true,
-      originalText:
-        "The employment, in magneto-electric machines, of one or more cylinders, rings, or large endless bobbins arranged and constructed in the manner as has been above described, viz., made into a circular or other suitable endless shape, and consisting of a series of small bobbins or wires enveloping a core of soft iron or other good magnetic material, and connected together end to end in a continuous series, the said endless large bobbin or bobbins or cylinders situated between or in opposition to the poles of fixed or movable permanent or electro-magnets, for the purpose of allowing the production of continuous induction-currents in the conducting-wires, strips, or ribbons of brass or other good conducting metal enveloping the magnetic material, in which wires, strips, or ribbons a continuous displacement of the magnetism takes place without demagnetizing.",
+      originalText: manualClaimText(1),
       plainEnglish:
         "Claim 1 covers the stated endless closed series of small coils or conductive strips/ribbons on a magnetic core, positioned relative to fixed or moving permanent or electromagnet poles so that continuous induction current is produced. It names the ring/cylinder construction, end-to-end connection, core, field relation, and continuous-current objective; it does not require only the Fig. 1 device.",
       keyInnovations: [
@@ -380,8 +389,7 @@ export const grammeDynamoPatent: Patent = {
     {
       number: 2,
       isIndependent: true,
-      originalText:
-        "The arrangements described for allowing of giving rise to alternate or opposite instead of continuous currents.",
+      originalText: manualClaimText(2),
       plainEnglish:
         "Claim 2 separately claims the described arrangements that yield alternate or opposite currents rather than continuous output. In the specification, that includes the diametrically opposite, perpendicular junction connections through the shaft and insulated rod.",
       keyInnovations: ["Alternate-current junction arrangement", "Perpendicular diametric taps"],
@@ -391,8 +399,7 @@ export const grammeDynamoPatent: Patent = {
     {
       number: 3,
       isIndependent: true,
-      originalText:
-        "The general arrangement and combination of parts of the various above-described magneto-electric apparatuses employed for any industrial, physiological, or other purposes for which electric currents may be made use of, substantially as described and illustrated in the annexed drawing and for the purposes set down.",
+      originalText: manualClaimText(3),
       plainEnglish:
         "Claim 3 claims the overall combinations shown and described for using electrical current, including industrial and physiological uses. Because it says substantially as described and illustrated, it is tied to the detailed apparatus and drawings rather than every future electrical machine.",
       keyInnovations: [

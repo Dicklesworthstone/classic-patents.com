@@ -88,12 +88,13 @@ Sheet 5. The earlier held edition had no authored preview occurrences for the
 remaining figures. The repaired edition adds those occurrences at their
 specific source citations; it does not infer links during rendering.
 
-The repaired edition now authors the printed Figure 1–18 descriptions and
-keeps each occurrence linked to an existing source render. The sheet renders
-used for Figures 3, 5, 6, and 8–17 are broad drawing-sheet evidence rather than
-individual figure crops; they remain a publication hold until cloud-reviewed,
-source-pixel crops for those figures are supplied. No broad render is presented
-as an individual crop in the provenance table above.
+The repaired edition now authors the printed Figure 1–18 descriptions. The
+sheet renders used for Figures 3, 5, 6, and 8–11 are broad drawing-sheet
+evidence rather than individual figure crops; Figures 12–17 have authored
+semantic references but no preview until their source sheets can be reviewed.
+These remain a publication hold until cloud-reviewed, source-pixel crops for
+those figures are supplied. No broad render is presented as an individual crop
+in the provenance table above.
 
 On the source sheets, the FIG. 7 label overlaps the signature horizontally and
 the FIG. 18 apparatus, output/target detail, and label are spatially separated.

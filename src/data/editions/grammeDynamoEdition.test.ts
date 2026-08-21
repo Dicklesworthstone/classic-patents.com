@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import {
@@ -172,6 +172,46 @@ describe("grammeDynamoArchivalEdition", () => {
       "Eardley Louis Charles d’Ivernois",
     ]);
     expect(grammeDynamoPatent.claims.map((claim) => claim.number)).toEqual([1, 2, 3]);
+  });
+
+  test("keeps canonical claim text sourced from explicit edition blocks", () => {
+    const editionClaims = grammeDynamoArchivalEdition.blocks.filter(
+      (
+        block,
+      ): block is Extract<(typeof grammeDynamoArchivalEdition.blocks)[number], { kind: "claim" }> =>
+        block.kind === "claim",
+    );
+    const editionClaimNumbers = editionClaims.map((claim) => claim.number);
+    const canonicalClaims = grammeDynamoPatent.claims;
+
+    expect(editionClaimNumbers).toEqual([1, 2, 3]);
+    expect(new Set(editionClaimNumbers).size).toBe(editionClaimNumbers.length);
+    expect(canonicalClaims.map((claim) => claim.number)).toEqual(editionClaimNumbers);
+    expect(canonicalClaims.map((claim) => claim.originalText)).toEqual(
+      editionClaims.map((claim) => claim.inlines.map((inline) => inline.text).join("")),
+    );
+    expect(grammeDynamoPatent.stats).toEqual({ totalClaims: 3, independentClaims: 3 });
+    expect(grammeDynamoPatent.stats.totalClaims).toBe(canonicalClaims.length);
+    expect(grammeDynamoPatent.stats.independentClaims).toBe(
+      canonicalClaims.filter((claim) => claim.isIndependent).length,
+    );
+    const includedClaimNumbers = new Set(canonicalClaims.map((claim) => claim.number));
+    for (const claim of canonicalClaims) {
+      for (const dependency of claim.dependsOn ?? []) {
+        expect(includedClaimNumbers.has(dependency)).toBe(true);
+      }
+    }
+
+    const canonicalRecordSource = readFileSync(
+      resolve(process.cwd(), "src/data/patents/gramme-dynamo.ts"),
+      "utf8",
+    );
+    expect(canonicalRecordSource).toContain("function manualClaimText");
+    expect(canonicalRecordSource).toContain("grammeDynamoArchivalEdition.blocks.find");
+    expect(canonicalRecordSource).not.toContain("const MANUALLY_REVIEWED_CLAIM_TEXT");
+    for (const claimNumber of editionClaimNumbers) {
+      expect(canonicalRecordSource).toContain(`originalText: manualClaimText(${claimNumber}),`);
+    }
   });
 
   test("keeps the reviewed text asset complete through the three printed claims and witnesses", async () => {

@@ -149,12 +149,18 @@ export const maimanRubyLaserParallelReadings: Readonly<Record<number, readonly s
     "Figures 10 through 12 explain how coatings and a high-index coolant suppress nonparallel rays and preserve a narrow, coherent output beam while controlling the active material's temperature.",
   ],
   12: [
-    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
+    "Figure 13 uses prisms, mirrors, and a Fabry-Perot interferometer to select the proper wavelength while rejecting nonparallel rays; Figures 14 and 15 use parallel reflective plates for the same discrimination.",
   ],
   13: [
-    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
+    "Figures 16 and 17 use parabolic and elliptical reflectors to transfer broadband pump light from a separated source through the active laser segment.",
+  ],
+  14: [
+    "Figure 18 applies the laser to a colidar optical-radar system: a synchronizer triggers the transmitter and time-separated transmitter and receiver pulses indicate target range.",
   ],
   15: [
+    "Summary of the solid-state ruby laser invention: monochromatic optical amplification, room-temperature operation, 5x10^11 cps tuning capability, high power handling for colidar radar, and precise beam focusing for physics and medicine.",
+  ],
+  17: [
     "Official statutory claims defining the legal scope of the three-level ruby laser system and solid-state optical maser apparatus.",
   ],
 };
@@ -267,47 +273,17 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
         "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
       ),
       text(" a coated segment; "),
-      ref(
-        "FIG. 12",
-        "#figure-12",
-        "Figure 12",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 12", "#figure-12", "Figure 12"),
       text(" a segment surrounded by high-index coolant; "),
-      ref(
-        "FIG. 13",
-        "#figure-13",
-        "Figure 13",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 13", "#figure-13", "Figure 13"),
       text(" an interferometer system; "),
-      ref(
-        "FIG. 14",
-        "#figure-14",
-        "Figure 14",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 14", "#figure-14", "Figure 14"),
       text(" and "),
-      ref(
-        "FIG. 15",
-        "#figure-15",
-        "Figure 15",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 15", "#figure-15", "Figure 15"),
       text(" additional interferometers; "),
-      ref(
-        "FIG. 16",
-        "#figure-16",
-        "Figure 16",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 16", "#figure-16", "Figure 16"),
       text(" and "),
-      ref(
-        "FIG. 17",
-        "#figure-17",
-        "Figure 17",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 17", "#figure-17", "Figure 17"),
       text(" laser systems using an exploding-wire optical pump; and "),
       ref(
         "FIG. 18",
@@ -468,14 +444,29 @@ export const maimanRubyLaserArchivalEdition: CuratedSpecificationEdition = {
       text(
         ", a coating transparent to pump energy and absorptive near the laser output frequency absorbs nonparallel rays at the boundary. ",
       ),
-      ref(
-        "FIG. 12",
-        "#figure-12",
-        "Figure 12",
-        "/patents/figures/us-3353115-maiman-ruby-laser/sheet-3-03.png",
-      ),
+      ref("FIG. 12", "#figure-12", "Figure 12"),
       text(
         " shows a high-index coolant in immediate contact with the active segment, transmitting nonparallel rays that would otherwise reflect. The specification gives diodomethane as a practical coolant whose refractive index is close to that of ruby and explains that coolant also controls the operating frequency by controlling temperature.",
+      ),
+    ),
+    p(
+      ref("FIG. 13", "#figure-13", "Figure 13"),
+      text(
+        " illustrates an interferometer arrangement in which prisms and mirrors define a closed path through active material. A Fabry-Perot interferometer between parallel plates selects the proper wavelength while nonparallel rays are lost from the circuit. ",
+      ),
+      ref("FIG. 14", "#figure-14", "Figure 14"),
+      text(" and "),
+      ref("FIG. 15", "#figure-15", "Figure 15"),
+      text(
+        " show additional interferometers using mutually parallel reflective plates to discriminate against nonparallel rays and couple out the desired beam.",
+      ),
+    ),
+    p(
+      ref("FIG. 16", "#figure-16", "Figure 16"),
+      text(" and "),
+      ref("FIG. 17", "#figure-17", "Figure 17"),
+      text(
+        " illustrate remote optical pumping of an active laser segment by broadband light. In the first arrangement parabolic reflectors collimate and refocus pump light through the segment; in the second, an elliptical surface reflects light from one focus to the laser segment at the other focus. The source may use an exploding wire, a gas-filled flash tube, or a carbon arc lamp.",
       ),
     ),
     p(
