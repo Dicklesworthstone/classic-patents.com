@@ -68,6 +68,7 @@ export default function HaberAmmonia3D({
     feedFlowRateMolesPerSec,
     catalystActivity,
   });
+  const sourceBoundedVisualOnly = true;
 
   const live = useLiveSimParams({
     isRotating,
@@ -144,6 +145,49 @@ export default function HaberAmmonia3D({
       nodesRef.current = null;
     };
   }, [live]);
+
+  if (sourceBoundedVisualOnly) {
+    return (
+      <section
+        aria-labelledby="haber-3d-source-boundary-heading"
+        className="flex min-h-[380px] flex-col justify-center gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-6 text-slate-900 shadow-md dark:border-amber-800 dark:bg-slate-950 dark:text-slate-100"
+      >
+        <div className="flex items-center gap-3">
+          <Layers className="h-6 w-6 text-amber-700 dark:text-amber-400" />
+          <h3 id="haber-3d-source-boundary-heading" className="font-serif text-xl font-bold">
+            3D apparatus view withheld: no drawing in US 971,501
+          </h3>
+        </div>
+        <p className="max-w-3xl text-sm leading-6 text-slate-700 dark:text-slate-300">
+          This grant contains no apparatus drawing. A compressor, heat exchanger, condenser, or
+          recycle loop would be a later industrial interpretation rather than an archival figure,
+          so the procedural process model is disabled. The accepted visual state is the source text
+          and the live chemistry readout below.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-4">
+          <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Pressure</div>
+            <div className="font-mono text-lg text-cyan-700 dark:text-cyan-300">{sim.pressureAtm} atm</div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Temperature</div>
+            <div className="font-mono text-lg text-amber-700 dark:text-amber-300">{sim.catalystTemperatureCelsius} °C</div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Host model yield</div>
+            <div className="font-mono text-lg text-emerald-700 dark:text-emerald-300">{sim.ammoniaYieldPct}%</div>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900">
+            <div className="text-xs uppercase tracking-wide text-slate-500">Catalyst</div>
+            <div className="font-mono text-lg text-violet-700 dark:text-violet-300">osmium</div>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Host SI fallback only; no WASM module or source drawing is claimed by this treatment.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-parchment-50/60 dark:bg-ink-950/80 rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 shadow-patent">

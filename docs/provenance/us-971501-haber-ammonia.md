@@ -21,12 +21,14 @@
 
 | PDF Page | Physical Content Checked |
 |---|---|
-| Page 1 | USPTO Masthead, Application Serial No. 512,679, Column 1 (Preamble, Prior Art Failures, Catalytic Discovery), Column 2 (Operating Parameters: 175 atm, ~550 °C, Osmium/Uranium Catalyst Bed, 8% Yield, Claims 1–6, Signatures of Fritz Haber & Robert Le Rossignol, Subscribing Witnesses J. Alec. Lloyd and A. Raesenbach). |
+| Page 1 | USPTO Masthead, Application Serial No. 512,679, specification paragraphs on prior attempts, osmium catalyst preparation, preferred pressure range, the 175-atmosphere/550-degree example with reported 8% ammonia, Claims 1–6, signatures of Fritz Haber and Robert Le Rossignol, and subscribing witnesses J. Alec. Lloyd and A. Raesenbach. |
 
 ## 3. Editorial & Preservation Boundaries
 
 - **Public Source Face**: Hand-authored continuous Archival Edition (`src/data/editions/haberAmmoniaEdition.ts`).
 - **Reviewed Ledger**: Full transcript ledger pinned to Page 1 (`public/patents/transcripts/us-971501-haber-ammonia-reviewed.txt`).
 - **Drawing Sheet Status**: No drawings in facsimile (`no-drawings-in-facsimile` verified).
+- **Figure References/Crops**: None are printed in this grant; no figure crop is created or linked.
 - **Printed Claims**: Exactly 6 claims printed in grant; all 6 claims decoded in the canonical record and archival edition.
-- **Physical Law**: Le Chatelier equilibrium shift under super-atmospheric compression, Temkin-Pyzhev heterogeneous catalytic kinetics, exothermic heat of formation $\Delta H = -92.4\text{ kJ/mol}$, counter-current heat recovery, and high-pressure condensation.
+- **Physical Law Boundary**: The editorial chemistry explanation may discuss equilibrium, catalytic kinetics, and reaction enthalpy as modern interpretation, but the grant itself claims passing nitrogen and hydrogen over osmium, including heated and above-100-atmosphere variants. Heat exchangers, condensers, recycle pumps, uranium catalysts, and later industrial reactor layouts are not disclosed by this one-page grant and must not be presented as patented organs.
+- **Preservation Boundary**: The reviewed ledger and manual edition are hand-authored source work. Any PDF text layer or cloud transcription draft is comparison evidence only; no machine draft is served as the source face.

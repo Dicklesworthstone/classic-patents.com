@@ -28,7 +28,7 @@ export const haberAmmoniaPatent: Patent = {
   category: "materials",
   categoryLabel: "Chemical Engineering & Catalytic Synthesis",
   summary:
-    "Fritz Haber and Robert Le Rossignol's landmark 1910 patent for the direct catalytic synthesis of ammonia from atmospheric nitrogen and hydrogen. By operating under extreme super-atmospheric pressure (100–200 atmospheres) and elevated temperature (~550 °C) over solid osmium or uranium catalysts with continuous gas circulation and product condensation, Haber overcame the extreme kinetic and thermodynamic stability of the N≡N triple bond, creating the Haber-Bosch process that feeds nearly half of modern humanity.",
+    "Fritz Haber and Robert Le Rossignol's 1910 patent claims producing ammonia by passing gases containing nitrogen and hydrogen over osmium, with additional independent process variants using a heated catalyst, pressure, and pressure above 100 atmospheres. The specification reports an example using finely divided osmium at 175 atmospheres and about 550 degrees centigrade that produced eight percent by volume ammonia.",
   heroQuote:
     "We have now discovered that on passing gases containing nitrogen and hydrogen over osmium large quantities of ammonia can be obtained... Pass slowly a mixture of about three parts by volume of hydrogen and one part by volume of nitrogen over finely divided osmium at a pressure of one hundred and seventy-five atmospheres and at a temperature of about five hundred and fifty degrees centigrade. A yield of eight per cent. by volume of ammonia can easily be obtained.",
   originalPdfUrl: "/patents/pdfs/us-971501-haber-ammonia.pdf",
@@ -56,54 +56,36 @@ export const haberAmmoniaPatent: Patent = {
   drawings: [],
   plainEnglishExplanation: {
     overview:
-      "At the dawn of the 20th century, humanity faced an existential food crisis. Nitrogen is the fundamental limiting nutrient for all plant life, yet 99.9% of terrestrial nitrogen is locked in the atmosphere as inert N2 gas held together by one of the strongest covalent bonds in chemistry (the N≡N triple bond, with a dissociation energy of 945 kJ/mol). Agriculture depended entirely on naturally occurring guano deposits and Chilean caliche saltpeter (sodium nitrate), which Sir William Crookes warned in 1898 would be exhausted within decades, triggering worldwide mass starvation. Earlier chemists such as Wilhelm Ostwald and Walther Nernst attempted to synthesize ammonia (NH3) directly from nitrogen and hydrogen but failed because the exothermic reaction presents a brutal thermodynamic dilemma: at low temperatures where equilibrium yields are high, the reaction rate is zero; at high temperatures where the reaction proceeds, the equilibrium yield drops to negligible fractions of a percent. Fritz Haber and Robert Le Rossignol solved this problem through three revolutionary insights: (1) Applying extreme super-atmospheric pressure (100–200 atmospheres) to force 4 volumes of gas into 2 volumes by Le Chatelier's principle, multiplying equilibrium yield tenfold; (2) Discovering solid transition-metal catalysts (osmium, uranium) capable of dissociating the N≡N triple bond at manageable temperatures (~550 °C); and (3) Designing a closed-loop recirculation process where gases continuously circulate through the reactor, ammonia is condensed out under pressure, and unreacted gases are recycled, achieving near 100% total conversion.",
+      "The one-page grant addresses a specific chemical bottleneck: attempts to make ammonia from its elements by passing gases over a catalyst had achieved little success. It reports that osmium allows large quantities of ammonia to be obtained, then gives a source-bounded example at 175 atmospheres and about 550 degrees centigrade. Modern chemistry explains why the pressure and temperature matter: pressure favors the lower-volume product, while heating accelerates bond-breaking and surface reactions at the cost of lower equilibrium concentration. Those modern principles explain the reported example; they do not turn later plant equipment into patent disclosures.",
     coreMechanism:
-      "The Haber ammonia synthesis operates on continuous high-pressure heterogeneous catalysis: (1) Reactant Gas Feed: Pure dry nitrogen and hydrogen are blended in exact stoichiometric proportion (1 N2 : 3 H2) and compressed to 100–200 atmospheres (10–20 MPa) by multi-stage reciprocating compressors. (2) Counter-Current Heat Exchange: The compressed gas enters the converter vessel through an annular heat exchanger where it absorbs the exothermic heat of the reacting stream, preheating to ~450–500 °C without burning external fuel. (3) Catalytic Dissociative Adsorption: The preheated gas flows over the solid catalyst bed (finely divided metallic osmium or promoted iron). On the metal surface, N2 chemisorbs and dissociates into atomic nitrogen radicals (N*), while H2 dissociates into atomic hydrogen (H*). Sequential hydrogenation steps on the surface produce NH*, NH2*, and finally NH3*. (4) Exothermic Equilibrium Yield: At 175 atmospheres and 550 °C, the gas reaches an 8–15% equilibrium concentration of ammonia, releasing 92.4 kJ/mol of heat. (5) Condensation & Recirculation: The hot product gas exits through the heat exchanger into a high-pressure chiller/condenser, where ammonia liquefies at -33 °C (or room temperature under 175 atm) and is tapped off. The remaining 85–92% unreacted N2 and H2 gas is recirculated by a circulating pump back into the reactor loop.",
+      "The claimed operation is deliberately simple in the text: pass gases containing nitrogen and hydrogen over a catalyst containing osmium. The specification permits ordinary pressure but prefers 100 to 200 atmospheres, and its example uses finely divided osmium at 175 atmospheres and about 550 degrees centigrade. Modern surface chemistry describes nitrogen and hydrogen adsorption, bond activation, and stepwise hydrogenation on an osmium surface; the grant itself does not specify a compressor, exchanger, condenser, circulation pump, catalyst geometry, or plant loop.",
     mechanicalBreakdown: [
       {
-        title: "Super-Atmospheric High-Pressure Autoclave Reactor",
+        title: "Nitrogen–Hydrogen Gas Contact",
         summary:
-          "Heavy forged-steel pressure vessel maintaining 100–200 atmospheres of continuous internal pressure.",
+          "The process passes gases containing nitrogen and hydrogen over an osmium-containing catalyst.",
         technicalDetails:
-          "The synthesis reaction $1\text{N}_2 + 3\text{H}_2 \rightleftharpoons 2\text{NH}_3$ reduces gas volume from 4 moles to 2 moles ($Delta V = -2\text{ mol}$). By Le Chatelier's principle, increasing pressure from 1 atm to 175 atm shifts the equilibrium constant fractionally: $K_p = \frac{P_{\text{NH}_3}^2}{P_{\text{N}_2} P_{\text{H}_2}^3} = \frac{y_{\text{NH}_3}^2}{y_{\text{N}_2} y_{\text{H}_2}^3 P^2}$. The mole fraction $y_{\text{NH}_3}$ scales directly with absolute pressure $P$, elevating single-pass conversion from <0.1% to over 8%.",
-        archaicTerm: "Increased pressure of from 100 to 200 atmospheres",
-        modernEquivalent: "High-pressure catalytic ammonia synthesis loop reactor",
+          "For the modern reaction model $\text{N}_2 + 3\text{H}_2 \rightleftharpoons 2\text{NH}_3$, four gas moles become two. At fixed temperature, increasing total pressure favors the lower-volume side, while the catalyst supplies a surface route for the otherwise slow bond-activation steps. The grant claims the contact process, not a particular vessel or flow diagram.",
+        archaicTerm: "gases containing nitrogen and hydrogen",
+        modernEquivalent: "Nitrogen-and-hydrogen reactant gas mixture",
       },
       {
-        title: "Solid Transition-Metal Catalyst Bed (Osmium / Uranium)",
+        title: "Finely Divided Osmium Contact Mass",
         summary:
-          "Finely divided active metal contact mass facilitating dissociative chemisorption of molecular nitrogen.",
+          "Osmium may be used as finely divided metal or supplied by a reducible osmium compound.",
         technicalDetails:
-          "Molecular nitrogen has a massive dissociation enthalpy of $945\text{ kJ/mol}$. Solid osmium (and later uranium and potassium/alumina-promoted alpha-iron) acts as a heterogeneous electron donor, lowering the activation energy of the rate-determining step (dissociative nitrogen adsorption $\text{N}_2 + 2* \rightarrow 2\text{N}^*$) from $418\text{ kJ/mol}$ to under $100\text{ kJ/mol}$.",
-        archaicTerm: "Catalyst containing osmium / finely divided osmium",
-        modernEquivalent: "Heterogeneous promoted iron/ruthenium/osmium catalyst bed",
+          "The specification permits metallic osmium, osmium precipitated on quartz, asbestos, or clay, and compounds such as osmium oxid hydrate or Fremy's salt that become metallic osmium under hydrogen. The modern surface step can be written $\text{N}_2 + 2* \rightarrow 2\text{N}^*$, but no activation energy or catalyst-bed dimensions are stated in the grant.",
+        archaicTerm: "finely divided condition",
+        modernEquivalent: "High-surface-area osmium catalyst",
       },
       {
-        title: "Counter-Current Regenerative Heat Exchanger",
+        title: "Preferred Pressure and Temperature",
         summary:
-          "Internal coaxial heat exchanger transferring reaction exotherm from product gas to incoming feed gas.",
+          "The specification prefers increased pressure and gives a 175-atmosphere, 550-degree example.",
         technicalDetails:
-          "Because ammonia synthesis is highly exothermic ($Delta H^circ_{298} = -92.4\text{ kJ/mol}$), the heat liberated by the synthesis reaction ($q = dot{n}_{\text{NH}_3} |Delta H|$) is transferred across counter-current tubes ($q = U A Delta T_{\text{lm}}$), making the synthesis reactor autothermal during continuous steady-state operation.",
-        archaicTerm: "Combination taking place at low temperature and as quickly as possible",
-        modernEquivalent: "Autothermal counter-current reactor feed-effluent heat exchanger",
-      },
-      {
-        title: "High-Pressure Condenser Chiller & Liquid Product Separator",
-        summary:
-          "Refrigerated condensation vessel separating liquid anhydrous ammonia from recirculating gas.",
-        technicalDetails:
-          "Under 175 atmospheres of pressure, the boiling point of ammonia rises from $-33.3\text{ }^circ\text{C}$ (at 1 atm) to over $+45\text{ }^circ\text{C}$ according to the Antoine equation. Simple water or ammonia-chilled cooling coils condense the synthesized ammonia gas into pure liquid $\text{NH}_3$, which drains from the bottom of the high-pressure separator vessel.",
-        archaicTerm: "Yield of eight per cent. by volume of ammonia",
-        modernEquivalent: "High-pressure knock-out drum / product separator",
-      },
-      {
-        title: "Closed-Loop Gas Recirculation Pump",
-        summary:
-          "Hermetically sealed high-pressure booster pump recycling unreacted gases continuously through the loop.",
-        technicalDetails:
-          "Rather than requiring 100% single-pass conversion, Haber realized that an 8% single-pass yield achieves $>98%$ overall loop conversion when unreacted gases ($92%$) are recycled continuously with fresh make-up gas addition ($F_{\text{makeup}} = 4 dot{n}_{\text{NH}_3}$).",
-        archaicTerm: "Passing slowly a mixture of hydrogen and nitrogen over osmium",
-        modernEquivalent: "Recycle gas compressor (circulator)",
+          "The stated example uses approximately a 3:1 hydrogen-to-nitrogen volume ratio, finely divided osmium, 175 atmospheres, and 550 degrees centigrade, with an 8% by-volume ammonia yield. The modern equilibrium relation $K_p = \frac{P_{\text{NH}_3}^2}{P_{\text{N}_2}P_{\text{H}_2}^3}$ explains why pressure favors product, while the temperature is a kinetic/equilibrium compromise; these are interpretive laws, not a drawing of an apparatus.",
+        archaicTerm: "at a pressure of one hundred and seventy-five atmospheres",
+        modernEquivalent: "High-pressure catalytic operating point",
       },
     ],
     scientificPrinciples: [
@@ -130,7 +112,7 @@ export const haberAmmoniaPatent: Patent = {
       },
     ],
     whyItMattersToday:
-      "The Haber-Bosch process is arguably the most consequential technological invention of the 20th century. Over 180 million metric tons of synthetic ammonia are synthesized annually using this process, producing the nitrogen fertilizer that sustains the global agricultural food supply. It is estimated that nearly 50% of the nitrogen atoms in human tissue worldwide originate from Haber-Bosch ammonia synthesis reactors.",
+      "Later Haber-Bosch plants made this chemistry industrially important by adding equipment and catalysts not disclosed in this one-page osmium grant. The durable inheritance is the pressure-and-catalysis strategy for converting atmospheric nitrogen into ammonia, which underlies modern fertilizer production; those later plant claims should not be projected back onto US 971,501.",
   },
   claims: [
     {
@@ -138,7 +120,7 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(1),
       plainEnglish:
-        "The master broad process claim for producing ammonia by passing a gaseous mixture containing nitrogen and hydrogen over a catalyst containing metallic osmium or osmium compounds.",
+        "This broad independent claim covers the chemical process itself: gases containing nitrogen and hydrogen must be passed over a catalyst containing osmium. It does not require heating, a pressure threshold, a particular support, or any compressor, condenser, circulation loop, or later iron catalyst.",
       keyInnovations: [
         "Direct catalytic synthesis of ammonia from elemental nitrogen and hydrogen",
         "Use of solid osmium as an active heterogeneous contact catalyst",
@@ -152,7 +134,7 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(2),
       plainEnglish:
-        "The process of producing ammonia by passing gases containing nitrogen and hydrogen over a heated catalyst containing osmium.",
+        "This independent variant adds heat to Claim 1's gas-over-osmium process. Its legal limitation is a heated osmium-containing catalyst, while the nitrogen-and-hydrogen feed remains required; the claim does not specify a temperature, vessel, catalyst support, product separator, or recycle system.",
       keyInnovations: [
         "Thermal activation of the solid osmium catalyst bed",
         "Controlled elevated reaction temperature for catalytic bond dissociation",
@@ -165,7 +147,7 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(3),
       plainEnglish:
-        "The process of producing ammonia by passing gases containing nitrogen and hydrogen under increased pressure over a heated catalyst containing osmium.",
+        "This claim combines the two operating conditions stated in the specification: nitrogen-and-hydrogen gases pass over osmium, the catalyst is heated, and the process occurs under pressure. It claims that combination without importing the worked example's exact 175 atmospheres or 550 degrees.",
       keyInnovations: [
         "Simultaneous application of elevated temperature and super-atmospheric pressure",
         "Synergistic kinetic acceleration and thermodynamic equilibrium shift",
@@ -178,7 +160,7 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(4),
       plainEnglish:
-        "The process of producing ammonia by passing a mixture of nitrogen and hydrogen over an osmium catalyst at a super-atmospheric pressure exceeding 100 atmospheres.",
+        "This claim narrows the broad osmium process by requiring a mixture of nitrogen and hydrogen and a pressure above 100 atmospheres. Unlike Claim 3, it does not expressly require a heated catalyst; its distinctive legal boundary is the stated super-atmospheric pressure threshold.",
       keyInnovations: [
         "Super-atmospheric pressure threshold exceeding 100 atmospheres (10 MPa)",
         "Industrial high-pressure chemical processing regime",
@@ -191,10 +173,10 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(5),
       plainEnglish:
-        "The process of producing ammonia by passing a mixture of nitrogen and hydrogen over a heated osmium catalyst at a pressure above 100 atmospheres.",
+        "This claim requires all three specified elements together: a nitrogen-and-hydrogen mixture, an osmium catalyst that is heated, and pressure above 100 atmospheres. It is narrower than Claim 4 because heat is explicit, but it still claims a process rather than an illustrated plant arrangement.",
       keyInnovations: [
         "Heated catalyst operation at pressures exceeding 100 atmospheres",
-        "Optimization of single-pass equilibrium yield (>8%) under industrial conditions",
+        "Nitrogen-and-hydrogen mixture over heated osmium above 100 atmospheres",
       ],
       legalSignificance:
         "The core commercial process claim under which the first industrial Haber-Bosch plants operated.",
@@ -204,10 +186,10 @@ export const haberAmmoniaPatent: Patent = {
       isIndependent: true,
       originalText: manualHaberClaimText(6),
       plainEnglish:
-        "The process of producing ammonia by passing a stoichiometric mixture of hydrogen and nitrogen over heated metallic osmium at a pressure exceeding 100 atmospheres.",
+        "This final claim specifies the worked-example direction and materials more closely: a mixture of hydrogen and nitrogen passes over heated metallic osmium at pressure above 100 atmospheres. It does not claim a particular three-to-one ratio, because that ratio appears in the example rather than in this claim text.",
       keyInnovations: [
         "Use of pure metallic osmium contact mass",
-        "Stoichiometric 3:1 hydrogen-to-nitrogen reactant ratio under high pressure",
+        "Heated metallic osmium above 100 atmospheres",
       ],
       legalSignificance:
         "Specific metallic catalyst claim securing the primary laboratory and pilot plant configuration.",
@@ -222,30 +204,8 @@ export const haberAmmoniaPatent: Patent = {
       "Prior direct synthesis attempts by Ostwald and Nernst operated at near-atmospheric pressures where equilibrium ammonia concentrations were <0.01%",
     ],
     breakthroughInsight:
-      "Combining extreme super-atmospheric pressure (100–200 atm) to shift thermodynamic equilibrium with active transition-metal catalysts (osmium/uranium) at ~550 °C and closed-loop recirculation to achieve commercial yields.",
-    patentWars: [
-      {
-        rivalName: "Walther Nernst & Wilhelm Ostwald",
-        rivalClaim:
-          "Thermodynamic impossibility of catalytic ammonia synthesis at accessible pressures",
-        conflictDetails:
-          "Nernst and Ostwald initially claimed Haber's equilibrium calculations were flawed, but Haber proved his high-pressure measurements were exact in public scientific debates.",
-        resolution:
-          "Haber signed an exclusive partnership with BASF in 1908; Carl Bosch and Alwin Mittasch successfully scaled the process to industrial production.",
-        legalOutcome:
-          "BASF secured worldwide patent dominance over high-pressure ammonia synthesis and related autoclave reactor designs.",
-      },
-      {
-        rivalName: "Luigi Casale & Georges Claude",
-        rivalClaim: "Hyper-pressure ammonia processes (500–1000 atmospheres)",
-        conflictDetails:
-          "In the 1920s, French and Italian inventors attempted to bypass Haber's patents by operating at extreme hyper-pressures up to 1000 atm.",
-        resolution:
-          "International patent courts recognized Haber's master priority in catalytic high-pressure synthesis above 100 atm.",
-        legalOutcome:
-          "Affirmed the foundational status of US 971,501 across all high-pressure catalytic chemical engineering.",
-      },
-    ],
+      "The source-bounded move was to pass nitrogen-and-hydrogen gases over osmium, preferably in finely divided form, while reporting that increased pressure and a 175-atmosphere, 550-degree example produced eight percent ammonia by volume.",
+    patentWars: [],
     civilizationalImpact:
       "Enabled the mass production of synthetic nitrogen fertilizer, sparking the Green Revolution that expanded global agricultural productivity and currently sustains roughly half of the world's 8 billion people.",
     funFact:

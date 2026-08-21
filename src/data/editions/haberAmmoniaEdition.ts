@@ -28,25 +28,25 @@ export const haberAmmoniaParallelReadings: Readonly<Record<number, readonly stri
     "Preamble and inventor declaration by Fritz Haber (Professor of Chemistry at Karlsruhe) and Robert Le Rossignol (Bachelor of Science), assigning their breakthrough invention to Badische Anilin & Soda Fabrik (BASF) under Application Serial No. 512,679 filed August 13, 1909.",
   ],
   2: [
-    "Historical problem statement: prior attempts by Ostwald, Nernst, and other prominent chemists to synthesize ammonia directly from elemental nitrogen and hydrogen failed commercially due to negligible equilibrium yields and ineffective catalysts.",
+    "Historical problem statement: the specification records that earlier attempts to produce ammonia on a large scale by passing nitrogen and hydrogen over a catalyst had met with little success.",
   ],
   3: [
     "Thermodynamic dilemma of ammonia synthesis: the exothermic reaction (N2 + 3H2 ⇌ 2NH3) is thermodynamically favored at low temperatures, but molecular reaction rates freeze; increasing temperature accelerates the reaction but destroys equilibrium concentration.",
   ],
   4: [
-    "The catalytic breakthrough: discovering that metallic osmium and its compounds exhibit extraordinary catalytic activity in splitting the inert nitrogen triple bond (N≡N), dramatically outperforming allied platinum-group metals.",
+    "The catalytic observation: gases containing nitrogen and hydrogen produce large quantities of ammonia over osmium, a result the specification calls surprising because it differs from the allied metal platinum.",
   ],
   5: [
-    "Catalyst preparation and support methods: deploying osmium in finely divided metallic form or supported upon inert carriers such as quartz, asbestos, clay, or derived in situ from osmium oxide hydrate or Fremy's salt under reducing hydrogen atmosphere.",
+    "Catalyst preparation and support methods: osmium may be finely divided metal or a compound that becomes metallic osmium during use; it may be used alone, mixed with other substances, precipitated on quartz, asbestos, or clay, including asbestos with ten percent osmium. Osmium oxid hydrate made from formaldehyde and osmic acid, or Fremy's salt, may likewise be reduced by hydrogen to metallic osmium, alone, mixed with an indifferent substance, or supported on a carrier.",
   ],
   6: [
-    "Super-atmospheric pressure principle: operating at 100 to 200 atmospheres (10–20 MPa) to exploit Le Chatelier's principle, driving the 4-volume reactant mixture (N2 + 3H2) into 2 volumes of product (2NH3) and multiplying equilibrium conversion tenfold.",
+    "Pressure preference: the specification permits ordinary pressure but states a preference for increased pressure, giving 100 to 200 atmospheres as an example operating range.",
   ],
   7: [
-    "Concrete industrial working example: passing a 3:1 stoichiometric hydrogen-nitrogen gas mixture over finely divided osmium at 175 atmospheres and ~550 °C, achieving a breakthrough 8% single-pass ammonia yield that enables continuous condensation and closed-loop gas recirculation.",
+    "Concrete working example: pass about three volumes of hydrogen to one volume of nitrogen slowly over finely divided osmium at 175 atmospheres and about 550 degrees centigrade; the specification reports that eight percent by volume ammonia can easily be obtained.",
   ],
   8: [
-    "Formal legal transition from the specification to the enumerated patent claims defining the exclusive scope of catalytic high-pressure synthesis.",
+    "Formal legal transition from the specification to six enumerated process claims defining the exclusive scope of the osmium-catalyzed ammonia method and its heated and pressure-qualified variants.",
   ],
   17: [
     "Formal execution and subscription of the patent specification signed by Fritz Haber and Robert Le Rossignol in the presence of subscribing witnesses J. Alec. Lloyd and A. Raesenbach.",
@@ -148,7 +148,7 @@ export const haberAmmoniaArchivalEdition: CuratedSpecificationEdition = {
       text(". A yield of "),
       term(
         "eight per cent. by volume",
-        "An 8% single-pass equilibrium concentration of ammonia, sufficiently high to condense into liquid under pressure and permit continuous recirculating extraction.",
+        "The specification's reported ammonia concentration in its worked example; the grant does not specify a condenser, product separator, or gas-recycle arrangement.",
       ),
       text(" of ammonia can easily be obtained."),
     ),

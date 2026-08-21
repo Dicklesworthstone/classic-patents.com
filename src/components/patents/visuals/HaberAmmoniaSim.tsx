@@ -37,6 +37,7 @@ export function HaberAmmoniaSim({
     feedFlowRateMolesPerSec,
     catalystActivity,
   });
+  const sourceBoundedVisualOnly = true;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -396,6 +397,108 @@ export function HaberAmmoniaSim({
       cancelAnimationFrame(animId);
     };
   }, [pressureAtm, temperatureCelsius, isPlaying, physics]);
+
+  if (sourceBoundedVisualOnly) {
+    return (
+      <section
+        aria-labelledby="haber-source-bounded-heading"
+        className="flex flex-col gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-slate-900 shadow-md dark:border-amber-800 dark:bg-slate-950 dark:text-slate-100 sm:p-6"
+      >
+        <div className="border-b border-amber-200 pb-3 dark:border-amber-900">
+          <div className="flex items-center gap-2">
+            <Activity className="h-5 w-5 text-amber-700 dark:text-amber-400" />
+            <h3 id="haber-source-bounded-heading" className="font-serif text-lg font-bold">
+              US 971,501: Osmium Catalytic Contact
+            </h3>
+          </div>
+          <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+            Source-bounded chemistry instrument. The one-page grant has no drawing and does not
+            disclose a compressor, heat exchanger, condenser, or recycle loop.
+          </p>
+        </div>
+
+        <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Pressure
+            </div>
+            <div className="font-mono text-xl text-cyan-700 dark:text-cyan-300">
+              {physics.pressureAtm} atm
+            </div>
+            <div className="text-[11px] text-slate-500">The grant prefers 100–200 atm.</div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Example temperature
+            </div>
+            <div className="font-mono text-xl text-amber-700 dark:text-amber-300">
+              {physics.catalystTemperatureCelsius} °C
+            </div>
+            <div className="text-[11px] text-slate-500">The example states about 550 °C.</div>
+          </div>
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Host model yield
+            </div>
+            <div className="font-mono text-xl text-emerald-700 dark:text-emerald-300">
+              {physics.ammoniaYieldPct}% NH₃
+            </div>
+            <div className="text-[11px] text-slate-500">The example reports 8% by volume.</div>
+          </div>
+        </div>
+
+        <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+          The controls expose the host SI interpretation of pressure, temperature, feed amount,
+          and catalyst activity. The canvas process-loop sketch remains disabled until a source
+          drawing or separately accepted apparatus record exists.
+        </p>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[
+            ["pressureAtm", "Pressure", pressureAtm, 50, 300, 5, "atm"],
+            ["temperatureCelsius", "Catalyst temperature", temperatureCelsius, 350, 650, 5, "°C"],
+            [
+              "feedFlowRateMolesPerSec",
+              "Reactant feed",
+              feedFlowRateMolesPerSec,
+              10,
+              100,
+              2,
+              "mol/s",
+            ],
+            ["catalystActivity", "Catalyst activity", catalystActivity, 0.2, 2, 0.1, "×"],
+          ].map(([id, label, value, min, max, step, unit]) => (
+            <label key={id as string} className="flex flex-col gap-1 text-xs font-semibold">
+              <span className="flex justify-between gap-2">
+                <span>{label as string}</span>
+                <span className="font-mono text-slate-600 dark:text-slate-300">
+                  {Number(value).toFixed(id === "catalystActivity" ? 1 : 0)} {unit as string}
+                </span>
+              </span>
+              <input
+                aria-label={label as string}
+                type="range"
+                min={min as number}
+                max={max as number}
+                step={step as number}
+                value={value as number}
+                onChange={(event) => updateParam(id as string, Number(event.target.value))}
+                className="accent-amber-600"
+              />
+            </label>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={resetParams}
+          className="self-start rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-white dark:border-slate-700 dark:hover:bg-slate-900"
+        >
+          Reset source-bounded controls
+        </button>
+      </section>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-slate-800 bg-parchment-50 dark:bg-slate-950 p-4 sm:p-6 text-ink-900 dark:text-slate-100 shadow-md transition-colors">

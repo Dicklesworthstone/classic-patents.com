@@ -7,6 +7,7 @@ import {
   haberAmmoniaParallelReadings,
   manualHaberClaimText,
 } from "./haberAmmoniaEdition";
+import { haberAmmoniaPatent } from "../patents/haber-ammonia";
 
 describe("US 971,501 Fritz Haber Production of Ammonia Archival Edition Publication Contract", () => {
   const rootDir = process.cwd();
@@ -58,5 +59,22 @@ describe("US 971,501 Fritz Haber Production of Ammonia Archival Edition Publicat
       expect(readings?.length).toBeGreaterThan(0);
       expect(readings?.[0]?.length).toBeGreaterThan(25);
     }
+  });
+
+  test("keeps every claim decoder claim-specific and non-lossy", () => {
+    expect(haberAmmoniaPatent.claims).toHaveLength(6);
+    for (const claim of haberAmmoniaPatent.claims) {
+      expect(claim.plainEnglish.trim().split(/\s+/).length).toBeGreaterThan(30);
+      expect(claim.plainEnglish.toLowerCase()).toContain("claim");
+      expect(claim.originalText).toBe(manualHaberClaimText(claim.number));
+    }
+  });
+
+  test("keeps the one-page no-drawing boundary explicit", () => {
+    expect(haberAmmoniaPatent.drawings).toEqual([]);
+    expect(haberAmmoniaPatent.historicalContext.patentWars).toEqual([]);
+    expect(haberAmmoniaPatent.plainEnglishExplanation.coreMechanism).toContain(
+      "does not specify a compressor",
+    );
   });
 });

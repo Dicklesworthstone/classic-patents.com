@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
-import { articulateHaberAmmoniaModel, buildHaberAmmoniaModel } from "./haberAmmoniaModel";
+import { HABER_3D_SOURCE_BOUNDARY, buildHaberAmmoniaModel } from "./haberAmmoniaModel";
 
 describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
   const rootDir = process.cwd();
@@ -27,7 +27,8 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(studioSource).toContain('updateParam("pressureAtm"');
     expect(studioSource).not.toContain("setPressureAtm");
     expect(modelSource).not.toContain("const compSpeed = 4.0");
-    expect(modelSource).toContain("compressorDisplayOmegaRadPerS");
+    expect(modelSource).toContain("HABER_3D_SOURCE_BOUNDARY");
+    expect(modelSource).toContain("No Drawing");
     const simSource = readFileSync(
       join(rootDir, "src/components/patents/visuals/HaberAmmoniaSim.tsx"),
       "utf-8",
@@ -36,6 +37,8 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(simSource).not.toContain("time * 6)");
     expect(simSource).toContain("physics.catalystParticleAdvance");
     expect(simSource).toContain("physics.condenserDripAdvance");
+    expect(simSource).toContain("sourceBoundedVisualOnly");
+    expect(studioSource).toContain("sourceBoundedVisualOnly");
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {
@@ -71,36 +74,8 @@ describe("US 971,501 Fritz Haber Ammonia Synthesis Visual Boundary", () => {
     expect(doubleFeed.compressorDisplayOmegaRadPerS).toBeCloseTo(8.0, 3);
   });
 
-  test("builds and articulates procedural synthesis reactor, compressor, heat exchanger, and condenser correctly", () => {
-    const nodes = buildHaberAmmoniaModel();
-    expect(nodes.root).toBeDefined();
-    expect(nodes.compressorPiston).toBeDefined();
-    expect(nodes.compressorFlywheel).toBeDefined();
-    expect(nodes.catalystBed).toBeDefined();
-    expect(nodes.catalystGlowLight).toBeDefined();
-    expect(nodes.condenserLiquidMesh).toBeDefined();
-    expect(nodes.materials.length).toBeGreaterThan(4);
-
-    const sim = stepHaberAmmonia({
-      pressureAtm: 175,
-      temperatureCelsius: 530,
-      feedFlowRateMolesPerSec: 50,
-      catalystActivity: 1.0,
-    });
-    articulateHaberAmmoniaModel(
-      nodes,
-      {
-        pressureAtm: 175,
-        temperatureCelsius: 530,
-        ammoniaYieldPct: 8.5,
-        ammoniaProductionKgPerHour: 50,
-        compressorDisplayOmegaRadPerS: sim.compressorDisplayOmegaRadPerS,
-        loopFlowAdvance: sim.loopFlowAdvance,
-      },
-      1.0,
-    );
-
-    expect(nodes.compressorFlywheel.rotation.z).toBeCloseTo(4.0, 1);
-    expect(nodes.catalystGlowLight.intensity).toBeGreaterThan(1.5);
+  test("refuses the unsupported process-loop model because the grant has no drawing", () => {
+    expect(HABER_3D_SOURCE_BOUNDARY).toContain("no drawing");
+    expect(() => buildHaberAmmoniaModel()).toThrow(HABER_3D_SOURCE_BOUNDARY);
   });
 });

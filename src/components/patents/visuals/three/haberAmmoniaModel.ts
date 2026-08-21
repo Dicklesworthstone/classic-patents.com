@@ -1,8 +1,13 @@
 /**
  * haberAmmoniaModel.ts
  *
- * Procedural 3D WebGL Model of Fritz Haber & Robert Le Rossignol's 1910
- * High-Pressure Catalytic Ammonia Synthesis Converter Apparatus (US Patent 971,501).
+ * Disabled legacy process-loop model for Fritz Haber & Robert Le Rossignol's
+ * 1910 ammonia patent (US Patent 971,501).
+ *
+ * The grant is explicitly marked "No Drawing". The compressor, heat exchanger,
+ * condenser, and recycle-loop geometry below is retained only as historical WIP
+ * for review and is deliberately refused at construction time. It must not be
+ * presented as an archival figure or as a structure claimed by this patent.
  *
  * Conforms to the Classic Patents 3D visualization doctrine:
  * - Pure procedural Three.js geometry (No GLTF/GLB asset loading)
@@ -11,6 +16,9 @@
  */
 
 import * as THREE from "three";
+
+export const HABER_3D_SOURCE_BOUNDARY =
+  "US 971,501 has no drawing; the interpretive process-loop model is disabled.";
 
 export interface HaberAmmoniaModelNodes {
   root: THREE.Group;
@@ -28,6 +36,10 @@ export interface HaberAmmoniaModelNodes {
 }
 
 export function buildHaberAmmoniaModel(): HaberAmmoniaModelNodes {
+  throw new Error(HABER_3D_SOURCE_BOUNDARY);
+
+  // Unreachable legacy geometry follows. Keeping it in the file avoids
+  // deleting peer history while the source-bounded replacement is reviewed.
   const root = new THREE.Group();
   const materials: THREE.Material[] = [];
 
