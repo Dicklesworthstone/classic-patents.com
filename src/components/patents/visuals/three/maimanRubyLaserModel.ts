@@ -216,9 +216,12 @@ export function createMaimanRubyLaserModel(): {
   const photonGeo = new THREE.BufferGeometry();
   const photonPositions = new Float32Array(photonCount * 3);
   for (let i = 0; i < photonCount; i++) {
-    photonPositions[i * 3] = -2.8 + Math.random() * 5.6;
-    photonPositions[i * 3 + 1] = 0.4 + (Math.random() - 0.5) * 0.4;
-    photonPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
+    const rx = (Math.sin((i + 1) * 12.9898) * 43758.5453) % 1;
+    const ry = (Math.sin((i + 1) * 78.233) * 43758.5453) % 1;
+    const rz = (Math.sin((i + 1) * 45.164) * 43758.5453) % 1;
+    photonPositions[i * 3] = -2.8 + Math.abs(rx) * 5.6;
+    photonPositions[i * 3 + 1] = 0.4 + (Math.abs(ry) - 0.5) * 0.4;
+    photonPositions[i * 3 + 2] = (Math.abs(rz) - 0.5) * 0.4;
   }
   photonGeo.setAttribute("position", new THREE.BufferAttribute(photonPositions, 3));
   const photonMat = new THREE.PointsMaterial({

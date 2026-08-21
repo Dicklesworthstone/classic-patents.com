@@ -254,7 +254,7 @@ export function createYaleLockModel(): YaleLockModelNodes {
       stack.keyPinMesh.position.y = keyPinY;
       stack.driverMesh.position.y = driverPinY;
 
-      if (!pin.isAtShearLine) {
+      if (!pin.isShearAligned) {
         allAligned = false;
       }
 

@@ -326,9 +326,12 @@ export function createRillieuxEvaporatorModel(): RillieuxEvaporatorModelNodes {
   const bubblePositions = new Float32Array(bubbleCount * 3);
   for (let b = 0; b < bubbleCount; b++) {
     const vesselIdx = b % 3;
-    const vx = (vesselIdx - 1) * spacing + (Math.random() - 0.5) * 1.6;
-    const vy = -0.8 + Math.random() * 0.9;
-    const vz = (Math.random() - 0.5) * 1.6;
+    const rx = (Math.sin((b + 1) * 19.34) * 43758.5453) % 1;
+    const ry = (Math.sin((b + 1) * 71.12) * 43758.5453) % 1;
+    const rz = (Math.sin((b + 1) * 43.89) * 43758.5453) % 1;
+    const vx = (vesselIdx - 1) * spacing + (Math.abs(rx) - 0.5) * 1.6;
+    const vy = -0.8 + Math.abs(ry) * 0.9;
+    const vz = (Math.abs(rz) - 0.5) * 1.6;
     bubblePositions[b * 3] = vx;
     bubblePositions[b * 3 + 1] = vy;
     bubblePositions[b * 3 + 2] = vz;
