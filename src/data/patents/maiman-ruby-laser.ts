@@ -155,7 +155,7 @@ export const maimanRubyLaserPatent: Patent = {
           figureRef: "Fig. 4",
           label: "m1",
           element: "m1",
-          description: "High-reflector silvered end face (R1 ~ 99.9%).",
+          description: "Reflective end face.",
           x: 18,
           y: 52,
         },
@@ -173,16 +173,16 @@ export const maimanRubyLaserPatent: Patent = {
   ],
   plainEnglishExplanation: {
     overview:
-      "Before Theodore Maiman's breakthrough on May 16, 1960, the scientific consensus—led by prominent physicists including Arthur Schawlow—believed that ruby was unsuitable for a laser because its fluorescence quantum efficiency was erroneously reported to be under 1% and achieving three-level population inversion would require impossibly intense continuous light. Maiman rigorously remeasured synthetic ruby at Hughes Research Laboratories, discovered its quantum efficiency was actually near 75%, and realized that instead of weak continuous lamps, a high-power photographic xenon flash tube discharging stored electrical energy in a millisecond burst could easily pump more than 50% of the ground-state chromium ions into the metastable state, achieving the world's very first working laser.",
+      "The specification addresses the difficulty of extending stimulated-emission techniques from microwave masers into optical frequencies. Maiman's disclosed move is to use a solid-state negative-temperature medium, such as a ruby rod, with broadband optical pumping and repeated optical feedback through the active material.",
     coreMechanism:
-      "When the xenon flash lamp fires, intense green (560 nm) and violet (410 nm) photons penetrate the ruby cylinder, exciting ground-state Cr3+ ions from the 4A2 state to the broad 4F2 and 4F1 pump bands. Within less than 100 picoseconds, these excited ions decay non-radiatively by dissipating lattice phonons into the sapphire crystal host, dropping into the metastable 2E doublet state. Because the spontaneous radiative lifetime of the 2E state is remarkably long (~3.0 to 4.3 ms), the population of excited ions (N2) rapidly accumulates. Once the flash energy exceeds the threshold (E_pump > E_th), N2 exceeds the depleted ground-state population N1, creating a population inversion (N2 > N1). Spontaneously emitted 694.3 nm photons traveling parallel to the rod axis bounce repeatedly between the silvered Fabry-Perot end mirrors, stimulating an exponential cascade of coherent identical photons that escapes through the partially silvered mirror as a blinding pulse of monochromatic, collimated laser radiation.",
+      "When the optical pump fires, broadband light excites atoms in the ruby from the ground level into a broad higher energy region. A radiationless transition feeds a discrete upper level. When the upper-state population exceeds the ground-state population, light traveling along the rod is reflected repeatedly between the end faces, stimulating coherent emission that exits through the coupling opening as a monochromatic beam.",
     mechanicalBreakdown: [
       {
         title: "Synthetic Pink Ruby Crystal Rod",
         summary:
-          "Single-crystal corundum (aluminum oxide, Al2O3) doped with ~0.05% Cr2O3 by weight, ground into a precision cylinder with optically flat, parallel end facets.",
+          "A ruby element prepared as a solid-state active laser medium, with end faces arranged to support repeated optical reflections.",
         technicalDetails:
-          "The crystal lattice provides strong electrostatic crystal-field splitting (10Dq ≈ 18,000 cm^-1), creating broad green (4F2) and violet (4F1) absorption bands while shielding the 2E metastable doublet from fast non-radiative decay, resulting in a narrow R1 fluorescence transition line at $\\lambda = 694.3\\text{ nm}$ with an exceptionally high stimulated emission cross section ($\\sigma_{21} \\approx 2.5 \\times 10^{-20}\\text{ cm}^2$).",
+          "The solid active material supplies discrete energy levels. Broadband pump energy reaches a higher region, a radiationless transition feeds a discrete upper level, and stimulated emission returns atoms toward the ground level.",
         archaicTerm: "synthetic ruby rod",
         modernEquivalent: "solid-state gain medium (Cr3+:Al2O3 crystal)",
       },
@@ -191,7 +191,7 @@ export const maimanRubyLaserPatent: Patent = {
         summary:
           "A quartz glass tube coiled helically around the ruby rod, filled with low-pressure xenon gas and triggered by high-voltage pulse discharge.",
         technicalDetails:
-          "Discharging a capacitor bank (e.g. 100 µF charged to 1000–2000 V, delivering 50–200 Joules in ~1 ms) creates an intense xenon arc plasma with an effective blackbody radiation temperature of 7,000–10,000 K, radiating high spectral radiance precisely matched to the green (560 nm) and violet (410 nm) absorption bands of ruby.",
+          "The gas-filled flash tube supplies high-intensity broadband light. The specification describes reflective housings, direct coupling, and fluorescent conversion as ways to improve the fraction of pump light reaching the active material.",
         archaicTerm: "helical gas-filled flash tube",
         modernEquivalent: "optical flashlamp pumping engine",
       },
@@ -200,7 +200,7 @@ export const maimanRubyLaserPatent: Patent = {
         summary:
           "Mutually parallel, optically flat end mirrors coated directly onto the polished ends of the ruby cylinder.",
         technicalDetails:
-          "One end face is fully coated with an opaque silver layer ($R_1 \\ge 99.9\\%$) while the output face has a partial transmission silver film ($R_2 \\approx 90\\%\\text{--}98\\%$) or pinhole aperture, forming an axial Fabry-Perot resonator where the round-trip gain $G = R_1 R_2 e^{2(\\sigma_{21} \\Delta N - \\alpha) L} \\ge 1$ establishes self-sustaining laser oscillation in low-order transverse electromagnetic modes.",
+          "Reflective end faces form an optical resonating path through the active material. A coupling opening or partially transmitting end permits the coherent beam to leave the resonator.",
         archaicTerm: "interferometer reflecting ends",
         modernEquivalent: "monolithic Fabry-Perot optical cavity resonator",
       },
@@ -209,9 +209,9 @@ export const maimanRubyLaserPatent: Patent = {
         summary:
           "The first optical radar instrument, combining the pulsed ruby laser transmitter with a photoelectric receiver and oscilloscope time-of-flight display.",
         technicalDetails:
-          "Transmits 10-nanosecond to 1-microsecond pulses of coherent 694.3 nm light with sub-milliradian beam divergence ($\\theta \\approx 1.22 \\lambda / D$), achieving target distance measurement via $R = c \\cdot \\Delta t / 2$ with centimeter-level precision and total immunity to radio-frequency electronic countermeasures.",
+          "The colidar sends a laser beam toward a target and uses a photoelectric receiver and oscillograph traces to compare the transmitted and received pulse times. The specification identifies the time difference as an indication of range.",
         archaicTerm: "Colidar (Coherent Light Detection and Ranging)",
-        modernEquivalent: "LIDAR (Light Detection and Ranging)",
+        modernEquivalent: "optical radar or lidar ranging system",
       },
     ],
     scientificPrinciples: [
@@ -243,26 +243,15 @@ export const maimanRubyLaserPatent: Patent = {
   claims,
   historicalContext: {
     problemStatement:
-      "In the late 1950s, building an optical maser was considered an intractable engineering challenge because theoretical calculations suggested that ruby had a fluorescence quantum efficiency below 1%, leading leading researchers to dismiss it as an impossible laser medium.",
+      "The patent identifies a gap between microwave masers and optical frequencies: wavelength-scale microwave cavities cannot be meaningfully reproduced at optical dimensions, while large optical cavities support many modes and demand impractical pump power.",
     priorArtLimitations: [
-      "Microwave masers operated only at centimeter radio wavelengths and required cryogenic cooling",
-      "Arthur Schawlow's published calculations claimed ruby could not lase due to low quantum efficiency",
-      "Continuous optical lamps lacked the spectral power density to pump 50% of ground-state atoms into inversion",
+      "Microwave maser cavities depend on dimensions of the order of a wavelength, a construction that does not transfer usefully to optical frequencies",
+      "Large optical cavities support many modes, degrade coherence, and require impractically large pumping power",
+      "The patent's gaseous-state examples require critical vapor pressure, temperature, purity, and reflective parallel end plates",
     ],
     breakthroughInsight:
-      "Theodore Maiman discovered that ruby's quantum efficiency was actually ~75% and realized that using a pulsed photographic xenon flash tube could deliver hundreds of Joules of green/violet optical pumping in a single millisecond, easily exceeding the three-level inversion threshold.",
-    patentWars: [
-      {
-        rivalName: "Arthur Schawlow & Charles Townes (Bell Telephone Laboratories)",
-        rivalClaim: "US Patent 2,929,922 claiming optical masers with open Fabry-Pérot cavities",
-        conflictDetails:
-          "Townes and Schawlow filed their seminal optical maser patent in 1958 based on potassium vapor and theoretical solid states. When Maiman built the first working laser in May 1960, Bell Labs claimed priority based on Townes' earlier patent.",
-        resolution:
-          "Maiman's patent US 3,353,115 was granted in 1967 specifically protecting three-level ruby laser systems, establishing independent patent rights for Hughes Aircraft Company.",
-        legalOutcome:
-          "Maiman is universally recognized by the global scientific and engineering community as the inventor and builder of the world's first functioning laser.",
-      },
-    ],
+      "The disclosed architecture combines a solid-state active medium, broadband optical pumping, radiationless transfer into a discrete upper level, and an optical feedback path that repeatedly traverses the material.",
+    patentWars: [],
     civilizationalImpact:
       "Maiman's creation of the first laser inaugurated the multi-hundred-billion-dollar photonics industry, fundamentally enabling fiber-optic global telecommunications, precision laser surgery, satellite laser ranging, and quantum optics.",
     funFact:

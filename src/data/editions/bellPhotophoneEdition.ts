@@ -5,24 +5,29 @@ import type {
 } from "@/types/patent";
 
 const t = (text: string): CuratedSpecificationInline => ({ kind: "text", text });
+const term = (text: string, definition: string): CuratedSpecificationInline => ({
+  kind: "term",
+  text,
+  definition,
+});
 const p = (...inlines: CuratedSpecificationInline[]) => ({
   kind: "paragraph" as const,
   inlines: inlines as CuratedSpecificationInlines,
 });
 const FIGURE_DIMS: Record<number, { width: number; height: number }> = {
-  1: { width: 2000, height: 870 },
-  2: { width: 970, height: 600 },
-  3: { width: 1030, height: 600 },
-  4: { width: 670, height: 600 },
-  5: { width: 650, height: 600 },
-  6: { width: 680, height: 600 },
-  7: { width: 670, height: 600 },
-  8: { width: 700, height: 600 },
-  9: { width: 630, height: 600 },
-  10: { width: 2000, height: 920 },
-  11: { width: 1000, height: 800 },
-  12: { width: 1000, height: 800 },
-  13: { width: 1000, height: 950 },
+  1: { width: 5000, height: 2700 },
+  2: { width: 1800, height: 1800 },
+  3: { width: 1500, height: 1500 },
+  4: { width: 900, height: 1300 },
+  5: { width: 1500, height: 1700 },
+  6: { width: 1000, height: 1500 },
+  7: { width: 1000, height: 1600 },
+  8: { width: 5700, height: 1700 },
+  9: { width: 1500, height: 1900 },
+  10: { width: 5000, height: 1800 },
+  11: { width: 1100, height: 1300 },
+  12: { width: 1800, height: 1300 },
+  13: { width: 2500, height: 900 },
   14: { width: 900, height: 1100 },
   15: { width: 700, height: 900 },
   16: { width: 360, height: 560 },
@@ -40,7 +45,7 @@ const figureAssetPath = (number: number) =>
     ? "/patents/figures/us-235199-bell-photophone/figs-16-and-17-source-crop-v5.png"
     : number >= 18
       ? `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop-v5.png`
-      : `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop${number === 14 || number === 15 ? "-v4" : "-v1"}.png`;
+      : `/patents/figures/us-235199-bell-photophone/fig-${number}-source-crop${number === 14 || number === 15 ? "-v4" : "-v3"}.png`;
 const fig = (text: string, numbers: readonly number[]): CuratedSpecificationInline => ({
   kind: "reference",
   text,
@@ -68,7 +73,14 @@ const SOURCE_PARAGRAPHS = [
   ),
   p(
     t(
-      "The rays which proceed from the sun and other similar sources, falling upon various bodies, produce effects generally perceived by the senses, as heat or as color. Besides this, and notably when they fall upon the substances hereinafter mentioned, the energy which they are to convey produces in those bodies a change which the sense of touch or the sense of sight has not been able to take notice of. This changed condition may be fitly called a “state of strain,” and I have been able to make it manifest in various ways in different substances. My discovery and invention relate to this class of changes.",
+      "The rays which proceed from the sun and other similar sources, falling upon various bodies, produce effects generally perceived by the senses, as heat or as color. Besides this, and notably when they fall upon the substances hereinafter mentioned, the energy which they are to convey produces in those bodies a change which the sense of touch or the sense of sight has not been able to take notice of. This changed condition may be fitly called a “",
+    ),
+    term(
+      "state of strain",
+      "Bell's period term for the transient, radiation-induced physical condition in a sensitive substance; it is the source-side state that later becomes an acoustic or electrical signal.",
+    ),
+    t(
+      ",” and I have been able to make it manifest in various ways in different substances. My discovery and invention relate to this class of changes.",
     ),
   ),
   p(
@@ -128,7 +140,21 @@ const SOURCE_PARAGRAPHS = [
   ),
   p(
     t(
-      "The apparatus employed consists, essentially, of an instrument which varies the amount of radiant energy falling upon the sensitive body, (this part of the apparatus I will call the “photophonic transmitter;” of an instrument by which the variations produced in the sensitive body are directly or indirectly made sensible as sound without the intervention of electricity, or as electrical variations which are capable of producing sounds or signals by means of an electric speaking telephonic receiver or other suitable electric signaling-instrument, (this part of the apparatus I will call a “photophonic receiver;”) and of various devices for giving the proper direction or diffusion to the rays employed. These instruments must be suitably arranged and placed with reference to each other.",
+      "The apparatus employed consists, essentially, of an instrument which varies the amount of radiant energy falling upon the sensitive body, (this part of the apparatus I will call the “",
+    ),
+    term(
+      "photophonic transmitter",
+      "The source-side beam controller: an optical or source-modulating instrument that varies the radiant energy delivered toward the sensitive body in accordance with a signal.",
+    ),
+    t(
+      ";” of an instrument by which the variations produced in the sensitive body are directly or indirectly made sensible as sound without the intervention of electricity, or as electrical variations which are capable of producing sounds or signals by means of an electric speaking telephonic receiver or other suitable electric signaling-instrument, (this part of the apparatus I will call a “",
+    ),
+    term(
+      "photophonic receiver",
+      "The receiving-side instrument: a sensitive body and its acoustic or electrical connections that turn the received radiant-energy variation into sound or a signal.",
+    ),
+    t(
+      ";”) and of various devices for giving the proper direction or diffusion to the rays employed. These instruments must be suitably arranged and placed with reference to each other.",
     ),
   ),
   p(
@@ -138,7 +164,14 @@ const SOURCE_PARAGRAPHS = [
   ),
   p(
     t(
-      "If the rays are to pass over any considerable distance, they should, to obtain the best result, be formed into a parallel pencil in order to prevent dispersion and loss of effect. At the point where they are to be controlled by the transmitter they are preferably concentrated in order that a large amount of energy may be readily controlled there, and this concentration may be wholly or partially continued till they reach the sensitive body, or they may be there again concentrated, so as to exercise their full effect on a small surface, which is important in most forms of apparatus.",
+      "If the rays are to pass over any considerable distance, they should, to obtain the best result, be formed into a ",
+    ),
+    term(
+      "parallel pencil",
+      "A nearly collimated beam whose rays remain close to parallel during the path, reducing geometric spreading and preserving useful radiant energy at a distant receiver.",
+    ),
+    t(
+      " in order to prevent dispersion and loss of effect. At the point where they are to be controlled by the transmitter they are preferably concentrated in order that a large amount of energy may be readily controlled there, and this concentration may be wholly or partially continued till they reach the sensitive body, or they may be there again concentrated, so as to exercise their full effect on a small surface, which is important in most forms of apparatus.",
     ),
   ),
   p(
@@ -195,8 +228,8 @@ const SOURCE_PARAGRAPHS = [
     t(
       "By varying the velocity of rotation of the disk c the rapidity of interruption of the beam will be correspondingly varied, and consequently the pitch of the sound produced at the receiving-station. In this form of transmitter the motion which causes the interruptions is continuously in the same direction. I have devised other forms to be used instead of it, and in which the screens employed operate by a to-and-fro or vibratory motion given to the moving part thereof. By means of these I am enabled to give a new power and capacity to the apparatus. ",
     ),
-    fig("Figs. 4, 5, 6, 7 a", [4, 5, 6, 7]),
-    t("re such forms of apparatus."),
+    fig("Figs. 4, 5, 6, 7", [4, 5, 6, 7]),
+    t(" are such forms of apparatus."),
   ),
   p(
     fig("Fig. 4", [4]),
@@ -227,8 +260,12 @@ const SOURCE_PARAGRAPHS = [
     ),
   ),
   p(
-    t("In the form of intercepter or beam-controller illustrated in "),
-    fig("Figs. 5, 6, 7, a ", [5, 6, 7]),
+    t("In the form of "),
+    term(
+      "intercepter",
+      "Bell's spelling for an in-path beam interrupter or controller: a moving screen that changes how much of the radiant pencil continues toward the receiver.",
+    ),
+    t(" or beam-controller illustrated in "),
     t(
       "series of slats, m, of opaque material, are pivoted, as at 5, in a frame-work in the path of the rays, the said slats being all oscillated simultaneously, like the slats of a window-blind, by a rod, n, connected with the actuating-vibrator j, as shown in ",
     ),
@@ -249,9 +286,9 @@ const SOURCE_PARAGRAPHS = [
     t(
       "It will be seen that when the slats are open, as shown at 6, they only present their edges as obstruction to the rays, and their thickness may be much less than the open space between them, so that a greater amount of rays may be allowed to pass than when the gratings shown in ",
     ),
-    fig("Figs. 3 and 4 a", [3, 4]),
+    fig("Figs. 3 and 4", [3, 4]),
     t(
-      "re used, as they never allow more than half the beam to pass. By connecting the rods n nearer the pivots 5 the same extent of movement in their rods will give a greater angular movement to the slats.",
+      " are used, as they never allow more than half the beam to pass. By connecting the rods n nearer the pivots 5 the same extent of movement in their rods will give a greater angular movement to the slats.",
     ),
   ),
   p(
@@ -340,7 +377,14 @@ const SOURCE_PARAGRAPHS = [
   ),
   p(
     t(
-      "I now remark, however, that as the selenium, even when in its most favorable condition, is of high resistance, it is desirable to interpose it in the circuit in the form of a conductor of but slight length and of large area, which may be done very advantageously by some novel forms of cells to be hereinafter described.",
+      "I now remark, however, that as the selenium, even when in its most favorable condition, is of ",
+    ),
+    term(
+      "high resistance",
+      "A large opposition to current in the selenium path; Bell responds by making the active path short and broad so the cell can carry a useful varying current.",
+    ),
+    t(
+      " resistance, it is desirable to interpose it in the circuit in the form of a conductor of but slight length and of large area, which may be done very advantageously by some novel forms of cells to be hereinafter described.",
     ),
   ),
   p(
@@ -361,12 +405,12 @@ const SOURCE_PARAGRAPHS = [
   p(
     fig("Fig. 10", [10]),
     t(
-      " illustrates another apparatus for transmitting complex sounds or articulate speech. As in the form last described, the sound-waves due to the voice serve to give to the movable part of the transmitter a vibrational movement of corresponding character, and this movement, in turn, impresses a vibra-",
+      " illustrates another apparatus for transmitting complex sounds or articulate speech. As in the form last described, the sound-waves due to the voice serve to give to the movable part of the transmitter a vibrational movement of corresponding character, and this movement, in turn, impresses a vibrational",
     ),
   ),
   p(
     t(
-      "tional or alternate variation of corresponding character upon the amount of radiant energy falling upon the sensitive part of the receiver.",
+      " or alternate variation of corresponding character upon the amount of radiant energy falling upon the sensitive part of the receiver.",
     ),
   ),
   p(
@@ -423,7 +467,14 @@ const SOURCE_PARAGRAPHS = [
     t("the different parts thereof in "),
     fig("Fig. 13", [13]),
     t(
-      ". This cell has an arrangement similar to, but in construction is different from, what is known as “Siemens spiral.” Two ribbons, a² b², of suitable conducting material, preferably brass, form the terminals of the poles of the battery B, the said ribbons being separated by thin strips c² of suitable insulating material, which is slightly narrower than the metal strip, so as to leave a slight",
+      ". This cell has an arrangement similar to, but in construction is different from, what is known as “",
+    ),
+    term(
+      "Siemens spiral",
+      "The period name for a spiral or helical arrangement of alternating conductive and insulating strips; Bell adapts the geometry for broad selenium exposure and short current paths.",
+    ),
+    t(
+      ".” Two ribbons, a² b², of suitable conducting material, preferably brass, form the terminals of the poles of the battery B, the said ribbons being separated by thin strips c² of suitable insulating material, which is slightly narrower than the metal strip, so as to leave a slight",
     ),
   ),
   p(
