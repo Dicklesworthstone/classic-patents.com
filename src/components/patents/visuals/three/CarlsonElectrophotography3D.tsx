@@ -125,6 +125,8 @@ export function CarlsonElectrophotography3D({
         timeRef.current,
       );
 
+      nodes.setCutaway?.(current.isCutaway ?? false);
+
       studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
     };
@@ -180,7 +182,7 @@ export function CarlsonElectrophotography3D({
         )}
 
         {/* Top-Right Action Controls */}
-        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex flex-wrap justify-end gap-1.5 sm:gap-2 max-w-[90%]">
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <button
             type="button"
             onClick={() => {
@@ -197,6 +199,7 @@ export function CarlsonElectrophotography3D({
               <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </button>
+
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
@@ -208,6 +211,21 @@ export function CarlsonElectrophotography3D({
           >
             {isRotating ? "Stop Orbit" : "Auto Orbit"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Drum & Chassis" : "Transparent Drum & Chassis Cutaway"}
+            aria-label={isCutaway ? "Solid Drum & Chassis" : "Transparent Drum & Chassis Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
+          </button>
+
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
@@ -220,7 +238,9 @@ export function CarlsonElectrophotography3D({
             aria-label={showUiOverlay ? "Hide Overlay Telemetry" : "Show Overlay Telemetry"}
           >
             {showUiOverlay ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span className="hidden md:inline">{showUiOverlay ? "Hide HUD" : "Show HUD"}</span>
           </button>
+
           <button
             aria-label="Reset camera view"
             type="button"

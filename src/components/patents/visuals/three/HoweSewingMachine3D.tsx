@@ -234,7 +234,10 @@ export function HoweSewingMachine3D() {
           <button
             aria-label={isAudioMuted ? "Unmute simulation audio" : "Mute simulation audio"}
             type="button"
-            onClick={toggleSound}
+            onClick={() => {
+              toggleSound();
+              soundEngine.playSwitchClick();
+            }}
             className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
@@ -246,7 +249,10 @@ export function HoweSewingMachine3D() {
           </button>
           <button
             type="button"
-            onClick={() => setIsCutaway(!isCutaway)}
+            onClick={() => {
+              setIsCutaway(!isCutaway);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               isCutaway
                 ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
@@ -260,7 +266,10 @@ export function HoweSewingMachine3D() {
           <button
             aria-label={showCalloutPins ? "Hide annotation pins" : "Show annotation pins"}
             type="button"
-            onClick={() => setShowCalloutPins(!showCalloutPins)}
+            onClick={() => {
+              setShowCalloutPins(!showCalloutPins);
+              soundEngine.playSwitchClick();
+            }}
             className={`p-1.5 sm:p-2.5 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
               showCalloutPins
                 ? "bg-amber-600 text-white border-amber-700 shadow-md"
