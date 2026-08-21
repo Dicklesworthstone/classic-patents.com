@@ -694,14 +694,14 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
     {
       claimNumber: 1,
       patentId: "us-706737-fessenden-wireless",
-      claimTitle: "Continuous Undamped High-Frequency Wave Audio Modulation",
+      claimTitle: "Distributed-Capacity Sending Conductor",
       activeDescription:
-        "Claim 1 generates continuous sinusoidal electromagnetic waves modulated directly by acoustic voice currents and detected by a heterodyne electrolytic receiver.",
+        "Claim 1 requires a sending conductor whose large capacity is distributed with substantial uniformity over its radiating portion.",
       invertedDescription:
-        "Damped spark pulses: intermittent broadband spark trains drown out analog acoustic signals with harsh broadband noise, limiting transmission to Morse telegraphy.",
-      failureModeName: "Damped Spark Noise Modulation Masking",
+        "Distributed-capacity relation absent: the reader no longer represents the large, substantially uniform capacity over the radiating portion required by Claim 1.",
+      failureModeName: "Distributed-Capacity Relation Absent",
       historicalPriorArt:
-        "Marconi and earlier systems used intermittent spark gaps that were fundamentally incapable of continuous voice or music transmission.",
+        "The specification contrasts this arrangement with earlier high-frequency systems whose waves rapidly diminished and varied in frequency and form.",
     },
   ],
   "us-879532-de-forest-audion": [
@@ -1225,13 +1225,10 @@ export function applyClaimConstraintModifications(
     case "us-706737-fessenden-wireless": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {
-        modified.harmonicPurityPct = 5.0; // Broadband spark noise
-        modified.audioIntelligibilityPct = 0.0; // Damped sparks mask speech
-        activeFailures.push(
-          "Damped Spark Audio Masking: Intermittent spark discharges mask analog speech modulation with acoustic noise",
-        );
+        modified.distributedCapacity = 0;
+        activeFailures.push("Distributed-capacity relation absent");
         refusalWarning =
-          "CONTINUOUS-WAVE FAILURE: Continuous undamped sinusoidal carrier required for amplitude-modulated voice telephony.";
+          "SOURCE-BOUND REFUSAL: Claim 1 requires large capacity distributed with substantial uniformity over the radiating portion.";
       }
       break;
     }

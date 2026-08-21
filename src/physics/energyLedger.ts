@@ -272,16 +272,9 @@ export function computePortHamiltonianEnergy(
     }
 
     case "us-706737-fessenden-wireless": {
-      const _carrierFreqKhz = params.carrierFreqKhz ?? 50.0;
-      const rfCurrentAmps = params.rfCurrentAmps ?? 18.0;
-      const antennaRadiationOhms = 4.2;
-      const alternatorRpm = 10000.0;
-      const omega = (alternatorRpm * 2 * Math.PI) / 60.0;
-      kinetic = 0.5 * 12.0 * (0.15 * omega) ** 2; // High-frequency Alexanderson-Fessenden alternator rotor
-      em = 0.5 * 1.2e-3 * rfCurrentAmps * rfCurrentAmps; // Stator multi-slot high-frequency field
-      powerIn = 3500.0; // 5 HP electric drive motor
-      dissipated = 3500.0 - rfCurrentAmps * rfCurrentAmps * antennaRadiationOhms; // Core eddy current & bearing losses
-      thermal = 800.0;
+      // US 706,737 gives qualitative circuit relationships and source examples,
+      // but no complete inertia, current, resistance, power, or loss data from
+      // which to close an energy ledger. Leave every channel at zero.
       break;
     }
 
