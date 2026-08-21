@@ -12,6 +12,8 @@ import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-x72-whitney-cotton-gin",
+  "us-395781-hollerith-tabulating",
+  "us-2929922-townes-laser",
   "us-3671542-kwolek-kevlar",
 ] as const;
 
