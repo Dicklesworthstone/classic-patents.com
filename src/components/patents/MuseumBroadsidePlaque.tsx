@@ -44,8 +44,8 @@ export function MuseumBroadsidePlaque({ patent }: { patent: Patent }) {
         <div>
           <span className="font-bold block uppercase text-[8pt] text-gray-600">Dates:</span>
           <span>
-            Filed: {patent.filingDate ? formatPatentDate(patent.filingDate) : "not recorded"} · Granted:{" "}
-            {formatPatentDate(patent.grantDate)}
+            Filed: {patent.filingDate ? formatPatentDate(patent.filingDate) : "not recorded"} ·
+            Granted: {formatPatentDate(patent.grantDate)}
           </span>
         </div>
       </div>

@@ -6138,7 +6138,10 @@ export function InteractiveDiagramViewer({
   if (!activeDrawing) return null;
 
   return (
-    <div ref={viewerRef} className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5">
+    <div
+      ref={viewerRef}
+      className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-5 sm:p-6 shadow-patent space-y-5"
+    >
       {/* Header, Figure Switcher & Viewport Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>

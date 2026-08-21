@@ -387,9 +387,9 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   iOS does not display PDFs inline
                 </h4>
                 <p className="font-sans text-sm text-ink-700 dark:text-parchment-300 leading-relaxed">
-                  Open the scanned {patent.patentNumber} facsimile in a new tab, or download
-                  it for offline reading. The complete document is the authoritative
-                  primary source for this record.
+                  Open the scanned {patent.patentNumber} facsimile in a new tab, or download it for
+                  offline reading. The complete document is the authoritative primary source for
+                  this record.
                 </p>
               </div>
               <div className="flex flex-wrap items-center justify-center gap-3">

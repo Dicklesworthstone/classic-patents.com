@@ -1,8 +1,8 @@
 import { Activity, ArrowRight, Calendar, User } from "lucide-react";
 import Link from "next/link";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { formatPatentDate } from "@/utils/patentDate";
 import type { Patent } from "@/types/patent";
+import { formatPatentDate } from "@/utils/patentDate";
 
 interface PatentCardProps {
   patent: Patent;

@@ -4,8 +4,8 @@ import { BookOpen, Calendar, Check, FileDown, MapPin, Share2, User } from "lucid
 import Link from "next/link";
 import { useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
-import { formatPatentDate } from "@/utils/patentDate";
 import type { Patent } from "@/types/patent";
+import { formatPatentDate } from "@/utils/patentDate";
 import { ArchaicGlossaryModal } from "./ArchaicGlossaryModal";
 
 interface PatentHeaderProps {
