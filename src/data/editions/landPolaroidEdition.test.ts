@@ -19,7 +19,10 @@ function normalizeClaimText(text: string): string {
     .trim();
 }
 
-function reconstructLedgerClaims(): { numbers: number[]; textByNumber: Map<number, string> } {
+function reconstructLedgerClaims(): {
+  numbers: number[];
+  textByNumber: Map<number, string>;
+} {
   const numbers: number[] = [];
   const textByNumber = new Map<number, string>();
   let currentNumber: number | undefined;
