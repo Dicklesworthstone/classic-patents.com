@@ -29,7 +29,7 @@ canonical text.
 
 | PDF locator | Reviewed content | Published treatment |
 | --- | --- | --- |
-| p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; separately reviewed local crops `fig-1.png` through `fig-6.png`; Fig. 1–6 references |
+| p. 1 | Drawing sheet 1, Figs. 1–6 | Figure-sheet block; separately reviewed local crops `fig-1.png`, `fig-2.png`, `fig-3-source-crop-v2.png`, `fig-4-source-crop-v2.png`, `fig-5.png`, and `fig-6-source-crop-v2.png`; Fig. 1–6 references |
 | p. 2 | Drawing sheet 2, Figs. 7–9 | Figure-sheet block; separately reviewed local crops `fig-7-source-crop.png`, `fig-8.png`, and `fig-9.png`; Fig. 7–9 references |
 | p. 3 | Drawing sheet 3, Figs. 10–13 | Figure-sheet block; separately reviewed local crops `fig-10.png`, `fig-11.png`, `fig-12-source-crop-v3.png`, and `fig-13-source-crop-v3.png`; Fig. 10–13 references |
 | p. 4 | Drawing sheet 4, Fig. 14 | Figure-sheet block; upright apparatus crop `fig-14-source-crop-v5.png` with the complete printed figure label and no witness block, plus separate label crop `fig-14-label-source-crop-v4.png`; Fig. 14 references |

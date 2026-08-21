@@ -22,9 +22,19 @@ const FIGURE_CROPS = {
     width: 300,
     height: 105,
   },
-  4: crop(4, 1220, 600, "Fig. 4"),
+  4: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-4-source-crop-v2.png",
+    alt: "Tight upright source-facsimile crop of Fig. 4 from US 120,057, excluding neighboring drawing fragments.",
+    width: 1140,
+    height: 525,
+  },
   5: crop(5, 1220, 580, "Fig. 5"),
-  6: crop(6, 440, 500, "Fig. 6"),
+  6: {
+    src: "/patents/figures/us-120057-gramme-dynamo/fig-6-source-crop-v2.png",
+    alt: "Tight upright source-facsimile crop of Fig. 6 from US 120,057, excluding the sheet title above the figure.",
+    width: 440,
+    height: 455,
+  },
   7: {
     src: "/patents/figures/us-120057-gramme-dynamo/fig-7-source-crop.png",
     alt: "Complete source-facsimile crop of Fig. 7 from US 120,057; the source sheet physically overlaps the upper portion with Fig. 9.",

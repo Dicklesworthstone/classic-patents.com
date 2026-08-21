@@ -105,6 +105,7 @@ export function WozniakApple3D() {
 
       const animTime = renderedSteps * delta;
       model.updateKinematics(delta, animTime, p.busDisplaySpeed, p.isCpuActive);
+      model.setCutaway?.(p.isCutaway ?? false);
 
       studio.controls.update();
       renderer.render(scene, camera);
@@ -167,6 +168,20 @@ export function WozniakApple3D() {
             title={isAudioMuted ? "Enable Sound Synthesis" : "Mute Sound"}
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsCutaway(!isCutaway)}
+            className={`p-1.5 sm:p-2 rounded-xl backdrop-blur-md border transition-colors shadow-sm ${
+              isCutaway
+                ? "bg-cyan-600 text-white border-cyan-700 shadow-md ring-2 ring-cyan-500/30"
+                : "bg-white/90 dark:bg-ink-900/90 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100"
+            }`}
+            title={isCutaway ? "Solid Enclosure" : "Transparent Case Cutaway"}
+            aria-label={isCutaway ? "Solid Enclosure" : "Transparent Case Cutaway"}
+          >
+            <Layers className="w-4 h-4" />
           </button>
 
           <button
