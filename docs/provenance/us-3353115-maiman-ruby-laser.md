@@ -22,11 +22,11 @@
 
 | PDF Page | Facsimile Content | Audit Notes |
 | :--- | :--- | :--- |
-| **Page 1** | Drawing Sheet 1: FIGS. 1 & 2 | Helical flash tube laser assembly (FIG. 1); 3-level atomic energy state diagram ($^4A_2$ ground, $^4F_1/^4F_2$ pump bands, $^2E$ metastable level at 694.3 nm) (FIG. 2). |
-| **Page 2** | Drawing Sheet 2: FIGS. 3, 4, 5, 6 | Optical pumping diagram (FIG. 3); silvered ruby rod (FIG. 4); absorption & fluorescence spectra (FIG. 5); population inversion threshold vs pump energy (FIG. 6). |
-| **Page 3** | Drawing Sheet 3: FIGS. 7, 8, 9, 10 | Cooled housing assembly (FIG. 7); trigger circuit (FIG. 8); spatial output profile (FIG. 9); relaxation oscillation spiking waveform (FIG. 10). |
-| **Page 4** | Drawing Sheet 4: FIGS. 11, 12, 13, 14 | Fabry-Perot resonator modes (FIG. 11); retroreflecting Porro prism resonator (FIG. 12); ring laser (FIG. 13); external planar mirror interferometer (FIG. 14). |
-| **Page 5** | Drawing Sheet 5: FIGS. 15, 16, 17, 18 | Single external mirror cavity (FIG. 15); elliptical reflector geometry (FIG. 16); linear side-pumping (FIG. 17); Colidar laser radar ranging system (FIG. 18). |
+| **Page 1** | Drawing Sheet 1: FIGS. 1–3 | Energy-level diagram (FIG. 1); ruby rod, light pump, and output beam (FIG. 2); sunlight/lens/mirror optical pump (FIG. 3). |
+| **Page 2** | Drawing Sheet 2: FIGS. 4–7 | Helical flash-tube pump (FIG. 4); hollow gas-filled pump (FIG. 5); fluorescein-separated flash tube (FIG. 6); its energy-level diagram (FIG. 7). |
+| **Page 3** | Drawing Sheet 3: FIGS. 8–11 | Hollow-cylinder laser/coolant (FIG. 8); refrigerated rod (FIG. 9); uncoated segment rays (FIG. 10); coated segment rays (FIG. 11). |
+| **Page 4** | Drawing Sheet 4: FIGS. 12–15 | High-index coolant (FIG. 12); prism/interferometer path (FIG. 13); and two plate interferometers (FIGS. 14–15). |
+| **Page 5** | Drawing Sheet 5: FIGS. 16–18 | Parabolic pump reflectors (FIG. 16); elliptical pump reflector (FIG. 17); Colidar transmitter, receiver, and target (FIG. 18). |
 | **Page 6** | Specification Column 1 & 2 | Heading, abstract, historical background, prior art microwave masers, optical maser challenge, summary of invention, drawing descriptions. |
 | **Page 7** | Specification Column 3 & 4 | Detailed quantum mechanics of Cr3+ ions in sapphire lattice ($\text{Al}_2\text{O}_3$), nonradiative relaxation kinetics, 694.3 nm emission, threshold equation. |
 | **Page 8** | Specification Column 5 & 6 | Helical xenon flashtube optical coupling, silvered Fabry-Perot end facets, transmission aperture, coherent beam generation mechanics. |

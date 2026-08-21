@@ -1,7 +1,4 @@
-import {
-  maimanRubyLaserArchivalEdition,
-  manualMaimanClaimText,
-} from "@/data/editions/maimanRubyLaserEdition";
+import { manualMaimanClaimText } from "@/data/editions/maimanRubyLaserEdition";
 import type { Patent, PatentClaim } from "@/types/patent";
 
 const claims: PatentClaim[] = [
@@ -59,15 +56,6 @@ export const maimanRubyLaserPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-3353115-maiman-ruby-laser.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3353115A/en",
   usptoClassification: "331/94.5",
-  archivalEdition: maimanRubyLaserArchivalEdition,
-  originalTextAsset: {
-    url: "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
-    pageCount: 10,
-    kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (Antigravity)",
-    reviewedAt: "2026-08-20",
-    sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
-  },
   originalText:
     "This invention relates to solid-state optical masers or lasers and more particularly to such devices which use a ruby crystal as the active laser material. In the past, devices operating on the principles of stimulated emission of radiation were primarily confined to the microwave region of the spectrum and were commonly known as masers. In accordance with the present invention, a practical, high-power solid-state optical maser is provided comprising a synthetic ruby element having optical reflecting faces at its ends forming an optical resonant cavity, directly coupled to a high-intensity helical flash tube.",
   drawings: [
