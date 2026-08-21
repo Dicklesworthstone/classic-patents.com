@@ -7,7 +7,6 @@
  */
 export {
   dieselEngineArchivalEdition as dieselArchivalEdition,
+  dieselEngineArchivalEdition as dieselEdition,
   dieselEngineParallelReadings as dieselParallelReadings,
 } from "./dieselEngineEdition";
-
-export { dieselEngineArchivalEdition as dieselEdition } from "./dieselEngineEdition";

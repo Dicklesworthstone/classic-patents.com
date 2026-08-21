@@ -76,7 +76,9 @@ describe("carrierAirConditionerArchivalEdition", () => {
       "Fig. 5",
       "Fig. 6",
     ]);
-    expect(new Set(carrierAirConditionerPatent.drawings.map((drawing) => drawing.svgType)).size).toBe(6);
+    expect(
+      new Set(carrierAirConditionerPatent.drawings.map((drawing) => drawing.svgType)).size,
+    ).toBe(6);
     for (const drawing of carrierAirConditionerPatent.drawings) {
       for (const callout of drawing.callouts) {
         expect(callout.label).toMatch(/^[a-z]?$|^[a-z]$/);

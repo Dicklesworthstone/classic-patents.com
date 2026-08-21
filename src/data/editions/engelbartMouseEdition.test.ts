@@ -152,8 +152,7 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
       (block) =>
         block.kind === "paragraph" &&
         block.inlines.some(
-          (inline) =>
-            inline.kind === "text" && inline.text.includes("In the readout circuit of"),
+          (inline) => inline.kind === "text" && inline.text.includes("In the readout circuit of"),
         ),
     );
     expect(readoutParagraph?.kind).toBe("paragraph");
@@ -161,7 +160,9 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
 
     const sourceErratumReference = readoutParagraph.inlines.find(
       (inline) =>
-        inline.kind === "reference" && inline.referenceType === "figure" && inline.text === "FIG. 5",
+        inline.kind === "reference" &&
+        inline.referenceType === "figure" &&
+        inline.text === "FIG. 5",
     );
     expect(sourceErratumReference?.kind).toBe("reference");
     if (sourceErratumReference?.kind !== "reference") return;

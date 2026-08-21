@@ -184,13 +184,7 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     for (const preview of actual) {
       expect(existsSync(join(root, "public", preview.src))).toBe(true);
     }
-    const accepted = new Set([
-      "FIG. 1",
-      "FIG. 2",
-      "FIG. 4",
-      "FIG. 7",
-      "FIG. 18",
-    ]);
+    const accepted = new Set(["FIG. 1", "FIG. 2", "FIG. 4", "FIG. 7", "FIG. 18"]);
     for (const inline of maimanRubyLaserArchivalEdition.blocks.flatMap((block) =>
       block.kind === "paragraph"
         ? block.inlines.filter((candidate) => candidate.kind === "reference")

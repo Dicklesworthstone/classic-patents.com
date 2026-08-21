@@ -43,7 +43,9 @@ describe("US 2,292,387 manual source edition", () => {
       "calibrated constant-speed spring motors",
     );
     expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain("clocks and chronometers");
-    expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain("automatic telegraphy and television");
+    expect(lamarrFrequencyHoppingParallelReadings[6]?.[0]).toContain(
+      "automatic telegraphy and television",
+    );
     expect(lamarrFrequencyHoppingParallelReadings[24]?.[0]).toContain("D, E, F, and G");
     expect(lamarrFrequencyHoppingParallelReadings[24]?.[0]).toContain("A, B, and C");
   });

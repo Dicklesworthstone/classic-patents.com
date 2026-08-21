@@ -31,7 +31,9 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       kilbyIntegratedCircuitArchivalEdition as unknown as CuratedSpecificationEdition,
     );
     expect(result.valid).toBe(false);
-    expect(result.errors).toContain("The archival edition lacks an explicit full-facsimile review attestation.");
+    expect(result.errors).toContain(
+      "The archival edition lacks an explicit full-facsimile review attestation.",
+    );
   });
 
   test("keeps claims as direct authored edition nodes without an indexed claim array", () => {
@@ -59,7 +61,9 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
       expect(transcript).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 9 ---`);
     }
     expect(
-      transcript.match(/STATUS: WITHHELD WIP — editorial drawing-label inventory only; not a public facsimile transcription\./g),
+      transcript.match(
+        /STATUS: WITHHELD WIP — editorial drawing-label inventory only; not a public facsimile transcription\./g,
+      ),
     ).toHaveLength(4);
   });
 

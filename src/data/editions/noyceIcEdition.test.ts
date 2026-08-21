@@ -159,7 +159,9 @@ describe("US 2,981,877 manual source edition", () => {
       "This invention relates to electrical circuit structures incorporating semiconductor devices.",
     );
     expect(noyceIcPatent.originalText).toContain("In brief, the present invention utilizes");
-    expect(noyceIcPatent.originalText).not.toContain("This catalogue excerpt is not the archival edition");
+    expect(noyceIcPatent.originalText).not.toContain(
+      "This catalogue excerpt is not the archival edition",
+    );
     const patentSource = readFileSync(
       resolve(process.cwd(), "src/data/patents/noyce-ic.ts"),
       "utf8",

@@ -59,8 +59,9 @@ const fig = (text: string, numbers: readonly number[]): CuratedSpecificationInli
       width: FIGURE_DIMS[number].width,
       height: FIGURE_DIMS[number].height,
     }))
-    .filter((preview, index, previews) =>
-      previews.findIndex((candidate) => candidate.src === preview.src) === index,
+    .filter(
+      (preview, index, previews) =>
+        previews.findIndex((candidate) => candidate.src === preview.src) === index,
     ),
 });
 
@@ -850,103 +851,293 @@ export const bellPhotophoneEdition = bellPhotophoneArchivalEdition;
  * the archival wording remains exclusively in the edition blocks above.
  */
 export const BELL_PHOTOPHONE_PARALLEL_READINGS: Readonly<Record<number, readonly string[]>> = {
-  1: ["Bell identifies the Washington inventor, the Photophone title, and the specification that follows the drawings."],
-  2: ["The broad teaching is radiant energy used deliberately to produce either audible signals or electrical signals."],
-  3: ["Bell distinguishes visible heat and color from a subtler radiation-induced state of strain in sensitive bodies, which his invention makes observable."],
-  4: ["The sensitive response is fast enough to follow acoustic variation; its magnitude tracks radiant energy, so the response curve preserves period, direction, amplitude, and waveform."],
-  5: ["A transmitter impresses a chosen variation on the beam, while the receiver turns corresponding strain changes into air motion whose pitch, loudness, and quality follow the modulation."],
-  6: ["Radiant energy can be varied at its source, blocked or attenuated in transit, focused or diverted, or alternately exposed at the sensitive body."],
-  7: ["In Bell's apparatus, motion of the transmitter's working part is the actuator that creates those controlled changes in the rays."],
-  8: ["Motion frequency sets pitch, amplitude sets loudness, and motion form sets quality; a voice-driven diaphragm therefore reproduces the same sound character at the receiver."],
-  9: ["The receiver combines beam-directing optics, a radiation-sensitive body, and, when needed, an acoustic or electrical output stage."],
-  10: ["Radiation changes selenium conductivity or resistance, allowing a battery circuit and telephone receiver to convert the beam variation into corresponding sound."],
-  11: ["Thin hard rubber can respond directly to rapidly interrupted concentrated sunlight, producing an audible tone whose pitch equals the interruption frequency."],
-  12: ["Bell reports direct acoustic response from hard rubber and many metal, mineral, wood, and glass diaphragms formed like ordinary telephone plates."],
-  13: ["A converging beam focused inside a narrow rubber, brass, or wooden tube excites the tube as a resonator when interruption frequency matches its natural pitch."],
-  14: ["Bell now moves from the general principle to concrete transmitter and receiver constructions."],
-  15: ["The named transmitter controls radiant amount; the named receiver senses the resulting change acoustically or electrically, with optics arranging the beam path."],
-  16: ["Bell separates beam action from the electrical implementation: the beam controller becomes a variable-resistance telephone transmitter, and a telephone receives its undulations."],
-  17: ["Long-distance transmission needs a nearly parallel pencil to limit spreading, with concentration at the control point and again at the small sensitive surface."],
-  18: ["Ordinary lenses and reflectors provide the required refraction, reflection, and routing of the radiant pencil."],
-  19: ["A reflector can steer the beam by changing the inclination of all or part of its surface, making it an efficient motion-operated transmitter."],
-  20: ["Figure 1 lays out a complete musical-note transmitter and receiver; Figure 2 isolates its rotating interrupter."],
-  21: ["A heliostat mirror and achromatic, aplanatic lens direct and focus sunlight at point 2 without chromatic or spherical dispersion."],
-  22: ["An alum solution in a glass cell can absorb obscure heat rays while passing light, protecting selenium apparatus from solar heating."],
-  23: ["At focus 2 a rotating disk with holes 3 alternately admits and blocks the beam, using the focal pencil as a clean optical gate."],
-  24: ["The holes produce an intermittent beam; a second lens recollimates it onto hard-rubber diaphragm f, whose sound pitch follows interruption rate and whose tube h carries sound to the ear."],
-  25: ["A large condenser lens i restores concentration at diaphragm f, compensating for beam spreading over distance."],
-  26: ["The illustrated receiver and transmitter are interchangeable with other forms, so the arrangement is a family of compatible optical and sensing modules."],
-  27: ["Disk speed controls interruption frequency and pitch; Bell contrasts this one-way wheel with later screens driven in to-and-fro vibration."],
-  28: ["Figure 4's fixed and sliding gratings overlap opaque strips and slits so their relative position sets the open beam area."],
-  29: ["A tiny upward or downward grating displacement changes the slit opening linearly, even doubling it after only half a slit-width of travel."],
-  30: ["The gratings may be physical slits or scraped openings in an opaque-coated glass plate, which Bell finds convenient."],
-  31: ["Polishing the opaque regions lets the paired gratings modulate reflected energy; maximum reflection occurs when polished and open regions oppose."],
-  32: ["With polished portions aligned behind one another reflection falls away; two movable gratings may be driven oppositely by one impulse."],
-  33: ["Figures 5 through 7 use pivoted opaque slats: a rod moves them together, alternate linkage can incline them oppositely, and the opening ranges from half-open to fully blocked."],
-  34: ["Open slats present only their thin edges, passing more light than the half-beam grating; moving the rod nearer pivots increases angular travel."],
-  35: ["Complete interruption is unnecessary for speech: any periodic slat motion changes beam strength, and the receiver inherits its period and amplitude as pitch and loudness."],
-  36: ["A tuned reed, electromagnet, automatic breaker, variable-current device, or organ reed can drive the screen; received tone follows reed frequency and excursion."],
-  37: ["Figure 8 extends the system from a tone to articulate speech by using a voice-actuated beam controller."],
-  38: ["Earlier transmitters set pitch and loudness, but complex speech also requires preserving the waveform or quality of the sound."],
-  39: ["Speech requires the beam variation to track the complex vibrational form, not merely its average frequency or amplitude."],
-  40: ["In Figure 8 a voice diaphragm moves grating kl; its changing slit area gives the beam the same undulatory form as the speech wave."],
-  41: ["The diaphragm could be driven indirectly by a speaking telephone or any mechanism that reproduces the desired acoustic motion."],
-  42: ["Because voice motion is small, Bell notes that the screen need not move far: the slat or grating geometry amplifies optical effect from limited diaphragm travel."],
-  43: ["A candle and lens provide an artificial parallel beam in Figure 8, while gratings kl modulate it without depending on sunlight."],
-  44: ["Figure 9 replaces sliding gratings with two plates and a small overlapping aperture at focus 2, using relative motion to vary transmitted area."],
-  45: ["A guided plate moving along the beam axis progressively intercepts the focused pencil, providing another way to control radiant amount."],
-  46: ["The Figure 8 receiver exploits selenium's rapid, substantial, nearly proportional conductivity increase under solar or similar rays."],
-  47: ["Selenium S sits in a battery-driven circuit; beam-induced conductivity changes vary current through telephone T, reproducing the spoken words."],
-  48: ["Bell points to a separate application for selenium preparation and mounting rather than repeating that manufacturing disclosure here."],
-  49: ["Because selenium remains high-resistance, the useful cell geometry makes its active path short and its exposed conducting area large."],
-  50: ["The generic cell stacks conducting plates separated by thin insulation, leaving a narrow channel that selenium fills as the electrical bridge."],
-  51: ["This plate-and-insulator construction exposes much selenium area while keeping the current path short; mica, porcelain-forming paint, and parallel branches are alternatives."],
-  52: ["The selenium-controlled circuit can drive an ordinary telephone or any current-sensitive instrument, so beam modulation becomes electrical speech."],
-  53: ["Figure 10 introduces a second speech transmitter in which voice moves a reflecting surface rather than a slit grating; that reflector's voice-driven motion imposes the same alternating radiant-energy variation on the receiver's sensitive body."],
-  54: ["A lens and heat screen feed a plane reflector; optional collimation and a second mirror then concentrate the directed beam on the receiver, with ray path set by reflector angle."],
-  55: ["A minute reflector-angle change diverts some rays away and brings others onto the receiver; the silvered diaphragm therefore converts voice motion into beam-energy variation."],
-  56: ["The reflector reproduces each voice variation's size, direction, period, and waveform, so the selenium receiver and telephone reproduce articulate speech."],
-  57: ["Bell reports speech with a thirty-inch silvered-glass reflector and clearer articulation with a thin, roughly two-inch silvered microscope-cover glass."],
-  58: ["The mouthpiece must hold reflector r in a repeatable neutral position so the reflected rays remain aimed at the distant receiver."],
-  59: ["A transit-style universal mount and graduated limb allow aiming over different angles while preserving controlled reflector movement."],
-  60: ["A flexible tube can carry the sound passage while allowing mirror r to occupy the selected angular position."],
-  61: ["Bell expressly leaves this particular transmitter unclaimed because it is a joint invention with Sumner Tainter for a separate application."],
+  1: [
+    "Bell identifies the Washington inventor, the Photophone title, and the specification that follows the drawings.",
+  ],
+  2: [
+    "The broad teaching is radiant energy used deliberately to produce either audible signals or electrical signals.",
+  ],
+  3: [
+    "Bell distinguishes visible heat and color from a subtler radiation-induced state of strain in sensitive bodies, which his invention makes observable.",
+  ],
+  4: [
+    "The sensitive response is fast enough to follow acoustic variation; its magnitude tracks radiant energy, so the response curve preserves period, direction, amplitude, and waveform.",
+  ],
+  5: [
+    "A transmitter impresses a chosen variation on the beam, while the receiver turns corresponding strain changes into air motion whose pitch, loudness, and quality follow the modulation.",
+  ],
+  6: [
+    "Radiant energy can be varied at its source, blocked or attenuated in transit, focused or diverted, or alternately exposed at the sensitive body.",
+  ],
+  7: [
+    "In Bell's apparatus, motion of the transmitter's working part is the actuator that creates those controlled changes in the rays.",
+  ],
+  8: [
+    "Motion frequency sets pitch, amplitude sets loudness, and motion form sets quality; a voice-driven diaphragm therefore reproduces the same sound character at the receiver.",
+  ],
+  9: [
+    "The receiver combines beam-directing optics, a radiation-sensitive body, and, when needed, an acoustic or electrical output stage.",
+  ],
+  10: [
+    "Radiation changes selenium conductivity or resistance, allowing a battery circuit and telephone receiver to convert the beam variation into corresponding sound.",
+  ],
+  11: [
+    "Thin hard rubber can respond directly to rapidly interrupted concentrated sunlight, producing an audible tone whose pitch equals the interruption frequency.",
+  ],
+  12: [
+    "Bell reports direct acoustic response from hard rubber and many metal, mineral, wood, and glass diaphragms formed like ordinary telephone plates.",
+  ],
+  13: [
+    "A converging beam focused inside a narrow rubber, brass, or wooden tube excites the tube as a resonator when interruption frequency matches its natural pitch.",
+  ],
+  14: [
+    "Bell now moves from the general principle to concrete transmitter and receiver constructions.",
+  ],
+  15: [
+    "The named transmitter controls radiant amount; the named receiver senses the resulting change acoustically or electrically, with optics arranging the beam path.",
+  ],
+  16: [
+    "Bell separates beam action from the electrical implementation: the beam controller becomes a variable-resistance telephone transmitter, and a telephone receives its undulations.",
+  ],
+  17: [
+    "Long-distance transmission needs a nearly parallel pencil to limit spreading, with concentration at the control point and again at the small sensitive surface.",
+  ],
+  18: [
+    "Ordinary lenses and reflectors provide the required refraction, reflection, and routing of the radiant pencil.",
+  ],
+  19: [
+    "A reflector can steer the beam by changing the inclination of all or part of its surface, making it an efficient motion-operated transmitter.",
+  ],
+  20: [
+    "Figure 1 lays out a complete musical-note transmitter and receiver; Figure 2 isolates its rotating interrupter.",
+  ],
+  21: [
+    "A heliostat mirror and achromatic, aplanatic lens direct and focus sunlight at point 2 without chromatic or spherical dispersion.",
+  ],
+  22: [
+    "An alum solution in a glass cell can absorb obscure heat rays while passing light, protecting selenium apparatus from solar heating.",
+  ],
+  23: [
+    "At focus 2 a rotating disk with holes 3 alternately admits and blocks the beam, using the focal pencil as a clean optical gate.",
+  ],
+  24: [
+    "The holes produce an intermittent beam; a second lens recollimates it onto hard-rubber diaphragm f, whose sound pitch follows interruption rate and whose tube h carries sound to the ear.",
+  ],
+  25: [
+    "A large condenser lens i restores concentration at diaphragm f, compensating for beam spreading over distance.",
+  ],
+  26: [
+    "The illustrated receiver and transmitter are interchangeable with other forms, so the arrangement is a family of compatible optical and sensing modules.",
+  ],
+  27: [
+    "Disk speed controls interruption frequency and pitch; Bell contrasts this one-way wheel with later screens driven in to-and-fro vibration.",
+  ],
+  28: [
+    "Figure 4's fixed and sliding gratings overlap opaque strips and slits so their relative position sets the open beam area.",
+  ],
+  29: [
+    "A tiny upward or downward grating displacement changes the slit opening linearly, even doubling it after only half a slit-width of travel.",
+  ],
+  30: [
+    "The gratings may be physical slits or scraped openings in an opaque-coated glass plate, which Bell finds convenient.",
+  ],
+  31: [
+    "Polishing the opaque regions lets the paired gratings modulate reflected energy; maximum reflection occurs when polished and open regions oppose.",
+  ],
+  32: [
+    "With polished portions aligned behind one another reflection falls away; two movable gratings may be driven oppositely by one impulse.",
+  ],
+  33: [
+    "Figures 5 through 7 use pivoted opaque slats: a rod moves them together, alternate linkage can incline them oppositely, and the opening ranges from half-open to fully blocked.",
+  ],
+  34: [
+    "Open slats present only their thin edges, passing more light than the half-beam grating; moving the rod nearer pivots increases angular travel.",
+  ],
+  35: [
+    "Complete interruption is unnecessary for speech: any periodic slat motion changes beam strength, and the receiver inherits its period and amplitude as pitch and loudness.",
+  ],
+  36: [
+    "A tuned reed, electromagnet, automatic breaker, variable-current device, or organ reed can drive the screen; received tone follows reed frequency and excursion.",
+  ],
+  37: [
+    "Figure 8 extends the system from a tone to articulate speech by using a voice-actuated beam controller.",
+  ],
+  38: [
+    "Earlier transmitters set pitch and loudness, but complex speech also requires preserving the waveform or quality of the sound.",
+  ],
+  39: [
+    "Speech requires the beam variation to track the complex vibrational form, not merely its average frequency or amplitude.",
+  ],
+  40: [
+    "In Figure 8 a voice diaphragm moves grating kl; its changing slit area gives the beam the same undulatory form as the speech wave.",
+  ],
+  41: [
+    "The diaphragm could be driven indirectly by a speaking telephone or any mechanism that reproduces the desired acoustic motion.",
+  ],
+  42: [
+    "Because voice motion is small, Bell notes that the screen need not move far: the slat or grating geometry amplifies optical effect from limited diaphragm travel.",
+  ],
+  43: [
+    "A candle and lens provide an artificial parallel beam in Figure 8, while gratings kl modulate it without depending on sunlight.",
+  ],
+  44: [
+    "Figure 9 replaces sliding gratings with two plates and a small overlapping aperture at focus 2, using relative motion to vary transmitted area.",
+  ],
+  45: [
+    "A guided plate moving along the beam axis progressively intercepts the focused pencil, providing another way to control radiant amount.",
+  ],
+  46: [
+    "The Figure 8 receiver exploits selenium's rapid, substantial, nearly proportional conductivity increase under solar or similar rays.",
+  ],
+  47: [
+    "Selenium S sits in a battery-driven circuit; beam-induced conductivity changes vary current through telephone T, reproducing the spoken words.",
+  ],
+  48: [
+    "Bell points to a separate application for selenium preparation and mounting rather than repeating that manufacturing disclosure here.",
+  ],
+  49: [
+    "Because selenium remains high-resistance, the useful cell geometry makes its active path short and its exposed conducting area large.",
+  ],
+  50: [
+    "The generic cell stacks conducting plates separated by thin insulation, leaving a narrow channel that selenium fills as the electrical bridge.",
+  ],
+  51: [
+    "This plate-and-insulator construction exposes much selenium area while keeping the current path short; mica, porcelain-forming paint, and parallel branches are alternatives.",
+  ],
+  52: [
+    "The selenium-controlled circuit can drive an ordinary telephone or any current-sensitive instrument, so beam modulation becomes electrical speech.",
+  ],
+  53: [
+    "Figure 10 introduces a second speech transmitter in which voice moves a reflecting surface rather than a slit grating; that reflector's voice-driven motion imposes the same alternating radiant-energy variation on the receiver's sensitive body.",
+  ],
+  54: [
+    "A lens and heat screen feed a plane reflector; optional collimation and a second mirror then concentrate the directed beam on the receiver, with ray path set by reflector angle.",
+  ],
+  55: [
+    "A minute reflector-angle change diverts some rays away and brings others onto the receiver; the silvered diaphragm therefore converts voice motion into beam-energy variation.",
+  ],
+  56: [
+    "The reflector reproduces each voice variation's size, direction, period, and waveform, so the selenium receiver and telephone reproduce articulate speech.",
+  ],
+  57: [
+    "Bell reports speech with a thirty-inch silvered-glass reflector and clearer articulation with a thin, roughly two-inch silvered microscope-cover glass.",
+  ],
+  58: [
+    "The mouthpiece must hold reflector r in a repeatable neutral position so the reflected rays remain aimed at the distant receiver.",
+  ],
+  59: [
+    "A transit-style universal mount and graduated limb allow aiming over different angles while preserving controlled reflector movement.",
+  ],
+  60: [
+    "A flexible tube can carry the sound passage while allowing mirror r to occupy the selected angular position.",
+  ],
+  61: [
+    "Bell expressly leaves this particular transmitter unclaimed because it is a joint invention with Sumner Tainter for a separate application.",
+  ],
   62: ["A small attached telescope provides a finder for aiming the optical transmitter."],
-  63: ["The beam enters parabolic mirror s', which concentrates it on selenium cell S' at the focus; tube t supports and electrically connects the cell."],
-  64: ["Finder v or sighting through tube t aligns the parabolic collector's optical axis with the incoming beam. The Figure 11-13 Siemens-spiral cell uses brass ribbons separated by narrower insulation, then coils and fills the channels with melted selenium."],
-  65: ["The spiral's second insulating strip prevents adjacent turns from shorting, while molten selenium bridges the two metal ribbons along their exposed channels."],
-  66: ["Mica, enamel, or Japan varnish can insulate the ribbons; added metal on their edges forms the projecting surfaces or channels that retain selenium."],
-  67: ["Figures 14 and 15 use alternating conducting and insulating strips with offset insulation, so selenium links each b-strip to only one neighboring a-strip and rods collect each terminal."],
-  68: ["The Figures 16-17 cell places a perforated disk inside an insulated metal box; pins and annular melted-selenium gaps bridge the two conductors, while Tainter receives credit for the specific cell."],
-  69: ["The larger cylindrical cell S' uses alternating disks and selenium rings, a geometry suited to parabolic concentration; Bell and Tainter reserve it for a joint application."],
-  70: ["Alternating metal disks and smaller insulating disks leave annular selenium channels; staggered hole diameters let mandrel cylinders connect alternate disk sets without touching the other set."],
-  71: ["Small-hole lines select one disk set for cylinders f⁵ and the other for g⁵, leaving selenium rings as the resistive bridge between the two terminals."],
-  72: ["Tubular cylinders with longitudinal slots improve contact, while insulating washers in the larger holes keep each cylinder isolated from the wrong plates. Poured type-metal flows through the slots to bond the selected plates; washers block contact with plates containing the larger neighboring holes, as Figures 22 and 23 show."],
-  73: ["Small metal washers or rings can confine the molten connector without touching the disks, replacing the insulating washers while preserving isolation."],
-  74: ["Metal filings or spelter can replace poured metal and make the cell easier to disassemble; end nuts hold the tube assembly together."],
-  75: ["Heating melts selenium into the cell, and filing excess selenium off disk or strip edges leaves only the intended inter-electrode paths."],
-  76: ["After finishing the active surface, remove a conductive mandrel and attach handle or tube t to an end plate for mounting."],
-  77: ["An alum cell in the optical path demonstrates operation using luminous rays after obscure heat has been removed."],
-  78: ["Hard rubber can replace alum, alone or together with it; Bell therefore declines to restrict operation to one spectral portion of sunlight."],
-  79: ["The name Photophone reflects effective light rays: filtering out luminous rays with iodine in carbon disulfide stops the apparatus."],
-  80: ["Gaslight, petroleum lamps, candlelight, and lime-light also work, and an adjustable artificial source is steadier than sunlight through night and weather."],
-  81: ["Prepared selenium represents sensitive bodies whose resistance changes in a constant-current circuit; hard rubber represents bodies whose radiation change is directly audible, so Bell distinguishes the electrical-resistance and directly-audible receiver families."],
-  82: ["The specification covers receivers that vary circuit resistance and others that vary the circuit's electromotive force."],
-  83: ["A thermopile can vary current through its radiation-induced electromotive force, but tonal reproduction demands response faster than ordinary thermopiles provide."],
-  84: ["Thin-film metal junctions and illuminated selenium can generate signal currents, but both require unusually rapid and sensitive response."],
-  85: ["Rapidly absorbing and cooling fine strained wires can display variations in a heat-ray beam, extending the receiver principle beyond selenium."],
-  86: ["Instead of changing the beam in transit, a manometric flame can vary the source itself; voice can drive that flame mechanism."],
-  87: ["A vibrating grating can meter burner gas just as it meters light, making flame brightness follow the actuating sound."],
-  88: ["Reflectors and other directing instruments allow a non-straight optical route between transmitter and receiver."],
-  89: ["Transmitter and sensitive body may be near or separated by any effective ray distance, with arrangement chosen for the intended use."],
-  90: ["An electrically driven transmitter may use a current circuit of any suitable length and familiar electrician's arrangement."],
-  91: ["A selenium receiver's circuit may be extended or coupled by induction coils to another circuit, using variable-resistance telephone practice; this remains within the established vocabulary of variable-resistance electric speaking telephones."],
-  92: ["Because light has no inertia and travels rigidly, tiny reflector motion can appear as light, sound, or a battery-powered secondary-circuit current change."],
-  93: ["Received sound depends on at least the ray or source character, the way the path is varied, and the sensitive body's own character."],
-  94: ["In the illustrated setup the path-changing element varies while source and sensitive body stay fixed; swapping any one element changes the audible result."],
-  114: ["The attestation clause states that Bell signed the specification before two subscribing witnesses."],
+  63: [
+    "The beam enters parabolic mirror s', which concentrates it on selenium cell S' at the focus; tube t supports and electrically connects the cell.",
+  ],
+  64: [
+    "Finder v or sighting through tube t aligns the parabolic collector's optical axis with the incoming beam. The Figure 11-13 Siemens-spiral cell uses brass ribbons separated by narrower insulation, then coils and fills the channels with melted selenium.",
+  ],
+  65: [
+    "The spiral's second insulating strip prevents adjacent turns from shorting, while molten selenium bridges the two metal ribbons along their exposed channels.",
+  ],
+  66: [
+    "Mica, enamel, or Japan varnish can insulate the ribbons; added metal on their edges forms the projecting surfaces or channels that retain selenium.",
+  ],
+  67: [
+    "Figures 14 and 15 use alternating conducting and insulating strips with offset insulation, so selenium links each b-strip to only one neighboring a-strip and rods collect each terminal.",
+  ],
+  68: [
+    "The Figures 16-17 cell places a perforated disk inside an insulated metal box; pins and annular melted-selenium gaps bridge the two conductors, while Tainter receives credit for the specific cell.",
+  ],
+  69: [
+    "The larger cylindrical cell S' uses alternating disks and selenium rings, a geometry suited to parabolic concentration; Bell and Tainter reserve it for a joint application.",
+  ],
+  70: [
+    "Alternating metal disks and smaller insulating disks leave annular selenium channels; staggered hole diameters let mandrel cylinders connect alternate disk sets without touching the other set.",
+  ],
+  71: [
+    "Small-hole lines select one disk set for cylinders f⁵ and the other for g⁵, leaving selenium rings as the resistive bridge between the two terminals.",
+  ],
+  72: [
+    "Tubular cylinders with longitudinal slots improve contact, while insulating washers in the larger holes keep each cylinder isolated from the wrong plates. Poured type-metal flows through the slots to bond the selected plates; washers block contact with plates containing the larger neighboring holes, as Figures 22 and 23 show.",
+  ],
+  73: [
+    "Small metal washers or rings can confine the molten connector without touching the disks, replacing the insulating washers while preserving isolation.",
+  ],
+  74: [
+    "Metal filings or spelter can replace poured metal and make the cell easier to disassemble; end nuts hold the tube assembly together.",
+  ],
+  75: [
+    "Heating melts selenium into the cell, and filing excess selenium off disk or strip edges leaves only the intended inter-electrode paths.",
+  ],
+  76: [
+    "After finishing the active surface, remove a conductive mandrel and attach handle or tube t to an end plate for mounting.",
+  ],
+  77: [
+    "An alum cell in the optical path demonstrates operation using luminous rays after obscure heat has been removed.",
+  ],
+  78: [
+    "Hard rubber can replace alum, alone or together with it; Bell therefore declines to restrict operation to one spectral portion of sunlight.",
+  ],
+  79: [
+    "The name Photophone reflects effective light rays: filtering out luminous rays with iodine in carbon disulfide stops the apparatus.",
+  ],
+  80: [
+    "Gaslight, petroleum lamps, candlelight, and lime-light also work, and an adjustable artificial source is steadier than sunlight through night and weather.",
+  ],
+  81: [
+    "Prepared selenium represents sensitive bodies whose resistance changes in a constant-current circuit; hard rubber represents bodies whose radiation change is directly audible, so Bell distinguishes the electrical-resistance and directly-audible receiver families.",
+  ],
+  82: [
+    "The specification covers receivers that vary circuit resistance and others that vary the circuit's electromotive force.",
+  ],
+  83: [
+    "A thermopile can vary current through its radiation-induced electromotive force, but tonal reproduction demands response faster than ordinary thermopiles provide.",
+  ],
+  84: [
+    "Thin-film metal junctions and illuminated selenium can generate signal currents, but both require unusually rapid and sensitive response.",
+  ],
+  85: [
+    "Rapidly absorbing and cooling fine strained wires can display variations in a heat-ray beam, extending the receiver principle beyond selenium.",
+  ],
+  86: [
+    "Instead of changing the beam in transit, a manometric flame can vary the source itself; voice can drive that flame mechanism.",
+  ],
+  87: [
+    "A vibrating grating can meter burner gas just as it meters light, making flame brightness follow the actuating sound.",
+  ],
+  88: [
+    "Reflectors and other directing instruments allow a non-straight optical route between transmitter and receiver.",
+  ],
+  89: [
+    "Transmitter and sensitive body may be near or separated by any effective ray distance, with arrangement chosen for the intended use.",
+  ],
+  90: [
+    "An electrically driven transmitter may use a current circuit of any suitable length and familiar electrician's arrangement.",
+  ],
+  91: [
+    "A selenium receiver's circuit may be extended or coupled by induction coils to another circuit, using variable-resistance telephone practice; this remains within the established vocabulary of variable-resistance electric speaking telephones.",
+  ],
+  92: [
+    "Because light has no inertia and travels rigidly, tiny reflector motion can appear as light, sound, or a battery-powered secondary-circuit current change.",
+  ],
+  93: [
+    "Received sound depends on at least the ray or source character, the way the path is varied, and the sensitive body's own character.",
+  ],
+  94: [
+    "In the illustrated setup the path-changing element varies while source and sensitive body stay fixed; swapping any one element changes the audible result.",
+  ],
+  114: [
+    "The attestation clause states that Bell signed the specification before two subscribing witnesses.",
+  ],
   115: ["Bell's signature is printed as Alexander Graham Bell."],
-  116: ["The witness block names Jos. P. Livermore and Arthur Reynolds as the two subscribing witnesses."],
+  116: [
+    "The witness block names Jos. P. Livermore and Arthur Reynolds as the two subscribing witnesses.",
+  ],
 } as const;
 export const bellPhotophoneParallelReadings = BELL_PHOTOPHONE_PARALLEL_READINGS;
 

@@ -60,19 +60,20 @@ describe("thomsonWeldingArchivalEdition", () => {
     for (const reference of figureReferences) {
       const expectedFigures = expectedFiguresByReference[reference.text];
       expect(expectedFigures).toBeDefined();
-      const acceptedFigures = expectedFigures.filter((figureNumber) =>
-        ![1, 3, 5, 6, 8, 9].includes(figureNumber),
+      const acceptedFigures = expectedFigures.filter(
+        (figureNumber) => ![1, 3, 5, 6, 8, 9].includes(figureNumber),
       );
       const previews = reference.figurePreviews ?? [];
       expect(previews.map((preview) => preview.src)).toEqual(
         acceptedFigures.map(
-          (figureNumber) => `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v${
-            [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(figureNumber)
-              ? 5
-              : [4, 10].includes(figureNumber)
-                ? 2
-                : 1
-          }.png`,
+          (figureNumber) =>
+            `/patents/figures/us-347140-thomson-welding/figure-${figureNumber}-source-crop-v${
+              [1, 2, 3, 5, 6, 8, 9, 12, 13, 15].includes(figureNumber)
+                ? 5
+                : [4, 10].includes(figureNumber)
+                  ? 2
+                  : 1
+            }.png`,
         ),
       );
       for (const preview of previews) {

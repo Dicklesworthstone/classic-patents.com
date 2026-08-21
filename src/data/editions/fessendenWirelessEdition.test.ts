@@ -231,6 +231,50 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     expect(editionText).not.toContain("rapidly-damped wave-train");
   });
 
+  test("keeps the bounded pages 4-5 ledger and edition source-faithful", () => {
+    const ledger = readFileSync(ledgerPath, "utf-8");
+    const page4 = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 4 OF 7 ---")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 5 OF 7 ---")[0];
+    const page5 = ledger
+      .split("--- REVIEWED TRANSCRIPTION PAGE 5 OF 7 ---")[1]
+      ?.split("--- REVIEWED TRANSCRIPTION PAGE 6 OF 7 ---")[0];
+
+    expect(page4).toContain("Fifth, it is also essential that all iron magnetically influenced");
+    expect(page4).toContain("fixed armature containing no iron");
+    expect(page4).toContain("five hundred feet");
+    expect(page4).toContain("either Figs. 3 and 5");
+    expect(page4).not.toContain("voltage at the top of the sending-conductor is then a maximum");
+    expect(page5).toContain("with a swell or enlargement 17");
+    expect(page5).toContain('By the term "large capacity" as herein used');
+    expect(page5).toContain("localized increase of capacity");
+    expect(page5).toContain("CLω²=1");
+
+    const editionText = fessendenWirelessArchivalEdition.blocks
+      .flatMap((block) => {
+        if (block.kind === "masthead") return block.lines;
+        if (block.kind === "paragraph" || block.kind === "claim") {
+          return [block.inlines.map((inline) => inline.text).join("")];
+        }
+        return [];
+      })
+      .join(" ");
+    expect(editionText).toContain("fixed armature containing no iron");
+    expect(editionText).toContain("five hundred feet");
+    expect(editionText).toContain("with a swell or enlargement 17");
+    expect(editionText).toContain("localized increase of capacity");
+
+    const figureRefs = fessendenWirelessArchivalEdition.blocks.flatMap((block) =>
+      block.kind === "paragraph"
+        ? block.inlines.filter(
+            (inline) => inline.kind === "reference" && inline.referenceType === "figure",
+          )
+        : [],
+    );
+    const preferredForms = figureRefs.find((reference) => reference.text === "Figs. 3 and 5");
+    expect(preferredForms?.figurePreviews?.length).toBeGreaterThanOrEqual(2);
+  });
+
   test("validates parallel readings map covers the archival paragraph blocks", () => {
     const paragraphs = fessendenWirelessArchivalEdition.blocks
       .map((block, idx) => ({ block, idx }))

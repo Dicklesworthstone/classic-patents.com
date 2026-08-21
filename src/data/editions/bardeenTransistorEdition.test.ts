@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
-import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
 import { bardeenTransistorPatent } from "@/data/patents/bardeen-transistor";
+import { bardeenTransistor2524035Patent } from "@/data/patents/bardeen-transistor-2524035";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { CuratedSpecificationInline } from "@/types/patent";
 import {

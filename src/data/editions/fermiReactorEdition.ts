@@ -1255,8 +1255,13 @@ const fermiPages36To42ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
 const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   paragraph([
     text(
-      "The curves account for resonance and moderator losses only. True K values for available materials must include impurity losses.",
+      "The curves account for resonance and moderator losses only. True K values for available materials must include ",
     ),
+    term(
+      "impurity losses",
+      "Neutron absorptions caused by unwanted elements in uranium, moderator, coolant, or structure that reduce the reproduction factor below the ideal curve value.",
+    ),
+    text("."),
   ]),
   {
     kind: "heading",
@@ -1265,17 +1270,41 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   },
   paragraph([
     text(
-      "Uranium and its compounds can be produced substantially free from neutron-absorbing impurities. A composition with high neutronic purity need not be chemically pure; it is substantially free of elements having a high danger sum, while oxygen, fluorine, carbon, beryllium, and other low-danger elements may remain. Hydrochloric-acid leaching of pitchblende can give uranium oxide better than 99.5 per cent chemically pure while leaving high neutron-capture elements in parts-per-million quantities. High-neutronic-purity compositions have danger sums in K units below 0.3, preferably below 0.01.",
+      "Uranium and its compounds can be produced substantially free from neutron-absorbing impurities. A composition with high ",
+    ),
+    term(
+      "neutronic purity",
+      "A composition substantially free of elements with large neutron-capture danger sums, even when chemically nonessential low-capture elements remain present.",
+    ),
+    text(
+      " need not be chemically pure; it is substantially free of elements having a high danger sum, while oxygen, fluorine, carbon, beryllium, and other low-danger elements may remain. Hydrochloric-acid leaching of pitchblende can give uranium oxide better than 99.5 per cent chemically pure while leaving high neutron-capture elements in parts-per-million quantities. High-neutronic-purity compositions have danger sums in K units below 0.3, preferably below 0.01.",
     ),
   ]),
   paragraph([
-    text(
-      "One illustrative process forms an ether solution of uranyl nitrate, washes impurities from it with small quantities of water, and recovers purified uranyl nitrate. Impure uranium oxide is treated with nitric acid, filtered, boiled to uranyl nitrate hexahydrate, and evaporated. The crystals are treated with ether; the resulting ether solution is extracted with small portions of water. High-absorption impurities dissolve more readily in water than in ether. Uranium loss is kept low by using only one-half to five per cent water by volume and by using water already saturated with uranyl nitrate. The term water extraction includes aqueous uranyl-nitrate solutions.",
+    text("One illustrative process forms an "),
+    term(
+      "ether solution",
+      "A solvent phase used to carry uranyl nitrate while many neutron-absorbing impurities preferentially remain in the aqueous extraction phase.",
     ),
+    text(
+      " of uranyl nitrate, washes impurities from it with small quantities of water, and recovers purified uranyl nitrate. Impure uranium oxide is treated with nitric acid, filtered, boiled to uranyl nitrate hexahydrate, and evaporated. The crystals are treated with ether; the resulting ether solution is extracted with small portions of water. High-absorption impurities dissolve more readily in water than in ether. Uranium loss is kept low by using only one-half to five per cent water by volume and by using water already saturated with uranyl nitrate. The term ",
+    ),
+    term(
+      "water extraction",
+      "The repeated aqueous washing step that removes high-neutron-capture impurities from an ether-borne uranyl-nitrate solution while limiting uranium loss.",
+    ),
+    text(" includes aqueous uranyl-nitrate solutions."),
   ]),
   paragraph([
     text(
-      "Successive water portions give purified uranyl nitrate of extremely high neutronic purity. It may be recovered by evaporating the ether or by extracting it with substantially pure water, then converted to U3O8, UO2, uranium tetrafluoride, uranium hexafluoride, metal, or carbide. For large-scale production, one ether solution and as many water extractions as necessary are used. The final water extraction removes most uranyl nitrate from the ether.",
+      "Successive water portions give purified uranyl nitrate of extremely high neutronic purity. It may be recovered by evaporating the ether or by extracting it with substantially pure water, then converted to U3O8, UO2, uranium tetrafluoride, uranium hexafluoride, metal, or carbide. For large-scale production, one ether solution and as many ",
+    ),
+    term(
+      "water extractions",
+      "Repeated aqueous contacts used at scale to remove neutron-absorbing contaminants from the uranyl-nitrate solution before conversion to reactor fuel compounds or metal.",
+    ),
+    text(
+      " as necessary are used. The final water extraction removes most uranyl nitrate from the ether.",
     ),
   ]),
   paragraph([
@@ -1291,13 +1320,30 @@ const fermiPages43To49ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
       "“shotgun test”",
       "A comparative neutron-absorption test in which impurities removed from a known uranium sample replace a standard boron absorber near a detector foil.",
     ),
-    text(
-      " places a thin neutron detector, such as indium foil near a neutron source inside paraffin, and compares its induced radioactivity with that produced when a standard boron pellet is replaced by a pellet containing impurities removed from a known uranium sample. The resulting danger sum is expressed as an equivalent boron absorption, from which K reduction is calculated.",
+    text(" places a thin "),
+    term(
+      "neutron detector",
+      "A foil or other absorber whose induced radioactivity reports the local thermal-neutron density for comparing impurity capture.",
     ),
+    text(
+      ", such as indium foil near a neutron source inside paraffin, and compares its induced radioactivity with that produced when a standard boron pellet is replaced by a pellet containing impurities removed from a known uranium sample. The resulting danger sum is expressed as an ",
+    ),
+    term(
+      "equivalent boron absorption",
+      "A common absorption measure that converts the impurity capture effect into the amount of boron producing the same neutron loss and K reduction.",
+    ),
+    text(", from which K reduction is calculated."),
   ]),
   paragraph([
     text(
-      "For a representative 10-kilogram uranium sample, the impurity pellet is made by exhaustive ether-water purification. The absorption ratio is the absorption of impurities in the pellet, expressed in equivalent milligrams of boron, divided by the absorption of 10 kilograms of uranium, also expressed in equivalent milligrams of boron. The latter is about 4,560 milligrams of boron. The ratio approximates the change in K. Analyses of residual impurities in metallic uranium produced from purified UO2 show danger sums on the order of 0.003 to 0.0053 K units when contamination is avoided.",
+      "For a representative 10-kilogram uranium sample, the impurity pellet is made by exhaustive ether-water purification. The ",
+    ),
+    term(
+      "absorption ratio",
+      "The impurity pellet's equivalent-boron absorption divided by the equivalent-boron absorption of the reference uranium sample, approximating the resulting change in K.",
+    ),
+    text(
+      " is the absorption of impurities in the pellet, expressed in equivalent milligrams of boron, divided by the absorption of 10 kilograms of uranium, also expressed in equivalent milligrams of boron. The latter is about 4,560 milligrams of boron. The ratio approximates the change in K. Analyses of residual impurities in metallic uranium produced from purified UO2 show danger sums on the order of 0.003 to 0.0053 K units when contamination is avoided.",
     ),
   ]),
   paragraph([

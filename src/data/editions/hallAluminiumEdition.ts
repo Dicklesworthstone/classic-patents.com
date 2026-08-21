@@ -55,7 +55,10 @@ const p = (
  * Candidate-only source edition. It remains structurally typed but is
  * deliberately not publishable while the v2 facsimile crops are absent.
  */
-type HallAluminiumEditionCandidate = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
+type HallAluminiumEditionCandidate = Omit<
+  CuratedSpecificationEdition,
+  "completeFacsimileReviewed"
+> & {
   completeFacsimileReviewed: false;
 };
 
@@ -299,7 +302,11 @@ export const HALL_ALUMINIUM_PARALLEL_READINGS: Readonly<Record<number, readonly 
   12: [
     "Hall excludes a potassium-aluminium-fluoride bath and the detailed apparatus from this application's claims because separate applications already address those subject matters.",
   ],
-  17: ["The closing legal formula states that Hall affixes his signature in the presence of two witnesses."],
+  17: [
+    "The closing legal formula states that Hall affixes his signature in the presence of two witnesses.",
+  ],
   18: ["The inventor's printed name and signature line execute the specification."],
-  19: ["George E. Hall and Robt. L. Fenwick are the two witnesses printed beneath Hall's signature."],
+  19: [
+    "George E. Hall and Robt. L. Fenwick are the two witnesses printed beneath Hall's signature.",
+  ],
 };

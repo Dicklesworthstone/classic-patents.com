@@ -161,7 +161,7 @@ export const fessendenWirelessParallelReadings: Readonly<Record<number, readonly
     "Iron must be arranged to avoid voltage-curve distortion and hysteresis loss; pure sine waves, nickel-steel rotating parts, the stated peripheral-speed examples, a steam turbine, and the transformer's secondary-wire proportion are all part of the source discussion.",
   ],
   9: [
-    "The source-to-radiator frequency match raises the top voltage; when the frequency is too low, electrostatic and magnetic effects dominate, while a radiating portion that is a large fraction of the circuit enables long-distance electromagnetic radiation. The five-foot radiator examples make the poor-radiator loss concrete.",
+    "The source-to-radiator frequency comparison explains why low frequency first produces chiefly electrostatic and magnetic effects, then why a radiating portion that is a large fraction of the circuit enables long-distance electromagnetic radiation. The five-foot radiator examples make the poor-radiator loss concrete.",
   ],
   10: [
     "Figure 1 connects the grounded dynamo through inductance 2 to radiating portion 1, while the receiving conductor 10 feeds a telephone translating device 11 and ground.",
@@ -351,7 +351,9 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
         "/patents/figures/us-706737-fessenden-wireless/fig-1-source-crop-v4.png",
         "Fig. 1, transmitting and receiving system with grounded dynamo 3, inductance 2, radiating portion 1, and telephone receiver 11.",
       ),
-      text(" the generator 3 (in this case a dynamo) has one pole connected to ground and the other pole connected by a wire having an inductance 2 to the radiating portion 1. The sending-conductor, which may have its radiating portion of any suitable form, but preferably that shown in either "),
+      text(
+        " the generator 3 (in this case a dynamo) has one pole connected to ground and the other pole connected by a wire having an inductance 2 to the radiating portion 1. The sending-conductor, which may have its radiating portion of any suitable form, but preferably that shown in either ",
+      ),
       refGroup(
         "Figs. 3 and 5",
         [
@@ -389,7 +391,7 @@ export const fessendenWirelessArchivalEdition: FessendenWirelessWipEdition = {
       ),
     ),
     p(
-      text("If the radiating portion is made, as shown in "),
+      text("If the radiating portion be made, as shown in "),
       ref(
         "Fig. 5",
         "/patents/figures/us-706737-fessenden-wireless/fig-5-source-crop-v4.png",

@@ -2,9 +2,9 @@ import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { CuratedSpecificationEdition } from "@/types/patent";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
+import type { CuratedSpecificationEdition } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
   fermiReactorArchivalEdition,
@@ -133,6 +133,48 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "seed portion",
       "resonance capture",
       "unit-cell ratios",
+    ]) {
+      expect(
+        fermiReactorArchivalEdition.blocks.some(
+          (block) =>
+            "inlines" in block &&
+            block.inlines.some((inline) => inline.kind === "term" && inline.text === expectedTerm),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  test("pins the bounded reviewed ledger reconciliation for PDF pages 42–44", () => {
+    const ledger = readFileSync(
+      publicFile("/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt"),
+      "utf8",
+    );
+    for (const page of [42, 43, 44]) {
+      expect(ledger).toContain(`--- REVIEWED TRANSCRIPTION PAGE ${page} OF 58 ---`);
+    }
+    expect(ledger).toContain("The curves account for resonance and moderator losses only");
+    expect(ledger).toContain("REDUCTION OF NEUTRON LOSSES DUE TO IMPURITIES IN THE MATERIALS");
+    expect(ledger).toContain(
+      "The resulting danger sum is expressed as an equivalent boron absorption",
+    );
+    const sourceFaceText = fermiReactorArchivalEdition.blocks
+      .filter((block) => block.kind === "paragraph")
+      .flatMap((block) => (block.kind === "paragraph" ? block.inlines : []))
+      .map((inline) => inline.text)
+      .join(" ");
+    expect(sourceFaceText).toContain("neutronic purity");
+    expect(sourceFaceText).toContain("water extractions");
+    expect(sourceFaceText).toContain("equivalent boron absorption");
+    for (const expectedTerm of [
+      "impurity losses",
+      "neutronic purity",
+      "ether solution",
+      "water extraction",
+      "water extractions",
+      "neutron detector",
+      "equivalent boron absorption",
+      "absorption ratio",
+      "shotgun test",
     ]) {
       expect(
         fermiReactorArchivalEdition.blocks.some(

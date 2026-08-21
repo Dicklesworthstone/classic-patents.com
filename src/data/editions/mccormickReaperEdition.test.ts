@@ -3,11 +3,11 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { mccormickReaperPatent } from "../patents/mccormick-reaper";
 import {
   mccormickReaperArchivalEdition,
   mccormickReaperParallelReadings,
 } from "./mccormickReaperEdition";
-import { mccormickReaperPatent } from "../patents/mccormick-reaper";
 
 const servedFigureUrl = "/patents/figures/us-x8277-mccormick-reaper-drawing-preview-v2.png";
 const servedFigurePath = join(process.cwd(), "public", servedFigureUrl.replace(/^\//, ""));
@@ -86,7 +86,14 @@ describe("mccormickReaperArchivalEdition", () => {
       (candidate) => candidate.figureNumber === "Unnumbered drawing sheet",
     );
     expect(drawing?.svgType).toBe("mccormick-reaper");
-    expect(drawing?.callouts.map((callout) => callout.label)).toEqual(["A", "B", "D", "L", "W", "T"]);
+    expect(drawing?.callouts.map((callout) => callout.label)).toEqual([
+      "A",
+      "B",
+      "D",
+      "L",
+      "W",
+      "T",
+    ]);
     expect(drawing?.callouts.map((callout) => callout.element)).toEqual([
       "Platform",
       "Tongue",

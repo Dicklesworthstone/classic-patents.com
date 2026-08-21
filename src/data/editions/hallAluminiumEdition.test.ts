@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
+import { hallAluminiumPatent } from "@/data/patents/hall-aluminium";
 import { validateReviewedTranscription } from "@/data/patents/sourceTextValidation";
 import type { CuratedSpecificationEdition } from "@/types/patent";
 import {
@@ -10,7 +11,6 @@ import {
   hallAluminiumArchivalEdition,
   manualHallClaimText,
 } from "./hallAluminiumEdition";
-import { hallAluminiumPatent } from "@/data/patents/hall-aluminium";
 
 describe("Charles Martin Hall US 400,766 Archival Edition Contract", () => {
   const rootDir = process.cwd();

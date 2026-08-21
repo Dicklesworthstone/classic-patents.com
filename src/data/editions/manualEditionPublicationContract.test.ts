@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { allPatents } from "@/data/patents";
@@ -378,9 +378,7 @@ describe("manual-edition publication contract", () => {
           );
         }
 
-        const normalizedDecoder = decoder
-          .replace(/[^\p{L}\p{N}]+/gu, "")
-          .toLocaleLowerCase();
+        const normalizedDecoder = decoder.replace(/[^\p{L}\p{N}]+/gu, "").toLocaleLowerCase();
         const normalizedClaim = claim.originalText
           .replace(/[^\p{L}\p{N}]+/gu, "")
           .toLocaleLowerCase();

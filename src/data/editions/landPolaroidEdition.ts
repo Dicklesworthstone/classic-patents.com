@@ -417,13 +417,17 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       ref("Fig. 10", "#fig-10", "Figure 10 — Apparatus for filling the Figure 9 member"),
-      text(" is a diagrammatic view, partly in section and partly in elevation with parts broken away, of apparatus whereby the cells of the fluid-retaining member of "),
+      text(
+        " is a diagrammatic view, partly in section and partly in elevation with parts broken away, of apparatus whereby the cells of the fluid-retaining member of ",
+      ),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
       text(" may be filled;"),
     ),
     p(
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
-      text(" is a diagrammatic view, in elevation with parts broken away, of one embodiment of camera means suitable for forming a positive print in the product of the present invention;"),
+      text(
+        " is a diagrammatic view, in elevation with parts broken away, of one embodiment of camera means suitable for forming a positive print in the product of the present invention;",
+      ),
     ),
     p(
       ref("Fig. 12", "#fig-12", "Figure 12 — Modified camera means"),
@@ -433,15 +437,21 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       ref("Fig. 13", "#fig-13", "Figure 13 — Means for fracturing a membrane"),
-      text(" is a fragmentary, diagrammatic view in elevation of novel means for fracturing the liquid-retaining membrane of the product of the invention;"),
+      text(
+        " is a fragmentary, diagrammatic view in elevation of novel means for fracturing the liquid-retaining membrane of the product of the invention;",
+      ),
     ),
     p(
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
-      text(" is an exaggerated, diagrammatic, fragmentary sectional view taken along the longitudinal axis of still another form of product comprehended by the present invention;"),
+      text(
+        " is an exaggerated, diagrammatic, fragmentary sectional view taken along the longitudinal axis of still another form of product comprehended by the present invention;",
+      ),
     ),
     p(
       ref("Fig. 15", "#fig-15", "Figure 15 — Liquid-reagent sac or pod"),
-      text(" is a perspective view of one form of sac or pod for containing the liquid reagent of the product of "),
+      text(
+        " is a perspective view of one form of sac or pod for containing the liquid reagent of the product of ",
+      ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
       text(";"),
     ),
@@ -453,11 +463,15 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       ref("Fig. 17", "#fig-17", "Figure 17 — Novel sheet material"),
-      text(" is a fragmentary, exaggerated, sectional view taken along the longitudinal axis of one form of novel sheet material comprehended by the invention;"),
+      text(
+        " is a fragmentary, exaggerated, sectional view taken along the longitudinal axis of one form of novel sheet material comprehended by the invention;",
+      ),
     ),
     p(
       ref("Fig. 18", "#fig-18", "Figure 18 — Another container construction"),
-      text(" is a fragmentary, enlarged, perspective view illustrating the construction of another form of the container means which may comprise part of the novel composite product of the invention;"),
+      text(
+        " is a fragmentary, enlarged, perspective view illustrating the construction of another form of the container means which may comprise part of the novel composite product of the invention;",
+      ),
     ),
     p(
       ref("Fig. 19", "#fig-19", "Figure 19 — Filled container"),
@@ -471,19 +485,27 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
     ),
     p(
       ref("Fig. 21", "#fig-21", "Figure 21 — Another composite product"),
-      text(" is an enlarged, fragmentary, sectional view in perspective illustrating another form of the composite product of the invention;"),
+      text(
+        " is an enlarged, fragmentary, sectional view in perspective illustrating another form of the composite product of the invention;",
+      ),
     ),
     p(
       ref("Fig. 22", "#fig-22", "Figure 22 — Another composite product"),
-      text(" is a longitudinal, sectional view showing still another composite product of the invention;"),
+      text(
+        " is a longitudinal, sectional view showing still another composite product of the invention;",
+      ),
     ),
     p(
       ref("Fig. 23", "#fig-23", "Figure 23 — Another embodiment"),
-      text(" is a somewhat diagrammatic, perspective view showing still another embodiment of the invention;"),
+      text(
+        " is a somewhat diagrammatic, perspective view showing still another embodiment of the invention;",
+      ),
     ),
     p(
       ref("Fig. 24", "#fig-24", "Figure 24 — Modified container means"),
-      text(" is a fragmentary, enlarged, sectional view illustrating another form of the invention which embodies a novel modification of the container means."),
+      text(
+        " is a fragmentary, enlarged, sectional view illustrating another form of the invention which embodies a novel modification of the container means.",
+      ),
     ),
     {
       kind: "figure-sheet",
@@ -625,45 +647,67 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
         "One method of forming a fixed image in accordance with the present invention is to provide within means 38 a liquid reagent and to provide in said reagent a developer, e. g., hydroquinone, and a compound, e. g., sodium thiosulfate, which forms soluble complex ions with silver halide at a less rapid rate than the developer will develop exposed silver halide. To carry out the method, a frame of the film is differentially exposed to actinic light, as for example in a camera, so that a latent image is formed in layer 36. After exposure, membrane 42 is fractured to cause the liquid reagent to permeate layer 36. At exposed areas 50 of said layer, development takes place and the silver halide is reduced to silver, remaining in layer 36, whereas at unexposed areas 52 the silver halide forms a soluble complex and is transported at least in part by the reagent to adjacent positive print layer 34 where reduction of the complex silver ions in solution is effected by the developer to form areas 54 of silver, the latter areas corresponding to the unexposed areas 52 of layer 36. An image is thus produced which is the positive of the latent image formed in photosensitive layer 36, and in order to provide a white, opaque background for such image the surface layer of base 32 adjoining layer 34 has dispersed thereon or therein a colorless compound which reacts with a compound contained in the liquid reagent to form a layer 56 of white precipitate. It is to be understood that the colorless compound may also be contained in a suitable permeable, transparent layer, for example of gelatin, disposed between base 32 and layer 34.",
       ),
     ),
-    p(text("If a positive transparency is desired instead of a print with an opaque background, one or both of the above compounds for producing layer 56 may be eliminated from the film.")),
     p(
-      text("The positive print comprising a silver image on a white or transparent background, as desired, is obtained by stripping base 32 together with layer 34 from the remainder of the film, as shown in "),
+      text(
+        "If a positive transparency is desired instead of a print with an opaque background, one or both of the above compounds for producing layer 56 may be eliminated from the film.",
+      ),
+    ),
+    p(
+      text(
+        "The positive print comprising a silver image on a white or transparent background, as desired, is obtained by stripping base 32 together with layer 34 from the remainder of the film, as shown in ",
+      ),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(". It will be noted that the print thus obtained is corrected for geometric reversal."),
     ),
     p(
-      text("In the above-described embodiment, the developer and the other reactive ingredients of the reagent may be contained either in layer 48 or in the liquid in layer 40. It is also possible to provide one or more of these materials in solid form in photosensitive layer 36, but this procedure is not preferred because it will tend to desensitize said layer."),
+      text(
+        "In the above-described embodiment, the developer and the other reactive ingredients of the reagent may be contained either in layer 48 or in the liquid in layer 40. It is also possible to provide one or more of these materials in solid form in photosensitive layer 36, but this procedure is not preferred because it will tend to desensitize said layer.",
+      ),
     ),
     p(
-      text("An example of a liquid reagent suitable for permeating the photosensitive layer in order to carry out the above method is one consisting of: sodium sulfite (anhydrous), 9.0 grams; hydroquinone, 4.5 grams; sodium hydroxide, 3.75 grams; potassium bromide, 3.00 grams; sodium thiosulfate, 10.00 grams; water to make 170 cubic centimeters."),
+      text(
+        "An example of a liquid reagent suitable for permeating the photosensitive layer in order to carry out the above method is one consisting of: sodium sulfite (anhydrous), 9.0 grams; hydroquinone, 4.5 grams; sodium hydroxide, 3.75 grams; potassium bromide, 3.00 grams; sodium thiosulfate, 10.00 grams; water to make 170 cubic centimeters.",
+      ),
     ),
     p(
-      text("In another method of forming a positive image, layer 36 is solarized approximately to, or just beyond, the reversal point so that when said layer is differentially exposed to actinic light, as in a camera, and then developed, the development occurs in the nonexposed areas. In this form of the invention, the reagent provided by containing means 38 contains a developer such as a p-phenylene-diamine which, when oxidized, will react with a coupler such as alpha-naphthol to form a relatively blue dye. To form the positive image, the coupler may be contained in the liquid reagent or it may be dispersed throughout layers 36 or 48 and the dye which is formed migrates to layer 34 to form the positive image. The coupler may also be dispersed throughout layer 34, in which event the oxidized developer migrates to the latter layer and the dye is formed there. It is to be understood that the developer may also be of the type which provides, as a reaction product of development, a compound which couples with itself to form a dye. Examples of developers of this type are pyrocatechin and p-phenylene-diamine."),
+      text(
+        "In another method of forming a positive image, layer 36 is solarized approximately to, or just beyond, the reversal point so that when said layer is differentially exposed to actinic light, as in a camera, and then developed, the development occurs in the nonexposed areas. In this form of the invention, the reagent provided by containing means 38 contains a developer such as a p-phenylene-diamine which, when oxidized, will react with a coupler such as alpha-naphthol to form a relatively blue dye. To form the positive image, the coupler may be contained in the liquid reagent or it may be dispersed throughout layers 36 or 48 and the dye which is formed migrates to layer 34 to form the positive image. The coupler may also be dispersed throughout layer 34, in which event the oxidized developer migrates to the latter layer and the dye is formed there. It is to be understood that the developer may also be of the type which provides, as a reaction product of development, a compound which couples with itself to form a dye. Examples of developers of this type are pyrocatechin and p-phenylene-diamine.",
+      ),
     ),
-    p(text("Any of the other aforementioned methods of obtaining positive prints which involve the use of a suitable liquid reagent, in combination with a photosensitive layer and a positive print layer, may be carried out with the above-described film.")),
+    p(
+      text(
+        "Any of the other aforementioned methods of obtaining positive prints which involve the use of a suitable liquid reagent, in combination with a photosensitive layer and a positive print layer, may be carried out with the above-described film.",
+      ),
+    ),
     p(
       text("A modification 60 of the liquid-containing means 38 of "),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(" is shown in "),
       ref("Fig. 2", "#fig-2", "Figure 2 — Modified liquid-containing means"),
-      text(" and comprises a plurality of cells or chambers 62 formed by a plurality of grooves 64 in a base member 66, such as a sheet of cellulose acetate or cellulose nitrate, said grooves being preferably filled with the liquid and sealed by a frangible membrane or wall 68 formed, for example, of polystyrene and corresponding in function and structure to membrane 42 of the film of "),
+      text(
+        " and comprises a plurality of cells or chambers 62 formed by a plurality of grooves 64 in a base member 66, such as a sheet of cellulose acetate or cellulose nitrate, said grooves being preferably filled with the liquid and sealed by a frangible membrane or wall 68 formed, for example, of polystyrene and corresponding in function and structure to membrane 42 of the film of ",
+      ),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
-      text(". Liquid-containing means 60 may be substituted for means 38 and, if desired, a porous layer corresponding to layer 48 of the film of "),
+      text(
+        ". Liquid-containing means 60 may be substituted for means 38 and, if desired, a porous layer corresponding to layer 48 of the film of ",
+      ),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(" may be provided between membrane 68 and layer 36 when means 60 is so substituted."),
     ),
     p(
-      text("It is to be understood that cells 62 of developer-retaining means 60 may be of various shapes, as for example rectangular or substantially circular in cross-section. It is preferable too that grooves 64 do not extend continuously across the film, so that in each transverse row of said grooves there is provided a plurality of cells. Moreover, the cells of successive rows are staggered so that the film can be cut longitudinally into strips after the cells are filled, for example during the manufacture of the film, without appreciable loss of liquid, and without rendering the strips thus obtained inoperative."),
+      text(
+        "It is to be understood that cells 62 of developer-retaining means 60 may be of various shapes, as for example rectangular or substantially circular in cross-section. It is preferable too that grooves 64 do not extend continuously across the film, so that in each transverse row of said grooves there is provided a plurality of cells. Moreover, the cells of successive rows are staggered so that the film can be cut longitudinally into strips after the cells are filled, for example during the manufacture of the film, without appreciable loss of liquid, and without rendering the strips thus obtained inoperative.",
+      ),
     ),
     p(
       text("Referring to "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
-      text(" there is illustrated another modification of the novel film means of the present invention which comprises, as the outer or base layer thereof, liquid-containing means 60, a photosensitive layer 70 being supported by membrane 68 of said liquid-containing means. Separated from layer 70, by a permeable antihalation coating 72, is a layer 74 of gelatin, polyvinyl alcohol, regenerated cellulose, hydroxyethyl cellulose, or other transparent, water-permeable material wherein the positive image is adapted to be formed. Coating 72 is desirable but not essential, and layer 74 may adjoin layer 70 to give satisfactory results. A backing or base 76, preferably of an opaque material such as paper, supports layer 74 and forms therewith the positive print material. The latter is secured to coating 72 so that it can be readily stripped therefrom when desired. To prevent gradual loss of developer by evaporation, the walls of cells 62 may be coated with water-vapor-impervious material such as polyethylene or paraffin, or the film may be encased in a coating of said material. It is to be understood that layer 74 need not be transparent, but may be formed of a relatively opaque material such as paper, in which event backing 76 may be dispensed with. It is also possible to form backing layer 76 of opal cellulose acetate and to provide layer 74 by regenerating the surface of the acetate sheet to cellulose."),
+      text(
+        " there is illustrated another modification of the novel film means of the present invention which comprises, as the outer or base layer thereof, liquid-containing means 60, a photosensitive layer 70 being supported by membrane 68 of said liquid-containing means. Separated from layer 70, by a permeable antihalation coating 72, is a layer 74 of gelatin, polyvinyl alcohol, regenerated cellulose, hydroxyethyl cellulose, or other transparent, water-permeable material wherein the positive image is adapted to be formed. Coating 72 is desirable but not essential, and layer 74 may adjoin layer 70 to give satisfactory results. A backing or base 76, preferably of an opaque material such as paper, supports layer 74 and forms therewith the positive print material. The latter is secured to coating 72 so that it can be readily stripped therefrom when desired. To prevent gradual loss of developer by evaporation, the walls of cells 62 may be coated with water-vapor-impervious material such as polyethylene or paraffin, or the film may be encased in a coating of said material. It is to be understood that layer 74 need not be transparent, but may be formed of a relatively opaque material such as paper, in which event backing 76 may be dispensed with. It is also possible to form backing layer 76 of opal cellulose acetate and to provide layer 74 by regenerating the surface of the acetate sheet to cellulose.",
+      ),
     ),
     p(
-      text(
-        "It will be noted that in each of the film structures described in ",
-      ),
+      text("It will be noted that in each of the film structures described in "),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(", "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
@@ -671,236 +715,402 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       ref("Fig. 4", "#fig-4", "Figure 4 — Further composite-product embodiment"),
       text(", as well as in the modified liquid-containing means of "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
-      text(", the liquid is released for saturating the photosensitive layer by fracturing a frangible liquid-retaining membrane. This may be accomplished by forming the membrane of a relatively more brittle material than the other layers of the film so that fracturing can be achieved by subjecting the film to a tension beyond the yield point of the membrane and below the yield point of any other layer."),
+      text(
+        ", the liquid is released for saturating the photosensitive layer by fracturing a frangible liquid-retaining membrane. This may be accomplished by forming the membrane of a relatively more brittle material than the other layers of the film so that fracturing can be achieved by subjecting the film to a tension beyond the yield point of the membrane and below the yield point of any other layer.",
+      ),
     ),
     p(
       text("A modified form of liquid-containing means 60 is shown in "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
-      text(" and comprises a sheet 92, for example, of film base provided with a plurality of chambers or cells 94, each connected by a self-sealing slot 96 to the bottom wall of the base. Slots 96 form temporary seals for the cells and a more permanent seal is provided by a frangible membrane 98 formed of a relatively brittle material and adapted to function in the same manner as membranes 42 and 68 of liquid film-retaining means 38 and 60, respectively. When the side of film 92 containing slots 96 is subjected to sufficient tension to fracture membrane 98, slots 96 are also opened and the liquid contained in cells 94 is released."),
+      text(
+        " and comprises a sheet 92, for example, of film base provided with a plurality of chambers or cells 94, each connected by a self-sealing slot 96 to the bottom wall of the base. Slots 96 form temporary seals for the cells and a more permanent seal is provided by a frangible membrane 98 formed of a relatively brittle material and adapted to function in the same manner as membranes 42 and 68 of liquid film-retaining means 38 and 60, respectively. When the side of film 92 containing slots 96 is subjected to sufficient tension to fracture membrane 98, slots 96 are also opened and the liquid contained in cells 94 is released.",
+      ),
     ),
     p(
       text("The cells 94 of the retaining means of "),
       ref("Fig. 9", "#fig-9", "Figure 9 — Modified liquid-containing means"),
-      text(" may be filled with the liquid in several ways. One novel method comprises causing film 92 to travel over roll 100, as shown in "),
+      text(
+        " may be filled with the liquid in several ways. One novel method comprises causing film 92 to travel over roll 100, as shown in ",
+      ),
       ref("Fig. 10", "#fig-10", "Figure 10 — Apparatus for filling the Figure 9 member"),
-      text(", with the side containing slots 96 on the outside. The tension is insufficient to open slots 96 in the straight portions 92a. Throughout curved portion 92b the outside surfaces are stretched enough to separate the walls of the slots, and cells 94 remain open while the base travels around the roll. Roll 100 is immersed in bath 102 of the liquid so that curved portion 92b and short lengths of the adjoining straight portions 92a are immersed. The cells are filled during curved travel; straight travel resumes before emergence from bath 102, sealing the cells and trapping the liquid. They are thereafter permanently sealed by applying membrane 98 to film base 92."),
+      text(
+        ", with the side containing slots 96 on the outside. The tension is insufficient to open slots 96 in the straight portions 92a. Throughout curved portion 92b the outside surfaces are stretched enough to separate the walls of the slots, and cells 94 remain open while the base travels around the roll. Roll 100 is immersed in bath 102 of the liquid so that curved portion 92b and short lengths of the adjoining straight portions 92a are immersed. The cells are filled during curved travel; straight travel resumes before emergence from bath 102, sealing the cells and trapping the liquid. They are thereafter permanently sealed by applying membrane 98 to film base 92.",
+      ),
     ),
     p(
-      text("Novel camera means for use with the films of the present invention, embodying release of the liquid by tension, is shown diagrammatically in "),
+      text(
+        "Novel camera means for use with the films of the present invention, embodying release of the liquid by tension, is shown diagrammatically in ",
+      ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
-      text(". The camera mounts a roll 110 of film F and has conventional shutter and lens means 112 for exposing a frame. Two laterally spaced pairs of rolls 114 and 116 frictionally engage and positively drive the film. Leading rolls 116 drive at a higher linear velocity than rolls 114, placing film portion 118 under sufficient tension to fracture the retaining membrane. Rolls 116 also compress the film to assist complete discharge of the liquid."),
+      text(
+        ". The camera mounts a roll 110 of film F and has conventional shutter and lens means 112 for exposing a frame. Two laterally spaced pairs of rolls 114 and 116 frictionally engage and positively drive the film. Leading rolls 116 drive at a higher linear velocity than rolls 114, placing film portion 118 under sufficient tension to fracture the retaining membrane. Rolls 116 also compress the film to assist complete discharge of the liquid.",
+      ),
     ),
     p(
-      text("After rolls 116 meter the exposed frame, the actuating mechanism operates film-cutting means 119 to cut that frame from the remainder. Guideways direct the film as it travels from rolls 116 to the camera exit; the travel is sufficient for development and formation of the positive print. Opening 120 discharges the cut frame. With the films of "),
+      text(
+        "After rolls 116 meter the exposed frame, the actuating mechanism operates film-cutting means 119 to cut that frame from the remainder. Guideways direct the film as it travels from rolls 116 to the camera exit; the travel is sufficient for development and formation of the positive print. Opening 120 discharges the cut frame. With the films of ",
+      ),
       ref("Fig. 1", "#fig-1", "Figure 1 — Four stages of one photographic product"),
       text(" or "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
-      text(", the positive print material may then be stripped from the remainder of the frame, including by suitable means within the camera. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame can thus be developed and printed without exposing the remainder of the film. It will be apparent that, in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed."),
+      text(
+        ", the positive print material may then be stripped from the remainder of the frame, including by suitable means within the camera. It is to be understood that this stripping may be accomplished by suitable means within the camera so that the separated portions of the film issue from the camera. Each exposed frame can thus be developed and printed without exposing the remainder of the film. It will be apparent that, in order to minimize the length of film between exposed frames, cutting means 119 should be located as closely as possible to the point at which the leading edge of each frame is exposed.",
+      ),
     ),
     p(
       text("Certain film means, including the film illustrated in "),
       ref("Fig. 3", "#fig-3", "Figure 3 — Another composite-product embodiment"),
-      text(", give a positive print that is not corrected for reversal. A camera arrangement shown in "),
+      text(
+        ", give a positive print that is not corrected for reversal. A camera arrangement shown in ",
+      ),
       ref("Fig. 12", "#fig-12", "Figure 12 — Modified camera means"),
-      text(" provides geometric reversal before projection onto the film frame. It comprises lens 112a and means similar to those in "),
+      text(
+        " provides geometric reversal before projection onto the film frame. It comprises lens 112a and means similar to those in ",
+      ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
-      text(" for mounting film F'. Mirror 121 is positioned with respect to lens system 112a and film F' to reflect and reverse the light before it reaches the film; the mirror is disposed at substantially 45 degrees to the optical axis. The camera of "),
+      text(
+        " for mounting film F'. Mirror 121 is positioned with respect to lens system 112a and film F' to reflect and reverse the light before it reaches the film; the mirror is disposed at substantially 45 degrees to the optical axis. The camera of ",
+      ),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
-      text(" may instead receive an attachment of prisms or mirrors to reverse the entering light."),
+      text(
+        " may instead receive an attachment of prisms or mirrors to reverse the entering light.",
+      ),
     ),
     p(
       text("In the camera of "),
       ref("Fig. 11", "#fig-11", "Figure 11 — Camera means"),
-      text(", rolls 114 and 116 uniformly stretch the film portion between them, but the membrane may also be fractured by differential stretching over a cylindrical roll or drum whose curvature is sufficient to stretch the membrane. The film may thereafter pass between friction rolls to ensure complete release of the liquid. Novel means shown in "),
+      text(
+        ", rolls 114 and 116 uniformly stretch the film portion between them, but the membrane may also be fractured by differential stretching over a cylindrical roll or drum whose curvature is sufficient to stretch the membrane. The film may thereafter pass between friction rolls to ensure complete release of the liquid. Novel means shown in ",
+      ),
       ref("Fig. 13", "#fig-13", "Figure 13 — Means for fracturing a membrane"),
-      text(" comprise rolls 122 and 124 between which film F travels. Roll 122 is preferably rigid metal with surface corrugations 126; roll 124 is yielding material such as rubber and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. Successive film lengths undergo differential stretching, ensuring at least one membrane fracture per predetermined unit length. The maximum distance between fractures is controlled by the radius and spacing of corrugations 126."),
+      text(
+        " comprise rolls 122 and 124 between which film F travels. Roll 122 is preferably rigid metal with surface corrugations 126; roll 124 is yielding material such as rubber and has its axis located with respect to roll 122 so that its periphery is substantially compressed by corrugations 126 in order for rotation of said rolls to take place. Successive film lengths undergo differential stretching, ensuring at least one membrane fracture per predetermined unit length. The maximum distance between fractures is controlled by the radius and spacing of corrugations 126.",
+      ),
     ),
     p(
-      text("By controlling the thickness of the several layers, the liquid-retaining membrane may be located closer to one face of the film than the other. It may then be compressed when the film is wound in one direction and tensioned, sufficiently to fracture, when wound in the other direction. Liquid is retained when the film is wound in the first direction and released when wound in the other. For roll film, materials somewhat less vapor-impervious than paraffin may be used in sufficient thickness, including polyvinylidene chloride, polyvinyl acetate-chloride, and cellulose acetate butyrate. In a wound roll, the aggregate layers of vapor-resistant material prevent appreciable vapor loss for a relatively long time, although outer frames may eventually lose liquid by vaporization."),
+      text(
+        "By controlling the thickness of the several layers, the liquid-retaining membrane may be located closer to one face of the film than the other. It may then be compressed when the film is wound in one direction and tensioned, sufficiently to fracture, when wound in the other direction. Liquid is retained when the film is wound in the first direction and released when wound in the other. For roll film, materials somewhat less vapor-impervious than paraffin may be used in sufficient thickness, including polyvinylidene chloride, polyvinyl acetate-chloride, and cellulose acetate butyrate. In a wound roll, the aggregate layers of vapor-resistant material prevent appreciable vapor loss for a relatively long time, although outer frames may eventually lose liquid by vaporization.",
+      ),
     ),
     p(
       text("A further preferred form of the invention is shown in "),
-      ref("Figs. 14 to 17", "#fig-14", "Figures 14–17 — Viscous liquid-containing film and pod constructions"),
-      text(" and comprises means for releasably containing a preferably viscous liquid adapted, when released, to permeate a predetermined area of a photosensitive layer. In the form illustrated in "),
+      ref(
+        "Figs. 14 to 17",
+        "#fig-14",
+        "Figures 14–17 — Viscous liquid-containing film and pod constructions",
+      ),
+      text(
+        " and comprises means for releasably containing a preferably viscous liquid adapted, when released, to permeate a predetermined area of a photosensitive layer. In the form illustrated in ",
+      ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
-      text(", the photosensitive layer is an element of the composite product, which can carry out the foregoing transfer-print methods. The liquid may contain a film-forming high polymer; on release it both performs the desired processing and forms a layer that eventually solidifies. That film-forming component may also thicken the liquid and impart the desired viscosity."),
+      text(
+        ", the photosensitive layer is an element of the composite product, which can carry out the foregoing transfer-print methods. The liquid may contain a film-forming high polymer; on release it both performs the desired processing and forms a layer that eventually solidifies. That film-forming component may also thicken the liquid and impart the desired viscosity.",
+      ),
     ),
     p(
-      text("The film formed by the reagent may be the layer in which the transfer print is formed or may cooperate with another layer to provide the print-receiving stratum. The transfer print may instead be formed elsewhere by selecting another composite layer in which the image-forming component is more readily precipitated. The invention also comprehends a sheetlike product comprising a base and liquid-reagent containing means without a photosensitive layer as an element, constructed so that face-to-face pressure against a photosensitive layer releases the reagent to process that layer."),
+      text(
+        "The film formed by the reagent may be the layer in which the transfer print is formed or may cooperate with another layer to provide the print-receiving stratum. The transfer print may instead be formed elsewhere by selecting another composite layer in which the image-forming component is more readily precipitated. The invention also comprehends a sheetlike product comprising a base and liquid-reagent containing means without a photosensitive layer as an element, constructed so that face-to-face pressure against a photosensitive layer releases the reagent to process that layer.",
+      ),
     ),
     p(
       text("Referring to "),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
-      text(", one form of the novel film means comprises film base 210, preferably transparent plastic such as a cellulose ester or mixed ester, supporting photosensitive layer 212 of a silver-halide or mixed-silver-halide emulsion. Adjacent layer 212 is image-receiving layer 214 of water-permeable material, including regenerated cellulose, polyvinyl alcohol, sodium alginate, certain cellulose ethers such as methyl cellulose and their derivatives, paper, gelatin, glue, gums, starch, or compatible mixtures. If the reagent contains a film-forming thickening agent, layer 214 may be selected from materials having an affinity for the film. It may be desirable that layer 214 and/or the film formed by the liquid reagent be nontransparent; a suitable pigment such as titanium dioxide can form a white, substantially opaque layer. Receiving layer 214 is mounted on base 216, which may be cellulose plastic, nylon-type plastic, polyvinyl plastic, or paper."),
+      text(
+        ", one form of the novel film means comprises film base 210, preferably transparent plastic such as a cellulose ester or mixed ester, supporting photosensitive layer 212 of a silver-halide or mixed-silver-halide emulsion. Adjacent layer 212 is image-receiving layer 214 of water-permeable material, including regenerated cellulose, polyvinyl alcohol, sodium alginate, certain cellulose ethers such as methyl cellulose and their derivatives, paper, gelatin, glue, gums, starch, or compatible mixtures. If the reagent contains a film-forming thickening agent, layer 214 may be selected from materials having an affinity for the film. It may be desirable that layer 214 and/or the film formed by the liquid reagent be nontransparent; a suitable pigment such as titanium dioxide can form a white, substantially opaque layer. Receiving layer 214 is mounted on base 216, which may be cellulose plastic, nylon-type plastic, polyvinyl plastic, or paper.",
+      ),
     ),
     p(
-      text("To releasably contain the reagent, the composite film has one or more elongated containers 218 in the form of sacs or pods mounted preferably transversely between layers 212 and 214. Each contains a sufficient quantity of liquid reagent to permeate a frame of the photosensitive layer and is adapted to release the reagent longitudinally in only one direction. One of sacs 218 is provided for each film frame, preferably adjacent the leading or trailing edge of the frame. The composite film may be provided as a roll, a film pack, or single frames. Sacs 218 are preferably formed so that suitable mechanical stress, such as squeezing together the faces of the composite film, releases the liquid reagent toward the exposed frame. As shown in "),
+      text(
+        "To releasably contain the reagent, the composite film has one or more elongated containers 218 in the form of sacs or pods mounted preferably transversely between layers 212 and 214. Each contains a sufficient quantity of liquid reagent to permeate a frame of the photosensitive layer and is adapted to release the reagent longitudinally in only one direction. One of sacs 218 is provided for each film frame, preferably adjacent the leading or trailing edge of the frame. The composite film may be provided as a roll, a film pack, or single frames. Sacs 218 are preferably formed so that suitable mechanical stress, such as squeezing together the faces of the composite film, releases the liquid reagent toward the exposed frame. As shown in ",
+      ),
       ref("Figs. 14 and 15", "#fig-14", "Figures 14–15 — Pod construction"),
-      text(" of a single sheet of oxygen- and water-vapor-impervious material, such as wax-impregnated, metal-coated paper or wax-coated metal foil, the sheet is folded and one face is formed to obtain a cavity "),
+      text(
+        " of a single sheet of oxygen- and water-vapor-impervious material, such as wax-impregnated, metal-coated paper or wax-coated metal foil, the sheet is folded and one face is formed to obtain a cavity ",
+      ),
       text("222"),
       text(" as shown in "),
       ref("Fig. 16", "#fig-16", "Figure 16 — Sac before filling"),
-      text(". The cavity is filled with liquid reagent, the faces are folded into engagement, and the edges are sealed by heat. To exclude oxygen, the cavity is completely filled or filling is carried out in an inert atmosphere. The seal breaks before the folded edge fractures, so pressure on the sac releases liquid from the side containing the seal. End seals offer greater resistance to separation than the longitudinal seal, producing a water-vapor-impervious container whose contents for relatively long periods will neither become dry nor oxidize."),
+      text(
+        ". The cavity is filled with liquid reagent, the faces are folded into engagement, and the edges are sealed by heat. To exclude oxygen, the cavity is completely filled or filling is carried out in an inert atmosphere. The seal breaks before the folded edge fractures, so pressure on the sac releases liquid from the side containing the seal. End seals offer greater resistance to separation than the longitudinal seal, producing a water-vapor-impervious container whose contents for relatively long periods will neither become dry nor oxidize.",
+      ),
     ),
     p(
-      text("The reagent is preferably more than fifty centipoises in viscosity so it permeates the exposed frame completely and relatively uniformly. A substantially less viscous reagent may be absorbed too greatly in some portions of the photosensitive layer while other portions remain dry. Suitable thickening agents include gelatin and water-soluble, film-forming high-molecular-weight compounds such as hydroxyethyl cellulose and sodium or aluminum carboxymethyl cellulose; a spreading layer can thereby form a firm, dimensionally stable film."),
+      text(
+        "The reagent is preferably more than fifty centipoises in viscosity so it permeates the exposed frame completely and relatively uniformly. A substantially less viscous reagent may be absorbed too greatly in some portions of the photosensitive layer while other portions remain dry. Suitable thickening agents include gelatin and water-soluble, film-forming high-molecular-weight compounds such as hydroxyethyl cellulose and sodium or aluminum carboxymethyl cellulose; a spreading layer can thereby form a firm, dimensionally stable film.",
+      ),
     ),
     p(
-      text("Example 2 specifies: water, 100 cubic centimeters; sodium sulfite, an amount not legible in the cloud text extraction; hydroquinone, 3.3 grams; sodium thiosulfate, 1.4 grams; an aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams in 100 cubic centimeters of water, 5 grams; and 11.2 cubic centimeters of 10% sodium hydroxide solution. The missing sodium-sulfite quantity is retained as an unresolved source glyph rather than guessed."),
+      text(
+        "Example 2 specifies: water, 100 cubic centimeters; sodium sulfite, an amount not legible in the cloud text extraction; hydroquinone, 3.3 grams; sodium thiosulfate, 1.4 grams; an aqueous solution of medium-viscosity sodium carboxymethyl cellulose consisting of 20 grams in 100 cubic centimeters of water, 5 grams; and 11.2 cubic centimeters of 10% sodium hydroxide solution. The missing sodium-sulfite quantity is retained as an unresolved source glyph rather than guessed.",
+      ),
     ),
     p(
-      text("The sodium sulfite, hydroquinone, and sodium thiosulfate are dissolved in the water, and the sodium carboxymethyl cellulose solution is then added and thoroughly mixed therewith. The solution thus obtained is cooled to a temperature between 65° and 75° F. and thereafter the sodium hydroxide solution is added thereto."),
+      text(
+        "The sodium sulfite, hydroquinone, and sodium thiosulfate are dissolved in the water, and the sodium carboxymethyl cellulose solution is then added and thoroughly mixed therewith. The solution thus obtained is cooled to a temperature between 65° and 75° F. and thereafter the sodium hydroxide solution is added thereto.",
+      ),
     ),
     p(
-      text("An alternative method of obtaining the above reagent is to first dilute the sodium carboxymethyl cellulose solution with the water and thereafter add the sodium sulfite, hydroquinone, and sodium thiosulfate. The mixing of these ingredients may be carried out at a temperature between 80° F. and 90° F. and after the components are thoroughly mixed, the mixture may be cooled to a temperature of approximately 65° to 75° F. and the specified quantity of sodium hydroxide solution added thereto."),
+      text(
+        "An alternative method of obtaining the above reagent is to first dilute the sodium carboxymethyl cellulose solution with the water and thereafter add the sodium sulfite, hydroquinone, and sodium thiosulfate. The mixing of these ingredients may be carried out at a temperature between 80° F. and 90° F. and after the components are thoroughly mixed, the mixture may be cooled to a temperature of approximately 65° to 75° F. and the specified quantity of sodium hydroxide solution added thereto.",
+      ),
     ),
     p(
-      text("The proportions of the ingredients set out above may be varied within relatively wide limits as, for example, quantities of hydroquinone up to 6.6 grams may be used. Similarly, the quantity of sodium thiosulfate may be varied from 1.4 to 2.8 grams, and the amount of sodium hydroxide solution from 11 to 44 cc. While it is preferred to omit the preservative from the novel reagents of the invention, satisfactory results may be obtained by including, for example, 2.2 to 6.6 grams of potassium bromide in the solution of the above example."),
+      text(
+        "The proportions of the ingredients set out above may be varied within relatively wide limits as, for example, quantities of hydroquinone up to 6.6 grams may be used. Similarly, the quantity of sodium thiosulfate may be varied from 1.4 to 2.8 grams, and the amount of sodium hydroxide solution from 11 to 44 cc. While it is preferred to omit the preservative from the novel reagents of the invention, satisfactory results may be obtained by including, for example, 2.2 to 6.6 grams of potassium bromide in the solution of the above example.",
+      ),
     ),
     p(
-      text("Example 3. Water — cubic centimeters — 150; hydroquinone — grams — 2.8; sodium sulfite — grams — 20; Metol — grams — 1.55; sodium thiosulfate — grams — 10; aqueous solution of medium viscosity sodium carboxymethyl cellulose consisting of 20 g. of the latter compound in 100 cc. of water — grams — 100; sodium hydroxide — grams — 5.6."),
+      text(
+        "Example 3. Water — cubic centimeters — 150; hydroquinone — grams — 2.8; sodium sulfite — grams — 20; Metol — grams — 1.55; sodium thiosulfate — grams — 10; aqueous solution of medium viscosity sodium carboxymethyl cellulose consisting of 20 g. of the latter compound in 100 cc. of water — grams — 100; sodium hydroxide — grams — 5.6.",
+      ),
     ),
     p(
-      text("Sodium alginate may be used instead of sodium carboxymethyl cellulose in either of the above examples in the same relative amounts as sodium carboxymethyl cellulose. Many of the starches as, for example, Merck's starch, Argo starch, Maine potato starch and Brazilian starch may also be used, and it is preferable when using these starches to employ a concentration approximately twice that of the sodium carboxymethyl cellulose suggested above."),
+      text(
+        "Sodium alginate may be used instead of sodium carboxymethyl cellulose in either of the above examples in the same relative amounts as sodium carboxymethyl cellulose. Many of the starches as, for example, Merck's starch, Argo starch, Maine potato starch and Brazilian starch may also be used, and it is preferable when using these starches to employ a concentration approximately twice that of the sodium carboxymethyl cellulose suggested above.",
+      ),
     ),
     p(
-      text("If a relatively white and nontransparent film is to be formed by the reagent, there may be incorporated in said reagent a suitable pigment such as titanium dioxide or mixtures of titanium dioxide and magnesium oxide or magnesium carbonate. The addition of titanium dioxide equivalent to from 10 to 20% by weight of the reagent has given good results. These pigments also serve as fillers for increasing the viscosity of the reagent."),
+      text(
+        "If a relatively white and nontransparent film is to be formed by the reagent, there may be incorporated in said reagent a suitable pigment such as titanium dioxide or mixtures of titanium dioxide and magnesium oxide or magnesium carbonate. The addition of titanium dioxide equivalent to from 10 to 20% by weight of the reagent has given good results. These pigments also serve as fillers for increasing the viscosity of the reagent.",
+      ),
     ),
     p(
-      text("Examples of other developers which may be used in the reagent are p-aminophenol hydrochloride (Kodelon), p-hydroxyphenylamino-acetic acid (Athenon, Glycin), p-phenylenediamine, pyrocatechin, diaminophenolhydrochloride (Amidol), pyrogallol, o-phenylenediamine and bromohydroquinone."),
+      text(
+        "Examples of other developers which may be used in the reagent are p-aminophenol hydrochloride (Kodelon), p-hydroxyphenylamino-acetic acid (Athenon, Glycin), p-phenylenediamine, pyrocatechin, diaminophenolhydrochloride (Amidol), pyrogallol, o-phenylenediamine and bromohydroquinone.",
+      ),
     ),
     p(
-      text("Examples of other materials which may be used in the reagent for the purpose of forming a soluble silver complex with the undeveloped silver halide of the photosensitive layer are ammonium thiosulfate and ammonia. For obvious reasons, it is preferable that the complex-forming substance be one which does not desensitize the silver halide emulsion and one which is not toxic. For example, a compound such as sodium cyanide which will give satisfactory photographic results when used in the reagent in accordance with the methods of the invention is generally not desirable because of its toxic character."),
+      text(
+        "Examples of other materials which may be used in the reagent for the purpose of forming a soluble silver complex with the undeveloped silver halide of the photosensitive layer are ammonium thiosulfate and ammonia. For obvious reasons, it is preferable that the complex-forming substance be one which does not desensitize the silver halide emulsion and one which is not toxic. For example, a compound such as sodium cyanide which will give satisfactory photographic results when used in the reagent in accordance with the methods of the invention is generally not desirable because of its toxic character.",
+      ),
     ),
     p(
-      text("The liquid reagent may also contain other accelerators, as for example potassium hydroxide, sodium carbonate, borax, sodium metaborate, paraformaldehyde, trisodium phosphate or Triton B. The last-named alkali, a Rohm and Haas product, is a 40% aqueous solution of benzyl trimethyl ammonium hydroxide. In certain modifications of the reagent composition, the preservative and the restrainer may be omitted."),
+      text(
+        "The liquid reagent may also contain other accelerators, as for example potassium hydroxide, sodium carbonate, borax, sodium metaborate, paraformaldehyde, trisodium phosphate or Triton B. The last-named alkali, a Rohm and Haas product, is a 40% aqueous solution of benzyl trimethyl ammonium hydroxide. In certain modifications of the reagent composition, the preservative and the restrainer may be omitted.",
+      ),
     ),
     p(
-      text("To practice the method, photosensitive layer 212 is differentially exposed, for example in a camera, through base 210 to predetermined subject matter so as to form in said layer a latent image of said subject matter. The film is then subjected, in the absence of actinic light, as for example in the camera or in a dark room, to compression or any other application of stress whereby the liquid reagent in container 218 is released from said container and caused to permeate the photosensitive layer and the receiving layer. The exposed silver halide, at least in the portions of the photosensitive layer adjacent the receiving layer, is developed to silver and a portion of the unexposed silver halide is transformed to the soluble silver complex which is transported at least in part to the receiving layer. This soluble complex is reduced in receiving layer 214 to an insoluble product comprising silver, said product forming in said receiving layer a positive image of the subject matter to which the photosensitive layer was exposed."),
+      text(
+        "To practice the method, photosensitive layer 212 is differentially exposed, for example in a camera, through base 210 to predetermined subject matter so as to form in said layer a latent image of said subject matter. The film is then subjected, in the absence of actinic light, as for example in the camera or in a dark room, to compression or any other application of stress whereby the liquid reagent in container 218 is released from said container and caused to permeate the photosensitive layer and the receiving layer. The exposed silver halide, at least in the portions of the photosensitive layer adjacent the receiving layer, is developed to silver and a portion of the unexposed silver halide is transformed to the soluble silver complex which is transported at least in part to the receiving layer. This soluble complex is reduced in receiving layer 214 to an insoluble product comprising silver, said product forming in said receiving layer a positive image of the subject matter to which the photosensitive layer was exposed.",
+      ),
     ),
     p(
-      text("The thickening agent in the reagent forms a film on the receiving layer and accordingly the insoluble reduction product which provides the positive image is contained at least in part in said film. After the formation of the positive image, layer 214, the film formed thereon by the reagent, and base 216 are separated from the photosensitive layer."),
+      text(
+        "The thickening agent in the reagent forms a film on the receiving layer and accordingly the insoluble reduction product which provides the positive image is contained at least in part in said film. After the formation of the positive image, layer 214, the film formed thereon by the reagent, and base 216 are separated from the photosensitive layer.",
+      ),
     ),
     p(
-      text("If a transparency is desired, base 216 as well as layer 214 is formed of transparent materials, but if a conventional positive print, i. e., an image visible against a white nontransparent background, is desired, base 216 is preferably formed of a relatively nontransparent, white material. For example, base 216 may be a pigmented cellulosic plastic such as Kotavachrome base, paper, or opal cellulose acetate."),
+      text(
+        "If a transparency is desired, base 216 as well as layer 214 is formed of transparent materials, but if a conventional positive print, i. e., an image visible against a white nontransparent background, is desired, base 216 is preferably formed of a relatively nontransparent, white material. For example, base 216 may be a pigmented cellulosic plastic such as Kotavachrome base, paper, or opal cellulose acetate.",
+      ),
     ),
     p(
-      text("It is less preferable, but also possible, to use as layer 214 a sheet of relatively water-permeable, nontransparent and preferably opaque white material adapted to adhere to the photosensitive layer 212, and sufficiently thin so that the complex silver ions in the reagent may permeate through said layer to the surface thereof remote from the photosensitive layer to form, when reduced, an image visible from the latter surface of said layer. In the latter case, if base 216 is transparent, it is unnecessary to separate said base from layer 214 since the positive image is visible through said base, and layer 214 acts as a barrier to render layer 212 and the developed silver contained therein invisible."),
+      text(
+        "It is less preferable, but also possible, to use as layer 214 a sheet of relatively water-permeable, nontransparent and preferably opaque white material adapted to adhere to the photosensitive layer 212, and sufficiently thin so that the complex silver ions in the reagent may permeate through said layer to the surface thereof remote from the photosensitive layer to form, when reduced, an image visible from the latter surface of said layer. In the latter case, if base 216 is transparent, it is unnecessary to separate said base from layer 214 since the positive image is visible through said base, and layer 214 acts as a barrier to render layer 212 and the developed silver contained therein invisible.",
+      ),
     ),
     p(
-      text("Where the reagent contains a thickening agent adapted to form a film, the separate receiving layer 214 may be omitted and the film formed by the reagent used for receiving all of the complex silver ions transported from layer 212. In this modification of the film, it is preferable to use as base 216 a material having a greater affinity for the film-forming material of the reagent than for the photosensitive layer. A suitable base of this character is pure alpha paper where the film-forming material is any one of the starches, sodium alginate or sodium hydroxyethyl cellulose mentioned above. It is also possible to use substantially all of the plastic, paper and other sheet materials mentioned hereinabove for base 216, provided these materials are first subcoated on the side which is to adjoin the photosensitive layer with a film of the film-forming material in the reagent."),
+      text(
+        "Where the reagent contains a thickening agent adapted to form a film, the separate receiving layer 214 may be omitted and the film formed by the reagent used for receiving all of the complex silver ions transported from layer 212. In this modification of the film, it is preferable to use as base 216 a material having a greater affinity for the film-forming material of the reagent than for the photosensitive layer. A suitable base of this character is pure alpha paper where the film-forming material is any one of the starches, sodium alginate or sodium hydroxyethyl cellulose mentioned above. It is also possible to use substantially all of the plastic, paper and other sheet materials mentioned hereinabove for base 216, provided these materials are first subcoated on the side which is to adjoin the photosensitive layer with a film of the film-forming material in the reagent.",
+      ),
     ),
     p(
-      text("To carry out another method for forming a positive image, liquid reagent 220 comprises a developer which tans the carrier for the photosensitive material of layer 212 wherever development of said material takes place, and also contains a compound which is adapted to react with a compound dispersed throughout layer 212 to form in said layer a dye which is substantive to the tanned carrier. When the liquid reagent permeates the photosensitive layer, said compound reacts to form the dye throughout layer 212, and wherever development of the latent image takes place, i. e., where the carrier is tanned, the dye is attracted and retained, whereas wherever no development takes place, the dye migrates to the receiving layer and forms therein the desired positive image."),
+      text(
+        "To carry out another method for forming a positive image, liquid reagent 220 comprises a developer which tans the carrier for the photosensitive material of layer 212 wherever development of said material takes place, and also contains a compound which is adapted to react with a compound dispersed throughout layer 212 to form in said layer a dye which is substantive to the tanned carrier. When the liquid reagent permeates the photosensitive layer, said compound reacts to form the dye throughout layer 212, and wherever development of the latent image takes place, i. e., where the carrier is tanned, the dye is attracted and retained, whereas wherever no development takes place, the dye migrates to the receiving layer and forms therein the desired positive image.",
+      ),
     ),
     p(
-      text("In a preferred modification of this embodiment of the invention, the developer also serves as the compound which reacts with the compound in the photosensitive layer to form the dye. For example, pyrocatechin may be the developer and p-phenylenediamine may be the compound contained in the photosensitive layer which reacts therewith to form the dye."),
+      text(
+        "In a preferred modification of this embodiment of the invention, the developer also serves as the compound which reacts with the compound in the photosensitive layer to form the dye. For example, pyrocatechin may be the developer and p-phenylenediamine may be the compound contained in the photosensitive layer which reacts therewith to form the dye.",
+      ),
     ),
     p(
-      text("In a modification of the invention, there is provided a unitary sheetlike product 224 ("),
+      text(
+        "In a modification of the invention, there is provided a unitary sheetlike product 224 (",
+      ),
       ref("Fig. 17", "#fig-17", "Figure 17 — Unitary sheetlike product"),
-      text(") comprising base 216 and containers 218 and adapted to be used with any developable photosensitive layer containing a latent image to produce a positive image corresponding to the subject matter of said latent image on base 216."),
+      text(
+        ") comprising base 216 and containers 218 and adapted to be used with any developable photosensitive layer containing a latent image to produce a positive image corresponding to the subject matter of said latent image on base 216.",
+      ),
     ),
     p(
-      text("Base 216 is shown with a receiving layer 214 but the latter may be omitted in the event reagent 220 contains a film-forming material and it is desired to form the positive image in the film obtained from said material."),
+      text(
+        "Base 216 is shown with a receiving layer 214 but the latter may be omitted in the event reagent 220 contains a film-forming material and it is desired to form the positive image in the film obtained from said material.",
+      ),
     ),
     p(
-      text("In use, composite sheet 225 is pressed into face-to-face contact with an exposed photosensitive layer of, for example, a conventional negative film in such a manner that containers 218 are caused to release the reagent and the latter is spread over the entire exposed frame of said photosensitive layer, causing a fixed positive image to be formed on base 216. Sheet 224 may be used either in a darkroom after the exposed photosensitive film is removed from the camera or in the camera so that a fixed positive image is obtained shortly after exposure."),
+      text(
+        "In use, composite sheet 225 is pressed into face-to-face contact with an exposed photosensitive layer of, for example, a conventional negative film in such a manner that containers 218 are caused to release the reagent and the latter is spread over the entire exposed frame of said photosensitive layer, causing a fixed positive image to be formed on base 216. Sheet 224 may be used either in a darkroom after the exposed photosensitive film is removed from the camera or in the camera so that a fixed positive image is obtained shortly after exposure.",
+      ),
     ),
     p(
-      text("A modified form of the film and composite sheet material of the above-described embodiment may be used whereby it becomes unnecessary to keep the unit formed of said sheet material and film in the darkness of the camera after exposure. For example, the photosensitive film may have its photosensitive layer supported by a sheet of opaque material such as black paper, and the sheet material carrying the reagent may be provided with a backing of relatively opaque material. Light is thus excluded from the unit formed of the exposed film and the sheet material when the two are brought into operative engagement, and said unit may pass directly out of the camera, after being assembled, into the light without deleteriously affecting the image-forming reaction."),
+      text(
+        "A modified form of the film and composite sheet material of the above-described embodiment may be used whereby it becomes unnecessary to keep the unit formed of said sheet material and film in the darkness of the camera after exposure. For example, the photosensitive film may have its photosensitive layer supported by a sheet of opaque material such as black paper, and the sheet material carrying the reagent may be provided with a backing of relatively opaque material. Light is thus excluded from the unit formed of the exposed film and the sheet material when the two are brought into operative engagement, and said unit may pass directly out of the camera, after being assembled, into the light without deleteriously affecting the image-forming reaction.",
+      ),
     ),
     p(
-      text("It is to be understood that containers 218 may be provided as units separate from base 216 in the above-described embodiments, said containers being operatively positioned between said base and the photosensitive film as the latter are pressed together after exposure of said film. This may be accomplished in the camera by equipping the latter with suitable dispensing means for the containers operatively connected to the film-metering mechanism of the camera. Containers 218 may also be manually positioned between the exposed photosensitive layer and base 216 as the latter are operatively pressed together, for example, between a pair of squeegee or wringer rollers, in a dark room."),
+      text(
+        "It is to be understood that containers 218 may be provided as units separate from base 216 in the above-described embodiments, said containers being operatively positioned between said base and the photosensitive film as the latter are pressed together after exposure of said film. This may be accomplished in the camera by equipping the latter with suitable dispensing means for the containers operatively connected to the film-metering mechanism of the camera. Containers 218 may also be manually positioned between the exposed photosensitive layer and base 216 as the latter are operatively pressed together, for example, between a pair of squeegee or wringer rollers, in a dark room.",
+      ),
     ),
     p(
-      text("The film-forming material when used as an ingredient of the liquid reagent is preferably a high molecular weight polymer which imparts to the composition the desired viscosity and which is of such character as to retain its viscosity-imparting and film-forming properties in the liquid material for the length of time that is to elapse between the mixing and the use of the viscous liquid. Where it is desired that the liquid material once mixed and in equilibrium remain uniformly viscous for any given temperature, the film-forming material is preferably one of the class of high molecular weight polymers which include in their chemical structure such groups as, for example, the ether, alkyl, hydroxyl, carboxyl, and acetyl groups that are stable to alkalis and which contain none of the chemical groups, such as the ester and acid chloride groups, that are unstable to alkalis. The polymers also contain groups such as the hydroxyl and/or carboxyl groups which tend to solubilize in aqueous alkaline solutions. Suitable examples of such polymers are the alkali-inert and water-soluble cellulose derivatives such as sodium carboxymethyl cellulose and hydroxyethyl cellulose, and the alkali-inert and water-soluble polyalkane derivatives such as the sodium salts of polymethacrylic acid and polyacrylic acid."),
+      text(
+        "The film-forming material when used as an ingredient of the liquid reagent is preferably a high molecular weight polymer which imparts to the composition the desired viscosity and which is of such character as to retain its viscosity-imparting and film-forming properties in the liquid material for the length of time that is to elapse between the mixing and the use of the viscous liquid. Where it is desired that the liquid material once mixed and in equilibrium remain uniformly viscous for any given temperature, the film-forming material is preferably one of the class of high molecular weight polymers which include in their chemical structure such groups as, for example, the ether, alkyl, hydroxyl, carboxyl, and acetyl groups that are stable to alkalis and which contain none of the chemical groups, such as the ester and acid chloride groups, that are unstable to alkalis. The polymers also contain groups such as the hydroxyl and/or carboxyl groups which tend to solubilize in aqueous alkaline solutions. Suitable examples of such polymers are the alkali-inert and water-soluble cellulose derivatives such as sodium carboxymethyl cellulose and hydroxyethyl cellulose, and the alkali-inert and water-soluble polyalkane derivatives such as the sodium salts of polymethacrylic acid and polyacrylic acid.",
+      ),
     ),
     p(
-      text("It is to be understood also that by a suitable selection of the film-forming material in liquid composition 220 ("),
+      text(
+        "It is to be understood also that by a suitable selection of the film-forming material in liquid composition 220 (",
+      ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
-      text(") the solid film or layer which is formed therefrom may be caused to adhere to either the photosensitive emulsion 212 or the surface of image-receiving layer 214 when and if the latter are peeled apart subsequent to the processing. For example, if the film-forming material is the plastic sodium carboxymethyl cellulose and layer 214 is a paper such as a baryta paper, the solid film of sodium carboxymethyl cellulose, when formed, will have a greater affinity for the surface of layer 214 than for the gelatin of emulsion 212, provided, of course, that the latter is an ordinary emulsion comprising the usual partially but not fully hardened gelatin and the liquid in the composition does not complete the hardening thereof. In general, the sodium carboxymethyl cellulose film will adhere to the harder of two layers of gelatin between which it is spread. Accordingly, if the surface of any image-carrying layer is provided with a thin coating of a substantially fully hardened gelatin, the film of sodium carboxymethyl cellulose will adhere to said image-carrying layer in preference to the relatively softer gelatin layer of the photosensitive emulsion."),
+      text(
+        ") the solid film or layer which is formed therefrom may be caused to adhere to either the photosensitive emulsion 212 or the surface of image-receiving layer 214 when and if the latter are peeled apart subsequent to the processing. For example, if the film-forming material is the plastic sodium carboxymethyl cellulose and layer 214 is a paper such as a baryta paper, the solid film of sodium carboxymethyl cellulose, when formed, will have a greater affinity for the surface of layer 214 than for the gelatin of emulsion 212, provided, of course, that the latter is an ordinary emulsion comprising the usual partially but not fully hardened gelatin and the liquid in the composition does not complete the hardening thereof. In general, the sodium carboxymethyl cellulose film will adhere to the harder of two layers of gelatin between which it is spread. Accordingly, if the surface of any image-carrying layer is provided with a thin coating of a substantially fully hardened gelatin, the film of sodium carboxymethyl cellulose will adhere to said image-carrying layer in preference to the relatively softer gelatin layer of the photosensitive emulsion.",
+      ),
     ),
     p(
-      text("The high viscosity for the liquid-processing agent is very desirable for any commercial use of the container 218 and its contents. In view of the order of nonuniformity of commercially available materials and of the pressure-applying means to be used in the release and spreading of the composition, for commercial purposes the film-forming material is preferably contained in the composition in suitable quantities to impart to the composition a viscosity in excess of 1,000 centipoises at a temperature of approximately 24° C. and preferably of the order of 1,000 to 200,000 centipoises at said temperature. It is to be understood that the construction of the container 218 may be modified, for example, by omitting the preforming of the cavity 222."),
+      text(
+        "The high viscosity for the liquid-processing agent is very desirable for any commercial use of the container 218 and its contents. In view of the order of nonuniformity of commercially available materials and of the pressure-applying means to be used in the release and spreading of the composition, for commercial purposes the film-forming material is preferably contained in the composition in suitable quantities to impart to the composition a viscosity in excess of 1,000 centipoises at a temperature of approximately 24° C. and preferably of the order of 1,000 to 200,000 centipoises at said temperature. It is to be understood that the construction of the container 218 may be modified, for example, by omitting the preforming of the cavity 222.",
+      ),
     ),
     p(
-      text("One example of a suitable container of this type is formed from a single multilayer sheet of material 230 ("),
+      text(
+        "One example of a suitable container of this type is formed from a single multilayer sheet of material 230 (",
+      ),
       ref("Fig. 18", "#fig-18", "Figure 18 — Another container construction"),
-      text(") comprising three layers 230a, 230b, and 230c. Layer 230a, which provides the internal surface layer of the container, is formed of a material which is chemically inert to the processing agent and which is impervious to the liquid of the agent. One class of materials suitable for this purpose is the polyvinyl acetals, and of the acetals, polyvinyl butyral is a preferred species. A composition comprising 60% to 72% by weight of polyvinyl butyral, 10% to 23% by weight of 1/2-inch nitrocellulose, and approximately 5% by weight of dibutyl sebacate is particularly satisfactory as inner coating 230a. Layer 230b contiguous to layer 230a is preferably impervious to the vapor of the processing agent and is formed, for example, of a metallic foil, such as lead or silver foil. Backing layer 230c, for example of kraft paper, is provided and makes possible the use of thinner layers 230a and 230b."),
+      text(
+        ") comprising three layers 230a, 230b, and 230c. Layer 230a, which provides the internal surface layer of the container, is formed of a material which is chemically inert to the processing agent and which is impervious to the liquid of the agent. One class of materials suitable for this purpose is the polyvinyl acetals, and of the acetals, polyvinyl butyral is a preferred species. A composition comprising 60% to 72% by weight of polyvinyl butyral, 10% to 23% by weight of 1/2-inch nitrocellulose, and approximately 5% by weight of dibutyl sebacate is particularly satisfactory as inner coating 230a. Layer 230b contiguous to layer 230a is preferably impervious to the vapor of the processing agent and is formed, for example, of a metallic foil, such as lead or silver foil. Backing layer 230c, for example of kraft paper, is provided and makes possible the use of thinner layers 230a and 230b.",
+      ),
     ),
     p(
       text("The container 240 ("),
       ref("Fig. 20", "#fig-20", "Figure 20 — Section through the Figure 19 container"),
-      text(") is preferably formed by taking the single sheet of material 230 and folding the same medially as shown in "),
+      text(
+        ") is preferably formed by taking the single sheet of material 230 and folding the same medially as shown in ",
+      ),
       ref("Fig. 18", "#fig-18", "Figure 18 — Another container construction"),
-      text(" and thereafter securing the end marginal portions 232 and the longitudinal marginal portions 234 of the two fold faces to one another, providing a central space 235 ("),
+      text(
+        " and thereafter securing the end marginal portions 232 and the longitudinal marginal portions 234 of the two fold faces to one another, providing a central space 235 (",
+      ),
       ref("Fig. 20", "#fig-20", "Figure 20 — Section through the Figure 19 container"),
-      text(") for containing the processing agent. To fill the container, it is possible, for example, to adhere together the opposite longitudinally extending marginal portions 234 and the end marginal portions 232 at one end only of the container, the container being thereafter filled through the other end. The longitudinal seal between marginal portions 234 is such that upon application of a predetermined compressive force to the walls of the container there may be created within the container a sufficient hydraulic pressure to separate the marginal portions 234 throughout substantially their entire length. To insure this result, the bond securing together said marginal portions 234 is somewhat weaker than the bond which secures together end marginal portions 232. For example, the end portions may be secured by pressing the two polyvinyl butyral inner surfaces together and applying heat thereto while a sealing strip 236 may be inserted between the longitudinal marginal portions, which sealing strip is adapted to adhere to the inner layers of polyvinyl butyral with a lesser affinity than said layers adhere to one another in a direct polyvinyl butyral to polyvinyl butyral bond. Strip 236 may be formed of a material such as ethyl cellulose or a mixture of ethyl cellulose and paraffin."),
+      text(
+        ") for containing the processing agent. To fill the container, it is possible, for example, to adhere together the opposite longitudinally extending marginal portions 234 and the end marginal portions 232 at one end only of the container, the container being thereafter filled through the other end. The longitudinal seal between marginal portions 234 is such that upon application of a predetermined compressive force to the walls of the container there may be created within the container a sufficient hydraulic pressure to separate the marginal portions 234 throughout substantially their entire length. To insure this result, the bond securing together said marginal portions 234 is somewhat weaker than the bond which secures together end marginal portions 232. For example, the end portions may be secured by pressing the two polyvinyl butyral inner surfaces together and applying heat thereto while a sealing strip 236 may be inserted between the longitudinal marginal portions, which sealing strip is adapted to adhere to the inner layers of polyvinyl butyral with a lesser affinity than said layers adhere to one another in a direct polyvinyl butyral to polyvinyl butyral bond. Strip 236 may be formed of a material such as ethyl cellulose or a mixture of ethyl cellulose and paraffin.",
+      ),
     ),
     p(
-      text("One or more containers 240 may be associated with sheet material to provide a sheetlike product capable of subjecting one or more areas of a photosensitive film to a predetermined processing. One such sheetlike structure is shown in "),
+      text(
+        "One or more containers 240 may be associated with sheet material to provide a sheetlike product capable of subjecting one or more areas of a photosensitive film to a predetermined processing. One such sheetlike structure is shown in ",
+      ),
       ref("Fig. 21", "#fig-21", "Figure 21 — Sheetlike container structure"),
-      text(" and comprises a plurality of containers 240 mounted on the surface of an image-carrying layer 242 as by being adhered thereto with their longitudinal axes extending transversely of said layer. The sheetlike product comprising layer 242 may comprise a part of a composite photographic film ("),
+      text(
+        " and comprises a plurality of containers 240 mounted on the surface of an image-carrying layer 242 as by being adhered thereto with their longitudinal axes extending transversely of said layer. The sheetlike product comprising layer 242 may comprise a part of a composite photographic film (",
+      ),
       ref("Fig. 22", "#fig-22", "Figure 22 — Composite photographic film"),
-      text(") which includes as a part of its unitary structure a transparent film base 246, a photosensitive emulsion 248 mounted on said film base and one of image-carrying layers 242. Containers 240 are thus located between said photosensitive emulsion and said image-carrying layer and are capable of discharging their fluid content throughout the interface area of said layers. This composite photographic film may be provided as a roll film, in the form of a film pack comprising a plurality of interconnected frames, or in single frames."),
+      text(
+        ") which includes as a part of its unitary structure a transparent film base 246, a photosensitive emulsion 248 mounted on said film base and one of image-carrying layers 242. Containers 240 are thus located between said photosensitive emulsion and said image-carrying layer and are capable of discharging their fluid content throughout the interface area of said layers. This composite photographic film may be provided as a roll film, in the form of a film pack comprising a plurality of interconnected frames, or in single frames.",
+      ),
     ),
     p(
-      text("When the film-forming agent carried by container 240 is released therefrom and spread between a photosensitive emulsion such as emulsion 248 and an image-carrying layer such as layer 242, the two layers in contact with the thin layer of composition therebetween prevent the latter from oxidizing. It becomes possible, therefore, to employ higher concentrations of materials subject to oxidation in the processing agent when used in this manner than can be employed in compositions when used, for example, in the ordinary developer bath which have a substantial surface thereof exposed to oxygen. Moreover, the presence of the film-forming material in the liquid composition carried by the container 240 whereby the viscosity of the latter is substantially increased acts to insure an unsealing of the longitudinal edge 234 of the container throughout substantially the entire length thereof, when sufficient compressive force is applied to the container faces, thereby insuring the provision of a mass of the composition throughout said length free for spreading over the desired area."),
+      text(
+        "When the film-forming agent carried by container 240 is released therefrom and spread between a photosensitive emulsion such as emulsion 248 and an image-carrying layer such as layer 242, the two layers in contact with the thin layer of composition therebetween prevent the latter from oxidizing. It becomes possible, therefore, to employ higher concentrations of materials subject to oxidation in the processing agent when used in this manner than can be employed in compositions when used, for example, in the ordinary developer bath which have a substantial surface thereof exposed to oxygen. Moreover, the presence of the film-forming material in the liquid composition carried by the container 240 whereby the viscosity of the latter is substantially increased acts to insure an unsealing of the longitudinal edge 234 of the container throughout substantially the entire length thereof, when sufficient compressive force is applied to the container faces, thereby insuring the provision of a mass of the composition throughout said length free for spreading over the desired area.",
+      ),
     ),
     p(
-      text("While it is preferable to spread the liquid composition from container 240 over the photosensitive emulsion by introducing the container between said emulsion and another sheet material and squeezing together said sheets, the spreading may also be accomplished without the use of said other sheet material as, for example, by means of an applicator roll which engages and spreads the composition over the photosensitive emulsion and which preferably is so surfaced as not to adhere to the composition. An embodiment of a composite product suitable for such use would be the structure shown in "),
+      text(
+        "While it is preferable to spread the liquid composition from container 240 over the photosensitive emulsion by introducing the container between said emulsion and another sheet material and squeezing together said sheets, the spreading may also be accomplished without the use of said other sheet material as, for example, by means of an applicator roll which engages and spreads the composition over the photosensitive emulsion and which preferably is so surfaced as not to adhere to the composition. An embodiment of a composite product suitable for such use would be the structure shown in ",
+      ),
       ref("Fig. 14", "#fig-14", "Figure 14 — Another product form"),
       text(" without layers 214 and 216, or the structure shown in "),
       ref("Fig. 21", "#fig-21", "Figure 21 — Another composite product"),
-      text(" without layer 242. In the latter event the composition may be of the type adapted to form a white, opaque solid film when dry and may contain a sufficient quantity of silver halide solvent to cause the formation of a positive image in silver in the white layer, which image is visible from the surface of said white layer remote from the photosensitive layer. The white layer serves as an opaque barrier obstructing the negative from view and to provide the highlight portions of the positive."),
+      text(
+        " without layer 242. In the latter event the composition may be of the type adapted to form a white, opaque solid film when dry and may contain a sufficient quantity of silver halide solvent to cause the formation of a positive image in silver in the white layer, which image is visible from the surface of said white layer remote from the photosensitive layer. The white layer serves as an opaque barrier obstructing the negative from view and to provide the highlight portions of the positive.",
+      ),
     ),
     p(
       text("A further composite film structure is shown in "),
       ref("Fig. 23", "#fig-23", "Figure 23 — Another embodiment"),
-      text(" and comprises a photosensitive layer 310, an image-carrying layer 312 and a container 300. Said layers and said container are connected together to form a unitary structure, the connection providing for a predetermined superpositioning of layer 310 with respect to layer 312 with container 300 in a position to discharge its contents between said layers. The unitary structure thus formed differs from the composite photographic films described above in that the connection between the photosensitive layer and the image-carrying layer is such as will permit of the ready displacement of said photosensitive layer with respect to the image-carrying layer so that the surface of the photosensitive layer normally adjacent the image-carrying layer can be directly exposed without having the light which effects said exposure intercepted by or incident on said image-carrying layer. In the form illustrated, photosensitive layer 310 is pivotally secured as by means of a hinge 314 to image-carrying layer 312 so that it may be pivoted from superposed position to a position at an angle to the plane of said image-carrying layer, in which position it may be photographically exposed. Container 300 may be secured to either the photosensitive layer or the image-carrying layer and as shown is adhesively secured to the photosensitive layer. This mounting locates the longitudinal seal 294 of said container 300 parallel to and adjacent the exposed area of the photosensitive layer when the latter is superposed on layer 312, placing the container in a position to release its contents throughout the area between said photosensitive layer and said image-carrying layer."),
+      text(
+        " and comprises a photosensitive layer 310, an image-carrying layer 312 and a container 300. Said layers and said container are connected together to form a unitary structure, the connection providing for a predetermined superpositioning of layer 310 with respect to layer 312 with container 300 in a position to discharge its contents between said layers. The unitary structure thus formed differs from the composite photographic films described above in that the connection between the photosensitive layer and the image-carrying layer is such as will permit of the ready displacement of said photosensitive layer with respect to the image-carrying layer so that the surface of the photosensitive layer normally adjacent the image-carrying layer can be directly exposed without having the light which effects said exposure intercepted by or incident on said image-carrying layer. In the form illustrated, photosensitive layer 310 is pivotally secured as by means of a hinge 314 to image-carrying layer 312 so that it may be pivoted from superposed position to a position at an angle to the plane of said image-carrying layer, in which position it may be photographically exposed. Container 300 may be secured to either the photosensitive layer or the image-carrying layer and as shown is adhesively secured to the photosensitive layer. This mounting locates the longitudinal seal 294 of said container 300 parallel to and adjacent the exposed area of the photosensitive layer when the latter is superposed on layer 312, placing the container in a position to release its contents throughout the area between said photosensitive layer and said image-carrying layer.",
+      ),
     ),
     p(
-      text("Light barriers opaque to light that is actinic to the photosensitive layer are preferably associated with both the photosensitive layer 310 and the image-carrying layer 312. In the embodiment of the invention illustrated in the drawings, a separate layer 318 of, for example, a paper opaque to actinic light is provided as a backing layer for photosensitive layer 310. Backing layer 318 may be secured directly to said photosensitive layer but in the form shown is separate therefrom, being secured as by a suitable hinge 319 to the image-carrying layer. Image-carrying layer 312 may be similarly provided with an opaque backing layer but in the form shown is formed of or comprises as a stratum thereof an opaque material and is preferably substantially equal in area to backing layer 318, being thereby provided with an image-receiving area 320 substantially coextensive with layer 310 and marginal portions 322 surrounding said image-receiving area on at least three sides thereof. Marginal portions 322 may be provided with an adhesive for effecting a temporary bond with sheet 318 when the latter is superposed on said image-receiving layer or the container 300 may be made long enough to release part of its content over marginal portion 322 to obtain this same temporary bond. It will be apparent from the foregoing construction that layer 310 may be readily exposed by pivoting the same with respect to image-receiving layer 312 and thereafter photosensitive layer 310 may be superposed upon layer 312 by causing barrier layer 318 to be pivoted into contact with layer 312. This encloses the photosensitive layer 310 in an envelope opaque to light actinic to said layer and permits of the handling of said envelope in daylight prior to or during processing of said photosensitive layer. The entire unit may be advanced through a pair of pressure-applying rollers or wringer rollers with the hinge end 319 foremost, to release and cause the liquid in container 300 to spread in a substantially uniform layer between the surface of layer 310 and area 320 of layer 312."),
+      text(
+        "Light barriers opaque to light that is actinic to the photosensitive layer are preferably associated with both the photosensitive layer 310 and the image-carrying layer 312. In the embodiment of the invention illustrated in the drawings, a separate layer 318 of, for example, a paper opaque to actinic light is provided as a backing layer for photosensitive layer 310. Backing layer 318 may be secured directly to said photosensitive layer but in the form shown is separate therefrom, being secured as by a suitable hinge 319 to the image-carrying layer. Image-carrying layer 312 may be similarly provided with an opaque backing layer but in the form shown is formed of or comprises as a stratum thereof an opaque material and is preferably substantially equal in area to backing layer 318, being thereby provided with an image-receiving area 320 substantially coextensive with layer 310 and marginal portions 322 surrounding said image-receiving area on at least three sides thereof. Marginal portions 322 may be provided with an adhesive for effecting a temporary bond with sheet 318 when the latter is superposed on said image-receiving layer or the container 300 may be made long enough to release part of its content over marginal portion 322 to obtain this same temporary bond. It will be apparent from the foregoing construction that layer 310 may be readily exposed by pivoting the same with respect to image-receiving layer 312 and thereafter photosensitive layer 310 may be superposed upon layer 312 by causing barrier layer 318 to be pivoted into contact with layer 312. This encloses the photosensitive layer 310 in an envelope opaque to light actinic to said layer and permits of the handling of said envelope in daylight prior to or during processing of said photosensitive layer. The entire unit may be advanced through a pair of pressure-applying rollers or wringer rollers with the hinge end 319 foremost, to release and cause the liquid in container 300 to spread in a substantially uniform layer between the surface of layer 310 and area 320 of layer 312.",
+      ),
     ),
     p(
       text("A modification of container 300 is shown in "),
       ref("Fig. 24", "#fig-24", "Figure 24 — Modified container means"),
-      text(". It comprises a tube 350 formed of a relatively brittle vapor and liquid-impervious material such, for example, as glass, said tube preferably having its ends hermetically sealed as by fusion. Tube 350 is enclosed in a suitable envelope 352 of a material such as a fabric which is readily permeable to the processing agent carried by said tube but which acts as a filter for retaining the fragments of the tube after the latter has been broken."),
+      text(
+        ". It comprises a tube 350 formed of a relatively brittle vapor and liquid-impervious material such, for example, as glass, said tube preferably having its ends hermetically sealed as by fusion. Tube 350 is enclosed in a suitable envelope 352 of a material such as a fabric which is readily permeable to the processing agent carried by said tube but which acts as a filter for retaining the fragments of the tube after the latter has been broken.",
+      ),
     ),
     p(
-      text("The products may use diazonium photosensitive layers. One form has the physical structure of the photosensitive element of "),
+      text(
+        "The products may use diazonium photosensitive layers. One form has the physical structure of the photosensitive element of ",
+      ),
       ref("Fig. 23", "#fig-23", "Figure 23 — Another embodiment"),
-      text(" with container 300 mounted thereon. The photosensitive layer of element 310 may have as its photosensitive substance a diazonium compound such as that sold by the Boston Blue Print Company under the trade name “Blackline #202,” and the liquid reagent in the container 300 then preferably comprises, by weight, 4 parts of medium viscosity sodium carboxymethyl cellulose, 100 parts of water and 8 parts of “Blackline” developer #203-A (sold by Boston Blue Print Company and manufactured by Frederick Post Company, Chicago)."),
+      text(
+        " with container 300 mounted thereon. The photosensitive layer of element 310 may have as its photosensitive substance a diazonium compound such as that sold by the Boston Blue Print Company under the trade name “Blackline #202,” and the liquid reagent in the container 300 then preferably comprises, by weight, 4 parts of medium viscosity sodium carboxymethyl cellulose, 100 parts of water and 8 parts of “Blackline” developer #203-A (sold by Boston Blue Print Company and manufactured by Frederick Post Company, Chicago).",
+      ),
     ),
     p(
-      text("In the alternative the photosensitive layer of the photosensitive element 310 may be obtained by applying to one side of a suitable sheet material a sensitizing solution which consists of 20 grams of chlorostannate of para-diazo-di-N-butyl-aniline, 0.4 gram of Pontacyl Brilliant Blue 2R, and 1 liter of water. The liquid-developing reagent in the container 300 then preferably comprises, by weight, 4 parts of medium viscosity sodium carboxymethyl cellulose, 100 parts of water, 5.8 parts of sodium carbonate (monohydrate) and 2.3 parts of phloroglucinol."),
+      text(
+        "In the alternative the photosensitive layer of the photosensitive element 310 may be obtained by applying to one side of a suitable sheet material a sensitizing solution which consists of 20 grams of chlorostannate of para-diazo-di-N-butyl-aniline, 0.4 gram of Pontacyl Brilliant Blue 2R, and 1 liter of water. The liquid-developing reagent in the container 300 then preferably comprises, by weight, 4 parts of medium viscosity sodium carboxymethyl cellulose, 100 parts of water, 5.8 parts of sodium carbonate (monohydrate) and 2.3 parts of phloroglucinol.",
+      ),
     ),
     p(
-      text("The diazonium photosensitive layer may also be obtained by dipping a sheet of paper in a solution of Du Pont Naphthanil Diazo Black B, and the developing solution in container 300 may comprise 1500 parts by weight of a 5% water solution of sodium carboxymethyl cellulose, 10 parts of resorcinol and 1 part of sodium hydroxide."),
+      text(
+        "The diazonium photosensitive layer may also be obtained by dipping a sheet of paper in a solution of Du Pont Naphthanil Diazo Black B, and the developing solution in container 300 may comprise 1500 parts by weight of a 5% water solution of sodium carboxymethyl cellulose, 10 parts of resorcinol and 1 part of sodium hydroxide.",
+      ),
     ),
     p(
-      text("It is also well known that certain ferric salts of organic acids, for example the oxalates, tartrates, and citrates, are reduced to ferrous salts when exposed to light. (L. P. Clerc, “Photography Theory and Practice,” second edition, published 1937 by Pitman Publishing Company, page 402, paragraph 621 et seq.; Crowley Patents Nos. 2,093,421, 2,113,423, 2,130,070, 2,130,071, 2,137,015.) A considerable number of photographic processes depend for their functioning on this photochemical phenomenon."),
+      text(
+        "It is also well known that certain ferric salts of organic acids, for example the oxalates, tartrates, and citrates, are reduced to ferrous salts when exposed to light. (L. P. Clerc, “Photography Theory and Practice,” second edition, published 1937 by Pitman Publishing Company, page 402, paragraph 621 et seq.; Crowley Patents Nos. 2,093,421, 2,113,423, 2,130,070, 2,130,071, 2,137,015.) A considerable number of photographic processes depend for their functioning on this photochemical phenomenon.",
+      ),
     ),
     p(
-      text("It is known in connection with these iron salts that any reagent that will differentiate between ferric and ferrous salts can be used to develop the barely visible image formed by the photochemical reduction of the ferric salt into an image which is very easily visible. Examples of such developing reagents are potassium ferricyanide, potassium ferrocyanide, tannins, gallic acid, beta-naphthoquinone sulphonic acid, silver salts, platinum and palladium salts. It is believed to be now apparent to one skilled in the art that the photoresponsive ferrous salts may constitute the photosensitive material of the photosensitive layer 310, and the liquid in the container 300 may include or dissolve in its travel to the photosensitive layer any one of the aforementioned developing reagents for distinguishing between the ferric and ferrous salts and producing the easily visible image from the very light image that is originally obtained by the photoexposure of the iron salts."),
+      text(
+        "It is known in connection with these iron salts that any reagent that will differentiate between ferric and ferrous salts can be used to develop the barely visible image formed by the photochemical reduction of the ferric salt into an image which is very easily visible. Examples of such developing reagents are potassium ferricyanide, potassium ferrocyanide, tannins, gallic acid, beta-naphthoquinone sulphonic acid, silver salts, platinum and palladium salts. It is believed to be now apparent to one skilled in the art that the photoresponsive ferrous salts may constitute the photosensitive material of the photosensitive layer 310, and the liquid in the container 300 may include or dissolve in its travel to the photosensitive layer any one of the aforementioned developing reagents for distinguishing between the ferric and ferrous salts and producing the easily visible image from the very light image that is originally obtained by the photoexposure of the iron salts.",
+      ),
     ),
     p(
-      text("Broadly, the products of the present invention may comprise, or may be used with, any photographic, photosensitive material for the purpose of developing the same. It is to be understood that the invention is not limited to materials sensitive to visible radiation but includes photographic, photosensitive materials sensitive to such other radiation as X-ray, ultraviolet or infrared."),
+      text(
+        "Broadly, the products of the present invention may comprise, or may be used with, any photographic, photosensitive material for the purpose of developing the same. It is to be understood that the invention is not limited to materials sensitive to visible radiation but includes photographic, photosensitive materials sensitive to such other radiation as X-ray, ultraviolet or infrared.",
+      ),
     ),
     p(
       text("The term "),
-      term("photographic developing reagent", "A reagent that renders a visible photographic image more visible or renders an otherwise invisible photoexposure image visible, including the ferric-salt and silver-halide cases described here."),
-      text(" as used herein is intended to include any reagent which acts to render a visible image more visible, as in the case of the ferric salts, or an invisible image visible, as in the case of the silver halide emulsions. The term "),
-      term("development", "Treatment of a photographic, photosensitive material that renders an image formed by photoexposure visible or more visible."),
-      text(" is intended to cover the treatment of any photographic, photosensitive material for the purpose of rendering an image formed therein by photoexposure visible or more visible."),
+      term(
+        "photographic developing reagent",
+        "A reagent that renders a visible photographic image more visible or renders an otherwise invisible photoexposure image visible, including the ferric-salt and silver-halide cases described here.",
+      ),
+      text(
+        " as used herein is intended to include any reagent which acts to render a visible image more visible, as in the case of the ferric salts, or an invisible image visible, as in the case of the silver halide emulsions. The term ",
+      ),
+      term(
+        "development",
+        "Treatment of a photographic, photosensitive material that renders an image formed by photoexposure visible or more visible.",
+      ),
+      text(
+        " is intended to cover the treatment of any photographic, photosensitive material for the purpose of rendering an image formed therein by photoexposure visible or more visible.",
+      ),
     ),
     p(
       text("The term "),
-      term("exposed solarized silver halide", "Silver halide that has first undergone solarization and is subsequently exposed, for example in a camera."),
-      text(" is to be understood to mean silver halide which, subsequent to solarization, is exposed, for example, in a camera, and by "),
-      term("nonexposed solarized silver halide", "Silver halide that has undergone solarization but is not exposed again after that solarization."),
-      text(" is meant silver halide which is not exposed subsequent to solarization. Solarization may, of course, be carried out chemically or by subjecting the photosensitive layer to a predetermined uniform exposure to light."),
+      term(
+        "exposed solarized silver halide",
+        "Silver halide that has first undergone solarization and is subsequently exposed, for example in a camera.",
+      ),
+      text(
+        " is to be understood to mean silver halide which, subsequent to solarization, is exposed, for example, in a camera, and by ",
+      ),
+      term(
+        "nonexposed solarized silver halide",
+        "Silver halide that has undergone solarization but is not exposed again after that solarization.",
+      ),
+      text(
+        " is meant silver halide which is not exposed subsequent to solarization. Solarization may, of course, be carried out chemically or by subjecting the photosensitive layer to a predetermined uniform exposure to light.",
+      ),
     ),
     p(
       text("The term "),
@@ -908,7 +1118,9 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       text(" as used herein is to be understood as covering a solution."),
     ),
     p(
-      text("This is in part a continuation of copending applications Serial No. 539,550, filed June 9, 1944, and Serial No. 729,977, filed February 21, 1947. Changes may be made without departing from the invention, and all matter in the description and drawings is illustrative and not limiting. What is claimed is:"),
+      text(
+        "This is in part a continuation of copending applications Serial No. 539,550, filed June 9, 1944, and Serial No. 729,977, filed February 21, 1947. Changes may be made without departing from the invention, and all matter in the description and drawings is illustrative and not limiting. What is claimed is:",
+      ),
     ),
     {
       kind: "heading",
@@ -938,7 +1150,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       number: 3,
       inlines: [
         text(
-          "A photographic product comprising at least two layers and including a photosensitive silver halide emulsion layer, a base layer for a positive image, and a container holding at least a liquid solvent for a photographic developer, said photosensitive layer, said base layer and said container being attached together to permit at least a portion of said base layer and said photosensitive layer to be superposed with said container so positioned as to be capable of being ruptured and without removal of its ruptured portion of releasing its liquid content between two layers of said product to at least partially permeate the superposed base layer and photosensitive layer, said product having positioned therein photographic processing material, including a photographic developer, transportable by said liquid to said photosensitive layer, said material being capable of developing a latent image in said photosensitive layer. and as a result of such development causing differential disposition throughout the photosensitive layer of a substance for providing said base layer with a positive image by transfer.",
+          "A photographic product comprising at least two layers and including a photosensitive silver halide emulsion layer, a base layer for a positive image, and a container holding at least a liquid solvent for a photographic developer, said photosensitive layer, said base layer and said container being attached together to permit at least a portion of said base layer and said photosensitive layer to be superposed with said container so positioned as to be capable of being ruptured and without removal of its ruptured portion of releasing its liquid content between two layers of said product to at least partially permeate the superposed base layer and photosensitive layer, said product having positioned therein photographic processing material, including a photographic developer, transportable by said liquid to said photosensitive layer, said material being capable of developing a latent image in said photosensitive layer, and as a result of such development causing differential disposition throughout the photosensitive layer of a substance for providing said base layer with a positive image by transfer.",
         ),
       ],
     },
@@ -1747,7 +1959,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       kind: "claim",
       number: 93,
       inlines: [
-        text("The product of claim 92 in which the plastic is sodium carboxymethyl cellulose.")
+        text("The product of claim 92 in which the plastic is sodium carboxymethyl cellulose."),
       ],
     },
     {
@@ -1840,7 +2052,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       kind: "claim",
       number: 104,
       inlines: [
-        text("The product of claim 103 wherein the plastic is sodium carboxymethyl cellulose.")
+        text("The product of claim 103 wherein the plastic is sodium carboxymethyl cellulose."),
       ],
     },
     {
@@ -1893,7 +2105,7 @@ export const landPolaroidArchivalEdition: LandWipSpecificationEdition = {
       number: 110,
       inlines: [
         text(
-          "A photographic product capable of uniformly dispensing a photographic reagent when squeezed between a pair of sheet materials by a pair of pressure-applying members, said product comprising a rupturable disposable container holding a sufficient quantity of a processing liquid for a single application, said liquid including a photographic image-transforming reagent for transforming an image in a photographically photosensitive element, said container being elongated and having the walls thereof at least in part deformable and flexible for transmitting pressures applied thereto to the container contents, said container having one long edge adapted to be drawn between a pair of pressure-applying members and a liquid dispensing lip opposite said edge, said liquid dispensing lip comprising portions of the container walls secured together in face-to-face relation and capable, by separation, of permitting the contents of the container to be dispensed between two sheet materials away from the container in a direction substantially perpendicular to the long dimension thereof, said container walls consisting of an upper and lower wall, each wall extending continuously, without folds, throughout its entire area, the total thickness of the container walls, measured depthwise at any point of the container, not appreciably exceeding the sum of a single thickness of the material of the upper wall and a single thickness of the material of the lower wall whereby said container, when passed between a pair of pressure-applying members, is capable of being flattened to a substantially uniform thickness."
+          "A photographic product capable of uniformly dispensing a photographic reagent when squeezed between a pair of sheet materials by a pair of pressure-applying members, said product comprising a rupturable disposable container holding a sufficient quantity of a processing liquid for a single application, said liquid including a photographic image-transforming reagent for transforming an image in a photographically photosensitive element, said container being elongated and having the walls thereof at least in part deformable and flexible for transmitting pressures applied thereto to the container contents, said container having one long edge adapted to be drawn between a pair of pressure-applying members and a liquid dispensing lip opposite said edge, said liquid dispensing lip comprising portions of the container walls secured together in face-to-face relation and capable, by separation, of permitting the contents of the container to be dispensed between two sheet materials away from the container in a direction substantially perpendicular to the long dimension thereof, said container walls consisting of an upper and lower wall, each wall extending continuously, without folds, throughout its entire area, the total thickness of the container walls, measured depthwise at any point of the container, not appreciably exceeding the sum of a single thickness of the material of the upper wall and a single thickness of the material of the lower wall whereby said container, when passed between a pair of pressure-applying members, is capable of being flattened to a substantially uniform thickness.",
         ),
       ],
     },

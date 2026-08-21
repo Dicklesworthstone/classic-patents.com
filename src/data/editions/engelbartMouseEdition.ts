@@ -28,8 +28,7 @@ const figure = (
   const previewFigures = options.previewFigures ?? [figureNumber];
   const previews = previewFigures.map((previewFigure) => {
     const asset = mouseFigureAssets[previewFigure];
-    if (!asset)
-      throw new Error(`US 3,541,541 is missing Figure ${previewFigure} crop metadata.`);
+    if (!asset) throw new Error(`US 3,541,541 is missing Figure ${previewFigure} crop metadata.`);
 
     const erratumContext =
       figureNumber === 5 && previewFigure === 6
