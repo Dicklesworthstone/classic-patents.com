@@ -38,6 +38,7 @@ export interface HoweSewingMachineModel {
     clothMat: THREE.MeshStandardMaterial;
     spoolWoodMat?: THREE.MeshStandardMaterial;
   };
+  setCutaway?: (cutaway: boolean) => void;
   dispose: () => void;
 }
 
@@ -335,6 +336,15 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
     for (const t of texturesToDispose) t.dispose();
   };
 
+  const setCutaway = (cutaway: boolean) => {
+    castIron.transparent = cutaway;
+    castIron.opacity = cutaway ? 0.35 : 1.0;
+    castIron.needsUpdate = true;
+    clothMat.transparent = cutaway;
+    clothMat.opacity = cutaway ? 0.35 : 1.0;
+    clothMat.needsUpdate = true;
+  };
+
   return {
     rootGroup,
     flywheelGroup,
@@ -354,6 +364,7 @@ export function buildHoweSewingMachineModel(): HoweSewingMachineModel {
       threadMat,
       clothMat,
     },
+    setCutaway,
     dispose,
   };
 }
