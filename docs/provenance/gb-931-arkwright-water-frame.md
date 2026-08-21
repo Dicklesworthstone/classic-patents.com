@@ -23,11 +23,11 @@
 |---|---|---|
 | Page 1 | Typeset specification reproduction | Masthead, preamble, and the A–G component prose. No drawing appears on this page. |
 | Page 2 | Typeset claims and enrollment reproduction | Four numbered statements, signature, and enrollment paragraph. No drawing appears on this page. |
-| Page 3 | Water-frame drawing sheet | The sole Figure 1 drawing, lettered A–G, with the explanatory letter key. The versioned upright crop is `public/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v2.png`, rendered from this page and cropped to 1760 × 2300 pixels. |
+| Page 3 | Water-frame drawing sheet | The sole Figure 1 drawing, lettered A–G, with the explanatory letter key. The cited v3 crop is rendered directly from this page at 300 dpi and tightly bounded to source-page pixel rectangle x=480, y=1020, width=1550, height=1500; it excludes the page heading and explanatory footer. |
 
 ## 4. Archival and Editorial Boundaries
 - **Facsimile**: Pinned immutable source PDF in `public/patents/pdfs/gb-931-arkwright-water-frame.pdf`.
-- **Figure Crops**: The preserved `fig-1-source-crop-v1.png` is a crop of the typeset claims page and is not cited. `fig-1-source-crop-v2.png` is the upright, source-derived Figure 1 crop from pinned PDF page 3.
+- **Figure Crops**: The preserved `fig-1-source-crop-v1.png` is a crop of the typeset claims page and is not cited. `fig-1-source-crop-v2.png` is rejected evidence: it contains the reconstructed page heading, editorial callouts, and explanatory footer rather than a tightly bounded Figure 1 mechanism. `fig-1-source-crop-v3.png` is the cited upright page-3 crop, containing only the source-page Figure 1 mechanism and its letter markers.
 - **Reviewed Ledger**: `public/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt` is retained as pre-repair research evidence only. Its two-page markers do not map to the pinned PDF's three pages; it is intentionally unbound from the catalogue record.
 - **Archival Edition**: `src/data/editions/arkwrightWaterFrameEdition.ts` retains the repair evidence and Figure 1 reference, but it is intentionally unbound from the catalogue record until an independent reviewer accepts the literal source, three-page ledger, figure linkage, and parallel readings.
 - **Physics Kernel**: Shared SI differential drafting and flyer twist kinematic kernel in `src/physics/arkwrightKernel.ts`.

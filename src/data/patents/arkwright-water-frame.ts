@@ -9,8 +9,8 @@ const arkwrightFigureCallouts = {
       label: "Great Wheel / Drum (A)",
       element: "A",
       description: "Great wooden driving drum transmitting mechanical water power to the frame.",
-      x: 50,
-      y: 76,
+      x: 49,
+      y: 88,
     },
     {
       id: "aw-shaft-b",
@@ -19,8 +19,8 @@ const arkwrightFigureCallouts = {
       element: "B",
       description:
         "Horizontal iron driving shaft with individual spindle whorl bands and disengaging levers.",
-      x: 26,
-      y: 68,
+      x: 21,
+      y: 78,
     },
     {
       id: "aw-rollers-c",
@@ -29,8 +29,8 @@ const arkwrightFigureCallouts = {
       element: "C",
       description:
         "Accelerating pairs of leather-covered top rollers and fluted brass/iron lower cylinders.",
-      x: 38,
-      y: 28,
+      x: 35,
+      y: 19,
     },
     {
       id: "aw-weights-d",
@@ -39,8 +39,8 @@ const arkwrightFigureCallouts = {
       element: "D",
       description:
         "Suspended lead weights pressing upper leather rollers for slip-free fiber traction.",
-      x: 32,
-      y: 37,
+      x: 27,
+      y: 32,
     },
     {
       id: "aw-flyers-e",
@@ -49,7 +49,7 @@ const arkwrightFigureCallouts = {
       element: "E",
       description:
         "U-shaped steel flyers with guide eyes rotating at 3500+ RPM to impart true helical twist.",
-      x: 25,
+      x: 20,
       y: 46,
     },
     {
@@ -59,8 +59,8 @@ const arkwrightFigureCallouts = {
       element: "F",
       description:
         "Friction-retarded bobbins collecting spun yarn under steady differential winding tension.",
-      x: 33,
-      y: 53,
+      x: 29,
+      y: 57,
     },
     {
       id: "aw-cam-g",
@@ -69,8 +69,8 @@ const arkwrightFigureCallouts = {
       element: "G",
       description:
         "Cardioid builder cam oscillating the bobbin rail for uniform cylindrical yarn distribution.",
-      x: 84,
-      y: 60,
+      x: 87,
+      y: 66,
     },
   ],
 };

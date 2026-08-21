@@ -1,9 +1,7 @@
 import type { Patent } from "@/types/patent";
-import { multiTouchArchivalEdition } from "../editions/multiTouchEdition";
 
 export const multiTouchPatent: Patent = {
   id: "us-7479949-multitouch",
-  archivalEdition: multiTouchArchivalEdition,
   patentNumber: "US 7,479,949",
   title:
     "Touch Screen Device, Method, and Graphical User Interface for Determining Commands by Applying Heuristics",

@@ -14,7 +14,7 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
   const pdfPath = resolve(root, "public/patents/pdfs/gb-931-arkwright-water-frame.pdf");
   const cropPath = resolve(
     root,
-    "public/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v2.png",
+    "public/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
   );
   const ledgerPath = resolve(
     root,
@@ -34,7 +34,7 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
   });
 
-  test("maps Fig. 1 to the upright pinned-PDF-page-3 crop at exact path and pixels", () => {
+  test("maps Fig. 1 to the tightly bounded pinned-PDF-page-3 crop at exact path and pixels", () => {
     const figureReference = arkwrightWaterFrameArchivalEdition.blocks
       .filter((block) => block.kind === "paragraph")
       .flatMap((block) => block.inlines)
@@ -49,14 +49,14 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     if (figureReference?.kind !== "reference") {
       throw new Error("GB 931 must retain its authored Figure 1 reference.");
     }
-    expect(figureReference.label).toContain("PDF page 3");
+    expect(figureReference.label).toContain("pinned-PDF-page-3");
     expect(figureReference.figurePreviews).toHaveLength(1);
     expect(figureReference.figurePreviews?.[0]).toEqual(
       expect.objectContaining({
-        src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v2.png",
-        alt: "Upright Figure 1 water-frame drawing sheet from pinned PDF page 3, lettered A through G.",
-        width: 1760,
-        height: 2300,
+        src: "/patents/figures/gb-931-arkwright-water-frame/fig-1-source-crop-v3.png",
+        alt: "Tightly cropped upright Figure 1 water-frame mechanism from pinned PDF page 3, lettered A through G.",
+        width: 1550,
+        height: 1500,
       }),
     );
 
@@ -64,23 +64,23 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     const png = readFileSync(cropPath);
     expect(png.length).toBeGreaterThan(10000);
     expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
-    expect(png.readUInt32BE(16)).toBe(1760);
-    expect(png.readUInt32BE(20)).toBe(2300);
+    expect(png.readUInt32BE(16)).toBe(1550);
+    expect(png.readUInt32BE(20)).toBe(1500);
   });
 
-  test("maps each drawing callout to the lettered marker in the page-3 crop", () => {
+  test("maps each drawing callout to the lettered marker in the tightly bounded page-3 crop", () => {
     expect(arkwrightWaterFramePatent.drawings).toContainEqual(
       expect.objectContaining({
         figureNumber: "1",
         title: "Water Frame Drawing Sheet (PDF Page 3)",
         callouts: [
-          expect.objectContaining({ element: "A", x: 50, y: 76 }),
-          expect.objectContaining({ element: "B", x: 26, y: 68 }),
-          expect.objectContaining({ element: "C", x: 38, y: 28 }),
-          expect.objectContaining({ element: "D", x: 32, y: 37 }),
-          expect.objectContaining({ element: "E", x: 25, y: 46 }),
-          expect.objectContaining({ element: "F", x: 33, y: 53 }),
-          expect.objectContaining({ element: "G", x: 84, y: 60 }),
+          expect.objectContaining({ element: "A", x: 49, y: 88 }),
+          expect.objectContaining({ element: "B", x: 21, y: 78 }),
+          expect.objectContaining({ element: "C", x: 35, y: 19 }),
+          expect.objectContaining({ element: "D", x: 27, y: 32 }),
+          expect.objectContaining({ element: "E", x: 20, y: 46 }),
+          expect.objectContaining({ element: "F", x: 29, y: 57 }),
+          expect.objectContaining({ element: "G", x: 87, y: 66 }),
         ],
       }),
     );

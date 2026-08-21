@@ -1,9 +1,7 @@
 import type { Patent } from "@/types/patent";
-import { eInkArchivalEdition } from "../editions/eInkEdition";
 
 export const eInkPatent: Patent = {
   id: "us-6120588-eink",
-  archivalEdition: eInkArchivalEdition,
   patentNumber: "US 6,120,588",
   title: "Electronically Addressable Display with Visually Contrastive Particles and Fluid",
   shortTitle: "E-Ink Microencapsulated Electronic Paper",

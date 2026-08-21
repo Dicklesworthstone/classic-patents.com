@@ -1,5 +1,8 @@
 import type { Patent } from "@/types/patent";
-import { edisonIndicatorClaimText } from "../editions/edisonIndicatorEdition";
+import {
+  edisonIndicatorArchivalEdition,
+  edisonIndicatorClaimText,
+} from "../editions/edisonIndicatorEdition";
 
 const edisonIndicatorFigureCallouts: Record<
   string,
@@ -133,6 +136,15 @@ export const edisonIndicatorPatent: Patent = {
   originalPdfUrl: "/patents/pdfs/us-307031-edison-indicator.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US307031A/en",
   usptoClassification: "H01J 1/02, G01R 19/00, H01K 1/02",
+  archivalEdition: edisonIndicatorArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-307031-edison-indicator-reviewed.txt",
+    pageCount: 3,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (Antigravity)",
+    reviewedAt: "2026-08-19",
+    sourcePdfSha256: "f36bc6aa879d42a3f495a9bda05871bb6181aa1979e6baa03b258c42d6a30c13",
+  },
   originalText:
     "Be it known that I, THOMAS A. EDISON, of Menlo Park, in the county of Middlesex and State of New Jersey, have invented a new and useful Improvement in Electrical Indicators, of which the following is a specification.\n\nI have discovered that if a conducting substance is interposed anywhere in the vacuous space within the globe of an incandescent electric lamp, and said conducting substance is connected outside of the lamp with one terminal, preferably the positive one, of the incandescent conductor, a portion of the current will, when the lamp is in operation, pass through the shunt-circuit thus formed, which shunt includes a portion of the vacuous space within the lamp. The current I find to be proportional to the degree of incandescence of the conductor or candle-power of the lamp.\n\nUtilizing this discovery, I have devised an indicator for showing the degree of incandescence of incandescent electric lamps, and therefore the variations in the electromotive force in the circuits in which they are placed, which indicator is not subject to the variations to which the indicators heretofore in use are subject...",
   plainEnglishExplanation: {

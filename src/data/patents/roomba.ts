@@ -1,9 +1,7 @@
 import type { Patent } from "@/types/patent";
-import { roombaArchivalEdition } from "../editions/roombaEdition";
 
 export const roombaPatent: Patent = {
   id: "us-6594844-roomba",
-  archivalEdition: roombaArchivalEdition,
   patentNumber: "US 6,594,844",
   title: "Robot Obstacle Detection System",
   shortTitle: "iRobot Roomba Autonomous Vacuum",

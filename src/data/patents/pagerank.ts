@@ -1,9 +1,7 @@
 import type { Patent } from "@/types/patent";
-import { pagerankArchivalEdition } from "../editions/pagerankEdition";
 
 export const pagerankPatent: Patent = {
   id: "us-6285999-pagerank",
-  archivalEdition: pagerankArchivalEdition,
   patentNumber: "US 6,285,999",
   title: "Method for Node Ranking in a Linked Database",
   shortTitle: "Google PageRank Algorithm",

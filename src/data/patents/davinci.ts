@@ -1,9 +1,7 @@
 import type { Patent } from "@/types/patent";
-import { daVinciArchivalEdition } from "../editions/daVinciEdition";
 
 export const daVinciPatent: Patent = {
   id: "us-6331181-davinci",
-  archivalEdition: daVinciArchivalEdition,
   patentNumber: "US 6,331,181",
   title: "Surgical Robotic Tools, Data Architecture, and Use",
   shortTitle: "Intuitive Surgical Da Vinci System",

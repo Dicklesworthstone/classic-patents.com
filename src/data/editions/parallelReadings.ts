@@ -15,12 +15,10 @@ import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEd
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { CORT_PUDDLING_ROLLING_PARALLEL_READINGS } from "./cortPuddlingRollingEdition";
-import { daVinciParallelReadings } from "./daVinciEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
 import { deForestAudionParallelReadings } from "./deForestAudionEdition";
 import { delavalSeparatorParallelReadings } from "./delavalSeparatorEdition";
 import { dieselEngineParallelReadings } from "./dieselEngineEdition";
-import { eInkParallelReadings } from "./eInkEdition";
 import { eastmanKodakParallelReadings } from "./eastmanKodakEdition";
 import { edisonIndicatorParallelReadings } from "./edisonIndicatorEdition";
 import { edisonLightbulbParallelReadings } from "./edisonLightbulbEdition";
@@ -50,18 +48,15 @@ import { maximMachineGunParallelReadings } from "./maximMachineGunEdition";
 import { mccormickReaperParallelReadings } from "./mccormickReaperEdition";
 import { mergenthalerLinotypeParallelReadings } from "./mergenthalerLinotypeEdition";
 import { morseTelegraphParallelReadings } from "./morseTelegraphEdition";
-import { multiTouchParallelReadings } from "./multiTouchEdition";
 import { nobelDynamiteParallelReadings } from "./nobelDynamiteEdition";
 import { noyceIcParallelReadings } from "./noyceIcEdition";
 import { otisElevatorParallelReadings } from "./otisElevatorParallelReading";
 import { ottoEngineParallelReadings } from "./ottoEngineEdition";
-import { pagerankParallelReadings } from "./pageRankEdition";
 import { parsonsTurbineParallelReadings } from "./parsonsTurbineEdition";
 import { pasteurFermentationParallelReadings } from "./pasteurFermentationParallelReading";
 import { peltonWaterWheelParallelReadings } from "./peltonWaterWheelEdition";
 import { renoEscalatorParallelReadings } from "./renoEscalatorEdition";
 import { rillieuxEvaporatorParallelReadings } from "./rillieuxEvaporatorEdition";
-import { roombaParallelReadings } from "./roombaEdition";
 import { sholesTypewriterParallelReadings } from "./sholesTypewriterEdition";
 import { spencerMicrowaveParallelReadings } from "./spencerMicrowaveEdition";
 import { teslaCoil593138ParallelReadings } from "./teslaCoil593138Edition";
@@ -145,11 +140,6 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
-  "us-6120588-eink": eInkParallelReadings,
-  "us-6285999-pagerank": pagerankParallelReadings,
-  "us-6331181-davinci": daVinciParallelReadings,
-  "us-6594844-roomba": roombaParallelReadings,
-  "us-7479949-multitouch": multiTouchParallelReadings,
 
   "us-821393-wright-flyer": {
     4: [
