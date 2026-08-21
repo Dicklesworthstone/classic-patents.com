@@ -254,7 +254,7 @@ export const whitneyCottonGinPatent: Patent = {
   originalText:
     "This Machine may be described under five divisions, corresponding to its five principal parts: Viz: 1. The Frame, 2. The Cylinder; 3. The Breastwork; 4. The clearer, and 5. The Hopper.",
   originalTextAsset: {
-    url: "/patents/transcripts/us-x72-whitney-cotton-gin.txt",
+    url: "/patents/transcripts/us-x72-whitney-cotton-gin-reviewed.txt",
     pageCount: 12,
     kind: "reviewed-transcription",
     reviewedBy: "Classic Patents editorial agent (HazyTern)",
