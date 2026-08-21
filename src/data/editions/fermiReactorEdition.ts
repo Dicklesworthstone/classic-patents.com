@@ -5,6 +5,10 @@ import type {
   CuratedSpecificationInlines,
 } from "@/types/patent";
 
+type FermiReactorWipEdition = Omit<CuratedSpecificationEdition, "completeFacsimileReviewed"> & {
+  completeFacsimileReviewed: false;
+};
+
 const literal = (text: string): CuratedSpecificationInlines => [{ kind: "text", text }];
 const text = (value: string): CuratedSpecificationInline => ({ kind: "text", text: value });
 const paragraph = (inlines: CuratedSpecificationInlines): CuratedSpecificationBlock => ({
@@ -2299,7 +2303,7 @@ const fermiPages50To58ReconciledBlocks: readonly CuratedSpecificationBlock[] = [
   ),
 ];
 
-export const fermiReactorArchivalEdition: CuratedSpecificationEdition = {
+export const fermiReactorArchivalEdition: FermiReactorWipEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   preparedBy: "Classic Patents editorial agent (SteelNeedle)",

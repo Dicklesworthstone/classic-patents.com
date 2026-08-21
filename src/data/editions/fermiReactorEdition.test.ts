@@ -7,7 +7,6 @@ import { validateReviewedTranscription } from "@/data/patents/sourceTextValidati
 import type {
   CuratedSpecificationBlock,
   CuratedSpecificationEdition,
-  CuratedSpecificationInline,
 } from "@/types/patent";
 import { fermiReactorPatent } from "../patents/fermi-reactor";
 import {
