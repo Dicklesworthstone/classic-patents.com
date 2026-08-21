@@ -235,6 +235,23 @@
   @apply bg-amber-600 dark:bg-amber-500;
 }
 
+/* Utility used across 3D camera toolbars and HUD strips: scrollable content
+   without the themed page scrollbar rendering inside a small overlay. */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Range sliders must own vertical drags: without this, touch drags that start
+   on a slider thumb scroll the page instead of moving it (iOS Safari). */
+input[type="range"] {
+  touch-action: none;
+}
+
 /* Museum Broadside Print Stylesheet */
 @media print {
   @page {
@@ -325,6 +342,15 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
   .text-pretty {
     text-wrap: pretty;
