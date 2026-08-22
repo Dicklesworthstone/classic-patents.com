@@ -139,7 +139,7 @@ export function LamarrFrequencyHopping3D() {
                 onClick={() => applyCameraPreset(id)}
                 className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg font-sans whitespace-nowrap shrink-0 transition-colors ${
                   activeCamera === id
-                    ? "bg-amber-700 dark:bg-amber-600 text-white font-semibold shadow-xs"
+                    ? "bg-amber-700 dark:bg-amber-700 text-white font-semibold shadow-xs"
                     : "text-ink-700 dark:text-parchment-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >

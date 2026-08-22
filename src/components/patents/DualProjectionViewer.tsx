@@ -231,7 +231,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             title="Plain English Face (Shortcut: 1)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "plain-english"
-                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
             }`}
           >
@@ -249,7 +249,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             title="Original Patent Text (Shortcut: 2)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "original-spec"
-                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
             }`}
           >
@@ -267,7 +267,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             title="Interactive 3D Simulator (Shortcut: 3)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "interactive-sim"
-                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
             }`}
           >
@@ -285,7 +285,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             title="Schematic & Pins (Shortcut: 4)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "schematic-sheet"
-                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
             }`}
           >
@@ -303,7 +303,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             title="Full Original PDF (Shortcut: 5)"
             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl flex items-center gap-2 transition-colors cursor-pointer ${
               viewMode === "pdf-facsimile"
-                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                 : "text-ink-800 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-ink-800 font-medium"
             }`}
           >
@@ -397,7 +397,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                   href={patent.originalPdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-mono font-bold transition-colors flex items-center gap-2 shadow-sm"
+                  className="px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-sm font-mono font-bold transition-colors flex items-center gap-2 shadow-sm"
                 >
                   <FileText className="w-4 h-4" /> Open Facsimile PDF
                 </a>

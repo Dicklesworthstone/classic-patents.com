@@ -49,7 +49,7 @@ export default function HomePage() {
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
           <a
             href="#catalog"
-            className="px-5 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-sans font-bold transition-colors shadow-sm flex items-center gap-2"
+            className="px-5 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-sm font-sans font-bold transition-colors shadow-sm flex items-center gap-2"
           >
             <span>Explore All {allPatents.length} Inventions</span>
             <ArrowRight className="w-4 h-4" />

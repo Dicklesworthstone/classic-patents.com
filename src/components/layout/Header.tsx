@@ -86,7 +86,7 @@ export function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-700 dark:bg-amber-600 flex items-center justify-center text-amber-50 shadow-xs group-hover:scale-105 transition-transform border border-amber-800/20 dark:border-amber-500/40">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-700 dark:bg-amber-700 flex items-center justify-center text-amber-50 shadow-xs group-hover:scale-105 transition-transform border border-amber-800/20 dark:border-amber-500/40">
               <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-amber-100 dark:text-amber-50 group-hover:rotate-45 transition-transform duration-500" />
             </div>
             <div className="hidden xs:flex flex-col min-w-0">

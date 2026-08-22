@@ -102,7 +102,7 @@ export function PatentTimeline() {
                 aria-pressed={isSelected}
                 className={`px-3.5 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs flex items-center gap-1.5 ${
                   isSelected
-                    ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                    ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                     : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
                 }`}
               >
@@ -111,7 +111,7 @@ export function PatentTimeline() {
                   className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
                     isSelected
                       ? "bg-white/20 text-white"
-                      : "bg-parchment-200 dark:bg-ink-800 text-ink-600 dark:text-ink-400"
+                      : "bg-parchment-200 dark:bg-ink-800 text-ink-600 dark:text-ink-300"
                   }`}
                 >
                   {tab.range}
@@ -144,14 +144,14 @@ export function PatentTimeline() {
                 onClick={() => setSelectedPatentId(p.id)}
                 className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all duration-150 cursor-pointer ${
                   isSelected
-                    ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500 scale-102 shadow-md ring-2 ring-amber-400"
+                    ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700 dark:border-amber-500 scale-102 shadow-md ring-2 ring-amber-400"
                     : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800 text-ink-800 dark:text-parchment-200"
                 }`}
               >
                 <div>
                   <div
                     className={`font-mono font-bold text-xs ${
-                      isSelected ? "text-amber-200" : "text-amber-700 dark:text-amber-400"
+                      isSelected ? "text-amber-50" : "text-amber-700 dark:text-amber-400"
                     }`}
                   >
                     {year}
@@ -162,7 +162,7 @@ export function PatentTimeline() {
                 </div>
                 <div
                   className={`text-[11px] font-mono mt-2 truncate ${
-                    isSelected ? "text-amber-100" : "text-ink-600 dark:text-ink-400"
+                    isSelected ? "text-amber-50" : "text-ink-600 dark:text-ink-300"
                   }`}
                 >
                   {p.patentNumber}
@@ -226,7 +226,7 @@ export function PatentTimeline() {
 
             <Link
               href={`/patents/${selectedPatent.id}`}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-xs sm:text-sm font-sans font-bold transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-xs sm:text-sm font-sans font-bold transition-colors shadow-sm"
             >
               <span>Explore Patent &amp; 3D Model</span>
               <ArrowRight className="w-4 h-4" />

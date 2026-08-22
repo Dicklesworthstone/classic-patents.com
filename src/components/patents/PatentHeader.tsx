@@ -158,7 +158,7 @@ export function PatentHeader({ patent }: PatentHeaderProps) {
             href={patent.originalPdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-600 dark:hover:bg-amber-700 text-white text-sm font-mono font-bold flex items-center gap-2 transition-colors shadow-sm"
+            className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 dark:bg-amber-700 dark:hover:bg-amber-800 text-white text-sm font-mono font-bold flex items-center gap-2 transition-colors shadow-sm"
           >
             <FileDown className="w-4 h-4" />
             <span>USPTO PDF</span>

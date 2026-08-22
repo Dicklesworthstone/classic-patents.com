@@ -6203,7 +6203,7 @@ export function InteractiveDiagramViewer({
                   }}
                   className={`px-3 py-2 min-h-10 inline-flex items-center rounded-lg text-xs font-sans transition-colors border ${
                     activeFigIndex === idx
-                      ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 shadow-xs"
+                      ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-700 shadow-xs"
                       : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
                   }`}
                 >

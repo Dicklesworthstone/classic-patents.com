@@ -44,6 +44,16 @@ export function CarlsonElectrophotographySim({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // The 640x380 logical canvas is stretched to ~1100+ CSS px on desktop,
+    // so a 1:1 backing store smears every stroke across multiple device
+    // pixels. Scale the backing store by devicePixelRatio (capped at 2) and
+    // keep drawing in unchanged logical coordinates via the base transform.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const LOGICAL_W = 640;
+    const LOGICAL_H = 380;
+    canvas.width = LOGICAL_W * dpr;
+    canvas.height = LOGICAL_H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     let animId: number;
     let angle = 0;
 
@@ -52,8 +62,8 @@ export function CarlsonElectrophotographySim({
         angle += 0.015;
       }
 
-      const w = canvas.width;
-      const h = canvas.height;
+      const w = LOGICAL_W;
+      const h = LOGICAL_H;
 
       // Dark background
       ctx.fillStyle = "#070b14";

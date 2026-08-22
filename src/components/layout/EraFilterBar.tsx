@@ -92,7 +92,7 @@ export function EraFilterBar({
               aria-pressed={isSelected}
               className={`px-3.5 py-2.5 sm:py-2 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-colors shadow-xs flex items-center gap-2 ${
                 isSelected
-                  ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-600"
+                  ? "bg-amber-700 text-white font-bold shadow dark:bg-amber-700"
                   : "bg-parchment-50 dark:bg-ink-950 text-ink-800 dark:text-parchment-200 border border-parchment-300 dark:border-ink-800 hover:bg-parchment-200 dark:hover:bg-ink-800"
               }`}
             >

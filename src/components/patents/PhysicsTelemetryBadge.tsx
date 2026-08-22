@@ -103,7 +103,7 @@ export function PhysicsTelemetryBadge({
             onClick={() => setShowTheory((v) => !v)}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-mono text-[11px] font-bold transition-all border shadow-2xs cursor-pointer ${
               showTheory
-                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-500"
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700 dark:border-amber-500"
                 : "bg-parchment-100 dark:bg-ink-900 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-200 dark:hover:bg-ink-800"
             }`}
           >

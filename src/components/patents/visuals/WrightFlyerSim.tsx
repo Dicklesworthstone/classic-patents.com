@@ -82,7 +82,7 @@ export function WrightFlyerSim() {
               }}
               className={`px-3 py-1.5 rounded-lg transition-colors ${
                 activeStep === 0
-                  ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                  ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                   : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
               }`}
             >
@@ -110,7 +110,7 @@ export function WrightFlyerSim() {
               }}
               className={`px-3 py-1.5 rounded-lg transition-colors ${
                 activeStep === 2
-                  ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-600"
+                  ? "bg-amber-700 text-white font-bold shadow-sm dark:bg-amber-700"
                   : "text-ink-700 dark:text-ink-400 hover:text-ink-900"
               }`}
             >

@@ -137,7 +137,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-3.5 rounded-2xl flex items-center justify-between gap-3 transition-colors text-left group ${
                     isSelected
-                      ? "bg-amber-700 text-white dark:bg-amber-600 shadow-sm"
+                      ? "bg-amber-700 text-white dark:bg-amber-700 shadow-sm"
                       : "bg-parchment-100/60 dark:bg-ink-900/60 hover:bg-parchment-200/80 dark:hover:bg-ink-800/80 text-ink-900 dark:text-parchment-100 border border-parchment-200/70 dark:border-ink-800/60"
                   }`}
                 >

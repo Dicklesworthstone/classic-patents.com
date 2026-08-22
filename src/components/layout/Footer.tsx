@@ -9,7 +9,7 @@ export function Footer() {
           {/* Col 1: Brand & Mission */}
           <div className="space-y-3 md:col-span-2">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded bg-amber-700 dark:bg-amber-600 flex items-center justify-center text-white">
+              <div className="w-6 h-6 rounded bg-amber-700 dark:bg-amber-700 flex items-center justify-center text-white">
                 <Compass className="w-4 h-4" />
               </div>
               <span className="font-serif text-lg font-bold text-ink-900 dark:text-parchment-100">

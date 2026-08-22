@@ -510,7 +510,7 @@ export function EdisonIndicatorSim() {
               onClick={() => updateParam("plateBiasPolarity", 1)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "positive"
-                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                   : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
               }`}
             >
@@ -521,7 +521,7 @@ export function EdisonIndicatorSim() {
               onClick={() => updateParam("plateBiasPolarity", 0)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "neutral"
-                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                   : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
               }`}
             >
@@ -532,7 +532,7 @@ export function EdisonIndicatorSim() {
               onClick={() => updateParam("plateBiasPolarity", -1)}
               className={`py-1.5 px-2 rounded-lg text-xs font-mono font-bold border transition-colors cursor-pointer ${
                 plateBias === "negative"
-                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                  ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                   : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-parchment-300 border-parchment-300 dark:border-ink-800 hover:bg-parchment-200"
               }`}
             >

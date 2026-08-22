@@ -259,7 +259,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
               onClick={() => setActiveClaimNum(c.number)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all border shadow-2xs cursor-pointer ${
                 isSelected
-                  ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-600 dark:border-amber-500 shadow-sm ring-2 ring-amber-400/40"
+                  ? "bg-amber-700 text-white font-bold border-amber-800 dark:bg-amber-700 dark:border-amber-500 shadow-sm ring-2 ring-amber-400/40"
                   : live === "broken"
                     ? "bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-200 border-red-400 dark:border-red-800"
                     : live === "held"

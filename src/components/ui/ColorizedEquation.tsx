@@ -197,7 +197,7 @@ export function ColorizedEquation({
             aria-pressed={colorBlindMode}
             className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold transition-colors border ${
               colorBlindMode
-                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-600"
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                 : "bg-parchment-200/80 dark:bg-ink-800/80 text-ink-700 dark:text-ink-300 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300 dark:hover:bg-ink-700"
             }`}
             title="Toggle high-contrast / symbol markers for accessibility"
