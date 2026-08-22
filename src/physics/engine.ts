@@ -755,13 +755,16 @@ export const FrankenSimEngine = {
     const cylAreaSqIn = 78.5; // 10-inch cylinder
     const pistonThrustLbf = cylPsi * cylAreaSqIn;
     const shoeClampingForceKn = Number(((pistonThrustLbf * 5 * 4.44822) / 1000).toFixed(1));
-    const stoppingDistanceM =
-      cylPsi > 10 ? Math.round((500 * (carMass / 35)) / (cylPsi / 50)) : 1200;
+    // Constant shoe force => constant deceleration at fixed mass and cylinder
+    // pressure: a = a0 * (psi/50) / (mass/35), anchored so 45 mph at the
+    // 50 psi / 35 t design point gives the historical 500 m stop. Distance
+    // then follows v^2/(2a) instead of ignoring approach speed entirely.
     const approachSpeedMps = Number((approachSpeedMph * 0.44704).toFixed(2));
-    const decelerationMps2 =
-      cylPsi > 10 && stoppingDistanceM > 0
-        ? Number((approachSpeedMps ** 2 / (2 * stoppingDistanceM)).toFixed(3))
-        : 0;
+    const designDecelerationMps2 = 0.405;
+    const brakeDecelerationMps2 = (designDecelerationMps2 * (cylPsi / 50)) / (carMass / 35);
+    const stoppingDistanceM =
+      cylPsi > 10 ? Math.round(approachSpeedMps ** 2 / (2 * brakeDecelerationMps2)) : 1200;
+    const decelerationMps2 = cylPsi > 10 ? Number(brakeDecelerationMps2.toFixed(3)) : 0;
     const stoppingTimeS =
       decelerationMps2 > 0 ? Number((approachSpeedMps / decelerationMps2).toFixed(1)) : 0;
     const wheelRadiusM = 0.42;

@@ -291,7 +291,7 @@ export function grammeSchematicJunction(deg: number, cx = 200, cy = 150, innerR 
 export function stepOttoEngine(params: { engineRpm?: number; compressionRatio?: number }) {
   const rpm = params.engineRpm ?? 180;
   const cr = params.compressionRatio ?? 4.5;
-  const peakCompressionBar = Number((1.0 * cr ** 1.35).toFixed(1));
+  const peakCompressionBar = Number((1.0 * cr ** 1.4).toFixed(1));
   const crank = rpmToOmega(rpm);
   return {
     brakeHorsepower: Number(((rpm / 180) * (3.0 * (cr / 4.5) ** 0.5)).toFixed(1)),
@@ -2925,11 +2925,18 @@ export function stepLincolnBuoy(params: {
   const depth = params.shoalDepth ?? 3.5;
   const volM3 = Number(((infl / 100) * 42.5).toFixed(1));
   const liftKn = Math.round(volM3 * 9.81);
-  const draftRedFt = Number((volM3 * 0.055).toFixed(2));
   const hullLengthFt = 160;
   const hullBeamFt = 32;
+  // Governing equation Δd = ΔF_b / (ρ g A_waterplane): draft change per
+  // displaced (or weighted) cubic metre is 1/A in metres. A_waterplane uses
+  // the same 0.78 prismatic factor the returned area reports, so every
+  // output now implies one consistent waterplane instead of three.
+  const waterplaneAreaSqFt = Math.round(hullLengthFt * hullBeamFt * 0.78);
+  const waterplaneAreaM2 = waterplaneAreaSqFt * 0.092903;
+  const ftPerM3 = 3.28084 / waterplaneAreaM2;
+  const draftRedFt = Number((volM3 * ftPerM3).toFixed(2));
   const baseDraftFt = 5.0;
-  const hullDraftFt = baseDraftFt + (weight - 380) / 190 - draftRedFt;
+  const hullDraftFt = baseDraftFt + (weight - 380) * ftPerM3 - draftRedFt;
   return {
     displacedVolumeM3: volM3,
     displacedVolumeCuFt: Math.round(volM3 * 35.315),
@@ -2942,7 +2949,7 @@ export function stepLincolnBuoy(params: {
     hullBeamFt,
     waterDensityLbsPerCuFt: 62.4,
     baseDraftFt,
-    waterplaneAreaSqFt: Math.round(hullLengthFt * hullBeamFt * 0.78),
+    waterplaneAreaSqFt,
     paddleDisplayOmegaRadPerS: 1.2,
     ...bellowsFluidCrate(infl),
     bellowsFlarePx: Number(((infl / 100) * 40).toFixed(2)),

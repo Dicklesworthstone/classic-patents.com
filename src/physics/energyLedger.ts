@@ -252,7 +252,7 @@ export function computePortHamiltonianEnergy(
     case "us-124404-westinghouse-air-brake": {
       const resPsi = params.reservoirPressure ?? 70.0;
       const brakePsi = params.brakePipePressure ?? 50.0;
-      const compWork = resPsi * 6894.76 * 0.028; // Reservoir pneumatic pressure work (Joules)
+      const compWork = resPsi * 6894.76 * 0.04; // Reservoir D (40 L) pneumatic pressure work (Joules)
       potential = compWork; // Stored compressed air energy
       powerIn = 3500.0; // Locomotive steam air-compressor pump power (Watts)
       kinetic = 0.5 * 18000.0 * 15.0 ** 2; // Moving train car kinetic energy (Joules)

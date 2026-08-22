@@ -450,7 +450,7 @@ export function computeParameterSensitivity(
         return {
           metricName: "Stored Pneumatic Work",
           derivativeSymbol: "∂E / ∂P",
-          derivativeValue: 193.0,
+          derivativeValue: 276.0,
           derivativeUnit: "J / psi",
           interpretation:
             "Auxiliary reservoir pressure energy available for emergency brake application.",
