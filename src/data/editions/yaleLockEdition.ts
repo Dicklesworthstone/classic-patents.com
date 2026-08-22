@@ -136,7 +136,15 @@ export const yaleLockArchivalEdition: CuratedSpecificationEdition = {
       kind: "figure-sheet",
       figureLabel: "Figs. 1 through 20",
       title: "Lock drawing sheet",
-      description: [{ kind: "text", text: "Figs. 1 through 20." }],
+      description: [
+        { kind: "text", text: "The single drawing sheet carries " },
+        makePreview(
+          "Figs. 1 through 20",
+          Array.from({ length: 20 }, (_, i) => i + 1),
+          "the complete drawing sheet of US 48,475",
+        ),
+        { kind: "text", text: "." },
+      ],
     },
     p(
       "To all whom it may concern:\nBe it known that I, ",

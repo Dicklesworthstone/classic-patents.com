@@ -177,7 +177,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "4 Sheets—Sheet 1. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 1. FIG. 2. FIG. 3. FIG. 4. FIG. 5. FIG. 6. Printed reference letters and numerals visible on this sheet include A, B, C, D, E, F, G, H, I, J, K, M, N, O, R, S, V, t, a′, g, and i. ",
+          text: "Printed reference letters and numerals visible on this sheet include A, B, C, D, E, F, G, H, I, J, K, M, N, O, R, S, V, t, a′, g, and i. ",
         },
         figure1To3,
         { kind: "text", text: " and " },
@@ -192,7 +192,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. 4 SHEETS—SHEET 2. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 7. FIG. 8. FIG. 9. Printed reference letters and numerals visible on this sheet include A, A′, B, C, D, E, F, G, H, I, J, K, L, N, P, P′, S, V, X, X′, c, and c′. Z. TH. GRAMME. E. L. Ch. D’IVERNOIS. WITNESSES: A. G. BRADE. AUGUSTE MEDARD. ",
+          text: "Printed reference letters and numerals visible on this sheet include A, A′, B, C, D, E, F, G, H, I, J, K, L, N, P, P′, S, V, X, X′, c, and c′. Witnessed by A. G. Brade and Auguste Medard. ",
         },
         figure7To9,
         { kind: "text", text: "." },
@@ -205,7 +205,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "FIG. 10. 4 SHEETS—SHEET 3. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 11. FIG. 12. FIG. 13. Printed reference letters and numerals visible on this sheet include A, A′, B, D, E, G, H, I, J, K, and N. Z. TH. GRAMME. E. L. Ch. D’IVERNOIS. WITNESSES: A. G. BRADE. AUGUSTE MEDARD. ",
+          text: "Printed reference letters and numerals visible on this sheet include A, A′, B, D, E, G, H, I, J, K, and N. Witnessed by A. G. Brade and Auguste Medard. ",
         },
         figure10To13,
         { kind: "text", text: "." },
@@ -218,7 +218,7 @@ export const grammeDynamoArchivalEdition: CuratedSpecificationEdition = {
       description: [
         {
           kind: "text",
-          text: "4 SHEETS—SHEET 4. Z. TH. GRAMME & E. L. Ch. D’IVERNOIS. MAGNETO ELECTRIC MACHINES. No. 120,057. Patented Oct. 17, 1871. FIG. 14. Printed reference letters and numerals visible on this sheet include A, A², B, C, D, H, h, h′, i, i′, K, S, X, and X′. No witness, inventor-signature, or attorney line is visible on this sheet. ",
+          text: "Printed reference letters and numerals visible on this sheet include A, A², B, C, D, H, h, h′, i, i′, K, S, X, and X′. No witness, inventor-signature, or attorney line is visible on this sheet. ",
         },
         figure14,
         { kind: "text", text: "." },

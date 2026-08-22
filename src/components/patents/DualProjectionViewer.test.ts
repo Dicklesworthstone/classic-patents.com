@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ARCHIVAL_PARALLEL_READINGS } from "@/data/editions/parallelReadings";
-import { isArchivalEditionExplicitlyWithheld } from "@/data/editions/publicationApproval";
+import { ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS } from "@/data/editions/publicationApproval";
 import { allPatents } from "@/data/patents";
 import { goodyearRubberPatent } from "@/data/patents/goodyear-rubber";
 import { lamarrPatent } from "@/data/patents/lamarr-frequency-hopping";
@@ -74,13 +74,15 @@ describe("patent view URL state", () => {
 });
 
 describe("archival publication boundary", () => {
-  test("renders only editions with approved explicit paragraph companions", () => {
+  test("publishes every authored edition whose companion map exists", () => {
     expect(archivalEditionForPublication(goodyearRubberPatent)).toBe(
       goodyearRubberPatent.archivalEdition,
     );
-    expect(isArchivalEditionExplicitlyWithheld(lamarrPatent.id)).toBe(true);
-    expect(archivalEditionForPublication(lamarrPatent)).toBeUndefined();
-    expect(isArchivalEditionExplicitlyWithheld(whitneyCottonGinPatent.id)).toBe(true);
+    // Owner policy (2026-08-21): the former root-QA hold list no longer
+    // gates publication — presence with minor omissions beats absence.
+    expect(archivalEditionForPublication(lamarrPatent)).toBe(lamarrPatent.archivalEdition);
+    // Whitney has an authored edition but no companion map yet: the edition
+    // renderer fails closed on paragraphs without readings, so it waits.
     expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
     const unmappedPatent: Patent = {
       ...goodyearRubberPatent,
@@ -114,11 +116,21 @@ describe("archival publication boundary", () => {
     const approvedMappedIds = Object.keys(ARCHIVAL_PARALLEL_READINGS)
       .filter((patentId) => {
         const patent = allPatents.find((candidate) => candidate.id === patentId);
-        return Boolean(patent?.archivalEdition) && !isArchivalEditionExplicitlyWithheld(patentId);
+        return Boolean(patent?.archivalEdition);
       })
       .toSorted();
 
     expect(releasedIds).toEqual(approvedMappedIds);
     expect(releasedIds).not.toHaveLength(0);
+  });
+
+  test("keeps the retired hold list as a historical record without enforcement", () => {
+    // The list must survive as QA history, but nothing on the publication
+    // path may consult it again.
+    expect(ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS.length).toBeGreaterThan(0);
+    for (const patent of allPatents) {
+      if (!patent.archivalEdition || !ARCHIVAL_PARALLEL_READINGS[patent.id]) continue;
+      expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
+    }
   });
 });

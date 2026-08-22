@@ -182,10 +182,10 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
       " is a schematic view of the same robot approaching an obstacle on a floor.",
     ),
     p(
-      "FIG. 4 is a schematic view showing the difference between the wall following and random modes of travel; FIG. 5 is a schematic view of a sensor subsystem; FIG. 6 is a schematic view of another, preferred sensor subsystem; FIG. 7 shows the field of emission and field of view; FIG. 8 shows full overlap; FIG. 9 shows minimal overlap; FIG. 10 is a graph of overlap area and sensor height; FIGS. 11 and 12 show overlap examples and corresponding areas; FIG. 13 is a detailed sensor-subsystem view; FIG. 14 shows the subsystem in a robot housing; FIG. 15 shows the wall detection system in the housing; and FIG. 16 shows another sensor-system embodiment.",
+      "The fourth drawing view contrasts the wall-following and random modes of travel; the fifth shows a sensor subsystem; the sixth shows a preferred sensor subsystem; the seventh shows the field of emission and field of view; the eighth shows full overlap; the ninth shows minimal overlap; the tenth graphs overlap area against sensor height; the eleventh and twelfth show overlap examples with corresponding areas; the thirteenth is a detailed sensor-subsystem view; the fourteenth shows the subsystem in a robot housing; the fifteenth shows the wall detection system in the housing; and the sixteenth shows another sensor-system embodiment. Individual source-facsimile crops for these views are being prepared.",
     ),
     p(
-      "FIG. 17 is a flow chart for cliff detection; FIG. 18 is a flow chart for wall detection; FIG. 19 shows decreasing-curvature wall following; FIGS. 20 and 21 compare abrupt and smoothed wall-following paths; FIG. 22 is a complete robotic-cleaning-device block diagram; FIG. 23 is a three-dimensional device view with cliff and wall sensors; FIG. 24 is a bottom view of cliff detectors; FIG. 25 is a side view with wall sensors; and FIGS. 26 through 34 show detector, oscillator, power, decoupling, connector, jumper, and constant-current circuits.",
+      "The seventeenth drawing view is a flow chart for cliff detection; the eighteenth is a flow chart for wall detection; the nineteenth shows decreasing-curvature wall following; the twentieth compares abrupt and smoothed wall-following paths. The remaining drawing-sheet views — a complete robotic-cleaning-device block diagram, three-dimensional device and bottom/side views with cliff and wall sensors, and detector, oscillator, power, decoupling, connector, jumper, and constant-current circuit diagrams — appear on the later sheets of the same patent.",
     ),
     {
       kind: "heading",
@@ -198,16 +198,16 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
       ", robotic cleaning device 10 can be configured to dust, mop, vacuum, and/or sweep a surface such as a floor. Typically, robot 10 operates in two modes: random coverage and a wall following mode. In either mode, robot 10 may encounter downward stair 12, upward stair 14, and/or obstacle 16.",
     ),
     p(
-      "As delineated in the background of the invention, presently available obstacle sensor subsystems useful in connection with robot 10 are either too complex or too expensive or both. Moreover, robot 10, FIG. 4 is designed to be inexpensive and to operate based on battery power to thus thoroughly clean room 20 in two modes: a wall following mode as shown at 22 and 24 and a random bounce mode as shown at 26.",
+      "As delineated in the background of the invention, presently available obstacle sensor subsystems useful in connection with robot 10 are either too complex or too expensive or both. Moreover, robot 10, shown in the fourth drawing view, is designed to be inexpensive and to operate based on battery power to thus thoroughly clean room 20 in two modes: a wall following mode as shown at 22 and 24 and a random bounce mode as shown at 26.",
     ),
     p(
-      "In the simplest embodiment, sensor subsystem 50, FIG. 5 includes optical emitter 52 which emits a directed beam 54 having a defined field of emission. Sensor subsystem 50 also includes photon detector 56 having a defined field of view which intersects the field of emission of emitter 52 at or for a given region. Surface 58 may be a floor or a wall depending on the arrangement of sensor subsystem 50 with respect to the housing of the robot.",
+      "In the simplest embodiment, sensor subsystem 50, shown in the fifth drawing view, includes optical emitter 52 which emits a directed beam 54 having a defined field of emission. Sensor subsystem 50 also includes photon detector 56 having a defined field of view which intersects the field of emission of emitter 52 at or for a given region. Surface 58 may be a floor or a wall depending on the arrangement of sensor subsystem 50 with respect to the housing of the robot.",
     ),
     p(
       "For wall following, the circuitry redirects the robot when the wall occupies the region defined by the intersection of the field of emission of emitter 52 and the field of view of detector 56. Emitter collimator tube 60 forms directed beam 54 with a predefined field of emission and detector collimator tube 62 defines the field of view of detector 56.",
     ),
     p(
-      "Accordingly, in the preferred embodiment, emitter collimator 60', FIG. 6 and detector collimator 62' are both angled with respect to surface 58 and with respect to each other. The region 70, FIG. 7 in which the field of emission of emitter 52' and the field of view of detector 56' intersect is finite to more adequately address specular scattering and surfaces of different reflectivity.",
+      "Accordingly, in the preferred embodiment, emitter collimator 60', shown in the sixth drawing view, and detector collimator 62' are both angled with respect to surface 58 and with respect to each other. The region 70, shown in the seventh drawing view, in which the field of emission of emitter 52' and the field of view of detector 56' intersect is finite to more adequately address specular scattering and surfaces of different reflectivity.",
       term(
         "wall following mode",
         "Wall boundary tracking behavior",
