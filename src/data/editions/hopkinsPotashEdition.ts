@@ -38,15 +38,21 @@ export const HOPKINS_PARALLEL_READINGS: Readonly<Record<number, readonly string[
     "Execution and testimonium: issued under the Great Seal of the United States at the City of New York on July 31, 1790, executed by George Washington and countersigned by Secretary of State Thomas Jefferson.",
   ],
   5: [
-    "Legal examination and certification: Attorney General Edmund Randolph certifies that the letters patent conform strictly to the statutory requirements of the 1790 Patent Act.",
+    "Presidential execution: George Washington affixes his own hand to make the invention letters patent, the act that gives the federal grant its force under the 1790 Patent Act.",
+  ],
+  6: [
+    "Countersignature: the notation “By the President” records that Thomas Jefferson, Secretary of State, signed the instrument in the President's name, the customary attestation for sealing letters patent of the United States.",
+  ],
+  7: [
+    "Legal examination and certification: Attorney General Edmund Randolph certifies at the City of New York on July 31, 1790 that the foregoing letters patent were delivered to him in pursuance of the Act to promote the Progress of useful Arts and that he finds them conformable to that Act.",
   ],
 };
 
 export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
   kind: "manual-react-edition",
   sourcePdfSha256: "d4cdaf8e4f5cf9fc841df0a98adca8341b5c513e4f328f013f50fc914509777e",
-  preparedBy: "Classic Patents editorial agent (Antigravity)",
-  preparedAt: "2026-08-19",
+  preparedBy: "Classic Patents editorial agent (ox-alpha)",
+  preparedAt: "2026-08-22",
   completeFacsimileReviewed: true,
   claimStatus: {
     kind: "no-formal-claims-in-facsimile",
@@ -56,12 +62,7 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
   blocks: [
     {
       kind: "masthead",
-      lines: [
-        "UNITED STATES PATENT OFFICE.",
-        "SAMUEL HOPKINS, OF PHILADELPHIA, PENNSYLVANIA.",
-        "IMPROVEMENT IN THE MAKING OF POT ASH AND PEARL ASH BY A NEW APPARATUS AND PROCESS.",
-        "Specification forming part of Letters Patent No. 1 [X1], dated July 31, 1790.",
-      ],
+      lines: ["THE UNITED STATES.", "To all to whom these Presents shall come.", "GREETING."],
     },
     {
       kind: "figure-sheet",
@@ -124,7 +125,7 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
         ),
         {
           kind: "text",
-          text: " so made as aforesaid; which Operation of burning the raw Ashes in a Furnace, preparatory to their Dissolution and boiling in Water, is new, leaves little Residuum; and produces a much greater Quantity of Salt.",
+          text: " so made as aforesaid; which Operation of burning the raw Ashes in a Furnace, preparatory to their Dissolution and boiling in Water, is new, leaves little Residuum; and produces a much greater Quantity of Salt:",
         },
       ],
     },
@@ -151,7 +152,33 @@ export const hopkinsPotashArchivalEdition: CuratedSpecificationEdition = {
       inlines: [
         {
           kind: "text",
-          text: "G°. WASHINGTON, President of the United States. TH: JEFFERSON, Secretary of State. EDM: RANDOLPH, Attorney General for the United States.",
+          text: "G°. WASHINGTON.",
+        },
+      ],
+    },
+    {
+      kind: "paragraph",
+      inlines: [
+        {
+          kind: "text",
+          text: "By the President, TH: JEFFERSON.",
+        },
+      ],
+    },
+    {
+      kind: "paragraph",
+      inlines: [
+        {
+          kind: "text",
+          text: "City of New York July 31st. 1790. I do hereby certify that the foregoing Letters Patent were delivered to me in pursuance of the Act, entituled “An Act to promote the Progress of useful Arts”; that I have examined the same, and find them conformable to the said Act.",
+        },
+        term(
+          "EDM: RANDOLPH",
+          "Edmund Randolph of Virginia, the first Attorney General of the United States, whose statutory duty under the 1790 Patent Act was to examine each letters-patent application for conformity to the Act before grant.",
+        ),
+        {
+          kind: "text",
+          text: ", Attorney General for the United States.",
         },
       ],
     },
