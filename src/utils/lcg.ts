@@ -5,9 +5,11 @@
  */
 
 export function createLcg(initialSeed: number) {
-  let seed = Math.floor(initialSeed);
+  // Numerical Recipes LCG constants mod 2^32; the product stays under 2^53,
+  // so float64 multiplication is exact. The seed is normalized into the
+  // unsigned 32-bit domain because JS `%` keeps the dividend's sign.
+  let seed = Math.floor(initialSeed) >>> 0;
   return () => {
-    // POSIX lrand48 parameters
     seed = (seed * 1664525 + 1013904223) % 4294967296;
     return seed / 4294967296;
   };

@@ -26,6 +26,9 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-247804-delaval-separator": { rotorRpm: same("bowlRpm") },
   "us-200521-edison-phonograph": { cylinderRpm: same("mandrelRpm") },
   "us-x8277-mccormick-reaper": { groundSpeedMph: same("forwardSpeedMph") },
+  "us-2524035-bardeen-transistor": { pointSpacingMicrons: same("pointSpacing") },
+  "us-31128-otis-elevator": { cableTensionPct: same("cableTension") },
+  "us-586193-marconi-radio": { mastHeightM: same("aerialHeight") },
   "us-120057-gramme-dynamo": {
     rotorRpm: same("shaftRate"),
     shaftRpm: same("shaftRate"),

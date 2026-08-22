@@ -454,6 +454,14 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
         window.removeEventListener("pointerup", onPointerUp);
         window.removeEventListener("pointercancel", onPointerUp);
       }
+    } else if (activePointers.size === 2) {
+      // A 3+ finger gesture lost one pointer: the remaining pair needs its
+      // own pinch baseline, or the next move zooms from stale distances.
+      const pair = Array.from(activePointers.values());
+      initialPinchDist = Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y);
+      initialPinchRadius = targetSpherical.radius;
+      prevPinchMidX = (pair[0].x + pair[1].x) / 2;
+      prevPinchMidY = (pair[0].y + pair[1].y) / 2;
     } else if (activePointers.size === 1) {
       isPinching = false;
       isPanning = false;

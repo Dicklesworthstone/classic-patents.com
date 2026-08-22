@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { marconiMastHeightFromHz } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import {
@@ -33,10 +34,42 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
   const isLamarr = patentId.includes("lamarr");
   const kh = isWright ? kittyHawkResidual(params) : null;
 
+  const [bankActive, setBankActive] = useState(false);
+  const bankFuseRef = useRef<number | null>(null);
+  const voiceCleanupRef = useRef<(() => void) | null>(null);
+  const voiceActiveRef = useRef(false);
+  const [voiceActive, setVoiceActive] = useState(false);
+
+  // Device-orientation banking owns its listener through the component
+  // lifecycle: an orphaned listener keeps writing wingWarp into the
+  // patentId-keyed physics store after unmount and resurfaces on revisit.
+  useEffect(() => {
+    if (!bankActive) return;
+    const onOri = (e: DeviceOrientationEvent) => {
+      const g = e.gamma ?? 0;
+      updateParam("wingWarp", Math.max(-15, Math.min(15, g * 0.4)));
+    };
+    window.addEventListener("deviceorientation", onOri);
+    bankFuseRef.current = window.setTimeout(() => {
+      setBankActive(false);
+    }, 10_000);
+    return () => {
+      window.removeEventListener("deviceorientation", onOri);
+      if (bankFuseRef.current !== null) {
+        window.clearTimeout(bankFuseRef.current);
+        bankFuseRef.current = null;
+      }
+    };
+  }, [bankActive, updateParam]);
+
   const enableDeviceBank = async () => {
     try {
       const ori = window.DeviceOrientationEvent;
       if (!ori) return;
+      if (bankActive) {
+        setBankActive(false);
+        return;
+      }
       const anyOri = DeviceOrientationEvent as unknown as {
         requestPermission?: () => Promise<string>;
       };
@@ -46,44 +79,65 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
       ) {
         return;
       }
-      const onOri = (e: DeviceOrientationEvent) => {
-        const g = e.gamma ?? 0;
-        updateParam("wingWarp", Math.max(-15, Math.min(15, g * 0.4)));
-      };
-      window.addEventListener("deviceorientation", onOri);
-      window.setTimeout(() => window.removeEventListener("deviceorientation", onOri), 10_000);
+      setBankActive(true);
     } catch {
       // The control remains available for devices that deny orientation permission.
     }
   };
 
+  const stopVoiceSampling = useCallback(() => {
+    voiceCleanupRef.current?.();
+    voiceCleanupRef.current = null;
+    voiceActiveRef.current = false;
+    setVoiceActive(false);
+  }, []);
+
+  // Final teardown: the mic stream, analyser interval, and AudioContext must
+  // not outlive the component (view-tab switches unmount without a route
+  // change, so the global pathname-based cleanup never sees them).
+  useEffect(() => {
+    return () => {
+      voiceCleanupRef.current?.();
+      voiceCleanupRef.current = null;
+    };
+  }, []);
+
   const sampleVoice = async () => {
+    if (voiceActiveRef.current) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const ctx = new AudioContext();
+      // getUserMedia resumes in a different task than the click; Safari and
+      // sometimes Chrome leave the context suspended, which pins the analyser
+      // at silence for the whole window.
+      void ctx.resume().catch(() => {});
       const src = ctx.createMediaStreamSource(stream);
       const anal = ctx.createAnalyser();
       anal.fftSize = 1024;
       src.connect(anal);
       const buf = new Uint8Array(anal.fftSize);
-      const tick = () => {
+      const intervalId = window.setInterval(() => {
         anal.getByteTimeDomainData(buf);
         let peak = 0;
         for (const sample of buf) peak = Math.max(peak, Math.abs(sample - 128));
         const db = 40 + (peak / 128) * 55;
         updateParam("voiceAmplitude", Math.min(95, Math.max(40, db)));
-      };
-      const intervalId = window.setInterval(tick, 80);
-      window.setTimeout(() => {
+      }, 80);
+      const stop = () => {
         window.clearInterval(intervalId);
         for (const track of stream.getTracks()) track.stop();
-        void ctx.close();
+        void ctx.close().catch(() => {});
+      };
+      voiceCleanupRef.current = stop;
+      voiceActiveRef.current = true;
+      setVoiceActive(true);
+      window.setTimeout(() => {
+        if (voiceCleanupRef.current === stop) stopVoiceSampling();
       }, 4000);
     } catch {
       // A denied microphone permission leaves the manual voice slider usable.
     }
   };
-
   if (
     ghosts.length === 0 &&
     !fidelity &&
@@ -272,9 +326,14 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
           <button
             type="button"
             onClick={() => void enableDeviceBank()}
-            className="ml-2 px-2.5 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-[11px] font-sans"
+            aria-pressed={bankActive}
+            className={`ml-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-sans ${
+              bankActive
+                ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
+                : "border-parchment-300 dark:border-ink-700"
+            }`}
           >
-            Bank with device roll
+            {bankActive ? "Banking (10 s) — tap to stop" : "Bank with device roll"}
           </button>
         </div>
       )}
@@ -290,8 +349,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
                 key={r.name}
                 type="button"
                 onClick={() => {
-                  soundEngine.playContinuousTone(r.hz, "sine", 0.08);
-                  setTimeout(() => soundEngine.stopContinuousTone(), 900);
+                  soundEngine.playTone(r.hz, 0.9, "sine", 0.08);
                 }}
                 className="min-h-11 px-3 py-2 rounded-lg border border-parchment-300 dark:border-ink-700 text-[10px] font-mono"
               >
@@ -300,10 +358,13 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
             ))}
             <button
               type="button"
-              onClick={() => void sampleVoice()}
+              onClick={() => {
+                if (voiceActive) stopVoiceSampling();
+                else void sampleVoice();
+              }}
               className="min-h-11 px-3 py-2 rounded-lg bg-amber-700 text-white text-[10px] font-sans"
             >
-              Speak 4 s
+              {voiceActive ? "Stop mic" : "Speak 4 s"}
             </button>
           </div>
         </div>

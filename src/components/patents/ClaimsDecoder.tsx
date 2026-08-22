@@ -56,7 +56,15 @@ export function claimLiveState(
     return (params.polymerConcentrationPct ?? 12) >= 8 ? "held" : "broken";
   }
   if (patentId.includes("boyle-smith-ccd") && claimNum === 1) {
-    return (params.gateVoltage ?? 8) >= 3 ? "held" : "broken";
+    // Claim 1's 3-phase gates only "hold" while charge transfer stays near
+    // lossless; both faces highlight >99.99% CTE as the operating criterion.
+    const metrics = stepBoyleSmithCcd({
+      gateVoltageV: params.gateVoltageV,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+      incidentLux: params.incidentLux,
+      temperatureKelvin: params.temperatureKelvin,
+    });
+    return metrics.ctePct > 99.99 ? "held" : "broken";
   }
   if (patentId.includes("lamarr-frequency-hopping") && claimNum === 1) {
     // Claim 1 requires the receiver strip in synchronism with the transmitter;
@@ -65,12 +73,6 @@ export function claimLiveState(
   }
   if (patentId.includes("farnsworth-tv") && claimNum === 1) {
     return (params.anodeVoltage ?? 1500) >= 400 ? "held" : "broken";
-  }
-  if (patentId.includes("einstein-refrigerator") && claimNum === 1) {
-    return (params.heatInputWatts ?? 250) >= 80 ? "held" : "broken";
-  }
-  if (patentId.includes("diesel-engine") && claimNum === 1) {
-    return (params.compressionRatio ?? 16) >= 12 ? "held" : "broken";
   }
   if (patentId.includes("otto-engine") && claimNum === 1) {
     return (params.compressionRatio ?? 4.5) >= 2.5 ? "held" : "broken";
@@ -97,7 +99,8 @@ export function claimLiveState(
     return (params.trainPipePressure ?? 70) <= 65 ? "held" : "broken";
   }
   if (patentId.includes("pelton") && claimNum === 1) {
-    return (params.headWaterMeters ?? 150) >= 30 ? "held" : "broken";
+    // Pelton's registry models claim 1 directly as the claim1Active control.
+    return (params.claim1Active ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("hyatt") && claimNum === 1) {
     return (params.steamTempC ?? 125) >= 100 ? "held" : "broken";
@@ -127,7 +130,9 @@ export function claimLiveState(
     return (params.typingSpeedWpm ?? 40) >= 10 ? "held" : "broken";
   }
   if (patentId.includes("gramme") && claimNum === 1) {
-    return (params.shaftRpm ?? 1200) >= 300 ? "held" : "broken";
+    // Registry control is an illustrative relative shaft-rate factor (0.4–1.6,
+    // nominal 1.0); probe holds at or above the nominal rating.
+    return (params.shaftRate ?? 1) >= 1 ? "held" : "broken";
   }
   if (patentId === "us-135245-pasteur-fermentation" && claimNum === 1) {
     const co2SweepPct = params.co2SweepPct ?? 100;
@@ -136,12 +141,6 @@ export function claimLiveState(
   }
   if (patentId.includes("glidden") && claimNum === 1) {
     return (params.twistsPerFoot ?? 4) >= 2 ? "held" : "broken";
-  }
-  if (patentId.includes("thomson") && claimNum === 1) {
-    return (params.weldCurrentAmps ?? 1200) >= 500 ? "held" : "broken";
-  }
-  if (patentId.includes("wozniak") && claimNum === 1) {
-    return (params.cpuClockMhz ?? 1.023) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("engelbart-mouse") && claimNum === 1) {
     return (params.mouseSpeed ?? 350) > 0 ? "held" : "broken";
