@@ -3,14 +3,17 @@ import { renderToStaticMarkup } from "react-dom/server";
 import GlobalErrorBoundary from "./global-error";
 
 describe("GlobalErrorBoundary component", () => {
-  test("renders critical error headline, custom message, and reset button", () => {
+  test("renders critical error headline, digest reference, and reset button", () => {
     const error = new Error("Catastrophic WebAssembly memory fault") as Error & {
       digest?: string;
     };
+    error.digest = "wasm-fault-digest";
     const html = renderToStaticMarkup(<GlobalErrorBoundary error={error} reset={() => {}} />);
 
+    // Visitor copy stays generic; diagnosability travels through the digest
+    // reference rather than a raw error message.
     expect(html).toContain("Critical Application Error");
-    expect(html).toContain("Catastrophic WebAssembly memory fault");
+    expect(html).toContain("Reference: wasm-fault-digest");
     expect(html).toContain("Reload Application");
   });
 
