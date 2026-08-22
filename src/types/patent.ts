@@ -159,8 +159,13 @@ export interface CuratedSpecificationEdition {
   preparedBy: string;
   /** ISO calendar date on which preparation finished. */
   preparedAt: string;
-  /** An explicit attestation that the full facsimile, not OCR alone, was checked. */
-  completeFacsimileReviewed: true;
+  /**
+   * Attestation that the full facsimile (not OCR alone) was checked. Owner
+   * policy (2026-08-22): editions publish even while this is pending; the
+   * viewer discloses "facsimile review in progress" instead of withholding
+   * the specification text.
+   */
+  completeFacsimileReviewed?: boolean;
   /**
    * Present only when the reviewed historical facsimile genuinely contains no
    * separately enumerated legal claims. It prevents the catalogue from
