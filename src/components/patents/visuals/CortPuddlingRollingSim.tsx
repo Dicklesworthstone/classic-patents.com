@@ -633,7 +633,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             step={25}
             value={furnaceTempC}
             onChange={(e) => updateParam("furnaceTemperatureCelsius", Number(e.target.value))}
-            className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
 
@@ -652,7 +652,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             step={0.1}
             value={initialCarbonPct}
             onChange={(e) => updateParam("initialCarbonPercent", Number(e.target.value))}
-            className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
 
@@ -671,7 +671,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             step={5}
             value={rabbleRpm}
             onChange={(e) => updateParam("rabbleStirringRpm", Number(e.target.value))}
-            className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
 
@@ -690,7 +690,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             step={10}
             value={puddlingTimeMin}
             onChange={(e) => updateParam("puddlingDurationMinutes", Number(e.target.value))}
-            className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
 
@@ -709,7 +709,7 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
             step={1}
             value={rollerPasses}
             onChange={(e) => updateParam("rollerPassCount", Number(e.target.value))}
-            className="w-full h-1.5 bg-ink-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-ink-800 dark:[&::-webkit-slider-runnable-track]:bg-ink-800 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-ink-800 dark:[&::-moz-range-track]:bg-ink-800 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
         </div>
       </div>
