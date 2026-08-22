@@ -201,7 +201,7 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/otto|194047|194,047/, "otto-engine"],
   [/phonograph|200521|200,521/, "edison-phonograph"],
   [/pelton|water[- ]wheel|233692|233,692/, "pelton-water-wheel"],
-  [/delaval|separator|247804|247,804/, "delaval-separator"],
+  [/delaval|247804|247,804/, "delaval-separator"],
   [/mergenthaler|linotype|313224|313,224/, "mergenthaler-linotype"],
   [/maxim|machine[- ]gun|319596|319,596/, "maxim-machine-gun"],
   [/thomson|welding|347140|347,140/, "thomson-welding"],
@@ -220,19 +220,115 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/carrier|condition|808897|808,897/, "carrier-air-conditioner"],
 ];
 
+/**
+ * Every dedicated case label rendered by _renderHistoricalSchematic. An
+ * authored svgType that names one of these kinds must always win: routing by
+ * substring over patent numbers and figure labels once sent Daimler to the
+ * Arkwright diagram (/931/), Carrier to DeLaval (/separator/), Edison
+ * Phonograph to the bulb (/edison/), and Kilby to Colt (/138/).
+ */
+const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
+  "arkwright-water-frame": true,
+  "baekeland-bakelite": true,
+  "bardeen-transistor": true,
+  "bell-phone": true,
+  "boyle-smith-ccd": true,
+  "carlson-electrophotography": true,
+  "carlson-electrophotography-charging": true,
+  "carlson-electrophotography-rotary": true,
+  "carrier-air-conditioner": true,
+  "colt-revolver": true,
+  "corliss-engine": true,
+  "cort-puddling-rolling": true,
+  "daimler-engine": true,
+  "davenport-motor": true,
+  "de-forest-audion": true,
+  "delaval-separator": true,
+  "diesel-engine": true,
+  "eastman-kodak": true,
+  "edison-bulb": true,
+  "edison-phonograph": true,
+  "einstein-refrigerator": true,
+  "engelbart-mouse": true,
+  "ericsson-propeller": true,
+  "farnsworth-tv": true,
+  "fermi-reactor": true,
+  "fessenden-wireless": true,
+  "gatling-gun": true,
+  "glidden-barbed-wire": true,
+  "goddard-rocket": true,
+  "goodyear-rubber": true,
+  "gramme-dynamo": true,
+  "haber-ammonia": true,
+  "hewitt-mercury-lamp": true,
+  "hollerith-tabulating": true,
+  "hopkins-potash": true,
+  "howe-sewing": true,
+  "hyatt-celluloid": true,
+  "kilby-ic-components": true,
+  "kilby-ic-multivibrator": true,
+  "kilby-ic-transistor": true,
+  "kwolek-kevlar": true,
+  "lamarr-frequency-hopping": true,
+  "lincoln-buoy": true,
+  "linde-air-liquefaction": true,
+  "marconi-radio": true,
+  "maxim-machine-gun": true,
+  "mccormick-reaper": true,
+  "mergenthaler-linotype": true,
+  "morse-telegraph": true,
+  "nobel-dynamite": true,
+  "noyce-ic": true,
+  "otis-elevator": true,
+  "otto-engine": true,
+  "parsons-turbine": true,
+  "pasteur-fermentation": true,
+  "pasteur-fermentation-fig-2": true,
+  "pelton-water-wheel": true,
+  "polaroid-film-stack": true,
+  "polaroid-roller-spread": true,
+  "reno-escalator": true,
+  "sholes-typewriter": true,
+  "spencer-microwave": true,
+  "tesla-coil": true,
+  "tesla-motor": true,
+  "tesla-teleautomaton": true,
+  "thomson-welding": true,
+  "townes-laser-cavity": true,
+  "townes-laser-energy": true,
+  "townes-laser-system": true,
+  "watt-rotary-engine": true,
+  "watt-separate-condenser": true,
+  "westinghouse-air-brake": true,
+  "whitney-cotton-gin": true,
+  "wozniak-apple": true,
+  "wright-flyer": true,
+  "zeppelin-airship": true,
+};
+
 function resolveSchematicKind(
   svgType: string,
-  figureNumber: string,
-  patentNumber: string,
-  patentId?: string,
+  _figureNumber: string,
+  _patentNumber: string,
+  _patentId?: string,
 ): string {
-  const known = new Set(SCHEMATIC_HINTS.map(([, kind]) => kind));
-  if (known.has(svgType) || svgType === "wright-fig1" || svgType === "wright-fig2") {
-    return svgType.startsWith("wright-fig") ? "wright-flyer" : svgType;
+  const t = svgType.toLowerCase();
+  if (t === "generic") return "generic";
+  if (t === "wright-fig1" || t === "wright-fig2") return "wright-flyer";
+  // Authored identity wins outright.
+  if (SCHEMATIC_SWITCH_ARM_IS_KIND[t]) return t;
+  // Family variants ("carlson-electrophotography-transfer",
+  // "edison-phonograph-fig2") route to their longest known arm prefix.
+  const segments = t.split("-");
+  for (let len = segments.length - 1; len >= 2; len--) {
+    const candidate = segments.slice(0, len).join("-");
+    if (SCHEMATIC_SWITCH_ARM_IS_KIND[candidate]) return candidate;
   }
-  const hay = `${svgType} ${figureNumber} ${patentNumber} ${patentId ?? ""}`.toLowerCase();
+  // Last resort: name hints against the svgType alone. Formatted patent
+  // numbers and figure labels stay out of the haystack — their bare digits
+  // are cross-record hijacks, not identities.
   for (const [pattern, kind] of SCHEMATIC_HINTS) {
-    if (pattern.test(hay)) return kind;
+    if (pattern.test(t)) return kind;
   }
   return "generic";
 }

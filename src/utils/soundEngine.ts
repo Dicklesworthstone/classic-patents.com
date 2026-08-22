@@ -202,10 +202,20 @@ class SoundEngine {
     filter.connect(gain);
     gain.connect(this.ctx.destination);
 
+    // Register with transientNodes so mute/route-change stopAll() can cut the
+    // burst immediately instead of letting it play out its remaining window.
+    this.transientNodes.add(noise);
+    this.transientNodes.add(gain);
     noise.onended = () => {
-      noise.disconnect();
-      filter.disconnect();
-      gain.disconnect();
+      try {
+        noise.disconnect();
+        filter.disconnect();
+        gain.disconnect();
+      } catch {
+        // Already disconnected by stopAll().
+      }
+      this.transientNodes.delete(noise);
+      this.transientNodes.delete(gain);
     };
     noise.start();
     noise.stop(this.ctx.currentTime + 0.08);

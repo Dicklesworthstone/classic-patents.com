@@ -455,6 +455,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             </div>
           ) : (
             <InteractiveDiagramViewer
+              key={patent.id}
               drawings={patent.drawings}
               patentNumber={patent.patentNumber}
               patentId={patent.id}
@@ -687,6 +688,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
             {patent.drawings && patent.drawings.length > 0 && (
               <div className="space-y-4 pt-5 border-t border-parchment-200 dark:border-ink-800">
                 <InteractiveDiagramViewer
+                  key={patent.id}
                   drawings={patent.drawings}
                   patentNumber={patent.patentNumber}
                   patentId={patent.id}

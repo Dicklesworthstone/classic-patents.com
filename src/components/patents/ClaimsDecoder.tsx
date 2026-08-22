@@ -3,6 +3,7 @@
 import { BookOpen, Check, ChevronLeft, ChevronRight, Copy, Scale, Sparkles } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
+import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { stepTeslaMotorFig9 } from "@/physics/teslaKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { WRIGHT_PATENT_ID } from "@/physics/wrightKernel";
