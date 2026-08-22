@@ -351,13 +351,17 @@ class SoundEngine {
    * Heavy mechanical impact / ratchet arrest thud (Otis Elevator Safety Catch)
    */
   public playImpactThud(intensity = 1.0) {
+    // Callers may pass physics-derived intensities; exponential ramps throw
+    // on non-positive start values, so floor both frequency and gain.
+    const safe = Math.max(0.05, intensity);
     this.playTransientVoice((osc, gain, ctx) => {
       osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(140 * intensity, ctx.currentTime);
+      osc.frequency.setValueAtTime(140 * safe, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.08);
 
-      gain.gain.setValueAtTime(0.3 * intensity, ctx.currentTime);
+      gain.gain.setValueAtTime(0.3 * safe, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+
       return 0.1;
     });
   }
@@ -366,12 +370,15 @@ class SoundEngine {
    * High-voltage spark gap discharge click / pop (Tesla Teleautomaton / Marconi Radio / Tesla Coil)
    */
   public playSparkDischarge(intensity = 1.0) {
+    // Same exponential-ramp guard as playImpactThud: physics-derived
+    // intensities must never reach the ramp with a zero start value.
+    const safe = Math.max(0.05, intensity);
     this.playTransientVoice((osc, gain, ctx) => {
       osc.type = "sawtooth";
-      osc.frequency.setValueAtTime(2400 * intensity, ctx.currentTime);
+      osc.frequency.setValueAtTime(2400 * safe, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.02);
 
-      gain.gain.setValueAtTime(0.25 * intensity, ctx.currentTime);
+      gain.gain.setValueAtTime(0.25 * safe, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
       return 0.025;
     });

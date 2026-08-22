@@ -124,7 +124,9 @@ export class WaveField {
 
   step(dt: number, forcing: { su: number; sv: number; amplitude: number }): void {
     const n = this.n;
-    const boundedDt = Math.max(1e-4, Math.min(0.12, dt));
+    // Explicit 2D wave update is only stable for dt <= dx/(c*sqrt2) with
+    // dx = 1/n; clamp to the field's own CFL bound, not a fixed ceiling.
+    const boundedDt = Math.max(1e-4, Math.min(1 / (n * Math.SQRT2), dt));
     const c2 = 1;
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
