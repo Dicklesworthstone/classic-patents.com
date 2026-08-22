@@ -55,6 +55,24 @@ const sourceCropOverrides: Record<
     height: 305,
     note: "This versioned crop keeps the printed Fig. 14 alternate breastwork detail and removes the neighboring Fig. 7 fragment.",
   },
+  "fig. 11": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-13-preview.png",
+    width: 1013,
+    height: 737,
+    note: "This versioned mapping retains the handwritten printed label Fig. 11 visible in this crop.",
+  },
+  "fig. 4": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-11-preview.png",
+    width: 471,
+    height: 1061,
+    note: "This versioned mapping retains the handwritten printed label Fig. 4 board-K brush assembly visible in this crop.",
+  },
+  "fig. 6": {
+    src: "/patents/figures/us-x72-whitney-cotton-gin-fig-11-preview.png",
+    width: 471,
+    height: 1061,
+    note: " The surviving drawing sheets carry no label matching this reference; this crop shows the neighboring labeled brush-board detail.",
+  },
 };
 const preview = (number: number | string, label: string): CuratedSpecificationInline => {
   const override = sourceCropOverrides[label.toLowerCase()];
