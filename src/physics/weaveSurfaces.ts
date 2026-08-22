@@ -1137,7 +1137,7 @@ export function intervalGhosts(patentId: string, params: Record<string, number>)
       trainPipePressurePsi: params.trainPipePressure ?? params.brakePressurePsi ?? 70,
       carMassTonnes: params.carMass ?? 35,
     });
-    return [{ label: "Stop", min: 50, max: 1200, live: wh.stoppingDistanceM, unit: "m" }];
+    return [{ label: "Stop", min: 20, max: 1200, live: wh.stoppingDistanceM, unit: "m" }];
   }
   if (patentId.includes("phonograph") || patentId.includes("200521")) {
     return [{ label: "Groove", min: 0.1, max: 0.5, live: 0.25, unit: "mm" }];
