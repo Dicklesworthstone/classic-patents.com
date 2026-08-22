@@ -29,7 +29,7 @@ function normalizedLength(value: string): number {
   return value.replace(/[^\p{L}\p{N}]+/gu, "").length;
 }
 
-function normalizeLiteralSourceText(value: string): string {
+export function normalizeLiteralSourceText(value: string): string {
   return value
     .normalize("NFKC")
     .toLocaleLowerCase("en-US")

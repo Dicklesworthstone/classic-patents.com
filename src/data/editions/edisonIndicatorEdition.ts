@@ -70,7 +70,7 @@ export const edisonIndicatorParallelReadings: Readonly<Record<number, readonly s
     "Reference to the patent drawing sheets: Figure 1 depicting the general circuit and galvanometer mechanism; Figure 2 depicting a shunt test circuit with calibration lamp A'; Figure 3 illustrating circuit-closing relay contacts; and Figure 4 showing the construction of the indicator bulb.",
   ],
   6: [
-    "Detailed circuitry and mechanical construction: main conductors 1 and 2 feed lamps a in multiple-arc circuits 3 and 4; lamp A contains platinum b and sealed wire 5, while wire 6 connects positive wire 3 to binding-posts c and c' leading to coils d d, needle e, torsion-wire f, split bar g, screws h h, stud i, thumb-nut j, spring k, nut l, and pointer m over scale n.",
+    "Detailed circuitry and mechanical construction of the indicating instrument: main conductors 1 and 2 feed lamps a arranged in multiple-arc circuits 3 and 4. Lamp A carries the platinum indicator piece b with its sealed platinum wire 5, and wire 6 runs from positive main conductor 3 to binding-posts c and c', which terminate the galvanometer's coils d d around pivoted needle e, torsion-spring f, split bar g, screws h h, stud i, thumb-nut j, and spring k; nut l and screw i' set the torsion zero, and light pointer m swings over calibrated scale n so the operator reads exactly how far the system's electro-motive force has moved from normal.",
   ],
   7: [
     "Automatic-control adaptation: the needle may carry circuit-controlling arm o, which closes contacts p or another suitable circuit to operate regulating, indicating, or other electrical apparatus.",
@@ -82,7 +82,9 @@ export const edisonIndicatorParallelReadings: Readonly<Record<number, readonly s
     "Calibration test circuit of Fig. 2: placing a duplicate test bulb A' in parallel with working lamp A to periodically verify filament aging and resistance stability.",
   ],
   19: ["Formal attestation and date of execution: signed by Thomas A. Edison on November 2, 1883."],
-  20: ["Inventor signature: Thomas A. Edison."],
+  20: [
+    "The inventor's signature, THOS. A. EDISON., closes the specification in his own hand; under 1883 practice this executed signing is what dates and validates the instrument that the two subscribing witnesses then attest below.",
+  ],
   21: ["Attestation of subscribing witnesses H. W. Seely and Edward H. Pyatt."],
 };
 

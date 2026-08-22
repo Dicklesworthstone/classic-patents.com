@@ -273,7 +273,7 @@ export const teslaCoil593138ParallelReadings: Readonly<Record<number, readonly s
     "The problem is safely making use of very high voltage. Tesla says ordinary transformer and induction-coil construction could not practically produce it without risking apparatus damage or harm to a person nearby.",
   ],
   6: [
-    "Tesla proposes both a coil form and a long-distance transmission arrangement. He puts the increasingly high-potential portions of the secondary farther from the primary and arranges the turns so neighboring conductors differ little in voltage.",
+    "Tesla pairs a new transformer form with a transmission system that raises the source's energy to a far higher transmission potential than had been practically employed. The coil is built for that duty: the secondary's convolutions sit progressively farther from the primary precisely where the potential — and therefore the risk of insulation destruction — grows greatest, leaving the apparatus both durable and safe to handle.",
   ],
   7: [
     "His usual geometry is a flat spiral: the primary is outside the secondary and the secondary output is taken from the spiral's center. He expressly allows later variations rather than limiting the invention to that one drawing form.",

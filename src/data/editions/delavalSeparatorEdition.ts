@@ -222,7 +222,9 @@ export const delavalSeparatorParallelReadings: Readonly<Record<number, readonly 
   15: [
     "The lower support e receives shaft i through friction plate z. De Laval permits cork, wood, or another suitable friction material. Pulley a and belt d are the illustrated way to bring power to the apparatus; the source gives no gear ratio or revolutions per minute.",
   ],
-  16: ["Cover E closes chamber A tightly."],
+  16: [
+    "Cover E is the removable lid that incloses the bowl chamber A tightly, sealing the separating chamber so the machine can be filled, run, and cleaned without the contents splashing out of the top.",
+  ],
   17: [
     "Curved pipe X picks up fluid from the inner periphery of rotating chamber D and leads it to outlet l. Claim 2 adds this particular curved path to the basic concentric-inlet-and-outlet combination.",
   ],

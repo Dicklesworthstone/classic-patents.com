@@ -75,14 +75,6 @@ const figure = (
   figurePreviews: numbers.map((number) => FIGURES[number]),
 });
 
-const claims: CuratedSpecificationInline = {
-  kind: "reference",
-  text: "claims",
-  href: "?view=original-spec#claim-1",
-  referenceType: "section",
-  label: "Jump to claim 1 in the original patent text",
-};
-
 /**
  * A continuous, hand-prepared reading edition of US 4,750. The three drawing
  * sheets and three specification sheets of the pinned local facsimile were
@@ -579,14 +571,6 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
     },
     { kind: "paragraph", inlines: [{ kind: "small-caps", text: "ELIAS HOWE, JR." }] },
     { kind: "paragraph", inlines: text("Witnesses: THOS. P. JONES. GEORGE FISHER.") },
-    {
-      kind: "paragraph",
-      inlines: [
-        { kind: "text", text: "The numbered " },
-        claims,
-        { kind: "text", text: " above are the five printed claims in the grant." },
-      ],
-    },
   ],
 };
 
@@ -690,8 +674,5 @@ export const HOWE_SEWING_MACHINE_PARALLEL_READINGS: Readonly<Record<number, read
   ],
   35: [
     "Thos. P. Jones and George Fisher are the printed witnesses to Howe's signing. They document execution of the patent instrument and are not named inventors or claimants.",
-  ],
-  36: [
-    "This editorial navigation sentence only points back to the five printed claims. Their technical and legal explanations remain the patent record's individual claim decoders; this note does not alter their scope.",
   ],
 };

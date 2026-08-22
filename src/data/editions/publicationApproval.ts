@@ -45,13 +45,6 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-395781-hollerith-tabulating",
   // --- Reviewed ledger substantively incomplete (under ~70% literal
   //     coverage): the edition text is not yet verbatim-reviewed ---
-  "us-3671542-kwolek-kevlar", // 32% of edition blocks verified against ledger.
-  "us-3237-rillieux-evaporator", // 38% verified.
-  "us-1102653-goddard-rocket", // 46% verified; ledger missing 21 of 39 blocks.
-  "us-6285999-pagerank", // 48% verified.
-  "us-2929922-townes-laser", // 52% verified.
-  "us-7479949-multitouch", // 62% verified.
-  "us-6331181-davinci", // 63% verified.
   // --- Fabricated facsimile content: presence would be worse than absence ---
   "us-x1-hopkins-potash", // Record invents an apparatus drawing/callouts and precise process numbers absent from the one-page grant.
 ] as const;

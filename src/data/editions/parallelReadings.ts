@@ -39,7 +39,6 @@ import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
 import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
-import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
 import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
@@ -83,7 +82,11 @@ export type ArchivalParallelReading = readonly string[];
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, readonly string[]>>>
 > = {
-  "us-x1-hopkins-potash": HOPKINS_PARALLEL_READINGS,
+  // us-x1-hopkins-potash is deliberately unregistered: its edition contains
+  // apparatus callouts and process numbers that the one-page grant does not
+  // print (root QA fabrication hold). With no companion map the fail-closed
+  // renderer keeps it out of publication until the source face is repaired
+  // against the facsimile.
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
