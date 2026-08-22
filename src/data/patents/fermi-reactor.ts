@@ -5,6 +5,7 @@ import {
 import type { Patent } from "@/types/patent";
 
 import { fermiReactorArchivalEdition } from "../editions/fermiReactorEdition";
+
 const FERMI_REACTOR_CALLOUTS_MAP: Record<
   string,
   { label: string; element: string; description: string; x: number; y: number }[]
@@ -629,7 +630,8 @@ export const fermiReactorPatent: Patent = {
     url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
     pageCount: 58,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
   },

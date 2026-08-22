@@ -121,7 +121,6 @@ describe("retired root editorial holds", () => {
     }
   });
 
-
   test("keeps the historical hold list intact as a QA record", () => {
     expect([...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].map(String).sort()).toEqual(
       [...REQUIRED_ROOT_EDITORIAL_HOLDS].map(String).sort(),

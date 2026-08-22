@@ -1,7 +1,5 @@
 import type { Patent } from "@/types/patent";
-import { manualClaimText } from "../editions/eInkEdition";
-
-import { einkArchivalEdition } from "../editions/eInkEdition";
+import { einkArchivalEdition, manualClaimText } from "../editions/eInkEdition";
 export const eInkPatent: Patent = {
   id: "us-6120588-eink",
   patentNumber: "US 6,120,588",

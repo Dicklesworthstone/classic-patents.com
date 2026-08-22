@@ -83,4 +83,6 @@ for (const b of branches) {
     }
   }
 }
-console.log(JSON.stringify({ branches: branches.length, checked: checkedCount, problems }, null, 2));
+console.log(
+  JSON.stringify({ branches: branches.length, checked: checkedCount, problems }, null, 2),
+);

@@ -1,13 +1,11 @@
 // Site-wide sim param audit: every updateParam()/paramKey="..."/params.X in
 // visual faces must resolve through the real physics bus (registry control
 // or registered alias) for the patent that face serves.
-import * as fs from "node:fs";
+
 import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import { canonicalizeParam, expandParamAliases } from "../src/physics/paramAliases";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
-import {
-  canonicalizeParam,
-  expandParamAliases,
-} from "../src/physics/paramAliases";
 
 const files = execSync(
   "find src/components/patents/visuals -name '*.tsx' -o -name '*.ts' | grep -v test | grep -v Model | grep -v index",
@@ -16,9 +14,7 @@ const files = execSync(
   .trim()
   .split("\n");
 
-const regIds = Object.keys(PATENT_PHYSICS_REGISTRY).filter(
-  (id) => !id.startsWith("_"),
-);
+const regIds = Object.keys(PATENT_PHYSICS_REGISTRY).filter((id) => !id.startsWith("_"));
 
 function resolveRead(pid: string, key: string): boolean {
   const meta = PATENT_PHYSICS_REGISTRY[pid];
@@ -81,14 +77,11 @@ const LOCAL_STATE_OK = new Set<string>([
 for (const file of files) {
   const src = fs.readFileSync(file, "utf8");
   const pids = new Set<string>();
-  for (const m of src.matchAll(
-    /usePatentPhysics\(\s*(?:WRIGHT_PATENT_ID|"([^"]+)")\s*\)/g,
-  )) {
+  for (const m of src.matchAll(/usePatentPhysics\(\s*(?:WRIGHT_PATENT_ID|"([^"]+)")\s*\)/g)) {
     pids.add(m[1] ?? "us-821393-wright-flyer");
   }
   for (const m of src.matchAll(/patentId="([^"]+)"/g)) pids.add(m[1]);
-  for (const m of src.matchAll(/PATENT_PHYSICS_REGISTRY\["([^"]+)"\]/g))
-    pids.add(m[1]);
+  for (const m of src.matchAll(/PATENT_PHYSICS_REGISTRY\["([^"]+)"\]/g)) pids.add(m[1]);
   const pidList = [...pids].filter((p) => regIds.includes(p));
   if (pidList.length === 0) continue;
 

@@ -25,7 +25,8 @@ export const cortPuddlingRollingPatent: Patent = {
     url: "/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt",
     pageCount: 2,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f",
   },

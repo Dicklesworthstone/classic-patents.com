@@ -41,7 +41,8 @@ export const kilbyIntegratedCircuitPatent: Patent = {
     url: "/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
     pageCount: 9,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
   },

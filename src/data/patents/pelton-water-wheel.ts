@@ -2,6 +2,7 @@ import { peltonWaterWheelRecordCorrections } from "@/data/editions/peltonWaterWh
 import type { Patent } from "@/types/patent";
 
 import { peltonWaterWheelArchivalEdition } from "../editions/peltonWaterWheelEdition";
+
 const peltonWaterWheelSourceRecord: Pick<
   Patent,
   | "id"

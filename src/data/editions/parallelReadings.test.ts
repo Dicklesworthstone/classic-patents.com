@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { wrightFlyerPatent } from "../patents/wright-flyer";
 import { allPatents } from "@/data/patents";
+import { wrightFlyerPatent } from "../patents/wright-flyer";
 import { ARCHIVAL_PARALLEL_READINGS, archivalParallelReadingsFor } from "./parallelReadings";
 import {
   archivalEditionForPublication,

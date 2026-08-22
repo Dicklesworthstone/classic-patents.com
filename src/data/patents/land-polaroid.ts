@@ -2,6 +2,7 @@ import { manualLandClaimText } from "@/data/editions/landPolaroidEdition";
 import type { Patent, PatentClaim } from "@/types/patent";
 
 import { landPolaroidArchivalEdition } from "../editions/landPolaroidEdition";
+
 const LAND_CLAIM_ANNOTATIONS: Record<number, readonly [string, readonly string[], string]> = {
   1: [
     "Claim 1 combines attached photosensitive and transfer-image base layers with a rupturable liquid-solvent container, heavy-metal-salt latent imaging, developer transport, and differential substance disposition that produces the transferred image across the superposed layers.",
@@ -1562,7 +1563,8 @@ export const landPolaroidPatent: Patent = {
     url: "/patents/transcripts/us-2543181-land-polaroid-reviewed.txt",
     pageCount: 32,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "4ee20338289f545608f472c50aa6ba8a7134f08fa377f1887e81f1e9bb5d4013",
   },

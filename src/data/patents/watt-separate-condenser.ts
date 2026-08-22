@@ -123,7 +123,8 @@ export const wattSeparateCondenserPatent: Patent = {
     url: "/patents/transcripts/gb-913-watt-separate-condenser-reviewed.txt",
     pageCount: 2,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "ba8638c99df583d72958f9ef8125bc30cd4e0f8784656cd561aecdc58b8b8fad",
   },

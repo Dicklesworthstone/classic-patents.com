@@ -214,10 +214,7 @@ const claimMetadata: Record<
     dependsOn: [17],
     plainEnglish:
       "Covers the device of claim 17 wherein the sequential electrical drive voltages applied to the transfer electrodes are sawtooth wave pulses having linear voltage ramps that impart directional electrostatic drift forces.",
-    keyInnovations: [
-      "Sawtooth clock waveforms",
-      "Directional electrostatic drift acceleration",
-    ],
+    keyInnovations: ["Sawtooth clock waveforms", "Directional electrostatic drift acceleration"],
   },
   21: {
     isIndependent: false,
@@ -244,10 +241,7 @@ const claimMetadata: Record<
     dependsOn: [14],
     plainEnglish:
       "Protects the device of claim 14 wherein the longitudinal length of each field electrode along the transfer direction is dimensioned to be comparable to or less than the thickness of the overlying insulating layer.",
-    keyInnovations: [
-      "Sub-micron electrode length scaling",
-      "High-speed transit time optimization",
-    ],
+    keyInnovations: ["Sub-micron electrode length scaling", "High-speed transit time optimization"],
   },
   24: {
     isIndependent: false,
@@ -264,10 +258,7 @@ const claimMetadata: Record<
     dependsOn: [24],
     plainEnglish:
       "Protects the device of claim 24 wherein the output charge detection means comprises a metal-insulator-semiconductor (MIS) capacitor sensing structure that detects capacitance variations induced by accumulated charge packets.",
-    keyInnovations: [
-      "MIS capacitor charge sensing",
-      "Capacitance-modulation charge detection",
-    ],
+    keyInnovations: ["MIS capacitor charge sensing", "Capacitance-modulation charge detection"],
   },
   26: {
     isIndependent: false,

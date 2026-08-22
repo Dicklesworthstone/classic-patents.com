@@ -1,7 +1,9 @@
 import type { Patent } from "@/types/patent";
-import { manualArkwrightClaimText } from "../editions/arkwrightWaterFrameEdition";
+import {
+  arkwrightWaterFrameArchivalEdition,
+  manualArkwrightClaimText,
+} from "../editions/arkwrightWaterFrameEdition";
 
-import { arkwrightWaterFrameArchivalEdition } from "../editions/arkwrightWaterFrameEdition";
 const arkwrightFigureCallouts = {
   "1": [
     {
@@ -106,7 +108,8 @@ export const arkwrightWaterFramePatent: Patent = {
     url: "/patents/transcripts/gb-931-arkwright-water-frame-reviewed.txt",
     pageCount: 2,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd",
   },

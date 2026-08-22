@@ -38,7 +38,8 @@ export const wattRotaryEnginePatent: Patent = {
     url: "/patents/transcripts/gb-1306-watt-rotary-engine-reviewed.txt",
     pageCount: 2,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
   },

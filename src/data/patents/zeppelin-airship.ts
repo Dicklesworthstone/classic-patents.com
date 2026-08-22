@@ -24,7 +24,8 @@ export const zeppelinAirshipPatent: Patent = {
     url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
   },

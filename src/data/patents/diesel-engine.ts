@@ -25,7 +25,8 @@ export const dieselEnginePatent: Patent = {
     url: "/patents/transcripts/us-542846-diesel-engine-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866",
   },

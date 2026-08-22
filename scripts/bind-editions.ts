@@ -17,7 +17,9 @@ function patentFile(pid: string): string {
 function editionExportName(edFile: string): string | null {
   const src = fs.readFileSync(edFile, "utf8");
   // Prefer an export whose initializer is the manual-react-edition object.
-  for (const m of src.matchAll(/export const ([a-zA-Z0-9]+)[^=]*= \{\s*kind: "manual-react-edition"/g)) {
+  for (const m of src.matchAll(
+    /export const ([a-zA-Z0-9]+)[^=]*= \{\s*kind: "manual-react-edition"/g,
+  )) {
     return m[1];
   }
   const fallback = /export const ([a-zA-Z0-9]*ArchivalEdition)\s*[=:]/.exec(src);
@@ -57,9 +59,7 @@ for (const { pid, editionPath } of BINDINGS) {
   // same edition module when present, otherwise append a new import).
   const moduleSpecifier = `../editions/${editionPath}`;
   if (!src.includes(importLine)) {
-    const sameMod = new RegExp(
-      `import \\{([^}]*)\\} from "${moduleSpecifier}";`,
-    ).exec(src);
+    const sameMod = new RegExp(`import \\{([^}]*)\\} from "${moduleSpecifier}";`).exec(src);
     if (sameMod) {
       src = src.replace(
         sameMod[0],

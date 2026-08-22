@@ -32,7 +32,8 @@ export const engelbartMousePatent: Patent = {
     url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
     pageCount: 7,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
   },

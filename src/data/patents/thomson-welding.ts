@@ -1,5 +1,6 @@
-import { thomsonWeldingArchivalEdition } from "../editions/thomsonWeldingEdition";
 import type { Patent } from "@/types/patent";
+import { thomsonWeldingArchivalEdition } from "../editions/thomsonWeldingEdition";
+
 const legacyThomsonWeldingPatent: Patent = {
   id: "us-347140-thomson-welding",
   patentNumber: "US 347,140",

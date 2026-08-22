@@ -2,6 +2,7 @@ import { manualMaimanClaimText } from "@/data/editions/maimanRubyLaserEdition";
 import type { Patent, PatentClaim } from "@/types/patent";
 
 import { maimanRubyLaserArchivalEdition } from "../editions/maimanRubyLaserEdition";
+
 const claims: PatentClaim[] = [
   {
     number: 1,
@@ -60,7 +61,8 @@ export const maimanRubyLaserPatent: Patent = {
     url: "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
     pageCount: 10,
     kind: "reviewed-transcription",
-    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedBy:
+      "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
     reviewedAt: "2026-08-22",
     sourcePdfSha256: "3222cc08d6662719dba7566e07f96f3d1687dda40d6fe213ac9993ceb1ba03e6",
   },
