@@ -4,20 +4,26 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { einkArchivalEdition, manualClaimText } from "@/data/editions/eInkEdition";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "@/data/editions/publicationApproval";
 import { eInkPatent } from "@/data/patents/eink";
 
 const PINNED_SHA256 = "574678473ca13e7daaeb661cfd96808fffb6c16d06d86872923fec52a08ab324";
 
 describe("US 6,120,588 E-Ink Archival Edition Contract", () => {
-  test("draft has valid typed shape but remains withheld from the served record", () => {
+  test("published edition keeps its valid typed shape in the served record", () => {
     const result = validateCuratedSpecificationEdition(einkArchivalEdition);
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
-    // The authored draft is intentionally not served until full paragraph and
-    // 16-sheet figure coverage receives independent acceptance.
-    expect(eInkPatent.archivalEdition).toBeUndefined();
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(isArchivalEditionExplicitlyWithheld(eInkPatent.id)).toBe(false);
+    expect(archivalEditionForPublication(eInkPatent)).toBe(einkArchivalEdition);
+    expect(eInkPatent.archivalEdition).toBe(einkArchivalEdition);
     expect(eInkPatent.originalTextAsset).toBeDefined();
   });
 

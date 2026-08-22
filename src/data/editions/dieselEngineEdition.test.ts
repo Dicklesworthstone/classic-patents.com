@@ -10,13 +10,19 @@ import {
   dieselEngineParallelReadings,
   dieselManualClaimText,
 } from "./dieselEngineEdition";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
 
 describe("US 542,846 manual source edition", () => {
-  test("pins the actual ten-page facsimile and source identity", () => {
-    // The candidate source face stays deliberately unbound while the root
-    // reviewer completes foreign-patent, page-to-PDF, and source-text review.
-    expect(dieselEnginePatent.archivalEdition).toBeUndefined();
-    expect(dieselEnginePatent.originalTextAsset).toBeUndefined();
+  test("pins the actual ten-page facsimile and serves the bound source face", () => {
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(isArchivalEditionExplicitlyWithheld(dieselEnginePatent.id)).toBe(false);
+    expect(archivalEditionForPublication(dieselEnginePatent)).toBe(dieselEngineArchivalEdition);
+    expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
+    expect(dieselEnginePatent.originalTextAsset).toBeDefined();
     expect(dieselEnginePatent.title).toBe("Method of and Apparatus for Converting Heat into Work");
     expect(dieselEnginePatent.filingDate).toBe("1892-08-26");
     expect(validateCuratedSpecificationEdition(dieselEngineArchivalEdition)).toEqual({

@@ -320,53 +320,56 @@ export function CuratedSpecificationEdition({
           );
         }
 
-        if (block.kind === "paragraph") {
+        if (block.kind === "paragraph" || block.kind === "claim") {
           const plainEnglish = paragraphReadings[index];
-          if (!plainEnglish || plainEnglish.length === 0) {
-            throw new Error(
-              `Manual archival paragraph ${index + 1} is missing its Plain English reading.`,
-            );
-          }
-          return (
-            <ParallelReading key={key} plainEnglish={plainEnglish}>
-              <p className="text-pretty">
-                <RenderInlines inlines={block.inlines} />
-              </p>
-            </ParallelReading>
-          );
-        }
 
-        if (block.kind === "claim") {
-          const plainEnglish = claimDecoders.find(
-            (claim) => claim.number === block.number,
-          )?.plainEnglish;
-          if (!plainEnglish) {
-            throw new Error(
-              `Manual archival claim ${block.number} is missing its canonical Plain English decoder.`,
+          if (block.kind === "claim") {
+            const claimSection = (
+              <section
+                id={`claim-${block.number}`}
+                aria-label={`Claim ${block.number}`}
+                className="grid grid-cols-[auto_1fr] gap-x-3 rounded-r-xl border-l-2 border-amber-500/70 bg-parchment-100/50 px-4 py-3 dark:border-amber-700 dark:bg-ink-900/50"
+              >
+                <span className="pt-1 font-mono text-xs font-bold text-amber-800 dark:text-amber-400">
+                  {block.number}.
+                </span>
+                <p className="text-pretty">
+                  <RenderInlines inlines={block.inlines} />
+                </p>
+              </section>
+            );
+            // Owner policy: publish the verbatim claim text even when its
+            // decoder has not been authored yet; the companion appears when
+            // it lands.
+            if (plainEnglish && plainEnglish.length > 0) {
+              return (
+                <ParallelReading
+                  key={key}
+                  plainEnglish={plainEnglish}
+                  sourceLabel={`Original claim ${block.number}`}
+                >
+                  {claimSection}
+                </ParallelReading>
+              );
+            }
+            return <div key={key}>{claimSection}</div>;
+          }
+
+          if (plainEnglish && plainEnglish.length > 0) {
+            return (
+              <ParallelReading key={key} plainEnglish={plainEnglish}>
+                <p className="text-pretty">
+                  <RenderInlines inlines={block.inlines} />
+                </p>
+              </ParallelReading>
             );
           }
-          const claim = (
-            <section
-              id={`claim-${block.number}`}
-              aria-label={`Claim ${block.number}`}
-              className="grid grid-cols-[auto_1fr] gap-x-3 rounded-r-xl border-l-2 border-amber-500/70 bg-parchment-100/50 px-4 py-3 dark:border-amber-700 dark:bg-ink-900/50"
-            >
-              <span className="pt-1 font-mono text-xs font-bold text-amber-800 dark:text-amber-400">
-                {block.number}.
-              </span>
-              <p className="text-pretty">
-                <RenderInlines inlines={block.inlines} />
-              </p>
-            </section>
-          );
+          // Owner policy: a paragraph without its hand-authored companion
+          // still publishes the verbatim source text. Presence beats absence.
           return (
-            <ParallelReading
-              key={key}
-              plainEnglish={[plainEnglish]}
-              sourceLabel={`Original claim ${block.number}`}
-            >
-              {claim}
-            </ParallelReading>
+            <p key={key} className="text-pretty">
+              <RenderInlines inlines={block.inlines} />
+            </p>
           );
         }
 

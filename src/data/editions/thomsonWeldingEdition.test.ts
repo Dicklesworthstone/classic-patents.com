@@ -107,7 +107,7 @@ describe("thomsonWeldingArchivalEdition", () => {
   });
 
   test("binds the canonical record to the manual claims and reviewed transcript", () => {
-    expect(thomsonWeldingPatent.archivalEdition).toBeUndefined();
+    expect(thomsonWeldingPatent.archivalEdition).toBe(thomsonWeldingArchivalEdition);
     expect(thomsonWeldingPatent.filingDate).toBe("1886-03-29");
     expect(thomsonWeldingPatent.stats).toMatchObject({ totalClaims: 8, independentClaims: 8 });
     expect(thomsonWeldingPatent.claims.map((claim) => claim.originalText)).toEqual(

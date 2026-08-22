@@ -199,7 +199,7 @@ export const peltonWaterWheelParallelReadings: Readonly<Record<number, readonly 
     "The following single claim defines the protected combination. It is not a broad claim to every split-cup wheel or every high-head hydroelectric system.",
   ],
   14: ["The execution line records Pelton's adoption of the completed specification."],
-  15: ["Lester A. Pelton signs the instrument."],
+  15: ["The inventor's signature, LESTER A. PELTON., executes the specification in his own hand; on an 1880 California grant this signing is what dates and validates the instrument that the subscribing witnesses then attest below."],
   16: ["S. H. Nourse and Frank A. Brooks are listed as witnesses to execution."],
 };
 

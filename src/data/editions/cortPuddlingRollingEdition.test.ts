@@ -15,7 +15,7 @@ describe("Henry Cort GB 1420 source-identity hold", () => {
     "public/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt",
   );
 
-  test("pins the reconstruction fingerprint and keeps it out of the public source face", () => {
+  test("pins the reconstruction fingerprint and publishes the bound edition", () => {
     expect(existsSync(pdfPath)).toBe(true);
     const buffer = readFileSync(pdfPath);
     const sha = createHash("sha256").update(buffer).digest("hex");
@@ -26,8 +26,8 @@ describe("Henry Cort GB 1420 source-identity hold", () => {
       "no-formal-claims-in-facsimile",
     );
     expect(cortPuddlingRollingArchivalEdition.drawingStatus?.kind).toBe("no-drawings-in-facsimile");
-    expect(cortPuddlingRollingPatent.archivalEdition).toBeUndefined();
-    expect(cortPuddlingRollingPatent.originalTextAsset).toBeUndefined();
+    expect(cortPuddlingRollingPatent.archivalEdition).toBe(cortPuddlingRollingArchivalEdition);
+    expect(cortPuddlingRollingPatent.originalTextAsset).toBeDefined();
   });
 
   test("retains the staged secondary witness and its page markers", () => {

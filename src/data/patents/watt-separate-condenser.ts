@@ -1,5 +1,8 @@
 import type { Patent } from "@/types/patent";
-import { manualWattClaimText } from "../editions/wattSeparateCondenserEdition";
+import {
+  manualWattClaimText,
+  wattSeparateCondenserArchivalEdition,
+} from "../editions/wattSeparateCondenserEdition";
 
 const wattFigureCallouts: Record<
   string,
@@ -116,6 +119,15 @@ export const wattSeparateCondenserPatent: Patent = {
     "My method of lessening the consumption of steam, and consequently fuel, in fire engines consists in keeping that vessel in which the powers of steam are employed as hot as the steam that enters it, and condensing the steam in vessels distinct from the steam vessels or cylinders.",
   originalPdfUrl: "/patents/pdfs/gb-913-watt-separate-condenser.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB176900913A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/gb-913-watt-separate-condenser-reviewed.txt",
+    pageCount: 2,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "ba8638c99df583d72958f9ef8125bc30cd4e0f8784656cd561aecdc58b8b8fad",
+  },
+  archivalEdition: wattSeparateCondenserArchivalEdition,
   usptoClassification: "Thermodynamic Power Cycles / Steam Condensers & Engines",
   // Publication hold: the pinned PDF is a 2026 Typst reconstruction, not a
   // primary historical facsimile. Keep the editorial WIP out of the visitor

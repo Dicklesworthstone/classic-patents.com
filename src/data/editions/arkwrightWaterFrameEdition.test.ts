@@ -32,9 +32,9 @@ describe("Richard Arkwright Water Frame Archival Edition Publication Contract", 
     expect(digest).toBe("3254894ae66cb4ddd2612d164e24af76f5efa8ee8ac6b741c8affc70d8fe62fd");
   });
 
-  test("keeps the catalogue source face withheld pending independent acceptance", () => {
-    expect(arkwrightWaterFramePatent.archivalEdition).toBeUndefined();
-    expect(arkwrightWaterFramePatent.originalTextAsset).toBeUndefined();
+  test("publishes the bound catalogue source face", () => {
+    expect(arkwrightWaterFramePatent.archivalEdition).toBe(arkwrightWaterFrameArchivalEdition);
+    expect(arkwrightWaterFramePatent.originalTextAsset).toBeDefined();
   });
 
   test("withholds every Figure 1 preview because the pinned PDF is not a primary facsimile", () => {

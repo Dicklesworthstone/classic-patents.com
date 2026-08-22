@@ -109,10 +109,12 @@ describe("US 3,353,115 Theodore H. Maiman Ruby Laser Archival Edition publicatio
     "public/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
   );
 
-  test("keeps the WIP edition unbound until independent facsimile acceptance", () => {
+  test("publishes the WIP edition with its review maturity disclosed", () => {
     expect(maimanRubyLaserArchivalEdition.completeFacsimileReviewed).toBe(false);
-    expect(maimanRubyLaserPatent.archivalEdition).toBeUndefined();
-    expect(maimanRubyLaserPatent.originalTextAsset).toBeUndefined();
+    expect(maimanRubyLaserPatent.archivalEdition).toBe(maimanRubyLaserArchivalEdition);
+    expect(maimanRubyLaserPatent.originalTextAsset?.url).toBe(
+      "/patents/transcripts/us-3353115-maiman-ruby-laser-reviewed.txt",
+    );
   });
 
   test("pins the immutable facsimile PDF with matching lowercase SHA-256", () => {

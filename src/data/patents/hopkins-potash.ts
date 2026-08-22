@@ -3,52 +3,6 @@ import { hopkinsPotashArchivalEdition } from "../editions/hopkinsPotashEdition";
 
 const hopkinsSourceDrawingCrops = [["Fig. 1", "Parchment Letters Patent No. 1 Facsimile"]] as const;
 
-const hopkinsFigureCallouts: Record<
-  string,
-  Array<{
-    id: string;
-    figureRef: string;
-    label: string;
-    element: string;
-    description: string;
-    x: number;
-    y: number;
-  }>
-> = {
-  "Fig. 1": [
-    {
-      id: "hp-reverberatory-kiln",
-      figureRef: "Fig. 1",
-      label: "Furnace",
-      element: "Roasting Kiln",
-      description:
-        "Reverberatory furnace burning raw wood ashes to oxidize combustible tars and organic carbon.",
-      x: 35,
-      y: 40,
-    },
-    {
-      id: "hp-leaching-vat",
-      figureRef: "Fig. 1",
-      label: "Ley Vat",
-      element: "Lixiviation Vat",
-      description:
-        "Aqueous leaching vessel where calcined ash dissolves into high-purity potassium carbonate alkaline ley.",
-      x: 55,
-      y: 50,
-    },
-    {
-      id: "hp-evaporating-pot",
-      figureRef: "Fig. 1",
-      label: "Pot",
-      element: "Evaporating & Fluxing Kettle",
-      description:
-        "Heavy cast-iron kettle used to boil down the ley into pearl ash and flux into solid pot-ash blocks.",
-      x: 75,
-      y: 60,
-    },
-  ],
-};
-
 export const hopkinsPotashPatent: Patent = {
   id: "us-x1-hopkins-potash",
   patentNumber: "US 1 (X1)",
@@ -167,9 +121,11 @@ export const hopkinsPotashPatent: Patent = {
   drawings: hopkinsSourceDrawingCrops.map(([figNum, title]) => ({
     figureNumber: figNum,
     title,
-    caption: `${title} from the historical parchment grant of United States Patent No. 1.`,
+    // No bespoke schematic: the parchment carries no drawing. The identifier
+    // resolves to the viewer's honest generic rendering.
     svgType: "hopkins-potash",
-    callouts: hopkinsFigureCallouts[figNum] || [],
+    caption: `${title} from the historical parchment grant of United States Patent No. 1. The parchment carries no technical drawing; the patented apparatus and process are described in words only.`,
+    callouts: [],
   })),
   historicalContext: {
     problemStatement:

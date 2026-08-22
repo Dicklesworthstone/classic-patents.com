@@ -4,19 +4,27 @@ import fs from "node:fs";
 import path from "node:path";
 import { validateCuratedSpecificationEdition } from "@/data/archivalEditionValidation";
 import { dieselEngineArchivalEdition } from "@/data/editions/dieselEngineEdition";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "@/data/editions/publicationApproval";
 import { dieselEnginePatent } from "@/data/patents/diesel-engine";
 
 const PINNED_SHA256 = "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866";
 
 describe("US 542,846 Rudolf Diesel Engine Archival Edition Contract", () => {
-  test("keeps the candidate edition detached from the catalogue during source hold", () => {
+  test("publishes the bound edition in the catalogue record", () => {
     const result = validateCuratedSpecificationEdition(dieselEngineArchivalEdition);
     expect(result).toEqual({
       valid: true,
       errors: [],
     });
-    expect(dieselEnginePatent.archivalEdition).toBeUndefined();
-    expect(dieselEnginePatent.originalTextAsset).toBeUndefined();
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(isArchivalEditionExplicitlyWithheld(dieselEnginePatent.id)).toBe(false);
+    expect(archivalEditionForPublication(dieselEnginePatent)).toBe(dieselEngineArchivalEdition);
+    expect(dieselEnginePatent.archivalEdition).toBe(dieselEngineArchivalEdition);
+    expect(dieselEnginePatent.originalTextAsset).toBeDefined();
   });
 
   test("pinned PDF SHA-256 matches archival edition", () => {

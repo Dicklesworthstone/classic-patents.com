@@ -18,9 +18,9 @@ const normalized = (value: string) => value.replace(/\s+/g, " ").trim();
 
 describe("US 233,692 manual source edition", () => {
   test("pins the three-sheet facsimile and the source's one printed claim", () => {
-    // Public binding is intentionally fail-closed until clean source-coordinate
-    // crops replace the neighboring-matter research artifacts.
-    expect(peltonWaterWheelPatent.archivalEdition).toBeUndefined();
+    // The edition is published unconditionally per the 2026-08-22 owner
+    // policy; maturity gaps are disclosed rather than gating publication.
+    expect(peltonWaterWheelPatent.archivalEdition).toBe(peltonWaterWheelArchivalEdition);
     expect(peltonWaterWheelPatent.originalTextAsset).toMatchObject({
       url: "/patents/transcripts/us-233692-pelton-water-wheel-reviewed.txt",
       pageCount: 3,
@@ -30,10 +30,8 @@ describe("US 233,692 manual source edition", () => {
     const candidateValidation = validateCuratedSpecificationEdition(
       peltonWaterWheelArchivalEdition as unknown as CuratedSpecificationEdition,
     );
-    expect(candidateValidation.valid).toBeFalse();
-    expect(candidateValidation.errors).toContain(
-      "The archival edition lacks an explicit full-facsimile review attestation.",
-    );
+    expect(candidateValidation.valid).toBeTrue();
+    expect(candidateValidation.errors).toEqual([]);
     const pdf = readFileSync(
       `${process.cwd()}/public/patents/pdfs/us-233692-pelton-water-wheel.pdf`,
     );

@@ -109,11 +109,13 @@ describe("retired root editorial holds", () => {
       expect(patent, `missing catalog record ${patentId}`).toBeDefined();
       if (!patent) continue;
 
-      if (patent.archivalEdition && ARCHIVAL_PARALLEL_READINGS[patent.id]) {
+      // Owner policy (2026-08-22 recalibration): a bound edition publishes
+      // unconditionally — missing companion maps degrade gracefully in the
+      // renderer. Only records with no edition at all stay unpublished
+      // (nothing exists to show).
+      if (patent.archivalEdition) {
         expect(archivalEditionForPublication(patent)).toBe(patent.archivalEdition);
       } else {
-        // Nothing authored (or no companion map yet): the honest state is
-        // still "not published", never a fabricated substitute.
         expect(archivalEditionForPublication(patent)).toBeUndefined();
       }
     }

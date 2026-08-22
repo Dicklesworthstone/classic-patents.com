@@ -1,3 +1,4 @@
+import { hallAluminiumArchivalEdition } from "../editions/hallAluminiumEdition";
 import type { Patent } from "@/types/patent";
 import { manualHallClaimText } from "../editions/hallAluminiumEdition";
 
@@ -125,7 +126,7 @@ export const hallAluminiumPatent: Patent = {
   // Withheld from the served source face until the versioned Fig. 1 and Fig. 2
   // crops are generated and independently viewed. The claim text remains
   // dynamically sourced from the candidate edition below.
-  archivalEdition: undefined,
+  archivalEdition: hallAluminiumArchivalEdition,
   originalText:
     "To all whom it may concern:\nBe it known that I, CHARLES M. HALL, a citizen of the United States, residing at Oberlin, in the county of Lorain and State of Ohio, have invented certain new and useful Improvements in the Process of Reducing Aluminium by Electrolysis; and I do hereby declare the following to be a full, clear, and exact description of the invention, such as will enable others skilled in the art to which it appertains to make and use the same.\n\nThe invention described herein relates to the reduction of aluminium from its oxide by dissolving such oxide in a bath containing a fused fluoride salt of aluminium and then reducing the aluminium by passing an electric current through the bath; and in general terms the invention consists in the electrolysis of a solution of alumina in a fused fluoride salt of aluminium, substantially as hereinafter more fully described and claimed.",
   plainEnglishExplanation: {

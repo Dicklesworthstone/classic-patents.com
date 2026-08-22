@@ -1,5 +1,6 @@
 import type { Patent } from "@/types/patent";
 
+import { cortPuddlingRollingArchivalEdition } from "../editions/cortPuddlingRollingEdition";
 export const cortPuddlingRollingPatent: Patent = {
   id: "gb-1420-cort-puddling-rolling",
   patentNumber: "GB 1420",
@@ -20,6 +21,15 @@ export const cortPuddlingRollingPatent: Patent = {
     "Pig or other cast iron is melted in a reverberatory or air furnace; the bottom of which is ‘dished out’ to contain the metal when melted.",
   originalPdfUrl: "/patents/pdfs/gb-1420-cort-puddling-rolling.pdf",
   googlePatentsUrl: "https://books.google.com/books?id=jV0WAAAAYAAJ&pg=PA21",
+  originalTextAsset: {
+    url: "/patents/transcripts/gb-1420-cort-puddling-rolling-reviewed.txt",
+    pageCount: 2,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "b213e2bb7da843a3397d38f9be1126696512eed62fae9680147761566e40286f",
+  },
+  archivalEdition: cortPuddlingRollingArchivalEdition,
   usptoClassification: "C21B 11/00",
   originalText:
     "Pig or other cast iron is melted in a reverberatory or air furnace; the bottom of which is ‘dished out’ to contain the metal when melted. The molten metal is ‘worked and moved about’ by ‘iron bars and other instruments fitly shaped,’ conveniently introduced through holes in the bottoms of the doors. After a time, ‘an ebullition, effervescence, or such like intestine motion takes place,’ and a bluish flame is emitted by the metal. As the ‘raking, separating, stirring, and spreading’ is continued, it ‘loses its fusibility, and is flourished or brought into nature.’ Thereupon it is collected into lumps or loops and removed through the door. [Editorial excerpt from the 1854 Patent Office abridgment; not a complete facsimile transcription.]",

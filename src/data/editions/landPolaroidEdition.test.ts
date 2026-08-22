@@ -6,6 +6,10 @@ import {
   landPolaroidParallelReadings,
   manualLandClaimText,
 } from "./landPolaroidEdition";
+import {
+  archivalEditionForPublication,
+  isArchivalEditionExplicitlyWithheld,
+} from "./publicationApproval";
 
 const reviewedLedger = readFileSync(
   new URL(
@@ -60,15 +64,19 @@ function reconstructLedgerClaims(): {
   return { numbers, textByNumber };
 }
 
-describe("US 2,543,181 Edwin Land Polaroid source-draft hold", () => {
-  it("pins the draft to the correct PDF but keeps it out of the public source face", () => {
+describe("US 2,543,181 Edwin Land Polaroid published manual archival edition", () => {
+  it("pins the draft to the correct PDF and serves it as the public source face", () => {
     expect(landPolaroidArchivalEdition.kind).toBe("manual-react-edition");
     expect(landPolaroidArchivalEdition.sourcePdfSha256).toBe(
       "4ee20338289f545608f472c50aa6ba8a7134f08fa377f1887e81f1e9bb5d4013",
     );
     expect(landPolaroidArchivalEdition.completeFacsimileReviewed).toBe(false);
-    expect(landPolaroidPatent.archivalEdition).toBeUndefined();
-    expect(landPolaroidPatent.originalTextAsset).toBeUndefined();
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(isArchivalEditionExplicitlyWithheld(landPolaroidPatent.id)).toBe(false);
+    expect(archivalEditionForPublication(landPolaroidPatent)).toBe(landPolaroidArchivalEdition);
+    expect(landPolaroidPatent.archivalEdition).toBe(landPolaroidArchivalEdition);
+    expect(landPolaroidPatent.originalTextAsset).toBeDefined();
   });
 
   it("retains all 116 staged claim nodes without treating them as reviewed publication text", () => {

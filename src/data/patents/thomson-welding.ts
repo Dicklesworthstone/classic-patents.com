@@ -1,6 +1,5 @@
-import { thomsonWeldingArchivalEdition } from "@/data/editions/thomsonWeldingEdition";
+import { thomsonWeldingArchivalEdition } from "../editions/thomsonWeldingEdition";
 import type { Patent } from "@/types/patent";
-
 const legacyThomsonWeldingPatent: Patent = {
   id: "us-347140-thomson-welding",
   patentNumber: "US 347,140",
@@ -21,6 +20,7 @@ const legacyThomsonWeldingPatent: Patent = {
     "A current of large volume and low electromotive force is passed across the abutting ends of the metals to be joined... the contact-resistance creates intense local heat at the joint, softening the metal, whereupon pressure is applied to forge the pieces into a solid, homogenous weld.",
   originalPdfUrl: "/patents/pdfs/us-347140-thomson-welding.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US347140/en",
+  archivalEdition: thomsonWeldingArchivalEdition,
   usptoClassification: "B23K 11/02 (Resistance welding; Butt-welding apparatus)",
   originalTextAsset: {
     url: "/patents/source-text/us-347140-thomson-welding.txt",

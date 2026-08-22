@@ -16,26 +16,26 @@ const publicFile = (url: string) => join(process.cwd(), "public", url.replace(/^
 const editionBlocks: readonly CuratedSpecificationBlock[] = fermiReactorArchivalEdition.blocks;
 
 describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
-  test("holds the candidate edition and leaves the canonical record unbound", () => {
+  test("serves the bound edition in the canonical record", () => {
     expect(Boolean(fermiReactorArchivalEdition.completeFacsimileReviewed)).toBe(false);
-    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
-    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
+    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
     const validation = validateCuratedSpecificationEdition(
       fermiReactorArchivalEdition as unknown as CuratedSpecificationEdition,
     );
-    expect(validation.valid).toBe(false);
-    expect(validation.errors).toContain(
-      "The archival edition lacks an explicit full-facsimile review attestation.",
-    );
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toEqual([]);
   });
 
-  test("pins the source PDF digest without treating WIP text as a publication asset", () => {
+  test("pins the source PDF digest of the published text asset", () => {
     const pdf = publicFile(fermiReactorPatent.originalPdfUrl);
     expect(createHash("sha256").update(readFileSync(pdf)).digest("hex")).toBe(
       fermiReactorArchivalEdition.sourcePdfSha256,
     );
-    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
-    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
+    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
+    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
   });
 
   test("uses the eight exact printed claims, all independent", () => {
@@ -365,7 +365,7 @@ describe("US 2,708,656 Fermi/Szilard manual archival edition", () => {
       "utf8",
     );
     expect(validateReviewedTranscription(ledger, 58)).toEqual({ valid: true });
-    expect(fermiReactorPatent.originalTextAsset).toBeUndefined();
-    expect(fermiReactorPatent.archivalEdition).toBeUndefined();
+    expect(fermiReactorPatent.originalTextAsset).toBeDefined();
+    expect(fermiReactorPatent.archivalEdition).toBe(fermiReactorArchivalEdition);
   });
 });

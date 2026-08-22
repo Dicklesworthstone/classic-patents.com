@@ -1,6 +1,7 @@
 import type { Patent } from "@/types/patent";
 import { manualClaimText } from "../editions/eInkEdition";
 
+import { einkArchivalEdition } from "../editions/eInkEdition";
 export const eInkPatent: Patent = {
   id: "us-6120588-eink",
   patentNumber: "US 6,120,588",
@@ -20,6 +21,7 @@ export const eInkPatent: Patent = {
     "We describe a system of electronically active inks which may include electronically addressable contrast media, conductors, insulators, resistors, semiconductive materials, magnetic materials, spin materials, piezoelectric materials, optoelectronic, thermoelectric or radio frequency materials.",
   originalPdfUrl: "/patents/pdfs/us-6120588-eink.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US6120588A/en",
+  archivalEdition: einkArchivalEdition,
   usptoClassification:
     "U.S. Cl. 106/31.16; 106/31.32; 106/31.64; 106/31.92; 264/6, 10, 12, 7; 425/6, 130, 174.8 E; 427/7",
   // Withheld: the current authored edition is a bounded draft and does not

@@ -1,6 +1,11 @@
 import { manualFessendenClaimText } from "@/data/editions/fessendenWirelessEdition";
 import type { Patent } from "@/types/patent";
 
+import {
+  fessendenWirelessArchivalEdition,
+  fessendenWirelessParallelReadings,
+} from "../editions/fessendenWirelessEdition";
+
 const fessendenClaimDecoders: Record<
   number,
   { plainEnglish: string; keyInnovations: string[]; legalSignificance?: string }
@@ -141,6 +146,7 @@ export const fessendenWirelessPatent: Patent = {
     "The invention described herein relates to certain improvements in transmission of energy by electromagnetic waves, and has for its object the production of more efficient sending or generating conductors.",
   originalPdfUrl: "/patents/pdfs/us-706737-fessenden-wireless.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US706737A/en",
+  archivalEdition: fessendenWirelessArchivalEdition,
   usptoClassification: "375/295",
   originalTextAsset: {
     url: "/patents/transcripts/us-706737-fessenden-wireless-reviewed.txt",

@@ -9,7 +9,7 @@ import {
 } from "./wattRotaryEngineEdition";
 
 describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
-  test("pins the two-page reconstruction fingerprint and keeps it out of the public source face", () => {
+  test("pins the two-page facsimile fingerprint and publishes the bound edition", () => {
     const pdfPath = resolve(process.cwd(), "public/patents/pdfs/gb-1306-watt-rotary-engine.pdf");
     expect(existsSync(pdfPath)).toBe(true);
     expect(statSync(pdfPath).size).toBeGreaterThan(50000);
@@ -19,8 +19,8 @@ describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
     expect(wattRotaryEngineArchivalEdition.sourcePdfSha256).toBe(
       "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
     );
-    expect(wattRotaryEnginePatent.archivalEdition).toBeUndefined();
-    expect(wattRotaryEnginePatent.originalTextAsset).toBeUndefined();
+    expect(wattRotaryEnginePatent.archivalEdition).toBe(wattRotaryEngineArchivalEdition);
+    expect(wattRotaryEnginePatent.originalTextAsset).toBeDefined();
   });
 
   test("retains all 4 staged claim nodes and extracts text dynamically", () => {
@@ -89,7 +89,7 @@ describe("James Watt Rotary Motion 1781 (GB 1306) source-identity hold", () => {
     expect(transcript).toContain("--- REVIEWED TRANSCRIPTION PAGE 1 OF 2 ---");
     expect(transcript).toContain("--- REVIEWED TRANSCRIPTION PAGE 2 OF 2 ---");
     expect(transcript).toContain("Sun wheel");
-    expect(transcript).toContain("Planet wheel");
+    expect(transcript).toContain("planet wheel");
     expect(transcript).toContain("two complete revolutions");
   });
 });

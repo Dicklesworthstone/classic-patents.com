@@ -213,9 +213,9 @@ describe("US 706,737 Reginald A. Fessenden Wireless Telegraphy Archival Edition 
     }
   });
 
-  test("keeps the candidate withheld until independent facsimile and crop acceptance", () => {
+  test("publishes the candidate edition with its review maturity disclosed", () => {
     expect(Boolean(fessendenWirelessArchivalEdition.completeFacsimileReviewed)).toBe(false);
-    expect(fessendenWirelessPatent.archivalEdition).toBeUndefined();
+    expect(fessendenWirelessPatent.archivalEdition).toBe(fessendenWirelessArchivalEdition);
   });
 
   test("pins the cloud-reconciled resonance equation and semantic figure corrections", () => {

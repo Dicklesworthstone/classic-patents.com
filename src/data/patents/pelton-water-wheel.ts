@@ -1,9 +1,11 @@
 import { peltonWaterWheelRecordCorrections } from "@/data/editions/peltonWaterWheelEdition";
 import type { Patent } from "@/types/patent";
 
+import { peltonWaterWheelArchivalEdition } from "../editions/peltonWaterWheelEdition";
 const peltonWaterWheelSourceRecord: Pick<
   Patent,
   | "id"
+  | "archivalEdition"
   | "patentNumber"
   | "title"
   | "grantDate"
@@ -24,6 +26,7 @@ const peltonWaterWheelSourceRecord: Pick<
   categoryLabel: "Fluid Mechanics & Hydraulic Machinery",
   originalPdfUrl: "/patents/pdfs/us-233692-pelton-water-wheel.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US233692/en",
+  archivalEdition: peltonWaterWheelArchivalEdition,
 };
 export const peltonWaterWheelPatent: Patent = {
   ...peltonWaterWheelSourceRecord,

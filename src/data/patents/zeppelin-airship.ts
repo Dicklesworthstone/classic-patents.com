@@ -1,5 +1,6 @@
 import type { Patent } from "@/types/patent";
 
+import { zeppelinAirshipArchivalEdition } from "../editions/zeppelinAirshipEdition";
 export const zeppelinAirshipPatent: Patent = {
   id: "us-621195-zeppelin-airship",
   patentNumber: "US 621,195",
@@ -19,6 +20,15 @@ export const zeppelinAirshipPatent: Patent = {
     "This invention relates to a navigable balloon which is characterized essentially in that it is provided with a number of motors arranged separately from each other.",
   originalPdfUrl: "/patents/pdfs/us-621195-zeppelin-airship.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US621195A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "179d9d9b857e4bda8c35a4d9e8ee29d1e2fea5aa90705b0ddbe7d8cc6bb8d429",
+  },
+  archivalEdition: zeppelinAirshipArchivalEdition,
   usptoClassification:
     "Navigable balloons (historic specification; no classification printed on facsimile)",
   originalText: `UNITED STATES PATENT OFFICE.

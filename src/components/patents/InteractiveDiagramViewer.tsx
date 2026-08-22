@@ -183,7 +183,6 @@ const SCHEMATIC_HINTS: Array<[RegExp, string]> = [
   [/watt|separate[- ]condenser|913/, "watt-separate-condenser"],
   [/arkwright|water[- ]frame|931/, "arkwright-water-frame"],
   [/cort|puddling|rolling|1420/, "cort-puddling-rolling"],
-  [/hopkins|potash|x1/, "hopkins-potash"],
   [/whitney|cotton[- ]gin|x72/, "whitney-cotton-gin"],
   [/mccormick|reaper|x8277|4895|4,895/, "mccormick-reaper"],
   [/davenport|132/, "davenport-motor"],
@@ -262,7 +261,6 @@ const SCHEMATIC_SWITCH_ARM_IS_KIND: Record<string, true> = {
   "haber-ammonia": true,
   "hewitt-mercury-lamp": true,
   "hollerith-tabulating": true,
-  "hopkins-potash": true,
   "howe-sewing": true,
   "hyatt-celluloid": true,
   "kilby-ic-components": true,
@@ -4020,61 +4018,6 @@ function _renderHistoricalSchematic(
           </text>
           <text x="300" y="225" fill="#f87171" fontSize="7" fontWeight="bold" textAnchor="middle">
             SQUEEZE PASS (P = 45 MPa)
-          </text>
-        </g>
-      );
-    }
-    case "hopkins-potash": {
-      return (
-        <g stroke="#10b981" strokeWidth="1.5" fill="none">
-          {/* Calcination Kiln */}
-          <rect
-            x="40"
-            y="80"
-            width="90"
-            height="120"
-            rx="6"
-            stroke="#f59e0b"
-            strokeWidth="2"
-            fill="#78350f"
-            fillOpacity="0.3"
-          />
-          <path
-            d="M 50 160 Q 85 110 120 160 Z"
-            stroke="#ef4444"
-            strokeWidth="2"
-            fill="#ef4444"
-            fillOpacity="0.2"
-          />
-          {/* Leaching Vat */}
-          <rect
-            x="155"
-            y="80"
-            width="90"
-            height="120"
-            rx="4"
-            stroke="#10b981"
-            strokeWidth="2"
-            fill="#064e3b"
-            fillOpacity="0.2"
-          />
-          {/* Evaporating Kettle */}
-          <path
-            d="M 270 120 L 270 170 Q 315 200 360 170 L 360 120 Z"
-            stroke="#64748b"
-            strokeWidth="2"
-            fill="#1e293b"
-            fillOpacity="0.3"
-          />
-          {/* Labels */}
-          <text x="85" y="72" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">
-            CALCINING KILN
-          </text>
-          <text x="200" y="72" fill="#10b981" fontSize="8" fontWeight="bold" textAnchor="middle">
-            LIXIVIATION VAT
-          </text>
-          <text x="315" y="112" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">
-            PEARL ASH KETTLE
           </text>
         </g>
       );

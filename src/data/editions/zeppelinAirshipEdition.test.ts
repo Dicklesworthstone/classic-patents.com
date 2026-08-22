@@ -8,9 +8,11 @@ import {
   zeppelinAirshipParallelReadings,
 } from "./zeppelinAirshipEdition";
 
-test("US 621,195 keeps its incomplete source face withheld until the missing cited figures are sourced", () => {
-  expect(zeppelinAirshipPatent.archivalEdition).toBeUndefined();
-  expect(zeppelinAirshipPatent.originalTextAsset).toBeUndefined();
+test("US 621,195 publishes its source face with the reviewed transcript bound", () => {
+  expect(zeppelinAirshipPatent.archivalEdition).toBe(zeppelinAirshipArchivalEdition);
+  expect(zeppelinAirshipPatent.originalTextAsset?.url).toBe(
+    "/patents/transcripts/us-621195-zeppelin-airship-reviewed.txt",
+  );
   expect(validateCuratedSpecificationEdition(zeppelinAirshipArchivalEdition)).toEqual({
     valid: true,
     errors: [],

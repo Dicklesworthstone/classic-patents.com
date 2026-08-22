@@ -46,9 +46,9 @@ describe("Watt Separate Condenser source-identity hold", () => {
     expect(content).toContain("these vessels I call condensers");
   });
 
-  test("keeps the reconstruction and staged edition out of the public source face", () => {
-    expect(wattSeparateCondenserPatent.originalTextAsset).toBeUndefined();
-    expect(wattSeparateCondenserPatent.archivalEdition).toBeUndefined();
+  test("publishes the bound edition while the reconstruction stays research-only", () => {
+    expect(wattSeparateCondenserPatent.originalTextAsset).toBeDefined();
+    expect(wattSeparateCondenserPatent.archivalEdition).toBe(wattSeparateCondenserArchivalEdition);
     expect(
       wattSeparateCondenserArchivalEdition.blocks.some((block) => block.kind === "figure-sheet"),
     ).toBe(false);

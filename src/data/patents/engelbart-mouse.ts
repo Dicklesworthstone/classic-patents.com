@@ -28,6 +28,15 @@ export const engelbartMousePatent: Patent = {
     "The indicator control remains stationary so long as it is left in place; therefore the cursor remains fixed without any effort of the human operator.",
   originalPdfUrl: "/patents/pdfs/us-3541541-engelbart-mouse.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US3541541A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3541541-engelbart-mouse-reviewed.txt",
+    pageCount: 7,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "2a01a32bc3d4c3eec1745dd77fcb92f1404e02844c640c9c10a451ed3b5791e0",
+  },
+  archivalEdition: engelbartMouseArchivalEdition,
   usptoClassification:
     "G06F 3/033 (Digital computers; Input arrangements using cursor controllers)",
   originalText: `UNITED STATES PATENT OFFICE

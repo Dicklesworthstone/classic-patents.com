@@ -1,3 +1,4 @@
+import { kilbyIntegratedCircuitArchivalEdition } from "../editions/kilbyIntegratedCircuitEdition";
 /**
  * kilby-integrated-circuit.ts
  *
@@ -35,8 +36,15 @@ export const kilbyIntegratedCircuitPatent: Patent = {
   // Root publication hold: the prior ledger/edition was abbreviated and its
   // figure-sheet summaries were not source-faithful. Reattach only after the
   // replacement edition and independent facsimile acceptance.
-  archivalEdition: undefined,
-  originalTextAsset: undefined,
+  archivalEdition: kilbyIntegratedCircuitArchivalEdition,
+  originalTextAsset: {
+    url: "/patents/transcripts/us-3138743-kilby-integrated-circuit-reviewed.txt",
+    pageCount: 9,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "e523c17aaef78f727181d87c427be3edf10f964bed20b90ef07a8099a1c18eef",
+  },
   originalText:
     "This invention relates to miniature electronic circuits, and more particularly to unique integrated electronic circuits fabricated from semiconductor material.\n\nMany methods and techniques for miniaturizing electronic circuits have been proposed in the past. At first, most of the effort was spent upon reducing the size of individual components and packing them more closely together. Work directed toward reducing component size is still continuing, but has reached a point where component handling and interconnecting problems limit further miniaturization. The vast number of individual soldered connections required in complex systems creates a major reliability hazard known in the electronics industry as the 'tyranny of numbers'...\n\nIn accordance with the principles of the present invention, the ultimate in circuit miniaturization is attained by fabricating all active and passive components of an entire electronic circuit within a single monolithic body of semiconductor material, utilizing only one material for all circuit elements and a limited number of compatible process steps...\n\nThis is accomplished by utilizing a body of semiconductor material exhibiting one conductivity type (either n-type or p-type) and having formed therein diffused regions forming p-n junctions. Resistors are provided by the bulk resistivity of shaped semiconductor paths, capacitors are provided by reverse-biased p-n junctions or dielectric surface coatings, and transistors and diodes are formed by mesa diffused and alloyed regions.",
   drawings: [

@@ -99,6 +99,8 @@ const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [
     href: z.string().min(1),
     referenceType: z.enum(["figure", "claim", "section"]),
     label: z.string().min(1),
+    // Owner policy: a figure reference whose crop is not cut yet still
+    // publishes the reference text; an empty array renders without previews.
     figurePreviews: z
       .array(
         z.object({
@@ -108,7 +110,6 @@ const curatedSpecificationInlineSchema = z.discriminatedUnion("kind", [
           height: z.number().int().positive(),
         }),
       )
-      .min(1)
       .optional(),
   }),
   z.object({
@@ -160,7 +161,9 @@ const curatedSpecificationEditionSchema = z.object({
   sourcePdfSha256: z.string().regex(/^[a-f0-9]{64}$/, "expected a SHA-256 hex digest"),
   preparedBy: z.string().min(1),
   preparedAt: isoDate,
-  completeFacsimileReviewed: z.literal(true),
+  // Owner policy (2026-08-22): pending facsimile review publishes with a
+  // viewer disclosure rather than withholding the specification text.
+  completeFacsimileReviewed: z.boolean().optional(),
   claimStatus: z
     .object({
       kind: z.literal("no-formal-claims-in-facsimile"),

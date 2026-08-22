@@ -98,7 +98,7 @@ const sourceCropExtras: Partial<Record<number, readonly FermiSourceCrop[]>> = {
     {
       src: "/patents/figures/us-2708656-fermi-reactor/fig-7-source-crop-v13-rail-end-clean.png",
       width: 400,
-      height: 550,
+      height: 450,
     },
   ],
   8: [

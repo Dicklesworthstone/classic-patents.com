@@ -144,9 +144,11 @@ describe("US 3,541,541 Douglas Engelbart Mouse manual archival edition", () => {
     });
   });
 
-  test("holds publication and discloses the page-five FIG. 5 / disc 100 source erratum", () => {
-    expect(engelbartMousePatent.archivalEdition).toBeUndefined();
-    expect(engelbartMousePatent.originalTextAsset).toBeUndefined();
+  test("publishes the edition while disclosing the page-five FIG. 5 / disc 100 source erratum", () => {
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(engelbartMousePatent.archivalEdition).toBe(engelbartMouseArchivalEdition);
+    expect(engelbartMousePatent.originalTextAsset).toBeDefined();
 
     const readoutParagraph = engelbartMouseArchivalEdition.blocks.find(
       (block) =>

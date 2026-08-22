@@ -12,6 +12,7 @@
 import { manualWattRotaryClaimText } from "@/data/editions/wattRotaryEngineEdition";
 import type { Patent } from "@/types/patent";
 
+import { wattRotaryEngineArchivalEdition } from "../editions/wattRotaryEngineEdition";
 export const wattRotaryEnginePatent: Patent = {
   id: "gb-1306-watt-rotary-engine",
   patentNumber: "GB 1306",
@@ -33,6 +34,15 @@ export const wattRotaryEnginePatent: Patent = {
     "Because the planet wheel is firmly fixed to the connecting rod and does not rotate independently about its own center, it causes the sun wheel, and the main axle and fly-wheel attached thereto, to perform two complete revolutions for every double stroke.",
   originalPdfUrl: "/patents/pdfs/gb-1306-watt-rotary-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/GB178101306A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/gb-1306-watt-rotary-engine-reviewed.txt",
+    pageCount: 2,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "339921eba26299f65c60e0d9d283deb09419fed3260ba6dc7208ecd55d2471f1",
+  },
+  archivalEdition: wattRotaryEngineArchivalEdition,
   usptoClassification: "GB Class 122 (Steam Engines & Gearing)",
 
   originalText:

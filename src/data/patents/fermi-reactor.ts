@@ -4,6 +4,7 @@ import {
 } from "@/data/editions/fermiReactorEdition";
 import type { Patent } from "@/types/patent";
 
+import { fermiReactorArchivalEdition } from "../editions/fermiReactorEdition";
 const FERMI_REACTOR_CALLOUTS_MAP: Record<
   string,
   { label: string; element: string; description: string; x: number; y: number }[]
@@ -624,6 +625,15 @@ export const fermiReactorPatent: Patent = {
     "The Italian navigator has landed in the New World... The earthlings were very friendly.",
   originalPdfUrl: "/patents/pdfs/us-2708656-fermi-reactor.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US2708656A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-2708656-fermi-reactor-reviewed.txt",
+    pageCount: 58,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "e32bdaa34dda164d2ab62273c182c437464f5a2b88e480beabba0fa2aae60ef3",
+  },
+  archivalEdition: fermiReactorArchivalEdition,
   usptoClassification: "G21C 1/00 (Nuclear reactors; Core structures and control)",
   originalText: `UNITED STATES PATENT OFFICE
 2,708,656

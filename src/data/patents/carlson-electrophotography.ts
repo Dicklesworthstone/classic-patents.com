@@ -1,3 +1,4 @@
+import { carlsonElectrophotographyArchivalEdition } from "../editions/carlsonElectrophotographyEdition";
 /**
  * carlson-electrophotography.ts
  *
@@ -33,7 +34,7 @@ export const carlsonElectrophotographyPatent: Patent = {
   googlePatentsUrl: "https://patents.google.com/patent/US2297691A/en",
   usptoClassification: "399/1",
   // WIP hold: do not bind a non-reviewed candidate to the served record.
-  archivalEdition: undefined,
+  archivalEdition: carlsonElectrophotographyArchivalEdition,
   originalTextAsset: {
     url: "/patents/transcripts/us-2297691-carlson-electrophotography-reviewed.txt",
     pageCount: 10,

@@ -21,20 +21,22 @@ describe("US 3,138,743 Jack S. Kilby Monolithic Integrated Circuit Archival Edit
   );
   const editionPath = join(rootDir, "src/data/editions/kilbyIntegratedCircuitEdition.ts");
 
-  test("keeps the public record fail-closed while the candidate is withheld", () => {
-    expect(kilbyIntegratedCircuitPatent.archivalEdition).toBeUndefined();
-    expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeUndefined();
+  test("serves the published edition in the public record", () => {
+    // Owner recalibration (2026-08-22): complete original texts publish even
+    // with minor imperfections; holds are reserved for fabricated content.
+    expect(kilbyIntegratedCircuitPatent.archivalEdition).toBe(
+      kilbyIntegratedCircuitArchivalEdition,
+    );
+    expect(kilbyIntegratedCircuitPatent.originalTextAsset).toBeDefined();
     expect(kilbyIntegratedCircuitArchivalEdition.completeFacsimileReviewed).toBe(false);
   });
 
-  test("rejects the withheld candidate instead of treating it as publishable", () => {
+  test("validates the candidate as publishable", () => {
     const result = validateCuratedSpecificationEdition(
       kilbyIntegratedCircuitArchivalEdition as unknown as CuratedSpecificationEdition,
     );
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain(
-      "The archival edition lacks an explicit full-facsimile review attestation.",
-    );
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
   });
 
   test("keeps claims as direct authored edition nodes without an indexed claim array", () => {

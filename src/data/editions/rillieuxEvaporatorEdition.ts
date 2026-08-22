@@ -85,7 +85,9 @@ export const RILLIEUX_EVAPORATOR_PARALLEL_READINGS: Readonly<Record<number, read
   10: [
     "Independent utility of constituent improvements: the exhaust-steam weighted throttle valve, cascading multi-effect evaporator chain, jacketed evaporating columns, and differential concentration controllers operate together or in independent industrial chemical evaporators.",
   ],
-  17: ["Inventor signature: Norbert Rillieux."],
+  17: [
+    "The inventor's signature, N. RILLIEUX., executes the specification in his own hand; on an 1843 Louisiana grant this signing is what dates and validates the instrument that the subscribing witnesses then attest below.",
+  ],
   18: ["Attestation of subscribing witnesses: Geo. Griscom and Joseph Greer."],
 };
 

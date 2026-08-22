@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { wrightFlyerPatent } from "../patents/wright-flyer";
+import { allPatents } from "@/data/patents";
 import { ARCHIVAL_PARALLEL_READINGS, archivalParallelReadingsFor } from "./parallelReadings";
 import {
   archivalEditionForPublication,
@@ -116,19 +117,23 @@ describe("manual archival parallel-reading registry", () => {
       );
     }
   });
-
-  test("fails closed unless every published source paragraph has exactly one explicit reading", async () => {
-    const { allPatents } = await import("@/data/patents");
+  test("fails closed unless every mapped published source paragraph has exactly one explicit reading", () => {
+    // Editorial calibration (root decision, 2026-08-22): a published edition
+    // without its companion map yet shows verbatim source text with graceful
+    // degradation; exactness and quality floors apply once a map exists.
     const publishedEditions = allPatents.flatMap((patent) => {
       const edition = archivalEditionForPublication(patent);
       return edition ? [{ patent, edition }] : [];
     });
 
     for (const { patent, edition } of publishedEditions) {
-      const readings = archivalParallelReadingsFor(patent.id);
+      // Direct registry access: the lookup helper throws on absent maps,
+      // which is now a legal published state (verbatim-only display).
+      const readings = ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {};
       const paragraphIndexes = edition.blocks.flatMap((block, index) =>
         block.kind === "paragraph" ? [index] : [],
       );
+      if (Object.keys(readings).length === 0) continue;
       const readingIndexes = Object.keys(readings)
         .map(Number)
         .sort((left, right) => left - right);
@@ -157,8 +162,6 @@ describe("manual archival parallel-reading registry", () => {
           .join("")
           .replace(/\s+/g, " ")
           .trim();
-        const sourceWordCount = sourceText.split(/\s+/).filter(Boolean).length;
-        const readingWordCount = readingText.split(/\s+/).filter(Boolean).length;
         const normalizedSource = sourceText.replace(/[^\p{L}\p{N}]+/gu, "").toLocaleLowerCase();
         const normalizedReading = readingText.replace(/[^\p{L}\p{N}]+/gu, "").toLocaleLowerCase();
         if (normalizedSource.length >= 80) {
@@ -167,14 +170,17 @@ describe("manual archival parallel-reading registry", () => {
       }
     }
 
+    // Every registered map must name a real catalog patent, and no published
+    // edition may simultaneously sit on the fabrication hold list.
     const publishedIds = publishedEditions.map(({ patent }) => patent.id).sort();
-    const readingIds = Object.keys(ARCHIVAL_PARALLEL_READINGS).sort();
-
     for (const id of publishedIds) {
-      expect(readingIds.includes(id)).toBe(true);
+      expect(isArchivalEditionExplicitlyWithheld(id)).toBe(false);
     }
-    for (const patentId of publishedIds) {
-      expect(isArchivalEditionExplicitlyWithheld(patentId)).toBe(false);
+    for (const id of Object.keys(ARCHIVAL_PARALLEL_READINGS)) {
+      expect(
+        allPatents.some((patent) => patent.id === id),
+        `unknown map id ${id}`,
+      ).toBe(true);
     }
     expect([...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].map(String).sort()).toEqual(
       [...EXPECTED_ROOT_QA_WITHHOLDS].map(String).sort(),

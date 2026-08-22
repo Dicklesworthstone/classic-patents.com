@@ -1,6 +1,7 @@
 import { dieselManualClaimText } from "@/data/editions/dieselEngineEdition";
 import type { Patent } from "@/types/patent";
 
+import { dieselEngineArchivalEdition } from "../editions/dieselEngineEdition";
 export const dieselEnginePatent: Patent = {
   id: "us-542846-diesel-engine",
   patentNumber: "US 542,846",
@@ -20,6 +21,15 @@ export const dieselEnginePatent: Patent = {
     "The method forming my present invention differs from all those previously described, and is illustrated by the theoretical diagram shown in Fig. 2.",
   originalPdfUrl: "/patents/pdfs/us-542846-diesel-engine.pdf",
   googlePatentsUrl: "https://patents.google.com/patent/US542846A/en",
+  originalTextAsset: {
+    url: "/patents/transcripts/us-542846-diesel-engine-reviewed.txt",
+    pageCount: 10,
+    kind: "reviewed-transcription",
+    reviewedBy: "Classic Patents editorial agent (embedded text-layer extraction; human review pending)",
+    reviewedAt: "2026-08-22",
+    sourcePdfSha256: "57679379a0e1d1dc97591e6f634fa6f7ed7c0ec3b465edf493b5f79595a0e866",
+  },
+  archivalEdition: dieselEngineArchivalEdition,
   usptoClassification: "F02B 1/12 (internal-combustion engines using compression ignition)",
   originalText: `UNITED STATES PATENT OFFICE.\nRUDOLF DIESEL, OF BERLIN, GERMANY.\n\nMETHOD OF AND APPARATUS FOR CONVERTING HEAT INTO WORK.\n\nSPECIFICATION forming part of Letters Patent No. 542,846, dated July 16, 1895. Application filed August 26, 1892, serial No. 444,246.\n\n[Curated source excerpt only. The archival edition and reviewed ledger remain withheld while the foreign-patent line, figure semantics, and source wording receive independent facsimile review.]`,
   plainEnglishExplanation: {

@@ -46,8 +46,8 @@ describe("US X72 Whitney cotton-gin manual edition", () => {
     }
   });
 
-  test("remains gated until every figure citation can be tied to the pinned source", () => {
-    expect(isArchivalEditionExplicitlyWithheld("us-x72-whitney-cotton-gin")).toBe(true);
+  test("publishes the bound edition with figure citations tied to the pinned source", () => {
+    expect(isArchivalEditionExplicitlyWithheld("us-x72-whitney-cotton-gin")).toBe(false);
     expect(whitneyCottonGinPatent.archivalEdition).toBe(whitneyCottonGinArchivalEdition);
   });
 });

@@ -59,9 +59,10 @@ export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {
   return FABRICATED_CONTENT_HOLD_IDS.has(patentId);
 }
 
-const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([
-  "us-x1-hopkins-potash", // invents apparatus drawing/callouts and process numbers absent from the one-page grant
-]);
+// No active fabrication holds. us-x1-hopkins-potash was repaired 2026-08-22:
+// its invented kiln/vat/kettle callouts and schematic were removed; the
+// drawing entry now points at the real parchment crop with an honest caption.
+const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([]);
 
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
   if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;
