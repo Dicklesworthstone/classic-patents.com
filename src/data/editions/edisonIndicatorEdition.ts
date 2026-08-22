@@ -58,13 +58,13 @@ export const edisonIndicatorParallelReadings: Readonly<Record<number, readonly s
     "Formal preamble and legal identification: Thomas A. Edison of Menlo Park, New Jersey, declares an Improvement in Electrical Indicators and identifies Case No. 603.",
   ],
   2: [
-    "The objective is an apparatus for indicating variations in electro-motive force in an electric circuit, especially an electrical-distribution system; the specification reports current through a shunt including part of the lamp's vacuous space and relates that current to the conductor's incandescence or candle-power.",
+    "The objective is an apparatus for indicating variations in electro-motive force in an electric circuit, especially an electrical-distribution system. Edison connects an indicating device into the shunt path around the lamp, so current through the shunt — which includes part of the lamp's vacuous space — tracks the conductor's incandescence, making candle-power changes directly readable and available for regulation.",
   ],
   3: [
     "Broad statement of application: using the described shunt current to indicate or regulate electro-motive-force variations, or to affect circuit-controlling and other electrical apparatus.",
   ],
   4: [
-    "Operating embodiment in incandescent lighting: place a platinum plate or wire between the carbon-conductor limbs, connect it to the observed circuit, add a positive lamp-circuit connection to one galvanometer terminal, connect the platinum through a glass-sealed wire to the other, and use the torsional zero to show deviations above or below normal.",
+    "Operating embodiment in incandescent lighting: place a thin platinum plate or wire within the standard lamp's globe, preferably between the limbs of its carbon conductor, and connect it to the circuit under observation. Run an additional connection from the positive terminal of the lamp-circuit to one galvanometer terminal, and lead from the platinum piece through a wire sealed into the glass to the other terminal. A torsional device holds the needle at zero under normal current, so any rise or fall of electro-motive force deflects it oppositely, making candle-power drift readable at a glance.",
   ],
   5: [
     "Reference to the patent drawing sheets: Figure 1 depicting the general circuit and galvanometer mechanism; Figure 2 depicting a shunt test circuit with calibration lamp A'; Figure 3 illustrating circuit-closing relay contacts; and Figure 4 showing the construction of the indicator bulb.",
@@ -137,13 +137,13 @@ export const edisonIndicatorArchivalEdition: CuratedSpecificationEdition = {
         "platinum-electrode",
         "A thin platinum plate, or platinum wire, placed preferably between the limbs of the carbon conductor and connected with the circuit whose electrical condition is to be indicated.",
       ),
-      ", preferably a thin plate, though platinum wire may be used, placed preferably between the limbs of its carbon conductor, such platinum piece being in connection with the circuit whose electrical condition is to be observed, connecting said terminals similarly to those of the other lamps of the system, and making an additional connection from the positive terminal, preferably of the lamp-circuit, to one terminal of a galvanometer or other indicator, and from the platinum piece through a wire sealed in the glass to the other terminal of the galvanometer or indicator. The galvanometer, if one is used, is provided ",
+      ", preferably a thin plate, though platinum wire may be used, placed preferably between the limbs of its carbon conductor, such platinum piece being in connection with the circuit whose electrical condition is to be observed, connecting said terminals similarly to those of the other lamps of the system, and making an additional connection from the positive terminal, preferably of the lamp-circuit, to one terminal of a galvanometer or other indicator, and from the platinum piece through a wire sealed in the glass to the other terminal of the galvanometer or indicator. The ",
       term(
         "galvanometer",
         "torsion-galvanometer",
         "The indicator described with a torsional device that holds its needle at zero under a normal current, so variations above or below normal deflect it in opposite directions.",
       ),
-      " with a torsional device for holding its needle at zero under a normal current, so that variations above or below the normal deflect the needle in one direction or the other. If the electro-motive force in the system, and consequently the candle-power of the lamps, increases, the indicating-lamp varies with the rest, and the current from it to the galvanometer is increased, causing the deflection of the galvanometer-needle; and, conversely, a decrease in electro-motive force in the system produces an opposite deflection. The galvanometer-needle may be made to close circuit to electrically-operated devices for accomplishing the automatic regulation of the generator supplying current to the system, or for any other purpose.",
+      ", if one is used, is provided with a torsional device for holding its needle at zero under a normal current, so that variations above or below the normal deflect the needle in one direction or the other. If the electro-motive force in the system, and consequently the candle-power of the lamps, increases, the indicating-lamp varies with the rest, and the current from it to the galvanometer is increased, causing the deflection of the galvanometer-needle; and, conversely, a decrease in electro-motive force in the system produces an opposite deflection. The galvanometer-needle may be made to close circuit to electrically-operated devices for accomplishing the automatic regulation of the generator supplying current to the system, or for any other purpose.",
     ),
     p(
       "My invention is illustrated in the annexed drawings. ",

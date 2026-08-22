@@ -58,7 +58,7 @@ The length of the secondary coil B or of each secondary coil when two are used, 
 
 Coils of that character herein described have several important advantages. As the potential increases with the number of turns the difference of potential between adjacent turns is comparatively small, and hence a very high potential, impracticable with ordinary coils, may be successfully maintained.
 
-As the secondary is electrically connected with the primary the latter will be at substantially the same potential as the adjacent portions of the secondary, so that there will be no tendency for sparks to jump from one to the other and destroy the insulation. Moreover, as both primary and secondary are surrounded and the line-terminal of the coil carried and protected to a point remote from the apparatus the danger of a discharge through the body of a person handling or approaching the apparatus is reduced to a minimum.
+As the secondary is electrically connected with the primary the latter will be at substantially the same potential as the adjacent portions of the secondary, so that there will be no tendency for sparks to jump from one to the other and destroy the insulation. Moreover, as both primary and secondary are grounded and the line-terminal of the coil carried and protected to a point remote from the apparatus the danger of a discharge through the body of a person handling or approaching the apparatus is reduced to a minimum.
 
 I am aware that an induction-coil in the form of a flat spiral is not in itself new, and this I do not claim; but
 

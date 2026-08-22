@@ -195,7 +195,12 @@ export const teslaCoil593138ArchivalEdition: CuratedSpecificationEdition = {
       figure("Fig. 3"),
       {
         kind: "text",
-        text: ". In this figure L L are spools of insulating material upon which the secondary is wound—in the present case, however, in two sections, so as to constitute really two secondaries. The primary C is a spirally-wound flat strip surrounding both secondaries B.",
+        text: ". In ",
+      },
+      figure("Fig. 3", "this figure"),
+      {
+        kind: "text",
+        text: " L L are spools of insulating material upon which the secondary is wound—in the present case, however, in two sections, so as to constitute really two secondaries. The primary C is a spirally-wound flat strip surrounding both secondaries B.",
       },
     ]),
     paragraph([

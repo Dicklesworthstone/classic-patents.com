@@ -101,7 +101,7 @@ export const howeSewingMachineArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "ELIAS HOWE, JR., OF CAMBRIDGE, MASSACHUSETTS.",
         "IMPROVEMENT IN SEWING-MACHINES.",
-        "No. 4,750. Specification forming part of Letters Patent, dated September 10, 1846.",
+        "Specification forming part of Letters Patent No. 4,750, dated September 10, 1846.",
       ],
     },
     {

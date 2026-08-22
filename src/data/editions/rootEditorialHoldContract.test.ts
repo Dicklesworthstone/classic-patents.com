@@ -64,20 +64,11 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2981877-noyce-ic",
   "us-2292387-lamarr-frequency-hopping",
   "us-542846-diesel-engine",
-  "us-821393-wright-flyer",
-  "us-593138-tesla-coil",
   "us-808897-carrier-air-conditioner",
-  "us-4136359-wozniak-apple",
-  "us-157124-glidden-barbed-wire",
   "us-x1-hopkins-potash",
   "us-135245-pasteur-fermentation",
-  "us-4750-howe-sewing-machine",
-  "us-200521-edison-phonograph",
   "us-2495429-spencer-microwave",
-  "us-307031-edison-indicator",
-  "us-361931-daimler-engine",
   "us-879532-de-forest-audion",
-  "us-942699-baekeland-bakelite",
   "us-971501-haber-ammonia",
   "us-6120588-eink",
   "us-6285999-pagerank",
@@ -86,7 +77,22 @@ const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-7479949-multitouch",
 ] as const;
 
-const SOURCE_QA_RELEASED_EDITIONS = ["us-3633-goodyear-rubber"] as const;
+const SOURCE_QA_RELEASED_EDITIONS = [
+  "us-x8277-mccormick-reaper",
+  "us-132-davenport-electric-motor",
+  "us-3633-goodyear-rubber",
+  "us-6469-lincoln-buoy",
+  "us-78317-nobel-dynamite",
+  "us-105338-hyatt-celluloid",
+  "us-821393-wright-flyer",
+  "us-593138-tesla-coil",
+  "us-157124-glidden-barbed-wire",
+  "us-4136359-wozniak-apple",
+  "us-4750-howe-sewing-machine",
+  "us-200521-edison-phonograph",
+  "us-942699-baekeland-bakelite",
+  "us-361931-daimler-engine",
+] as const;
 
 describe("root editorial publication holds", () => {
   test("keeps every rejected edition unavailable through the actual visitor lookup", () => {

@@ -623,226 +623,77 @@ gh the text of the document itself may not match the
      documents first and low ranking documents last. The rank
 n this case is a function which combines all of the above
 rs such as the objective ranking and textual matching.
-sired, the results can be grouped by category or site as
        It will be clear to one skilled in the art that the above
      embodiments may be altered in many ways without depart
      ing from the scope of the invention. Accordingly, the scope
      of the invention should be determined by the following
      claims and their legal equivalents.
- What is claimed is:
-  1. A computer implemented method of scoring a plurality
-of linked documents, comprising:
- obtaining a plurality of documents, at least some of the
-     documents being linked documents, at least some of the
-          documents being linking documents, and at least some
-          of the documents being both linked documents and
-          linking documents, each of the linked documents being
-          pointed to by a link in one or more of the linking
-          documents;
-       assigning a score to each of the linked documents based
-          on scores of the one or more linking documents and processing the linked documents according to their
-          scores.
+
+What is claimed is:
+
+1. A computer implemented method of scoring a plurality of linked documents, comprising: obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; assigning a score to each of the linked documents based on scores of the one or more linking documents and processing the linked documents according to their scores.
 
 --- REVIEWED TRANSCRIPTION PAGE 10 OF 12 ---
 
-2. The method of claim 1, wherein the assigning includes:
-  identifying a weighting factor for each of the linking
-    documents, the weighting factor being dependent on
-    the number of links to the one or more linking
-    documents, and
-  adjusting the score of each of the one or more linking
+2. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on the number of links to the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
+3. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on an estimation of a probability that a linking document will be accessed, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
-    documents based on the identified weighting factor.
-  3. The method of claim 1, wherein the assigning includes:
+4. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on the URL, host, domain, author, institution, or last update time of the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
-  identifying a weighting factor for each of the linking
+5. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on whether the one or more linking documents are selected documents or roots, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
-     documents, the weighting factor being dependent on an 10
-    estimation of a probability that a linking document will
-    be accessed, and
+6. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on the importance, visibility or textual emphasis of the links in the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
-  adjusting the score of each of the one or more linking
+7. The method of claim 1, wherein the assigning includes: identifying a weighting factor for each of the linking documents, the weighting factor being dependent on a particular user's preferences, the rate at which users access the one or more linking documents, or the importance of the one or more linking documents, and adjusting the score of each of the one or more linking documents based on the identified weighting factor.
 
+8. A computer implemented method of determining a score for a plurality of linked documents, comprising: obtaining a plurality of linked documents; selecting one of the linked documents; assigning a score to the selected document that is dependent on scores of documents that link to the selected document; and processing the linked documents according to their scores.
 
-    documents based on the identified weighting factor.
+9. A computer implemented method of ranking a plurality of linked documents, comprising: obtaining a plurality of documents, at least some of the documents being linked documents and at least some of the documents being linking documents, at least some of the linking documents also being linked documents, each of the linked documents being pointed to by a link in one or more of the linking documents; generating an initial estimate of a rank for each of the linked documents; updating the estimate of the rank for each of the linked documents using ranks for the one or more linking documents; and processing the linked documents according to their updated ranks.
 
-  4. The method of claim 1, wherein the assigning includes:
+10. A computer implemented method of ranking a plurality of linked documents, comprising: automatically performing a random traversal of a plurality of linked documents, the random traversal including selecting a random link to traverse in a current linked document; for each linked document that is traversed, assigning a rank to the linked document that is dependent on the number of times the linked document has been traversed; and processing the plurality of linked documents according to their rank.
 
-  identifying a weighting factor for each of the linking
-    documents, the weighting factor being dependent on
-    the URL, host, domain, author, institution, or last
-    update time of the one or more linking documents, and
-  adjusting the score of each of the one or more linking
-    documents based on the identified weighting factor.
-  5. The method of claim 1, wherein the assigning includes:
-  identifying a weighting factor for each of the linking
-    documents, the weighting factor being dependent on
-    Whether the one or more linking documents are selected
+11. The method of claim 10, wherein there is a predetermined probability that the next linked document to be traversed will be a random one according to a distribution of the plurality of linked documents.
 
-    documents or roots, and
+12. The method of claim 1, wherein the processing includes: displaying links to the linked documents as a directory listing.
 
-  adjusting the score of each of the one or more linking
-    documents based on the identified weighting factor.
+13. The method of claim 1, wherein the processing includes: displaying links to the linked documents, and displaying annotations representing the score of each of the linked documents.
 
-  6. The method of claim 1, wherein the assigning includes:
-  identifying a weighting factor for each of the linking
-    documents, the weighting factor being dependent on
-    the importance, visibility or textual emphasis of the
-    links in the one or more linking documents, and
-  adjusting the score of each of the one or more linking
-    documents based on the identified weighting factor.
-  7. The method of claim 1, wherein the assigning includes:
-  identifying a weighting factor for each of the linking
-     documents, the weighting factor being dependent on a
-    particular user’s preferences, the rate at which users
-    access the one or more linking documents, or the
-    importance of the one or more linking documents, and
-  adjusting the score of each of the one or more linking
-    documents based on the identified weighting factor.
-  8. A computer implemented method of determining a score for a plurality of linked documents, comprising:
-  obtaining a plurality of linked documents;
-  selecting one of the linked documents;
-  assigning a score to the selected document that is dependent on scores of documents that link to the selected
-    document; and
-  processing the linked documents according to their
-    scores.
-   9. A computer implemented method of ranking a plurality
-of linked documents, comprising:
-  obtaining a plurality of documents, at least some of the
-    documents being linked documents and at least some of
-    the documents being linking documents, at least some
-    of the linking documents also being linked documents,
-    each of the linked documents being pointed to by a link
-    in one or more of the linking documents;
-  generating an initial estimate of a rank for each of the
-    linked documents;
-  updating the estimate of the rank for each of the linked documents using ranks for the one or more linking
-    documents; and
+14. The method of claim 13, wherein the annotations are bars, icons, or text.
 
-     processing the linked documents according to their
-        updated ranks.
-     10. A computer implemented method of ranking a plurality of linked documents, comprising:
-     automatically performing a random traversal of a plurality
-       of linked documents, the random traversal including
-        selecting a random link to traverse in a current linked
-        document;
-     for each linked document that is traversed, assigning a
-        rank to the linked document that is dependent on the
-        number of times the linked document has been traversed; and
-     processing the plurality of linked documents according to
-        their rank.
-     11. The method of claim 10, wherein there is a predetermined probability that the next linked document to be
-   traversed will be a random one according to a distribution of
-   the plurality of linked documents.
-      12. The method of claim 1, wherein the processing
-   includes:
-      displaying links to the linked documents as a directory
-        listing.
-     13. The method of claim 1, wherein the processing
-   includes:
-      displaying links to the linked documents, and
-      displaying annotations representing the score of each of
-         the linked documents.
-      14. The method of claim 13, wherein the annotations are
-   bars, icons, or text.
-      15. The method of claim 1, further comprising:
-      processing the linked documents based on textual match
-        ing.
-     16. The method of claim 15, wherein the textual matching
-   includes matching anchor text associated with the links.
-     17. The method of claim 1, further comprising:
-     processing the linked documents based on groupings of
-        the linked documents.
-     18. A computer-readable medium that stores instructions
-   executable by one or more processing devices to perform a
-   method for determining scores for a plurality of linked
-   documents, comprising:
-     instructions for obtaining a plurality of documents, at
-        least some of the documents being linked documents, at
-        least some of the documents being linking documents,
-        and at least some of the documents being both linked
-        documents and linking documents, each of the linked
-        documents being pointed to by a link in one or more of
-        the linking documents;
-     instructions for determining a score for each of the linked
-        documents based on scores for the one or more linking
-        documents; and
-     instructions for processing the linked documents accord
-        ing to their scores.
-  19. A computer-readable medium that stores instructions
-executable by one or more processors to perform a method
-   for scoring documents, comprising:
-     instructions for searching a plurality of documents, at
-        least some of the documents being linked documents
-        and at least some of the documents being linking
-        documents, at least some of the linking documents also
-        being linked documents, each of the linked documents
-        being pointed to by a link in one or more of the linking
-        documents;
-     instructions for scoring each of the linked documents
-        based on scores for the one or more linking documents;
-        and
+15. The method of claim 1, further comprising: processing the linked documents based on textual matching.
+
+16. The method of claim 15, wherein the textual matching includes matching anchor text associated with the links.
+
+17. The method of claim 1, further comprising: processing the linked documents based on groupings of the linked documents.
+
+18. A computer-readable medium that stores instructions executable by one or more processing devices to perform a method for determining scores for a plurality of linked documents, comprising: instructions for obtaining a plurality of documents, at least some of the documents being linked documents, at least some of the documents being linking documents, and at least some of the documents being both linked documents and linking documents, each of the linked documents being pointed to by a link in one or more of the linking documents; instructions for determining a score for each of the linked documents based on scores for the one or more linking documents; and instructions for processing the linked documents according to their scores.
+
+19. A computer-readable medium that stores instructions executable by one or more processors to perform a method for scoring documents, comprising: instructions for searching a plurality of documents, at least some of the documents being linked documents and at least some of the documents being linking documents, at least some of the linking documents also being linked documents, each of the linked documents being pointed to by a link in one or more of the linking documents; instructions for scoring each of the linked documents based on scores for the one or more linking documents; and
 
 --- REVIEWED TRANSCRIPTION PAGE 11 OF 12 ---
 
-instructions for providing the linked documents based on
-     their scores.
-   20. The method of claim 1, wherein the assigning a score
-includes:
-   determining the score based on (1) a number of the linking
-      documents that link to the linked document and (2) an
-     importance of the linking documents.
-  21. The method of claim 20, wherein the importance of
-the linking documents is based on a number of documents
-that link to the linking documents.
-   22. The method of claim 1, wherein the assigning a score
-includes:
-  associating one or more backlinks with each of the linked
-     documents, each of the backlinks corresponding to one
-     of the linking documents that links to the linked
-     document,
-  assigning a weight to each of the backlinks, and
-  determining a score for each of the linked documents
-    based on a number of backlinks for the linked docu
-     ment and the weights assigned to the backlinks.
-  23. The method of claim 22, wherein the processing of the
-linked documents includes:
-  organizing the linked documents based on the determined
-     scores.                                              25
-  24. The method of claim 22, wherein the assigning a
-weight includes:
-  assigning different weights to at least some of the back
-    links associated with at least one of the linked docu
-     ments.
+instructions for providing the linked documents based on their scores.
 
-     25. The method of claim 1, wherein the assigning a score
-   includes:
-     associating one or more backlinks with each of the linked
-       documents, each of the backlinks corresponding to one
-       of the linking documents that links to the linked
-       document,
-     assigning a weight to each of the backlinks, and
-     determining a score for each of the linked documents
-       based on a sum of the weights assigned to the backlinks
-       associated with the linked document.
-     26. The method of claim 25, wherein the weights assigned
-   to each of the backlinks are independent of text of the
-   corresponding linking documents.
-     27. The method of claim 1, wherein the assigning a score
-   includes:
-      determining the score primarily based on linking infor
-        mation.
-     28. The method of claim 1, wherein the assigning a score
-   includes:
-      determining the score substantially independent of user
-       query content.
-  29. The method of claim 1, wherein the assigning a score
-includes:
-   iteratively determining the score for a linked document,
-      the score being primarily based on document-linking
-       information and substantially independent of user
-       query content.
+20. The method of claim 1, wherein the assigning a score includes: determining the score based on (1) a number of the linking documents that link to the linked document and (2) an importance of the linking documents.
+
+21. The method of claim 20, wherein the importance of the linking documents is based on a number of documents that link to the linking documents.
+
+22. The method of claim 1, wherein the assigning a score includes: associating one or more backlinks with each of the linked documents, each of the backlinks corresponding to one of the linking documents that links to the linked document, assigning a weight to each of the backlinks, and determining a score for each of the linked documents based on a number of backlinks for the linked document and the weights assigned to the backlinks.
+
+23. The method of claim 22, wherein the processing of the linked documents includes: organizing the linked documents based on the determined scores.
+
+24. The method of claim 22, wherein the assigning a weight includes: assigning different weights to at least some of the backlinks associated with at least one of the linked documents.
+
+25. The method of claim 1, wherein the assigning a score includes: associating one or more backlinks with each of the linked documents, each of the backlinks corresponding to one of the linking documents that links to the linked document, assigning a weight to each of the backlinks, and determining a score for each of the linked documents based on a sum of the weights assigned to the backlinks associated with the linked document.
+
+26. The method of claim 25, wherein the weights assigned to each of the backlinks are independent of text of the corresponding linking documents.
+
+27. The method of claim 1, wherein the assigning a score includes: determining the score primarily based on linking information.
+
+28. The method of claim 1, wherein the assigning a score includes: determining the score substantially independent of user-query content.
+
+29. The method of claim 1, wherein the assigning a score includes: iteratively determining the score for a linked document, the score being primarily based on document-linking information and substantially independent of user-query content.
 
 --- REVIEWED TRANSCRIPTION PAGE 12 OF 12 ---
 

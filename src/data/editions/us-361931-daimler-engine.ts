@@ -88,7 +88,7 @@ export const daimlerMarineEngineArchivalEdition: CuratedSpecificationEdition = {
         "UNITED STATES PATENT OFFICE.",
         "GOTTLIEB DAIMLER, OF CANNSTADT, WÜRTEMBERG, GERMANY.",
         "EXPLOSIVE-GAS MARINE ENGINE.",
-        "No. 361,931. Specification forming part of Letters Patent No. 361,931, dated April 26, 1887.",
+        "Specification forming part of Letters Patent No. 361,931, dated April 26, 1887.",
         "Application filed November 9, 1886. Serial No. 218,411. (No model.)",
       ],
     },

@@ -42,6 +42,7 @@ import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
 import { HOPKINS_PARALLEL_READINGS } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
+import { kwolekKevlarParallelReadings } from "./kwolekKevlarEdition";
 import { lamarrFrequencyHoppingParallelReadings } from "./lamarrFrequencyHoppingEdition";
 import { landPolaroidParallelReadings } from "./landPolaroidEdition";
 import { lincolnBuoyParallelReadings } from "./lincolnBuoyEdition";
@@ -145,6 +146,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-3353115-maiman-ruby-laser": maimanRubyLaserParallelReadings,
   "us-2929922-townes-laser": townesLaserParallelReadings,
   "us-3541541-engelbart-mouse": engelbartMouseParallelReadings,
+  "us-3671542-kwolek-kevlar": kwolekKevlarParallelReadings,
   "us-3858232-boyle-smith-ccd": boyleSmithCcdParallelReadings,
   "us-4136359-wozniak-apple": wozniakAppleParallelReadings,
   "us-6120588-eink": einkParallelReadings,

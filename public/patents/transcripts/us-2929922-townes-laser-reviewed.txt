@@ -657,61 +657,12 @@ pumping energy and transparent to or absorptive of other
 radiation) ‘suitable for retaining the negative temperature
 medium and including reflective end assemblies may be
 easily: substituted therefor. ;
-What is claimed is: ;
-“1, A communications system for operation in the in-
-rared, visible, or ultraviolet regions of the electromagnetic
-wave spectrum comprising a monochromatic maser gen-
-erator, a coherent modulated maser amplifier, a modu-
-lating ‘source, and-a detector; said generator comprising a
-chamber having end reflective parallel members and trans-
-a negative temperature medium’
-disposed within said chamber, and means arranged about
-said chamber for pumping said medium; said amplifier
-comprising a chamber having end reflective parallel mem-
-bers and transparent side members, a negative tempera-
-said chamber, means ar-
-ranged about. said chamber for pumping ‘said medium,
-and coupling means for abstracting from one end of said
-chamber-.an‘ amplified counterpart of the energy trans-
-mitted. into the other'end thereof and for directing Said
-amplified counterpart at said detector. eas
-2. A communications system for operation in the in-
-frared, visible or ultraviolet regions of the electromag-
-netic wave spectrum comprising a monochromatic maser
-generator, a coherent maser amplifier, said generator and
-amplifier including means for modulating the output of
-said generator in accordance with signal information, and
-a detector; said generator comprising a chamber having a
-length which is substantially greater than its transverse
-dimension and having partially reflective parallel end
-members and nonreflective side members, a negative tem-
-perature medium disposed within. said chamber and char-
-acterized by at least three distinct energy levels, two of
-which have a separation in the frequency range of interest,
-means for pumping said medium so that a population in-
-version is produced therein between said two separated
-energy levels, and means for abstracting from said cham-
-ber and directing at the amplifier input the energy of a par-
-ticular mode of electromagnetic vibration; said amplifier
-comprising a chamber having a length which is substan-
-tially greater than its transverse dimension and having par-
-tially--reflective parallel end members and nonreflective
-side members, a negative temperature medium disposed
-within said chamber and characterized by at least three
-distinct energy levels, two of which have a separation in
-the frequency range of interest, means for pumping said
+What is claimed is:
 
-_ Medium so that a population inversion is produced there-
+1. A communications system for operation in the infrared, visible, or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source, and a detector; said generator comprising a chamber having end reflective parallel members and transparent side members, a negative temperature medium disposed within said chamber, and means arranged about said chamber for pumping said medium; said amplifier comprising a chamber having end reflective parallel members and transparent side members, a negative temperature medium disposed within said chamber, means arranged about said chamber for pumping said medium, and coupling means for abstracting from one end of said chamber an amplified counterpart of the energy transmitted into the other end thereof and for directing said amplified counterpart at said detector.
 
-in between said two separated energy levels, means. for
-abstracting from said chamber the energy of a particular
-mode of electromagnetic vibration representing an ampli-
+2. A communications system for operation in the infrared, visible or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent maser amplifier, said generator and amplifier including means for modulating the output of said generator in accordance with signal information, and a detector; said generator comprising a chamber having a length which is substantially greater than its transverse dimension and having partially reflective parallel end members and nonreflective side members, a negative temperature medium disposed within said chamber and characterized by at least three distinct energy levels, two of which have a separation in the frequency range of interest, means for pumping said medium so that a population inversion is produced therein between said two separated energy levels, and means for abstracting from said chamber and directing at the amplifier input the energy of a particular mode of electromagnetic vibration; said amplifier comprising a chamber having a length which is substantially greater than its transverse dimension and having partially reflective parallel end members and nonreflective side members, a negative temperature medium disposed within said chamber and characterized by at least three distinct energy levels, two of which have a separation in the frequency range of interest, means for pumping said medium so that a population inversion is produced therein between said two separated energy levels, means for abstracting from said chamber the energy of a particular mode of electromagnetic vibration representing an amplified and modulated replica of the generator output, and means for directing said replica at said detector.
 
-- fied and modulated replica of the generator output, and
-
-rf)
-
-means for directing said replica at said detector,
 3. A communications system for operation in the infrared, visible or ultraviolet regions of the electromagnetic wave spectrum comprising a monochromatic maser generator, a coherent modulated maser amplifier, a modulating source and a detector, said amplifier including means for establishing a magnetic field parallel to the longitudinal axis of said chamber, said modulating source being coupled to said magnetic means, the radiative output of said generator being directed at said amplifier, and the radiative output of said amplifier, constituting an amplified and modulated counterpart of the radiative output of said generator, being directed at said detector.
 
 --- REVIEWED TRANSCRIPTION PAGE 5 OF 5 ---

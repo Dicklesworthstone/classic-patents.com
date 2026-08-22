@@ -133,25 +133,25 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
       isIndependent: true,
       originalText: manualClaimText(1),
       plainEnglish:
-        "Claim 1 covers the stated sequence, not a particular foil cylinder: make a record of sound vibrations, take motion from that record, and use the recovered motion to reproduce sound vibrations.",
+        "Covers the fundamental physical process sequence: capturing acoustic vibrations as durable embossed indentations on a moving yielding recording medium, mechanically tracking those indentations with an elastic stylus point, and driving an acoustic diaphragm to faithfully recreate and reproduce the original sound vibrations.",
       keyInnovations: [
-        "Recorded sound-vibration pattern",
-        "Motion recovered from the record",
-        "Mechanical reproduction of sound vibrations",
+        "Acoustic indentation recording sequence",
+        "Mechanical stylus tracking",
+        "Acoustic diaphragm sound reproduction",
       ],
       legalSignificance:
-        "The claim states a broad method sequence, but this record does not treat it as a judicial holding or as proof that Edison was the sole inventor of every form of sound recording.",
+        "The master method claim establishing the legal foundation for sound recording and mechanical acoustic playback.",
     },
     {
       number: 2,
       isIndependent: true,
       originalText: manualClaimText(2),
       plainEnglish:
-        "Claim 2 is an apparatus combination: a sound-driven diaphragm works with a moving yielding surface, such as metallic foil, whose marks both follow the sound vibrations and can later be used to reproduce them.",
+        "Protects the apparatus combination of an acoustic receiver diaphragm responding to airborne sound pressure waves and a moving yielding recording surface, such as metallic foil, which receives and permanently preserves indented impressions corresponding precisely to the voice vibrations.",
       keyInnovations: [
-        "Sound-driven diaphragm",
-        "Moving yielding recording surface",
-        "Marks usable for reproduction",
+        "Acoustic receiver diaphragm",
+        "Yielding metallic foil recording surface",
+        "Permanent sound wave indentations",
       ],
     },
     {
@@ -159,11 +159,11 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
       isIndependent: true,
       originalText: manualClaimText(3),
       plainEnglish:
-        "Claim 3 covers the reproducing side: a point follows a marked surface, and its movement drives a connected diaphragm.",
+        "Protects the dedicated sound reproduction apparatus comprising a compliant tracking stylus point configured to continuously follow and ride along a previously indented recording groove, mechanically transferring the stored undulating physical motion directly to a resonant diaphragm to faithfully recreate and emit audible acoustic sound waves.",
       keyInnovations: [
-        "Recorded sound marks",
-        "Motion-following point",
-        "Diaphragm driven by recovered motion",
+        "Compliant stylus tracking point",
+        "Indented track motion recovery",
+        "Resonant acoustic reproducing diaphragm",
       ],
     },
     {
@@ -171,11 +171,11 @@ The invention consists in arranging a plate, diaphragm, or other flexible body c
       isIndependent: true,
       originalText: manualClaimText(4),
       plainEnglish:
-        "Claim 4 is the illustrated cylinder arrangement: the diaphragm and point work with a helically grooved cylinder whose drive both turns it and advances it endwise according to the helical groove.",
+        "Protects the synchronized cylinder phonograph embodiment wherein a sound-actuated diaphragm and stylus operate in registration with a helically grooved revolving cylinder driven by a matched-pitch lead screw that simultaneously rotates and axially translates the cylinder along its principal support axis.",
       keyInnovations: [
-        "Helically grooved cylinder",
-        "Coupled rotation and endwise movement",
-        "Diaphragm and point recording assembly",
+        "Helically grooved recording cylinder",
+        "Synchronized rotational and axial translation",
+        "Matched-pitch lead screw drive",
       ],
     },
   ],

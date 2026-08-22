@@ -367,7 +367,7 @@ export const edisonPhonographParallelReadings: Readonly<Record<number, readonly 
     "After a recording reaches its limit toward O, the cylinder returns toward P. The same marked material is then positioned for replay instead of recording.",
   ],
   18: [
-    "Tube C is the reproducer. Its lighter diaphragm carries spring D and a finer point that follows the recorded indentations. A thread or direct connection carries that point's motion to diaphragm F.",
+    "Reproducing tube C incorporates a sensitive diaphragm F that is typically lighter than recording diaphragm G to maximize acoustic response. Positioned directly in front of this diaphragm is a resilient tracing spring D carrying a fine, rounded stylus point shorter and sharper than the recording point, precisely aligned to ride within the helical groove of indentations. A tensioned silk thread or mechanical linkage couples spring D directly to diaphragm F, converting each mechanical deflection of the tracing point into acoustic diaphragm vibration as the recorded foil advances.",
   ],
   19: [
     "As the cylinder turns beneath the tracer, the depth and length of each mark move spring D. That motion reaches the reproducing diaphragm and makes it repeat the pattern attributed to the first diaphragm.",

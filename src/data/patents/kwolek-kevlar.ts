@@ -170,7 +170,7 @@ I claim as my invention:
       dependsOn: [1],
       originalText: kwolekKevlarClaims[1].text,
       plainEnglish:
-        "A dependent dope claim narrowing the liquid medium of claim 1 specifically to concentrated sulfuric acid of greater than about 98 percent by weight concentration, which may contain free sulfur trioxide (SO3).",
+        "Protects the anisotropic spinning dope of claim 1 wherein the liquid solvent medium is specifically concentrated sulfuric acid of greater than about 98 percent by weight concentration, which may optionally contain free sulfur trioxide ($SO_3$).",
       keyInnovations: [
         "Concentrated sulfuric acid solvent system (>98% H2SO4)",
         "Dissolution of rigid-rod polyamides without chain degradation",

@@ -121,7 +121,7 @@ export const roombaArchivalEdition: CuratedSpecificationEdition = {
         "Date of Patent: Jul. 22, 2003",
         "ROBOT OBSTACLE DETECTION SYSTEM",
         "Inventor: Joseph L. Jones, Acton, MA (US)",
-        "Assignee: iRobot Corporation, Burlington, MA (US)",
+        "Assignee: iRobot Corporation, Burlington, MA",
         "Application No.: 09/768,773 · Filed: Jan. 24, 2001",
       ],
     },

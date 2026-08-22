@@ -17,7 +17,15 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-319596-maxim-machine-gun": { fireRateRpm: same("firingRate") },
   "us-124404-westinghouse-air-brake": { brakePressurePsi: same("trainPipePressure") },
   "us-347140-thomson-welding": { currentAmperes: same("weldCurrentAmps") },
-  "us-105338-hyatt-celluloid": { tempCelsius: same("steamTempC") },
+  "us-105338-hyatt-celluloid": {
+    tempCelsius: same("steamTempC"),
+    ramPressurePsi: {
+      canonical: "hydraulicPressureMpa",
+      // PSI → MPa
+      toCanonical: (psi) => Number((psi / 145.038).toFixed(4)),
+      fromCanonical: (mpa) => Number((mpa * 145.038).toFixed(1)),
+    },
+  },
   "us-78317-nobel-dynamite": {
     ngConcentration: same("ngConcentrationPct"),
     nitroglycerinRatioPct: same("ngConcentrationPct"),
@@ -25,10 +33,16 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
   "us-135245-pasteur-fermentation": { tempCelsius: same("wortTempC") },
   "us-247804-delaval-separator": { rotorRpm: same("bowlRpm") },
   "us-200521-edison-phonograph": { cylinderRpm: same("mandrelRpm") },
-  "us-x8277-mccormick-reaper": { groundSpeedMph: same("forwardSpeedMph") },
+  "us-x8277-mccormick-reaper": {
+    groundSpeedMph: same("forwardSpeedMph"),
+    draftSpeedMph: same("forwardSpeedMph"),
+  },
   "us-2524035-bardeen-transistor": { pointSpacingMicrons: same("pointSpacing") },
   "us-31128-otis-elevator": { cableTensionPct: same("cableTension") },
-  "us-586193-marconi-radio": { mastHeightM: same("aerialHeight") },
+  "us-586193-marconi-radio": {
+    mastHeightM: same("aerialHeight"),
+    sparkVoltageKv: same("sparkVoltage"),
+  },
   "us-120057-gramme-dynamo": {
     rotorRpm: same("shaftRate"),
     shaftRpm: same("shaftRate"),
@@ -106,6 +120,22 @@ export const PATENT_PARAM_ALIASES: Record<string, Record<string, ParamAlias>> = 
     sprayRate: same("sprayRatePct"),
     plateFaces: same("separatorFaces"),
   },
+  "us-2708656-fermi-reactor": { controlRodWithdrawalPct: same("rodWithdrawal") },
+  "us-6469-lincoln-buoy": {
+    bellowsInflationPct: same("inflationPct"),
+    steamboatWeightTons: same("weightTons"),
+    riverShoalDepthFt: same("shoalDepth"),
+  },
+  "us-706737-fessenden-wireless": {
+    carrierFreqKhz: same("carrierFrequencyKhz"),
+    modDepthPct: same("audioModulationPct"),
+  },
+  "us-2297691-carlson-electrophotography": {
+    exposure: same("exposureLuxSec"),
+    thickness: same("layerThicknessUm"),
+    temperature: same("fuserTemperatureC"),
+  },
+  "us-588-ericsson-propeller": { pitchAngleDeg: same("bladePitchAngleDeg") },
   "us-613809-tesla-teleautomaton": {
     rudderAngleDeg: same("rudderAngle"),
     transmitterFreqKhz: same("rfFrequency"),

@@ -328,7 +328,7 @@ export const townesLaserPatent: Patent = {
       dependsOn: [5],
       originalText: manualTownesClaimText(7),
       plainEnglish:
-        "A maser generator according to claim 5 where the active negative-temperature medium is potassium vapor and the pump comprises an assembly of optical potassium discharge lamps.",
+        "Covers an optical maser generator according to claim 5 wherein the negative-temperature quantum medium comprises gaseous potassium vapor and the optical pumping system comprises an assembly of resonant potassium vapor discharge lamps.",
       keyInnovations: [
         "Potassium vapor active medium pumped by matching resonant optical discharge lamps",
       ],
@@ -353,7 +353,7 @@ export const townesLaserPatent: Patent = {
       isIndependent: true,
       originalText: manualTownesClaimText(9),
       plainEnglish:
-        "An optical maser amplifier with an elongated chamber, partially reflective parallel end members, nonreflective sides, a three-level inverted medium, and mode abstracting optics directing amplified energy to a detector.",
+        "Protects an optical maser amplifier operating in the infrared, visible, or ultraviolet spectrum with an elongated chamber, partially reflective parallel end members, nonreflective side boundaries, a three-level population-inverted medium, and mode-abstracting optics directing amplified output to a detector.",
       keyInnovations: ["Three-level optical maser amplifier with spatial mode selection"],
       legalSignificance:
         "Establishes patent protection for low-noise optical pre-amplifiers in optical receivers.",
@@ -364,7 +364,7 @@ export const townesLaserPatent: Patent = {
       dependsOn: [9],
       originalText: manualTownesClaimText(10),
       plainEnglish:
-        "A maser amplifier according to claim 9 where the negative-temperature medium is potassium vapor pumped by an array of potassium discharge lamps.",
+        "Covers an optical maser amplifier according to claim 9 wherein the active negative-temperature medium comprises gaseous potassium vapor pumped into population inversion by an auxiliary array of resonant potassium discharge lamps.",
       keyInnovations: ["Potassium vapor optical amplifier with resonant lamp pumping"],
       legalSignificance: "Covers alkali vapor optical amplifier stages.",
     },

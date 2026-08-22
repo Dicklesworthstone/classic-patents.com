@@ -82,33 +82,35 @@ export const YALE_LOCK_PARALLEL_READINGS: Readonly<Record<number, readonly strin
     "The specification says the improvements concern security against picking and construction that adapts the lock to either hand and to doors of differing thicknesses.",
   ],
   6: [
-    "Bolt retention and insertion mechanism: mortise case A houses bolt B with talons and projection F, retained by elastic spring plate F' and clamping screw G, allowing insertion directly through the front mortise faceplate after case installation.",
+    "Linus Yale, Jr. discloses an innovative sliding bolt retention and field-insertion contrivance for mortise lock case A. Bolt B is fitted with rear actuating talons and a side projection pin F. Interposed between pin F and the interior case wall is an upwardly biased elastic spring plate F-prime. When bolt B is inserted through the front mortise edge opening of the lock case, retaining screw G is driven inward to depress spring plate F-prime, locking projection pin F within elongated clearance slot F-prime. This securely prevents the bolt from being extracted from the lock case while permitting smooth shooting and retracting movement during key operation.",
   ],
   7: [
-    "Externally threaded modular cylinder housing: cylindrical tumbler-case C features external machine threads mating with tapped nut O in the lock case, clamped via off-axis pointed set screw H to adjust cylinder projection for doors of differing thickness.",
+    "The lock architecture features an externally threaded modular cylinder housing C that mates with tapped mounting aperture O in lock case A. The cylinder housing can be threaded into either the left or right side of the lock case to configure right-handed or left-handed door operation. Thin lazy-arm cam wing E engages along any portion of the wide bolt talons p-q, permitting the cylinder to be threaded to variable depths to accommodate doors of varying thickness while maintaining the cylinder escutcheon face flush with the outer door stile. The cylinder housing is locked firmly at the chosen depth by setting pointed locking screw H through the front bolt opening prior to final bolt installation.",
   ],
   8: [
-    "The core pin-tumbler shear-line mechanism: eccentric revolving plug D houses two-piece pin tumblers (upper piece I and lower piece J) loaded by springs L. Flat bitted steel key K lifts the pieces so their division lines align with the periphery of D. Notches on the tumblers or recesses serve the purpose of racking and prevent picking to a certain extent, while the narrow key-hole leaves the projecting parts supported by most of their containing cavities.",
+    "The core pin-tumbler security mechanism comprises an eccentric revolving plug cylinder D rotatably seated within outer housing C. Aligned radial chambers bored perpendicular to the plug axis receive two-piece pin stacks consisting of upper driver pins I and lower key pins J, biased downward by compression springs L across the cylindrical shear line. Thin bitted steel key K, sliding into a narrow axial keyway slot, elevates the pin stacks so that the division interfaces between driver pins I and key pins J align flush with the outer circumference of plug D, freeing the plug to rotate. To defeat lock picking, pin surfaces and chamber walls feature circumferential grooved notches (racking serrations) that catch under pick tension. Because the narrow keyway slit removes only minimal wall material at top and bottom, the pin chambers firmly support the tumblers against key thrust around nearly their entire circumference.",
   ],
   9: [
-    "Lost-motion lost-angle cam (lazy-arm): plug D features ring recess s and axial groove t that engage drive knob v on stamped steel lazy-arm E with bolt-throwing wing W, providing rotary clearance and deadlocking bolt engagement.",
+    "Revolving plug D features a circumferential ring recess s and an axial clearance groove t extending to the inner end of the plug body. Stamped sheet-steel lazy-arm ring E is fitted over plug D, with an internal driving lug v sliding along axial groove t. Radial projecting wing W acts directly upon the bolt talons to shoot and retract the bolt during key rotation, augmented by flanking bilateral stop knobs whose mechanical function is detailed in subsequent sections.",
   ],
   10: [
     "Tumbler-case circumferential clearance slit: transverse arcuate slit W' allows the lazy-arm to rotate freely within the cylinder housing when the cylinder is threaded into place.",
   ],
   11: [
-    "Sequential assembly and plug dead-retention: inserting pins and springs, compressing drivers I, sliding plug D with groove t over knob v, and releasing inner pin J into the retaining groove ensures the rotating plug cannot be extracted from the front without the authorized key.",
+    "Assembly of the cylinder mechanism proceeds in a precise mechanical sequence: driver pins I and key pins J are loaded into their respective chambers, and lazy-arm ring E is inserted into transverse case slit W-prime. Plug D is slid into housing C with its axial groove t passing over internal drive lug v, depressing driver pins I in succession. When fully seated and rotated into resting alignment, spring-loaded key pins J drop into the plug chambers, with the innermost pin blocking axial groove t and permanently locking rotating plug D inside housing C against unauthorized front extraction.",
   ],
   12: [
-    "Lost-motion rotation geometry and anti-forcing bolt stop: the key-containing plug turns nearly a whole revolution to reach a key-removal position, while the lazy-arm moves through less than a whole revolution and remains in contact with a bolt talon at the locked and unlocked positions.",
+    "By engineering drive lug v to travel through an angular dead-band along groove t, revolving plug D must complete nearly an entire 360-degree rotation to realign pin chambers for key removal, whereas lazy-arm wing W moves through a substantially smaller angle. This lost-motion geometry ensures that bolt-driving wing W remains in continuous positive blocking contact against bolt talon p-q in both fully locked and fully unlocked states, acting as an internal deadlocking stop that prevents forced retraction of the bolt by picking tools or external jimmying.",
   ],
   13: [
     "Automatic key alignment stops: bilateral stop knobs on the lazy-arm strike bolt talons at the locked and unlocked terminal positions, ensuring the cylinder plug always comes to rest with all pin chambers perfectly in line for immediate key insertion or removal.",
   ],
   14: [
-    "Independent utility of constituent inventions: Yale notes that the cylinder retention ring, lost-motion lazy-arm deadbolt actuator, alignment stops, and modular threaded mortise mounting possess distinct security and mechanical utility individually or in combination.",
+    "Yale explicitly emphasizes the distinct and independent mechanical utility of his separate inventive contributions: the anti-extraction cylinder retention ring, lost-motion deadlocking lazy-arm cam, bilateral alignment key stops, and modular threaded mortise mounting. Each of these security and convenience mechanisms may be incorporated individually or in various combinations within pin-tumbler locks, rim locks, or other architectural locking mechanisms without departing from the foundational principles and scope of the invention.",
   ],
-  21: ["Inventor signature: Linus Yale, Jr."],
+  21: [
+    "Inventor formal execution: Linus Yale, Jr., signs and executes the complete specification.",
+  ],
   22: ["Attestation of subscribing witnesses: Arthur Maxwell and Henry Winn."],
 };
 
