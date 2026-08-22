@@ -79,9 +79,19 @@ export function setPatentPhysicsParam(patentId: string, paramId: string, value: 
   const canonical = canonicalizeParam(patentId, paramId, value);
   const meta = PATENT_PHYSICS_REGISTRY[patentId];
   const current = getRawPatentPhysicsParams(patentId);
-  const from = current[canonical.id] ?? value;
   paramId = canonical.id;
   value = canonical.value;
+  let updated = { ...current, [paramId]: value };
+  if (meta?.enforceConstraints) {
+    updated = meta.enforceConstraints(updated, paramId, value);
+  }
+
+  // Report what was actually committed. Constraints may clamp or couple the
+  // touched parameter, so the tick must carry the stored value rather than
+  // the pre-constraint input, and a first touch on a missing key reports
+  // zero rate instead of a spike from an out-of-range raw input.
+  const from = current[paramId] ?? updated[paramId];
+  const to = updated[paramId];
   const now =
     typeof performance !== "undefined" && typeof performance.now === "function"
       ? performance.now()
@@ -91,15 +101,10 @@ export function setPatentPhysicsParam(patentId: string, paramId: string, value: 
   bumpTick(patentId, {
     id: paramId,
     from,
-    to: value,
-    ratePerSec: (value - from) / dtSec,
+    to,
+    ratePerSec: (to - from) / dtSec,
     atMs: now,
   });
-
-  let updated = { ...current, [paramId]: value };
-  if (meta?.enforceConstraints) {
-    updated = meta.enforceConstraints(updated, paramId, value);
-  }
 
   stateMap.set(patentId, updated);
   publishParams(patentId, updated);

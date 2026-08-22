@@ -30,23 +30,18 @@ export function claimLiveState(
     }
   }
   if (patentId.includes("tesla-motor") && claimNum === 1) {
-    const frequencyHz = params.frequency ?? params.frequencyHz;
+    const frequencyHz = params.frequency;
     if (typeof frequencyHz !== "number" || !Number.isFinite(frequencyHz)) return null;
     const apparatus = stepTeslaMotorFig9(frequencyHz);
     return frequencyHz > 0 && apparatus.phaseCycleHz > 0 ? "held" : "broken";
   }
   if (patentId.includes("fermi") && claimNum === 1) {
-    return (params.controlRodExtractionPct ?? 60) <= 85 ? "held" : "broken";
-  }
-  if (patentId.includes("edison-bulb") && claimNum === 1) {
-    return (params.vacuumLevel ?? 1) >= 0.5 ? "held" : "broken";
+    // Registry control is "rodWithdrawal" (%); past ~85% the pile loses k_eff margin.
+    return (params.rodWithdrawal ?? 83.5) <= 85 ? "held" : "broken";
   }
   if (patentId.includes("goodyear") && claimNum === 1) {
     const s = params.sulfurPct ?? 8;
     return s >= 2 && s <= 20 ? "held" : "broken";
-  }
-  if (patentId.includes("bell-telephone") && claimNum <= 5) {
-    return (params.signalType ?? 1) >= 0.5 ? "held" : "broken";
   }
   if (patentId.includes("bardeen-transistor") && claimNum === 1) {
     return (params.pointSpacingMicrons ?? 50) <= 100 ? "held" : "broken";
@@ -64,7 +59,9 @@ export function claimLiveState(
     return (params.gateVoltage ?? 8) >= 3 ? "held" : "broken";
   }
   if (patentId.includes("lamarr-frequency-hopping") && claimNum === 1) {
-    return (params.syncErrorMs ?? 0) <= 25 ? "held" : "broken";
+    // Claim 1 requires the receiver strip in synchronism with the transmitter;
+    // the 3D face defines "receiver tuned" as recordPosition >= 3.
+    return (params.recordPosition ?? 0) >= 3 ? "held" : "broken";
   }
   if (patentId.includes("farnsworth-tv") && claimNum === 1) {
     return (params.anodeVoltage ?? 1500) >= 400 ? "held" : "broken";
@@ -183,9 +180,13 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
     if (!claim) return;
     const textToCopy = `[Claim ${claim.number} · ${claim.isIndependent ? "Independent" : `Dependent on #${claim.dependsOn?.join(", ")}`}]\n\nOriginal Text:\n"${claim.originalText}"\n\nPlain English Translation:\n${claim.plainEnglish}\n\nKey Innovations:\n${claim.keyInnovations.join(", ")}`;
     if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(textToCopy).catch(() => {});
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch(() => {});
     }
   }, [claim]);
 
@@ -215,12 +216,16 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
   const selectPrevClaim = () => {
     if (activeIndex > 0) {
       setActiveClaimNum(claims[activeIndex - 1].number);
+      // Chevron navigation can land on a pill clipped inside the collapsed
+      // selector wall; expand it so the current selection stays visible.
+      setShowAllClaims(true);
     }
   };
 
   const selectNextClaim = () => {
     if (activeIndex < claims.length - 1) {
       setActiveClaimNum(claims[activeIndex + 1].number);
+      setShowAllClaims(true);
     }
   };
 
