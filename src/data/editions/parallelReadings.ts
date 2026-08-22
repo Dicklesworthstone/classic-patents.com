@@ -267,9 +267,8 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
 export function archivalParallelReadingsFor(
   patentId: string,
 ): Readonly<Record<number, readonly string[]>> {
-  const reading = ARCHIVAL_PARALLEL_READINGS[patentId];
-  if (!reading) {
-    throw new Error(`No hand-authored archival parallel reading is published for ${patentId}.`);
-  }
-  return reading;
+  // Owner policy (2026-08-22): a missing companion map degrades gracefully —
+  // the renderer publishes verbatim source text without the Plain English
+  // aside. Throwing here crashed whole patent routes for unmapped editions.
+  return ARCHIVAL_PARALLEL_READINGS[patentId] ?? {};
 }
