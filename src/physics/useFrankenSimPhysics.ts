@@ -17,9 +17,40 @@ export interface TransportTapeFrame {
 
 type TapeListener = (frame: TransportTapeFrame) => void;
 
+export type TapeUpdater = (
+  prev: UniversalPatentPhysicsTelemetry,
+  dt: number,
+) => Partial<UniversalPatentPhysicsTelemetry> | null;
+
+function canonicalizeTelemetry(value: unknown): unknown {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? Math.round(value * 1e6) / 1e6 : String(value);
+  }
+  if (value === null || typeof value !== "object") return value;
+  if (Array.isArray(value)) return value.map(canonicalizeTelemetry);
+  const out: Record<string, unknown> = {};
+  for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+    if (key === "timestampMs") continue;
+    out[key] = canonicalizeTelemetry((value as Record<string, unknown>)[key]);
+  }
+  return out;
+}
+
+/** Stable FNV-1a digest over canonically serialized telemetry (tape verification; wall clock excluded). */
+export function telemetryDigest(telemetry: UniversalPatentPhysicsTelemetry): string {
+  const json = JSON.stringify(canonicalizeTelemetry(telemetry));
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < json.length; i++) {
+    hash ^= json.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
 class PatentTransport {
   public patentId: string;
   public scheduler: TickScheduler;
+  public declaredProvenance?: Provenance;
   public lastFrame: TransportTapeFrame;
   private listeners = new Set<TapeListener>();
   private tickS: number;
@@ -49,28 +80,25 @@ class PatentTransport {
     return () => this.listeners.delete(listener);
   }
 
-  pump(
-    nowMs: number,
-    updater: (
-      prev: UniversalPatentPhysicsTelemetry,
-      dt: number,
-    ) => Partial<UniversalPatentPhysicsTelemetry> | null,
-  ) {
+  pump(nowMs: number, updater: TapeUpdater) {
     let ran = 0;
     this.scheduler.pump(nowMs / 1000, () => {
       ran++;
+      const tickNo = this.scheduler.ticksRun + 1;
       const update = updater(this.lastFrame.telemetry, this.tickS);
       if (update) {
+        const merged: UniversalPatentPhysicsTelemetry = {
+          ...this.lastFrame.telemetry,
+          ...update,
+          timestampMs: nowMs,
+          timeStepDt: this.tickS,
+        };
         this.lastFrame = {
-          ...this.lastFrame,
-          tick: this.scheduler.ticksRun,
+          tick: tickNo,
           atMs: nowMs,
-          telemetry: {
-            ...this.lastFrame.telemetry,
-            ...update,
-            timestampMs: nowMs,
-            timeStepDt: this.tickS,
-          },
+          digest: telemetryDigest(merged),
+          provenance: this.declaredProvenance ?? "TS_FALLBACK",
+          telemetry: merged,
         };
       }
     });
@@ -86,13 +114,7 @@ class PatentTransport {
 class TransportBus {
   private transports = new Map<string, PatentTransport>();
   private rafId: number | null = null;
-  private updaters = new Map<
-    string,
-    (
-      prev: UniversalPatentPhysicsTelemetry,
-      dt: number,
-    ) => Partial<UniversalPatentPhysicsTelemetry> | null
-  >();
+  private updaters = new Map<string, { updater: TapeUpdater; provenance?: Provenance }>();
 
   getTransport(
     patentId: string,
@@ -107,14 +129,10 @@ class TransportBus {
     return t;
   }
 
-  registerUpdater(
-    patentId: string,
-    updater: (
-      prev: UniversalPatentPhysicsTelemetry,
-      dt: number,
-    ) => Partial<UniversalPatentPhysicsTelemetry> | null,
-  ) {
-    this.updaters.set(patentId, updater);
+  registerUpdater(patentId: string, updater: TapeUpdater, provenance?: Provenance) {
+    this.updaters.set(patentId, { updater, provenance });
+    const existing = this.transports.get(patentId);
+    if (existing) existing.declaredProvenance = provenance;
   }
 
   unregisterUpdater(patentId: string) {
@@ -128,8 +146,9 @@ class TransportBus {
     const loop = () => {
       const now = performance.now();
       for (const [patentId, transport] of this.transports) {
-        const updater = this.updaters.get(patentId) || (() => null);
-        transport.pump(now, updater);
+        const entry = this.updaters.get(patentId);
+        transport.declaredProvenance = entry?.provenance;
+        transport.pump(now, entry ? entry.updater : () => null);
       }
       this.rafId = requestAnimationFrame(loop);
     };
@@ -166,6 +185,7 @@ export function useFrankenSimPhysics(
         ...updater(transport.lastFrame.telemetry),
         timestampMs: Date.now(),
       };
+      transport.lastFrame.digest = telemetryDigest(transport.lastFrame.telemetry);
       setFrame({ ...transport.lastFrame });
     },
     [transport],
