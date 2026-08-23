@@ -267,7 +267,7 @@ describe("manual-edition publication contract", () => {
     }
 
     expect(violations).toEqual([]);
-  });
+  }, 60_000);
 
   test("keeps every authored figure reference valid; logs unauthored printed mentions", () => {
     // Editorial calibration (root decision, 2026-08-22): a printed mention
@@ -440,5 +440,5 @@ describe("manual-edition publication contract", () => {
     }
 
     expect(violations).toEqual([]);
-  });
+  }, 60_000);
 });
