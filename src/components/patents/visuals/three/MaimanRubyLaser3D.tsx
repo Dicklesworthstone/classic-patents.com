@@ -4,6 +4,8 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -52,6 +54,11 @@ export function MaimanRubyLaser3D() {
     crystalTemperatureKelvin,
     isCutaway,
   });
+  // Shared transport tape: optical pumping state publishes to the bus.
+  useFrankenSimPhysics("us-3353115-maiman-ruby-laser", {
+    domain: "optics_waves",
+    refusal: { isRefused: false },
+  });
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -86,12 +93,14 @@ export function MaimanRubyLaser3D() {
 
     let animId = 0;
     let flashPhase = 0;
+    const studioClock = createStudioClock();
 
-    const animate = () => {
+    const animate = (nowMs: number) => {
       animId = requestAnimationFrame(animate);
+      const { dt } = studioClock.pump(nowMs);
 
       if (isFiringRef.current) {
-        flashPhase += 0.05;
+        flashPhase += dt * 3;
         if (flashPhase > 1.0) {
           flashPhase = 0;
           setIsFiring(false);
@@ -116,8 +125,7 @@ export function MaimanRubyLaser3D() {
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };
-
-    animate();
+    animId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animId);

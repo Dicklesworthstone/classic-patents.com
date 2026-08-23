@@ -12,6 +12,8 @@ import {
 } from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -53,6 +55,28 @@ export function TeslaMotor3D() {
   const apparatus = stepTeslaMotorFig9(generatorFrequencyHz);
 
   const generatorRpm = apparatus.generatorRpm;
+  // Shared transport tape: Fig. 9 EM state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-381968-tesla-motor", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: generatorFrequencyHz,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: 0,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: generatorRpm,
+      slipFraction: 0,
+      rotorRpm: generatorRpm,
+      shaftPowerWatts: 0,
+      electricalInputWatts: 0,
+    },
+  });
 
   const live = useLiveSimParams({
     generatorFrequencyHz,
@@ -141,14 +165,12 @@ export function TeslaMotor3D() {
     let reqId: number;
     let bFieldAngle = 0;
     let fieldTimeSec = 0;
-    let lastFrameTimeMs: number | undefined;
+    const studioClock = createStudioClock();
     let lastLegalAngle = 0;
 
     const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
-      const delta =
-        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
-      lastFrameTimeMs = frameTimeMs;
+      const { dt: delta } = studioClock.pump(frameTimeMs);
       const p = live.current;
       const refused = (p.claim1Active ?? 1) < 0.5;
 

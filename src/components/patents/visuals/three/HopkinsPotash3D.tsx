@@ -3,6 +3,8 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
+import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -59,6 +61,22 @@ export function HopkinsPotash3D() {
     decarbonizationPct: pot.decarbonizationPct,
     pearlAshYieldKg: pot.pearlAshYieldKg,
   });
+  // Shared transport tape: calcination thermodynamics publish to the bus.
+  useFrankenSimPhysics("us-x1-hopkins-potash", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: roastTempC,
+      temperatureKelvin: roastTempC + 273.15,
+      pressureAtm: 1,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -95,10 +113,11 @@ export function HopkinsPotash3D() {
     studio.scene.add(modelResult.rootGroup);
 
     let animId: number;
+    const studioClock = createStudioClock();
 
     const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
-      const timeS = now / 1000;
+      const { simTimeSec: timeS } = studioClock.pump(now);
       const p = live.current;
 
       animateHopkinsPotashModel(

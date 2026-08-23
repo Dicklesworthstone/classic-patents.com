@@ -3,6 +3,8 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { stepPasteurFermentation } from "@/physics/catalogKernels";
+import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -43,6 +45,22 @@ export const PasteurFermentation3D = memo(() => {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
   const live = useLiveSimParams({ co2SweepPct, sprayCoveragePct, isCutaway });
+  // Shared transport tape: vessel thermal state publishes to the bus.
+  useFrankenSimPhysics("us-135245-pasteur-fermentation", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: wortTempC,
+      temperatureKelvin: wortTempC + 273.15,
+      pressureAtm: 1,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -62,11 +80,10 @@ export const PasteurFermentation3D = memo(() => {
     const { rootGroup, nodes, materials, dispose } = buildPasteurFermentationModel();
     studio.scene.add(rootGroup);
     let requestId = 0;
-    let previousMs: number | undefined;
+    const studioClock = createStudioClock();
     const animate = (nowMs: number) => {
       requestId = requestAnimationFrame(animate);
-      const dt = previousMs === undefined ? 0 : Math.min((nowMs - previousMs) / 1000, 0.1);
-      previousMs = nowMs;
+      const { dt } = studioClock.pump(nowMs);
       updatePasteurFermentationKinematics(
         nodes,
         materials,

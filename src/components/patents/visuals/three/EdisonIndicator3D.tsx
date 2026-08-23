@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepEdisonIndicator } from "@/physics/catalogKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -56,6 +57,28 @@ export default function EdisonIndicator3D() {
   }, [mainsVoltage, plateBias, nullRefVoltage]);
 
   const live = useLiveSimParams({ ...sim, isCutaway });
+  // Shared transport tape: honest indicator-circuit EM telemetry on the bus.
+  useFrankenSimPhysics("us-307031-edison-indicator", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: 0,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: sim.emissionCurrentMicroAmps / 1e6,
+      voltageVolts: mainsVoltage,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+      rotorRpm: 0,
+      shaftPowerWatts: 0,
+      electricalInputWatts: sim.filamentPowerW,
+    },
+  });
 
   useEffect(() => {
     const container = containerRef.current;

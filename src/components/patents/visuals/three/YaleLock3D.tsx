@@ -3,6 +3,7 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { DEFAULT_LOCK_BITTINGS_MM, stepYaleLock } from "@/physics/catalogKernels";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -70,6 +71,18 @@ export function YaleLock3D({
   }, [keyInsertion, appliedTorqueNm, activeKeyBittings, isRotating, useAuthorizedKey]);
 
   const live = useLiveSimParams({ yaleState, keyInsertion });
+  // Shared transport tape: plug rotation rides the machine pose channel.
+  useFrankenSimPhysics("us-48475-yale-lock", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: yaleState.plugAngleRad,
+      modeLabel: yaleState.isUnlocked ? "unlocked" : "locked",
+      wheelSpeedMps: 0,
+    },
+  });
 
   useEffect(() => {
     const container = containerRef.current;

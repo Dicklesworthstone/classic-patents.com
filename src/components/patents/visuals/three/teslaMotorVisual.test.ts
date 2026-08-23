@@ -21,7 +21,7 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
     expect(modelSource).toContain("updateTeslaMotorKinematics");
   });
 
-  test("uses the actual animation-frame delta without ambient randomness or a private clock", () => {
+  test("steps from host-fed studio-clock ticks without ambient randomness or a private clock", () => {
     const threeSource = readFileSync(join(VISUALS_DIRECTORY, "three", "TeslaMotor3D.tsx"), "utf8");
     const modelSource = readFileSync(
       join(VISUALS_DIRECTORY, "three", "teslaMotorModel.ts"),
@@ -33,7 +33,9 @@ describe("US 381,968 Tesla Fig. 9 motor visual & electromagnetics boundary", () 
       expect(modelSource).not.toContain(forbidden);
     }
     expect(threeSource).toContain("frameTimeMs");
-    expect(threeSource).toContain("lastFrameTimeMs");
+    expect(threeSource).toContain("createStudioClock");
+    expect(threeSource).toContain(".pump(frameTimeMs)");
+    expect(threeSource).not.toContain("lastFrameTimeMs");
     expect(threeSource).not.toContain("const delta = 1 / 60");
   });
 
