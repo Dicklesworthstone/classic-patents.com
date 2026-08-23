@@ -4080,29 +4080,100 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
   },
   "_legacy-unpublished-us-542846-diesel-engine": {
     domain: "thermodynamics_transport",
-    domainTitle: "Diesel source face held for facsimile review",
-    equationName: "No published Diesel telemetry",
-    governingEquation: "source-only: no measured state is asserted",
-    engineMethod: "source-edition-hold",
-    controls: [],
-    computeMetrics: () => [
+    domainTitle: "Adiabatic Compression Auto-Ignition & Constant-Pressure Expansion",
+    equationName: "Adiabatic Temperature Rise & Diesel Cycle Efficiency",
+    governingEquation:
+      "T_2 = T_1 r^{\\gamma - 1} \\quad \\text{and} \\quad \\eta = 1 - \\frac{1}{r^{\\gamma - 1}} \\left[\\frac{r_c^\\gamma - 1}{\\gamma (r_c - 1)}\\right]",
+    engineMethod: "FrankenSimEngine.stepDieselEngine",
+    controls: [
       {
-        label: "Publication state",
-        value: "HELD",
-        unit: "source review",
-        badgeColor: "amber",
-        progressPct: 0,
+        id: "compRatio",
+        label: "Compression Ratio (r)",
+        min: 12,
+        max: 22,
+        step: 0.5,
+        defaultValue: 18,
+        unit: ":1",
       },
       {
-        label: "Telemetry",
-        value: "WITHHELD",
-        unit: "no measured values",
-        badgeColor: "rose",
-        progressPct: 0,
+        id: "blastAirPressure",
+        label: "Blast-Air Injector Pressure",
+        min: 45,
+        max: 85,
+        step: 2,
+        defaultValue: 65,
+        unit: "bar",
+      },
+      {
+        id: "cutoffRatio",
+        label: "Fuel Cutoff Ratio (rc)",
+        min: 1.2,
+        max: 2.2,
+        step: 0.1,
+        defaultValue: 1.6,
+        unit: "ratio",
+      },
+      {
+        id: "engineRpm",
+        label: "Engine Shaft Speed",
+        min: 60,
+        max: 300,
+        step: 10,
+        defaultValue: 150,
+        unit: "RPM",
       },
     ],
+    computeMetrics: (p) => {
+      const diesel = FrankenSimEngine.stepDieselEngine({
+        compressionRatio: p.compRatio ?? 18,
+        blastAirPressureBar: p.blastAirPressure ?? 65,
+        cutoffRatio: p.cutoffRatio ?? 1.6,
+        engineRpm: p.engineRpm ?? 150,
+      });
+      const tCompC = diesel.tCompressionC;
+      const pComp = diesel.pCompBar.toFixed(1);
+      const brakeEff = diesel.brakeEfficiencyPct.toFixed(1);
+
+      return [
+        {
+          label: "Compression Temperature",
+          value: `${tCompC} °C`,
+          unit: "T_comp",
+          badgeColor: tCompC > 210 ? "emerald" : "amber",
+          progressPct: clampProgress((tCompC / 800) * 100),
+        },
+        {
+          label: "Peak Cylinder Pressure",
+          value: `${pComp} bar`,
+          unit: "P_comp",
+          badgeColor: "cyan",
+          progressPct: clampProgress((Number(pComp) / 80) * 100),
+        },
+        {
+          label: "Brake Thermal Efficiency",
+          value: `${brakeEff}%`,
+          unit: "η_brake",
+          badgeColor: "emerald",
+          progressPct: clampProgress((Number(brakeEff) / 50) * 100),
+        },
+        {
+          label: "Auto-Ignition State",
+          value: diesel.isAutoIgnition ? "SELF-IGNITING" : "NO IGNITION",
+          unit: "state",
+          badgeColor: diesel.isAutoIgnition ? "emerald" : "rose",
+          progressPct: clampProgress(diesel.isAutoIgnition ? 100 : 0),
+        },
+        {
+          label: "Crank ω",
+          value: `${diesel.crankOmegaRadPerS}`,
+          unit: "rad/s",
+          badgeColor: "cyan",
+          progressPct: Math.min(100, (diesel.crankOmegaRadPerS / 30) * 100),
+        },
+      ];
+    },
     pedagogicalInsight:
-      "US 542,846 describes compression before fuel admission, gradual admission to cut-off, and further expansion. It does not publish a measured operating envelope for a live badge.",
+      "Compressing pure air to 18:1 generates 680°C heat, causing atomized fuel droplets injected under high pressure to self-ignite instantaneously and expand at constant pressure.",
   },
   "us-613809-tesla-teleautomaton": {
     domain: "electromagnetics_flux",

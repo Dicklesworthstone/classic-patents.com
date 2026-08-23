@@ -213,26 +213,30 @@ describe("Physics Telemetry Data Registry", () => {
     ]);
   });
 
-  test("holds Diesel US 542,846 telemetry without synthetic state", () => {
+  test("routes Diesel US 542,846 telemetry through the auto-ignition kernel", () => {
     const diesel = PATENT_PHYSICS_REGISTRY["us-542846-diesel-engine"];
-    expect(diesel.engineMethod).toBe("source-edition-hold");
-    expect(diesel.controls).toEqual([]);
-    expect(diesel.computeMetrics({})).toEqual([
-      {
-        label: "Publication state",
-        value: "HELD",
-        unit: "source review",
-        badgeColor: "amber",
-        progressPct: 0,
-      },
-      {
-        label: "Telemetry",
-        value: "WITHHELD",
-        unit: "no measured values",
-        badgeColor: "rose",
-        progressPct: 0,
-      },
+    expect(diesel.engineMethod).toBe("FrankenSimEngine.stepDieselEngine");
+    expect(diesel.controls.map((control) => control.id)).toEqual([
+      "compRatio",
+      "blastAirPressure",
+      "cutoffRatio",
+      "engineRpm",
     ]);
+    const metrics = diesel.computeMetrics({
+      compRatio: 18,
+      blastAirPressure: 65,
+      cutoffRatio: 1.6,
+      engineRpm: 150,
+    });
+    expect(metrics.map((metric) => metric.label)).toEqual([
+      "Compression Temperature",
+      "Peak Cylinder Pressure",
+      "Brake Thermal Efficiency",
+      "Auto-Ignition State",
+      "Crank ω",
+    ]);
+    // 18:1 compression of pure air sits in the self-igniting regime.
+    expect(metrics[3]?.value).toBe("SELF-IGNITING");
   });
 
   test("routes Carrier US 808,897 telemetry through the spray-dew-point kernel", () => {

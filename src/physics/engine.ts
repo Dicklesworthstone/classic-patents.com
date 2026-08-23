@@ -44,6 +44,7 @@ import {
   stepWozniakApple,
   stepZeppelinAirship,
 } from "./catalogKernels";
+import { stepDieselEngine as kernelStepDieselEngine } from "./dieselEngineKernel";
 import { stepFermiKinetics } from "./fermiKinetics";
 import { tryGoddardWasmStep } from "./goddardWasm";
 import {
@@ -1132,6 +1133,15 @@ export const FrankenSimEngine = {
   /**
    * Universal Telemetry Envelope Generator
    */
+  stepDieselEngine(params: {
+    compressionRatio?: number;
+    blastAirPressureBar?: number;
+    cutoffRatio?: number;
+    engineRpm?: number;
+  }) {
+    return kernelStepDieselEngine(params);
+  },
+
   createTelemetryEnvelope(
     patentId: string,
     data: Partial<UniversalPatentPhysicsTelemetry>,

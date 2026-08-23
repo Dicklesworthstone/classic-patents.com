@@ -53,6 +53,62 @@ export function degToRad(deg: number) {
   return (deg * Math.PI) / 180;
 }
 
+export function dieselCamWindows(
+  injectionStartDeg = 355,
+  injectionEndDeg = 390,
+  cycleWrapDeg = 720,
+  camRatio = 0.5,
+) {
+  return {
+    camRatio,
+    camWrapRad: degToRad(cycleWrapDeg * camRatio),
+    intakeCamEndRad: degToRad(180 * camRatio),
+    compressionCamEndRad: degToRad(360 * camRatio),
+    injectionCamStartRad: degToRad(injectionStartDeg * camRatio),
+    injectionCamEndRad: degToRad(injectionEndDeg * camRatio),
+    exhaustCamStartRad: degToRad(540 * camRatio),
+    intakeLiftAmp: 0.15,
+    injectionLiftAmp: 0.12,
+    exhaustLiftAmp: 0.15,
+    intakeRockerCoupling: 1.5,
+    injectorRockerCoupling: 1.8,
+    exhaustRockerCoupling: 1.5,
+    flameScale0: 0.7,
+    flameScaleAmp: 0.6,
+    flameEmissive0: 3,
+    flameEmissiveAmp: 3,
+    compressorSwingAmp: 0.18,
+    flyballOmegaRatio: 2,
+    fuelPumpStrokeAmp: 0.08,
+    fuelPumpOmegaRatio: 2,
+    gasTopY: 3.4,
+    gasMinHeight: 0.18,
+    pistonCrownOffset: 0.5,
+    gasIntakeColor: 0x38bdf8,
+    gasIntakeEmissive: 0x0284c7,
+    gasCompressionCold: 0x38bdf8,
+    gasCompressionHot: 0xf97316,
+    gasInjectionColor: 0xfef08a,
+    gasInjectionEmissive: 0xf97316,
+    gasExhaustColor: 0x64748b,
+    gasExhaustEmissive: 0x334155,
+    compressionEmissive0: 0.2,
+    compressionEmissiveAmp: 1.8,
+    injectionEmissive: 2.5,
+    exhaustEmissive: 0.1,
+    intakeEmissive: 0.3,
+    compressionBarAmp: 2.2,
+    injectionBar: 45,
+    idleBar: 1.5,
+    crankR: 0.55,
+    rodLen: 2.2,
+    rodMin: 0.1,
+    crankTdcPhase: Math.PI / 2,
+    pinYHome: -1.65,
+    pistonCrownLift: 1.5,
+  };
+}
+
 /** Wrap a crank or cam angle onto one cycle. Shared by 2D and 3D. */
 export function wrapCycleRad(angleRad: number, wrapRad = Math.PI * 4) {
   const wrap = wrapRad === 0 ? Math.PI * 4 : wrapRad;
