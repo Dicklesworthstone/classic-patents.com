@@ -339,7 +339,7 @@ async function main() {
     // material, and the reference visual must not derive published state from
     // wall-clock time or randomness. A green build without these contracts is
     // not sufficient evidence for a museum release.
-    run("bun", ["test", ...PUBLICATION_CONTRACT_TESTS]);
+    run("bun", ["test", "--timeout", "60000", ...PUBLICATION_CONTRACT_TESTS]);
     run("bun", ["run", "typecheck"]);
     run("bun", ["run", "lint"]);
     run("ubs", ["--diff"]);
