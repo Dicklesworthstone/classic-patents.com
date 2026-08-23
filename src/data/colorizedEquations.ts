@@ -21187,7 +21187,7 @@ ALL_COLORIZED_EQUATIONS["us-6331181-davinci"] = [
     category: "Robotic Tool Data Interfaces",
     rawLatex: "\\Delta q_{tool} = q_{measured} - q_{nominal}",
     colorizedLatex:
-      "\\textcolor{#059669}{\\Delta q_{tool}} = \\textcolor{#2563eb}{q_{measured}} - \\textcolor{#d97706}{q_{nominal}}",
+      "\\textcolor{#dc2626}{\\Delta q_{tool}} = \\textcolor{#059669}{q_{measured}} - \\textcolor{#2563eb}{q_{nominal}}",
     plainEnglishSentence: [
       { text: "The tool memory reports the " },
       { text: "measured position", variableId: "measured_position" },
@@ -21387,7 +21387,7 @@ ALL_COLORIZED_EQUATIONS["us-3353115-maiman-ruby-laser"] = [
     rawLatex:
       "\\Delta N_{\\text{th}} = N_2 - N_1 = \\frac{\\gamma_{\\text{cav}}}{\\sigma_{21}} = \\frac{1}{\\sigma_{21} L} \\left[ \\alpha L + \\frac{1}{2} \\ln\\left(\\frac{1}{R_1 R_2}\\right) \\right]",
     colorizedLatex:
-      "\\textcolor{#059669}{\\Delta N_{\\text{th}}} = \\textcolor{#2563eb}{N_2} - \\textcolor{#dc2626}{N_1} = \\frac{\\textcolor{#9333ea}{\\gamma_{\\text{cav}}}}{\\textcolor{#d97706}{\\sigma_{21}}} = \\frac{1}{\\textcolor{#d97706}{\\sigma_{21}} \\textcolor{#16a34a}{L}} \\left[ \\textcolor{#6b7280}{\\alpha} \\textcolor{#16a34a}{L} + \\frac{1}{2} \\ln\\left(\\frac{1}{\\textcolor{#ea580c}{R_1} \\textcolor{#0891b2}{R_2}}\\right) \\right]",
+      "\\textcolor{#059669}{\\Delta N_{\\text{th}}} = \\textcolor{#2563eb}{N_2} - \\textcolor{#dc2626}{N_1} = \\frac{\\textcolor{#9333ea}{\\gamma_{\\text{cav}}}}{\\textcolor{#d97706}{\\sigma_{21}}} = \\frac{1}{\\textcolor{#d97706}{\\sigma_{21}} \\textcolor{#16a34a}{L}} \\left[ \\textcolor{#6b7280}{\\alpha} \\textcolor{#16a34a}{L} + \\frac{1}{2} \\ln\\left(\\frac{1}{\\textcolor{#ea580c}{R_1} \\textcolor{#0d9488}{R_2}}\\right) \\right]",
     plainEnglishSentence: [
       { text: "The " },
       { text: "threshold population inversion", variableId: "delta_n_th" },

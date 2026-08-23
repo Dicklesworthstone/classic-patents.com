@@ -223,49 +223,94 @@ export function prepareInteractiveLatex(equation: {
     colorOwnerCount.set(v.color, (colorOwnerCount.get(v.color) ?? 0) + 1);
   }
 
+  /**
+   * True when the `\textcolor` group starting at `idx` is already claimed by
+   * an interactive wrapper (it sits directly inside `\htmlData{var=...}{`).
+   * Guards against a second variable re-wrapping — and thereby
+   * double-attributing — a group another variable already owns.
+   */
+  const isAlreadyClaimed = (s: string, idx: number): boolean =>
+    /\\htmlData\{var=[^{}]*\}\{$/.test(s.slice(Math.max(0, idx - 80), idx));
+
+  /**
+   * Wraps every unclaimed `\textcolor{...}{...}` group accepted by `accept`.
+   * Returns the rewritten latex and whether any group was wrapped.
+   */
+  const wrapMatchingColorGroups = (
+    input: string,
+    v: { id: string; color: ColorVariant },
+    accept: (colorSpec: string, content: string) => boolean,
+  ): { latex: string; found: boolean } => {
+    let out = input;
+    let found = false;
+    const colorTargetPrefix = "\\textcolor{";
+    let searchIdx = out.indexOf(colorTargetPrefix, 0);
+
+    while (searchIdx !== -1) {
+      const closeBraceColor = out.indexOf("}", searchIdx + colorTargetPrefix.length);
+      if (closeBraceColor === -1) break;
+
+      const openBraceContent = out.indexOf("{", closeBraceColor);
+      if (openBraceContent !== closeBraceColor + 1) {
+        searchIdx = out.indexOf(colorTargetPrefix, closeBraceColor + 1);
+        continue;
+      }
+
+      const colorSpec = out.slice(searchIdx + colorTargetPrefix.length, closeBraceColor);
+      const contentEnd = findBalancedGroupEnd(out, openBraceContent);
+      if (contentEnd === -1) break;
+
+      const content = out.slice(openBraceContent + 1, contentEnd);
+      if (!isAlreadyClaimed(out, searchIdx) && accept(colorSpec, content)) {
+        const termClass = `eq-term eq-term-${v.id} eq-term-${v.color}`;
+        const fullColoredMatch = out.slice(searchIdx, contentEnd + 1);
+        const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
+        out = out.slice(0, searchIdx) + replacement + out.slice(contentEnd + 1);
+        found = true;
+        searchIdx = out.indexOf(colorTargetPrefix, searchIdx + replacement.length);
+        continue;
+      }
+      searchIdx = out.indexOf(colorTargetPrefix, closeBraceColor + 1);
+    }
+    return { latex: out, found };
+  };
+
+  const alreadyPrepared = (v: { id: string }): boolean =>
+    new RegExp(`\\beq-term-${v.id}\\b`).test(latex);
+  const wrappedByGroup = new Set<string>();
+
+  // Phase 1 — exact-symbol claims. Content identity is the strongest evidence
+  // of which variable a group denotes, so it always wins over color identity
+  // (an equation whose authored hexes drifted from the declared palette must
+  // not let the hex rule steal a group whose content names another variable).
   for (const v of equation.variables) {
-    if (new RegExp(`\\beq-term-${v.id}\\b`).test(latex)) continue;
+    if (alreadyPrepared(v)) continue;
+    const res = wrapMatchingColorGroups(latex, v, (_spec, content) => content === v.symbol);
+    latex = res.latex;
+    if (res.found) wrappedByGroup.add(v.id);
+  }
+
+  // Phase 2 — color-identity claims for the groups no symbol matched.
+  // A hex identifies a variable only when that variable is the sole owner of
+  // the palette color within this equation.
+  for (const v of equation.variables) {
+    if (alreadyPrepared(v) && !wrappedByGroup.has(v.id)) continue;
+    if (colorOwnerCount.get(v.color) !== 1) continue;
+    const hexAliases = new Set(COLOR_HEX_ALIASES[v.color].map((h) => h.toLowerCase()));
+    const res = wrapMatchingColorGroups(latex, v, (spec) => hexAliases.has(spec.toLowerCase()));
+    latex = res.latex;
+    if (res.found) wrappedByGroup.add(v.id);
+  }
+
+  // Phase 3 — raw-text fallback for variables no colored group matched.
+  for (const v of equation.variables) {
+    if (wrappedByGroup.has(v.id) || alreadyPrepared(v)) continue;
 
     const cfg = COLOR_STYLES[v.color];
     const hex = cfg.hexLight;
-    const colorIsUnique = colorOwnerCount.get(v.color) === 1;
-    const hexAliases = new Set(COLOR_HEX_ALIASES[v.color].map((h) => h.toLowerCase()));
     const termClass = `eq-term eq-term-${v.id} eq-term-${v.color}`;
 
-    let found = false;
-    const colorTargetPrefix = "\\textcolor{";
-    let searchIdx = latex.indexOf(colorTargetPrefix, 0);
-
-    while (searchIdx !== -1) {
-      const closeBraceColor = latex.indexOf("}", searchIdx + colorTargetPrefix.length);
-      if (closeBraceColor === -1) break;
-
-      const openBraceContent = latex.indexOf("{", closeBraceColor);
-      if (openBraceContent !== closeBraceColor + 1) {
-        searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
-        continue;
-      }
-
-      const colorSpec = latex.slice(searchIdx + colorTargetPrefix.length, closeBraceColor);
-      const contentEnd = findBalancedGroupEnd(latex, openBraceContent);
-      if (contentEnd === -1) break;
-
-      const content = latex.slice(openBraceContent + 1, contentEnd);
-      const matchesSymbol = content === v.symbol;
-      const matchesUniqueHex = colorIsUnique && hexAliases.has(colorSpec.toLowerCase());
-
-      if (matchesSymbol || matchesUniqueHex) {
-        const fullColoredMatch = latex.slice(searchIdx, contentEnd + 1);
-        const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
-        latex = latex.slice(0, searchIdx) + replacement + latex.slice(contentEnd + 1);
-        found = true;
-        searchIdx = latex.indexOf(colorTargetPrefix, searchIdx + replacement.length);
-        continue;
-      }
-      searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
-    }
-
-    if (!found && latex.includes(v.symbol)) {
+    if (latex.includes(v.symbol)) {
       const rawReplacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{\\textcolor{${hex}}{${v.symbol}}}}`;
 
       const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

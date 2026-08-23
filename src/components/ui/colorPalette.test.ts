@@ -142,6 +142,56 @@ describe("Semantic Color Palette & KaTeX Preprocessor Engine", () => {
     expect(count("\\htmlData{var=")).toBe(2);
   });
 
+  test("prepareInteractiveLatex never double-attributes a group when authored hexes drift from declared colors (GH#1 follow-up)", () => {
+    // Real shape from davinci-calibration-offset before the data fix: every
+    // authored hex belongs to a *different* variable's declared color. The
+    // exact-symbol match must claim each group first, and the color-identity
+    // rule must never re-wrap (nest inside) a group another variable owns.
+    const equation = {
+      colorizedLatex:
+        "\\textcolor{#059669}{\\Delta q} = \\textcolor{#2563eb}{q_{m}} - \\textcolor{#d97706}{q_{n}}",
+      rawLatex: "\\Delta q = q_{m} - q_{n}",
+      variables: [
+        { id: "measured", symbol: "q_{m}", color: "emerald" as const },
+        { id: "nominal", symbol: "q_{n}", color: "sapphire" as const },
+        { id: "offset", symbol: "\\Delta q", color: "crimson" as const },
+      ],
+    };
+
+    const prepared = prepareInteractiveLatex(equation);
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    // One wrapper per group, correctly attributed by content.
+    expect(count("var=measured")).toBe(1);
+    expect(count("var=nominal")).toBe(1);
+    expect(count("var=offset")).toBe(1);
+    // No wrapper may sit directly inside another (double attribution).
+    expect(prepared).not.toMatch(/\\htmlData\{var=[^{}]*\}\{\\htmlClass\{/);
+  });
+
+  test("prepareInteractiveLatex exact-symbol claims beat color-identity claims for the same group", () => {
+    // The cyan-unique variable must not steal the cyan-authored group whose
+    // content names the teal variable (maiman R_2 shape); the teal variable
+    // claims it by symbol and alpha still wraps via its own group.
+    const equation = {
+      colorizedLatex: "\\textcolor{#6b7280}{\\alpha} + \\textcolor{#0891b2}{R_2}",
+      rawLatex: "\\alpha + R_2",
+      variables: [
+        { id: "alpha_loss", symbol: "\\alpha", color: "cyan" as const },
+        { id: "r2_refl", symbol: "R_2", color: "teal" as const },
+      ],
+    };
+
+    const prepared = prepareInteractiveLatex(equation);
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    expect(count("var=alpha_loss")).toBe(1);
+    expect(count("var=r2_refl")).toBe(1);
+    expect(prepared).not.toMatch(/\\htmlData\{var=[^{}]*\}\{\\htmlClass\{/);
+    // R_2's group is attributed to r2_refl, not alpha_loss.
+    expect(prepared).toMatch(/var=r2_refl\}\{\\textcolor\{#0891b2\}\{R_2\}/);
+  });
+
   test("prepareInteractiveLatex is idempotent and avoids duplicating existing term classes", () => {
     const alreadyPrepared = {
       rawLatex: "\\htmlClass{eq-term eq-term-v eq-term-sapphire}{\\htmlData{var=v}{V}}",
