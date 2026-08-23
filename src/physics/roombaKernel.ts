@@ -176,9 +176,7 @@ export function getRoombaTapeState(): RoombaState | undefined {
   return tapeState;
 }
 
-export function createRoombaTransportUpdater(
-  getControls: () => RoombaControls,
-): TapeUpdater {
+export function createRoombaTransportUpdater(getControls: () => RoombaControls): TapeUpdater {
   return (_prev, dt) => {
     const next = stepRoomba(getControls(), tapeState, dt);
     tapeState = next;
