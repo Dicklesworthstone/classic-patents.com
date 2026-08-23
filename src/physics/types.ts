@@ -153,6 +153,15 @@ export interface ContinuumState {
   buoyancyLiftForceKiloNewtons: number; // kN
 }
 
+// 7. Rigid Machines & Mechanisms (shared poses on the transport tape)
+export interface MachineState {
+  poseXMeters: number;
+  poseYMeters: number;
+  headingRad: number;
+  modeLabel: string;
+  wheelSpeedMps: number;
+}
+
 export interface UniversalPatentPhysicsTelemetry {
   patentId: string;
   domain: PhysicsDomain;
@@ -165,4 +174,5 @@ export interface UniversalPatentPhysicsTelemetry {
   thermo?: ThermodynamicsState;
   nuclear?: NuclearKineticsState;
   continuum?: ContinuumState;
+  machine?: MachineState;
 }

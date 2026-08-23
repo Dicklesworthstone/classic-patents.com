@@ -1,3 +1,4 @@
+import type { TapeUpdater } from "./useFrankenSimPhysics";
 export interface RoombaControls {
   wheelSpeedMps: number;
   turnRateRadSec: number;
@@ -163,4 +164,32 @@ export function stepRoomba(c: RoombaControls, s?: RoombaState, dt: number = 1 / 
   state.displayY = state.y;
 
   return state;
+}
+
+/**
+ * Single shared tape for every Roomba face: one stepper, one state, no
+ * per-face divergence. The transport bus owns the clock; faces only draw.
+ */
+let tapeState: RoombaState | undefined;
+
+export function getRoombaTapeState(): RoombaState | undefined {
+  return tapeState;
+}
+
+export function createRoombaTransportUpdater(
+  getControls: () => RoombaControls,
+): TapeUpdater {
+  return (_prev, dt) => {
+    const next = stepRoomba(getControls(), tapeState, dt);
+    tapeState = next;
+    return {
+      machine: {
+        poseXMeters: next.displayX,
+        poseYMeters: next.displayY,
+        headingRad: next.heading,
+        modeLabel: next.mode,
+        wheelSpeedMps: getControls().wheelSpeedMps,
+      },
+    };
+  };
 }
