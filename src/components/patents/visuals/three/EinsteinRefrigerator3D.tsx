@@ -5,6 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEinsteinRefrigerator } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +36,18 @@ const CAMERA_PRESETS: Record<
   evaporator: { pos: [-2.8, 2.8, 3.8], target: [-2.8, 1.8, 0] },
   absorber: { pos: [-3.2, -0.6, 3.6], target: [-2.8, -1.4, 0] },
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 0,
+  temperatureKelvin: 0,
+  pressureAtm: 0,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
 };
 
 export function EinsteinRefrigerator3D() {
@@ -63,6 +81,9 @@ export function EinsteinRefrigerator3D() {
     isCutaway,
     showCalloutPins,
     isAudioMuted,
+    totalPressureAtm: systemPressureAtm,
+    partialPressureButaneAtm: frige.partialPressureButaneAtm,
+    claim1Active: claimStates[1] === false ? 0 : 1,
     coolingWatts: frige.coolingWatts,
     evapTempC: frige.evapTempC,
     cop: frige.cop,
@@ -73,6 +94,63 @@ export function EinsteinRefrigerator3D() {
     heatFrameIndex: frige.heatFrameIndex,
     fluidWrapY: frige.fluidWrapY,
   });
+
+  // Shared transport tape: the absorption-cycle operating point publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-1781541-einstein-refrigerator", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      ...IDLE_THERMO,
+      temperatureCelsius: frige.evapTempC,
+      temperatureKelvin: frige.evapTempC + 273.15,
+      pressureAtm: systemPressureAtm,
+      partialPressureButaneAtm: frige.partialPressureButaneAtm,
+      heatInputWatts,
+      coolingPowerWatts: frige.coolingWatts,
+      coefficientOfPerformance: frige.cop,
+    },
+  });
+
+  // One tape-bound gate (br-ixl): the bus updater owns the claim boundary and
+  // publishes the kernel-derived cycle state each tick.
+  useEffect(() => {
+    const integrate: TapeUpdater = () => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused
+            ? "Claim 1 valve closed: absorption cycle held at last legal state"
+            : undefined,
+        },
+        thermo: {
+          ...IDLE_THERMO,
+          temperatureCelsius: live.current.evapTempC ?? -25,
+          temperatureKelvin: (live.current.evapTempC ?? -25) + 273.15,
+          pressureAtm: live.current.totalPressureAtm ?? 15,
+          partialPressureButaneAtm: live.current.partialPressureButaneAtm ?? 5.25,
+          heatInputWatts: live.current.heatInputWatts ?? 220,
+          coolingPowerWatts: live.current.coolingWatts ?? 0,
+          coefficientOfPerformance: live.current.cop ?? 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(
+      "us-1781541-einstein-refrigerator",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return () => globalTransportBus.unregisterUpdater("us-1781541-einstein-refrigerator");
+  }, [
+    live.current.claim1Active,
+    live.current.coolingWatts,
+    live.current.cop,
+    live.current.evapTempC,
+    live.current.heatInputWatts,
+    live.current.partialPressureButaneAtm,
+    live.current.totalPressureAtm,
+  ]);
 
   const studioRef = useRef<StudioContext | null>(null);
 

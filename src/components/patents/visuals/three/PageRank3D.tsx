@@ -8,7 +8,7 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { stepPageRank } from "@/physics/pageRankKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import { globalTransportBus, type TapeUpdater } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -54,6 +54,29 @@ export function PageRank3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
+  // Shared transport tape: the rank-vector iteration steps on the bus at a
+  // fixed 60 Hz so every face converges on one cadence. PageRank has no
+  // physical telemetry block, so the updater publishes no synthetic channel —
+  // consumers read the stepped ranks from this ref directly.
+  const tapeRef = useRef({ ranks: [1 / 3, 1 / 3, 1 / 3], iteration: 0, displayRate: 0.68 });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = () => {
+      const out = stepPageRank(
+        { dampingFactor: live.current.dampingFactor ?? 0.85 },
+        tapeRef.current.ranks,
+      );
+      tapeRef.current = {
+        ranks: out.ranks,
+        iteration: tapeRef.current.iteration + 1,
+        displayRate: out.displayRate,
+      };
+      return null;
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate);
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [live]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -67,16 +90,14 @@ export function PageRank3D() {
     const model = buildPageRankModel();
     studio.scene.add(model.root);
 
-    let renderedSteps = 0;
-    const sched = new TickScheduler(1 / 10, 0);
     let displayAngle = 0;
     let timeSec = 0;
     let hudCounter = 0;
     let rafId = 0;
     let lastFrameTimeMs: number | undefined;
 
-    let currentRanks = [1 / 3, 1 / 3, 1 / 3];
-    let iteration = 0;
+    // The bus pump must be alive for the registered rank iterator above.
+    globalTransportBus.getTransport(EXHIBIT_ID);
 
     const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
@@ -85,16 +106,10 @@ export function PageRank3D() {
       lastFrameTimeMs = frameTimeMs;
       timeSec += delta;
 
-      renderedSteps += 1;
       const p = live.current;
 
-      let surferRate = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }).displayRate;
-      sched.pump(renderedSteps / 60, () => {
-        const out = stepPageRank({ dampingFactor: p.dampingFactor ?? 0.85 }, currentRanks);
-        currentRanks = out.ranks;
-        surferRate = out.displayRate;
-        iteration += 1;
-      });
+      // Ranks/iteration step on the transport tape; this loop only draws.
+      const { ranks: currentRanks, iteration, displayRate: surferRate } = tapeRef.current;
 
       displayAngle += surferRate * delta * (0.15 / 0.8);
       model.mainGroup.rotation.y = displayAngle;

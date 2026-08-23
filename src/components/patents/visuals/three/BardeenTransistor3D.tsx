@@ -8,7 +8,12 @@ import {
   type BardeenOperatingSampleNumber,
   stepBardeenPointContact,
 } from "@/physics/bardeenPointContactKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import type { MachineState, SemiconductorState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -61,6 +66,53 @@ export const BardeenTransistor3D = memo(() => {
     isCutaway,
   });
 
+  // Shared transport tape: only the specification's reported Table I sample
+  // values (bias, gains) ride the semi channel; the carrier stream is an
+  // authored display mapping carried by the machine pose channel. The
+  // updater integrates the display stream so every reader sees one state.
+  useFrankenSimPhysics("us-2524035-bardeen-transistor", {
+    domain: "semiconductor_carrier",
+    refusal: {
+      isRefused: !(claimStates[1] ?? true),
+      reason: !(claimStates[1] ?? true)
+        ? "Contact spacing beyond diffusion length: injected holes recombine before collection"
+        : undefined,
+    },
+    semi: {
+      biasVoltageVolts: sample.collectorBiasVolts,
+      currentGainAlpha: sample.sourceStatedCurrentGain ?? 0,
+      holeDiffusionCoefficientCm2ps: 0,
+      chargeTransferEfficiencyPct: 0,
+      clockPeriodNs: 0,
+      busBandwidthMbps: 0,
+      electronVelocityMps: 0,
+      relativisticFractionC: 0,
+      voltageGain: sample.voltageGainFactor,
+      powerGainDb: Number((10 * Math.log10(sample.powerGainFactor)).toFixed(2)),
+      collectorCurrentMa: 0,
+      gapStudioUnits: sourceState.gapStudioUnits,
+      pointGapSvgPx: sourceState.pointGapSvgPx,
+    } satisfies SemiconductorState,
+  });
+
+  const carrierTravelRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      carrierTravelRef.current += live.current.carrierDisplaySpeed * dt;
+      const active = live.current.showCarrierPaths;
+      const machine: MachineState = {
+        poseXMeters: 0,
+        poseYMeters: 0,
+        headingRad: carrierTravelRef.current % (2 * Math.PI),
+        modeLabel: active ? "carrier display stream" : "collector collection quenched",
+        wheelSpeedMps: 0,
+      };
+      return { machine };
+    };
+    globalTransportBus.registerUpdater("us-2524035-bardeen-transistor", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-2524035-bardeen-transistor");
+  }, [live.current.carrierDisplaySpeed, live.current.showCarrierPaths]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -84,26 +136,24 @@ export const BardeenTransistor3D = memo(() => {
     const { rootGroup, nodes, materials, dispose } = buildBardeenTransistorModel();
     scene.add(rootGroup);
 
-    // Animation Loop
+    // Animation Loop: pure consumer of the shared transport tape. The bus
+    // updater owns the carrier-stream integration and the tape tick; this
+    // loop only paces mesh interpolation with frame delta.
     let reqId: number;
-    let simTimeSec = 0;
-    const sched = new TickScheduler(1 / 60, 0);
+    const transport = globalTransportBus.getTransport("us-2524035-bardeen-transistor");
     let lastMs: number | undefined;
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 1 / 60;
       lastMs = now;
-      sched.pump(now / 1000, () => {
-        simTimeSec += 1 / 60;
-      });
       const p = live.current;
 
       updateBardeenTransistorKinematics(
         nodes,
         materials,
         dt,
-        Math.floor(simTimeSec * 60),
+        transport.lastFrame.tick,
         p.gapStudioUnits,
         p.carrierDisplaySpeed,
         p.showCarrierPaths,

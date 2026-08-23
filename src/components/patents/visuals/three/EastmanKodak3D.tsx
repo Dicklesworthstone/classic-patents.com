@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -76,6 +81,41 @@ export function EastmanKodak3D() {
     filmAdvanceSpeedRadPerS: kodak.filmAdvanceSpeedRadPerS,
     supplySpoolOmegaRadPerS: kodak.supplySpoolOmegaRadPerS,
   });
+
+  // Shared transport tape: the optics op point publishes to the patentId-keyed
+  // bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-388850-eastman-kodak", {
+    domain: "optics_waves",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+  });
+
+  // One tape-bound integrator (br-ixl.3): the registered updater owns the
+  // authoritative barrel-shutter phase derived from the shared engine step;
+  // the render loop keeps dt-paced mesh interpolation. Accumulators live in
+  // refs so re-registering on control changes never resets the shutter phase.
+  const barrelAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      barrelAngleRef.current += (live.current.barrelOmegaRadPerS ?? 0) * dt;
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: barrelAngleRef.current,
+          modeLabel: "barrel shutter / roll film",
+          // The kernel gives spool omegas only; no metric spool radius exists
+          // in the source, so wheel speed stays unpublished rather than
+          // invented.
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-388850-eastman-kodak", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-388850-eastman-kodak");
+  }, [live.current.barrelOmegaRadPerS]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

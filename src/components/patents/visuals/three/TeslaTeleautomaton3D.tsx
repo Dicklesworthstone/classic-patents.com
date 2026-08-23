@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepTeslaTeleautomaton } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -39,6 +44,14 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 9.5, 0.1], target: [0, 0, 0] },
 };
 
+/** Fields the render loop consumes from each teleautomaton kernel step. */
+interface TeleautoStepPose {
+  propellerOmegaRadPerS: number;
+  rudderAngleDeg: number;
+  steppingDiskIndex: number;
+  cohererDisplayOmegaRadPerS: number;
+}
+
 export function TeslaTeleautomaton3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
@@ -70,6 +83,49 @@ export function TeslaTeleautomaton3D() {
     cutawayMode,
     isAudioMuted,
   });
+
+  // Shared transport tape: RF tank/coherer/propulsion state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-613809-tesla-teleautomaton", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+  });
+  const teleStepRef = useRef<TeleautoStepPose | null>(null);
+  const teleDiskPhaseRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const out = stepTeslaTeleautomaton({
+        rfFrequency: live.current.transmitterFreqKhz,
+        rudderAngle: live.current.rudderAngleDeg,
+        propellerThrottlePct: live.current.propellerThrottlePct,
+        pulseCount: live.current.pulseCount,
+      });
+      teleStepRef.current = out;
+      // Stepping-disk commutator rotation is the accumulated EM phase on the tape.
+      teleDiskPhaseRef.current += out.cohererDisplayOmegaRadPerS * dt;
+      return {
+        em: {
+          frequencyHz: out.rfFrequencyKhz * 1000,
+          magneticFluxDensityTesla: 0,
+          electricFieldVpm: 0,
+          phaseAngleRad: teleDiskPhaseRef.current,
+          inductanceHenry: 0,
+          capacitanceFarad: 0,
+          currentAmperes: 0,
+          voltageVolts: 0,
+          powerFactor: 0,
+          efficiencyPct: 0,
+          synchronousRpm: 0,
+          slipFraction: 0,
+          rotorRpm: out.propellerRpm,
+          shaftPowerWatts: 0,
+          electricalInputWatts: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-613809-tesla-teleautomaton", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-613809-tesla-teleautomaton");
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -111,25 +167,23 @@ export function TeslaTeleautomaton3D() {
       reqId = requestAnimationFrame(animate);
       const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
-      const out = stepTeslaTeleautomaton({
-        rfFrequency: p.transmitterFreqKhz,
-        rudderAngle: p.rudderAngleDeg,
-        propellerThrottlePct: p.propellerThrottlePct,
-        pulseCount: p.pulseCount,
-      });
-
-      updateTeslaTeleautomatonKinematics(
-        vesselModel.nodes,
-        vesselModel.materials,
-        delta,
-        timeSec,
-        out.propellerOmegaRadPerS,
-        out.rudderAngleDeg,
-        p.showRadioWaves,
-        p.cutawayMode,
-        out.steppingDiskIndex,
-        out.cohererDisplayOmegaRadPerS,
-      );
+      // Bus-owned kernel step: read the latest shared-tape outputs; render
+      // immediately from the static model until the first tape tick lands.
+      const out = teleStepRef.current;
+      if (out) {
+        updateTeslaTeleautomatonKinematics(
+          vesselModel.nodes,
+          vesselModel.materials,
+          delta,
+          timeSec,
+          out.propellerOmegaRadPerS,
+          out.rudderAngleDeg,
+          p.showRadioWaves,
+          p.cutawayMode,
+          out.steppingDiskIndex,
+          out.cohererDisplayOmegaRadPerS,
+        );
+      }
 
       controls.update();
       renderer.render(scene, camera);

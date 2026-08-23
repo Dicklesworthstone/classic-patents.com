@@ -3,8 +3,13 @@
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { stepSholesTypewriter } from "@/physics/machineKernels";
+import { sholesCarriageStudioX, stepSholesTypewriter } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -38,6 +43,15 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
 };
 
+/** Fields the 3D render loop consumes from each Sholes kernel step. */
+interface SholesStepPose {
+  eventsPerSecond: number;
+  completedSteps: number;
+  keyCyclePct: number;
+  displayTypebarIndex: number;
+  escapementStepRad: number;
+}
+
 export const SholesTypewriter3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -58,6 +72,44 @@ export const SholesTypewriter3D = memo(() => {
     demonstrationCadence,
     isCutaway,
   });
+
+  // Shared transport tape: typebasket/carriage cycle publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-79265-sholes-typewriter", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "idle",
+      wheelSpeedMps: 0,
+    },
+  });
+  const sholesStepRef = useRef<SholesStepPose | null>(null);
+  const sholesElapsedSRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      sholesElapsedSRef.current += dt;
+      const step = stepSholesTypewriter(
+        live.current.demonstrationCadence,
+        sholesElapsedSRef.current,
+      );
+      sholesStepRef.current = step;
+      return {
+        machine: {
+          // Escapement carriage advance and platen ratchet rotation on the tape.
+          poseXMeters: sholesCarriageStudioX(step.displayTypebarIndex),
+          poseYMeters: 0,
+          headingRad: step.completedSteps * step.escapementStepRad,
+          modeLabel: step.keyCyclePct < 0.35 ? "typebar strike" : "carriage feed",
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-79265-sholes-typewriter", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-79265-sholes-typewriter");
+  }, [live]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -94,20 +146,22 @@ export const SholesTypewriter3D = memo(() => {
 
     let reqId: number;
     const clock = createStudioClock();
-
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const { simTimeSec: displayElapsedS } = clock.pump(now);
+      clock.pump(now);
       const p = live.current;
-      const step = stepSholesTypewriter(p.demonstrationCadence, displayElapsedS);
-
-      updateSholesTypewriterKinematics(
-        nodes,
-        materials,
-        step.keyCyclePct,
-        step.displayTypebarIndex,
-        p.isCutaway,
-      );
+      // Bus-owned integration: read the latest shared-tape step; render immediately
+      // from the static model until the first tape tick lands.
+      const step = sholesStepRef.current;
+      if (step) {
+        updateSholesTypewriterKinematics(
+          nodes,
+          materials,
+          step.keyCyclePct,
+          step.displayTypebarIndex,
+          p.isCutaway,
+        );
+      }
 
       controls.update();
       renderer.render(scene, camera);

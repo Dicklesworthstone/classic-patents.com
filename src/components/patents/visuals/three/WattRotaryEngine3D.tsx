@@ -13,8 +13,17 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { readWattRotaryControls, stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
+import {
+  readWattRotaryControls,
+  stepWattRotaryEngine,
+  type WattRotaryTelemetry,
+} from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -73,6 +82,35 @@ export function WattRotaryEngine3D() {
     flywheelMassKg,
   });
 
+  // Shared transport tape: sun-and-planet kinematics publish to the patentId-keyed bus.
+  useFrankenSimPhysics("gb-1306-watt-rotary-engine", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+  });
+  const wattStepRef = useRef<WattRotaryTelemetry | null>(null);
+  const wattTimeRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      if (!isPlayingRef.current) return null;
+      wattTimeRef.current += dt;
+      const out = stepWattRotaryEngine(readWattRotaryControls(live.current), wattTimeRef.current);
+      wattStepRef.current = out;
+      return {
+        machine: {
+          // Planet-gear orbit pose and flywheel shaft rotation on the tape.
+          poseXMeters: out.planetPosX,
+          poseYMeters: out.planetPosY,
+          headingRad: (out.sunShaftAngleDeg * Math.PI) / 180,
+          modeLabel: "sun-and-planet running",
+          wheelSpeedMps: out.pistonVelocityMps,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("gb-1306-watt-rotary-engine", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("gb-1306-watt-rotary-engine");
+  }, [live]);
+
   const handleCameraPreset = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -97,22 +135,16 @@ export function WattRotaryEngine3D() {
     studio.scene.add(model.root);
     modelRef.current = model;
 
-    let virtualTimeSec = 0;
     const clock = createStudioClock();
-
     const animate = (now: number) => {
       animFrameRef.current = requestAnimationFrame(animate);
-      const { dt } = clock.pump(now);
-
+      clock.pump(now);
       studio.controls.update();
 
-      if (isPlayingRef.current) {
-        virtualTimeSec += dt;
-      }
-
       if (modelRef.current) {
-        if (isPlayingRef.current) {
-          const out = stepWattRotaryEngine(readWattRotaryControls(live.current), virtualTimeSec);
+        // Bus-owned kernel step: read the latest shared-tape gear poses.
+        const out = wattStepRef.current;
+        if (out) {
           modelRef.current.updateAnimation({
             beamAngleDeg: out.beamAngleDeg,
             planetOrbitAngleDeg: out.planetOrbitAngleDeg,
@@ -137,7 +169,7 @@ export function WattRotaryEngine3D() {
       studioRef.current = null;
       modelRef.current = null;
     };
-  }, [live]);
+  }, []);
 
   const telemetry = stepWattRotaryEngine(
     {

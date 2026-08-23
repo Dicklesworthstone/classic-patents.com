@@ -5,6 +5,12 @@ import { memo, useEffect, useRef, useState } from "react";
 import { stepGrammeDynamo } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState, MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -35,6 +41,32 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
 
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
+};
+
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "ring-armature",
+  wheelSpeedMps: 0,
+};
+
 export const GrammeDynamo3D = memo(() => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
@@ -58,7 +90,61 @@ export const GrammeDynamo3D = memo(() => {
     displayRadPerFrame: gramme.displayRadPerFrame,
     fluxOpacity: gramme.fluxOpacity,
     isCutaway,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
+
+  // Shared transport tape: the US 120,057 ring-armature state publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  // The illustrative shaft rate maps to display omega only (rad/frame * 60).
+  const ringOmegaRadPerS = gramme.displayRadPerFrame * 60;
+  useFrankenSimPhysics("us-120057-gramme-dynamo", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      ...IDLE_EM,
+      frequencyHz: ringOmegaRadPerS / (2 * Math.PI),
+      synchronousRpm: (ringOmegaRadPerS * 60) / (2 * Math.PI),
+      rotorRpm: (ringOmegaRadPerS * 60) / (2 * Math.PI),
+    },
+    machine: { ...IDLE_MACHINE },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the ring
+  // rotation phase. Refusal freezes the armature at the last legal angle.
+  const ringAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      const omega = (live.current.displayRadPerFrame ?? 0) * 60;
+      if (!refused) {
+        ringAngleRef.current += omega * dt;
+        lastLegalAngleRef.current = ringAngleRef.current;
+      } else {
+        ringAngleRef.current = lastLegalAngleRef.current;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused
+            ? "Claim 1 drive disengaged: ring armature held at last legal angle"
+            : undefined,
+        },
+        em: {
+          ...(prev.em ?? IDLE_EM),
+          frequencyHz: omega / (2 * Math.PI),
+          synchronousRpm: (omega * 60) / (2 * Math.PI),
+          rotorRpm: (omega * 60) / (2 * Math.PI),
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          headingRad: ringAngleRef.current,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-120057-gramme-dynamo", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-120057-gramme-dynamo");
+  }, [live.current.claim1Active, live.current.displayRadPerFrame]);
 
   const studioRef = useRef<StudioContext | null>(null);
 

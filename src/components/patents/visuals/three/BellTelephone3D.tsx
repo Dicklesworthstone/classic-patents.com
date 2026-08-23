@@ -5,7 +5,12 @@ import { memo, useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBellTelephone } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
-import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState, MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -73,6 +78,61 @@ export const BellTelephone3D = memo(() => {
     isAudioMuted,
   });
 
+  // Shared transport tape: one bus-owned integrator steps the acoustic
+  // display phase; the liquid-transmitter circuit state (battery EMF,
+  // baseline current) publishes on the em channel. Accumulator lives in a
+  // ref so re-registering on control changes never snaps the phase.
+  useFrankenSimPhysics("us-174465-bell-telephone", {
+    domain: "electromagnetics_flux",
+    refusal: {
+      isRefused: bell.voiceNorm <= 0,
+      reason:
+        bell.voiceNorm <= 0
+          ? "No acoustic input below 40 dB: diaphragm rests, resistance unmodulated"
+          : undefined,
+    },
+  });
+  const acousticTimeRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      acousticTimeRef.current += dt;
+      const acousticPhaseRad =
+        (acousticTimeRef.current * live.current.acousticDisplayOmegaRadPerS) % (2 * Math.PI);
+      const em: ElectromagneticsState = {
+        frequencyHz: acousticFrequencyHz,
+        magneticFluxDensityTesla: 0,
+        electricFieldVpm: 0,
+        phaseAngleRad: acousticPhaseRad,
+        inductanceHenry: 0,
+        capacitanceFarad: 0,
+        currentAmperes: bell.currentBaselineAmps,
+        voltageVolts: batteryVoltage,
+        powerFactor: 1,
+        efficiencyPct: 0,
+        synchronousRpm: 0,
+        slipFraction: 0,
+        rotorRpm: 0,
+        shaftPowerWatts: 0,
+        electricalInputWatts: batteryVoltage * bell.currentBaselineAmps,
+      };
+      const machine: MachineState = {
+        poseXMeters: 0,
+        poseYMeters: 0,
+        headingRad: acousticPhaseRad,
+        modeLabel: "liquid-transmitter acoustic modulation",
+        wheelSpeedMps: 0,
+      };
+      return { em, machine };
+    };
+    globalTransportBus.registerUpdater("us-174465-bell-telephone", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-174465-bell-telephone");
+  }, [
+    live.current.acousticDisplayOmegaRadPerS,
+    acousticFrequencyHz,
+    batteryVoltage,
+    bell.currentBaselineAmps,
+  ]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -106,19 +166,19 @@ export const BellTelephone3D = memo(() => {
     const model = buildBellTelephoneModel();
     scene.add(model.rootGroup);
 
-    // Animation Loop
+    // Animation Loop: pure consumer of the shared transport tape. The bus
+    // updater owns acoustic-time integration; this loop only paces mesh
+    // interpolation with frame delta.
     let reqId: number;
-    const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       reqId = requestAnimationFrame(animate);
-      const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
       updateBellTelephoneKinematics(
         model,
-        delta,
-        timeSec,
+        1 / 60,
+        acousticTimeRef.current,
         p.acousticDisplayOmegaRadPerS,
         p.diaphragmStudioScale,
         p.electronStudioSpeed,

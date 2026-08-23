@@ -5,6 +5,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { stepRillieuxEvaporator } from "@/physics/rillieuxEvaporatorKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -94,6 +95,25 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
     const target = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(target.pos, target.target);
   };
+
+  // Shared transport tape: the audited kernel's first-effect thermal state
+  // publishes as the initial thermo envelope (mass-balance outputs, not
+  // invented dynamics); the per-frame kernel call feeding model.update stays.
+  useFrankenSimPhysics("us-3237-rillieux-evaporator", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: state.effects[0]?.boilingTemperatureC ?? 0,
+      temperatureKelvin: (state.effects[0]?.boilingTemperatureC ?? 0) + 273.15,
+      pressureAtm: (state.effects[0]?.operatingPressureKPa ?? 0) / 101.325,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: (state.effects[0]?.heatTransferKw ?? 0) * 1000,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
 
   useEffect(() => {
     const container = containerRef.current;

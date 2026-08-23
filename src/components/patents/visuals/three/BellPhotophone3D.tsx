@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { stepBellPhotophone } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -48,6 +49,20 @@ export function BellPhotophone3D() {
   }, [beamVariationActive]);
 
   const live = useLiveSimParams({ photoState, isCutaway });
+
+  // Shared transport tape: the Photophone kernel is deliberately qualitative
+  // (the grant establishes causal arrangements, not measured flux), so this
+  // face publishes an honest ENVELOPE — only the authored schematic switch
+  // state — and keeps the local rAF pacing the beam display.
+  useFrankenSimPhysics("us-235199-bell-photophone", {
+    domain: "optics_waves",
+    refusal: {
+      isRefused: !beamVariationActive,
+      reason: !beamVariationActive
+        ? "Voice switch open: the mirror diaphragm holds a static beam"
+        : undefined,
+    },
+  });
 
   useEffect(() => {
     const container = containerRef.current;

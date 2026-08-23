@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepLincolnBuoy } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -55,6 +56,22 @@ export function LincolnBuoy3D() {
   });
 
   const baseDraftFt = lincoln.baseDraftFt;
+
+  // Shared transport tape envelope: hydrostatic lift publishes to the
+  // patentId-keyed bus so badges and sibling faces read one honest value.
+  useFrankenSimPhysics("us-6469-lincoln-buoy", {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: false },
+    continuum: {
+      tensileStressMpa: 0,
+      tensileStrainPct: 0,
+      elasticModulusGpa: 0,
+      crossLinkDensityMolesPerCm3: 0,
+      stitchFrequencyHz: 0,
+      feedVelocityMmPs: 0,
+      buoyancyLiftForceKiloNewtons: lincoln.liftKn,
+    },
+  });
   const effectiveDraftFt = lincoln.hullDraftFt;
 
   const live = useLiveSimParams({

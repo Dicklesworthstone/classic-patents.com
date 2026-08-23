@@ -5,6 +5,12 @@ import { memo, useEffect, useRef, useState } from "react";
 import { stepHyattCelluloid } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -14,6 +20,18 @@ import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
+
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 135,
+  temperatureKelvin: 408.15,
+  pressureAtm: 1,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
+};
 
 type CameraPreset =
   | "iso"
@@ -71,6 +89,38 @@ export const HyattCelluloid3D = memo(() => {
     isMelted: hyatt.isMelted,
   });
 
+  // Shared transport tape: the celluloid rheology kernel step is owned by the
+  // bus updater (TS_FALLBACK); the render loop keeps its own kinematics.
+  useFrankenSimPhysics("us-105338-hyatt-celluloid", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      ...IDLE_THERMO,
+      temperatureCelsius: steamTempC,
+      temperatureKelvin: steamTempC + 273.15,
+      fluidFlowVelocityMps: Number((hyatt.extrusionRateCmPerMin / 6000).toFixed(5)),
+    },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      const s = stepHyattCelluloid({
+        steamTempC: live.current.steamTempC,
+        hydraulicPressureMpa: live.current.hydraulicPressureMpa,
+      });
+      return {
+        refusal: { isRefused: false },
+        thermo: {
+          ...(prev.thermo ?? IDLE_THERMO),
+          temperatureCelsius: live.current.steamTempC,
+          temperatureKelvin: live.current.steamTempC + 273.15,
+          fluidFlowVelocityMps: Number((s.extrusionRateCmPerMin / 6000).toFixed(5)),
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-105338-hyatt-celluloid", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-105338-hyatt-celluloid");
+  }, [live.current.hydraulicPressureMpa, live.current.steamTempC]);
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];

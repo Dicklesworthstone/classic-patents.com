@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { stepZeppelinAirship } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -34,6 +39,13 @@ const CAMERA_PRESETS: Record<
   control_fins: { pos: [-8.5, 1.5, 3.5], target: [-6.5, 0, 0] },
   top: { pos: [0, 22.0, 0.1], target: [0, 0, 0] },
 };
+
+/** Fields the render loop consumes from each airship kernel step. */
+interface ZeppelinPose {
+  hullStudioY: number;
+  pitchTrimDeg: number;
+  propellerDisplayOmegaRadPerS: number;
+}
 
 export function ZeppelinAirship3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -66,13 +78,60 @@ export function ZeppelinAirship3D() {
     isAudioMuted,
     trimWeightPosM,
     gasInflation,
+    flightAlt,
     flightSpeedKnots: Number(flightSpeedKnots),
-    netLiftKn: zep.netLiftKn,
     hullStudioY: zep.hullStudioY,
     pitchTrimDeg: zep.pitchTrimDeg,
-    parasiteDragKn: zep.parasiteDragKn,
     propellerOmegaRadPerS: zep.propellerDisplayOmegaRadPerS,
   });
+
+  // Shared transport tape: aerostatic state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-621195-zeppelin-airship", {
+    domain: "aerodynamics_mbd",
+    refusal: { isRefused: false },
+  });
+  const zeppelinPoseRef = useRef<ZeppelinPose | null>(null);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev) => {
+      const p = live.current;
+      const out = stepZeppelinAirship({
+        gasInflation: p.gasInflation,
+        flightAlt: p.flightAlt,
+        flightSpeedKnots: p.flightSpeedKnots,
+        trimWeight: p.trimWeightPosM,
+      });
+      zeppelinPoseRef.current = out;
+      return {
+        aero: {
+          airspeedMps: (out.flightSpeedKmh / 3.6) * 1,
+          altitudeMeters: p.flightAlt,
+          angleOfAttackRad: (out.pitchTrimDeg * Math.PI) / 180,
+          sideslipRad: 0,
+          pitchRateRps: 0,
+          rollRateRps: 0,
+          yawRateRps: 0,
+          liftNewtons: out.netLiftKn * 1000,
+          inducedDragNewtons: 0,
+          parasiticDragNewtons: out.parasiteDragKn * 1000,
+          thrustNewtons: out.parasiteDragKn * 1000,
+          elevatorDeflectionDeg: 0,
+          rudderDeflectionDeg: 0,
+          wingWarpDeflectionDeg: 0,
+        },
+        machine: {
+          poseXMeters: 0,
+          // Hull buoyancy station on the tape.
+          poseYMeters: out.hullStudioY,
+          headingRad: (out.pitchTrimDeg * Math.PI) / 180,
+          modeLabel: "rigid airship cruise",
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-621195-zeppelin-airship", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-621195-zeppelin-airship");
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -119,14 +178,16 @@ export function ZeppelinAirship3D() {
       const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
+      // Bus-owned kernel step: prefer the latest shared-tape aerostatic state.
+      const z = zeppelinPoseRef.current;
       updateZeppelinAirshipKinematics(
         nodes,
         materials,
         dt,
         timeSec,
-        p.hullStudioY,
-        p.pitchTrimDeg,
-        p.propellerOmegaRadPerS,
+        z ? z.hullStudioY : p.hullStudioY,
+        z ? z.pitchTrimDeg : p.pitchTrimDeg,
+        z ? z.propellerDisplayOmegaRadPerS : p.propellerOmegaRadPerS,
         p.trimWeightPosM,
         p.isCutaway,
         p.gasInflation,

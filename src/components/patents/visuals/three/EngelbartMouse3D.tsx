@@ -7,6 +7,12 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepEngelbartMouse } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -29,6 +35,14 @@ const CAMERA_PRESETS: Record<
   microswitch: { pos: [3, 4, -4], target: [1.3, 2.0, -2.0] },
   potentiometers: { pos: [-3, 3, 2], target: [0, 0.5, 0] },
   top: { pos: [0, 16, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "encoder-wheels",
+  wheelSpeedMps: 0,
 };
 
 export const EngelbartMouse3D = memo(() => {
@@ -67,8 +81,57 @@ export const EngelbartMouse3D = memo(() => {
     wheelOmegaRadPerS: mouse.omegaRadPerS,
     pathDisplayOmega: mouse.pathDisplayOmega,
     resolverSvgScale: mouse.resolverSvgScale,
+    claim1Active: claimStates[1] === false ? 0 : 1,
     pulsesPerRev,
   });
+
+  // Shared transport tape: the US 3,541,541 encoder-wheel pose publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-3541541-engelbart-mouse", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      ...IDLE_MACHINE,
+      wheelSpeedMps: mouseSpeedMmPerS / 1000,
+    },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the wheel
+  // rotation phase and dead-reckoned desk travel. Accumulators live in refs
+  // so re-registering on control changes never snaps the phase back to zero.
+  const wheelAngleRef = useRef(0);
+  const travelMetersRef = useRef(0);
+  const lastLegalRef = useRef({ angle: 0, travel: 0 });
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        wheelAngleRef.current += (live.current.wheelOmegaRadPerS ?? 0) * dt;
+        travelMetersRef.current += ((live.current.mouseSpeedMmPerS ?? 0) * dt) / 1000;
+        lastLegalRef.current = {
+          angle: wheelAngleRef.current,
+          travel: travelMetersRef.current,
+        };
+      } else {
+        wheelAngleRef.current = lastLegalRef.current.angle;
+        travelMetersRef.current = lastLegalRef.current.travel;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Claim 1 wheels lifted: resolver held at last legal angle" : undefined,
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          poseXMeters: travelMetersRef.current,
+          headingRad: wheelAngleRef.current,
+          wheelSpeedMps: (live.current.mouseSpeedMmPerS ?? 0) / 1000,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-3541541-engelbart-mouse", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-3541541-engelbart-mouse");
+  }, [live.current.claim1Active, live.current.mouseSpeedMmPerS, live.current.wheelOmegaRadPerS]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

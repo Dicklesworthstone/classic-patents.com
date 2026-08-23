@@ -12,6 +12,12 @@ import {
 } from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -35,11 +41,23 @@ const CAMERA_PRESETS: Record<
   { pos: [number, number, number]; target: [number, number, number] }
 > = {
   iso: { pos: [11, 7, 14], target: [0, 0, 0] },
+
   filament_horseshoe: { pos: [0, 2.5, 4.2], target: [0, 1.2, 0] },
   screw_base: { pos: [0, -2.2, 3.8], target: [0, -2.8, 0] },
   exhaust_tip: { pos: [0, 4.8, 2.6], target: [0, 3.8, 0] },
   glass_stem: { pos: [0, 0.5, 3.2], target: [0, -0.6, 0] },
   top: { pos: [0, 10.5, 0.1], target: [0, 0, 0] },
+};
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 0,
+  temperatureKelvin: 0,
+  pressureAtm: 0,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
 };
 
 export const EdisonBulb3D = memo(() => {
@@ -63,6 +81,20 @@ export const EdisonBulb3D = memo(() => {
     filamentLength: filamentLengthCm,
   });
 
+  // Shared transport tape: the kernel-derived filament operating point
+  // publishes to the patentId-keyed bus so every face reads one state.
+  useFrankenSimPhysics("us-223898-edison-lightbulb", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      ...IDLE_THERMO,
+      temperatureCelsius: bulb.filamentTempK - 273.15,
+      temperatureKelvin: bulb.filamentTempK,
+      pressureAtm: vacuumTorr / 760,
+      heatInputWatts: bulb.radiantWatts,
+    },
+  });
+
   const live = useLiveSimParams({
     appliedVoltage,
     filamentTempKelvin: bulb.filamentTempK,
@@ -74,8 +106,41 @@ export const EdisonBulb3D = memo(() => {
     thermalJitterPerS: bulb.thermalJitterPerS,
     filamentEmissiveScale: bulb.filamentEmissiveScale,
     bulbLightScale: bulb.bulbLightScale,
+    filamentRadiantWatts: bulb.radiantWatts,
     claim1Active: claimStates[1] === false ? 0 : 1,
   });
+
+  // One tape-bound gate (br-ixl): the bus updater owns the claim boundary and
+  // publishes the kernel-derived filament thermal state; the render loop reads
+  // the frame instead of privately stepping. Refusal holds the last legal state.
+  useEffect(() => {
+    const integrate: TapeUpdater = () => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      const tempK = live.current.filamentTempKelvin ?? 2200;
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused
+            ? "Claim 1 circuit open: carbon filament held at last legal temperature"
+            : undefined,
+        },
+        thermo: {
+          ...IDLE_THERMO,
+          temperatureCelsius: tempK - 273.15,
+          temperatureKelvin: tempK,
+          pressureAtm: (live.current.vacuumTorr ?? 1e-4) / 760,
+          heatInputWatts: live.current.filamentRadiantWatts ?? 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-223898-edison-lightbulb", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-223898-edison-lightbulb");
+  }, [
+    live.current.claim1Active,
+    live.current.filamentRadiantWatts,
+    live.current.filamentTempKelvin,
+    live.current.vacuumTorr,
+  ]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -136,13 +201,18 @@ export const EdisonBulb3D = memo(() => {
     let timeSec = 0;
     const sched = new TickScheduler(1 / 60, 0);
     let lastMs: number | undefined;
+    const transport = globalTransportBus.getTransport("us-223898-edison-lightbulb");
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       const delta = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
       lastMs = now;
       const p = live.current;
-      const refused = (p.claim1Active ?? 1) < 0.5;
+      // Pure consumer of the shared transport tape: refusal and filament
+      // temperature arrive on bus frames from the registered updater.
+      const tape = transport.lastFrame.telemetry;
+      const refused = tape.refusal.isRefused;
+      const filamentTempKelvin = tape.thermo?.temperatureKelvin ?? p.filamentTempKelvin ?? 2200;
       if (!refused) {
         sched.pump(now / 1000, () => {
           timeSec += 1 / 60;
@@ -154,7 +224,7 @@ export const EdisonBulb3D = memo(() => {
         refused ? 0 : delta,
         timeSec,
         p.incandescenceIntensity,
-        p.filamentTempKelvin,
+        filamentTempKelvin,
         p.thermalJitterPerS,
         p.filamentEmissiveScale,
         p.bulbLightScale,
@@ -167,7 +237,7 @@ export const EdisonBulb3D = memo(() => {
       writeColormappedField(
         fieldRgba,
         computeEdisonFilamentThermalField(
-          p.filamentTempKelvin ?? 2200,
+          filamentTempKelvin,
           p.appliedVoltage ?? 110,
           p.vacuumTorr ?? 1e-4,
           fieldGrid,

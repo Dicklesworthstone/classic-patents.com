@@ -5,6 +5,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { stepNobelDynamite } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -45,6 +46,25 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
     capEnergyJoules,
   });
   const detonationVelocityMps = nobel.detonationVelocityMps;
+
+  // Shared transport tape envelope: detonation pressure and shock-front
+  // velocity publish to the patentId-keyed bus so badges and sibling faces
+  // read one honest state.
+  useFrankenSimPhysics("us-78317-nobel-dynamite", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: 0,
+      temperatureKelvin: 0,
+      pressureAtm: nobel.blastOverpressureMpa * 9.86923,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: nobel.detonationVelocityMps,
+    },
+  });
   const [isFuseLit, setIsFuseLit] = useState<boolean>(false);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();

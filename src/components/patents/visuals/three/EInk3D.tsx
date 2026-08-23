@@ -9,7 +9,12 @@ import {
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type EInkState, stepEInk } from "@/physics/eInkKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import type { ElectromagneticsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +35,24 @@ const CAMERA_PRESETS: Record<
   microcapsule: { pos: [0, 0.2, 1.8], target: [0, 0, 0] },
   electrodes: { pos: [0, 1.2, 2.2], target: [0, 0, 0] },
   top: { pos: [0, 4.0, 0.01], target: [0, 0, 0] },
+};
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
 };
 
 export function EInk3D() {
@@ -55,7 +78,57 @@ export function EInk3D() {
     isCutaway,
   });
 
+  // Shared transport tape: the electrophoretic drive state publishes to the
+  // patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "electromagnetics_flux",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    em: { ...IDLE_EM },
+  });
+
   const studioRef = useRef<StudioContext | null>(null);
+
+  // One tape-bound stepper (br-ixl.3): the registered updater owns the
+  // per-tick eInkKernel integration (two 1/120 sub-steps per 1/60 bus tick,
+  // matching the previous TickScheduler cadence). The render loop only
+  // consumes the latest kernel state. Accumulators live in refs so
+  // re-registering on control changes never resets particle positions.
+  const kernelStateRef = useRef<EInkState | null>(null);
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      const voltage = live.current.electrodeVoltageVolts ?? 15;
+      const viscosityCp = live.current.fluidViscosityCp ?? 2.0;
+      const subSteps = Math.max(1, Math.round(dt / (1 / 120)));
+      let state = kernelStateRef.current ?? undefined;
+      for (let sub = 0; sub < subSteps; sub++) {
+        state = stepEInk(
+          {
+            electrodeVoltageVolts: voltage,
+            fluidViscosityCp: viscosityCp,
+            particleChargeCoupled: 1.0,
+          },
+          dt / subSteps,
+          state,
+        );
+      }
+      kernelStateRef.current = state ?? null;
+      const s = kernelStateRef.current;
+      return s
+        ? {
+            refusal: { isRefused: false },
+            em: {
+              ...(prev.em ?? IDLE_EM),
+              electricFieldVpm: s.electricFieldVperUm * 1e6,
+              voltageVolts: voltage,
+            },
+          }
+        : null;
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [live.current.electrodeVoltageVolts, live.current.fluidViscosityCp]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -76,12 +149,12 @@ export function EInk3D() {
     const model = buildEInkModel();
     studio.scene.add(model.root);
 
-    let renderedSteps = 0;
-    const sched = new TickScheduler(1 / 120, 0);
+    // --- RENDER LOOP: pure consumer of the shared transport tape ---
+    // The registered updater owns the eInkKernel integration; this loop only
+    // paces mesh interpolation and HUD refresh from the latest state.
     let hudCounter = 0;
     let rafId = 0;
     let timeSec = 0;
-    let currentState: EInkState | undefined;
     let lastFrameTimeMs: number | undefined;
 
     const animate = (frameTimeMs: number) => {
@@ -91,20 +164,8 @@ export function EInk3D() {
       lastFrameTimeMs = frameTimeMs;
       timeSec += delta;
 
-      renderedSteps += 1;
       const p = live.current;
-
-      sched.pump(renderedSteps / 60, () => {
-        currentState = stepEInk(
-          {
-            electrodeVoltageVolts: p.electrodeVoltageVolts ?? 15,
-            fluidViscosityCp: p.fluidViscosityCp ?? 2.0,
-            particleChargeCoupled: 1.0,
-          },
-          1 / 120,
-          currentState,
-        );
-      });
+      const currentState = kernelStateRef.current;
 
       if (currentState) {
         model.updateElectrophoresis(p.electrodeVoltageVolts ?? 15, timeSec);

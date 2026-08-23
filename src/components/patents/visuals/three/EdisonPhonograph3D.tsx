@@ -2,8 +2,14 @@
 
 import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { stepEdisonPhonograph } from "@/physics/catalogKernels";
+import { phonographAxialTravelMm, stepEdisonPhonograph } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -37,6 +43,14 @@ const CAMERA_PRESETS: Record<
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
 
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "mandrel-cylinder",
+  wheelSpeedMps: 0,
+};
+
 export function EdisonPhonograph3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -57,6 +71,17 @@ export function EdisonPhonograph3D() {
     voiceVolumeDb,
   });
 
+  // Shared transport tape: the US 200,521 mandrel/cylinder pose publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-200521-edison-phonograph", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      ...IDLE_MACHINE,
+      wheelSpeedMps: phono.axialTravelMmPerS / 1000,
+    },
+  });
+
   const live = useLiveSimParams({
     mandrelRpm,
     cylinderRpm,
@@ -67,7 +92,46 @@ export function EdisonPhonograph3D() {
     mandrelOmegaRadPerS: phono.mandrelOmegaRadPerS,
     stylusAmp: phono.stylusAmp,
     stylusOmegaRadPerS: phono.stylusOmegaRadPerS,
+    axialFeedMmPerS: phono.axialTravelMmPerS,
   });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the mandrel
+  // rotation phase and lead-screw travel. Accumulators live in refs so
+  // re-registering on control changes never snaps the phase back to zero.
+  const mandrelAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const refused = (live.current.mandrelRpm ?? 0) <= 0;
+      if (!refused) {
+        mandrelAngleRef.current += (live.current.mandrelOmegaRadPerS ?? 0) * dt;
+        lastLegalAngleRef.current = mandrelAngleRef.current;
+      } else {
+        mandrelAngleRef.current = lastLegalAngleRef.current;
+      }
+      const angleDeg = (mandrelAngleRef.current * 180) / Math.PI;
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Crank stopped: cylinder held at last legal angle" : undefined,
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          poseXMeters:
+            phonographAxialTravelMm(angleDeg, live.current.leadScrewPitchMm ?? 2.54) / 1000,
+          headingRad: mandrelAngleRef.current,
+          wheelSpeedMps: (live.current.axialFeedMmPerS ?? 0) / 1000,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-200521-edison-phonograph", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-200521-edison-phonograph");
+  }, [
+    live.current.axialFeedMmPerS,
+    live.current.leadScrewPitchMm,
+    live.current.mandrelOmegaRadPerS,
+    live.current.mandrelRpm,
+  ]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

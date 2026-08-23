@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepMorseTelegraph } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -55,6 +56,30 @@ export function MorseTelegraph3D() {
     lineVoltageV,
     lineLengthMiles,
     wpmSpeed,
+  });
+
+  // Shared transport tape envelope: loop current publishes to the
+  // patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics("us-1647-morse-telegraph", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: 1000 / morse.unitDurationMs,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: morse.loopCurrentMa / 1000,
+      voltageVolts: lineVoltageV,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+      rotorRpm: 0,
+      shaftPowerWatts: 0,
+      electricalInputWatts: 0,
+    },
   });
 
   const live = useLiveSimParams({

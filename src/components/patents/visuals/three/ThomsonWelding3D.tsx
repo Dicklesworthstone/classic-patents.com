@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { stepThomsonWelding } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -34,6 +39,15 @@ const CAMERA_PRESETS: Record<
   compression_screw: { pos: [3.8, 1.0, 2.2], target: [2.4, 0.4, 0] },
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
+
+/** Fields the render loop consumes from each welding kernel step. */
+interface ThomsonWeldPose {
+  jouleKw: number;
+  interfaceTempC: number;
+  weldGlowIntensity: number;
+  weldSeamScale: number;
+  jawStudioOffset: number;
+}
 
 export function ThomsonWelding3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,6 +86,37 @@ export function ThomsonWelding3D() {
     isCutaway,
   });
 
+  // Shared transport tape: Joule/forge state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-347140-thomson-welding", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+  });
+  const thomsonWeldRef = useRef<ThomsonWeldPose | null>(null);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev) => {
+      const out = stepThomsonWelding({
+        weldCurrentAmps: live.current.weldCurrentAmps,
+        clampPressureMpa: live.current.clampPressureMpa,
+      });
+      thomsonWeldRef.current = out;
+      return {
+        thermo: {
+          temperatureCelsius: out.interfaceTempC,
+          temperatureKelvin: out.interfaceTempC + 273.15,
+          pressureAtm: 0,
+          partialPressureButaneAtm: 0,
+          heatInputWatts: out.jouleWatts,
+          coolingPowerWatts: 0,
+          coefficientOfPerformance: 0,
+          blackbodyRadiantPowerWatts: 0,
+          fluidFlowVelocityMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-347140-thomson-welding", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-347140-thomson-welding");
+  }, [live]);
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -116,16 +161,17 @@ export function ThomsonWelding3D() {
       reqId = requestAnimationFrame(animate);
       const { dt } = clock.pump(now);
       const p = live.current;
-
+      // Bus-owned kernel step: prefer the latest shared-tape weld state.
+      const w = thomsonWeldRef.current;
       updateThomsonWeldingKinematics(
         nodes,
         materials,
         dt,
-        p.jouleKw,
-        p.weldTempCelsius,
-        p.weldGlowIntensity,
-        p.weldSeamScale,
-        p.jawStudioOffset,
+        w ? w.jouleKw : p.jouleKw,
+        w ? w.interfaceTempC : p.weldTempCelsius,
+        w ? w.weldGlowIntensity : p.weldGlowIntensity,
+        w ? w.weldSeamScale : p.weldSeamScale,
+        w ? w.jawStudioOffset : p.jawStudioOffset,
         p.showSparks,
         p.isCutaway,
         p.weldCurrentAmps,

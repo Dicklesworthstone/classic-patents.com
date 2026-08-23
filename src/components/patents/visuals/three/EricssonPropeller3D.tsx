@@ -5,6 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { stepEricssonPropeller } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +36,14 @@ const CAMERA_PRESETS: Record<
   sternpost: { pos: [-3.2, 1.2, 3.5], target: [-1.5, 0, 0] },
   rudder: { pos: [4.2, 0.8, 2.5], target: [2.8, 0, 0] },
   top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "spiral-propeller-shaft",
+  wheelSpeedMps: 0,
 };
 
 export function EricssonPropeller3D() {
@@ -69,7 +83,50 @@ export function EricssonPropeller3D() {
     shaftOmegaRadPerS: ericson.shaftOmegaRadPerS,
     wakeSwirlCoeff: ericson.wakeSwirlCoeff,
     wakeOpacity: ericson.wakeOpacity,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
+
+  // Shared transport tape: the US 588 shaft pose publishes to the
+  // patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-588-ericsson-propeller", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      ...IDLE_MACHINE,
+      wheelSpeedMps: ericson.shipSpeedKnots * 0.514444,
+    },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the shaft
+  // rotation phase. Refusal freezes the shaft at the last legal angle.
+  const shaftAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        shaftAngleRef.current += (live.current.shaftOmegaRadPerS ?? 0) * dt;
+        lastLegalAngleRef.current = shaftAngleRef.current;
+      } else {
+        shaftAngleRef.current = lastLegalAngleRef.current;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused
+            ? "Claim 1 engine stopped: spiral shaft held at last legal angle"
+            : undefined,
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          headingRad: shaftAngleRef.current,
+          wheelSpeedMps: (live.current.shipSpeedKnots ?? 0) * 0.514444,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-588-ericsson-propeller", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-588-ericsson-propeller");
+  }, [live.current.claim1Active, live.current.shaftOmegaRadPerS, live.current.shipSpeedKnots]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

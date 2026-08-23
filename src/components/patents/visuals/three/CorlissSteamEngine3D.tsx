@@ -6,6 +6,12 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCorlissEngine } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -66,6 +72,34 @@ export function CorlissSteamEngine3D() {
     crankWrapRad: corliss.crankWrapRad,
   });
 
+  // Shared transport tape: one bus-owned integrator steps the crank angle
+  // from the kernel ω; the pose publishes on the machine channel so any
+  // reader sees one engine state. Accumulator lives in a ref so
+  // re-registering on control changes never snaps the crank back to TDC.
+  useFrankenSimPhysics("us-6162-corliss-steam-engine", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+  });
+
+  const crankPhaseRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      crankPhaseRef.current =
+        (crankPhaseRef.current + live.current.crankOmegaRadPerS * dt) %
+        Math.max(live.current.crankWrapRad, 1e-6);
+      const machine: MachineState = {
+        poseXMeters: 0,
+        poseYMeters: 0,
+        headingRad: crankPhaseRef.current,
+        modeLabel: "governor-tripped variable cut-off",
+        wheelSpeedMps: 0,
+      };
+      return { machine };
+    };
+    globalTransportBus.registerUpdater("us-6162-corliss-steam-engine", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-6162-corliss-steam-engine");
+  }, [live.current.crankOmegaRadPerS, live.current.crankWrapRad]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -105,10 +139,12 @@ export function CorlissSteamEngine3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
-      const { dt, simTimeSec: timeSec } = clock.pump(now);
+      const { dt } = clock.pump(now);
       const p = live.current;
 
-      const crankAngleRad = (timeSec * p.crankOmegaRadPerS) % p.crankWrapRad;
+      // Pure consumer of the shared transport tape: the crank angle is
+      // integrated by the bus updater from the kernel ω.
+      const crankAngleRad = crankPhaseRef.current;
 
       updateCorlissEngineKinematics(model, {
         crankAngleRad,

@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Wind } from "
 import { memo, useEffect, useRef, useState } from "react";
 import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMarineKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -60,6 +61,21 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
     steamAdvancePerS: 1.2,
     steamOpacity: 0.72,
     steamSwirlOmegaRadPerS: 0.2,
+  });
+
+  // Shared transport tape: stepParsonsMarine owns the valve-and-pipe routing
+  // state; its causal route/direction labels publish as the initial machine
+  // envelope while the local rAF keeps the steam/shaft display animation.
+  useFrankenSimPhysics("us-608969-parsons-turbine", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: `${marine.routeLabel} · ${marine.directionLabel}`,
+      wheelSpeedMps: 0,
+    },
   });
 
   const studioRef = useRef<StudioContext | null>(null);

@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -31,6 +36,13 @@ const CAMERA_PRESETS: Record<
   crank_drive: { pos: [5.5, 0.8, 2.5], target: [3.5, 0, 0] },
   top: { pos: [0, 12.0, 0.1], target: [0, 0, 0] },
 };
+
+/** Fields the render loop consumes from each gin kernel step. */
+interface WhitneyGinPose {
+  crankOmegaRadPerS: number;
+  sawOmegaRadPerS: number;
+  brushOmegaRadPerS: number;
+}
 
 export function WhitneyCottonGin3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -64,6 +76,34 @@ export function WhitneyCottonGin3D() {
     sawOmegaRadPerS: gin.sawOmegaRadPerS,
     brushOmegaRadPerS: gin.brushOmegaRadPerS,
   });
+
+  // Shared transport tape: saw/brush drum state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-x72-whitney-cotton-gin", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+  });
+  const whitneyGinRef = useRef<WhitneyGinPose | null>(null);
+  const whitneySawAngleRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const out = stepWhitneyCottonGin({ crankRpm: live.current.crankRpm });
+      whitneyGinRef.current = out;
+      whitneySawAngleRef.current += out.sawOmegaRadPerS * dt;
+      return {
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          // Saw drum rotation on the tape.
+          headingRad: whitneySawAngleRef.current,
+          modeLabel: "ginning",
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-x72-whitney-cotton-gin", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-x72-whitney-cotton-gin");
+  }, [live]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -110,13 +150,15 @@ export function WhitneyCottonGin3D() {
       reqId = requestAnimationFrame(animate);
       const { dt } = clock.pump(now);
       const p = live.current;
-
+      // Bus-owned kernel step: prefer the latest shared-tape gin state.
+      const g = whitneyGinRef.current;
       updateWhitneyCottonGinKinematics(
         model,
         dt,
-        p.crankOmegaRadPerS,
-        p.sawOmegaRadPerS,
-        p.brushOmegaRadPerS,
+        // Bus-owned kernel step: prefer the latest shared-tape drum speeds.
+        g ? g.crankOmegaRadPerS : p.crankOmegaRadPerS,
+        g ? g.sawOmegaRadPerS : p.sawOmegaRadPerS,
+        g ? g.brushOmegaRadPerS : p.brushOmegaRadPerS,
         p.showFibers,
         p.isCutaway,
         p.crankRpm,

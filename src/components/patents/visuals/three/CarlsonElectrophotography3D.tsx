@@ -4,7 +4,12 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
-import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -89,6 +94,69 @@ export function CarlsonElectrophotography3D({
     isCutaway,
   });
 
+  // Shared transport tape: one bus-owned integrator advances the drum/fuser
+  // display time; corona charging state publishes on the em channel and the
+  // fuser on the thermo channel. timeRef already lives in a ref, so
+  // re-registering on control changes never snaps the drum phase.
+  useFrankenSimPhysics("us-2297691-carlson-electrophotography", {
+    domain: "electromagnetics_flux",
+    refusal: {
+      isRefused: coronaVoltageKv < 1,
+      reason:
+        coronaVoltageKv < 1
+          ? "Corona wire de-energized: no uniform charge, no latent image"
+          : undefined,
+    },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      timeRef.current += dt;
+      const layerThicknessM = Math.max(1e-6, layerThicknessUm * 1e-6);
+      const em: ElectromagneticsState = {
+        frequencyHz: 0,
+        magneticFluxDensityTesla: 0,
+        electricFieldVpm: sim.contrastPotentialV / layerThicknessM,
+        phaseAngleRad: (timeRef.current * live.current.drumDisplayOmegaRadPerS) % (2 * Math.PI),
+        inductanceHenry: 0,
+        capacitanceFarad: 0,
+        currentAmperes: 0,
+        voltageVolts: live.current.coronaVoltageKv * 1000,
+        powerFactor: 1,
+        efficiencyPct: 0,
+        synchronousRpm: 0,
+        slipFraction: 0,
+        rotorRpm: 0,
+        shaftPowerWatts: 0,
+        electricalInputWatts: 0,
+      };
+      const thermo: ThermodynamicsState = {
+        temperatureCelsius: live.current.fuserTemperatureC,
+        temperatureKelvin: live.current.fuserTemperatureC + 273.15,
+        pressureAtm: 1.0, // ambient chamber pressure
+        partialPressureButaneAtm: 0,
+        heatInputWatts: 0,
+        coolingPowerWatts: 0,
+        coefficientOfPerformance: 0,
+        blackbodyRadiantPowerWatts: 0,
+        fluidFlowVelocityMps: 0,
+      };
+      return { em, thermo };
+    };
+    globalTransportBus.registerUpdater(
+      "us-2297691-carlson-electrophotography",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return () => globalTransportBus.unregisterUpdater("us-2297691-carlson-electrophotography");
+  }, [
+    live.current.coronaVoltageKv,
+    live.current.drumDisplayOmegaRadPerS,
+    live.current.fuserTemperatureC,
+    layerThicknessUm,
+    sim.contrastPotentialV,
+  ]);
+
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
     const targetConfig = CAMERA_PRESETS[preset];
@@ -111,10 +179,9 @@ export function CarlsonElectrophotography3D({
     studio.scene.add(nodes.root);
     nodesRef.current = nodes;
 
-    const clock = createStudioClock();
-    const animate = (now: number) => {
-      const { simTimeSec } = clock.pump(now);
-      timeRef.current = simTimeSec;
+    // Pure consumer of the shared transport tape: the bus updater owns the
+    // drum/fuser display-time integration (timeRef).
+    const animate = () => {
       const current = live.current;
       if (current.isRotating) {
         nodes.root.rotation.y += 0.0044;

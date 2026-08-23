@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -53,6 +55,33 @@ export function CarrierAirConditioner3D() {
     separatorFaces,
     cutawayMode,
     showSpray,
+  });
+
+  // Shared transport tape: the air-washer kernel is steady-state in its
+  // controls (the grant models no thermal setpoints), so this face publishes
+  // an honest ENVELOPE — separator airflow and fan work — while the local
+  // rAF keeps pacing the spray/fan display.
+  const washerThermo: ThermodynamicsState = {
+    temperatureCelsius: 0, // no thermal setpoint modeled; see kernel modelBoundary
+    temperatureKelvin: 0,
+    pressureAtm: carrier.pressureDropPa / 101325,
+    partialPressureButaneAtm: 0,
+    heatInputWatts: carrier.airMovementWatts, // fan work against separator resistance
+    coolingPowerWatts: 0,
+    coefficientOfPerformance: 0,
+    blackbodyRadiantPowerWatts: 0,
+    fluidFlowVelocityMps: carrier.airCurrentMps,
+  };
+  useFrankenSimPhysics("us-808897-carrier-air-conditioner", {
+    domain: "thermo_fluid",
+    refusal: {
+      isRefused: sprayRatePct <= 0,
+      reason:
+        sprayRatePct <= 0
+          ? "Water spray shut off: the unobstructed wet front of Claim 1 is lost"
+          : undefined,
+    },
+    thermo: washerThermo,
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {

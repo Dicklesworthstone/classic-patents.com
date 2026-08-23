@@ -9,7 +9,11 @@ import {
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type DaVinciState, stepDaVinci } from "@/physics/daVinciKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +34,14 @@ const CAMERA_PRESETS: Record<
   master_console: { pos: [0, 1.6, 1.8], target: [0, 0.8, 0] },
   slave_wrist: { pos: [0, 0.5, 1.5], target: [0, 0, 0] },
   top: { pos: [0, 4.0, 0.01], target: [0, 0, 0] },
+};
+
+const IDLE_MACHINE = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "teleop slave arm",
+  wheelSpeedMps: 0,
 };
 
 export function DaVinci3D() {
@@ -58,7 +70,62 @@ export function DaVinci3D() {
     isCutaway,
   });
 
+  // Shared transport tape: the slave-arm pose publishes to the patentId-keyed
+  // bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-6331181-davinci", {
+    domain: "solid_mechanics",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    machine: { ...IDLE_MACHINE },
+  });
+
   const studioRef = useRef<StudioContext | null>(null);
+
+  // One tape-bound stepper (br-ixl.3): the registered updater owns the
+  // per-tick daVinciKernel integration (two 1/120 sub-steps per 1/60 bus tick,
+  // matching the previous TickScheduler cadence). The render loop only
+  // consumes the latest kernel state. Accumulators live in refs so
+  // re-registering on control changes never resets the presentation clock.
+  const simTimeRef = useRef(0);
+  const kernelStateRef = useRef<DaVinciState | null>(null);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const controls = {
+        motionScaleRatio: live.current.motionScaleRatio ?? 3.0,
+        tremorFilterEnabled: (live.current.tremorFilterEnabled ?? 1) > 0.5,
+        masterInputSpeedMps: live.current.masterInputSpeedMps ?? 0.5,
+        gripAngleDeg: live.current.gripAngleDeg ?? 30,
+      };
+      const subSteps = Math.max(1, Math.round(dt / (1 / 120)));
+      let state = kernelStateRef.current ?? undefined;
+      for (let sub = 0; sub < subSteps; sub++) {
+        simTimeRef.current += dt / subSteps;
+        state = stepDaVinci(controls, simTimeRef.current, state);
+      }
+      kernelStateRef.current = state ?? null;
+      const s = kernelStateRef.current;
+      return s
+        ? {
+            refusal: { isRefused: false },
+            machine: {
+              poseXMeters: s.slaveX,
+              poseYMeters: s.slaveY,
+              headingRad: s.baseYawRad,
+              modeLabel: "teleop slave arm",
+              wheelSpeedMps: 0,
+            },
+          }
+        : null;
+    };
+    globalTransportBus.registerUpdater("us-6331181-davinci", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-6331181-davinci");
+  }, [
+    live.current.motionScaleRatio,
+    live.current.tremorFilterEnabled,
+    live.current.masterInputSpeedMps,
+    live.current.gripAngleDeg,
+  ]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
@@ -79,36 +146,16 @@ export function DaVinci3D() {
     const model = buildDaVinciModel();
     studio.scene.add(model.root);
 
-    let _renderedSteps = 0;
-    const sched = new TickScheduler(1 / 120, 0);
+    // --- RENDER LOOP: pure consumer of the shared transport tape ---
+    // The registered updater owns the daVinciKernel integration; this loop
+    // only paces mesh interpolation and HUD refresh from the latest state.
     let hudCounter = 0;
     let rafId = 0;
-    let timeSec = 0;
-    let currentState: DaVinciState | undefined;
-    let lastFrameTimeMs: number | undefined;
 
-    const animate = (frameTimeMs: number) => {
+    const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const delta =
-        lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
-      lastFrameTimeMs = frameTimeMs;
-      timeSec += delta;
-
-      _renderedSteps += 1;
       const p = live.current;
-
-      sched.pump(timeSec, () => {
-        currentState = stepDaVinci(
-          {
-            motionScaleRatio: p.motionScaleRatio ?? 3.0,
-            tremorFilterEnabled: (p.tremorFilterEnabled ?? 1) > 0.5,
-            masterInputSpeedMps: p.masterInputSpeedMps ?? 0.5,
-            gripAngleDeg: p.gripAngleDeg ?? 30,
-          },
-          timeSec,
-          currentState,
-        );
-      });
+      const currentState = kernelStateRef.current;
 
       if (currentState) {
         model.baseGroup.position.set(currentState.slaveX, currentState.slaveY, currentState.slaveZ);

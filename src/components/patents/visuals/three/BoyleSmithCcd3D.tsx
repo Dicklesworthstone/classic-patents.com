@@ -2,7 +2,12 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
-import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState, SemiconductorState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -68,6 +73,61 @@ export function BoyleSmithCcd3D() {
     temperatureKelvin: temperature,
   });
 
+  // Shared transport tape: one bus-owned integrator steps the three-phase
+  // display clock; the kernel's transfer-efficiency metrics publish on the
+  // semi channel. Accumulator lives in a ref so re-registering on control
+  // changes never snaps the clock phase back to zero.
+  useFrankenSimPhysics("us-3858232-boyle-smith-ccd", {
+    domain: "semiconductor_carrier",
+    refusal: {
+      isRefused: gateVoltage < 5,
+      reason:
+        gateVoltage < 5
+          ? "Gate bias below threshold: potential wells collapsed, packets smear across pixels"
+          : undefined,
+    },
+  });
+
+  const clockPhaseRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      if (live.current.isRunning) {
+        clockPhaseRef.current = (clockPhaseRef.current + dt * 3) % (Math.PI * 2);
+      }
+      const semi: SemiconductorState = {
+        biasVoltageVolts: live.current.gateVoltageV,
+        currentGainAlpha: 0,
+        holeDiffusionCoefficientCm2ps: 0,
+        chargeTransferEfficiencyPct: metrics.ctePct,
+        clockPeriodNs:
+          live.current.clockFrequencyMhz > 0
+            ? Number((1000 / live.current.clockFrequencyMhz).toFixed(3))
+            : 0,
+        busBandwidthMbps: 0,
+        electronVelocityMps: 0,
+        relativisticFractionC: 0,
+        voltageGain: 1,
+        powerGainDb: 0,
+        collectorCurrentMa: 0,
+      };
+      const machine: MachineState = {
+        poseXMeters: 0,
+        poseYMeters: 0,
+        headingRad: clockPhaseRef.current,
+        modeLabel: live.current.isRunning ? "three-phase clock transfer" : "clock paused",
+        wheelSpeedMps: 0,
+      };
+      return { semi, machine };
+    };
+    globalTransportBus.registerUpdater("us-3858232-boyle-smith-ccd", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-3858232-boyle-smith-ccd");
+  }, [
+    live.current.isRunning,
+    live.current.gateVoltageV,
+    live.current.clockFrequencyMhz,
+    metrics.ctePct,
+  ]);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -84,19 +144,14 @@ export function BoyleSmithCcd3D() {
     studio.scene.add(ccdModel.nodes.group);
 
     let animId = 0;
-    let clockPhase = 0;
-    const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       animId = requestAnimationFrame(animate);
-      const { dt } = clock.pump(now);
 
-      if (live.current.isRunning) {
-        clockPhase = (clockPhase + dt * 3) % (Math.PI * 2);
-      }
-
+      // Pure consumer of the shared transport tape: the three-phase display
+      // clock is integrated by the bus updater.
       ccdModel.setCutaway?.(live.current.isCutaway ?? false);
-      ccdModel.update(live.current, clockPhase);
+      ccdModel.update(live.current, clockPhaseRef.current);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
     };

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepOtisElevator } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -55,6 +56,21 @@ export function OtisElevator3D() {
     cableTensionPct,
     isAudioMuted,
     isCutaway,
+  });
+
+  // Shared transport tape: stepOtisElevator is a statics safety calculation,
+  // so the kernel's arrest state publishes as the initial machine envelope;
+  // the local rAF keeps the fall/arrest interpolation as-is.
+  useFrankenSimPhysics("us-31128-otis-elevator", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: otis.springBowY,
+      headingRad: 0,
+      modeLabel: otis.isSnapped ? "pawls engaged" : "suspended",
+      wheelSpeedMps: 0,
+    },
   });
 
   const studioRef = useRef<StudioContext | null>(null);

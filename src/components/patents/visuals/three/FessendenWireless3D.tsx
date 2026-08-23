@@ -6,6 +6,12 @@ import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +36,24 @@ const CAMERA_PRESETS: Record<
   alternator: { pos: [-1.8, 1.2, 2.0], target: [-1.8, 0.4, 0] },
   cageAntenna: { pos: [0.5, 2.2, 2.5], target: [0.5, 1.8, 0] },
   liquidBarretter: { pos: [2.0, 0.8, 1.2], target: [1.9, 0.3, 0] },
+};
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
 };
 
 export function FessendenWireless3D() {
@@ -81,7 +105,53 @@ export function FessendenWireless3D() {
     waveRingDisplayRate: sim.waveRingDisplayRate,
     headsetDisplayOmegaRadPerS: sim.headsetDisplayOmegaRadPerS,
     audioEnvelopeOmegaRadPerS: sim.audioEnvelopeOmegaRadPerS,
+    rfTraceOmegaRadPerS: sim.rfTraceDisplayOmegaRadPerS,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
+
+  // Shared transport tape: the US 706,737 alternator RF state publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-706737-fessenden-wireless", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      ...IDLE_EM,
+      frequencyHz: sim.carrierFrequencyKhz * 1000,
+      currentAmperes: sim.audioSignalCurrentMicroamps * 1e-6,
+      efficiencyPct: sim.radiationEfficiencyPct,
+    },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the RF trace
+  // phase. Refusal freezes the alternator at the last legal angle.
+  const rfPhaseRef = useRef(0);
+  const lastLegalPhaseRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        rfPhaseRef.current += (live.current.rfTraceOmegaRadPerS ?? 0) * dt;
+        lastLegalPhaseRef.current = rfPhaseRef.current;
+      } else {
+        rfPhaseRef.current = lastLegalPhaseRef.current;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused
+            ? "Claim 1 alternator stopped: RF phase held at last legal angle"
+            : undefined,
+        },
+        em: {
+          ...(prev.em ?? IDLE_EM),
+          frequencyHz: (live.current.carrierFreqKhz ?? 75) * 1000,
+          phaseAngleRad: rfPhaseRef.current,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-706737-fessenden-wireless", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-706737-fessenden-wireless");
+  }, [live.current.carrierFreqKhz, live.current.claim1Active, live.current.rfTraceOmegaRadPerS]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

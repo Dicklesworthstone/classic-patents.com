@@ -6,6 +6,11 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -85,6 +90,53 @@ export function WestinghouseAirBrake3D() {
     isCutaway,
   });
 
+  // Shared transport tape: brake pipe/triple-valve state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-124404-westinghouse-air-brake", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+  });
+  const westWheelAngleRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const p = live.current;
+      const out = FrankenSimEngine.stepWestinghouseAirBrake({
+        trainPipePressurePsi: p.trainPipePressurePsi,
+        reservoirPipePressurePsi: p.reservoirPipePressurePsi,
+        selectingCockState: p.selectingCockState as "normal" | "reversed",
+        tripCockState: p.tripCockState as "running" | "tripped_derailment" | "tripped_parting",
+        signalPulsePressurePsi: p.signalPulsePressurePsi,
+      });
+      westWheelAngleRef.current += out.rollingOmegaRadPerS * dt;
+      return {
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: westWheelAngleRef.current,
+          modeLabel: out.valveState,
+          wheelSpeedMps: out.rollingOmegaRadPerS * out.wheelRadiusM,
+        },
+        thermo: {
+          temperatureCelsius: 0,
+          temperatureKelvin: 0,
+          pressureAtm: out.brakeCylinderPressurePsi / 14.6959,
+          partialPressureButaneAtm: 0,
+          heatInputWatts: 0,
+          coolingPowerWatts: 0,
+          coefficientOfPerformance: 0,
+          blackbodyRadiantPowerWatts: 0,
+          fluidFlowVelocityMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(
+      "us-124404-westinghouse-air-brake",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return () => globalTransportBus.unregisterUpdater("us-124404-westinghouse-air-brake");
+  }, [live]);
+
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -123,7 +175,6 @@ export function WestinghouseAirBrake3D() {
 
     // Animation Loop
     let reqId: number;
-    let wheelAngle = 0;
     let wasClamped = false;
 
     const clock = createStudioClock();
@@ -133,7 +184,8 @@ export function WestinghouseAirBrake3D() {
       const { dt: delta } = clock.pump(now);
       const p = live.current;
 
-      wheelAngle += (p.rollingOmegaRadPerS ?? 0) * delta;
+      // Bus-owned integration: latest shared-tape wheel rotation.
+      const wheelAngleNow = westWheelAngleRef.current;
 
       // Update model kinematics
       updateWestinghouseAirBrakeKinematics(
@@ -152,9 +204,8 @@ export function WestinghouseAirBrake3D() {
         delta,
       );
 
-      // Rotate wheels
       brakeModel.nodes.wheelSets.forEach((ws) => {
-        ws.rotation.z = wheelAngle;
+        ws.rotation.z = wheelAngleNow;
       });
 
       brakeModel.setCutaway?.(p.isCutaway ?? false);

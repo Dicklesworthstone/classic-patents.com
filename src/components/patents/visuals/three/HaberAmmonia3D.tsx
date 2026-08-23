@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -67,6 +69,25 @@ export default function HaberAmmonia3D({
     temperatureCelsius,
     feedFlowRateMolesPerSec,
     catalystActivity,
+  });
+
+  // Shared transport tape: US 971,501 carries no apparatus drawing and its
+  // host kernel is a parametric equilibrium step (nothing integrates over dt),
+  // so publication is envelope-only. Values are the kernel's own SI outputs.
+  useFrankenSimPhysics("us-971501-haber-ammonia", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: sim.catalystTemperatureCelsius,
+      temperatureKelvin: sim.catalystTemperatureCelsius + 273.15,
+      pressureAtm: sim.pressureAtm,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    } satisfies ThermodynamicsState,
   });
   const sourceBoundedVisualOnly = true;
 

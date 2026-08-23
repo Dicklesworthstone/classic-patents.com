@@ -2,7 +2,13 @@
 
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Waves } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { stepPeltonWheelVisual } from "@/physics/peltonWheelKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -47,6 +53,42 @@ export function PeltonWheel3D() {
 
   const studioRef = useRef<StudioContext | null>(null);
 
+  // Shared transport tape: the source-bounded peltonWheelKernel refuses to
+  // invent head/rpm values, so the tape carries only its posed runner state
+  // and jet visibility — no hydraulic telemetry is manufactured.
+  useFrankenSimPhysics("us-233692-pelton-water-wheel", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "posed",
+      wheelSpeedMps: 0,
+    },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = () => {
+      const p = live.current;
+      const visual = stepPeltonWheelVisual({ jetEnabled: Boolean(p.showJet) });
+      return {
+        refusal: {
+          isRefused: !p.claim1Active,
+          reason: p.claim1Active ? undefined : "Claim 1 disabled: runner hidden from view",
+        },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: 0,
+          modeLabel: visual.jetOpacity > 0.5 ? "jet visible" : "jet idle",
+          wheelSpeedMps: 0, // kernel: the grant supplies no operating speed
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-233692-pelton-water-wheel", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-233692-pelton-water-wheel");
+  }, [live]);
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];

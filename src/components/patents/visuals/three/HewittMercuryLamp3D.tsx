@@ -5,6 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -28,6 +34,36 @@ interface HewittMercuryLamp3DProps {
 }
 
 type CameraPreset = "isometric" | "cathode" | "plasmaColumn" | "condenser";
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
+};
+
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 42,
+  temperatureKelvin: 315.15,
+  pressureAtm: 1,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
+};
 
 const CAMERA_PRESETS: Record<
   CameraPreset,
@@ -76,6 +112,11 @@ export function HewittMercuryLamp3D({
   const live = useLiveSimParams({
     isRotating,
     isCutaway,
+    mainsVoltageV,
+    tubeLengthCm,
+    tubeDiameterMm,
+    condenserCoolingLevel,
+    ballastResistanceOhms,
     arcCurrentAmperes: sim.arcCurrentAmperes,
     luminousEfficacyLmPerWatt: sim.luminousEfficacyLmPerWatt,
     mercuryVaporPressureMmHg: sim.mercuryVaporPressureMmHg,
@@ -84,6 +125,60 @@ export function HewittMercuryLamp3D({
     cathodeSpotOmegaXRadPerS: sim.cathodeSpotOmegaXRadPerS,
     cathodeSpotOmegaYRadPerS: sim.cathodeSpotOmegaYRadPerS,
   });
+
+  // Shared transport tape: the arc-discharge kernel step is owned by the bus
+  // updater (TS_FALLBACK); the render loop keeps articulating from live refs.
+  useFrankenSimPhysics("us-682690-hewitt-mercury-lamp", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      ...IDLE_EM,
+      currentAmperes: sim.arcCurrentAmperes,
+      voltageVolts: sim.arcOperatingVoltageV,
+      electricFieldVpm: sim.electricFieldVPerCm * 100,
+    },
+    thermo: { ...IDLE_THERMO, pressureAtm: sim.mercuryVaporPressurePa / 101325 },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      const s = stepHewittMercuryLamp({
+        mainsVoltageV: live.current.mainsVoltageV,
+        tubeLengthCm: live.current.tubeLengthCm,
+        tubeDiameterMm: live.current.tubeDiameterMm,
+        condenserCoolingLevel: live.current.condenserCoolingLevel,
+        ballastResistanceOhms: live.current.ballastResistanceOhms,
+      });
+      return {
+        refusal: {
+          isRefused: !s.isStable,
+          reason: s.isStable
+            ? undefined
+            : "Ballast cannot stabilize the arc's negative differential resistance",
+        },
+        em: {
+          ...(prev.em ?? IDLE_EM),
+          currentAmperes: s.arcCurrentAmperes,
+          voltageVolts: s.arcOperatingVoltageV,
+          electricFieldVpm: s.electricFieldVPerCm * 100,
+          electricalInputWatts: s.totalPowerWatts,
+          efficiencyPct: s.electricalEfficiencyPct,
+        },
+        thermo: {
+          ...(prev.thermo ?? IDLE_THERMO),
+          pressureAtm: s.mercuryVaporPressurePa / 101325,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-682690-hewitt-mercury-lamp", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-682690-hewitt-mercury-lamp");
+  }, [
+    live.current.ballastResistanceOhms,
+    live.current.condenserCoolingLevel,
+    live.current.mainsVoltageV,
+    live.current.tubeDiameterMm,
+    live.current.tubeLengthCm,
+  ]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

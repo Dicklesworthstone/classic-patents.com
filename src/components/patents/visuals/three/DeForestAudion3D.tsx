@@ -5,13 +5,19 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeForestAudion } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { SemiconductorState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { articulateDeForestAudionModel, buildDeForestAudionModel } from "./deForestAudionModel";
 import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -27,9 +33,23 @@ const CAMERA_PRESETS: Record<
   plateAnode: { pos: [1.2, 0.4, 1.8], target: [0.4, 0.2, 0] },
 };
 
+const IDLE_SEMI: SemiconductorState = {
+  biasVoltageVolts: 0,
+  currentGainAlpha: 0,
+  holeDiffusionCoefficientCm2ps: 0,
+  chargeTransferEfficiencyPct: 0,
+  clockPeriodNs: 0,
+  busBandwidthMbps: 0,
+  electronVelocityMps: 0,
+  relativisticFractionC: 0,
+  voltageGain: 0,
+  powerGainDb: 0,
+  collectorCurrentMa: 0,
+};
+
 export function DeForestAudion3D() {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [isCutaway, setIsCutaway] = useState(false);
   const [cameraPreset, setCameraPreset] = useState<CameraPreset>("isometric");
@@ -57,11 +77,41 @@ export function DeForestAudion3D() {
     filamentTemperatureK: sim.filamentTemperatureK,
     plateCurrentMa: sim.plateCurrentMa,
     voltageGain: sim.voltageGain,
+
     isConducting: sim.isConducting,
     electronStreamAdvancePerFrame: sim.electronStreamAdvancePerFrame,
     isRotating,
     isCutaway,
   });
+
+  // Shared transport tape: the triode's operating point publishes to the
+  // patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-879532-de-forest-audion", {
+    domain: "semiconductor_carrier",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    semi: { ...IDLE_SEMI },
+  });
+
+  // One tape-bound publisher (br-ixl.3): the audion kernel is a pure
+  // operating-point evaluation, so the registered updater re-derives it from
+  // the live params each tick; the render loop keeps its dt-paced articulation.
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      return {
+        refusal: { isRefused: false },
+        semi: {
+          ...(prev.semi ?? IDLE_SEMI),
+          biasVoltageVolts: gridBiasVoltageV,
+          voltageGain: live.current.voltageGain,
+          collectorCurrentMa: live.current.plateCurrentMa,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-879532-de-forest-audion", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-879532-de-forest-audion");
+  }, [live.current.voltageGain, live.current.plateCurrentMa, gridBiasVoltageV]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

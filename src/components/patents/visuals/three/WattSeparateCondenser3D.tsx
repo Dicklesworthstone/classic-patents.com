@@ -4,6 +4,11 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattCondenser } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
@@ -61,8 +66,56 @@ export function WattSeparateCondenser3D() {
     hasSteamJacket: (params.hasSteamJacket ?? 1) > 0.5,
   });
   const live = useLiveSimParams({
-    cycleOmegaRadPerS: outputs.cycleOmegaRadPerS,
+    boilerPressurePsi,
+    condenserTempC,
+    strokesPerMinute,
+    hasSeparateCondenser: (params.hasSeparateCondenser ?? 1) > 0.5,
+    hasSteamJacket: (params.hasSteamJacket ?? 1) > 0.5,
   });
+
+  // Shared transport tape: condenser cycle publishes to the patentId-keyed bus.
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+  });
+  const wattPhaseRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const p = live.current;
+      const out = stepWattCondenser({
+        boilerPressurePsi: p.boilerPressurePsi,
+        condenserTempC: p.condenserTempC,
+        strokesPerMinute: p.strokesPerMinute,
+        hasSeparateCondenser: p.hasSeparateCondenser,
+        hasSteamJacket: p.hasSteamJacket,
+      });
+      wattPhaseRef.current = (wattPhaseRef.current + dt * out.cycleOmegaRadPerS) % (2 * Math.PI);
+      return {
+        machine: {
+          // Piston travel and beam deflection on the tape.
+          poseXMeters: Math.sin(wattPhaseRef.current) * 0.5,
+          poseYMeters: 2.6 + Math.sin(wattPhaseRef.current) * 0.5,
+          headingRad: -Math.sin(wattPhaseRef.current) * (12 * (Math.PI / 180)),
+          modeLabel: p.hasSeparateCondenser ? "separate condenser" : "steam jacket",
+          wheelSpeedMps: 0,
+        },
+        thermo: {
+          temperatureCelsius: out.steamTempC,
+          temperatureKelvin: out.steamTempC + 273.15,
+          pressureAtm: out.boilerPressureAbsKpa / 101.325,
+          partialPressureButaneAtm: 0,
+          heatInputWatts: out.heatInputRateKw * 1000,
+          coolingPowerWatts: 0,
+          coefficientOfPerformance: 0,
+          blackbodyRadiantPowerWatts: 0,
+          fluidFlowVelocityMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [live]);
 
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
@@ -84,18 +137,14 @@ export function WattSeparateCondenser3D() {
     const model = buildWattSeparateCondenserModel();
     studio.scene.add(model.root);
 
-    let cyclePhase = 0;
     let rafId = 0;
     const clock = createStudioClock();
 
     const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
-      const { dt } = clock.pump(now);
-      const p = live.current;
-
-      cyclePhase = (cyclePhase + dt * p.cycleOmegaRadPerS) % (2 * Math.PI);
-
-      const pistonPos = Math.sin(cyclePhase);
+      clock.pump(now);
+      // Bus-owned integration: read the latest shared-tape cycle phase.
+      const pistonPos = Math.sin(wattPhaseRef.current);
       const beamAngleRad = -pistonPos * (12 * (Math.PI / 180));
 
       model.beamGroup.rotation.z = beamAngleRad;
@@ -117,7 +166,7 @@ export function WattSeparateCondenser3D() {
       studio.dispose();
       studioRef.current = null;
     };
-  }, [live]);
+  }, []);
 
   const chips: KernelChip[] = [
     {

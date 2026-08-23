@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepBaekelandBakelite } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ContinuumState, ThermodynamicsState } from "@/physics/types";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -62,6 +64,44 @@ export function BaekelandBakelite3D() {
     fillerPct: filler,
   });
 
+  // Shared transport tape: the curing kernel is steady-state in the controls
+  // (no time integration), so this face publishes an honest ENVELOPE —
+  // autoclave thermodynamics and cured-resin strength from
+  // stepBaekelandBakelite — while the local rAF keeps pacing the display.
+  const sim = stepBaekelandBakelite(tempC, pressPsi, catPct, timeMin, filler);
+
+  const bakeliteThermo: ThermodynamicsState = {
+    temperatureCelsius: tempC,
+    temperatureKelvin: tempC + 273.15,
+    pressureAtm: pressPsi / 14.6959, // autoclave gauge psi -> atm
+    partialPressureButaneAtm: 0,
+    heatInputWatts: 0,
+    coolingPowerWatts: 0,
+    coefficientOfPerformance: 0,
+    blackbodyRadiantPowerWatts: 0,
+    fluidFlowVelocityMps: 0,
+  };
+  const curedContinuum: ContinuumState = {
+    tensileStressMpa: sim.tensileStrengthMpa,
+    tensileStrainPct: 0,
+    elasticModulusGpa: 0,
+    crossLinkDensityMolesPerCm3: 0,
+    stitchFrequencyHz: 0,
+    feedVelocityMmPs: 0,
+    buoyancyLiftForceKiloNewtons: 0,
+  };
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "materials_kinetics",
+    refusal: {
+      isRefused: !sim.isFoamingSuppressed,
+      reason: !sim.isFoamingSuppressed
+        ? "Insufficient mold pressure: foaming voids would defeat the thermoset"
+        : undefined,
+    },
+    thermo: bakeliteThermo,
+    continuum: curedContinuum,
+  });
+
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
   const calloutsRef = useRef(showCallouts);
@@ -114,8 +154,6 @@ export function BaekelandBakelite3D() {
     const cfg = CAMERA_PRESETS[preset];
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
-
-  const sim = stepBaekelandBakelite(tempC, pressPsi, catPct, timeMin, filler);
 
   const chips: KernelChip[] = [
     {

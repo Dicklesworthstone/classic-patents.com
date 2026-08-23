@@ -5,6 +5,12 @@ import { memo, useEffect, useRef, useState } from "react";
 import { stepGliddenBarbedWire } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ContinuumState, MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +36,24 @@ const CAMERA_PRESETS: Record<
   takeup_drum: { pos: [3.5, 2.0, 4.0], target: [2.2, 0, 0] },
   feed_spools: { pos: [-4.8, 2.0, 3.2], target: [-3.8, 0, -1.2] },
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_CONTINUUM: ContinuumState = {
+  tensileStressMpa: 0,
+  tensileStrainPct: 0,
+  elasticModulusGpa: 0,
+  crossLinkDensityMolesPerCm3: 0,
+  stitchFrequencyHz: 0,
+  feedVelocityMmPs: 0,
+  buoyancyLiftForceKiloNewtons: 0,
+};
+
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "twisting-flyer",
+  wheelSpeedMps: 0,
 };
 
 export const GliddenBarbedWire3D = memo(() => {
@@ -62,8 +86,69 @@ export const GliddenBarbedWire3D = memo(() => {
     isLocked: glidden.isLocked,
     flyerOmegaRadPerS: glidden.flyerOmegaRadPerS,
     reelOmegaRadPerS: glidden.reelOmegaRadPerS,
+    stitchFrequencyHz: glidden.flyerOmegaRadPerS / (2 * Math.PI),
+    feedVelocityMmPs: glidden.productionRateFtPerMin * 5.08,
+    claim1Active: claimStates[1] === false ? 0 : 1,
     isCutaway,
   });
+
+  // Shared transport tape: the US 157,124 twisting-flyer state publishes to
+  // the patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-157124-glidden-barbed-wire", {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: false },
+    continuum: {
+      ...IDLE_CONTINUUM,
+      stitchFrequencyHz: glidden.flyerOmegaRadPerS / (2 * Math.PI),
+      feedVelocityMmPs: glidden.productionRateFtPerMin * 5.08,
+    },
+    machine: {
+      ...IDLE_MACHINE,
+      modeLabel: glidden.isLocked ? "barbs-locked" : "twisting-flyer",
+      wheelSpeedMps: (glidden.productionRateFtPerMin * 5.08) / 1000,
+    },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the flyer
+  // rotation phase. Refusal freezes the twist at the last legal angle.
+  const flyerAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        flyerAngleRef.current += (live.current.flyerOmegaRadPerS ?? 0) * dt;
+        lastLegalAngleRef.current = flyerAngleRef.current;
+      } else {
+        flyerAngleRef.current = lastLegalAngleRef.current;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Claim 1 machine stopped: flyer held at last legal angle" : undefined,
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          modeLabel: live.current.isLocked ? "barbs-locked" : "twisting-flyer",
+          headingRad: flyerAngleRef.current,
+          wheelSpeedMps: (live.current.feedVelocityMmPs ?? 0) / 1000,
+        },
+        continuum: {
+          ...IDLE_CONTINUUM,
+          stitchFrequencyHz: live.current.stitchFrequencyHz ?? 0,
+          feedVelocityMmPs: live.current.feedVelocityMmPs ?? 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-157124-glidden-barbed-wire", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-157124-glidden-barbed-wire");
+  }, [
+    live.current.claim1Active,
+    live.current.feedVelocityMmPs,
+    live.current.flyerOmegaRadPerS,
+    live.current.isLocked,
+    live.current.stitchFrequencyHz,
+  ]);
 
   const studioRef = useRef<StudioContext | null>(null);
 

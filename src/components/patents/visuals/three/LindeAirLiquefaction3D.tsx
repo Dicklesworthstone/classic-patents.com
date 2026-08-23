@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Wind } from "lucide-r
 import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -53,6 +54,24 @@ export function LindeAirLiquefaction3D() {
   const highPressureAtm = linde.highPressureAtm;
   const lowPressureAtm = linde.lowPressureAtm;
   const coolerOutletC = linde.coolerOutletC;
+
+  // Shared transport tape envelope: throttle-cycle thermodynamics publish to
+  // the patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics("us-727650-linde-air-liquefaction", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: coolerOutletC,
+      temperatureKelvin: coolerOutletC + 273.15,
+      pressureAtm: highPressureAtm,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
 
   const live = useLiveSimParams({
     showFlowTracer,

@@ -6,6 +6,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -59,6 +60,30 @@ export function MarconiRadio3D() {
     sparkGapMm,
     inductionCoilKv,
   );
+
+  // Shared transport tape envelope: spark-gap radiation publishes to the
+  // patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics("us-586193-marconi-radio", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: {
+      frequencyHz: radioPhysics.resonantFreqMhz * 1e6,
+      magneticFluxDensityTesla: 0,
+      electricFieldVpm: 0,
+      phaseAngleRad: 0,
+      inductanceHenry: 0,
+      capacitanceFarad: 0,
+      currentAmperes: 0,
+      voltageVolts: inductionCoilKv * 1000,
+      powerFactor: 0,
+      efficiencyPct: 0,
+      synchronousRpm: 0,
+      slipFraction: 0,
+      rotorRpm: 0,
+      shaftPowerWatts: 0,
+      electricalInputWatts: 0,
+    },
+  });
 
   const live = useLiveSimParams({
     aerialHeightMeters,

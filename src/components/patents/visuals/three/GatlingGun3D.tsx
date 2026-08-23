@@ -6,6 +6,12 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { gatlingBoltStudioX, stepGatlingGun } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -28,6 +34,14 @@ const CAMERA_PRESETS: Record<
   hopper: { pos: [-0.8, 3.8, 2.2], target: [-0.6, 1.4, 0] },
   crank: { pos: [-3.6, 1.2, 2.8], target: [-2.4, 0.4, 0.85] },
   top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "crank-battery",
+  wheelSpeedMps: 0,
 };
 
 export function GatlingGun3D() {
@@ -63,7 +77,45 @@ export function GatlingGun3D() {
     boltFlexStudio: gatling.boltFlexStudio,
     fireIntervalS: gatling.fireIntervalS,
     muzzleFlashDecayPerS: gatling.muzzleFlashDecayPerS,
+    claim1Active: claimStates[1] === false ? 0 : 1,
   });
+
+  // Shared transport tape: the US 36,836 crank pose publishes to the
+  // patentId-keyed bus so every face reads one deterministic state.
+  useFrankenSimPhysics("us-36836-gatling-gun", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: { ...IDLE_MACHINE },
+  });
+
+  // One tape-bound integrator (br-ixl): the bus updater owns the crank
+  // rotation phase so the render loop is a pure consumer of the tape.
+  // Refusal freezes the illegal step at the last legal angle.
+  const crankAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        crankAngleRef.current += (live.current.crankOmegaRadPerS ?? 0) * dt;
+        lastLegalAngleRef.current = crankAngleRef.current;
+      } else {
+        crankAngleRef.current = lastLegalAngleRef.current;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Claim 1 feed closed: crank held at last legal angle" : undefined,
+        },
+        machine: {
+          ...IDLE_MACHINE,
+          headingRad: crankAngleRef.current,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-36836-gatling-gun", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-36836-gatling-gun");
+  }, [live.current.claim1Active, live.current.crankOmegaRadPerS]);
 
   const studioRef = useRef<StudioContext | null>(null);
 
@@ -98,26 +150,28 @@ export function GatlingGun3D() {
     let reqId: number;
     let lastFireTime = 0;
     const clock = createStudioClock();
+    const transport = globalTransportBus.getTransport("us-36836-gatling-gun");
 
     const animate = (nowMs: number) => {
       reqId = requestAnimationFrame(animate);
       const { dt: delta, simTimeSec } = clock.pump(nowMs);
       const p = live.current;
 
-      // Rotate Barrel Cluster & Drive Crank via shared SI speed
-      const omega = p.crankOmegaRadPerS;
-      model.nodes.barrelClusterGroup.rotation.x += omega * delta;
-      model.nodes.crankGroup.rotation.x += omega * delta;
-
-      // Reciprocate Bolts along Spiral Cam Track
-      const clusterAngle = model.nodes.barrelClusterGroup.rotation.x;
+      // Pure consumer of the shared transport tape: the crank angle arrives
+      // on bus frames from the registered updater; this studio clock only
+      // paces mesh interpolation and flash decay.
+      const tape = transport.lastFrame.telemetry;
+      const refused = tape.refusal.isRefused;
+      const clusterAngle = tape.machine?.headingRad ?? model.nodes.barrelClusterGroup.rotation.x;
+      model.nodes.barrelClusterGroup.rotation.x = clusterAngle;
+      model.nodes.crankGroup.rotation.x = clusterAngle;
       model.nodes.bolts.forEach((bolt, i) => {
         const boltAngle = clusterAngle + i * p.barrelSpacingRad;
         bolt.position.x = gatlingBoltStudioX(boltAngle, p.boltHomeX, p.camStrokeStudio);
       });
 
       // Muzzle Flash & Sound Triggering on live fire interval
-      if (simTimeSec - lastFireTime > p.fireIntervalS) {
+      if (!refused && simTimeSec - lastFireTime > p.fireIntervalS) {
         lastFireTime = simTimeSec;
         if (p.showMuzzleFlash) {
           model.materials.muzzleFlash.opacity = 1.0;

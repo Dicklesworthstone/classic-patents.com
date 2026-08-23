@@ -4,12 +4,18 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX, Zap } from "l
 import { useEffect, useRef, useState } from "react";
 import { stepCortPuddlingRolling } from "@/physics/cortKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
 import { buildCortPuddlingRollingModel } from "./cortPuddlingRollingModel";
 import { type KernelChip, StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
-import { createThreeStudioScene } from "./ThreeStudioScene";
+import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -28,6 +34,18 @@ const CAMERA_PRESETS: Record<
   grooves: { pos: [2.0, 1.3, 1.8], target: [2.0, 1.0, 0] },
 };
 
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 0,
+  temperatureKelvin: 273.15,
+  pressureAtm: 1,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
+};
+
 export function CortPuddlingRolling3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
@@ -44,6 +62,15 @@ export function CortPuddlingRolling3D() {
   const rollerPassCount = params.rollerPassCount ?? 5;
   const rollSpeedRpm = params.rollSpeedRpm ?? 30;
 
+  const outputs = stepCortPuddlingRolling({
+    furnaceTemperatureCelsius: furnaceTempC,
+    initialCarbonPercent: initialCarbon,
+    rabbleStirringRpm: rabbleRpm,
+    puddlingDurationMinutes: puddlingMin,
+    rollerPassCount,
+    rollSpeedRpm,
+  });
+
   const live = useLiveSimParams({
     furnaceTemperatureCelsius: furnaceTempC,
     initialCarbonPercent: initialCarbon,
@@ -53,12 +80,78 @@ export function CortPuddlingRolling3D() {
     rollSpeedRpm: rollSpeedRpm,
   });
 
+  // Shared transport tape: the cortKernel op point publishes to the
+  // patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "thermodynamics_transport",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: outputs.currentTemperatureCelsius,
+      temperatureKelvin: outputs.currentTemperatureCelsius + 273.15,
+      pressureAtm: 1,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
+
   const cutawayRef = useRef(cutaway);
   cutawayRef.current = cutaway;
   const calloutsRef = useRef(showCallouts);
   calloutsRef.current = showCallouts;
 
-  const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
+  const studioRef = useRef<StudioContext | null>(null);
+
+  // One tape-bound stepper (br-ixl.3): the registered updater owns the
+  // per-tick cortKernel evaluation; the render loop only consumes the latest
+  // bus-published outputs. Accumulators live in refs so re-registering on
+  // control changes never resets the roll phase.
+  const rollAngleRef = useRef(0);
+  const kernelOutputsRef = useRef(outputs);
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      const next = stepCortPuddlingRolling({
+        furnaceTemperatureCelsius: live.current.furnaceTemperatureCelsius,
+        initialCarbonPercent: live.current.initialCarbonPercent,
+        rabbleStirringRpm: live.current.rabbleStirringRpm,
+        puddlingDurationMinutes: live.current.puddlingDurationMinutes,
+        rollerPassCount: live.current.rollerPassCount,
+        rollSpeedRpm: live.current.rollSpeedRpm,
+      });
+      kernelOutputsRef.current = next;
+      rollAngleRef.current += next.rollOmegaRadPerS * dt;
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: rollAngleRef.current,
+          modeLabel: next.isPastyNatureState ? "pasty nature" : "fluid bath",
+          // Grooved rolls use the kernel's Ø450 mm default geometry.
+          wheelSpeedMps: Number((next.rollOmegaRadPerS * 0.225).toFixed(3)),
+        },
+        thermo: {
+          ...(prev.thermo ?? IDLE_THERMO),
+          temperatureCelsius: next.currentTemperatureCelsius,
+          temperatureKelvin: next.currentTemperatureCelsius + 273.15,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [
+    live.current.furnaceTemperatureCelsius,
+    live.current.initialCarbonPercent,
+    live.current.rabbleStirringRpm,
+    live.current.puddlingDurationMinutes,
+    live.current.rollerPassCount,
+    live.current.rollSpeedRpm,
+  ]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -84,15 +177,10 @@ export function CortPuddlingRolling3D() {
       animId = requestAnimationFrame(renderLoop);
       const { simTimeSec: virtualTime } = clock.pump(now);
 
-      const p = live.current;
-      const outputs = stepCortPuddlingRolling({
-        furnaceTemperatureCelsius: p.furnaceTemperatureCelsius,
-        initialCarbonPercent: p.initialCarbonPercent,
-        rabbleStirringRpm: p.rabbleStirringRpm,
-        puddlingDurationMinutes: p.puddlingDurationMinutes,
-        rollerPassCount: p.rollerPassCount,
-        rollSpeedRpm: p.rollSpeedRpm,
-      });
+      // Pure consumer of the tape: the registered updater owns the per-tick
+      // kernel evaluation; fall back to the initial op point until the first
+      // bus frame lands.
+      const outputs = kernelOutputsRef.current;
 
       model.setCutaway(cutawayRef.current);
       model.setShowCallouts(calloutsRef.current);
@@ -114,7 +202,7 @@ export function CortPuddlingRolling3D() {
       model.dispose();
       studio.cleanup();
     };
-  }, [live]);
+  }, []);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActivePreset(preset);
@@ -123,15 +211,6 @@ export function CortPuddlingRolling3D() {
     const cfg = CAMERA_PRESETS[preset];
     studio.controls.setView(cfg.pos, cfg.target);
   };
-
-  const outputs = stepCortPuddlingRolling({
-    furnaceTemperatureCelsius: furnaceTempC,
-    initialCarbonPercent: initialCarbon,
-    rabbleStirringRpm: rabbleRpm,
-    puddlingDurationMinutes: puddlingMin,
-    rollerPassCount,
-    rollSpeedRpm,
-  });
 
   const chips: KernelChip[] = [
     {

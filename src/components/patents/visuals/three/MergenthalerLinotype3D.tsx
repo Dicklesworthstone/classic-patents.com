@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepMergenthalerLinotype } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -69,6 +74,55 @@ export function MergenthalerLinotype3D() {
     isCutaway,
   });
 
+  // Shared transport tape envelope: pot thermodynamics and cycle pose
+  // publish to the patentId-keyed bus.
+  useFrankenSimPhysics("us-313224-mergenthaler-linotype", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+  });
+
+  // One tape-bound integrator: the bus updater owns the casting-cycle kernel
+  // step so every reader shares one deterministic phase. Accumulators live in
+  // refs so re-registering on control changes never snaps the cycle back to
+  // zero; the full typed step result rides a ref because the universal tape
+  // carries only the fitting subset (cycle angle + mode label).
+  const elapsedSRef = useRef(0);
+  const cycleStepRef = useRef(linotypeIdle);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      elapsedSRef.current += dt;
+      const next = stepMergenthalerLinotype({
+        matrixRatePerMin: live.current.matrixRate,
+        spacebandWedgeMm: live.current.spacebandWedge,
+        potTempC: live.current.potTempC,
+        elapsedS: elapsedSRef.current,
+      });
+      cycleStepRef.current = next;
+      return {
+        thermo: {
+          temperatureCelsius: live.current.potTempC,
+          temperatureKelvin: live.current.potTempC + 273.15,
+          pressureAtm: 0,
+          partialPressureButaneAtm: 0,
+          heatInputWatts: 0,
+          coolingPowerWatts: 0,
+          coefficientOfPerformance: 0,
+          blackbodyRadiantPowerWatts: 0,
+          fluidFlowVelocityMps: 0,
+        },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: next.moldAngle,
+          modeLabel: next.slugOut ? "slug ejection" : "matrix distribution",
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-313224-mergenthaler-linotype", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-313224-mergenthaler-linotype");
+  }, [live.current.matrixRate, live.current.spacebandWedge, live.current.potTempC]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -112,12 +166,9 @@ export function MergenthalerLinotype3D() {
       const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 
-      const step = stepMergenthalerLinotype({
-        matrixRatePerMin: p.matrixRate,
-        spacebandWedgeMm: p.spacebandWedge,
-        potTempC: p.potTempC,
-        elapsedS: timeSec,
-      });
+      // Pure consumer of the shared transport tape: the bus updater owns the
+      // casting-cycle kernel step; this loop reads its latest result.
+      const step = cycleStepRef.current;
 
       // Update cutaway transparency on metal pot
       materials.castIron.opacity = p.isCutaway ? 0.35 : 1.0;

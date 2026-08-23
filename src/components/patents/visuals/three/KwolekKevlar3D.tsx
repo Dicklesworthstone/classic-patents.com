@@ -16,6 +16,12 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepKevlarContinuum } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ContinuumState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -38,6 +44,16 @@ const CAMERA_PRESETS: Record<
   spinneret: { pos: [-3.5, 2.0, 4.0], target: [-2.0, 0, 0] },
   impact: { pos: [0, 3.5, 5.0], target: [0, 0, 0] },
   top: { pos: [0, 9.0, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_CONTINUUM: ContinuumState = {
+  tensileStressMpa: 0,
+  tensileStrainPct: 0,
+  elasticModulusGpa: 0,
+  crossLinkDensityMolesPerCm3: 0,
+  stitchFrequencyHz: 0,
+  feedVelocityMmPs: 0,
+  buoyancyLiftForceKiloNewtons: 0,
 };
 
 export function KwolekKevlar3D() {
@@ -75,6 +91,8 @@ export function KwolekKevlar3D() {
     isNematicLCP,
     isCutaway,
     isAudioMuted,
+    drawRatio,
+    appliedTension: params.appliedTension ?? 30,
     elasticModulusGpa: kevlar.elasticModulusGpa,
     tensileStressMpa: kevlar.tensileStressMpa,
     impactVelocityMps: params.impactVelocity ?? 450,
@@ -87,6 +105,46 @@ export function KwolekKevlar3D() {
     chainWobbleAmp: kevlar.chainWobbleAmp,
     chainWobbleOmega: kevlar.chainWobbleOmega,
   });
+
+  // Shared transport tape: the aramid continuum kernel step is owned by the
+  // bus updater (TS_FALLBACK); the render loop keeps its own kinematics.
+  useFrankenSimPhysics("us-3671542-kwolek-kevlar", {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: false },
+    continuum: {
+      ...IDLE_CONTINUUM,
+      tensileStressMpa: kevlar.tensileStressMpa,
+      tensileStrainPct: kevlar.tensileStrainPct,
+      elasticModulusGpa: kevlar.elasticModulusGpa,
+    },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      const s = stepKevlarContinuum(
+        live.current.drawRatio,
+        live.current.impactVelocityMps,
+        live.current.appliedTension,
+        live.current.temperatureCelsius,
+      );
+      return {
+        refusal: { isRefused: false },
+        continuum: {
+          ...(prev.continuum ?? IDLE_CONTINUUM),
+          tensileStressMpa: s.tensileStressMpa,
+          tensileStrainPct: s.tensileStrainPct,
+          elasticModulusGpa: s.elasticModulusGpa,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-3671542-kwolek-kevlar", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-3671542-kwolek-kevlar");
+  }, [
+    live.current.appliedTension,
+    live.current.drawRatio,
+    live.current.impactVelocityMps,
+    live.current.temperatureCelsius,
+  ]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

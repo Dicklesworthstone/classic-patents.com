@@ -5,6 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -18,8 +24,25 @@ import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
-type CameraPreset = "iso" | "pin_press" | "dials_board" | "sorting_box" | "press_lever" | "top";
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 12,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
+};
 
+type CameraPreset = "iso" | "pin_press" | "dials_board" | "sorting_box" | "press_lever" | "top";
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { pos: [number, number, number]; target: [number, number, number] }
@@ -53,9 +76,10 @@ export function HollerithTabulating3D() {
   const { isAudioMuted, toggleSound: toggleEngine } = usePatentAudio();
   const [crateSource, setCrateSource] = useState(genericKernelSource());
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
-
   const live = useLiveSimParams({
     cardsPerMin,
+    batteryVolts,
+    activeRelays,
     isAudioMuted,
     isCutaway,
     cycleTimeMs: hollerith.cycleTimeMs,
@@ -64,6 +88,41 @@ export function HollerithTabulating3D() {
     pressOmegaRadPerS: hollerith.pressOmegaRadPerS,
     plungeAmp: hollerith.plungeAmp,
   });
+
+  // Shared transport tape: the tabulator's electromechanical kernel step is
+  // owned by the bus updater (TS_FALLBACK); the loop keeps its own kinematics.
+  useFrankenSimPhysics("us-395781-hollerith-tabulating", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: { ...IDLE_EM, voltageVolts: batteryVolts },
+  });
+
+  // Press-shaft phase lives in a ref so updater re-registration never snaps it.
+  const pressAngleRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      const s = FrankenSimEngine.stepHollerithTabulating({
+        cardsPerMin: live.current.cardsPerMin,
+        supplyVoltageV: live.current.batteryVolts,
+        activeRelays: live.current.activeRelays,
+      });
+      pressAngleRef.current = (pressAngleRef.current + s.pressOmegaRadPerS * dt) % (Math.PI * 2);
+      return {
+        refusal: { isRefused: false },
+        em: { ...(prev.em ?? IDLE_EM), voltageVolts: live.current.batteryVolts },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: pressAngleRef.current,
+          modeLabel: "punch cycle",
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-395781-hollerith-tabulating", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-395781-hollerith-tabulating");
+  }, [live.current.activeRelays, live.current.batteryVolts, live.current.cardsPerMin]);
 
   const studioRef = useRef<StudioContext | null>(null);
 

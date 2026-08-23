@@ -6,6 +6,11 @@ import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepOttoEngine, wrapCycleRad } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -88,6 +93,65 @@ export function OttoEngine3D() {
     studioRef.current?.controls.setView(cfg.pos, cfg.target);
   };
 
+  // Shared transport tape: the bus owns crank-angle integration so every
+  // stroke-timed consumer reads one deterministic state; this render loop only
+  // draws and fires the power-stroke thud.
+  useFrankenSimPhysics("us-194047-otto-engine", {
+    domain: "thermodynamics_transport",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: 0,
+      temperatureKelvin: 0,
+      pressureAtm: 0,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "stopped",
+      wheelSpeedMps: 0,
+    },
+  });
+
+  const crankAngleRef = useRef(0);
+
+  useEffect(() => {
+    const strokeLabels = ["intake", "compression", "power", "exhaust"] as const;
+    const integrate: TapeUpdater = (_prev, dt) => {
+      if (!live.current.isRunning) {
+        return {
+          refusal: { isRefused: true, reason: "Engine stopped: crank held at last angle" },
+        };
+      }
+      crankAngleRef.current = wrapCycleRad(
+        crankAngleRef.current + live.current.crankOmegaRadPerS * dt,
+        live.current.cycleWrapRad,
+      );
+      const strokeIndex = Math.min(
+        3,
+        Math.max(0, Math.floor((crankAngleRef.current / (Math.PI * 4)) * 4)),
+      );
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: crankAngleRef.current,
+          modeLabel: strokeLabels[strokeIndex],
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-194047-otto-engine", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-194047-otto-engine");
+  }, [live]);
+
   const toggleSound = () => {
     toggleEngine(() => {
       soundEngine.playSwitchClick();
@@ -127,19 +191,21 @@ export function OttoEngine3D() {
     scene.add(flameMesh);
 
     let reqId: number;
-    let crankAngle = 0;
     let lastSoundStroke = -1;
 
     const clock = createStudioClock();
+    const transport = globalTransportBus.getTransport("us-194047-otto-engine");
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       const { dt } = clock.pump(now);
       const p = live.current;
 
-      if (p.isRunning) {
-        crankAngle = wrapCycleRad(crankAngle + p.crankOmegaRadPerS * dt, p.cycleWrapRad);
+      // Crank angle arrives on the tape from the bus-owned integrator; before
+      // the first tick this falls back to the last pose (0 rad).
+      const crankAngle = transport.lastFrame.telemetry.machine?.headingRad ?? 0;
 
+      if (p.isRunning) {
         const currentStroke = Math.floor((crankAngle / (Math.PI * 4)) * 4);
         if (currentStroke === 2 && lastSoundStroke !== 2 && !p.isAudioMuted) {
           soundEngine.playImpactThud(0.8);

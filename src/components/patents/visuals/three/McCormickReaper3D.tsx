@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { stepMcCormickReaper } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -46,6 +47,20 @@ export function McCormickReaper3D() {
 
   const reaper = stepMcCormickReaper({
     forwardSpeedMph: groundSpeedMph,
+  });
+
+  // Shared transport tape envelope: ground-speed pose publishes to the
+  // patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics("us-x8277-mccormick-reaper", {
+    domain: "aerodynamics_mbd",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "reaping",
+      wheelSpeedMps: groundSpeedMph * 0.44704,
+    },
   });
 
   const live = useLiveSimParams({

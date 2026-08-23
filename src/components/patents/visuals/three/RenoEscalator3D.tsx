@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepRenoEscalator } from "@/physics/machineKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -65,6 +66,21 @@ export function RenoEscalator3D() {
     speedFpm: deckSpeedFpm,
     throughputPerHour: passengersPerHour,
     motorPowerKw: renoIdle.motorPowerKw,
+  });
+
+  // Shared transport tape: stepRenoEscalator is a statics throughput kernel,
+  // so its belt speed publishes as the initial machine envelope; the local
+  // rAF keeps the cleated-belt/handrail animation as-is.
+  useFrankenSimPhysics("us-470918-reno-escalator", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "inclined belt running",
+      wheelSpeedMps: beltSpeedMps,
+    },
   });
 
   const studioRef = useRef<StudioContext | null>(null);

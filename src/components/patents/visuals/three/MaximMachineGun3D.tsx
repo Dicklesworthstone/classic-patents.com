@@ -7,6 +7,7 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { FrankenSimEngine } from "@/physics/engine";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -52,6 +53,24 @@ export function MaximMachineGun3D() {
     firingRateRpm: fireRateRpm,
     waterJacketLiters: waterLevelLiters,
     recoilStrokeMm,
+  });
+
+  // Shared transport tape envelope: jacket-water thermodynamics publish to
+  // the patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics("us-319596-maxim-machine-gun", {
+    domain: "thermo_fluid",
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: maxim.barrelTempC,
+      temperatureKelvin: maxim.barrelTempC + 273.15,
+      pressureAtm: 0,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
   });
   const [showMuzzleFlash] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");

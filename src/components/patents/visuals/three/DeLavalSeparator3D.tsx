@@ -6,6 +6,11 @@ import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepDeLavalSeparator } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -70,6 +75,51 @@ export function DeLavalSeparator3D() {
     skimDropWrap: sep.skimDropWrap,
   });
 
+  // Shared transport tape: the bowl's centrifugal state publishes to the
+  // patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-247804-delaval-separator", {
+    domain: "thermo_fluid",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: 0,
+      temperatureKelvin: 273.15,
+      pressureAtm: 1,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
+
+  // One tape-bound integrator (br-ixl.3): the registered updater owns the
+  // authoritative bowl angle; the render loop reads it for the spindle/bowl
+  // rotation and keeps dt-paced drop interpolation. Accumulators live in refs
+  // so re-registering on control changes never resets the bowl phase.
+  const bowlAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      bowlAngleRef.current += live.current.displayOmegaRadPerS * dt;
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: bowlAngleRef.current,
+          modeLabel: "centrifugal separation",
+          // The kernel reports display-slowed omega only (6500 rpm is a
+          // blur); no honest metric rim speed exists, so none is published.
+          wheelSpeedMps: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-247804-delaval-separator", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-247804-delaval-separator");
+  }, [live.current.displayOmegaRadPerS]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -113,9 +163,13 @@ export function DeLavalSeparator3D() {
       const { dt } = clock.pump(now);
       const p = live.current;
 
-      // Rotate Spindle & Bowl
-      model.spindleGroup.rotation.y += p.displayOmegaRadPerS * dt;
-      model.bowlGroup.rotation.y += p.displayOmegaRadPerS * dt;
+      // Rotate Spindle & Bowl from the shared transport tape (fall back to
+      // the last pose until the first bus frame lands).
+      const bowlAngle =
+        globalTransportBus.getTransport("us-247804-delaval-separator").lastFrame.telemetry.machine
+          ?.headingRad ?? bowlAngleRef.current;
+      model.spindleGroup.rotation.y = bowlAngle;
+      model.bowlGroup.rotation.y = bowlAngle;
 
       // Animate Milk/Cream Stream Particles
       const dropCount = model.creamDrops.length;

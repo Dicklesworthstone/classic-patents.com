@@ -3,7 +3,12 @@
 import { Camera, Eye, EyeOff, RotateCcw, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { stepArkwrightWaterFrame } from "@/physics/arkwrightKernel";
-import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -60,6 +65,61 @@ export function ArkwrightWaterFrame3D() {
     inputRovingCountNe: params.inputRovingCountNe,
   });
 
+  // Shared transport tape: honest envelope plus one bus-owned integrator.
+  // The updater steps every roller/flyer/traverse phase from the shared
+  // kernel; the render loop consumes the integrated phases instead of
+  // privately stepping. Accumulators live in a ref so re-registering on
+  // control changes never snaps a phase back to zero.
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "continuum_elasticity",
+    refusal: { isRefused: false },
+  });
+
+  const phasesRef = useRef({
+    wheel: 0,
+    shaft: 0,
+    feed: 0,
+    delivery: 0,
+    spindle: 0,
+    bobbin: 0,
+    traverse: 0,
+  });
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const out = stepArkwrightWaterFrame({
+        waterWheelRpm: live.current.waterWheelRpm,
+        totalDraftRatio: live.current.totalDraftRatio,
+        rollerClampingWeightKg: live.current.rollerClampingWeightKg,
+        stapleLengthMm: live.current.stapleLengthMm,
+        inputRovingCountNe: live.current.inputRovingCountNe,
+      });
+      const ph = phasesRef.current;
+      ph.wheel += out.wheelOmegaRadPerS * dt;
+      ph.shaft += out.wheelOmegaRadPerS * dt;
+      ph.feed += out.feedRollerOmegaRadPerS * dt;
+      ph.delivery += out.deliveryRollerOmegaRadPerS * dt;
+      ph.spindle += out.spindleOmegaRadPerSec * dt;
+      ph.bobbin += out.bobbinOmegaRadPerS * dt;
+      ph.traverse = (ph.traverse + out.traverseFreqHz * 2 * Math.PI * dt) % (2 * Math.PI);
+      const machine: MachineState = {
+        poseXMeters: 0,
+        poseYMeters: 0,
+        headingRad: ph.spindle % (2 * Math.PI),
+        modeLabel: "water-frame drafting + flyer twist",
+        wheelSpeedMps: out.deliveryVelocityMPerMin / 60,
+      };
+      return { machine };
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [
+    live.current.waterWheelRpm,
+    live.current.totalDraftRatio,
+    live.current.rollerClampingWeightKg,
+    live.current.stapleLengthMm,
+    live.current.inputRovingCountNe,
+  ]);
+
   const handlePresetChange = (preset: CameraPreset) => {
     setActivePreset(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -87,45 +147,35 @@ export function ArkwrightWaterFrame3D() {
     studio.scene.add(model.root);
 
     let rafId = 0;
-    const clock = createStudioClock();
 
-    const animate = (now: number) => {
+    const animate = () => {
       rafId = requestAnimationFrame(animate);
-      const { simTimeSec: virtualTime } = clock.pump(now);
-      const p = live.current;
 
-      const out = stepArkwrightWaterFrame({
-        waterWheelRpm: p.waterWheelRpm,
-        totalDraftRatio: p.totalDraftRatio,
-        rollerClampingWeightKg: p.rollerClampingWeightKg,
-        stapleLengthMm: p.stapleLengthMm,
-        inputRovingCountNe: p.inputRovingCountNe,
-      });
+      // Pure consumer of the shared transport tape: every phase below is
+      // integrated by the bus updater from the shared kernel ω.
+      const ph = phasesRef.current;
 
       // Kinematic rotations from the shared kernel ω
-      model.wheelGroup.rotation.x = virtualTime * out.wheelOmegaRadPerS;
-      model.shaftGroup.rotation.z = virtualTime * out.wheelOmegaRadPerS;
+      model.wheelGroup.rotation.x = ph.wheel;
+      model.shaftGroup.rotation.z = ph.shaft;
 
       // Rollers
-      model.feedRollersGroup.rotation.x = virtualTime * out.feedRollerOmegaRadPerS;
-      model.deliveryRollersGroup.rotation.x = virtualTime * out.deliveryRollerOmegaRadPerS;
+      model.feedRollersGroup.rotation.x = ph.feed;
+      model.deliveryRollersGroup.rotation.x = ph.delivery;
 
       // Flyers & Bobbins
-      const flyerAngle = virtualTime * out.spindleOmegaRadPerSec;
       for (const f of model.flyerGroups) {
-        f.rotation.y = flyerAngle;
+        f.rotation.y = ph.spindle;
       }
 
-      const bobbinAngle = virtualTime * out.bobbinOmegaRadPerS;
       for (const b of model.bobbinGroups) {
-        b.rotation.y = bobbinAngle;
+        b.rotation.y = ph.bobbin;
       }
 
       // Heart-cam & traverse rail lift
-      const traversePhase = (virtualTime * out.traverseFreqHz * 2 * Math.PI) % (2 * Math.PI);
-      const traverseOffset = Math.sin(traversePhase) * 0.04;
+      const traverseOffset = Math.sin(ph.traverse) * 0.04;
       model.traverseRailGroup.position.y = 0.52 + traverseOffset;
-      model.camGroup.rotation.z = traversePhase;
+      model.camGroup.rotation.z = ph.traverse;
 
       model.setCutaway(cutawayRef.current);
       model.setCalloutsVisible(calloutsRef.current);
@@ -142,7 +192,7 @@ export function ArkwrightWaterFrame3D() {
       studio.cleanup();
       studioRef.current = null;
     };
-  }, [live]);
+  }, []);
 
   const outputs = stepArkwrightWaterFrame({
     waterWheelRpm,

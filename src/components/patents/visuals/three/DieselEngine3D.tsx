@@ -7,6 +7,12 @@ import { wrapCycleRad } from "@/physics/catalogKernels";
 import { stepDieselEngine as kernelStepDieselEngine } from "@/physics/dieselEngineKernel";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -34,6 +40,20 @@ const CAMERA_PRESETS: Record<
   crosshead: { pos: [0.1, -0.4, 3.0], target: [0, -0.6, 0] },
   compressor: { pos: [-3.6, 0.6, -1.8], target: [-1.0, -0.2, -0.8] },
   flywheel: { pos: [4.5, -0.8, 3.8], target: [0, -1.6, 1.6] },
+};
+
+const BAR_TO_ATM = 0.986923;
+
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 0,
+  temperatureKelvin: 273.15,
+  pressureAtm: 1,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
 };
 
 export function DieselEngine3D() {
@@ -71,6 +91,7 @@ export function DieselEngine3D() {
     cutoffRatio,
     isPlaying,
     isAutoIgnition: isAutoIgnition ? 1 : 0,
+    claim1Active: claimStates[1] === false ? 0 : 1,
     peakTempC,
     cutawayMode,
     isMuted,
@@ -83,11 +104,89 @@ export function DieselEngine3D() {
     injectionCamStartRad: diesel.injectionCamStartRad,
   });
 
+  // Shared transport tape: the kernel-derived thermo state publishes to the
+  // patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-542846-diesel-engine", {
+    domain: "thermodynamics_transport",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    thermo: {
+      temperatureCelsius: peakTempC,
+      temperatureKelvin: peakTempC + 273.15,
+      pressureAtm: peakPressureBar * BAR_TO_ATM,
+      partialPressureButaneAtm: 0,
+      heatInputWatts: 0,
+      coolingPowerWatts: 0,
+      coefficientOfPerformance: 0,
+      blackbodyRadiantPowerWatts: 0,
+      fluidFlowVelocityMps: 0,
+    },
+  });
+
   const studioRef = useRef<StudioContext | null>(null);
   const animRef = useRef<number | null>(null);
   const nodesRef = useRef<DieselEngineNodes | null>(null);
   const matsRef = useRef<DieselEngineMaterials | null>(null);
   const [crateSource, setCrateSource] = useState(genericKernelSource());
+
+  // One tape-bound integrator (br-ixl.3): the registered updater owns the
+  // crank-angle integration; the render loop only consumes bus frames.
+  // Accumulators live in refs so re-registering on control changes never
+  // snaps the crank back to zero. The kernel snapshot ref carries the
+  // param-derived op point into the updater without re-running it per tick.
+  const crankAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  const kernelSnapshotRef = useRef({ pCompBar: peakPressureBar, tCompressionC: peakTempC });
+  kernelSnapshotRef.current = { pCompBar: peakPressureBar, tCompressionC: peakTempC };
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      if (!live.current.isPlaying) return null;
+      // Refusal freezes the illegal step at the last legal angle instead of
+      // clamping on (br-ixl.3 convention).
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        crankAngleRef.current = wrapCycleRad(
+          crankAngleRef.current + live.current.crankOmegaRadPerS * dt,
+          live.current.cycleWrapRad,
+        );
+        lastLegalAngleRef.current = crankAngleRef.current;
+      } else {
+        crankAngleRef.current = lastLegalAngleRef.current;
+      }
+      const snap = kernelSnapshotRef.current;
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Claim 1 interlock open: crank held at last legal angle" : undefined,
+        },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: crankAngleRef.current,
+          modeLabel: live.current.isAutoIgnition > 0.5 ? "compression-ignition" : "compression",
+          // No metric flywheel radius exists in the source; wheel speed stays
+          // unpublished rather than invented.
+          wheelSpeedMps: 0,
+        },
+        thermo: {
+          ...(prev.thermo ?? IDLE_THERMO),
+          temperatureCelsius: snap.tCompressionC,
+          temperatureKelvin: snap.tCompressionC + 273.15,
+          pressureAtm: snap.pCompBar * BAR_TO_ATM,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-542846-diesel-engine", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-542846-diesel-engine");
+  }, [
+    live.current.isPlaying,
+    live.current.crankOmegaRadPerS,
+    live.current.cycleWrapRad,
+    live.current.isAutoIgnition,
+    live.current.claim1Active,
+  ]);
 
   useEffect(() => {
     void ensureGenericWasm().then((next) => setCrateSource(next));
@@ -114,18 +213,21 @@ export function DieselEngine3D() {
     matsRef.current = materials;
     scene.add(root);
 
-    // --- ANIMATION LOOP & KINEMATIC INTEGRATION ---
+    // --- RENDER LOOP: pure consumer of the shared transport tape ---
+    // The registered updater integrates the crank angle on the bus; this
+    // studio clock only paces mesh interpolation and falls back to the last
+    // published pose until the first frame lands.
     let crankAngle = 0;
     let lastSoundAngle = 0;
     const clock = createStudioClock();
+    const transport = globalTransportBus.getTransport("us-542846-diesel-engine");
 
     const renderLoop = (now: number) => {
-      const { dt } = clock.pump(now);
+      clock.pump(now);
       const p = live.current;
 
       if (p.isPlaying) {
-        const speed = p.crankOmegaRadPerS;
-        crankAngle = wrapCycleRad(crankAngle + speed * dt, p.cycleWrapRad);
+        crankAngle = transport.lastFrame.telemetry.machine?.headingRad ?? crankAngle;
 
         updateDieselEngineKinematics(nodes, crankAngle, p.cutawayMode);
 

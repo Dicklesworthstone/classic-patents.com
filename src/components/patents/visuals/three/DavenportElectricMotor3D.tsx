@@ -5,6 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { stepDavenportMotor } from "@/physics/catalogKernels";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -30,6 +36,24 @@ const CAMERA_PRESETS: Record<
   rotor: { pos: [0, 4.0, 1.5], target: [0, 0, 0] },
   brushes: { pos: [-1.8, 2.2, 2.5], target: [-0.5, 1.6, 0] },
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
 };
 
 export function DavenportElectricMotor3D() {
@@ -60,6 +84,46 @@ export function DavenportElectricMotor3D() {
     mechanicalWatts: davenport.shaftPowerW,
     shaftOmegaRadPerS: davenport.shaftOmegaRadPerS,
   });
+
+  // Shared transport tape: the motor's electrical drive state publishes to
+  // the patentId-keyed bus so every consumer reads one deterministic envelope.
+  useFrankenSimPhysics("us-132-davenport-electric-motor", {
+    domain: "electromagnetics_flux",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
+    em: { ...IDLE_EM, voltageVolts: supplyVoltage, rotorRpm: motorRpm },
+  });
+
+  // One tape-bound integrator (br-ixl.3): the registered updater owns the
+  // authoritative shaft angle; the render loop keeps dt-paced mesh
+  // interpolation. Accumulators live in refs so re-registering on control
+  // changes never resets the rotor phase.
+  const shaftAngleRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev, dt) => {
+      shaftAngleRef.current += live.current.shaftOmegaRadPerS * dt;
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: shaftAngleRef.current,
+          modeLabel: "commutator DC motor",
+          // No metric rotor radius exists in the source; wheel speed stays
+          // unpublished rather than invented.
+          wheelSpeedMps: 0,
+        },
+        em: {
+          ...(prev.em ?? IDLE_EM),
+          voltageVolts: live.current.supplyVoltage,
+          rotorRpm: live.current.motorRpm,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-132-davenport-electric-motor", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-132-davenport-electric-motor");
+  }, [live.current.shaftOmegaRadPerS, live.current.supplyVoltage, live.current.motorRpm]);
 
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);

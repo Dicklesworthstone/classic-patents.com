@@ -9,7 +9,11 @@ import {
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { type MultiTouchState, stepMultiTouch } from "@/physics/multiTouchKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -57,6 +61,60 @@ export function MultiTouch3D() {
     gestureVelocityMmS: params.gestureVelocityMmS ?? 15,
   });
 
+  // Shared transport tape envelope: gesture pose publishes to the
+  // patentId-keyed bus so badges and sibling faces read one honest state.
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "aerodynamics_mbd",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "Pinch-to-Zoom",
+      wheelSpeedMps: 15 / 1000,
+    },
+  });
+
+  // One tape-bound integrator: the bus updater owns the stepMultiTouch kernel
+  // step so every reader shares one deterministic gesture state. Accumulators
+  // live in refs so re-registering on control changes never snaps the gesture
+  // back to zero; the full typed state rides a ref because the universal tape
+  // carries only the fitting subset (rotation angle + mode label).
+  const multiTouchStateRef = useRef<MultiTouchState | undefined>(undefined);
+  const simTimeRef = useRef(0);
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      simTimeRef.current += dt;
+      const next = stepMultiTouch(
+        {
+          fingerCount: live.current.fingerCount ?? 2,
+          fingerSeparationMm: live.current.fingerSeparationMm ?? 50,
+          touchPressureGrams: live.current.touchPressureGrams ?? 80,
+          gestureVelocityMmS: live.current.gestureVelocityMmS ?? 15,
+        },
+        simTimeRef.current,
+        multiTouchStateRef.current,
+      );
+      multiTouchStateRef.current = next;
+      return {
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad: (next.rotationAngleDeg * Math.PI) / 180,
+          modeLabel: next.gestureMode,
+          wheelSpeedMps: (live.current.gestureVelocityMmS ?? 15) / 1000,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(EXHIBIT_ID, integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [
+    live.current.fingerCount,
+    live.current.fingerSeparationMm,
+    live.current.touchPressureGrams,
+    live.current.gestureVelocityMmS,
+  ]);
+
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -79,11 +137,9 @@ export function MultiTouch3D() {
     studio.scene.add(model.root);
 
     let _renderedSteps = 0;
-    const sched = new TickScheduler(1 / 120, 0);
     let hudCounter = 0;
     let rafId = 0;
     let timeSec = 0;
-    let currentState: MultiTouchState | undefined;
     let lastFrameTimeMs: number | undefined;
 
     const animate = (frameTimeMs: number) => {
@@ -96,18 +152,9 @@ export function MultiTouch3D() {
       _renderedSteps += 1;
       const p = live.current;
 
-      sched.pump(timeSec, () => {
-        currentState = stepMultiTouch(
-          {
-            fingerCount: p.fingerCount ?? 2,
-            fingerSeparationMm: p.fingerSeparationMm ?? 50,
-            touchPressureGrams: p.touchPressureGrams ?? 80,
-            gestureVelocityMmS: p.gestureVelocityMmS ?? 15,
-          },
-          timeSec,
-          currentState,
-        );
-      });
+      // Pure consumer of the shared transport tape: the bus updater owns the
+      // stepMultiTouch kernel step; this loop reads its latest result.
+      const currentState = multiTouchStateRef.current;
 
       if (currentState) {
         model.updateTouchContacts(

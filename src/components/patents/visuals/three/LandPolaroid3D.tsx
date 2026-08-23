@@ -4,7 +4,14 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { MachineState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -47,6 +54,14 @@ const CAMERA_PRESETS: Record<
   },
 };
 
+const IDLE_MACHINE: MachineState = {
+  poseXMeters: 0,
+  poseYMeters: 0,
+  headingRad: 0,
+  modeLabel: "idle",
+  wheelSpeedMps: 0,
+};
+
 export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const studioRef = useRef<StudioContext | null>(null);
@@ -75,6 +90,47 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
     alkaliPh,
     isCutaway,
   });
+
+  // Roller phase lives in a ref so updater re-registration never snaps it.
+  const rollerAngleRef = useRef(0);
+
+  // Shared transport tape: the diffusion-transfer kernel (previously unused by
+  // this face) is adopted here; the bus updater owns the roller integration.
+  useFrankenSimPhysics("us-2543181-land-polaroid", {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: { ...IDLE_MACHINE, modeLabel: "developing" },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const film = stepLandPolaroidInstantFilm({
+        reagentViscosityCp: live.current.reagentViscosityCp,
+        rollerGapUm: live.current.rollerGapUm,
+        alkaliPh: live.current.alkaliPh,
+        exposureFraction: live.current.exposureFraction,
+        developmentTimeSec: live.current.developmentTimeSec,
+      });
+      rollerAngleRef.current =
+        (rollerAngleRef.current + film.rollerDisplayOmegaRadPerS * dt) % (Math.PI * 2);
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          ...IDLE_MACHINE,
+          headingRad: rollerAngleRef.current,
+          modeLabel: film.printCompletionPercent >= 100 ? "print complete" : "developing",
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-2543181-land-polaroid", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-2543181-land-polaroid");
+  }, [
+    live.current.alkaliPh,
+    live.current.developmentTimeSec,
+    live.current.exposureFraction,
+    live.current.reagentViscosityCp,
+    live.current.rollerGapUm,
+  ]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

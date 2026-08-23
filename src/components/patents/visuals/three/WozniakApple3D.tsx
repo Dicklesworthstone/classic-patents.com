@@ -5,6 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepWozniakApple } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -27,6 +32,11 @@ const CAMERA_PRESETS: Record<
   slots: { pos: [0, 4.0, 5.0], target: [0, 0, 1.5] },
   top: { pos: [0, 11.0, 0.1], target: [0, 0, 0] },
 };
+
+/** Fields the render loop consumes from each Apple kernel step. */
+interface WozniakStepPose {
+  busDisplaySpeed: number;
+}
 
 export function WozniakApple3D() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,6 +80,40 @@ export function WozniakApple3D() {
     busDisplaySpeed: apple.busDisplaySpeed,
   });
 
+  // Shared transport tape: 6502 bus-cycle state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-4136359-wozniak-apple", {
+    domain: "semiconductor_microarch",
+    refusal: { isRefused: false },
+  });
+  const wozniakRef = useRef<WozniakStepPose | null>(null);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev) => {
+      const out = stepWozniakApple({
+        crystalFreq: live.current.clockFrequencyMhz,
+        ramCapacityKb: live.current.ramCapacityKb,
+      });
+      wozniakRef.current = out;
+      return {
+        semi: {
+          biasVoltageVolts: 0,
+          currentGainAlpha: 0,
+          holeDiffusionCoefficientCm2ps: 0,
+          chargeTransferEfficiencyPct: 0,
+          clockPeriodNs: out.cycleTimeNs,
+          busBandwidthMbps: out.busDisplaySpeed,
+          electronVelocityMps: 0,
+          relativisticFractionC: 0,
+          voltageGain: 0,
+          powerGainDb: 0,
+          collectorCurrentMa: 0,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-4136359-wozniak-apple", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-4136359-wozniak-apple");
+  }, [live]);
+
   const applyCameraPreset = (preset: CameraPreset) => {
     setActiveCamera(preset);
     const cfg = CAMERA_PRESETS[preset];
@@ -107,7 +151,14 @@ export function WozniakApple3D() {
       const { dt: delta, simTimeSec: animTime } = clock.pump(now);
       const p = live.current;
 
-      model.updateKinematics(delta, animTime, p.busDisplaySpeed, p.isCpuActive);
+      // Bus-owned kernel step: prefer the latest shared-tape bus state.
+      const a = wozniakRef.current;
+      model.updateKinematics(
+        delta,
+        animTime,
+        a ? a.busDisplaySpeed : p.busDisplaySpeed,
+        p.isCpuActive,
+      );
       model.setCutaway?.(p.isCutaway ?? false);
 
       studio.controls.update();

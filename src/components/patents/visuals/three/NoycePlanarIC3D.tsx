@@ -12,6 +12,7 @@ import {
 } from "@/physics/fieldTextures";
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { TickScheduler } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -71,6 +72,27 @@ export const NoycePlanarIC3D = memo(() => {
     clockPeriodNs: noyce.clockPeriodNs,
     signalDisplaySpeed: noyce.signalDisplaySpeed,
     isCutaway,
+  });
+
+  // Shared transport tape: stepNoyceIC is a statics kernel, so its honest
+  // junction/oxide outputs publish as the initial semiconductor envelope and
+  // the local rAF keeps the display interpolation as-is.
+  useFrankenSimPhysics("us-2981877-noyce-ic", {
+    domain: "semiconductor_microarch",
+    refusal: { isRefused: false },
+    semi: {
+      biasVoltageVolts: reverseBias,
+      currentGainAlpha: 0,
+      holeDiffusionCoefficientCm2ps: 0,
+      chargeTransferEfficiencyPct: 0,
+      clockPeriodNs: noyce.clockPeriodNs,
+      busBandwidthMbps: 0,
+      electronVelocityMps: 0,
+      relativisticFractionC: 0,
+      voltageGain: 0,
+      powerGainDb: 0,
+      collectorCurrentMa: 0,
+    },
   });
 
   const applyCameraPreset = (preset: CameraPreset) => {

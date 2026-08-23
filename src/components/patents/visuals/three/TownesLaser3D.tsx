@@ -4,6 +4,11 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import { useEffect, useRef, useState } from "react";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -37,6 +42,16 @@ const CAMERA_PRESETS: Record<
   outputCoupler: { pos: [2.0, 0.6, 2.2], target: [2.0, 0, 0] },
   detector: { pos: [2.6, 0.6, 2.2], target: [2.6, 0, 0] },
 };
+
+/** Fields the render loop consumes from each laser kernel step. */
+interface TownesStepPose {
+  pumpPowerWatts: number;
+  laserOutputPowerWatts: number;
+  intraCavityPowerWatts: number;
+  isLasing: boolean;
+  pumpShimmerOmegaRadPerS: number;
+  beamShimmerOmegaRadPerS: number;
+}
 
 export function TownesLaser3D({
   initialPumpPowerWatts = 350,
@@ -77,9 +92,54 @@ export function TownesLaser3D({
     isLasing: sim.isLasing,
     pumpShimmerOmegaRadPerS: sim.pumpShimmerOmegaRadPerS,
     beamShimmerOmegaRadPerS: sim.beamShimmerOmegaRadPerS,
+    cavityLengthCm,
+    mirror2ReflectivityPct,
+    beamDiameterMm,
     isRotating,
     isCutaway,
   });
+
+  // Shared transport tape: cavity/beam state publishes to the patentId-keyed bus.
+  useFrankenSimPhysics("us-2929922-townes-laser", {
+    domain: "optics_waves",
+    refusal: { isRefused: false },
+  });
+  const townesBeamRef = useRef<TownesStepPose | null>(null);
+  const townesBeamPhaseRef = useRef(0);
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (_prev, dt) => {
+      const out = stepTownesLaser({
+        pumpPowerWatts: live.current.pumpPowerWatts,
+        cavityLengthCm: live.current.cavityLengthCm,
+        mirror2ReflectivityPct: live.current.mirror2ReflectivityPct,
+        beamDiameterMm: live.current.beamDiameterMm,
+      });
+      townesBeamPhaseRef.current += out.beamShimmerOmegaRadPerS * dt;
+      townesBeamRef.current = out;
+      return {
+        em: {
+          frequencyHz: 2.99792458e8 / (out.wavelengthNm * 1e-9),
+          magneticFluxDensityTesla: 0,
+          electricFieldVpm: 0,
+          phaseAngleRad: townesBeamPhaseRef.current,
+          inductanceHenry: 0,
+          capacitanceFarad: 0,
+          currentAmperes: 0,
+          voltageVolts: 0,
+          powerFactor: 0,
+          efficiencyPct: 0,
+          synchronousRpm: 0,
+          slipFraction: 0,
+          rotorRpm: 0,
+          shaftPowerWatts: 0,
+          electricalInputWatts: out.pumpPowerWatts,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-2929922-townes-laser", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-2929922-townes-laser");
+  }, [live]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);
@@ -113,15 +173,17 @@ export function TownesLaser3D({
       }
       studio.controls.update();
 
+      // Bus-owned kernel step: prefer the latest shared-tape beam state.
+      const w = townesBeamRef.current;
       articulateTownesLaserModel(
         nodes,
         {
-          pumpPowerWatts: current.pumpPowerWatts,
-          laserOutputPowerWatts: current.laserOutputPowerWatts,
-          intraCavityPowerWatts: current.intraCavityPowerWatts,
-          isLasing: current.isLasing,
-          pumpShimmerOmegaRadPerS: current.pumpShimmerOmegaRadPerS,
-          beamShimmerOmegaRadPerS: current.beamShimmerOmegaRadPerS,
+          pumpPowerWatts: w ? w.pumpPowerWatts : current.pumpPowerWatts,
+          laserOutputPowerWatts: w ? w.laserOutputPowerWatts : current.laserOutputPowerWatts,
+          intraCavityPowerWatts: w ? w.intraCavityPowerWatts : current.intraCavityPowerWatts,
+          isLasing: w ? w.isLasing : current.isLasing,
+          pumpShimmerOmegaRadPerS: w ? w.pumpShimmerOmegaRadPerS : current.pumpShimmerOmegaRadPerS,
+          beamShimmerOmegaRadPerS: w ? w.beamShimmerOmegaRadPerS : current.beamShimmerOmegaRadPerS,
         },
         timeRef.current,
       );

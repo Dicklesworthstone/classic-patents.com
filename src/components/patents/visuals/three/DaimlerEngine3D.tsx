@@ -4,6 +4,7 @@ import { Camera, Eye, EyeOff, Play, RotateCcw, Volume2, VolumeX } from "lucide-r
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { createStudioClock } from "@/physics/tickScheduler";
+import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { PortHamiltonianEnergyStrip } from "../PortHamiltonianEnergyStrip";
@@ -49,6 +50,16 @@ export function DaimlerEngine3D() {
     shaftPosition,
     coolingPumpEnabled,
     isPlaying,
+  });
+
+  // ENVELOPE pattern (br-ixl.3): this face has no physics kernel and no
+  // meaningful cross-face state — its kinematics are pure functions of the
+  // shaft-position control — so it declares only an honest static envelope.
+  useFrankenSimPhysics("us-361931-daimler-engine", {
+    domain: "solid_mechanics",
+    timestampMs: 0,
+    timeStepDt: 1 / 60,
+    refusal: { isRefused: false },
   });
 
   const studioRef = useRef<StudioContext | null>(null);

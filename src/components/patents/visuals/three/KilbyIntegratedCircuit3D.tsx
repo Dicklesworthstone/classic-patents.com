@@ -4,7 +4,14 @@ import { Camera, Eye, EyeOff, Layers, RotateCcw, Volume2, VolumeX } from "lucide
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
+import { stepKilbyIntegratedCircuit } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { SemiconductorState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -21,6 +28,19 @@ interface Kilby3DProps {
 
 type CameraPreset = "overview" | "transistors" | "wireBonds" | "capacitor";
 
+const IDLE_SEMI: SemiconductorState = {
+  biasVoltageVolts: 6,
+  currentGainAlpha: 0,
+  holeDiffusionCoefficientCm2ps: 0,
+  chargeTransferEfficiencyPct: 0,
+  clockPeriodNs: 0,
+  busBandwidthMbps: 0,
+  electronVelocityMps: 0,
+  relativisticFractionC: 0,
+  voltageGain: 0,
+  powerGainDb: 0,
+  collectorCurrentMa: 0,
+};
 const CAMERA_PRESETS: Record<
   CameraPreset,
   { label: string; pos: [number, number, number]; target: [number, number, number] }
@@ -75,6 +95,50 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
     resistorWidthUm,
     isCutaway,
   });
+
+  // Shared transport tape: the monolithic-IC solid-state kernel (previously
+  // unused by this face) is adopted here; the bus updater owns the step.
+  useFrankenSimPhysics("us-3138743-kilby-integrated-circuit", {
+    domain: "semiconductor_microarch",
+    refusal: { isRefused: false },
+    semi: { ...IDLE_SEMI, biasVoltageVolts: supplyVoltageV },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      const s = stepKilbyIntegratedCircuit({
+        substrateMaterial: "germanium",
+        supplyVoltageV: live.current.supplyVoltageV,
+        baseDriveCurrentUa: live.current.baseDriveCurrentUa,
+        reverseBiasVoltageV: live.current.reverseBiasVoltageV,
+        resistorLengthUm: live.current.resistorLengthUm,
+        resistorWidthUm: live.current.resistorWidthUm,
+      });
+      return {
+        refusal: { isRefused: false },
+        semi: {
+          ...(prev.semi ?? IDLE_SEMI),
+          biasVoltageVolts: s.supplyVoltageV,
+          currentGainAlpha: Number((s.transistorGainBeta / (s.transistorGainBeta + 1)).toFixed(4)),
+          capacitanceFarad: s.junctionCapacitancePf * 1e-12,
+          clockPeriodNs: Number((1000 / Math.max(1, s.maxClockFrequencyMhz)).toFixed(2)),
+          collectorCurrentMa: s.collectorCurrentMa,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(
+      "us-3138743-kilby-integrated-circuit",
+      integrate,
+      "TS_FALLBACK",
+    );
+    return () => globalTransportBus.unregisterUpdater("us-3138743-kilby-integrated-circuit");
+  }, [
+    live.current.baseDriveCurrentUa,
+    live.current.resistorLengthUm,
+    live.current.resistorWidthUm,
+    live.current.reverseBiasVoltageV,
+    live.current.supplyVoltageV,
+  ]);
 
   const handlePresetChange = (preset: CameraPreset) => {
     setCameraPreset(preset);

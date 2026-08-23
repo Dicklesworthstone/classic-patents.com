@@ -5,6 +5,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { stepHallAluminium } from "@/physics/catalogKernels";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState, ThermodynamicsState } from "@/physics/types";
+import {
+  globalTransportBus,
+  type TapeUpdater,
+  useFrankenSimPhysics,
+} from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -25,6 +31,36 @@ const CAMERA_PRESETS: Record<
   anodes: { pos: [0, 2.0, 2.6], target: [0, 0.5, 0] },
   molten_bath: { pos: [0, 0.9, 3.2], target: [0, -0.2, 0] },
   siphon_tap: { pos: [2.6, 0.6, 2.2], target: [1.8, -0.5, 0] },
+};
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
+};
+
+const IDLE_THERMO: ThermodynamicsState = {
+  temperatureCelsius: 960,
+  temperatureKelvin: 1233.15,
+  pressureAtm: 1,
+  partialPressureButaneAtm: 0,
+  heatInputWatts: 0,
+  coolingPowerWatts: 0,
+  coefficientOfPerformance: 0,
+  blackbodyRadiantPowerWatts: 0,
+  fluidFlowVelocityMps: 0,
 };
 
 export function HallAluminium3D() {
@@ -53,8 +89,49 @@ export function HallAluminium3D() {
     currentAmperes,
     bathTemperatureCelsius,
     aluminaConcentrationPct,
+    totalCellVoltage: sim.totalCellVoltage,
+    aluminiumProductionRateKgPerHour: sim.aluminiumProductionRateKgPerHour,
     isCutaway,
   });
+
+  // Shared transport tape: the Hall-Héroult kernel step is owned by the bus
+  // updater (TS_FALLBACK), so the render loop and any badge read one state.
+  useFrankenSimPhysics("us-400766-hall-aluminium", {
+    domain: "electromagnetics_flux",
+    refusal: { isRefused: false },
+    em: { ...IDLE_EM, currentAmperes: sim.currentAmperes, voltageVolts: sim.totalCellVoltage },
+    thermo: { ...IDLE_THERMO, temperatureCelsius: sim.bathTemperatureCelsius },
+  });
+
+  useEffect(() => {
+    const integrate: TapeUpdater = (prev) => {
+      const s = stepHallAluminium({
+        currentAmperes: live.current.currentAmperes,
+        bathTemperatureCelsius: live.current.bathTemperatureCelsius,
+        aluminaConcentrationPct: live.current.aluminaConcentrationPct,
+      });
+      return {
+        refusal: { isRefused: false },
+        em: {
+          ...(prev.em ?? IDLE_EM),
+          currentAmperes: s.currentAmperes,
+          voltageVolts: s.totalCellVoltage,
+          electricalInputWatts: s.electricalPowerKw * 1000,
+        },
+        thermo: {
+          ...(prev.thermo ?? IDLE_THERMO),
+          temperatureCelsius: s.bathTemperatureCelsius,
+          temperatureKelvin: s.bathTemperatureCelsius + 273.15,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater("us-400766-hall-aluminium", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-400766-hall-aluminium");
+  }, [
+    live.current.aluminaConcentrationPct,
+    live.current.bathTemperatureCelsius,
+    live.current.currentAmperes,
+  ]);
 
   const studioRef = useRef<ReturnType<typeof createThreeStudioScene> | null>(null);
 
@@ -65,7 +142,6 @@ export function HallAluminium3D() {
     const cfg = CAMERA_PRESETS[preset];
     studio.controls.setView(cfg.pos, cfg.target);
   };
-
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -86,25 +162,25 @@ export function HallAluminium3D() {
     let reqId: number;
     const clock = createStudioClock();
 
+    // Pure consumer of the shared transport tape: the bus updater owns the
+    // Hall-Héroult kernel step; this loop only reads the latest frame.
+    const transport = globalTransportBus.getTransport("us-400766-hall-aluminium");
+
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
       const { simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
-      const currentSim = stepHallAluminium({
-        currentAmperes: p.currentAmperes,
-        bathTemperatureCelsius: p.bathTemperatureCelsius,
-        aluminaConcentrationPct: p.aluminaConcentrationPct,
-      });
+      const frameTel = transport.lastFrame.telemetry;
 
       model.setCutaway?.(p.isCutaway ?? false);
 
       updateHallAluminiumVisual(
         model,
         {
-          currentAmperes: currentSim.currentAmperes,
-          bathTemperatureCelsius: currentSim.bathTemperatureCelsius,
-          totalCellVoltage: currentSim.totalCellVoltage,
-          aluminiumProductionRateKgPerHour: currentSim.aluminiumProductionRateKgPerHour,
+          currentAmperes: frameTel.em?.currentAmperes ?? p.currentAmperes,
+          bathTemperatureCelsius: frameTel.thermo?.temperatureCelsius ?? p.bathTemperatureCelsius,
+          totalCellVoltage: frameTel.em?.voltageVolts ?? p.totalCellVoltage,
+          aluminiumProductionRateKgPerHour: p.aluminiumProductionRateKgPerHour,
         },
         timeSec,
       );

@@ -8,8 +8,12 @@ import {
 } from "@/components/patents/visuals/three/ThreeStudioScene";
 import { useLiveSimParams } from "@/components/patents/visuals/three/useLiveSimParams";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
-import { ROOMBA_ROOM, type RoombaState, stepRoomba } from "@/physics/roombaKernel";
-import { TickScheduler } from "@/physics/tickScheduler";
+import {
+  createRoombaTransportUpdater,
+  getRoombaTapeState,
+  ROOMBA_ROOM,
+} from "@/physics/roombaKernel";
+import { globalTransportBus, useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -50,6 +54,35 @@ export function Roomba3D() {
     isCutaway,
   });
 
+  // Shared transport tape: the roombaKernel module owns one shared tape for
+  // every Roomba face. This face registers the kernel's transport updater on
+  // the bus; the render loop only draws from getRoombaTapeState().
+  useFrankenSimPhysics(EXHIBIT_ID, {
+    domain: "solid_mechanics",
+    refusal: { isRefused: false },
+    machine: {
+      poseXMeters: 0,
+      poseYMeters: 0,
+      headingRad: 0,
+      modeLabel: "spiral",
+      wheelSpeedMps,
+    },
+  });
+
+  useEffect(() => {
+    globalTransportBus.registerUpdater(
+      EXHIBIT_ID,
+      createRoombaTransportUpdater(() => ({
+        wheelSpeedMps: live.current.wheelSpeedMps ?? 0.3,
+        turnRateRadSec: live.current.turnRateRadSec ?? 1.5,
+        roomWidth: ROOMBA_ROOM.width,
+        roomHeight: ROOMBA_ROOM.height,
+      })),
+      "TS_FALLBACK",
+    );
+    return () => globalTransportBus.unregisterUpdater(EXHIBIT_ID);
+  }, [live]);
+
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -72,10 +105,8 @@ export function Roomba3D() {
     studio.scene.add(model.root);
 
     let renderedSteps = 0;
-    const sched = new TickScheduler(1 / 120, 0);
     let hudCounter = 0;
     let rafId = 0;
-    let currentState: RoombaState | undefined;
     let lastFrameTimeMs: number | undefined;
 
     const animate = (frameTimeMs: number) => {
@@ -87,38 +118,23 @@ export function Roomba3D() {
       renderedSteps += 1;
       const p = live.current;
 
-      sched.pump(renderedSteps / 60, () => {
-        currentState = stepRoomba(
-          {
-            wheelSpeedMps: p.wheelSpeedMps ?? 0.3,
-            turnRateRadSec: p.turnRateRadSec ?? 1.5,
-            roomWidth: ROOMBA_ROOM.width,
-            roomHeight: ROOMBA_ROOM.height,
-          },
-          currentState,
-          1 / 120,
-        );
-      });
-
-      if (currentState) {
-        model.mainGroup.position.x = currentState.displayX;
-        model.mainGroup.position.z = currentState.displayY;
-        model.mainGroup.rotation.y = -currentState.heading;
-        model.updateKinematics(
-          delta,
-          p.wheelSpeedMps ?? 0.3,
-          currentState.displayX,
-          currentState.displayY,
-        );
+      // Draw-only consumer: pose/mode arrive on the single shared kernel tape
+      // stepped by the bus-registered roombaKernel updater.
+      const tape = getRoombaTapeState();
+      if (tape) {
+        model.mainGroup.position.x = tape.displayX;
+        model.mainGroup.position.z = tape.displayY;
+        model.mainGroup.rotation.y = -tape.heading;
+        model.updateKinematics(delta, p.wheelSpeedMps ?? 0.3, tape.displayX, tape.displayY);
 
         if (renderedSteps % 4 === 0) {
-          model.updateTrail(currentState.displayX, currentState.displayY);
+          model.updateTrail(tape.displayX, tape.displayY);
         }
 
         hudCounter += 1;
         if (hudCounter % 15 === 0) {
           setHud({
-            mode: currentState.mode,
+            mode: tape.mode,
             speed: p.wheelSpeedMps ?? 0.3,
           });
         }
