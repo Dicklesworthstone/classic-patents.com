@@ -13,12 +13,12 @@ import {
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
+import type { ElectromagneticsState } from "@/physics/types";
 import {
   globalTransportBus,
-  useFrankenSimPhysics,
   type TapeUpdater,
+  useFrankenSimPhysics,
 } from "@/physics/useFrankenSimPhysics";
-import type { ElectromagneticsState } from "@/physics/types";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -112,28 +112,35 @@ export function TeslaMotor3D() {
   // One tape-bound integrator (br-ixl.3): the bus updater owns the rotating
   // B-field physics so every face reads one deterministic state. Refusal
   // freezes the illegal step at the last legal angle instead of clamping on.
+  const bFieldAngleRef = useRef(0);
+  const lastLegalAngleRef = useRef(0);
+  // One tape-bound integrator (br-ixl.3): the bus updater owns the rotating
+  // B-field physics so every face reads one deterministic state. Refusal
+  // freezes the illegal step at the last legal angle instead of clamping on.
+  // Accumulators live in refs so re-registering on control changes never
+  // snaps the phase back to zero.
   useEffect(() => {
-    let bFieldAngle = 0;
-    let lastLegalAngle = 0;
     const integrate: TapeUpdater = (prev, dt) => {
       const refused = (live.current.claim1Active ?? 1) < 0.5;
       if (!refused) {
-        bFieldAngle += live.current.fieldDisplayOmegaRadPerS * dt;
-        lastLegalAngle = bFieldAngle;
+        bFieldAngleRef.current += live.current.fieldDisplayOmegaRadPerS * dt;
+        lastLegalAngleRef.current = bFieldAngleRef.current;
       } else {
-        bFieldAngle = lastLegalAngle;
+        bFieldAngleRef.current = lastLegalAngleRef.current;
       }
       return {
         refusal: {
           isRefused: refused,
-          reason: refused ? "Claim 1 circuit open: rotating field held at last legal angle" : undefined,
+          reason: refused
+            ? "Claim 1 circuit open: rotating field held at last legal angle"
+            : undefined,
         },
-        em: { ...(prev.em ?? IDLE_EM), phaseAngleRad: bFieldAngle },
+        em: { ...(prev.em ?? IDLE_EM), phaseAngleRad: bFieldAngleRef.current },
       };
     };
     globalTransportBus.registerUpdater("us-381968-tesla-motor", integrate, "TS_FALLBACK");
     return () => globalTransportBus.unregisterUpdater("us-381968-tesla-motor");
-  }, []);
+  }, [live.current.claim1Active, live.current.fieldDisplayOmegaRadPerS]);
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
