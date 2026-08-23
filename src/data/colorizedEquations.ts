@@ -5134,7 +5134,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       rawLatex:
         "\\Delta v = I_{\\text{sp}} \\cdot g_0 \\cdot \\ln\\left(\\frac{m_0}{m_f}\\right) \\quad \\text{and} \\quad v_e = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} R T_c \\left[ 1 - \\left(\\frac{p_e}{p_c}\\right)^{\\frac{\\gamma-1}{\\gamma}} \\right]}",
       colorizedLatex:
-        "\\textcolor{#2563eb}{\\Delta v} = \\textcolor{#059669}{I_{\\text{sp}}} \\cdot \\textcolor{#d97706}{g_0} \\cdot \\ln\\left(\\frac{\\textcolor{#0891b2}{m_0}}{\\textcolor{#ea580c}{m_f}}\\right) \\quad \\text{and} \\quad \\textcolor{#dc2626}{v_e} = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} R \\textcolor{#dc2626}{T_c} \\left[ 1 - \\left(\\frac{\\textcolor{#9333ea}{p_e}}{\\textcolor{#0891b2}{p_c}}\\right)^{\\frac{\\gamma-1}{\\gamma}} \\right]}",
+        "\\textcolor{#2563eb}{\\Delta v} = \\textcolor{#059669}{I_{\\text{sp}}} \\cdot \\textcolor{#d97706}{g_0} \\cdot \\ln\\left(\\frac{\\textcolor{#0891b2}{m_0}}{\\textcolor{#ea580c}{m_f}}\\right) \\quad \\text{and} \\quad \\textcolor{#dc2626}{v_e} = \\sqrt{\\frac{2\\gamma}{\\gamma - 1} R \\textcolor{#e11d48}{T_c} \\left[ 1 - \\left(\\frac{\\textcolor{#9333ea}{p_e}}{\\textcolor{#e11d48}{p_c}}\\right)^{\\frac{\\gamma-1}{\\gamma}} \\right]}",
       plainEnglishSentence: [
         { text: "The " },
         {
@@ -6495,7 +6495,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       category: "Cryogenics & Low-Temperature Physics",
       rawLatex: "T - T' = \\frac{(p^2-p'^2)(289)}{4T^2}",
       colorizedLatex:
-        "\\textcolor{#dc2626}{T} - \\textcolor{#0891b2}{T'} = \\frac{(\\textcolor{#2563eb}{p^2}-\\textcolor{#9333ea}{p'^2})(289)}{4\\textcolor{#dc2626}{T^2}}",
+        "\\textcolor{#059669}{T} - \\textcolor{#059669}{T'} = \\frac{(\\textcolor{#2563eb}{p^2}-\\textcolor{#9333ea}{p'^2})(289)}{4\\textcolor{#059669}{T^2}}",
       plainEnglishSentence: [
         { text: "The " },
         { text: "printed temperature decrease " },
@@ -12314,7 +12314,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       rawLatex:
         "G = \\frac{\\omega^2 R_{\\text{bowl}}}{g} \\quad \\text{and} \\quad r_{\\text{interface}} = \\sqrt{\\frac{\\rho_{\\text{skim}} r_{\\text{skim}}^2 - \\rho_{\\text{cream}} r_{\\text{cream}}^2}{\\rho_{\\text{skim}} - \\rho_{\\text{cream}}}}",
       colorizedLatex:
-        "\\textcolor{#059669}{G} = \\frac{\\textcolor{#0891b2}{\\omega^2} \\textcolor{#9333ea}{R_{\\text{bowl}}}}{g} \\quad \\text{and} \\quad \\textcolor{#dc2626}{r_{\\text{interface}}} = \\sqrt{\\frac{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} \\textcolor{#ea580c}{r_{\\text{skim}}^2} - \\textcolor{#d97706}{\\rho_{\\text{cream}}} \\textcolor{#0891b2}{r_{\\text{cream}}^2}}{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} - \\textcolor{#d97706}{\\rho_{\\text{cream}}}}}",
+        "\\textcolor{#059669}{G} = \\frac{\\textcolor{#0891b2}{\\omega^2} \\textcolor{#9333ea}{R_{\\text{bowl}}}}{g} \\quad \\text{and} \\quad \\textcolor{#dc2626}{r_{\\text{interface}}} = \\sqrt{\\frac{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} \\textcolor{#ea580c}{r_{\\text{skim}}^2} - \\textcolor{#d97706}{\\rho_{\\text{cream}}} \\textcolor{#0d9488}{r_{\\text{cream}}^2}}{\\textcolor{#2563eb}{\\rho_{\\text{skim}}} - \\textcolor{#d97706}{\\rho_{\\text{cream}}}}}",
       plainEnglishSentence: [
         {
           text: "The ",
@@ -12458,7 +12458,7 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
           id: "r_cream_exit",
           symbol: "r_{\\text{cream}}",
           name: "Cream Discharge Weir Radius",
-          color: "cyan",
+          color: "teal",
           role: "Radial position of the central cream nozzle ring discharging rich butterfat",
           unit: "Meters (m)",
           dimension: "[L]",
@@ -20117,7 +20117,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
     variables: [
       {
         id: "m_al",
-        symbol: "m_Al",
+        symbol: "m_{\\text{Al}}",
         name: "Mass of Reduced Aluminium Metal",
         color: "emerald",
         role: "Total liquid metallic aluminium electrodeposited at the cathode and tapped from the pot bottom",
@@ -20183,7 +20183,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
       },
       {
         id: "curr_eff",
-        symbol: "\\eta_curr",
+        symbol: "\\eta_{\\text{curr}}",
         name: "Faradaic Current Efficiency",
         color: "emerald",
         role: "Fraction of electric current producing net aluminium metal (~85–95%)",
@@ -20196,7 +20196,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
       },
       {
         id: "v_cell",
-        symbol: "V_cell",
+        symbol: "V_{\\text{cell}}",
         name: "Total Cell Operating Voltage",
         color: "amber",
         role: "Terminal voltage applied across the anode bus and cathode shell (4.0–4.5 V)",
@@ -20209,7 +20209,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
       },
       {
         id: "e_rev",
-        symbol: "E_rev",
+        symbol: "E_{\\text{rev}}",
         name: "Reversible Thermodynamic Potential",
         color: "sapphire",
         role: "Theoretical minimum decomposition voltage with carbon anode consumption (1.18 V at 960°C)",
@@ -20220,7 +20220,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
       },
       {
         id: "eta_anode",
-        symbol: "\\eta_anode",
+        symbol: "\\eta_{\\text{anode}}",
         name: "Anode & Cathode Overpotential",
         color: "rose",
         role: "Kinetic activation and concentration polarization voltage drops (~0.5–0.6 V)",
@@ -20231,7 +20231,7 @@ ALL_COLORIZED_EQUATIONS["us-400766-hall-aluminium"] = [
       },
       {
         id: "r_bath",
-        symbol: "R_bath",
+        symbol: "R_{\\text{bath}}",
         name: "Cryolite Electrolyte Ohmic Resistance",
         color: "teal",
         role: "Internal electrical resistance of the molten salt layer between anodes and metal pad",

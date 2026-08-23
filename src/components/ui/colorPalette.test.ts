@@ -85,6 +85,63 @@ describe("Semantic Color Palette & KaTeX Preprocessor Engine", () => {
     expect(prepared).toContain("\\text{ is voltage}");
   });
 
+  test("prepareInteractiveLatex wraps every colorized mention of a variable, including mentions written differently from the canonical symbol (GH#1)", () => {
+    // Real shape from the Wright Flyer coordinated-turn equation: the
+    // velocity variable's symbol is `V^2`, but its second mention is a bare
+    // `V` colored with the same (unique) emerald hex. Both must be
+    // interactive; `g` and `\tan(\phi)` each appear twice and must both be
+    // wrapped as well.
+    const equation = {
+      colorizedLatex:
+        "\\textcolor{#2563eb}{R_{\\text{turn}}} = \\frac{\\textcolor{#059669}{V^2}}{\\textcolor{#d97706}{g} \\cdot \\textcolor{#9333ea}{\\tan(\\phi)}}, \\quad \\textcolor{#ea580c}{\\dot{\\psi}} = \\frac{\\textcolor{#d97706}{g} \\textcolor{#9333ea}{\\tan(\\phi)}}{\\textcolor{#059669}{V}}",
+      rawLatex:
+        "R_{\\text{turn}} = \\frac{V^2}{g \\cdot \\tan(\\phi)}, \\quad \\dot{\\psi} = \\frac{g \\tan(\\phi)}{V}",
+      variables: [
+        { id: "r_turn", symbol: "R_{\\text{turn}}", color: "sapphire" as const },
+        { id: "turn_vel", symbol: "V^2", color: "emerald" as const },
+        { id: "grav", symbol: "g", color: "amber" as const },
+        { id: "tan_phi", symbol: "\\tan(\\phi)", color: "amethyst" as const },
+        { id: "psi_dot", symbol: "\\dot{\\psi}", color: "coral" as const },
+      ],
+    };
+
+    const prepared = prepareInteractiveLatex(equation);
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    // Both V^2 and the bare V mention are interactive.
+    expect(count("var=turn_vel")).toBe(2);
+    // Repeated identical mentions are each wrapped.
+    expect(count("var=grav")).toBe(2);
+    expect(count("var=tan_phi")).toBe(2);
+    // Single-mention variables (with nested braces in their symbols) wrap once.
+    expect(count("var=r_turn")).toBe(1);
+    expect(count("var=psi_dot")).toBe(1);
+    // No colored group is left unwrapped.
+    expect(count("\\textcolor{")).toBe(count("\\htmlData{var="));
+  });
+
+  test("prepareInteractiveLatex falls back to exact-symbol matching when two variables share a palette color", () => {
+    const equation = {
+      colorizedLatex: "\\textcolor{#2563eb}{V} + \\textcolor{#2563eb}{I} + \\textcolor{#2563eb}{X}",
+      rawLatex: "V + I + X",
+      variables: [
+        { id: "volt", symbol: "V", color: "sapphire" as const },
+        { id: "curr", symbol: "I", color: "sapphire" as const },
+      ],
+    };
+
+    const prepared = prepareInteractiveLatex(equation);
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    // The shared hex must not let one variable claim the other's mention —
+    // only exact symbol matches wrap.
+    expect(count("var=volt")).toBe(1);
+    expect(count("var=curr")).toBe(1);
+    // The unclaimed X group stays untouched.
+    expect(prepared).toContain("\\textcolor{#2563eb}{X}");
+    expect(count("\\htmlData{var=")).toBe(2);
+  });
+
   test("prepareInteractiveLatex is idempotent and avoids duplicating existing term classes", () => {
     const alreadyPrepared = {
       rawLatex: "\\htmlClass{eq-term eq-term-v eq-term-sapphire}{\\htmlData{var=v}{V}}",

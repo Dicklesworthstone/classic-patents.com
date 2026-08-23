@@ -157,7 +157,56 @@ export function wrapInteractiveKatexTerm(
 }
 
 /**
+ * Every hex an author may plausibly have used for a palette color family:
+ * the registered light (Tailwind 600) and dark (400) hexes plus the 500-level
+ * mid tone that several data entries were authored with. Families are
+ * disjoint, so a hex identifies at most one ColorVariant.
+ */
+export const COLOR_HEX_ALIASES: Record<ColorVariant, readonly string[]> = {
+  crimson: ["#dc2626", "#ef4444", "#f87171"],
+  sapphire: ["#2563eb", "#3b82f6", "#60a5fa"],
+  emerald: ["#059669", "#10b981", "#34d399"],
+  amber: ["#d97706", "#f59e0b", "#fbbf24"],
+  amethyst: ["#9333ea", "#a855f7", "#c084fc"],
+  cyan: ["#0891b2", "#06b6d4", "#22d3ee"],
+  coral: ["#ea580c", "#f97316", "#fb923c"],
+  rose: ["#e11d48", "#f43f5e", "#fb7185"],
+  teal: ["#0d9488", "#14b8a6", "#2dd4bf"],
+};
+
+/**
+ * Finds the index of the `}` that closes the group opened at `openIdx`
+ * (which must point at a `{`). Honors backslash escapes (`\{`, `\}`).
+ * Returns -1 when the group never closes.
+ */
+function findBalancedGroupEnd(latex: string, openIdx: number): number {
+  let depth = 0;
+  for (let i = openIdx; i < latex.length; i++) {
+    const ch = latex[i];
+    if (ch === "\\") {
+      i++; // skip the escaped character
+      continue;
+    }
+    if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+/**
  * Takes a colorized equation and ensures all variables are wrapped with interactive HTML classes and data attributes for KaTeX rendering.
+ *
+ * Matching strategy for pre-colorized LaTeX: an authored `\textcolor{hex}{...}`
+ * group belongs to a variable when its content equals the variable's symbol
+ * exactly, OR when the hex is one of that variable's color-family aliases
+ * (COLOR_HEX_ALIASES) and no other variable in the equation declares the same
+ * color. The hex rule is what keeps *every*
+ * mention interactive even when later mentions are written differently from
+ * the canonical symbol (e.g. symbol `V^2` with a later bare `V` mention) — see
+ * GH#1 (classic-patents.com).
  */
 export function prepareInteractiveLatex(equation: {
   colorizedLatex?: string;
@@ -166,11 +215,21 @@ export function prepareInteractiveLatex(equation: {
 }): string {
   let latex = equation.colorizedLatex || equation.rawLatex;
 
+  // Count how many variables use each palette color; a color (and thus any
+  // of its hex aliases) identifies a variable only when it is unique within
+  // this equation.
+  const colorOwnerCount = new Map<ColorVariant, number>();
+  for (const v of equation.variables) {
+    colorOwnerCount.set(v.color, (colorOwnerCount.get(v.color) ?? 0) + 1);
+  }
+
   for (const v of equation.variables) {
     if (new RegExp(`\\beq-term-${v.id}\\b`).test(latex)) continue;
 
     const cfg = COLOR_STYLES[v.color];
     const hex = cfg.hexLight;
+    const colorIsUnique = colorOwnerCount.get(v.color) === 1;
+    const hexAliases = new Set(COLOR_HEX_ALIASES[v.color].map((h) => h.toLowerCase()));
     const termClass = `eq-term eq-term-${v.id} eq-term-${v.color}`;
 
     let found = false;
@@ -187,16 +246,21 @@ export function prepareInteractiveLatex(equation: {
         continue;
       }
 
-      if (latex.startsWith(v.symbol, openBraceContent + 1)) {
-        const afterSymbolIdx = openBraceContent + 1 + v.symbol.length;
-        if (latex[afterSymbolIdx] === "}") {
-          const fullColoredMatch = latex.slice(searchIdx, afterSymbolIdx + 1);
-          const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
-          latex = latex.slice(0, searchIdx) + replacement + latex.slice(afterSymbolIdx + 1);
-          found = true;
-          searchIdx = latex.indexOf(colorTargetPrefix, searchIdx + replacement.length);
-          continue;
-        }
+      const colorSpec = latex.slice(searchIdx + colorTargetPrefix.length, closeBraceColor);
+      const contentEnd = findBalancedGroupEnd(latex, openBraceContent);
+      if (contentEnd === -1) break;
+
+      const content = latex.slice(openBraceContent + 1, contentEnd);
+      const matchesSymbol = content === v.symbol;
+      const matchesUniqueHex = colorIsUnique && hexAliases.has(colorSpec.toLowerCase());
+
+      if (matchesSymbol || matchesUniqueHex) {
+        const fullColoredMatch = latex.slice(searchIdx, contentEnd + 1);
+        const replacement = `\\htmlClass{${termClass}}{\\htmlData{var=${v.id}}{${fullColoredMatch}}}`;
+        latex = latex.slice(0, searchIdx) + replacement + latex.slice(contentEnd + 1);
+        found = true;
+        searchIdx = latex.indexOf(colorTargetPrefix, searchIdx + replacement.length);
+        continue;
       }
       searchIdx = latex.indexOf(colorTargetPrefix, closeBraceColor + 1);
     }
