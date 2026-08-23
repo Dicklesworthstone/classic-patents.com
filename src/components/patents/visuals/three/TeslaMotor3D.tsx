@@ -13,7 +13,12 @@ import {
 import { ensureGenericWasm, genericKernelSource } from "@/physics/genericWasm";
 import { stepTeslaMotorFig9, teslaBAt, teslaMotorPhaseHz } from "@/physics/teslaKernel";
 import { createStudioClock } from "@/physics/tickScheduler";
-import { useFrankenSimPhysics } from "@/physics/useFrankenSimPhysics";
+import {
+  globalTransportBus,
+  useFrankenSimPhysics,
+  type TapeUpdater,
+} from "@/physics/useFrankenSimPhysics";
+import type { ElectromagneticsState } from "@/physics/types";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { ClaimConstraintToggle } from "../ClaimConstraintToggle";
@@ -36,6 +41,24 @@ const CAMERA_PRESETS: Record<
   shaft: { pos: [5.5, 1.5, 3.5], target: [2.0, -0.4, 0] },
   generator: { pos: [-5.5, 2.5, 3.5], target: [-2.5, 0.5, 0] },
   top: { pos: [0, 11.5, 0.1], target: [0, 0, 0] },
+};
+
+const IDLE_EM: ElectromagneticsState = {
+  frequencyHz: 0,
+  magneticFluxDensityTesla: 0,
+  electricFieldVpm: 0,
+  phaseAngleRad: 0,
+  inductanceHenry: 0,
+  capacitanceFarad: 0,
+  currentAmperes: 0,
+  voltageVolts: 0,
+  powerFactor: 0,
+  efficiencyPct: 0,
+  synchronousRpm: 0,
+  slipFraction: 0,
+  rotorRpm: 0,
+  shaftPowerWatts: 0,
+  electricalInputWatts: 0,
 };
 
 export function TeslaMotor3D() {
@@ -86,6 +109,31 @@ export function TeslaMotor3D() {
     claim1Active: claimStates[1] === false ? 0 : 1,
   });
 
+  // One tape-bound integrator (br-ixl.3): the bus updater owns the rotating
+  // B-field physics so every face reads one deterministic state. Refusal
+  // freezes the illegal step at the last legal angle instead of clamping on.
+  useEffect(() => {
+    let bFieldAngle = 0;
+    let lastLegalAngle = 0;
+    const integrate: TapeUpdater = (prev, dt) => {
+      const refused = (live.current.claim1Active ?? 1) < 0.5;
+      if (!refused) {
+        bFieldAngle += live.current.fieldDisplayOmegaRadPerS * dt;
+        lastLegalAngle = bFieldAngle;
+      } else {
+        bFieldAngle = lastLegalAngle;
+      }
+      return {
+        refusal: {
+          isRefused: refused,
+          reason: refused ? "Claim 1 circuit open: rotating field held at last legal angle" : undefined,
+        },
+        em: { ...(prev.em ?? IDLE_EM), phaseAngleRad: bFieldAngle },
+      };
+    };
+    globalTransportBus.registerUpdater("us-381968-tesla-motor", integrate, "TS_FALLBACK");
+    return () => globalTransportBus.unregisterUpdater("us-381968-tesla-motor");
+  }, []);
   const studioRef = useRef<StudioContext | null>(null);
 
   const applyCameraPreset = (preset: CameraPreset) => {
@@ -161,25 +209,22 @@ export function TeslaMotor3D() {
     scene.add(fieldPlane);
     const fieldRgba = fieldTex.image.data as Uint8Array;
 
-    // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
+    // --- RENDER LOOP: pure consumer of the shared transport tape ---
+    // B-field angle and refusal arrive on bus frames from the registered
+    // updater; this studio clock only paces mesh interpolation.
     let reqId: number;
-    let bFieldAngle = 0;
     let fieldTimeSec = 0;
     const studioClock = createStudioClock();
-    let lastLegalAngle = 0;
+    const transport = globalTransportBus.getTransport("us-381968-tesla-motor");
 
     const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
       const { dt: delta } = studioClock.pump(frameTimeMs);
       const p = live.current;
-      const refused = (p.claim1Active ?? 1) < 0.5;
-
-      if (refused) {
-        bFieldAngle = lastLegalAngle;
-      } else {
+      const bFieldAngle = transport.lastFrame.telemetry.em?.phaseAngleRad ?? 0;
+      const refused = transport.lastFrame.telemetry.refusal.isRefused;
+      if (!refused) {
         fieldTimeSec += delta;
-        bFieldAngle += p.fieldDisplayOmegaRadPerS * delta;
-        lastLegalAngle = bFieldAngle;
       }
 
       const cos = Math.cos(bFieldAngle);

@@ -52,4 +52,42 @@ describe("Cross-Face Integration", () => {
     expect(transport.lastFrame.provenance).toBe("WASM");
     globalTransportBus.unregisterUpdater(id);
   });
+
+  test("production-style integrating updater advances tick and moves the tape digest", () => {
+    const id = "us-test-integrating-updater";
+    const transport = globalTransportBus.getTransport(id);
+    expect(transport.lastFrame.tick).toBe(0);
+    expect(transport.lastFrame.provenance).toBe("HONEST_PLACEHOLDER");
+
+    // Mirrors the component contract landed on br-ixl.3: one closure owns the
+    // per-tick integration and is both registered and pumped.
+    let headingRad = 0;
+    const integrate = () => {
+      headingRad += 1 / 60;
+      return {
+        refusal: { isRefused: false },
+        machine: {
+          poseXMeters: 0,
+          poseYMeters: 0,
+          headingRad,
+          modeLabel: "spin",
+          wheelSpeedMps: 1,
+        },
+      };
+    };
+    globalTransportBus.registerUpdater(id, integrate, "TS_FALLBACK");
+
+    transport.pump(performance.now() + 16, integrate);
+    const first = transport.lastFrame.digest;
+    const tickAfterOne = transport.lastFrame.tick;
+    expect(tickAfterOne).toBeGreaterThan(0);
+    expect(first).not.toBe("00000000");
+
+    transport.pump(performance.now() + 32, integrate);
+    expect(transport.lastFrame.tick).toBeGreaterThan(tickAfterOne);
+    expect(transport.lastFrame.digest).not.toBe(first); // state advanced -> tape moved
+    expect(transport.lastFrame.provenance).toBe("TS_FALLBACK");
+
+    globalTransportBus.unregisterUpdater(id);
+  });
 });
