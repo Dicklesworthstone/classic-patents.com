@@ -192,6 +192,86 @@ describe("Semantic Color Palette & KaTeX Preprocessor Engine", () => {
     expect(prepared).toMatch(/var=r2_refl\}\{\\textcolor\{#0891b2\}\{R_2\}/);
   });
 
+  test("prepareInteractiveLatex keeps the double-attribution guard for long variable ids", () => {
+    // The already-claimed check must not depend on a fixed lookback window:
+    // `\htmlData{var=<id>}{` grows with the id, so a long id must still be seen.
+    const longId = "a_very_long_variable_identifier_that_exceeds_sixty_five_characters_in_total_x";
+    expect(longId.length).toBeGreaterThanOrEqual(65);
+    const prepared = prepareInteractiveLatex({
+      colorizedLatex: "\\textcolor{#059669}{\\Delta q} = \\textcolor{#2563eb}{q_{m}}",
+      rawLatex: "\\Delta q = q_{m}",
+      variables: [
+        { id: "measured", symbol: "q_{m}", color: "emerald" as const },
+        { id: longId, symbol: "\\Delta q", color: "crimson" as const },
+      ],
+    });
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    expect(count(`var=${longId}`)).toBe(1);
+    expect(count("var=measured")).toBe(1);
+    expect(prepared).not.toMatch(/\\htmlData\{var=[^{}]*\}\{\\htmlClass\{/);
+  });
+
+  test("prepareInteractiveLatex raw-text fallback never wraps inside a group another variable owns", () => {
+    // Real shape from engelbart-coordinate-resolver: `N` is a substring of the
+    // claimed `N_2` group (the suffix guard permits `_`), so the fallback must
+    // skip the owned group body and only wrap the free-standing mention.
+    const prepared = prepareInteractiveLatex({
+      colorizedLatex: "\\textcolor{#2563eb}{N_2} - N",
+      rawLatex: "N_2 - N",
+      variables: [
+        { id: "n2", symbol: "N_2", color: "sapphire" as const },
+        { id: "n", symbol: "N", color: "crimson" as const },
+      ],
+    });
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    expect(prepared).toMatch(/var=n2\}\{\\textcolor\{#2563eb\}\{N_2\}\}/);
+    expect(count("var=n}")).toBe(1);
+    expect(prepared).toContain(
+      "- \\htmlClass{eq-term eq-term-n eq-term-crimson}{\\htmlData{var=n}{",
+    );
+  });
+
+  test("prepareInteractiveLatex raw-text fallback never rewrites class names, var ids, hexes, or \\text prose", () => {
+    const prepared = prepareInteractiveLatex({
+      colorizedLatex:
+        "\\htmlClass{eq-term eq-term-a eq-term-crimson}{\\htmlData{var=a}{\\textcolor{#dc2626}{A}}} + eq \\text{ eq } eq",
+      rawLatex: "A + eq \\text{ eq } eq",
+      variables: [
+        { id: "a", symbol: "A", color: "crimson" as const },
+        { id: "eq_var", symbol: "eq", color: "sapphire" as const },
+      ],
+    });
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    // Exactly the two free-standing `eq` mentions are wrapped; the `eq-term`
+    // class names, the `\text{ eq }` prose, and a's owned group are untouched.
+    expect(count("var=eq_var}")).toBe(2);
+    expect(count("var=a}")).toBe(1);
+    expect(prepared).toContain("\\text{ eq }");
+    expect(prepared).toContain(
+      "\\htmlClass{eq-term eq-term-a eq-term-crimson}{\\htmlData{var=a}{\\textcolor{#dc2626}{A}}}",
+    );
+  });
+
+  test("prepareInteractiveLatex still claims a group that follows an already-closed claim", () => {
+    const prepared = prepareInteractiveLatex({
+      colorizedLatex:
+        "\\htmlClass{eq-term eq-term-a eq-term-crimson}{\\htmlData{var=a}{\\textcolor{#dc2626}{A}}} + \\textcolor{#2563eb}{B}",
+      rawLatex: "A + B",
+      variables: [
+        { id: "a", symbol: "A", color: "crimson" as const },
+        { id: "b", symbol: "B", color: "sapphire" as const },
+      ],
+    });
+    const count = (needle: string) => prepared.split(needle).length - 1;
+
+    expect(count("var=a}")).toBe(1);
+    expect(count("var=b}")).toBe(1);
+    expect(prepared).toMatch(/var=b\}\{\\textcolor\{#2563eb\}\{B\}/);
+  });
+
   test("prepareInteractiveLatex is idempotent and avoids duplicating existing term classes", () => {
     const alreadyPrepared = {
       rawLatex: "\\htmlClass{eq-term eq-term-v eq-term-sapphire}{\\htmlData{var=v}{V}}",

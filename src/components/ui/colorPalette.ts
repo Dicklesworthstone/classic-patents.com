@@ -197,6 +197,69 @@ function findBalancedGroupEnd(latex: string, openIdx: number): number {
 }
 
 /**
+ * Inclusive `[start, end]` index ranges of `latex` that the raw-text fallback
+ * must never rewrite:
+ * - `\text{...}` groups (prose, not math);
+ * - the argument of every `\textcolor{...}`, `\htmlClass{...}` and
+ *   `\htmlData{...}` (hexes, class names, `var=` ids);
+ * - the body of every `\htmlData{...}{...}` — a group an interactive wrapper
+ *   already owns; injecting a second wrapper inside it would attribute the
+ *   same glyphs to two variables.
+ */
+function collectProtectedRanges(latex: string): Array<[number, number]> {
+  const ranges: Array<[number, number]> = [];
+  const markers: Array<{ text: string; protectBody: boolean; wholeCommand: boolean }> = [
+    { text: "\\text{", protectBody: false, wholeCommand: true },
+    { text: "\\textcolor{", protectBody: false, wholeCommand: false },
+    { text: "\\htmlClass{", protectBody: false, wholeCommand: false },
+    { text: "\\htmlData{", protectBody: true, wholeCommand: false },
+  ];
+  for (const marker of markers) {
+    let idx = latex.indexOf(marker.text);
+    while (idx !== -1) {
+      const argOpen = idx + marker.text.length - 1;
+      const argEnd = findBalancedGroupEnd(latex, argOpen);
+      if (argEnd === -1) break;
+      ranges.push([marker.wholeCommand ? idx : argOpen, argEnd]);
+      if (marker.protectBody && latex[argEnd + 1] === "{") {
+        const bodyEnd = findBalancedGroupEnd(latex, argEnd + 1);
+        if (bodyEnd !== -1) ranges.push([argEnd + 1, bodyEnd]);
+      }
+      idx = latex.indexOf(marker.text, argEnd + 1);
+    }
+  }
+  return ranges;
+}
+
+/**
+ * Replaces every match of `re` (which must carry the `g` flag) in `latex`
+ * with the literal `replacement`, skipping matches that start inside a
+ * protected range. The replacement is inserted verbatim — no `$&`-style
+ * pattern expansion — and the ranges are computed once, against the input,
+ * so a replacement can never be re-scanned.
+ */
+function replaceOutsideProtected(latex: string, re: RegExp, replacement: string): string {
+  const ranges = collectProtectedRanges(latex);
+  const isProtected = (pos: number): boolean =>
+    ranges.some(([start, end]) => pos >= start && pos <= end);
+
+  let out = "";
+  let last = 0;
+  re.lastIndex = 0;
+  let m: RegExpExecArray | null = re.exec(latex);
+  while (m !== null) {
+    if (m[0].length === 0) {
+      re.lastIndex++;
+    } else if (!isProtected(m.index)) {
+      out += latex.slice(last, m.index) + replacement;
+      last = m.index + m[0].length;
+    }
+    m = re.exec(latex);
+  }
+  return out + latex.slice(last);
+}
+
+/**
  * Takes a colorized equation and ensures all variables are wrapped with interactive HTML classes and data attributes for KaTeX rendering.
  *
  * Matching strategy for pre-colorized LaTeX: an authored `\textcolor{hex}{...}`
@@ -230,7 +293,13 @@ export function prepareInteractiveLatex(equation: {
    * double-attributing — a group another variable already owns.
    */
   const isAlreadyClaimed = (s: string, idx: number): boolean =>
-    /\\htmlData\{var=[^{}]*\}\{$/.test(s.slice(Math.max(0, idx - 80), idx));
+    // Cheap pre-check (`}{` immediately before the group) before the anchored
+    // regex over the whole prefix; no fixed lookback window, so the guard can
+    // never be defeated by a long variable id.
+    idx >= 2 &&
+    s[idx - 1] === "{" &&
+    s[idx - 2] === "}" &&
+    /\\htmlData\{var=[^{}]*\}\{$/.test(s.slice(0, idx));
 
   /**
    * Wraps every unclaimed `\textcolor{...}{...}` group accepted by `accept`.
@@ -319,21 +388,18 @@ export function prepareInteractiveLatex(equation: {
 
       const prefix = isAlphaNumStart ? "(?<![a-zA-Z0-9\\\\_])" : "";
       const suffix = isAlphaNumEnd ? "(?![a-zA-Z0-9])" : "";
-      const regexStr = `${prefix}${escapeRegExp(v.symbol)}${suffix}`;
+      const escapedSymbol = escapeRegExp(v.symbol);
 
+      let re: RegExp;
       try {
-        const re = new RegExp(regexStr, "g");
-        const parts = latex.split(/(\\text\{[^{}]*\})/g);
-        for (let i = 0; i < parts.length; i++) {
-          if (!parts[i].startsWith("\\text{")) {
-            parts[i] = parts[i].replace(re, rawReplacement);
-          }
-        }
-        latex = parts.join("");
+        re = new RegExp(`${prefix}${escapedSymbol}${suffix}`, "g");
       } catch (_e) {
-        // Fallback to basic string replacement if regex fails on legacy browser
-        latex = latex.replaceAll(v.symbol, rawReplacement);
+        // Engines without lookbehind support: keep the lookahead-only guard.
+        re = new RegExp(`${escapedSymbol}${suffix}`, "g");
       }
+      // Never rewrite inside prose, command arguments, or a group another
+      // variable's wrapper already owns (see collectProtectedRanges).
+      latex = replaceOutsideProtected(latex, re, rawReplacement);
     }
   }
 
