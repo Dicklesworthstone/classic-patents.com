@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { DualProjectionViewer } from "@/components/patents/DualProjectionViewer";
 import { LegacyPatentRedirect } from "@/components/patents/LegacyPatentRedirect";
 import { PatentHeader } from "@/components/patents/PatentHeader";
+import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import {
   allPatents,
   getAdjacentPatents,
@@ -40,9 +41,24 @@ export async function generateMetadata({ params }: PatentPageProps): Promise<Met
     return { title: "Patent Not Found" };
   }
 
+  const description = `${patent.subtitle}. ${patent.summary}`;
+  const url = `/patents/${patent.id}`;
   return {
     title: `${patent.shortTitle} (${patent.patentNumber}) — Plain English & Interactive Sim`,
-    description: `${patent.subtitle}. ${patent.summary}`,
+    description,
+    // Without these overrides every patent page inherits the root-layout
+    // openGraph/twitter objects: generic og:title and site-level og:url.
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${patent.shortTitle} (${patent.patentNumber})`,
+      description,
+      url,
+      type: "article",
+    },
+    twitter: {
+      title: `${patent.shortTitle} (${patent.patentNumber})`,
+      description,
+    },
   };
 }
 
@@ -57,7 +73,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
   if (!patent) {
     notFound();
   }
-
+  const colorizedEquations = getColorizedEquationsForPatent(id);
   const { prev, next } = getAdjacentPatents(id);
 
   const jsonLd = {
@@ -97,7 +113,7 @@ export default async function PatentDetailPage({ params }: PatentPageProps) {
 
       {/* Dual Projection Viewer (Plain English + Original Spec + Interactive Simulator) */}
       <div data-archival-edition={patent.archivalEdition?.kind ?? "withheld"}>
-        <DualProjectionViewer patent={patent} />
+        <DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />
       </div>
 
       {/* Adjacent Patent Chronological Navigation */}

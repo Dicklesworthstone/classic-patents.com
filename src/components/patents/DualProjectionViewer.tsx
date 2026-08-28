@@ -15,7 +15,6 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
-import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";
 import { archivalEditionForPublication } from "@/data/editions/publicationApproval";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
@@ -34,6 +33,9 @@ import { WeaveInstrument } from "./WeaveInstrument";
 interface DualProjectionViewerProps {
   patent: Patent;
   initialView?: string;
+  /** Per-patent colorized equations, resolved on the server (colorizedEquations.ts is
+   * a 976KB all-patents record that must never enter the client bundle wholesale). */
+  colorizedEquations: ColorizedEquationType[];
 }
 
 export type PatentViewMode =
@@ -143,9 +145,12 @@ function TranscriptUnavailable({
   );
 }
 
-export function DualProjectionViewer({ patent, initialView }: DualProjectionViewerProps) {
+export function DualProjectionViewer({
+  patent,
+  initialView,
+  colorizedEquations,
+}: DualProjectionViewerProps) {
   const { tick, lastChange } = usePatentPhysics(patent.id);
-  const colorizedEquations = useMemo(() => getColorizedEquationsForPatent(patent.id), [patent]);
   const [viewMode, setViewModeState] = useState<PatentViewMode>(
     isPatentViewMode(initialView) ? initialView : "plain-english",
   );
@@ -436,7 +441,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
       {viewMode === "interactive-sim" && (
         <div className="space-y-6">
           <PatentVisualDispatcher patentId={patent.id} />
-          <PhysicsTelemetryBadge patentId={patent.id} />
+          <PhysicsTelemetryBadge patentId={patent.id} equations={colorizedEquations} />
           <WeaveInstrument patentId={patent.id} />
         </div>
       )}
@@ -568,7 +573,7 @@ export function DualProjectionViewer({ patent, initialView }: DualProjectionView
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />
-              <PhysicsTelemetryBadge patentId={patent.id} />
+              <PhysicsTelemetryBadge patentId={patent.id} equations={colorizedEquations} />
               <WeaveInstrument patentId={patent.id} />
             </div>
 

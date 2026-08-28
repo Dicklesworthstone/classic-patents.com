@@ -5,21 +5,23 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { EnergyFlowStrip } from "@/components/patents/EnergyFlowStrip";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer } from "@/components/ui/LatexRenderer";
-import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { coupleEdgesFor } from "@/physics/coupleGraph";
 import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
-
+import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
 interface PhysicsTelemetryBadgeProps {
   patentId: string;
+  /** Per-patent colorized equations, resolved server-side and passed down. */
+  equations: ColorizedEquationType[];
   defaultExpanded?: boolean;
 }
 
 export function PhysicsTelemetryBadge({
   patentId,
+  equations,
   defaultExpanded = false,
 }: PhysicsTelemetryBadgeProps) {
   const {
@@ -31,7 +33,6 @@ export function PhysicsTelemetryBadge({
     resetParams,
   } = usePatentPhysics(patentId);
   const [showTheory, setShowTheory] = useState(defaultExpanded);
-  const equations = useMemo(() => getColorizedEquationsForPatent(patentId), [patentId]);
 
   const handleReset = useCallback(() => {
     resetParams();
