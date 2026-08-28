@@ -6,6 +6,7 @@ import { ARKWRIGHT_DEFAULT_CONTROLS, stepArkwrightWaterFrame } from "@/physics/a
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 const EXHIBIT_ID = "gb-931-arkwright-water-frame";
 
@@ -27,27 +28,29 @@ export function ArkwrightWaterFrameSim() {
     inputRovingCountNe,
   };
   const [animTime, setAnimTime] = useState(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const speedId = useId();
   const draftId = useId();
   const weightId = useId();
   const stapleId = useId();
 
-  // Run 60 FPS animation loop
+  // Run 60 FPS animation loop (paused while scrolled offscreen)
   useEffect(() => {
     let frameId: number;
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      frameId = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = (time - lastTime) / 1000;
       lastTime = time;
       setAnimTime((prev) => prev + dt);
-      frameId = requestAnimationFrame(loop);
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, []);
+  }, [onscreenRef.current]);
 
   const outputs = stepArkwrightWaterFrame(controls);
 
@@ -66,24 +69,27 @@ export function ArkwrightWaterFrameSim() {
   const traverseOffset = Math.sin(traversePhase) * 18;
 
   return (
-    <div className="w-full bg-parchment-50 dark:bg-stone-900/95 border border-parchment-300 dark:border-stone-800 rounded-2xl p-4 sm:p-6 text-ink-900 dark:text-stone-200 shadow-md backdrop-blur-xl transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full bg-parchment-50 dark:bg-ink-900/95 border border-parchment-300 dark:border-ink-800 rounded-2xl p-4 sm:p-6 text-ink-900 dark:text-parchment-200 shadow-md backdrop-blur-xl transition-colors"
+    >
       {/* Header & Mode Badge */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-parchment-200 dark:border-stone-800">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-parchment-200 dark:border-ink-800">
         <div>
           <div className="flex items-center gap-2">
             <Cog className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-stone-100">
+            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-parchment-100">
               Richard Arkwright Water Frame Spinning Simulator (GB 931)
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
             Differential roller drafting (draw zones), weighted top-roller clamping, and high-speed
             flyer twisting.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
-          <div className="flex items-center gap-1.5 bg-parchment-200 dark:bg-stone-950/80 p-1.5 rounded-xl border border-parchment-300 dark:border-stone-800 text-xs">
+          <div className="flex items-center gap-1.5 bg-parchment-200 dark:bg-ink-950/80 p-1.5 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs">
             <button
               type="button"
               onClick={() => {
@@ -94,7 +100,7 @@ export function ArkwrightWaterFrameSim() {
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 (controls.totalDraftRatio ?? 6.0) >= 4.0
                   ? "bg-emerald-600 text-white shadow-sm"
-                  : "text-ink-600 dark:text-stone-400 hover:text-ink-900 dark:hover:text-stone-200"
+                  : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
               Arkwright Frame (Warp)
@@ -109,7 +115,7 @@ export function ArkwrightWaterFrameSim() {
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 (controls.totalDraftRatio ?? 6.0) < 4.0
                   ? "bg-amber-600 text-white shadow-sm"
-                  : "text-ink-600 dark:text-stone-400 hover:text-ink-900 dark:hover:text-stone-200"
+                  : "text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-stone-200"
               }`}
             >
               Manual Jenny Mode

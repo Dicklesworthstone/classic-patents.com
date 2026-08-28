@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { allPatents, getPatentById } from "@/data/patents";
+import { allPatents, getPatentById, LEGACY_PATENT_REDIRECTS } from "@/data/patents";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -10,7 +10,12 @@ export const size = {
 export const contentType = "image/png";
 
 export async function generateStaticParams() {
-  return allPatents.map((p) => ({ id: p.id }));
+  // Legacy redirect ids prerender the page route, so their image routes must
+  // prerender too (force-static + on-demand misses otherwise).
+  return [
+    ...allPatents.map((p) => ({ id: p.id })),
+    ...Object.keys(LEGACY_PATENT_REDIRECTS).map((id) => ({ id })),
+  ];
 }
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {

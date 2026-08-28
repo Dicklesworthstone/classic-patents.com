@@ -12,7 +12,6 @@ export function ThemeToggle() {
     localStorage.setItem("classic-patents-theme", dark ? "dark" : "light");
 
     const root = document.documentElement;
-    root.classList.remove("theme-blueprint", "theme-parchment");
 
     if (dark) {
       root.classList.add("dark");

@@ -76,6 +76,11 @@ export function EraFilterBar({
           </span>{" "}
           historical patents
         </div>
+        <span
+          role="status"
+          aria-live="polite"
+          className="sr-only"
+        >{`${resultCount} patents shown`}</span>
       </div>
 
       {/* Category Filter Pills with Item Counts */}

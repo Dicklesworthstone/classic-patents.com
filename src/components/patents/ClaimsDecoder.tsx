@@ -261,6 +261,7 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
             <button
               key={c.number}
               type="button"
+              aria-pressed={isSelected}
               onClick={() => setActiveClaimNum(c.number)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-sans font-semibold transition-all border shadow-2xs cursor-pointer ${
                 isSelected
@@ -347,7 +348,10 @@ export function ClaimsDecoder({ claims, patentId, claimStatus }: ClaimsDecoderPr
                 {copied ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold">
+                    <span
+                      role="status"
+                      className="text-emerald-600 dark:text-emerald-400 font-bold"
+                    >
                       Copied!
                     </span>
                   </>

@@ -7,6 +7,7 @@ import { formatSones, sonesFromDbSpl } from "@/physics/psycho";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function BellTelephoneSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-174465-bell-telephone");
@@ -31,13 +32,15 @@ export function BellTelephoneSim() {
   // inherit an unmuted singleton from a previous patent visit.
   const { isAudioMuted, setMuted } = usePatentAudio();
   const [time, setTime] = useState<number>(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (!onscreenRef.current) return;
       setTime((t) => t + 1);
     }, 40);
     return () => clearInterval(timer);
-  }, []);
+  }, [onscreenRef.current]);
 
   // Update real-time Web Audio synthesis when playing
   useEffect(() => {
@@ -75,7 +78,10 @@ export function BellTelephoneSim() {
     .join(" ");
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">

@@ -17,6 +17,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function WestinghouseAirBrakeSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-124404-westinghouse-air-brake");
@@ -34,6 +35,7 @@ export function WestinghouseAirBrakeSim() {
 
   const [activeClaimProbe, setActiveClaimProbe] = useState<number | null>(null);
   const [pulseAnim, setPulseAnim] = useState<number>(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const wh = FrankenSimEngine.stepWestinghouseAirBrake({
     trainPipePressurePsi,
@@ -53,15 +55,16 @@ export function WestinghouseAirBrakeSim() {
   useEffect(() => {
     let frame = 0;
     const loop = () => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       frame += 0.05;
       setPulseAnim(frame);
-      animRef.current = requestAnimationFrame(loop);
     };
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, []);
+  }, [onscreenRef.current]);
 
   const handleToggleSelectingCock = () => {
     const nextPos = selectingCockPos === 0 ? 1 : 0;
@@ -107,7 +110,10 @@ export function WestinghouseAirBrakeSim() {
   };
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -175,7 +181,7 @@ export function WestinghouseAirBrakeSim() {
       {/* Visual Canvas & Pneumatic Flow */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* SVG Schematic */}
-        <div className="lg:col-span-8 relative bg-[#090d16] rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 flex flex-col items-center justify-center min-h-[440px] overflow-hidden select-none">
+        <div className="lg:col-span-8 relative bg-canvas rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 flex flex-col items-center justify-center min-h-[440px] overflow-hidden select-none">
           {/* Blueprint Grid */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-25 pointer-events-none" />
 

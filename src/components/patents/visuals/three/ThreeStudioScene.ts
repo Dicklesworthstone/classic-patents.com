@@ -160,8 +160,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     opts.isDark !== undefined
       ? opts.isDark
       : typeof document !== "undefined"
-        ? document.documentElement.classList.contains("dark") ||
-          document.documentElement.classList.contains("theme-blueprint")
+        ? document.documentElement.classList.contains("dark")
         : false;
 
   // 1. Scene & Background Sky

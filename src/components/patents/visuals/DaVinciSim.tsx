@@ -7,6 +7,7 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface DaVinciSimProps {
   initialMotionScale?: number;
@@ -18,6 +19,7 @@ export function DaVinciSim({
   initialTremorFilter = true,
 }: DaVinciSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const motionScaleId = useId();
   const speedId = useId();
   const gripId = useId();
@@ -51,6 +53,8 @@ export function DaVinciSim({
     );
 
     const render = (now: number) => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isPlaying) {
         const { simTimeSec } = clock.pump(now);
         timeSec = simTimeSec;
@@ -70,7 +74,7 @@ export function DaVinciSim({
       const h = canvas.height;
 
       // Dark surgical UI background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Grid lines
@@ -267,16 +271,17 @@ export function DaVinciSim({
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 9px monospace";
       ctx.fillText("PROCESSOR DATA BUS", (mX + mW + sX) / 2 - 45, mY + mH / 2 - 8);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [motionScale, tremorFilter, inputSpeed, gripAngleDeg, isPlaying]);
+  }, [motionScale, tremorFilter, inputSpeed, gripAngleDeg, isPlaying, onscreenRef.current]);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+    <div
+      ref={rootRef}
+      className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -333,7 +338,7 @@ export function DaVinciSim({
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">
         <canvas
           ref={canvasRef}
           width={760}
@@ -343,10 +348,10 @@ export function DaVinciSim({
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-ink-900/70 border border-parchment-200 dark:border-ink-800/80 text-xs">
         {/* Motion Scaling Slider */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={motionScaleId}>Illustrative calibration offset:</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {motionScale.toFixed(1)}
@@ -362,14 +367,14 @@ export function DaVinciSim({
             onChange={(e) => updateParam("motionScaleRatio", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Numeric value is illustrative; the grant claims stored measured offsets, not a ratio.
           </span>
         </div>
 
         {/* Input Trajectory Speed */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={speedId}>Illustrative drive speed:</label>
             <span className="text-cyan-600 dark:text-cyan-400 font-bold">
               {inputSpeed.toFixed(2)} m/s
@@ -385,14 +390,14 @@ export function DaVinciSim({
             onChange={(e) => updateParam("masterInputSpeedMps", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Presentation-only motion for the explanatory instrument
           </span>
         </div>
 
         {/* Micro-Forceps Jaw Grip */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={gripId}>Illustrative end-effector angle:</label>
             <span className="text-emerald-600 dark:text-emerald-400 font-bold">
               {gripAngleDeg}°
@@ -408,7 +413,7 @@ export function DaVinciSim({
             onChange={(e) => updateParam("gripAngleDeg", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Presentation-only distal pose; not a numeric claim limitation
           </span>
         </div>
@@ -426,14 +431,14 @@ export function DaVinciSim({
             className={`px-3 py-1.5 rounded-lg font-mono text-xs font-semibold border transition-all ${
               tremorFilter
                 ? "bg-emerald-100 dark:bg-emerald-950/60 border-emerald-400 dark:border-emerald-500/80 text-emerald-800 dark:text-emerald-300"
-                : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+                : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
             {tremorFilter ? "✓ Compatibility signal: PRESENT" : "✗ Compatibility signal: ABSENT"}
           </button>
         </div>
 
-        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+        <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
           Tool-boundary probe:{" "}
           <span className="text-indigo-600 dark:text-indigo-400">
             compatibility and calibration data

@@ -13,6 +13,7 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function McCormickReaperSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x8277-mccormick-reaper");
@@ -22,6 +23,7 @@ export function McCormickReaperSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [phase, setPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const groundSpeedMps = reaper.groundSpeedMps;
   const reelRpm = reaper.reelRpm;
@@ -29,23 +31,27 @@ export function McCormickReaperSim() {
   useEffect(() => {
     if (!isPlaying) return;
     const loop = () => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       // Fixed presentation steps make the visual reproducible from the same
       // shared control state. They do not claim to be a physical time solver.
       setPhase((prev) => (prev + reaper.cutterDisplayRadPerFrame) % reaper.phaseWrapRad);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, reaper.cutterDisplayRadPerFrame, reaper.phaseWrapRad]);
+  }, [isPlaying, reaper.cutterDisplayRadPerFrame, reaper.phaseWrapRad, onscreenRef.current]);
 
   const cutterX = Math.sin(phase) * reaper.cutterSvgAmp;
   const reelAngleDeg = mccormickReelAngleDeg(phase, reaper.reelToCutterRatio);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

@@ -554,7 +554,7 @@ export function EdisonIndicatorSim() {
             >
               Torsion Null (Nut j):
             </label>
-            <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 font-bold">
+            <span className="px-2 py-0.5 rounded bg-slate-200 dark:bg-ink-800 font-bold">
               {nullRefVoltage} V₀
             </span>
           </div>

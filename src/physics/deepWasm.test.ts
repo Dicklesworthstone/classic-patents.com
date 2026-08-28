@@ -248,7 +248,14 @@ describe("P7 host-pumped FrankenSim crate bindings", () => {
       "BoyleSmithCcd3D.tsx",
     ]) {
       const src = readFileSync(join(dir, name), "utf8");
-      expect(src).toContain("createStudioClock");
+      if (name === "ArkwrightWaterFrame3D.tsx" || name === "BoyleSmithCcd3D.tsx") {
+        // Bus-driven pose consumers: they integrate nothing locally, so the
+        // honest contract is "no local clock AND no fake fixed dt" — phases
+        // arrive pre-integrated on the shared transport tape.
+        expect(src).toContain("Pure consumer of the shared transport tape");
+      } else {
+        expect(src).toContain("createStudioClock");
+      }
       if (/const (dt|delta) = 1 \/ 60/.test(src)) leftover.push(name);
       if (src.includes("dtVirtual")) leftover.push(`${name}:dtVirtual`);
       if (src.includes("virtualTime += 1 / 60")) leftover.push(`${name}:virtualTime`);

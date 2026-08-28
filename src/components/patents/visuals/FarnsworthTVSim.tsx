@@ -7,6 +7,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function FarnsworthTVSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-1773980-farnsworth-tv");
@@ -19,6 +20,7 @@ export function FarnsworthTVSim() {
   );
   const [isScanning, setIsScanning] = useState<boolean>(true);
   const [beamPos, setBeamPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const deflectionGauss = FrankenSimEngine.farnsworthDeflectionGauss(coilCurrent);
   const beam = FrankenSimEngine.stepFarnsworthTv(
@@ -32,6 +34,7 @@ export function FarnsworthTVSim() {
   useEffect(() => {
     if (!isScanning) return;
     const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
       setBeamPos((pos) => {
         const nextX = (pos.x + speedMultiplier) % beam.rasterLineWrapPct;
         const nextY = nextX < pos.x ? (pos.y + beam.rasterLinePct) % beam.rasterLineWrapPct : pos.y;
@@ -39,10 +42,19 @@ export function FarnsworthTVSim() {
       });
     }, 30);
     return () => clearInterval(interval);
-  }, [isScanning, speedMultiplier, beam.rasterLinePct, beam.rasterLineWrapPct]);
+  }, [
+    isScanning,
+    speedMultiplier,
+    beam.rasterLinePct,
+    beam.rasterLineWrapPct,
+    onscreenRef.current,
+  ]);
 
   return (
-    <div className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">

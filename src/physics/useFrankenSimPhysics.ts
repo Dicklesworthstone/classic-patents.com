@@ -54,6 +54,7 @@ class PatentTransport {
   public lastFrame: TransportTapeFrame;
   private listeners = new Set<TapeListener>();
   private tickS: number;
+  private bus?: TransportBus;
 
   constructor(
     patentId: string,
@@ -74,14 +75,23 @@ class PatentTransport {
     };
   }
 
+  /** @internal Wired up by TransportBus so subscribe() can re-adopt after an idle eviction. */
+  attachBus(bus: TransportBus) {
+    this.bus = bus;
+  }
+
   subscribe(listener: TapeListener): () => void {
+    // React effects run after paint: a frame can fire between getTransport()
+    // (render) and this subscribe, idling the pump out and evicting this
+    // instance. Re-insert it, or the face would pump a transport the bus
+    // no longer knows about and freeze.
+    this.bus?.adopt(this);
     this.listeners.add(listener);
     listener(this.lastFrame);
     return () => {
       this.listeners.delete(listener);
     };
   }
-
   get hasListeners(): boolean {
     return this.listeners.size > 0;
   }
@@ -129,10 +139,19 @@ class TransportBus {
     let t = this.transports.get(patentId);
     if (!t) {
       t = new PatentTransport(patentId, 1 / 60, initialTelemetry);
+      t.attachBus(this);
       this.transports.set(patentId, t);
     }
     this.startPump();
     return t;
+  }
+
+  /** Re-insert a transport after an idle eviction (see PatentTransport.subscribe). */
+  adopt(transport: PatentTransport) {
+    if (!this.transports.has(transport.patentId)) {
+      this.transports.set(transport.patentId, transport);
+    }
+    this.startPump();
   }
 
   registerUpdater(patentId: string, updater: TapeUpdater, provenance?: Provenance) {

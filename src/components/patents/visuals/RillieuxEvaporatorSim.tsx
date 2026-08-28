@@ -42,9 +42,9 @@ export function RillieuxEvaporatorSim({
   }, [juiceFeedRateKgPerH, initialBrixDeg, targetBrixDeg, numberOfEffects]);
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-md backdrop-blur-md transition-colors">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md backdrop-blur-md transition-colors">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Gauge className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -52,7 +52,7 @@ export function RillieuxEvaporatorSim({
               Norbert Rillieux Multiple-Effect Evaporator (US 3,237)
             </h3>
           </div>
-          <p className="text-sm text-ink-600 dark:text-neutral-400">
+          <p className="text-sm text-ink-600 dark:text-ink-400">
             Latent Heat Cascading, Multi-Stage Vacuum Boiling & Steam Cogeneration
           </p>
         </div>

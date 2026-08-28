@@ -19,22 +19,22 @@ export function LindeAirLiquefactionSim() {
   const linde = FrankenSimEngine.stepLindeAirLiquefaction();
 
   return (
-    <div className="flex w-full flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-neutral-800 bg-parchment-50 dark:bg-neutral-950 p-4 sm:p-6 text-ink-900 dark:text-neutral-100 shadow-md transition-colors">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
+    <div className="flex w-full flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 text-ink-900 dark:text-parchment-100 shadow-md transition-colors">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-neutral-100">
+            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-parchment-100">
               Carl von Linde Cryogenic Air Liquefaction & Rectification (US 727,650)
             </h3>
           </div>
-          <p className="mt-0.5 text-xs text-ink-600 dark:text-neutral-400">
+          <p className="mt-0.5 text-xs text-ink-600 dark:text-ink-400">
             Joule-Thomson countercurrent regenerator, expansion throttling, and fractional
             distillation.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
-          <div className="flex rounded-lg border border-parchment-300 dark:border-neutral-800 bg-parchment-200 dark:bg-neutral-900 p-1 text-xs">
+          <div className="flex rounded-lg border border-parchment-300 dark:border-ink-800 bg-parchment-200 dark:bg-ink-900 p-1 text-xs">
             <button
               type="button"
               onClick={() => {
@@ -44,7 +44,7 @@ export function LindeAirLiquefactionSim() {
               className={`rounded-md px-3 py-1.5 font-medium transition-all ${
                 activeTab === "liquefaction"
                   ? "bg-cyan-600 text-white font-bold"
-                  : "text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
               }`}
             >
               Liquefaction
@@ -58,7 +58,7 @@ export function LindeAirLiquefactionSim() {
               className={`rounded-md px-3 py-1.5 font-medium transition-all ${
                 activeTab === "separation"
                   ? "bg-cyan-600 text-white font-bold"
-                  : "text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+                  : "text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
               }`}
             >
               Fractionation

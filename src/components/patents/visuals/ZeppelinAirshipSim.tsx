@@ -91,7 +91,12 @@ export function ZeppelinAirshipSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Rigid airship simulation: ${isPlaying ? `airship cruising at ${Math.round(flightSpeedKnots)} knots` : "airship stationary"}, pitched ${Math.round(pitchDeg)} degrees with gas cells at ${Math.round(gasCellPurityPct)} percent inflation`}
+          className="w-full h-full"
+        >
           {/* Cloud layers in sky */}
           <g opacity="0.3" fill="#E2E8F0">
             <ellipse cx="100" cy="80" rx="60" ry="20" />

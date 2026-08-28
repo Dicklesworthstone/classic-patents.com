@@ -16,6 +16,7 @@ import { stepHopkinsPotash } from "@/physics/hopkinsPotashKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function HopkinsPotashSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x1-hopkins-potash");
@@ -28,6 +29,7 @@ export function HopkinsPotashSim() {
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [cycleProgress, setCycleProgress] = useState<number>(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const pot = stepHopkinsPotash({
     roastTempC,
@@ -42,23 +44,27 @@ export function HopkinsPotashSim() {
     let lastTime = performance.now();
 
     const loop = (now: number) => {
+      animId = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
       const cycleRate = 0.2 * (2.5 / Math.max(0.2, roastTimeHours));
       setCycleProgress((prev) => (prev + dt * cycleRate) % 1.0);
-      animId = requestAnimationFrame(loop);
     };
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isPlaying, roastTimeHours]);
+  }, [isPlaying, roastTimeHours, onscreenRef.current]);
 
   // Dynamic colors based on temperature
   const flameHue = Math.min(50, Math.max(10, (roastTempC - 500) * 0.08));
   const ashGlow = `rgb(${Math.min(255, 140 + (roastTempC - 500) * 0.25)}, ${Math.min(200, 40 + (roastTempC - 500) * 0.35)}, 30)`;
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Top Header & Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>

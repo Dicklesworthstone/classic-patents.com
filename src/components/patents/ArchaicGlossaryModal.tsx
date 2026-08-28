@@ -164,7 +164,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
     <dialog
       ref={dialogRef}
       aria-labelledby="glossary-modal-title"
-      className="fixed inset-0 z-50 m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[85vh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
+      className="fixed inset-0 z-50 m-auto w-[min(42rem,calc(100vw-2rem))] max-h-[85dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
       onClick={(e) => {
         // Clicks on the native <dialog> backdrop land on the dialog element.
@@ -174,7 +174,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
         if (e.key === "Escape") onClose();
       }}
     >
-      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
+      <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-2xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85dvh] relative">
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-parchment-200 dark:border-ink-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -189,8 +189,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           <button
             aria-label="Close"
             type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors cursor-pointer"
+            className="p-1.5 min-h-11 min-w-11 flex items-center justify-center rounded-lg text-ink-500 hover:text-ink-800 dark:hover:text-ink-200 hover:bg-parchment-200 dark:hover:bg-ink-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -200,6 +199,14 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
         <div
           role="tablist"
           aria-label="Glossary sections"
+          onKeyDown={(e) => {
+            if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+            e.preventDefault();
+            const next = activeTab === "glossary" ? "citation" : "glossary";
+            if (next === "citation" && !patent) return;
+            setActiveTab(next);
+            document.getElementById(`glossary-tab-${next}`)?.focus();
+          }}
           className="flex items-center gap-2 px-5 pt-3 border-b border-parchment-200 dark:border-ink-800 text-xs font-mono"
         >
           <button
@@ -207,7 +214,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
             role="tab"
             id="glossary-tab-glossary"
             aria-selected={activeTab === "glossary"}
-            onClick={() => setActiveTab("glossary")}
+            aria-controls="glossary-panel-glossary"
             className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
               activeTab === "glossary"
                 ? "border-amber-600 text-amber-700 dark:text-amber-400"
@@ -222,7 +229,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
               role="tab"
               id="glossary-tab-citation"
               aria-selected={activeTab === "citation"}
-              onClick={() => setActiveTab("citation")}
+              aria-controls="glossary-panel-citation"
               className={`pb-2 border-b-2 font-bold transition-colors cursor-pointer ${
                 activeTab === "citation"
                   ? "border-amber-600 text-amber-700 dark:text-amber-400"
@@ -235,9 +242,14 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 overflow-y-auto space-y-4 flex-1">
+        <div className="p-5 overflow-y-auto overscroll-contain space-y-4 flex-1">
           {activeTab === "glossary" && (
-            <div className="space-y-4">
+            <div
+              id="glossary-panel-glossary"
+              role="tabpanel"
+              aria-labelledby="glossary-tab-glossary"
+              className="space-y-4"
+            >
               <div className="relative">
                 <label htmlFor="archaic-glossary-search" className="sr-only">
                   Search archaic legal terms or modern engineering equivalents
@@ -249,7 +261,7 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
                   placeholder="e.g. means, said, Letters Patent"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 rounded-lg text-xs font-mono text-ink-900 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-1 focus:ring-amber-600"
+                  className="w-full pl-9 pr-4 py-2 bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 rounded-lg text-base font-mono text-ink-900 dark:text-parchment-100 placeholder:text-ink-400 focus:outline-none focus:ring-1 focus:ring-amber-600"
                 />
               </div>
 
@@ -290,7 +302,12 @@ export function ArchaicGlossaryModal({ isOpen, onClose, patent }: ArchaicGlossar
           )}
 
           {activeTab === "citation" && patent && (
-            <div className="space-y-4">
+            <div
+              id="glossary-panel-citation"
+              role="tabpanel"
+              aria-labelledby="glossary-tab-citation"
+              className="space-y-4"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-serif font-bold text-sm text-ink-900 dark:text-parchment-100">
                   BibTeX Citation Entry

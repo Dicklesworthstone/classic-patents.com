@@ -19,7 +19,7 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
   test("Claim 18 rudder linkage coupling ratio equals 0.45", () => {
     expect(WRIGHT_PATENT_ID).toBe("us-821393-wright-flyer");
     expect(WRIGHT_COUPLING).toBe(0.45);
-    expect(coupledRudderDeg(10)).toBe(5); // round(10 * 0.45) = 5
+    expect(coupledRudderDeg(10)).toBe(4.5); // continuous Claim 18 linkage: 10 * 0.45
     expect(coupledRudderDeg(20)).toBe(9); // round(20 * 0.45) = 9
   });
 
@@ -27,7 +27,7 @@ describe("Wright Flyer 3-Axis Aerodynamics Kernel", () => {
     const coupled = readWrightControls({ airspeed: 28, wingWarp: 12, coupled: 1 });
     expect(coupled.coupled).toBe(true);
     expect(coupled.wingWarpDeg).toBe(12);
-    expect(coupled.rudderDeg).toBe(5); // coupledRudderDeg(12) = 5
+    expect(coupled.rudderDeg).toBe(5.4); // coupledRudderDeg(12) = 12 * 0.45 (continuous)
 
     const uncoupled = readWrightControls({
       airspeed: 28,

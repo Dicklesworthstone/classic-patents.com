@@ -18,9 +18,9 @@ export function BellPhotophoneSim() {
   }, [beamVariationActive]);
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-md backdrop-blur-md transition-colors">
+    <div className="flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md backdrop-blur-md transition-colors">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Sun className="w-5 h-5 text-amber-500 animate-spin-slow" />
@@ -28,7 +28,7 @@ export function BellPhotophoneSim() {
               Alexander Graham Bell Photophone Optical Wireless (US 235,199)
             </h3>
           </div>
-          <p className="text-sm text-ink-600 dark:text-neutral-400">
+          <p className="text-sm text-ink-600 dark:text-ink-400">
             Voice-Modulated Sunbeam, Parabolic Flux Collector & Photoconductive Selenium Receiver
           </p>
         </div>
@@ -41,7 +41,7 @@ export function BellPhotophoneSim() {
             className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all border ${
               beamVariationActive
                 ? "bg-amber-100 dark:bg-cyan-500/20 text-amber-900 dark:text-cyan-300 border-amber-400 dark:border-cyan-500/40"
-                : "bg-parchment-200 dark:bg-neutral-800 text-ink-600 dark:text-neutral-400 border-parchment-300 dark:border-neutral-700"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-600 dark:text-ink-400 border-parchment-300 dark:border-ink-700"
             }`}
           >
             {beamVariationActive ? "Beam Variation: On" : "Beam Variation: Off"}

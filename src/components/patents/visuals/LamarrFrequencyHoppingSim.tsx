@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 const TRANSMITTER_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
 const RECEIVER_ROWS = new Set(["D", "E", "F", "G"]);
@@ -20,15 +21,19 @@ export function LamarrFrequencyHoppingSim() {
   );
   const [rudderStep, setRudderStep] = useState(0);
   const [commandTone, setCommandTone] = useState<100 | 500>(100);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   // Shared player-piano roll — not Math.random. Transmitter and receiver share the same punched sequence.
   useEffect(() => {
     if (!isHoppingActive) return;
 
-    const interval = setInterval(() => setRecordPosition((position) => (position + 1) % 7), 700);
+    const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
+      setRecordPosition((position) => (position + 1) % 7);
+    }, 700);
 
     return () => clearInterval(interval);
-  }, [isHoppingActive]);
+  }, [isHoppingActive, onscreenRef.current]);
 
   const txRow = TRANSMITTER_ROWS[recordPosition] ?? "A";
   const receiverTuned = RECEIVER_ROWS.has(txRow);
@@ -40,7 +45,10 @@ export function LamarrFrequencyHoppingSim() {
   };
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>

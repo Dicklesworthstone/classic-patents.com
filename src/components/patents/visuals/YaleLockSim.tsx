@@ -40,9 +40,9 @@ export function YaleLockSim({
   }, [keyInsertion, appliedTorqueNm, activeKeyBittings, isRotating, useAuthorizedKey]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-parchment-50 dark:bg-neutral-900/90 border border-parchment-300 dark:border-neutral-800 text-ink-900 dark:text-neutral-100 shadow-2xl backdrop-blur-md">
+    <div className="flex flex-col gap-6 p-6 rounded-2xl bg-parchment-50 dark:bg-ink-900/90 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-2xl backdrop-blur-md">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Key className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -50,7 +50,7 @@ export function YaleLockSim({
               Linus Yale Jr. Pin-Tumbler Cylinder Lock (US 48,475)
             </h3>
           </div>
-          <p className="text-sm text-ink-600 dark:text-neutral-400">
+          <p className="text-sm text-ink-600 dark:text-ink-400">
             5-Chamber Shear-Line Kinematics & Lost-Motion Cam Actuator
           </p>
         </div>
@@ -81,7 +81,7 @@ export function YaleLockSim({
                 ? isRotating
                   ? "bg-amber-100 dark:bg-amber-500/20 text-amber-900 dark:text-amber-300 border-amber-400 dark:border-amber-500/40 hover:bg-amber-200 dark:hover:bg-amber-500/30"
                   : "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300 border-cyan-400 dark:border-cyan-500/40 hover:bg-cyan-200 dark:hover:bg-cyan-500/30"
-                : "bg-parchment-200 dark:bg-neutral-800 text-ink-400 dark:text-neutral-500 border-parchment-300 dark:border-neutral-700 cursor-not-allowed"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-400 dark:text-ink-500 border-parchment-300 dark:border-ink-700 cursor-not-allowed"
             }`}
           >
             {isRotating ? "Return Key (0°)" : "Turn Key (90°)"}
@@ -119,6 +119,8 @@ export function YaleLockSim({
       <div className="relative w-full aspect-[16/9] min-h-[360px] bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center p-4">
         <svg
           viewBox="0 0 900 500"
+          role="img"
+          aria-label={`Pin-tumbler lock simulation: ${yaleState.isUnlocked ? (isRotating ? "bolt rotating as key turns" : "bolt unlocked, key ready to turn") : "bolt locked, key cannot turn"}`}
           className="w-full h-full select-none"
           preserveAspectRatio="xMidYMid meet"
         >

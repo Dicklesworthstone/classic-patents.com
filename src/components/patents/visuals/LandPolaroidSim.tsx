@@ -7,6 +7,7 @@ import { stepLandPolaroidInstantFilm } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface LandPolaroidSimProps {
   className?: string;
@@ -15,6 +16,7 @@ interface LandPolaroidSimProps {
 export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = "" }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-2543181-land-polaroid");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -33,6 +35,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     let timer: ReturnType<typeof setInterval>;
     if (isPlaying) {
       timer = setInterval(() => {
+        if (!onscreenRef.current) return;
         setInternalTime((prev) => {
           const next = prev >= 60 ? 0 : prev + 0.5;
           updateParam("developmentTimeSec", Math.round(next));
@@ -41,7 +44,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
       }, 50);
     }
     return () => clearInterval(timer);
-  }, [isPlaying, updateParam]);
+  }, [isPlaying, updateParam, onscreenRef.current]);
 
   const state = stepLandPolaroidInstantFilm({
     developmentTimeSec: internalTime,
@@ -60,6 +63,8 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     let animTime = 0;
 
     const render = () => {
+      animFrameRef.current = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       animTime += 0.02;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -68,7 +73,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
 
       // Background
       const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, "#090d16");
+      grad.addColorStop(0, "#0a0f1d");
       grad.addColorStop(1, "#030712");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
@@ -289,8 +294,6 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
         ctx.font = "10px monospace";
         ctx.fillText("POLAROID LAND TYPE 40 (60s)", px + 20, py + ph - 16);
       }
-
-      animFrameRef.current = requestAnimationFrame(render);
     };
 
     animFrameRef.current = requestAnimationFrame(render);
@@ -298,10 +301,20 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [internalTime, exposure, viscosity, rollerGap, alkaliPh, state, viewMode]);
+  }, [
+    internalTime,
+    exposure,
+    viscosity,
+    rollerGap,
+    alkaliPh,
+    state,
+    viewMode,
+    onscreenRef.current,
+  ]);
 
   return (
     <div
+      ref={rootRef}
       className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors ${className}`}
     >
       {/* Header */}
@@ -321,7 +334,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
 
         <div className="flex flex-wrap items-center gap-2 self-end lg:self-auto">
           {/* View Mode Tabs */}
-          <div className="flex gap-1 bg-parchment-200 dark:bg-slate-900 p-1 rounded-lg border border-parchment-300 dark:border-slate-800">
+          <div className="flex gap-1 bg-parchment-200 dark:bg-ink-900 p-1 rounded-lg border border-parchment-300 dark:border-ink-800">
             {(["diffusion", "sandwich", "print"] as const).map((mode) => (
               <button
                 key={mode}
@@ -333,7 +346,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
                 className={`px-3 py-1 text-xs font-mono rounded-md transition-colors ${
                   viewMode === mode
                     ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-400 dark:border-emerald-500"
-                    : "bg-parchment-100 dark:bg-slate-800 hover:bg-parchment-200 dark:hover:bg-slate-700 text-ink-700 dark:text-slate-300"
+                    : "bg-parchment-100 dark:bg-ink-800 hover:bg-parchment-200 dark:hover:bg-slate-700 text-ink-700 dark:text-parchment-300"
                 }`}
               >
                 {mode === "diffusion"
@@ -392,7 +405,7 @@ export const LandPolaroidSim: React.FC<LandPolaroidSimProps> = ({ className = ""
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full h-[320px] rounded-xl overflow-hidden bg-slate-900 border border-parchment-300 dark:border-slate-800">
+      <div className="relative w-full h-[320px] rounded-xl overflow-hidden bg-slate-900 border border-parchment-300 dark:border-ink-800">
         <canvas ref={canvasRef} width={680} height={320} className="w-full h-full" />
       </div>
 

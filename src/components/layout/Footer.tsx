@@ -115,9 +115,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-parchment-200 dark:border-ink-800 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-700 dark:text-ink-400 font-sans gap-3">
-          <div>
-            © {new Date().getFullYear()} Classic Patents · Curated by Jeffrey Emanuel. Open Source.
-          </div>
+          <div>© 2026 Classic Patents · Curated by Jeffrey Emanuel. Open Source.</div>
           <div className="flex items-center gap-4">
             <span>Historical patent texts are in the public domain.</span>
           </div>

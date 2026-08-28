@@ -128,7 +128,7 @@ export function OtisElevatorSim() {
       {/* Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* SVG Hoistway Diagram */}
-        <div className="lg:col-span-8 relative bg-[#090d16] rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center justify-center min-h-[420px] overflow-hidden select-none">
+        <div className="lg:col-span-8 relative bg-canvas rounded-2xl border border-parchment-300 dark:border-ink-800 p-6 flex flex-col items-center justify-center min-h-[420px] overflow-hidden select-none">
           {/* Blueprint Grid */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
 

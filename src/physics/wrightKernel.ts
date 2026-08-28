@@ -76,7 +76,9 @@ export interface WrightSiState {
 }
 
 export function coupledRudderDeg(wingWarpDeg: number): number {
-  return Math.round(wingWarpDeg * WRIGHT_COUPLING);
+  // Continuous Claim 18 linkage: a stepping rudder would quantize the yaw
+  // cancellation and break finite-difference sensitivities.
+  return wingWarpDeg * WRIGHT_COUPLING;
 }
 
 /** USPTO Fig. 4 schematic pose. Idle warp is 8° when the bus has not set wingWarp. */

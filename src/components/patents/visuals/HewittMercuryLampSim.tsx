@@ -6,6 +6,7 @@ import { stepHewittMercuryLamp } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface HewittMercuryLampSimProps {
   initialMainsVoltageV?: number;
@@ -23,6 +24,7 @@ export function HewittMercuryLampSim({
   initialBallastResistanceOhms = 12,
 }: HewittMercuryLampSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-682690-hewitt-mercury-lamp");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -58,6 +60,8 @@ export function HewittMercuryLampSim({
     let time = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       time += 0.025;
 
       const w = canvas.width;
@@ -325,8 +329,6 @@ export function HewittMercuryLampSim({
       ctx.fillText(`FLUX: ${physics.luminousFluxLumens.toLocaleString()} lm`, 350, h - 22);
       ctx.fillStyle = "#c084fc";
       ctx.fillText(`REPLACES: ${physics.equivalentCarbonBulbs} Carbon Bulbs`, 500, h - 22);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
@@ -334,10 +336,13 @@ export function HewittMercuryLampSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [tubeDiameterMm, isLit, strikePulseTime, physics]);
+  }, [tubeDiameterMm, isLit, strikePulseTime, physics, onscreenRef.current]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -394,12 +399,12 @@ export function HewittMercuryLampSim({
       </div>
 
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Control Sliders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
         {/* Mains Voltage */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
@@ -413,9 +418,9 @@ export function HewittMercuryLampSim({
             step={5}
             value={mainsVoltageV}
             onChange={(e) => updateParam("mainsVoltageV", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             Commercial supply mains
           </span>
         </div>

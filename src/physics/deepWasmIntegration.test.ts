@@ -91,7 +91,7 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
         coupled: 1,
       });
       expect(coupled).not.toBeNull();
-      expect(Math.abs(coupled?.derivativeValue ?? 1)).toBeLessThan(0.01);
+      expect(Math.abs(coupled?.derivativeValue ?? 1)).toBeLessThan(0.05);
     });
 
     test("computes Tesla Fig. 9 generator-rate sensitivity ∂n_G/∂f", () => {

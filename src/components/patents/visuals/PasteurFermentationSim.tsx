@@ -6,6 +6,7 @@ import { stepPasteurFermentation } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 const VESSEL_X = [145, 300, 455] as const;
 
@@ -18,6 +19,7 @@ export function PasteurFermentationSim() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const process = stepPasteurFermentation({ co2SweepPct, sprayCoveragePct, wortTempC });
 
@@ -25,19 +27,23 @@ export function PasteurFermentationSim() {
     if (!isPlaying) return;
     let lastTime: number | undefined;
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = lastTime === undefined ? 0 : Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
       setTimerSeconds((previous) => (previous + dt) % 10);
-      animRef.current = requestAnimationFrame(loop);
     };
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current !== null) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying]);
+  }, [isPlaying, onscreenRef.current]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 bg-parchment-50 p-4 shadow-md transition-colors dark:border-ink-800 dark:bg-ink-950 sm:p-6">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 bg-parchment-50 p-4 shadow-md transition-colors dark:border-ink-800 dark:bg-ink-950 sm:p-6"
+    >
       <div className="mb-4 flex flex-col items-start justify-between gap-3 border-b border-parchment-200 pb-3 dark:border-ink-800 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">

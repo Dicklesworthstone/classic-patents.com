@@ -74,11 +74,12 @@ export default function HomePage() {
           </span>
           <span className="hidden sm:inline text-ink-400">•</span>
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
-            <Sparkles className="w-4 h-4 text-emerald-600" /> Plain English Dual-Projection
+            <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" /> Plain English
+            Dual-Projection
           </span>
           <span className="hidden sm:inline text-ink-400">•</span>
           <span className="flex items-center gap-1.5 px-3 py-1 bg-parchment-100/80 dark:bg-ink-900/80 rounded-lg border border-parchment-200 dark:border-ink-800">
-            <Box className="w-4 h-4 text-blue-600" /> 3D WebGL Physics Engines
+            <Box className="w-4 h-4 text-amber-700 dark:text-amber-400" /> 3D WebGL Physics Engines
           </span>
         </div>
       </section>

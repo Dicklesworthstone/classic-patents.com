@@ -84,7 +84,7 @@ export function LincolnBuoySim() {
 
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
           <svg viewBox="0 0 600 320" className="w-full h-auto max-h-[340px]">
             {/* Sky Background */}
             <rect width="600" height="150" fill="#0f172a" />

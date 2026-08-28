@@ -71,7 +71,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
     <dialog
       ref={dialogRef}
       aria-label="Patent Search Palette"
-      className="fixed inset-0 z-50 m-auto w-[min(44rem,calc(100vw-2rem))] max-h-[85vh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
+      className="fixed inset-0 z-50 m-auto w-[min(44rem,calc(100vw-2rem))] max-h-[85dvh] p-0 bg-transparent border-none open:flex open:items-center open:justify-center backdrop:bg-ink-950/80 backdrop:backdrop-blur-sm"
       onClose={onClose}
       onKeyDown={handleKeyDown}
       onClick={(e) => {
@@ -81,7 +81,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
     >
       <div className="w-full max-w-2xl bg-parchment-50 dark:bg-ink-950 rounded-3xl border border-parchment-300 dark:border-ink-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative">
         {/* Search Input Bar */}
-        <div className="p-4 sm:p-5 border-b border-parchment-200 dark:border-ink-800 flex items-center gap-3 bg-white/70 dark:bg-ink-900/70">
+        <div className="p-4 sm:p-5 border-b border-parchment-200 dark:border-ink-800 flex items-center gap-3 bg-parchment-100/70 dark:bg-ink-900/70">
           <Search className="w-5 h-5 text-amber-700 dark:text-amber-400 shrink-0" />
           <input
             ref={inputRef}
@@ -92,13 +92,20 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            className="w-full bg-transparent border-none text-sm sm:text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/60 dark:focus-visible:ring-amber-400/60 rounded-lg transition-shadow"
+            className="w-full bg-transparent border-none text-base font-sans text-ink-950 dark:text-parchment-50 placeholder:text-ink-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600/60 dark:focus-visible:ring-amber-400/60 rounded-lg transition-shadow"
             aria-label="Search patents"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="patent-search-results"
+            aria-activedescendant={
+              results[selectedIndex] ? `patent-search-result-${selectedIndex}` : undefined
+            }
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
+              aria-label="Clear search"
               className="p-2.5 min-h-11 min-w-11 flex items-center justify-center rounded-md text-ink-400 hover:text-ink-700 dark:hover:text-ink-200 transition-colors cursor-pointer"
               title="Clear search"
             >
@@ -113,15 +120,21 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             ESC
           </button>
         </div>
-
-        {/* Results List */}
-        <div className="p-3 overflow-y-auto max-h-[60vh] space-y-1.5 flex-1">
+        <div
+          id="patent-search-results"
+          role="listbox"
+          aria-label="Search results"
+          className="p-3 overflow-y-auto overscroll-contain max-h-[60dvh] space-y-1.5 flex-1"
+        >
           <div className="px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider text-ink-500 font-semibold flex items-center justify-between">
             <span>
               {query ? `Search Results (${results.length})` : "Featured Historic Inventions"}
             </span>
             <span className="text-[10px]">Use ↑↓ to navigate · Enter to open</span>
           </div>
+          <span role="status" aria-live="polite" className="sr-only">
+            {results.length} {results.length === 1 ? "result" : "results"} shown
+          </span>
 
           {results.length > 0 ? (
             results.map((patent: Patent, idx: number) => {
@@ -134,7 +147,8 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
                   id={`patent-search-result-${idx}`}
                   href={`/patents/${patent.id}`}
                   onClick={onClose}
-                  onMouseEnter={() => setSelectedIndex(idx)}
+                  role="option"
+                  aria-selected={isSelected}
                   className={`p-3.5 rounded-2xl flex items-center justify-between gap-3 transition-colors text-left group ${
                     isSelected
                       ? "bg-amber-700 text-white dark:bg-amber-700 shadow-sm"

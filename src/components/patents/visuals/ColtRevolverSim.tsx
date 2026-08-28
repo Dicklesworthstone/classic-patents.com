@@ -257,7 +257,7 @@ export function ColtRevolverSim() {
       </div>
 
       {/* Visual Canvas & Interactive Schematics */}
-      <div className="relative bg-[#090d16] rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 flex flex-col items-center justify-center min-h-[380px] overflow-hidden select-none">
+      <div className="relative bg-canvas rounded-2xl border border-parchment-300 dark:border-ink-800 p-4 sm:p-6 flex flex-col items-center justify-center min-h-[380px] overflow-hidden select-none">
         {/* Blueprint Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-35 pointer-events-none" />
 
@@ -414,7 +414,7 @@ export function ColtRevolverSim() {
                     y="13"
                     width="140"
                     height="24"
-                    fill={isFiring ? "#7c2d12" : "#090d16"}
+                    fill={isFiring ? "#7c2d12" : "#0a0f1d"}
                     stroke={isFiring ? "#ea580c" : "#475569"}
                     strokeWidth="1.5"
                   />
@@ -469,7 +469,7 @@ export function ColtRevolverSim() {
                     y="113"
                     width="140"
                     height="24"
-                    fill="#090d16"
+                    fill="#0a0f1d"
                     stroke="#475569"
                     strokeWidth="1.5"
                   />
@@ -482,7 +482,7 @@ export function ColtRevolverSim() {
                     y="144"
                     width="16"
                     height="6"
-                    fill="#090d16"
+                    fill="#0a0f1d"
                     stroke="#38bdf8"
                     strokeWidth="1.5"
                   />
@@ -491,7 +491,7 @@ export function ColtRevolverSim() {
                     y="0"
                     width="16"
                     height="6"
-                    fill="#090d16"
+                    fill="#0a0f1d"
                     stroke="#38bdf8"
                     strokeWidth="1.5"
                   />
@@ -665,7 +665,7 @@ export function ColtRevolverSim() {
                               ? "#1e293b"
                               : status === "loaded"
                                 ? "#0f172a"
-                                : "#090d16"
+                                : "#0a0f1d"
                           }
                           stroke={
                             isBattery ? "#f59e0b" : status === "loaded" ? "#38bdf8" : "#64748b"
@@ -708,7 +708,7 @@ export function ColtRevolverSim() {
                   })}
 
                   {/* Central Arbor Pin Bore & 5-Tooth Ratchet Star */}
-                  <circle cx="0" cy="0" r="22" fill="#090d16" stroke="#475569" strokeWidth="2" />
+                  <circle cx="0" cy="0" r="22" fill="#0a0f1d" stroke="#475569" strokeWidth="2" />
                   <circle cx="0" cy="0" r="10" fill="#475569" stroke="#94a3b8" strokeWidth="1.5" />
                 </g>
               </svg>

@@ -6,6 +6,7 @@ import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface BoyleSmithCcdSimProps {
   interactive?: boolean;
@@ -16,6 +17,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRunning, setIsRunning] = useState(true);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const gateVoltage = params.gateVoltageV ?? 10;
   const clockFreq = params.clockFrequencyMhz ?? 5.0;
@@ -41,6 +43,8 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
     let clockPhase = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isRunning) {
         clockPhase = (clockPhase + 0.05 * (clockFreq / 5.0)) % (Math.PI * 2);
       }
@@ -49,7 +53,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
       const h = canvas.height;
 
       // Dark background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Grid lines
@@ -281,16 +285,17 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
         ctx.font = "10px Inter, sans-serif";
         ctx.fillText(card.desc, cx + 12, hudY + 62);
       });
-
-      animId = requestAnimationFrame(render);
     };
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics]);
+  }, [gateVoltage, clockFreq, incidentLux, temperature, isRunning, metrics, onscreenRef.current]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -347,17 +352,17 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
       </div>
 
       {/* Canvas */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={800} height={420} className="h-full w-full object-contain" />
       </div>
 
       {interactive && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-slate-800/80 bg-parchment-100/80 dark:bg-slate-900/50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-ink-800/80 bg-parchment-100/80 dark:bg-ink-900/50 p-4">
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="gateVoltage"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Gate Voltage:{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
@@ -379,7 +384,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="clockFreq"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Clock Freq:{" "}
                 <span className="font-bold text-cyan-600 dark:text-cyan-400">{clockFreq} MHz</span>
@@ -399,7 +404,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="incidentLux"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Incident Light:{" "}
                 <span className="font-bold text-amber-600 dark:text-amber-400">
@@ -421,7 +426,7 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="temperature"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Temp:{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">

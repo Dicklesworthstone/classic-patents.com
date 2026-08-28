@@ -48,18 +48,18 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
 
   return (
     <div
-      className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-stone-700 bg-parchment-50 dark:bg-stone-900/90 p-4 sm:p-6 shadow-md text-ink-900 dark:text-stone-100 transition-colors ${className}`}
+      className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-700 bg-parchment-50 dark:bg-ink-900/90 p-4 sm:p-6 shadow-md text-ink-900 dark:text-parchment-100 transition-colors ${className}`}
     >
       {/* Header & Principle Banner */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-parchment-200 dark:border-stone-700 pb-4">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-parchment-200 dark:border-ink-700 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <FlaskConical className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-stone-100">
+            <h3 className="text-xl font-bold font-serif text-ink-950 dark:text-parchment-100">
               Leo Baekeland Bakelite Phenol-Formaldehyde Synthesis (US 942,699)
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
             Editorial process model of the patent's reaction, water separation, forming, and
             heat-and-pressure hardening. Resin-stage names and numerical material outputs are modern
             interpretations, not printed measurements in US 942,699.

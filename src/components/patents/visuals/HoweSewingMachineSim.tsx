@@ -7,12 +7,14 @@ import { howeStitch, stepHoweLockstitch, stepHoweSewingMachine } from "@/physics
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function HoweSewingMachineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-4750-howe-sewing-machine");
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(120); // 0 to 360 degrees
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const sewingSpeedRpm = params.crankRpm ?? 240;
   const sew = stepHoweSewingMachine(
     sewingSpeedRpm,
@@ -25,6 +27,7 @@ export function HoweSewingMachineSim() {
     const tickMs = sew.crankDisplayTickMs;
     const degPerTick = sew.crankOmegaDegPerS * sew.crankDisplayTickS;
     const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
       setCrankAngleDeg((prev) => (prev + degPerTick) % sew.displayWrapDeg);
     }, tickMs);
     return () => clearInterval(interval);
@@ -34,6 +37,7 @@ export function HoweSewingMachineSim() {
     sew.crankOmegaDegPerS,
     sew.crankDisplayTickS,
     sew.displayWrapDeg,
+    onscreenRef.current,
   ]);
 
   const {
@@ -45,7 +49,10 @@ export function HoweSewingMachineSim() {
   } = stepHoweLockstitch(crankAngleDeg);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-6 sm:p-7 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
@@ -109,7 +116,7 @@ export function HoweSewingMachineSim() {
 
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
           <svg viewBox="0 0 600 320" className="w-full h-auto max-h-[340px]">
             {/* Background Plate */}
             <rect width="600" height="320" fill="#0f172a" />

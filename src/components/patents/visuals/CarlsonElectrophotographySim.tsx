@@ -6,6 +6,7 @@ import { stepCarlsonElectrophotography } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface CarlsonElectrophotographySimProps {
   initialCoronaVoltageKv?: number;
@@ -21,6 +22,7 @@ export function CarlsonElectrophotographySim({
   initialFuserTemperatureC = 185,
 }: CarlsonElectrophotographySimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const physicsState = usePatentPhysics("us-2297691-carlson-electrophotography");
   const { params, updateParam, resetParams } = physicsState;
@@ -58,6 +60,8 @@ export function CarlsonElectrophotographySim({
     let angle = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isRotating) {
         angle += 0.015;
       }
@@ -66,7 +70,7 @@ export function CarlsonElectrophotographySim({
       const h = LOGICAL_H;
 
       // Dark background
-      ctx.fillStyle = "#070b14";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Subtle Grid
@@ -352,8 +356,6 @@ export function CarlsonElectrophotographySim({
       ctx.fillText(`TONER DENSITY: ${physics.tonerMassDensityMgPerCm2} mg/cm²`, 360, h - 22);
       ctx.fillStyle = "#f87171";
       ctx.fillText(`FUSING QUALITY: ${physics.fuserBondQualityPct}%`, 530, h - 22);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
@@ -361,10 +363,13 @@ export function CarlsonElectrophotographySim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [isRotating, physics]);
+  }, [isRotating, physics, onscreenRef.current]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -418,12 +423,12 @@ export function CarlsonElectrophotographySim({
       </div>
 
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Interactive Control Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
         {/* Corona Voltage */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
@@ -439,9 +444,9 @@ export function CarlsonElectrophotographySim({
             step={0.25}
             value={coronaVoltageKv}
             onChange={(e) => updateParam("coronaVoltageKv", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             Surface charging potential
           </span>
         </div>
@@ -461,11 +466,9 @@ export function CarlsonElectrophotographySim({
             step={1}
             value={exposureLuxSec}
             onChange={(e) => updateParam("exposureLuxSec", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
-            Discharge light energy
-          </span>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">Discharge light energy</span>
         </div>
 
         {/* Photoreceptor Thickness */}
@@ -483,9 +486,9 @@ export function CarlsonElectrophotographySim({
             step={5}
             value={layerThicknessUm}
             onChange={(e) => updateParam("layerThicknessUm", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             Semiconductor layer depth
           </span>
         </div>
@@ -505,11 +508,9 @@ export function CarlsonElectrophotographySim({
             step={5}
             value={fuserTemperatureC}
             onChange={(e) => updateParam("fuserTemperatureC", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-600 dark:accent-rose-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-rose-600 dark:accent-rose-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
-            Thermal resin bonding
-          </span>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">Thermal resin bonding</span>
         </div>
       </div>
     </div>

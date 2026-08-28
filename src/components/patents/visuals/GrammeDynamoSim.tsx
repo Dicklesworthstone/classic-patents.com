@@ -6,6 +6,7 @@ import { grammeCoil, grammeJunctionRod, stepGrammeDynamo } from "@/physics/catal
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function GrammeDynamoSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-120057-gramme-dynamo");
@@ -16,24 +17,29 @@ export function GrammeDynamoSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angleDeg, setAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   useEffect(() => {
     if (!isPlaying) return;
     const loop = () => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       // The animation is a visual cue, not a historical speed measurement.
       // Fixed per-frame steps avoid deriving state from a private wall clock.
       setAngleDeg((prev) => (prev + gramme.displayDegPerFrame) % gramme.displayWrapDeg);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gramme.displayDegPerFrame, gramme.displayWrapDeg]);
+  }, [isPlaying, gramme.displayDegPerFrame, gramme.displayWrapDeg, onscreenRef.current]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

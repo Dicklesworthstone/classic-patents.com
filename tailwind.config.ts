@@ -13,6 +13,8 @@ const config: Config = {
         xs: "420px",
       },
       colors: {
+        // Shared artboard navy for 2D sim canvases (replaces five ad-hoc hexes).
+        canvas: "#0a0f1d",
         parchment: {
           50: "#faf8f5",
           100: "#f4ede2",
@@ -26,19 +28,6 @@ const config: Config = {
           900: "#4f3c2f",
           950: "#2a1f18",
         },
-        blueprint: {
-          50: "#f0f7ff",
-          100: "#e0effe",
-          200: "#bae0fd",
-          300: "#7cc5fb",
-          400: "#36a5f7",
-          500: "#0c87eb",
-          600: "#016bc9",
-          700: "#0255a2",
-          800: "#064885",
-          900: "#0b3d6f",
-          950: "#062447",
-        },
         ink: {
           50: "#f6f6f7",
           100: "#e1e3e5",
@@ -51,13 +40,6 @@ const config: Config = {
           800: "#2d3138",
           900: "#1a1d21",
           950: "#0f1113",
-        },
-        brass: {
-          300: "#e6c387",
-          400: "#d8ac60",
-          500: "#c4933f",
-          600: "#aa782f",
-          700: "#865a25",
         },
       },
       fontFamily: {

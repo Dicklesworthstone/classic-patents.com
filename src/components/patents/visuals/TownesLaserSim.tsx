@@ -6,6 +6,7 @@ import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface TownesLaserSimProps {
   initialPumpPowerWatts?: number;
@@ -21,6 +22,7 @@ export function TownesLaserSim({
   initialBeamDiameterMm = 8,
 }: TownesLaserSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-2929922-townes-laser");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -50,6 +52,8 @@ export function TownesLaserSim({
     let phase = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       phase += 0.08;
 
       const w = canvas.width;
@@ -395,8 +399,6 @@ export function TownesLaserSim({
       ctx.fillText(`GAIN THRESHOLD: ${physics.thresholdGainPerCm} cm⁻¹`, 330, h - 22);
       ctx.fillStyle = "#c084fc";
       ctx.fillText(`DIVERGENCE: ${physics.beamDivergenceMrad} mrad`, 510, h - 22);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
@@ -404,10 +406,20 @@ export function TownesLaserSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [pumpPowerWatts, mirror2ReflectivityPct, beamDiameterMm, activeMedium, physics]);
+  }, [
+    pumpPowerWatts,
+    mirror2ReflectivityPct,
+    beamDiameterMm,
+    activeMedium,
+    physics,
+    onscreenRef.current,
+  ]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -452,12 +464,12 @@ export function TownesLaserSim({
       </div>
 
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Interactive Control Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
         {/* Optical Pump Power */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">
@@ -473,9 +485,9 @@ export function TownesLaserSim({
             step={25}
             value={pumpPowerWatts}
             onChange={(e) => updateParam("pumpPowerWatts", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-amber-600 dark:accent-yellow-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">Threshold ~120 W</span>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">Threshold ~120 W</span>
         </div>
 
         {/* Cavity Length */}
@@ -491,11 +503,9 @@ export function TownesLaserSim({
             step={5}
             value={cavityLengthCm}
             onChange={(e) => updateParam("cavityLengthCm", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-cyan-600 dark:accent-cyan-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
-            End mirror separation
-          </span>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">End mirror separation</span>
         </div>
 
         {/* Output Mirror Reflectivity */}
@@ -513,9 +523,9 @@ export function TownesLaserSim({
             step={0.5}
             value={mirror2ReflectivityPct}
             onChange={(e) => updateParam("mirror2ReflectivityPct", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600 dark:accent-emerald-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-emerald-600 dark:accent-emerald-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             Front mirror reflection
           </span>
         </div>
@@ -535,9 +545,9 @@ export function TownesLaserSim({
             step={1}
             value={beamDiameterMm}
             onChange={(e) => updateParam("beamDiameterMm", Number(e.target.value))}
-            className="w-full h-1.5 bg-parchment-300 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-600 dark:accent-purple-500"
+            className="w-full h-1.5 bg-parchment-300 dark:bg-ink-700 rounded-lg appearance-none cursor-pointer accent-purple-600 dark:accent-purple-500"
           />
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">
             Diffraction divergence limit
           </span>
         </div>
@@ -558,16 +568,14 @@ export function TownesLaserSim({
                 e.target.value as "potassium_vapor" | "ruby_solid" | "he_ne_gas" | "nd_yag",
               )
             }
-            className="w-full py-1 px-2 text-xs bg-parchment-100 dark:bg-slate-800 text-ink-900 dark:text-slate-200 rounded border border-parchment-300 dark:border-slate-700"
+            className="w-full py-1 px-2 text-xs bg-parchment-100 dark:bg-ink-800 text-ink-900 dark:text-parchment-200 rounded border border-parchment-300 dark:border-ink-700"
           >
             <option value="potassium_vapor">Potassium (3.14 µm)</option>
             <option value="ruby_solid">Ruby Rod (694.3 nm)</option>
             <option value="he_ne_gas">He-Ne Gas (632.8 nm)</option>
             <option value="nd_yag">Nd:YAG (1064 nm)</option>
           </select>
-          <span className="text-[10px] text-ink-500 dark:text-slate-400">
-            Laser transition media
-          </span>
+          <span className="text-[10px] text-ink-500 dark:text-ink-400">Laser transition media</span>
         </div>
       </div>
     </div>

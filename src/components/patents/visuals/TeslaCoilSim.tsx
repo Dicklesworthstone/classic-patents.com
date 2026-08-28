@@ -82,10 +82,10 @@ export function TeslaCoilSim() {
 
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-[#0a0f1d] border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
           <svg viewBox="0 0 600 340" className="w-full h-auto max-h-[340px]">
             {/* Background Dark Lab */}
-            <rect width="600" height="340" fill="#090d16" />
+            <rect width="600" height="340" fill="#0a0f1d" />
 
             {/* Floor Ground Plane */}
             <line x1="50" y1="300" x2="550" y2="300" stroke="#334155" strokeWidth="3" />

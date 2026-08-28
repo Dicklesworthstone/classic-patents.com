@@ -7,6 +7,7 @@ import { stepKilbyIntegratedCircuit } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface KilbySimProps {
   className?: string;
@@ -14,6 +15,7 @@ interface KilbySimProps {
 
 export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className = "" }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const { params, updateParam, resetParams } = usePatentPhysics(
     "us-3138743-kilby-integrated-circuit",
   );
@@ -42,6 +44,8 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
     let time = 0;
 
     const render = () => {
+      animationFrameId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -52,7 +56,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
       time += 0.03;
 
       // Dark solid-state blueprint/museum background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, width, height);
 
       // Subtle engineering coordinate grid
@@ -325,8 +329,6 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
         ctx.font = "9px 'JetBrains Mono', monospace";
         ctx.fillText(m.sub, cx + 10, cardY + 58);
       });
-
-      animationFrameId = requestAnimationFrame(render);
     };
 
     render();
@@ -334,10 +336,19 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [simState, activeCircuitMode, clockState, supplyVoltage, resistorLength, resistorWidth]);
+  }, [
+    simState,
+    activeCircuitMode,
+    clockState,
+    supplyVoltage,
+    resistorLength,
+    resistorWidth,
+    onscreenRef.current,
+  ]);
 
   return (
     <div
+      ref={rootRef}
       className={`flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors ${className}`}
     >
       {/* Header with Title and Global Action Controls */}
@@ -398,7 +409,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
             className={`px-3 py-1 text-xs font-mono rounded-lg border transition-colors ${
               activeCircuitMode === "flipflop"
                 ? "bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 border-cyan-400 dark:border-cyan-500"
-                : "bg-parchment-100 dark:bg-slate-900 text-ink-700 dark:text-slate-400 border-parchment-300 dark:border-slate-700 hover:text-ink-900 dark:hover:text-slate-200"
+                : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-ink-400 border-parchment-300 dark:border-ink-700 hover:text-ink-900 dark:hover:text-slate-200"
             }`}
           >
             Bistable Multivibrator (Fig. 7)
@@ -412,7 +423,7 @@ export const KilbyIntegratedCircuitSim: React.FC<KilbySimProps> = ({ className =
             className={`px-3 py-1 text-xs font-mono rounded-lg border transition-colors ${
               activeCircuitMode === "oscillator"
                 ? "bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border-purple-400 dark:border-purple-500"
-                : "bg-parchment-100 dark:bg-slate-900 text-ink-700 dark:text-slate-400 border-parchment-300 dark:border-slate-700 hover:text-ink-900 dark:hover:text-slate-200"
+                : "bg-parchment-100 dark:bg-ink-900 text-ink-700 dark:text-ink-400 border-parchment-300 dark:border-ink-700 hover:text-ink-900 dark:hover:text-slate-200"
             }`}
           >
             Phase-Shift Oscillator (Fig. 11)

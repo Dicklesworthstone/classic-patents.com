@@ -51,6 +51,8 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
           onClick={() => sensitivity && setShowDetail(!showDetail)}
           className="text-ink-700 dark:text-ink-300 font-medium flex items-center gap-1 text-left cursor-pointer hover:text-ink-900 dark:hover:text-parchment-100"
           title={sensitivity ? "Tap to toggle derivative details" : undefined}
+          aria-expanded={sensitivity ? showDetail : undefined}
+          aria-controls={sensitivity ? `${id}-sensitivity-detail` : undefined}
         >
           <span>{label}</span>
           {sensitivity && (
@@ -88,6 +90,7 @@ export const SensitivitySlider: React.FC<SensitivitySliderProps> = ({
       {/* Live Automatic Differentiation Sensitivity Pill (Hover or Mobile Tap) */}
       {sensitivity && (
         <div
+          id={`${id}-sensitivity-detail`}
           className={`flex items-center justify-between px-2 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/20 text-[10px] font-mono text-amber-800 dark:text-amber-300 transition-all ${
             showDetail
               ? "opacity-100 scale-100"

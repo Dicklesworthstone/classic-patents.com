@@ -6,6 +6,7 @@ import { ROOMBA_FURNITURE, ROOMBA_ROOM, stepRoomba } from "@/physics/roombaKerne
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface RoombaSimProps {
   initialWheelSpeed?: number;
@@ -14,6 +15,7 @@ interface RoombaSimProps {
 
 export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: RoombaSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const speedId = useId();
   const turnId = useId();
 
@@ -43,6 +45,8 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
     });
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isPlaying) {
         state = stepRoomba(
           {
@@ -66,7 +70,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       const h = canvas.height;
 
       // Dark background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Grid lines
@@ -276,25 +280,27 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       ctx.fillStyle = "#38bdf8";
       ctx.font = "bold 10px monospace";
       ctx.fillText(`${state.timeInMode.toFixed(2)} sec`, tX + 12, statY + 82);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [wheelSpeed, turnRate, isPlaying, cleanedAreaPct]);
+  }, [wheelSpeed, turnRate, isPlaying, cleanedAreaPct, onscreenRef.current]);
 
   // Increment cleaned area slowly while active
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
       setCleanedAreaPct((p) => Math.min(96, p + 1));
     }, 1200);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, onscreenRef.current]);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+    <div
+      ref={rootRef}
+      className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -353,7 +359,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">
         <canvas
           ref={canvasRef}
           width={760}
@@ -363,10 +369,10 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-ink-900/70 border border-parchment-200 dark:border-ink-800/80 text-xs">
         {/* Drive Wheel Speed */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={speedId}>Differential Wheel Speed:</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {wheelSpeed.toFixed(2)} m/s
@@ -382,14 +388,14 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             onChange={(e) => updateParam("wheelSpeedMps", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Linear velocity across floor driving Archimedean spiral and straight cruise modes
           </span>
         </div>
 
         {/* Turn Rate Rad/Sec */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={turnId}>Turn Angular Rate:</label>
             <span className="text-cyan-600 dark:text-cyan-400 font-bold">
               {turnRate.toFixed(1)} rad/s
@@ -405,7 +411,7 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
             onChange={(e) => updateParam("turnRateRadSec", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Spin rate of differential drive wheels during obstacle collision deflection
           </span>
         </div>
@@ -421,13 +427,13 @@ export function RoombaSim({ initialWheelSpeed = 0.3, initialTurnRate = 1.5 }: Ro
               setCleanedAreaPct(5);
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-neutral-900 border border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
             🧹 Clear Trail Ribbon
           </button>
         </div>
 
-        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+        <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
           Navigation:{" "}
           <span className="text-indigo-600 dark:text-indigo-400">
             Brooks Subsumption Architecture

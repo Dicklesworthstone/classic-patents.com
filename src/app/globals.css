@@ -4,15 +4,6 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --ease-stripe: cubic-bezier(0.19, 1, 0.22, 1);
-    --duration-fast: 200ms;
-    --duration-normal: 400ms;
-    --duration-slow: 700ms;
-
-    --shadow-brand: 0 0 40px -10px rgba(217, 119, 6, 0.25);
-  }
-
   html {
     overflow-x: clip;
     overscroll-behavior-x: none;
@@ -111,28 +102,7 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.04);
 }
 
-/* Kinetic Card Lift — only on real hover pointers so scroll-over does not jank. */
-@media (hover: hover) and (pointer: fine) {
-  .kinetic-card {
-    transition:
-      transform var(--duration-normal) var(--ease-stripe),
-      box-shadow var(--duration-normal) var(--ease-stripe),
-      border-color var(--duration-normal) var(--ease-stripe);
-  }
-
-  .kinetic-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-brand);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .kinetic-card,
-  .kinetic-card:hover {
-    transition: none;
-    transform: none;
-  }
-
   .animate-pulse,
   .animate-pulse-slow,
   .animate-spin-slow,

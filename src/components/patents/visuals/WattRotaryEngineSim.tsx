@@ -17,6 +17,7 @@ import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { stepWattRotaryEngine } from "@/physics/wattRotaryKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function WattRotaryEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-1306-watt-rotary-engine");
@@ -27,6 +28,7 @@ export function WattRotaryEngineSim() {
   >("engine-elevation");
   const [isPlaying, setIsPlaying] = useState(true);
   const [time, setTime] = useState(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const strokeRateSpm = params.strokeRateSpm ?? 20;
   const boilerPressureKpa = params.boilerPressureKpa ?? 70;
@@ -40,15 +42,16 @@ export function WattRotaryEngineSim() {
     let lastTimestamp = performance.now();
 
     const render = (now: number) => {
+      animationFrameId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       const deltaSec = (now - lastTimestamp) / 1000;
       lastTimestamp = now;
       setTime((prev) => prev + deltaSec);
-      animationFrameId = requestAnimationFrame(render);
     };
 
     animationFrameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isPlaying]);
+  }, [isPlaying, onscreenRef.current]);
 
   // Compute live physics telemetry
   const telemetry = stepWattRotaryEngine(
@@ -88,7 +91,10 @@ export function WattRotaryEngineSim() {
   const sunAngleDeg = telemetry.sunShaftAngleDeg;
 
   return (
-    <div className="w-full bg-parchment-50 dark:bg-[#0d1117] border border-parchment-300 dark:border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-ink-900 dark:text-stone-200">
+    <div
+      ref={rootRef}
+      className="w-full bg-parchment-50 dark:bg-canvas border border-parchment-300 dark:border-amber-950/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-6 text-ink-900 dark:text-parchment-200"
+    >
       {/* Header & Subtitle */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-parchment-200 dark:border-amber-900/30 pb-4">
         <div>
@@ -100,7 +106,7 @@ export function WattRotaryEngineSim() {
               James Watt Sun &amp; Planet Epicyclic Rotative Engine
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-stone-400 mt-1">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-1">
             Authentic 2:1 speed multiplication, planetary tooth mesh, and continuous rotative shaft
             drive
           </p>
@@ -194,7 +200,7 @@ export function WattRotaryEngineSim() {
       </div>
 
       {/* Main Interactive Canvas & Diagram */}
-      <div className="relative w-full aspect-[16/10] bg-[#080b11] rounded-xl border border-stone-800 overflow-hidden">
+      <div className="relative w-full aspect-[16/10] bg-canvas rounded-xl border border-stone-800 overflow-hidden">
         {activeTab === "engine-elevation" && (
           <svg viewBox="0 0 700 480" className="w-full h-full">
             {/* Grid and background styling */}
@@ -476,9 +482,9 @@ export function WattRotaryEngineSim() {
         )}
 
         {activeTab === "gear-mesh" && (
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#090d16]">
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-canvas">
             <svg viewBox="0 0 500 350" className="w-full max-w-lg h-auto">
-              <rect width="500" height="350" fill="#080b11" rx="10" stroke="#1f2937" />
+              <rect width="500" height="350" fill="#0a0f1d" rx="10" stroke="#1f2937" />
 
               {/* Sun Gear Pitch Circle */}
               <circle
@@ -572,7 +578,7 @@ export function WattRotaryEngineSim() {
         )}
 
         {activeTab === "alternative-methods" && (
-          <div className="w-full h-full grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-[#090d16] overflow-y-auto">
+          <div className="w-full h-full grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-canvas overflow-y-auto">
             {/* Method 2: Internal Planetary */}
             <div className="bg-[#0f172a] p-4 rounded-xl border border-stone-800 space-y-2">
               <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">

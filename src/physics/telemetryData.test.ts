@@ -349,8 +349,8 @@ describe("Physics Telemetry Data Registry", () => {
   test("routes Parsons, CCD, Kevlar, Marconi, Lamarr, Fermi, Engelbart, Linotype, and Hollerith onto their shared kernels", () => {
     const routed: Array<[string, string]> = [
       ["us-608969-parsons-turbine", "stepParsonsTurbine"],
-      ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCCD"],
-      ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCCD"],
+      ["us-3858232-boyle-smith-ccd", "stepBoyleSmithCcd"],
+      ["us-3923554-boyle-smith-ccd", "stepBoyleSmithCcd"],
       ["us-3671542-kwolek-kevlar", "stepKevlarContinuum"],
       ["us-586193-marconi-radio", "stepMarconiRadio"],
       ["us-2292387-lamarr-frequency-hopping", "stepLamarrFrequencyHopping"],

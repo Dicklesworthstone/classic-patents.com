@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { useOffscreenGate } from "./useOffscreenGate";
+
 interface SparkWaterfallProps {
   /** Fundamental of the damped spark, Hz */
   fundamentalHz: number;
@@ -34,6 +36,7 @@ function sparkSpectrum(fundamentalHz: number, energy: number): Float32Array {
 
 export function SparkWaterfall({ fundamentalHz, energy, firing, className }: SparkWaterfallProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const rowsRef = useRef<Float32Array[]>(
     Array.from({ length: ROWS }, () => new Float32Array(BINS)),
   );
@@ -49,6 +52,7 @@ export function SparkWaterfall({ fundamentalHz, energy, firing, className }: Spa
 
     const draw = (now: number) => {
       raf = requestAnimationFrame(draw);
+      if (!onscreenRef.current) return;
       if (now - last < 50) return;
       last = now;
 
@@ -84,12 +88,12 @@ export function SparkWaterfall({ fundamentalHz, energy, firing, className }: Spa
 
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, [energy, firing, fundamentalHz]);
+  }, [energy, firing, fundamentalHz, onscreenRef.current]);
 
   const f0Khz = (fundamentalHz / 1000).toFixed(0);
 
   return (
-    <div className={className}>
+    <div ref={rootRef} className={className}>
       <div className="flex items-baseline justify-between mb-1">
         <span className="text-[10px] font-mono uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Spark spectrum

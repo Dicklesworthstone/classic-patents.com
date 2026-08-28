@@ -6,6 +6,7 @@ import { stepWhitneyCottonGin } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function WhitneyCottonGinSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-x72-whitney-cotton-gin");
@@ -15,6 +16,7 @@ export function WhitneyCottonGinSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [angle, setAngle] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const gin = stepWhitneyCottonGin({ crankRpm, seedGridClearance: grateClearanceMm });
   const sawSpeedMps = gin.sawTipSpeedMps;
@@ -29,21 +31,25 @@ export function WhitneyCottonGinSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
       setAngle((prev) => (prev + gin.crankOmegaDegPerS * dt) % gin.displayWrapDeg);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, gin.crankOmegaDegPerS, gin.displayWrapDeg]);
+  }, [isPlaying, gin.crankOmegaDegPerS, gin.displayWrapDeg, onscreenRef.current]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -104,7 +110,12 @@ export function WhitneyCottonGinSim() {
 
       {/* SVG Simulation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Cotton gin simulation: ${isPlaying ? "gin operating" : "standby"}, saw spinning at ${Math.round(sawSpeedMps)} meters per second and brush cylinder at ${Math.round(brushRpm)} rpm${isClogged ? ", grate clogged" : ""}${isSeedDamaged ? ", seeds at risk of damage" : ""}`}
+          className="w-full h-full"
+        >
           {/* Hopper and Housing Frame */}
           <path
             d="M 60 40 L 180 180 L 160 300 L 40 300 Z"

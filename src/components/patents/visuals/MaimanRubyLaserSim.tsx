@@ -6,6 +6,7 @@ import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface MaimanRubyLaserSimProps {
   interactive?: boolean;
@@ -16,6 +17,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isFiring, setIsFiring] = useState(false);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const pumpEnergy = params.pumpEnergyJoules ?? 150;
   const flashDuration = params.flashDurationMs ?? 1.0;
@@ -46,12 +48,14 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
     let _time = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       _time += 0.03;
       const w = canvas.width;
       const h = canvas.height;
 
       // Dark quantum optics lab background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Draw optical bench grid lines
@@ -324,16 +328,17 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
         ctx.font = "10px Inter, sans-serif";
         ctx.fillText(card.desc, cx + 12, hudY + 62);
       });
-
-      animId = requestAnimationFrame(render);
     };
 
     render();
     return () => cancelAnimationFrame(animId);
-  }, [pumpEnergy, outputReflectivity, temperature, isFiring, metrics]);
+  }, [pumpEnergy, outputReflectivity, temperature, isFiring, metrics, onscreenRef.current]);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -391,17 +396,17 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
       </div>
 
       {/* Canvas */}
-      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={800} height={420} className="h-full w-full object-contain" />
       </div>
 
       {interactive && (
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-slate-800/80 bg-parchment-100/80 dark:bg-slate-900/50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-parchment-200 dark:border-ink-800/80 bg-parchment-100/80 dark:bg-ink-900/50 p-4">
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="pumpEnergy"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Flash Pump Energy:{" "}
                 <span className="font-bold text-rose-600 dark:text-rose-400">{pumpEnergy} J</span>
@@ -421,7 +426,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="outputReflectivity"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Output Mirror R2:{" "}
                 <span className="font-bold text-cyan-600 dark:text-cyan-400">
@@ -443,7 +448,7 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
             <div className="flex flex-col gap-1">
               <label
                 htmlFor="temperature"
-                className="text-xs font-mono text-ink-700 dark:text-slate-400"
+                className="text-xs font-mono text-ink-700 dark:text-ink-400"
               >
                 Crystal Temp:{" "}
                 <span className="font-bold text-emerald-600 dark:text-emerald-400">

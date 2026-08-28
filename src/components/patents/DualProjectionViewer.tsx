@@ -206,6 +206,10 @@ export function DualProjectionViewer({
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.target instanceof HTMLSelectElement) return;
       if (e.target instanceof HTMLElement && e.target.isContentEditable) return;
+      // Never hijack browser chords (Alt+1..6) or act while a <dialog> is
+      // open — PatentTimeline.tsx is the reference guard.
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (typeof document !== "undefined" && document.querySelector("dialog[open]")) return;
       if (e.key === "1") setViewMode("plain-english");
       else if (e.key === "2") setViewMode("original-spec");
       else if (e.key === "3") setViewMode("interactive-sim");
@@ -416,7 +420,7 @@ export function DualProjectionViewer({
               </div>
             </div>
           ) : (
-            <div className="w-full h-[75vh] sm:h-[80vh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
+            <div className="w-full h-[75dvh] sm:h-[80dvh] lg:h-[800px] rounded-2xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-ink-900 shadow-inner">
               <object
                 data={`${patent.originalPdfUrl}#toolbar=1&navpanes=0`}
                 type="application/pdf"
@@ -570,6 +574,9 @@ export function DualProjectionViewer({
                 </h4>
                 <span className="text-xs font-sans text-ink-500 hidden sm:inline">
                   Drag to rotate · Scroll to zoom · Shared controls update the displayed model
+                </span>
+                <span className="text-xs font-sans text-ink-500 sm:hidden">
+                  Drag to rotate · Pinch to zoom · Shared controls update the displayed model
                 </span>
               </div>
               <PatentVisualDispatcher patentId={patent.id} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, RotateCcw, Shield, Sparkles, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { TextWithLatex } from "@/components/ui/LatexRenderer";
 import { FrankenSimEngine } from "@/physics/engine";
@@ -16,7 +16,6 @@ export function FermiReactorSim() {
   const controlRodWithdrawalPct = params.rodWithdrawal ?? 83.5;
   const moderatorPurityPct = params.moderatorPurity ?? 99.5;
   const fuelEnrichmentPct = params.fuelEnrichmentPct ?? 0.72;
-  const [_neutronHistory, setNeutronHistory] = useState<number[]>([200, 200, 200, 200, 200]);
 
   // Compute Nuclear Kinetics via FrankenSimEngine
   const kinetics = FrankenSimEngine.stepFermiReactor(
@@ -31,14 +30,6 @@ export function FermiReactorSim() {
 
   const isSupercritical = kEffective > 1.002;
   const isCritical = kEffective >= 0.998 && kEffective <= 1.002;
-  const _isSubcritical = kEffective < 0.998;
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setNeutronHistory((prev) => [...prev.slice(1), Math.min(1000, thermalPowerWatts)]);
-    }, 500);
-    return () => clearInterval(timer);
-  }, [thermalPowerWatts]);
 
   useEffect(() => {
     if (kEffective <= 1.0 || isAudioMuted || soundEngine.getIsMuted()) return;
@@ -111,7 +102,7 @@ export function FermiReactorSim() {
               width="300"
               height="220"
               rx="12"
-              className="fill-slate-800 dark:fill-slate-900 stroke-slate-600"
+              className="fill-slate-800 dark:fill-ink-900 stroke-slate-600"
               strokeWidth="2"
             />
 

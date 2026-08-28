@@ -76,6 +76,7 @@ export function WrightFlyerSim() {
           <div className="flex flex-wrap items-center gap-1.5 bg-parchment-200 dark:bg-ink-900 p-1 rounded-xl border border-parchment-300 dark:border-ink-800 text-xs font-mono">
             <button
               type="button"
+              aria-pressed={activeStep === 0}
               onClick={() => {
                 applyPedagogyStep(0);
                 soundEngine.playSwitchClick();
@@ -90,6 +91,7 @@ export function WrightFlyerSim() {
             </button>
             <button
               type="button"
+              aria-pressed={activeStep === 1}
               onClick={() => {
                 applyPedagogyStep(1);
                 soundEngine.playSwitchClick();
@@ -104,6 +106,7 @@ export function WrightFlyerSim() {
             </button>
             <button
               type="button"
+              aria-pressed={activeStep === 2}
               onClick={() => {
                 applyPedagogyStep(2);
                 soundEngine.playSwitchClick();
@@ -118,6 +121,7 @@ export function WrightFlyerSim() {
             </button>
             <button
               type="button"
+              aria-pressed={activeStep === 3}
               onClick={() => {
                 applyPedagogyStep(3);
                 soundEngine.playSwitchClick();

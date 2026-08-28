@@ -6,6 +6,7 @@ import { stepHaberAmmonia } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface HaberAmmoniaSimProps {
   initialPressureAtm?: number;
@@ -21,6 +22,7 @@ export function HaberAmmoniaSim({
   initialCatalystActivity = 1.0,
 }: HaberAmmoniaSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-971501-haber-ammonia");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -49,13 +51,15 @@ export function HaberAmmoniaSim({
     let time = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isPlaying) time += 0.025;
 
       const w = canvas.width;
       const h = canvas.height;
 
       // Background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Draw Grid / Flow Lines
@@ -387,8 +391,6 @@ export function HaberAmmoniaSim({
       ctx.fillText(`YIELD: ${physics.ammoniaYieldPct}%`, 360, h - 28);
       ctx.fillStyle = "#a855f7";
       ctx.fillText(`EXOTHERM: ${physics.reactionHeatGeneratedKw} kW`, 480, h - 28);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
@@ -396,13 +398,14 @@ export function HaberAmmoniaSim({
     return () => {
       cancelAnimationFrame(animId);
     };
-  }, [pressureAtm, temperatureCelsius, isPlaying, physics]);
+  }, [pressureAtm, temperatureCelsius, isPlaying, physics, onscreenRef.current]);
 
   if (sourceBoundedVisualOnly) {
     return (
       <section
+        ref={rootRef}
         aria-labelledby="haber-source-bounded-heading"
-        className="flex flex-col gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-slate-900 shadow-md dark:border-amber-800 dark:bg-slate-950 dark:text-slate-100 sm:p-6"
+        className="flex flex-col gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-slate-900 shadow-md dark:border-amber-800 dark:bg-ink-950 dark:text-parchment-100 sm:p-6"
       >
         <div className="border-b border-amber-200 pb-3 dark:border-amber-900">
           <div className="flex items-center gap-2">
@@ -411,13 +414,13 @@ export function HaberAmmoniaSim({
               US 971,501: Osmium Catalytic Contact
             </h3>
           </div>
-          <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+          <p className="mt-1 text-xs text-slate-600 dark:text-ink-400">
             Source-bounded chemistry instrument. The one-page grant has no drawing and does not
             disclose a compressor, heat exchanger, condenser, or recycle loop.
           </p>
         </div>
 
-        <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:grid-cols-3">
+        <div className="grid gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900 sm:grid-cols-3">
           <div>
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               Pressure
@@ -447,7 +450,7 @@ export function HaberAmmoniaSim({
           </div>
         </div>
 
-        <p className="text-sm leading-6 text-slate-700 dark:text-slate-300">
+        <p className="text-sm leading-6 text-slate-700 dark:text-parchment-300">
           The controls expose the host SI interpretation of pressure, temperature, feed amount, and
           catalyst activity. The canvas process-loop sketch remains disabled until a source drawing
           or separately accepted apparatus record exists.
@@ -471,7 +474,7 @@ export function HaberAmmoniaSim({
             <label key={id as string} className="flex flex-col gap-1 text-xs font-semibold">
               <span className="flex justify-between gap-2">
                 <span>{label as string}</span>
-                <span className="font-mono text-slate-600 dark:text-slate-300">
+                <span className="font-mono text-slate-600 dark:text-parchment-300">
                   {Number(value).toFixed(id === "catalystActivity" ? 1 : 0)} {unit as string}
                 </span>
               </span>
@@ -492,7 +495,7 @@ export function HaberAmmoniaSim({
         <button
           type="button"
           onClick={resetParams}
-          className="self-start rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-white dark:border-slate-700 dark:hover:bg-slate-900"
+          className="self-start rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold hover:bg-white dark:border-ink-700 dark:hover:bg-slate-900"
         >
           Reset source-bounded controls
         </button>
@@ -501,9 +504,9 @@ export function HaberAmmoniaSim({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-slate-800 bg-parchment-50 dark:bg-slate-950 p-4 sm:p-6 text-ink-900 dark:text-slate-100 shadow-md transition-colors">
+    <div className="flex flex-col gap-4 rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 text-ink-900 dark:text-parchment-100 shadow-md transition-colors">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-slate-800 pb-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-sky-600 dark:text-sky-400" />
@@ -511,7 +514,7 @@ export function HaberAmmoniaSim({
               Fritz Haber Catalytic High-Pressure Ammonia Synthesis (US 971,501)
             </h3>
           </div>
-          <p className="font-sans text-xs text-ink-500 dark:text-slate-400 mt-0.5">
+          <p className="font-sans text-xs text-ink-500 dark:text-ink-400 mt-0.5">
             Super-atmospheric compression loop, catalytic equilibrium kinetics, and exothermic heat
             recovery.
           </p>
@@ -526,7 +529,7 @@ export function HaberAmmoniaSim({
             className={`p-2 rounded-lg transition-colors border shadow-sm ${
               isPlaying
                 ? "bg-sky-600 text-white border-sky-700"
-                : "bg-parchment-200 dark:bg-slate-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-slate-700 hover:bg-parchment-300"
+                : "bg-parchment-200 dark:bg-ink-800 text-ink-800 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-300"
             }`}
             title={isPlaying ? "Pause Synthesis Loop" : "Run Synthesis Loop"}
             aria-label={isPlaying ? "Pause Synthesis Loop" : "Run Synthesis Loop"}
@@ -540,7 +543,7 @@ export function HaberAmmoniaSim({
               soundEngine.playSwitchClick();
             }}
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
             {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -553,7 +556,7 @@ export function HaberAmmoniaSim({
               soundEngine.playSwitchClick();
             }}
             aria-label="Reset Simulation"
-            className="p-2 rounded-lg bg-parchment-200 dark:bg-slate-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
+            className="p-2 rounded-lg bg-parchment-200 dark:bg-ink-800 hover:bg-parchment-300 dark:hover:bg-slate-700 text-ink-800 dark:text-parchment-200 transition-colors"
             title="Reset Simulation"
           >
             <RotateCcw className="w-4 h-4" />
@@ -562,12 +565,12 @@ export function HaberAmmoniaSim({
       </div>
 
       {/* 2D Canvas Viewport */}
-      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-slate-800 bg-slate-950">
+      <div className="relative w-full aspect-[16/9] max-h-[520px] rounded-xl overflow-hidden border border-parchment-300 dark:border-ink-800 bg-slate-950">
         <canvas ref={canvasRef} width={640} height={380} className="w-full h-full object-contain" />
       </div>
 
       {/* Control Sliders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-slate-900/60 rounded-xl border border-parchment-200 dark:border-slate-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-parchment-100/80 dark:bg-ink-900/60 rounded-xl border border-parchment-200 dark:border-ink-800">
         {/* Reactor Pressure */}
         <div className="flex flex-col gap-1">
           <div className="flex justify-between text-xs font-semibold">

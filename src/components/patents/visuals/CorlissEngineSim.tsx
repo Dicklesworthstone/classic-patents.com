@@ -6,6 +6,7 @@ import { corlissConnectingRod, sliderStrokeSvg, stepCorlissEngine } from "@/phys
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function CorlissEngineSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-6162-corliss-steam-engine");
@@ -16,6 +17,7 @@ export function CorlissEngineSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [crankAngleDeg, setCrankAngleDeg] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const corliss = stepCorlissEngine({
     steamPressurePsi: boilerPressurePsi,
@@ -33,18 +35,19 @@ export function CorlissEngineSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
       setCrankAngleDeg((prev) => (prev + corliss.crankOmegaDegPerS * dt) % corliss.displayWrapDeg);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, corliss.crankOmegaDegPerS, corliss.displayWrapDeg]);
+  }, [isPlaying, corliss.crankOmegaDegPerS, corliss.displayWrapDeg, onscreenRef.current]);
 
   // Kinematic calculations for piston & wrist-plate
   const pistonStroke = sliderStrokeSvg(crankAngleDeg, corliss.pistonStrokePx);
@@ -63,7 +66,10 @@ export function CorlissEngineSim() {
   const isIntakeOpen = crankAngleDeg % corliss.intakeCycleDeg < corliss.intakeOpenWindowDeg;
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

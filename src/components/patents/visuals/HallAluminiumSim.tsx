@@ -95,7 +95,7 @@ export function HallAluminiumSim() {
       </div>
 
       {/* Interactive SVG Diagram */}
-      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-[#070b14] rounded-xl border border-ink-800 overflow-hidden flex items-center justify-center p-2">
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] bg-canvas rounded-xl border border-ink-800 overflow-hidden flex items-center justify-center p-2">
         <svg
           viewBox="0 0 800 480"
           className="w-full h-full select-none"
@@ -149,7 +149,7 @@ export function HallAluminiumSim() {
           </defs>
 
           {/* BACKGROUND STRUCTURE */}
-          <rect x="0" y="0" width="800" height="480" fill="#070b14" />
+          <rect x="0" y="0" width="800" height="480" fill="#0a0f1d" />
 
           {/* 1. STEEL POT SHELL (A) */}
           <rect

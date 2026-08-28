@@ -224,7 +224,7 @@ export function EngelbartMouseSim() {
                   width="18"
                   height="45"
                   rx="2"
-                  className="fill-slate-700 stroke-slate-900 dark:fill-slate-400 dark:stroke-slate-200"
+                  className="fill-slate-700 stroke-slate-900 dark:fill-ink-400 dark:stroke-parchment-200"
                   strokeWidth="1.5"
                 />
                 <line x1="9" y1="-5" x2="9" y2="50" className="stroke-amber-400" strokeWidth="2" />
@@ -242,7 +242,7 @@ export function EngelbartMouseSim() {
                   width="45"
                   height="18"
                   rx="2"
-                  className="fill-slate-700 stroke-slate-900 dark:fill-slate-400 dark:stroke-slate-200"
+                  className="fill-slate-700 stroke-slate-900 dark:fill-ink-400 dark:stroke-parchment-200"
                   strokeWidth="1.5"
                 />
                 <line x1="-5" y1="9" x2="50" y2="9" className="stroke-cyan-400" strokeWidth="2" />

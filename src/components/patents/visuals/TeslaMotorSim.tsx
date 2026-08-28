@@ -14,6 +14,7 @@ import {
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function TeslaMotorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-381968-tesla-motor");
@@ -25,6 +26,7 @@ export function TeslaMotorSim() {
   const isPlayingAudio = !isAudioMuted && (params.acHum ?? 1) === 1;
   const [_activePedagogyStep, setActivePedagogyStep] = useState<number>(1);
   const [angle, setAngle] = useState<number>(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const apparatus = stepTeslaMotorFig9(frequencyHz);
 
@@ -34,6 +36,8 @@ export function TeslaMotorSim() {
     let frameId = 0;
     let lastTimestampMs: number | undefined;
     const animate = (timestampMs: number) => {
+      frameId = requestAnimationFrame(animate);
+      if (!onscreenRef.current) return;
       if (lastTimestampMs !== undefined) {
         const elapsedS = Math.min((timestampMs - lastTimestampMs) / 1000, 0.1);
         setAngle(
@@ -42,11 +46,10 @@ export function TeslaMotorSim() {
         );
       }
       lastTimestampMs = timestampMs;
-      frameId = requestAnimationFrame(animate);
     };
     frameId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frameId);
-  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.displayWrapDeg]);
+  }, [apparatus.fieldDisplayOmegaDegPerS, apparatus.displayWrapDeg, onscreenRef.current]);
 
   // Audio AC Hum feedback
   useEffect(() => {
@@ -79,7 +82,10 @@ export function TeslaMotorSim() {
   const bVectorY = field.bySvg;
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6"
+    >
       {/* Simulation Header */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>

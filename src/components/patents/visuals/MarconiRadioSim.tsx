@@ -7,6 +7,7 @@ import { stepMarconiRadio } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function MarconiRadioSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-586193-marconi-radio");
@@ -15,6 +16,7 @@ export function MarconiRadioSim() {
   const sparkPowerKv = params.sparkVoltage ?? 28;
   const [isSparking, setIsSparking] = useState<boolean>(false);
   const [waveRingRadius, setWaveRingRadius] = useState<number>(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const radio = stepMarconiRadio(antennaHeightMeters, params.sparkGapMm ?? 10, sparkPowerKv);
   const estimatedRangeMiles = radio.maxRangeMiles;
@@ -24,13 +26,14 @@ export function MarconiRadioSim() {
     let timer: any;
     if (isSparking) {
       timer = setInterval(() => {
+        if (!onscreenRef.current) return;
         setWaveRingRadius((r) => (r + waveAdvancePx) % radio.waveRingWrapPx);
       }, 40);
     } else {
       setWaveRingRadius(0);
     }
     return () => clearInterval(timer);
-  }, [isSparking, waveAdvancePx, radio.waveRingWrapPx]);
+  }, [isSparking, waveAdvancePx, radio.waveRingWrapPx, onscreenRef.current]);
 
   const triggerSpark = () => {
     setIsSparking(true);
@@ -44,7 +47,10 @@ export function MarconiRadioSim() {
   };
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>

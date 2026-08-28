@@ -6,6 +6,7 @@ import { stepPageRank } from "@/physics/pageRankKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface PageRankSimProps {
   initialDampingFactor?: number;
@@ -28,6 +29,7 @@ const GRAPH_EDGES = [
 
 export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const dampingId = useId();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-6285999-pagerank");
@@ -48,13 +50,15 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
     let particlePhase = 0;
 
     const render = () => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       particlePhase += 0.02;
 
       const w = canvas.width;
       const h = canvas.height;
 
       // Dark background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Grid lines
@@ -247,19 +251,18 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       ctx.fillStyle = "#94a3b8";
       ctx.font = "9px monospace";
       ctx.fillText(`Invariant: Σ r_i = ${sum.toFixed(3)} (Stochastic Sum)`, rX + 15, rY + rH - 12);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [ranks, dampingFactor, iterationCount]);
+  }, [ranks, dampingFactor, iterationCount, onscreenRef.current]);
 
   // Step iteration effect when playing
   useEffect(() => {
     if (!isPlaying) return;
 
     const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
       setRanks((prev) => {
         const next = stepPageRank({ dampingFactor }, prev);
         return next.ranks;
@@ -268,7 +271,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
     }, 400);
 
     return () => clearInterval(interval);
-  }, [isPlaying, dampingFactor]);
+  }, [isPlaying, dampingFactor, onscreenRef.current]);
 
   const handleStepOnce = () => {
     setRanks((prev) => {
@@ -284,7 +287,10 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+    <div
+      ref={rootRef}
+      className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -342,7 +348,7 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">
         <canvas
           ref={canvasRef}
           width={760}
@@ -352,10 +358,10 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-ink-900/70 border border-parchment-200 dark:border-ink-800/80 text-xs">
         {/* Link-follow probability slider; the patent names its complement α. */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={dampingId}>Link-follow probability (1−α):</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {dampingFactor.toFixed(2)}
@@ -371,25 +377,25 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
             onChange={(e) => updateParam("dampingFactor", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             The patent calls α the random-jump probability; this control exposes its complement,
             1−α, for hyperlink propagation.
           </span>
         </div>
 
         {/* Status / Algorithm Insights */}
-        <div className="flex flex-col justify-center gap-1 p-2.5 rounded bg-parchment-50/80 dark:bg-neutral-950/60 border border-parchment-200 dark:border-neutral-800 font-mono text-[11px]">
-          <div className="text-ink-700 dark:text-neutral-400">
+        <div className="flex flex-col justify-center gap-1 p-2.5 rounded bg-parchment-50/80 dark:bg-ink-950/60 border border-parchment-200 dark:border-ink-800 font-mono text-[11px]">
+          <div className="text-ink-700 dark:text-ink-400">
             Markov Chain:{" "}
             <span className="text-emerald-700 dark:text-emerald-400 font-bold">
               Irreducible & Primitive
             </span>
           </div>
-          <div className="text-ink-700 dark:text-neutral-400">
+          <div className="text-ink-700 dark:text-ink-400">
             Dominant Eigenvalue:{" "}
             <span className="text-cyan-700 dark:text-cyan-400 font-bold">λ₁ = 1.000</span>
           </div>
-          <div className="text-ink-500 dark:text-neutral-500 text-[10px]">
+          <div className="text-ink-500 dark:text-ink-500 text-[10px]">
             Power iteration converges to unique steady-state distribution (Perron-Frobenius theorem)
           </div>
         </div>
@@ -404,13 +410,13 @@ export function PageRankSim({ initialDampingFactor = 0.85 }: PageRankSimProps) {
               handleStepOnce();
               soundEngine.playSwitchClick();
             }}
-            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-neutral-900 border border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
+            className="px-3 py-1.5 rounded-lg font-mono text-xs font-semibold bg-parchment-100 dark:bg-ink-900 border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-200 hover:bg-parchment-200 dark:hover:bg-neutral-800 hover:text-ink-900 dark:hover:text-white transition-all"
           >
             ⚡ Step Power Iteration (+1)
           </button>
         </div>
 
-        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+        <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
           Convergence Engine:{" "}
           <span className="text-indigo-600 dark:text-indigo-400">Power Iteration</span>
         </span>

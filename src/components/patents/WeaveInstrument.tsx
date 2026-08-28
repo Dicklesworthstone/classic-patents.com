@@ -293,7 +293,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
                 onClick={() => {
                   for (const [k, v] of Object.entries(s.writes)) updateParam(k, v);
                 }}
-                className="px-2.5 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-left text-[11px] font-sans hover:bg-parchment-100 dark:hover:bg-ink-800"
+                className="min-h-11 px-2.5 py-1.5 rounded-lg border border-parchment-300 dark:border-ink-700 text-left text-[11px] font-sans hover:bg-parchment-100 dark:hover:bg-ink-800"
               >
                 <span className="block font-mono text-[10px] text-amber-700 dark:text-amber-400">
                   {s.date}
@@ -317,7 +317,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
               updateParam("coupled", next);
               if (next === 1) updateParam("rudder", (params.wingWarp ?? 8) * 0.45);
             }}
-            className="px-2.5 py-1.5 rounded-lg bg-amber-700 text-white text-[11px] font-sans"
+            className="min-h-11 px-2.5 py-1.5 rounded-lg bg-amber-700 text-white text-[11px] font-sans"
           >
             {(params.coupled ?? 1) >= 0.5
               ? "Uncouple rudder (1901 failure)"
@@ -327,7 +327,7 @@ export function WeaveInstrument({ patentId }: WeaveInstrumentProps) {
             type="button"
             onClick={() => void enableDeviceBank()}
             aria-pressed={bankActive}
-            className={`ml-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-sans ${
+            className={`min-h-11 ml-2 px-2.5 py-1.5 rounded-lg border text-[11px] font-sans ${
               bankActive
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                 : "border-parchment-300 dark:border-ink-700"

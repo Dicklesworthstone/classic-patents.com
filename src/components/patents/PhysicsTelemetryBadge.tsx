@@ -195,7 +195,7 @@ export function PhysicsTelemetryBadge({
           {sliderSensitivity ? (
             <div className="rounded-lg border border-parchment-300 dark:border-ink-800 bg-white/80 dark:bg-ink-900/80 px-2.5 py-1.5">
               <div className="text-[9px] uppercase tracking-wider font-mono text-ink-500 dark:text-ink-400">
-                {sliderSensitivity.derivativeSymbol} (host Dual)
+                {sliderSensitivity.derivativeSymbol} (host sensitivity)
               </div>
               <div className="text-[11px] font-mono font-bold text-ink-900 dark:text-parchment-100">
                 {sliderSensitivity.derivativeValue}{" "}
@@ -223,6 +223,13 @@ export function PhysicsTelemetryBadge({
         {data.controls.map((ctrl) => {
           const val = params[ctrl.id] ?? ctrl.defaultValue;
           const isCheckbox = ctrl.min === 0 && ctrl.max === 1 && ctrl.step === 1 && !ctrl.unit;
+          // Claim 18 interlock: while coupling is engaged the kernel derives
+          // the rudder from wing warp, so a free rudder slider would be a
+          // dead control. Disable it and say why.
+          const rudderInterlocked =
+            patentId === "us-821393-wright-flyer" &&
+            ctrl.id === "rudder" &&
+            (params.coupled ?? 1) >= 0.5;
           return (
             <div
               key={ctrl.id}
@@ -257,10 +264,16 @@ export function PhysicsTelemetryBadge({
                     step={ctrl.step}
                     value={val}
                     onChange={(e) => updateParam(ctrl.id, Number(e.target.value))}
-                    className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 dark:[&::-webkit-slider-thumb]:bg-amber-400 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 dark:[&::-moz-range-thumb]:bg-amber-400 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
+                    disabled={rudderInterlocked}
+                    className={`${rudderInterlocked ? "opacity-50 cursor-not-allowed" : ""} w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600 dark:[&::-webkit-slider-thumb]:bg-amber-400 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-600 dark:[&::-moz-range-thumb]:bg-amber-400 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950`}
                     aria-label={ctrl.label}
                     aria-valuetext={`${val > 0 && ctrl.min < 0 ? `+${val}` : val} ${ctrl.unit || ""}`.trim()}
                   />
+                  {rudderInterlocked && (
+                    <p className="text-[10px] font-mono text-ink-500 dark:text-ink-400">
+                      Claim 18 interlock: rudder follows wing warp. Uncouple to command it directly.
+                    </p>
+                  )}
                 </>
               )}
             </div>

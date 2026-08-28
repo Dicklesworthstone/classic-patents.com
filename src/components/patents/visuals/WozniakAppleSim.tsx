@@ -7,6 +7,7 @@ import { stepWozniakApple, wozniakBusCycle } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export { wozniakBusCycle };
 
@@ -25,6 +26,7 @@ export function WozniakAppleSim() {
   const [colorMode, setColorMode] = useState<"color" | "monochrome">("color");
   const [dramAddress, setDramAddress] = useState<string>("0x0400");
   const busTickRef = useRef(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const intervalMs = apple.busTickIntervalMs;
 
@@ -32,6 +34,7 @@ export function WozniakAppleSim() {
   useEffect(() => {
     if (!isClockRunning) return;
     const interval = setInterval(() => {
+      if (!onscreenRef.current) return;
       busTickRef.current += 1;
       const cycle = wozniakBusCycle(
         busTickRef.current,
@@ -55,10 +58,14 @@ export function WozniakAppleSim() {
     apple.dramAddrSpan,
     apple.dramAddrStride,
     apple.rasterLineWrap,
+    onscreenRef.current,
   ]);
 
   return (
-    <div className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6">
+    <div
+      ref={rootRef}
+      className="rounded-2xl border border-amber-900/20 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-patent space-y-6"
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>

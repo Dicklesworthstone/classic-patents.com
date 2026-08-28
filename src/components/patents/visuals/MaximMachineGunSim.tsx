@@ -7,6 +7,7 @@ import { FrankenSimEngine } from "@/physics/engine";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function MaximMachineGunSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-319596-maxim-machine-gun");
@@ -16,6 +17,7 @@ export function MaximMachineGunSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [recoilPhase, setRecoilPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const maxim = FrankenSimEngine.stepMaximMachineGun({
     firingRateRpm: cyclicRateRpm,
@@ -32,27 +34,31 @@ export function MaximMachineGunSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
       setRecoilPhase((prev) =>
         wrapCycleRad(prev + maxim.fireOmegaRadPerS * dt, maxim.fireCycleWrapRad),
       );
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, maxim.fireOmegaRadPerS, maxim.fireCycleWrapRad]);
+  }, [isPlaying, maxim.fireOmegaRadPerS, maxim.fireCycleWrapRad, onscreenRef.current]);
 
   // Recoil displacement of barrel & breech
   const recoilX = (Math.cos(recoilPhase) + 1) * maxim.recoilSvgAmp;
   const isMuzzleFiring = recoilPhase < maxim.firingWindowRad;
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

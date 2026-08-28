@@ -6,6 +6,7 @@ import { type ParsonsRoutingMode, stepParsonsMarine } from "@/physics/parsonsMar
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function ParsonsTurbineSim() {
   const { resetParams } = usePatentPhysics("us-608969-parsons-turbine");
@@ -16,6 +17,7 @@ export function ParsonsTurbineSim() {
   const [throttle, setThrottle] = useState(0.75);
   const [flowPhase, setFlowPhase] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const marine = stepParsonsMarine({ routing, reversing, throttle });
 
   useEffect(() => {
@@ -23,21 +25,25 @@ export function ParsonsTurbineSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
       setFlowPhase((prev) => (prev + dt * (0.5 + marine.flowRateRelative)) % 1);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, marine.flowRateRelative]);
+  }, [isPlaying, marine.flowRateRelative, onscreenRef.current]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

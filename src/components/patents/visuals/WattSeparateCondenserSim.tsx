@@ -10,6 +10,7 @@ import {
 } from "@/physics/wattCondenserKernel";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function WattSeparateCondenserSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("gb-913-watt-separate-condenser");
@@ -31,6 +32,7 @@ export function WattSeparateCondenserSim() {
     [params],
   );
   const [animTime, setAnimTime] = useState(0);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const boilerId = useId();
   const condTempId = useId();
@@ -43,15 +45,16 @@ export function WattSeparateCondenserSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      frameId = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = (time - lastTime) / 1000;
       lastTime = time;
       setAnimTime((prev) => prev + dt);
-      frameId = requestAnimationFrame(loop);
     };
 
     frameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameId);
-  }, []);
+  }, [onscreenRef.current]);
 
   const outputs = useMemo(() => stepWattCondenser(controls), [controls]);
 
@@ -62,7 +65,10 @@ export function WattSeparateCondenserSim() {
   const beamAngleDeg = -pistonPos * 12.0;
 
   return (
-    <div className="w-full bg-stone-900/95 border border-stone-800 rounded-2xl p-6 text-stone-200 shadow-2xl backdrop-blur-xl">
+    <div
+      ref={rootRef}
+      className="w-full bg-stone-900/95 border border-stone-800 rounded-2xl p-6 text-stone-200 shadow-2xl backdrop-blur-xl"
+    >
       {/* Header & Mode Badge */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-5 border-b border-stone-800">
         <div>

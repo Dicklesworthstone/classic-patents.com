@@ -24,29 +24,29 @@ export function CarrierAirConditionerSim() {
   });
 
   return (
-    <div className="w-full rounded-2xl bg-parchment-50 dark:bg-neutral-950 border border-parchment-300 dark:border-neutral-800 p-6 space-y-6 text-ink-900 dark:text-neutral-200">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-neutral-800 pb-4">
+    <div className="w-full rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 p-6 space-y-6 text-ink-900 dark:text-parchment-200">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-parchment-200 dark:border-ink-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <Wind className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-neutral-100">
+            <h3 className="text-lg font-bold font-serif tracking-wide text-ink-950 dark:text-parchment-100">
               Willis H. Carrier — Apparatus for Treating Air (US 808,897)
             </h3>
           </div>
-          <p className="text-xs text-ink-600 dark:text-neutral-400 mt-0.5">
+          <p className="text-xs text-ink-600 dark:text-ink-400 mt-0.5">
             Fine liquid spray, wet sinuous plates, and rear gutters for separating liquid and
             suspended impurities
           </p>
         </div>
         <div className="flex items-center gap-2 self-end lg:self-auto">
-          <div className="flex rounded-lg bg-parchment-200 dark:bg-neutral-900 p-1 border border-parchment-300 dark:border-neutral-800 text-xs">
+          <div className="flex rounded-lg bg-parchment-200 dark:bg-ink-900 p-1 border border-parchment-300 dark:border-ink-800 text-xs">
             <button
               type="button"
               onClick={() => {
                 setActiveTab("washer");
                 soundEngine.playSwitchClick();
               }}
-              className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "washer" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-neutral-400"}`}
+              className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "washer" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-ink-400"}`}
             >
               Washer path
             </button>
@@ -56,7 +56,7 @@ export function CarrierAirConditionerSim() {
                 setActiveTab("separator");
                 soundEngine.playSwitchClick();
               }}
-              className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "separator" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-neutral-400"}`}
+              className={`px-3 py-1.5 rounded-md font-medium ${activeTab === "separator" ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-900 dark:text-cyan-300" : "text-ink-600 dark:text-ink-400"}`}
             >
               Separator geometry
             </button>

@@ -11,13 +11,18 @@ mock.module("next/navigation", () => ({
   },
 }));
 
+import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
 import { wrightFlyerPatent } from "@/data/patents/wright-flyer";
 import { DualProjectionViewer } from "./DualProjectionViewer";
 
 describe("DualProjectionViewer component", () => {
   test("renders navigation projection tabs and default plain-English face", () => {
     const html = renderToStaticMarkup(
-      <DualProjectionViewer patent={wrightFlyerPatent} initialView="plain-english" />,
+      <DualProjectionViewer
+        patent={wrightFlyerPatent}
+        colorizedEquations={getColorizedEquationsForPatent(wrightFlyerPatent.id)}
+        initialView="plain-english"
+      />,
     );
 
     expect(html).toContain("Plain English Face");

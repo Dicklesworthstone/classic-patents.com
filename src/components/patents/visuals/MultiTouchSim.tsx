@@ -7,6 +7,7 @@ import { createStudioClock } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 interface MultiTouchSimProps {
   initialFingerCount?: number;
@@ -22,6 +23,7 @@ export function MultiTouchSim({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sepId = useId();
   const pressureId = useId();
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const { params, updateParam, resetParams } = usePatentPhysics("us-7479949-multitouch");
   const { isAudioMuted, toggleSound } = usePatentAudio();
@@ -52,6 +54,8 @@ export function MultiTouchSim({
     );
 
     const render = (now: number) => {
+      animId = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       if (isPlaying) {
         const { simTimeSec } = clock.pump(now);
         timeSec = simTimeSec;
@@ -71,7 +75,7 @@ export function MultiTouchSim({
       const h = canvas.height;
 
       // Dark capacitive UI background
-      ctx.fillStyle = "#090d16";
+      ctx.fillStyle = "#0a0f1d";
       ctx.fillRect(0, 0, w, h);
 
       // Grid lines
@@ -304,16 +308,24 @@ export function MultiTouchSim({
       ctx.fillStyle = "#a78bfa";
       ctx.font = "bold 11px monospace";
       ctx.fillText(state.gestureMode, readX, mY + 190);
-
-      animId = requestAnimationFrame(render);
     };
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [fingerCount, separationMm, pressureGrams, gestureVelocityMmS, isPlaying]);
+  }, [
+    fingerCount,
+    separationMm,
+    pressureGrams,
+    gestureVelocityMmS,
+    isPlaying,
+    onscreenRef.current,
+  ]);
 
   return (
-    <div className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md">
+    <div
+      ref={rootRef}
+      className="w-full flex flex-col gap-4 p-4 sm:p-6 rounded-2xl bg-parchment-50 dark:bg-ink-950 border border-parchment-300 dark:border-ink-800 text-ink-900 dark:text-parchment-100 shadow-md"
+    >
       {/* Header with Title and Global Action Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3">
         <div>
@@ -370,7 +382,7 @@ export function MultiTouchSim({
       </div>
 
       {/* Canvas */}
-      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-neutral-800 bg-[#090d16]">
+      <div className="relative w-full overflow-hidden rounded-xl border border-parchment-300 dark:border-ink-800 bg-canvas">
         <canvas
           ref={canvasRef}
           width={760}
@@ -380,10 +392,10 @@ export function MultiTouchSim({
       </div>
 
       {/* Interactive Controls */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-neutral-900/70 border border-parchment-200 dark:border-neutral-800/80 text-xs">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-parchment-100/80 dark:bg-ink-900/70 border border-parchment-200 dark:border-ink-800/80 text-xs">
         {/* Finger Separation Distance */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={sepId}>Finger Separation D(t):</label>
             <span className="text-amber-600 dark:text-amber-400 font-bold">
               {separationMm.toFixed(0)} mm
@@ -399,14 +411,14 @@ export function MultiTouchSim({
             onChange={(e) => updateParam("fingerSeparationMm", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-amber-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Pinch fingers together (15mm) to zoom out; spread apart (120mm) to zoom in
           </span>
         </div>
 
         {/* Touch Normal Pressure */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between font-mono text-ink-700 dark:text-neutral-300">
+          <div className="flex justify-between font-mono text-ink-700 dark:text-parchment-300">
             <label htmlFor={pressureId}>Touch Contact Force:</label>
             <span className="text-cyan-600 dark:text-cyan-400 font-bold">
               {pressureGrams.toFixed(0)} grams
@@ -422,7 +434,7 @@ export function MultiTouchSim({
             onChange={(e) => updateParam("touchPressureGrams", parseFloat(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <span className="text-[10px] text-ink-500 dark:text-neutral-500">
+          <span className="text-[10px] text-ink-500 dark:text-ink-500">
             Higher contact force expands finger flesh contact area, deepening capacitive shunt
           </span>
         </div>
@@ -440,7 +452,7 @@ export function MultiTouchSim({
             className={`px-3 py-1.5 rounded-lg font-mono text-xs font-semibold border transition-all ${
               fingerCount === 1
                 ? "bg-blue-100 dark:bg-blue-950/60 border-blue-400 dark:border-blue-500/80 text-blue-800 dark:text-blue-300"
-                : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+                : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
             ☝️ 1 Finger: Scroll
@@ -454,14 +466,14 @@ export function MultiTouchSim({
             className={`px-3 py-1.5 rounded-lg font-mono text-xs font-semibold border transition-all ${
               fingerCount === 2
                 ? "bg-amber-100 dark:bg-amber-950/60 border-amber-400 dark:border-amber-500/80 text-amber-800 dark:text-amber-300"
-                : "bg-parchment-100 dark:bg-neutral-900 border-parchment-300 dark:border-neutral-700 text-ink-700 dark:text-neutral-400 hover:text-ink-900 dark:hover:text-neutral-200"
+                : "bg-parchment-100 dark:bg-ink-900 border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-ink-400 hover:text-ink-900 dark:hover:text-neutral-200"
             }`}
           >
             ✌️ 2 Fingers: Pinch & Rotate
           </button>
         </div>
 
-        <span className="text-[11px] font-mono text-ink-500 dark:text-neutral-400">
+        <span className="text-[11px] font-mono text-ink-500 dark:text-ink-400">
           Transform Engine:{" "}
           <span className="text-indigo-600 dark:text-indigo-400">Affine Matrix Interpolation</span>
         </span>

@@ -66,7 +66,9 @@ describe("patent view URL state", () => {
     expect(VIEWER_SOURCE).not.toMatch(
       /const setViewMode = \(mode: PatentViewMode\) => \{\s*setViewModeState\(mode\);\s*\};/,
     );
-    expect(PATENT_PAGE_SOURCE).toContain("<DualProjectionViewer patent={patent} />");
+    expect(PATENT_PAGE_SOURCE).toContain(
+      "<DualProjectionViewer patent={patent} colorizedEquations={colorizedEquations} />",
+    );
     expect(PATENT_PAGE_SOURCE).not.toContain("searchParams");
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === "original-spec"');
     expect(E2E_AUDIT_SOURCE).toContain('searchParams.get("view") === view');

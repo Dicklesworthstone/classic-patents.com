@@ -97,23 +97,6 @@ export function computeParameterSensitivity(
       break;
     }
 
-    case "us-2708656-fermi-reactor": {
-      if (controlKey === "controlRodWithdrawalPct" || controlKey === "rodPosition") {
-        const rod = params.controlRodWithdrawalPct ?? params.rodPosition ?? 65.0;
-        // Rod worth curve derivative d(rho)/d(x) ~ sin^2(pi*x)
-        const xFrac = rod / 100.0;
-        const dRho_dx = (Math.PI / 2) * Math.sin(Math.PI * xFrac) * 0.0015; // dk / %
-        return {
-          metricName: "Reactivity Insertion",
-          derivativeSymbol: "∂ρ / ∂x_rod",
-          derivativeValue: Number((dRho_dx * 1e5).toFixed(1)),
-          derivativeUnit: "pcm / %",
-          interpretation: "Cadmium neutron absorption cross-section differential worth.",
-        };
-      }
-      break;
-    }
-
     case "us-2495429-spencer-microwave": {
       if (controlKey === "anodeVoltage" || controlKey === "anodeVoltageVolts") {
         const va = params.anodeVoltage ?? params.anodeVoltageVolts ?? 2200.0;

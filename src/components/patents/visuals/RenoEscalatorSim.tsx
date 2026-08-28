@@ -6,6 +6,7 @@ import { renoCleatSvg, stepRenoEscalator } from "@/physics/machineKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
 import { usePatentAudio } from "./three/usePatentAudio";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function RenoEscalatorSim() {
   const { params, updateParam, resetParams } = usePatentPhysics("us-470918-reno-escalator");
@@ -16,6 +17,7 @@ export function RenoEscalatorSim() {
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
   const [treadOffset, setTreadOffset] = useState<number>(0);
   const animRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
 
   const reno = stepRenoEscalator({
     passengerCount: passengerLoad,
@@ -32,21 +34,25 @@ export function RenoEscalatorSim() {
     let lastTime = performance.now();
 
     const loop = (time: number) => {
+      animRef.current = requestAnimationFrame(loop);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (time - lastTime) / 1000);
       lastTime = time;
 
       setTreadOffset((prev) => (prev + reno.treadSvgAdvancePerS * dt) % reno.treadSvgWrapPx);
-      animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
     };
-  }, [isPlaying, reno.treadSvgAdvancePerS, reno.treadSvgWrapPx]);
+  }, [isPlaying, reno.treadSvgAdvancePerS, reno.treadSvgWrapPx, onscreenRef.current]);
 
   return (
-    <div className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors">
+    <div
+      ref={rootRef}
+      className="w-full rounded-2xl border border-parchment-300 dark:border-ink-800 bg-parchment-50 dark:bg-ink-950 p-4 sm:p-6 shadow-md transition-colors"
+    >
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-parchment-200 dark:border-ink-800 pb-3 mb-4">
         <div>
           <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { stepFessendenWireless } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
+import { useOffscreenGate } from "./useOffscreenGate";
 
 export function FessendenWirelessSim() {
   const { params, updateParam } = usePatentPhysics("us-706737-fessenden-wireless");
@@ -14,6 +15,7 @@ export function FessendenWirelessSim() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number | null>(null);
+  const { rootRef, onscreenRef } = useOffscreenGate<HTMLDivElement>();
   const timeRef = useRef(0);
 
   const sim = stepFessendenWireless({
@@ -32,6 +34,8 @@ export function FessendenWirelessSim() {
     let lastTime = performance.now();
 
     const render = (now: number) => {
+      animFrameRef.current = requestAnimationFrame(render);
+      if (!onscreenRef.current) return;
       const dt = Math.min(0.1, (now - lastTime) / 1000);
       lastTime = now;
       if (isPlaying) {
@@ -313,25 +317,26 @@ export function FessendenWirelessSim() {
       ctx.moveTo(phoneX, phoneY + 16);
       ctx.lineTo(phoneX, groundY); // phone to ground
       ctx.stroke();
-
-      animFrameRef.current = requestAnimationFrame(render);
     };
 
     animFrameRef.current = requestAnimationFrame(render);
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
-  }, [carrierFreqKhz, audioModPct, antennaTuningUh, isPlaying, sim]);
+  }, [carrierFreqKhz, audioModPct, antennaTuningUh, isPlaying, sim, onscreenRef.current]);
 
   return (
-    <div className="flex flex-col gap-6 p-6 bg-slate-950 text-slate-100 rounded-xl border border-slate-800 shadow-2xl">
+    <div
+      ref={rootRef}
+      className="flex flex-col gap-6 p-6 bg-parchment-100/70 text-ink-900 rounded-xl border border-parchment-300 shadow-2xl dark:bg-slate-950 dark:text-slate-100 dark:border-slate-800"
+    >
       {/* HUD Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
           <h2 className="text-xl font-bold tracking-wide text-cyan-400">
             Reginald Fessenden Continuous-Wave Radio & Electrolytic Detector
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-ink-600 dark:text-slate-400">
             US Patent 706,737 • Uninterrupted Sinusoidal Radiation, Low-Loss Cage Aerials & Liquid
             Barretter
           </p>
@@ -340,8 +345,8 @@ export function FessendenWirelessSim() {
           <span
             className={`px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider ${
               sim.isResonant
-                ? "bg-emerald-950 text-emerald-300 border border-emerald-700"
-                : "bg-amber-950 text-amber-300 border border-amber-700"
+                ? "bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-700"
+                : "bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-700"
             }`}
           >
             {sim.isResonant ? "✓ Resonant Lock" : "⚠ Detuned (Off-Resonance)"}
@@ -363,42 +368,56 @@ export function FessendenWirelessSim() {
 
       {/* Real-time SI Metrics Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Antenna Resonance</div>
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
+            Antenna Resonance
+          </div>
           <div className="text-lg font-bold text-emerald-400">{sim.antennaResonantFreqKhz} kHz</div>
-          <div className="text-xs text-slate-500">Δf = {sim.detuningKhz} kHz</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">Δf = {sim.detuningKhz} kHz</div>
         </div>
 
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Radiated RF Power</div>
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
+            Radiated RF Power
+          </div>
           <div className="text-lg font-bold text-cyan-400">{sim.radiatedPowerWatts} W</div>
-          <div className="text-xs text-slate-500">Nominal 1 kW input</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">Nominal 1 kW input</div>
         </div>
 
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Radiation Efficiency
           </div>
           <div className="text-lg font-bold text-emerald-400">{sim.radiationEfficiencyPct} %</div>
-          <div className="text-xs text-slate-500">R_rad = {sim.radiationResistanceOhms} Ω</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">
+            R_rad = {sim.radiationResistanceOhms} Ω
+          </div>
         </div>
 
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Received Power (Rx)</div>
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
+            Received Power (Rx)
+          </div>
           <div className="text-lg font-bold text-purple-400">{sim.receivedPowerMicrowatts} µW</div>
-          <div className="text-xs text-slate-500">At {distanceKm} km range</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">At {distanceKm} km range</div>
         </div>
 
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Audio SNR</div>
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
+            Audio SNR
+          </div>
           <div className="text-lg font-bold text-amber-400">{sim.audioSnrDb} dB</div>
-          <div className="text-xs text-slate-500">Clear voice threshold</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">Clear voice threshold</div>
         </div>
 
-        <div className="p-3 bg-slate-900 border border-slate-800 rounded-lg">
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Earpiece Volume</div>
+        <div className="p-3 bg-white/70 border border-parchment-300 rounded-lg dark:bg-slate-900 dark:border-slate-800">
+          <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
+            Earpiece Volume
+          </div>
           <div className="text-lg font-bold text-amber-400">{sim.audioSoundLevelDbSpl} dB SPL</div>
-          <div className="text-xs text-slate-500">I_sig = {sim.audioSignalCurrentMicroamps} µA</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500">
+            I_sig = {sim.audioSignalCurrentMicroamps} µA
+          </div>
         </div>
       </div>
 
@@ -418,7 +437,7 @@ export function FessendenWirelessSim() {
             onChange={(e) => updateParam("carrierFrequencyKhz", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
             High-frequency alternator generator speed
           </div>
         </div>
@@ -437,7 +456,9 @@ export function FessendenWirelessSim() {
             onChange={(e) => updateParam("audioModulationPct", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <div className="text-xs text-slate-500 mt-1">Carbon microphone acoustic modulation</div>
+          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
+            Carbon microphone acoustic modulation
+          </div>
         </div>
 
         <div>
@@ -454,7 +475,7 @@ export function FessendenWirelessSim() {
             onChange={(e) => updateParam("antennaTuningUh", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
             Adjustable series inductance for resonance
           </div>
         </div>
@@ -473,7 +494,7 @@ export function FessendenWirelessSim() {
             onChange={(e) => updateParam("transmissionDistanceKm", Number(e.target.value))}
             className="w-full h-11 appearance-none bg-transparent cursor-pointer touch-none [&::-webkit-slider-runnable-track]:h-2.5 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-parchment-300 dark:[&::-webkit-slider-runnable-track]:bg-ink-700 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:-mt-[7px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white dark:[&::-webkit-slider-thumb]:border-ink-950 [&::-moz-range-track]:h-2.5 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-parchment-300 dark:[&::-moz-range-track]:bg-ink-700 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-cyan-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white dark:[&::-moz-range-thumb]:border-ink-950"
           />
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-ink-500 dark:text-slate-500 mt-1">
             Free-space & groundwave propagation loss
           </div>
         </div>

@@ -67,7 +67,7 @@ import { stepPageRank } from "./pageRankKernel";
 import { goddardNozzleMatch } from "./thermochem";
 import { stepWattCondenser } from "./wattCondenserKernel";
 import { stepWattRotaryEngine } from "./wattRotaryKernel";
-import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
+import { readWrightControls, stepWrightFlyerSi, WRIGHT_COUPLING } from "./wrightKernel";
 
 export interface PhysicsControl {
   id: string;
@@ -333,7 +333,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
     governingEquation:
       "\\psi_s = V_G - V_{\\text{FB}} + V_0 - \\sqrt{2 (V_G - V_{\\text{FB}}) V_0 + V_0^2} \\quad \\text{and} \\quad \\text{CTE} = 1 - \\exp\\left(-\\frac{\\pi^2 D_n t_{\\text{transfer}}}{4 L_{\\text{gate}}^2}\\right)",
     engineMethod:
-      "FrankenSimEngine.stepBoyleSmithCCD: MOS Gate Depletion, Photoelectron Integration, 3-Phase Clocked Potential Well Translation",
+      "FrankenSimEngine.stepBoyleSmithCcd: MOS Gate Depletion, Photoelectron Integration, 3-Phase Clocked Potential Well Translation",
     pedagogicalInsight:
       "Clocked gate voltages create movable electrostatic potential wells in single-conductivity silicon. Photons generate electron packets that are sequentially transferred from well to well with >99.999% efficiency.",
     controls: [
@@ -1310,7 +1310,8 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const updated = { ...params, [key]: value };
       if (updated.coupled === 1) {
         if (key === "wingWarp" || key === "coupled") {
-          updated.rudder = Number((updated.wingWarp * 0.5).toFixed(1)); // Simple linear coupling equivalent
+          // Same Claim 18 constant the kernel uses, so badge and sim agree.
+          updated.rudder = Number((updated.wingWarp * WRIGHT_COUPLING).toFixed(1));
         }
       }
       return updated;
@@ -1367,13 +1368,6 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
           unit: "RPM",
           badgeColor: "amber",
           progressPct: Math.min(100, (apparatus.diskRpm / 7200) * 100),
-        },
-        {
-          label: "Generator collector rings",
-          value: "present",
-          unit: "Fig. 9",
-          badgeColor: "indigo",
-          progressPct: clampProgress(100),
         },
       ];
     },
