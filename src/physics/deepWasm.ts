@@ -530,6 +530,11 @@ function adTestFn(x: number): { f: number; d1: number; d2: number } {
  * Discrete Hodge 1-form on an annulus (shape 1). Layout: 12 header + 6E edges
  * `[mx, my, mz, exact, coexact, harmonic]`.
  */
+/** True once the fs-feec Hodge WASM function is actually loaded (cache-key input). */
+export function hodgeWasmStepped(): boolean {
+  return Boolean(extraWasmFns.hodgeDecomposition);
+}
+
 export function hodgeDecomposition(shape: number): Float64Array {
   const s = Math.max(0, Math.min(2, Math.floor(shape)));
   if (extraWasmFns.hodgeDecomposition) return asF64(extraWasmFns.hodgeDecomposition(s));

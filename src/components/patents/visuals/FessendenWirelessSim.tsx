@@ -333,7 +333,7 @@ export function FessendenWirelessSim() {
       {/* HUD Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
-          <h2 className="text-xl font-bold tracking-wide text-cyan-400">
+          <h2 className="text-xl font-bold tracking-wide text-cyan-700 dark:text-cyan-400">
             Reginald Fessenden Continuous-Wave Radio & Electrolytic Detector
           </h2>
           <p className="text-sm text-ink-600 dark:text-slate-400">
@@ -372,7 +372,7 @@ export function FessendenWirelessSim() {
           <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Antenna Resonance
           </div>
-          <div className="text-lg font-bold text-emerald-400">{sim.antennaResonantFreqKhz} kHz</div>
+          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{sim.antennaResonantFreqKhz} kHz</div>
           <div className="text-xs text-ink-500 dark:text-slate-500">Δf = {sim.detuningKhz} kHz</div>
         </div>
 
@@ -380,7 +380,7 @@ export function FessendenWirelessSim() {
           <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Radiated RF Power
           </div>
-          <div className="text-lg font-bold text-cyan-400">{sim.radiatedPowerWatts} W</div>
+          <div className="text-lg font-bold text-cyan-700 dark:text-cyan-400">{sim.radiatedPowerWatts} W</div>
           <div className="text-xs text-ink-500 dark:text-slate-500">Nominal 1 kW input</div>
         </div>
 
@@ -388,7 +388,7 @@ export function FessendenWirelessSim() {
           <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Radiation Efficiency
           </div>
-          <div className="text-lg font-bold text-emerald-400">{sim.radiationEfficiencyPct} %</div>
+          <div className="text-lg font-bold text-emerald-700 dark:text-emerald-400">{sim.radiationEfficiencyPct} %</div>
           <div className="text-xs text-ink-500 dark:text-slate-500">
             R_rad = {sim.radiationResistanceOhms} Ω
           </div>
@@ -406,7 +406,7 @@ export function FessendenWirelessSim() {
           <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Audio SNR
           </div>
-          <div className="text-lg font-bold text-amber-400">{sim.audioSnrDb} dB</div>
+          <div className="text-lg font-bold text-amber-700 dark:text-amber-400">{sim.audioSnrDb} dB</div>
           <div className="text-xs text-ink-500 dark:text-slate-500">Clear voice threshold</div>
         </div>
 
@@ -414,7 +414,7 @@ export function FessendenWirelessSim() {
           <div className="text-xs text-ink-600 uppercase tracking-wider dark:text-slate-400">
             Earpiece Volume
           </div>
-          <div className="text-lg font-bold text-amber-400">{sim.audioSoundLevelDbSpl} dB SPL</div>
+          <div className="text-lg font-bold text-amber-700 dark:text-amber-400">{sim.audioSoundLevelDbSpl} dB SPL</div>
           <div className="text-xs text-ink-500 dark:text-slate-500">
             I_sig = {sim.audioSignalCurrentMicroamps} µA
           </div>

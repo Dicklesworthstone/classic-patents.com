@@ -181,6 +181,10 @@ export function FessendenWireless3D() {
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      if (!studio.isVisible()) {
+        animFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
       const { dt, simTimeSec } = clock.pump(now);
       timeRef.current = simTimeSec;
 
@@ -208,7 +212,6 @@ export function FessendenWireless3D() {
 
       studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
-      if (!studio.isVisible()) return;
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

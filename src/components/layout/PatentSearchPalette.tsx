@@ -40,6 +40,15 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
   }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Escape closes from anywhere inside the dialog.
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    // Result navigation/activation belongs to the combobox input. Scoped so a
+    // focused Clear/ESC button or result link keeps its own native Enter.
+    if (e.target !== inputRef.current) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : 0));
@@ -54,9 +63,6 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
       } else if (typeof window !== "undefined") {
         window.location.href = `/patents/${results[selectedIndex].id}`;
       }
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      onClose();
     }
   };
 
@@ -120,6 +126,9 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             ESC
           </button>
         </div>
+        <span role="status" aria-live="polite" className="sr-only">
+          {results.length} {results.length === 1 ? "result" : "results"} shown
+        </span>
         <div
           id="patent-search-results"
           role="listbox"
@@ -132,10 +141,6 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
             </span>
             <span className="text-[10px]">Use ↑↓ to navigate · Enter to open</span>
           </div>
-          <span role="status" aria-live="polite" className="sr-only">
-            {results.length} {results.length === 1 ? "result" : "results"} shown
-          </span>
-
           {results.length > 0 ? (
             results.map((patent: Patent, idx: number) => {
               const isSelected = idx === selectedIndex;
@@ -149,6 +154,7 @@ export function PatentSearchPalette({ isOpen, onClose }: PatentSearchPaletteProp
                   onClick={onClose}
                   role="option"
                   aria-selected={isSelected}
+                  tabIndex={-1}
                   className={`p-3.5 rounded-2xl flex items-center justify-between gap-3 transition-colors text-left group ${
                     isSelected
                       ? "bg-amber-700 text-white dark:bg-amber-700 shadow-sm"

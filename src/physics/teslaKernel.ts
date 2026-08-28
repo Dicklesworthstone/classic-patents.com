@@ -5,6 +5,7 @@
  */
 
 import { teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
+import { hodgeWasmStepped } from "./deepWasm";
 import type { TeslaStatorHodge } from "./deepWasm";
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
@@ -145,12 +146,15 @@ export function teslaMotorPhaseHz(params: { frequency?: number; frequencyHz?: nu
 // runs an i128 bignum homology (Betti ranks) that profiler-measured at ~90% of
 // the Tesla page's main thread when recomputed per 60 Hz tick. The result only
 // varies with phaseCount, so compute it once per phaseCount and reuse.
-const statorHodgeCache = new Map<2 | 3, TeslaStatorHodge>();
+const statorHodgeCache = new Map<string, TeslaStatorHodge>();
 function cachedStatorHodge(phaseCount: 2 | 3): TeslaStatorHodge {
-  let cached = statorHodgeCache.get(phaseCount);
+  // Key includes the WASM-load state: a ts-fallback result computed before the
+  // module finished loading must not pin probe values after WASM arrives.
+  const key = `${phaseCount}:${hodgeWasmStepped() ? "wasm" : "ts"}`;
+  let cached = statorHodgeCache.get(key);
   if (!cached) {
     cached = teslaStatorHodge(phaseCount, 0);
-    statorHodgeCache.set(phaseCount, cached);
+    statorHodgeCache.set(key, cached);
   }
   return cached;
 }
