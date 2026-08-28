@@ -130,7 +130,7 @@ export default function HomePage() {
 
         {/* Grid of All Patents */}
         {filteredPatents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+          <div className="catalog-grid-cv grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             {filteredPatents.map((patent: Patent) => (
               <PatentCard key={patent.id} patent={patent} />
             ))}

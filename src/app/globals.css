@@ -361,6 +361,15 @@ input[type="range"] {
   .text-pretty {
     text-wrap: pretty;
   }
+
+  /* Museum catalog render-cost gate: the home page lays out all ~79 patent
+     cards (~139k px tall on phones). Offscreen cards skip layout and paint
+     until approached; `auto` keeps the real size once a card has rendered,
+     so the scrollbar estimate stays honest. */
+  .catalog-grid-cv > * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 560px;
+  }
 }
 @keyframes ui-fade-in {
   from {
