@@ -5,6 +5,7 @@
  */
 
 import { teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
+import type { TeslaStatorHodge } from "./deepWasm";
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;
@@ -140,10 +141,24 @@ export function teslaMotorPhaseHz(params: { frequency?: number; frequencyHz?: nu
   return Math.max(1, params.frequency ?? params.frequencyHz ?? 60);
 }
 
+// teslaStatorHodge(2, 0) is argument-constant: the fs-feec Hodge decomposition
+// runs an i128 bignum homology (Betti ranks) that profiler-measured at ~90% of
+// the Tesla page's main thread when recomputed per 60 Hz tick. The result only
+// varies with phaseCount, so compute it once per phaseCount and reuse.
+const statorHodgeCache = new Map<2 | 3, TeslaStatorHodge>();
+function cachedStatorHodge(phaseCount: 2 | 3): TeslaStatorHodge {
+  let cached = statorHodgeCache.get(phaseCount);
+  if (!cached) {
+    cached = teslaStatorHodge(phaseCount, 0);
+    statorHodgeCache.set(phaseCount, cached);
+  }
+  return cached;
+}
+
 export function stepTeslaMotorFig9(phaseCycleHz: number): TeslaFig9State {
   const boundedHz = Math.max(1, phaseCycleHz);
   const generatorRpm = Math.round(boundedHz * 60);
-  const hodge = teslaStatorHodge(2, 0);
+  const hodge = cachedStatorHodge(2);
   return {
     phaseCycleHz: boundedHz,
     generatorRpm,

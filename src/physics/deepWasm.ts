@@ -842,16 +842,15 @@ export function wrightStayWireTruss(
   return out;
 }
 
-export function teslaStatorHodge(
-  phaseCount: 2 | 3,
-  omegaT: number,
-): {
+export interface TeslaStatorHodge {
   hodgeExactEnergy: number;
   hodgeCoexactEnergy: number;
   hodgeHarmonicEnergy: number;
   hodgeEdgeCount: number;
   hodgeSource: DeepKernelSource;
-} {
+}
+
+export function teslaStatorHodge(phaseCount: 2 | 3, omegaT: number): TeslaStatorHodge {
   const buf = hodgeDecomposition(1);
   const scale = 0.6 + 0.4 * Math.abs(Math.sin(omegaT));
   const three = phaseCount === 3 ? 1.05 : 1;

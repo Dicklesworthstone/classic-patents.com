@@ -30,7 +30,9 @@
 
 ---
 
-## Curated Historical Patents (22 Masterpieces)
+## Curated Historical Patents (22 Featured — 79 in the Live Catalogue)
+
+The live, searchable catalogue at [classic-patents.com](https://classic-patents.com) holds all 79 records — every one with a pinned USPTO facsimile, reviewed transcription, archival edition, and interactive simulation. This table highlights 22 foundational entries; the site's search (⌘K) and timeline cover the complete registry.
 
 | Patent | Title | Inventors | Grant Date | Key Breakthrough | Interactive 3D Sim |
 |---|---|---|---|---|---|
