@@ -125,6 +125,7 @@ export function PeltonWheel3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       clock.pump(now);
       const p = live.current;
 

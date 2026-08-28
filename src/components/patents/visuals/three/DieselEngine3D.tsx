@@ -223,6 +223,10 @@ export function DieselEngine3D() {
     const transport = globalTransportBus.getTransport("us-542846-diesel-engine");
 
     const renderLoop = (now: number) => {
+      if (!studio.isVisible()) {
+        animRef.current = requestAnimationFrame(renderLoop);
+        return;
+      }
       clock.pump(now);
       const p = live.current;
 

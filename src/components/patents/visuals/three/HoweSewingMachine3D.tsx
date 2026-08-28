@@ -123,6 +123,7 @@ export function HoweSewingMachine3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       virtualTime += dt;
       const p = live.current;

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { JetBrains_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AudioCleanupProvider } from "@/components/layout/AudioCleanupProvider";
 import { Footer } from "@/components/layout/Footer";
@@ -17,13 +17,6 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   display: "swap",
   weight: ["400", "500", "600", "700", "800"],
-});
-
-const ibmPlexSans = IBM_Plex_Sans({
-  subsets: ["latin"],
-  variable: "--font-tech-sans",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -106,16 +99,29 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${plusJakartaSans.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
+      className={`${newsreader.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <body className="antialiased selection:bg-amber-500/20 selection:text-amber-900 dark:selection:text-amber-200">
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: static inline theme bootstrap string, no user input */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <AudioCleanupProvider />
+        {/* WCAG 2.4.1 bypass block: keyboard/SR users can jump straight to content. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-amber-700 focus:px-4 focus:py-2 focus:font-sans focus:text-sm focus:font-bold focus:text-white focus:shadow-lg"
+        >
+          Skip to content
+        </a>
         <div className="flex flex-col min-h-screen">
           <Header />
-          <main className="flex-1 relative z-0 isolate">{children}</main>
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="flex-1 relative z-0 isolate outline-none"
+          >
+            {children}
+          </main>
           <Footer />
         </div>
       </body>

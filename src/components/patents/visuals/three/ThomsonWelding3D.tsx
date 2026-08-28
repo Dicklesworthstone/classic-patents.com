@@ -159,6 +159,7 @@ export function ThomsonWelding3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       const p = live.current;
       // Bus-owned kernel step: prefer the latest shared-tape weld state.

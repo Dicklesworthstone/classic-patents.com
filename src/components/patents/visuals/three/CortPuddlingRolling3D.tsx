@@ -175,6 +175,7 @@ export function CortPuddlingRolling3D() {
 
     const renderLoop = (now: number) => {
       animId = requestAnimationFrame(renderLoop);
+      if (!studio.isVisible()) return;
       const { simTimeSec: virtualTime } = clock.pump(now);
 
       // Pure consumer of the tape: the registered updater owns the per-tick

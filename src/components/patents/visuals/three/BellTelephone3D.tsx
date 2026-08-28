@@ -173,6 +173,7 @@ export const BellTelephone3D = memo(() => {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const p = live.current;
 
       updateBellTelephoneKinematics(

@@ -117,6 +117,7 @@ export function HopkinsPotash3D() {
 
     const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { simTimeSec: timeS } = studioClock.pump(now);
       const p = live.current;
 

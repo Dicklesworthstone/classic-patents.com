@@ -148,6 +148,7 @@ export const SholesTypewriter3D = memo(() => {
     const clock = createStudioClock();
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       clock.pump(now);
       const p = live.current;
       // Bus-owned integration: read the latest shared-tape step; render immediately

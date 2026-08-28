@@ -235,6 +235,7 @@ export function ColtRevolver3D() {
 
     const animate = () => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const p = live.current;
       const anim = animRef.current;
 

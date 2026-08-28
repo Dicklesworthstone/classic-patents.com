@@ -162,6 +162,7 @@ export function MergenthalerLinotype3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       controls.update();
       const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;

@@ -1,65 +1,16 @@
 /**
  * sensitivityKernel.ts
  *
- * Forward-Mode Automatic Differentiation (AD) & Parameter Sensitivity Engine
- * based on FrankenSim's `fs-ad` and `fs-qty` crates.
+ * Parameter-sensitivity readouts for the live UI sliders (∂Metric/∂Control).
  *
- * Computes exact partial derivatives ∂Metric/∂Control for live UI sliders,
- * teaching users the direct mechanical/electrical gradient of each knob.
+ * Provenance, honestly stated: most entries are per-patent closed-form
+ * derivatives authored alongside their kernels; the Wright Flyer entries are
+ * central finite differences over the live stepWrightFlyerSi kernel, so they
+ * cannot drift from the numbers the sims actually display. This file does NOT
+ * use automatic differentiation; the unused Dual class was removed.
  */
 
-export class Dual {
-  constructor(
-    public val: number,
-    public dot: number = 0,
-  ) {}
-
-  add(other: Dual | number): Dual {
-    if (typeof other === "number") return new Dual(this.val + other, this.dot);
-    return new Dual(this.val + other.val, this.dot + other.dot);
-  }
-
-  sub(other: Dual | number): Dual {
-    if (typeof other === "number") return new Dual(this.val - other, this.dot);
-    return new Dual(this.val - other.val, this.dot - other.dot);
-  }
-
-  mul(other: Dual | number): Dual {
-    if (typeof other === "number") return new Dual(this.val * other, this.dot * other);
-    return new Dual(this.val * other.val, this.val * other.dot + this.dot * other.val);
-  }
-
-  div(other: Dual | number): Dual {
-    if (typeof other === "number") return new Dual(this.val / other, this.dot / other);
-    const denom = other.val * other.val;
-    return new Dual(
-      this.val / other.val,
-      (this.dot * other.val - this.val * other.dot) / Math.max(1e-12, denom),
-    );
-  }
-
-  pow(p: number): Dual {
-    return new Dual(this.val ** p, p * this.val ** (p - 1) * this.dot);
-  }
-
-  sqrt(): Dual {
-    const s = Math.sqrt(Math.max(0, this.val));
-    return new Dual(s, this.dot / (2 * Math.max(1e-12, s)));
-  }
-
-  sin(): Dual {
-    return new Dual(Math.sin(this.val), Math.cos(this.val) * this.dot);
-  }
-
-  cos(): Dual {
-    return new Dual(Math.cos(this.val), -Math.sin(this.val) * this.dot);
-  }
-
-  exp(): Dual {
-    const e = Math.exp(this.val);
-    return new Dual(e, e * this.dot);
-  }
-}
+import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 export interface SensitivityResult {
   metricName: string;
@@ -79,40 +30,34 @@ export function computeParameterSensitivity(
 ): SensitivityResult | null {
   switch (patentId) {
     case "us-821393-wright-flyer": {
+      // Central finite differences over the live kernel. Probing through
+      // readWrightControls keeps the Claim 18 rudder interlock in the loop:
+      // with coupling ON the warp-induced adverse yaw is cancelled and the
+      // chip honestly reads ~0 — toggle the coupling to see the gradient.
+      const warpProbe = (warpDeg: number) =>
+        stepWrightFlyerSi(readWrightControls({ ...params, wingWarp: warpDeg }));
       if (controlKey === "wingWarp" || controlKey === "wingWarpDeg") {
         const warp = params.wingWarp ?? params.wingWarpDeg ?? 5.0;
-        const airspeed = params.airspeedKts ?? 28.0;
-        const v = airspeed * 0.514444; // m/s
-        const q = 0.5 * 1.225 * v * v; // Dynamic pressure
-        const S = 47.4; // Wing area m^2
-        const b = 12.3; // Wingspan m
-
-        // Induced drag sensitivity from wing warp: d(CDi)/d(warp) = 2 * CL * (dCL/dwarp) / (pi * AR * e)
-        const ar = (b * b) / S;
-        const cl = 0.65 + Math.abs(warp) * 0.015;
-        const dcl_dwarp_deg = 0.085;
-        const dcdi_dwarp = (2 * cl * dcl_dwarp_deg) / (Math.PI * ar * 0.75);
-        const dDrag_dwarp = dcdi_dwarp * q * S * 0.0174533; // N/deg
-        const dYawMoment_dwarp = dDrag_dwarp * (b * 0.4); // N*m/deg
-
+        const dYawDwarp = (warpProbe(warp + 0.5).netYawNm - warpProbe(warp - 0.5).netYawNm) / 1.0;
         return {
           metricName: "Adverse Yaw Moment",
           derivativeSymbol: "∂N / ∂δ_warp",
-          derivativeValue: Number(dYawMoment_dwarp.toFixed(2)),
+          derivativeValue: Number(dYawDwarp.toFixed(2)),
           derivativeUnit: "N·m / deg",
           interpretation:
-            "Induced drag asymmetry produces adverse yaw opposing the commanded turn.",
+            "Central difference of the live kernel. With the Claim 18 rudder interlock engaged the residual gradient is ~0; uncoupled it shows the raw adverse-yaw gradient.",
         };
       }
-      if (controlKey === "airspeedKts") {
-        const airspeed = params.airspeedKts ?? 28.0;
-        const v = airspeed * 0.514444;
-        const dLift_dv = 1.225 * v * 47.4 * 0.65 * 0.514444; // N / kt
+      if (controlKey === "airspeed" || controlKey === "airspeedKts") {
+        const mph = params.airspeed ?? 28.0;
+        const liftProbe = (airspeedMph: number) =>
+          stepWrightFlyerSi(readWrightControls({ ...params, airspeed: airspeedMph }));
+        const dLiftDv = (liftProbe(mph + 0.5).liftNewtons - liftProbe(mph - 0.5).liftNewtons) / 1.0;
         return {
           metricName: "Aerodynamic Lift",
           derivativeSymbol: "∂L / ∂V",
-          derivativeValue: Number(dLift_dv.toFixed(1)),
-          derivativeUnit: "N / kt",
+          derivativeValue: Number(dLiftDv.toFixed(1)),
+          derivativeUnit: "N / mph",
           interpretation: "Dynamic pressure lift growth scaling with velocity squared.",
         };
       }
@@ -207,6 +152,28 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-2708656-fermi-reactor": {
+      if (
+        controlKey === "rodWithdrawal" ||
+        controlKey === "controlRodWithdrawalPct" ||
+        controlKey === "rodPosition"
+      ) {
+        // Registry id is rodWithdrawal; the legacy keys stay accepted for tests.
+        const rod =
+          params.rodWithdrawal ?? params.controlRodWithdrawalPct ?? params.rodPosition ?? 65.0;
+        // Rod worth curve derivative d(rho)/d(x) ~ sin^2(pi*x)
+        const xFrac = rod / 100.0;
+        const dRho_dx = (Math.PI / 2) * Math.sin(Math.PI * xFrac) * 0.0015; // dk / %
+        return {
+          metricName: "Reactivity Insertion",
+          derivativeSymbol: "∂ρ / ∂x_rod",
+          derivativeValue: Number((dRho_dx * 1e5).toFixed(1)),
+          derivativeUnit: "pcm / %",
+          interpretation: "Cadmium neutron absorption cross-section differential worth.",
+        };
+      }
+      break;
+    }
     case "us-3858232-boyle-smith-ccd": {
       if (
         controlKey === "gateVoltageV" ||

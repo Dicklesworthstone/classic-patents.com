@@ -148,6 +148,7 @@ export function WozniakApple3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta, simTimeSec: animTime } = clock.pump(now);
       const p = live.current;
 

@@ -90,6 +90,7 @@ export function DaimlerEngine3D() {
 
     const animate = (now: number) => {
       animId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
 
       const p = live.current;

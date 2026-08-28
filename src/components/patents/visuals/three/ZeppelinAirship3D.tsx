@@ -175,6 +175,7 @@ export function ZeppelinAirship3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
 

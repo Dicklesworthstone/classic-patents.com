@@ -153,6 +153,7 @@ export function FarnsworthTV3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt, simTimeSec } = clock.pump(now);
       const p = live.current;
 

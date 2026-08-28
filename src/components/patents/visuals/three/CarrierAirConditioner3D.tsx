@@ -106,6 +106,7 @@ export function CarrierAirConditioner3D() {
     const clock = createStudioClock();
     const animate = (now: number) => {
       requestId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       const p = live.current;
       updateCarrierAirConditionerKinematics(

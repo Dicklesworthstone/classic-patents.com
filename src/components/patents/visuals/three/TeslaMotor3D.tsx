@@ -226,6 +226,7 @@ export function TeslaMotor3D() {
 
     const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta } = studioClock.pump(frameTimeMs);
       const p = live.current;
       const bFieldAngle = transport.lastFrame.telemetry.em?.phaseAngleRad ?? 0;

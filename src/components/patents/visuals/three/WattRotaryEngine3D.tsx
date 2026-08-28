@@ -138,6 +138,7 @@ export function WattRotaryEngine3D() {
     const clock = createStudioClock();
     const animate = (now: number) => {
       animFrameRef.current = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       clock.pump(now);
       studio.controls.update();
 

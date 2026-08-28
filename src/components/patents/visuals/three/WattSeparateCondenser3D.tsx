@@ -142,6 +142,7 @@ export function WattSeparateCondenser3D() {
 
     const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       clock.pump(now);
       // Bus-owned integration: read the latest shared-tape cycle phase.
       const pistonPos = Math.sin(wattPhaseRef.current);

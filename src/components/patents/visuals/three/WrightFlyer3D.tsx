@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { SensitivitySlider } from "@/components/ui/SensitivitySlider";
 import { ensureFlyerWasm, flyerAeroSource, flyerKernelSource } from "@/physics/flyerWasm";
-import { TickScheduler } from "@/physics/tickScheduler";
+import { createStudioClock, TickScheduler } from "@/physics/tickScheduler";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { identityAeroBody, stepWrightAeroBody } from "@/physics/wrightAeroBody";
 import {
@@ -41,8 +41,6 @@ import {
   FLYER_DIM,
   updateWrightFlyerKinematics,
 } from "./wrightFlyerAirframe";
-
-const FIXED_RENDER_STEP_S = 1 / 60;
 
 type CameraPreset = "iso" | "wing_warp" | "canard" | "rudder" | "engine_props" | "top";
 
@@ -218,16 +216,19 @@ export function WrightFlyer3D() {
     vectorsGroup.add(weightVector);
 
     // --- RENDER LOOP & REAL-TIME PHYSICS SIMULATION ---
+    // Host-fed time: dt comes from the rAF timestamp via createStudioClock
+    // (bounded catch-up), so simulation speed no longer scales with the
+    // display's refresh rate, and the loop freezes while the canvas is
+    // scrolled offscreen.
     let reqId: number;
-    let renderedSteps = 0;
     let aero = identityAeroBody();
     const scheduler = new TickScheduler(1 / 120, 0, 3);
+    const studioClock = createStudioClock();
 
-    const animate = () => {
+    const animate = (frameTimeMs: number) => {
       reqId = requestAnimationFrame(animate);
-      renderedSteps += 1;
-      const delta = FIXED_RENDER_STEP_S;
-      const elapsed = renderedSteps * FIXED_RENDER_STEP_S;
+      if (!studio.isVisible()) return;
+      const { dt: delta, simTimeSec: elapsed } = studioClock.pump(frameTimeMs);
 
       const p = live.current;
       const controlsNow = {
@@ -301,7 +302,8 @@ export function WrightFlyer3D() {
       renderer.render(scene, camera);
     };
 
-    animate();
+    // Start via rAF so the first pump() receives a real frame timestamp.
+    reqId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(reqId);

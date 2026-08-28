@@ -154,6 +154,7 @@ export function GatlingGun3D() {
 
     const animate = (nowMs: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta, simTimeSec } = clock.pump(nowMs);
       const p = live.current;
 

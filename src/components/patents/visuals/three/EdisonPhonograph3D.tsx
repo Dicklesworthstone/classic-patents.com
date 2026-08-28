@@ -168,6 +168,7 @@ export function EdisonPhonograph3D() {
 
     const animate = (frameMs: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta, simTimeSec: timeSec } = clock.pump(frameMs);
       const p = live.current;
 

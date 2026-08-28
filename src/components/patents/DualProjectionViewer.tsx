@@ -12,7 +12,7 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ColorizedEquation } from "@/components/ui/ColorizedEquation";
 import { LatexRenderer, TextWithLatex } from "@/components/ui/LatexRenderer";
 import { archivalParallelReadingsFor } from "@/data/editions/parallelReadings";

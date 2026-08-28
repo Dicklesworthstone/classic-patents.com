@@ -83,6 +83,7 @@ export function LamarrFrequencyHopping3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       const elapsed = now / 1000;
 

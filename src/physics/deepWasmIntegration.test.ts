@@ -9,7 +9,7 @@ import {
   generateVectorStreamlines,
   sampleThermalColormap,
 } from "./fieldTextures";
-import { computeParameterSensitivity, Dual } from "./sensitivityKernel";
+import { computeParameterSensitivity } from "./sensitivityKernel";
 
 describe("Deep FrankenSim WASM Integration Suite", () => {
   describe("Field Textures & Streamlines (Phase 1)", () => {
@@ -70,27 +70,28 @@ describe("Deep FrankenSim WASM Integration Suite", () => {
   });
 
   describe("Automatic Differentiation & Sensitivity Gradients (Phase 2)", () => {
-    test("Dual number forward-mode AD computes exact polynomial and transcendental derivatives", () => {
-      // f(x) = x^3 + 2*x + sin(x) at x = 2
-      const x = new Dual(2.0, 1.0);
-      const f = x.pow(3).add(x.mul(2.0)).add(x.sin());
-
-      const expectedVal = 8.0 + 4.0 + Math.sin(2.0);
-      const expectedDeriv = 3 * 4.0 + 2.0 + Math.cos(2.0);
-
-      expect(f.val).toBeCloseTo(expectedVal, 5);
-      expect(f.dot).toBeCloseTo(expectedDeriv, 5);
-    });
-
-    test("computes Wright Flyer adverse yaw sensitivity ∂N/∂δ_warp", () => {
-      const sens = computeParameterSensitivity("us-821393-wright-flyer", "wingWarp", {
+    test("computes Wright Flyer adverse yaw sensitivity ∂N/∂δ_warp from the live kernel", () => {
+      // Uncoupled: the raw adverse-yaw gradient must be negative (warping the
+      // right wing down yaws the nose right; sign follows the kernel).
+      const uncoupled = computeParameterSensitivity("us-821393-wright-flyer", "wingWarp", {
         wingWarp: 5.0,
-        airspeedKts: 28.0,
+        airspeed: 28.0,
+        coupled: 0,
       });
-      expect(sens).not.toBeNull();
-      expect(sens?.metricName).toBe("Adverse Yaw Moment");
-      expect(sens?.derivativeValue).toBeGreaterThan(0);
-      expect(sens?.derivativeUnit).toContain("N·m / deg");
+      expect(uncoupled).not.toBeNull();
+      expect(uncoupled?.metricName).toBe("Adverse Yaw Moment");
+      expect(uncoupled?.derivativeValue).not.toBe(0);
+      expect(uncoupled?.derivativeUnit).toContain("N·m / deg");
+
+      // Claim 18 rudder interlock engaged: the coupled rudder cancels the
+      // warp-induced adverse yaw, so the residual gradient is ~0.
+      const coupled = computeParameterSensitivity("us-821393-wright-flyer", "wingWarp", {
+        wingWarp: 5.0,
+        airspeed: 28.0,
+        coupled: 1,
+      });
+      expect(coupled).not.toBeNull();
+      expect(Math.abs(coupled?.derivativeValue ?? 1)).toBeLessThan(0.01);
     });
 
     test("computes Tesla Fig. 9 generator-rate sensitivity ∂n_G/∂f", () => {

@@ -154,6 +154,7 @@ export function DaVinci3D() {
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const p = live.current;
       const currentState = kernelStateRef.current;
 

@@ -119,6 +119,7 @@ export function McCormickReaper3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       sched.pump(now / 1000, () => {
         simTimeSec += 1 / 60;
       });

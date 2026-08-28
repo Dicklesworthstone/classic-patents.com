@@ -168,6 +168,7 @@ export function HallAluminium3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       const frameTel = transport.lastFrame.telemetry;

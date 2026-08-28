@@ -17,8 +17,8 @@
     overflow-x: clip;
     overscroll-behavior-x: none;
     color-scheme: light;
-    /* Keep anchored sections clear of the 4rem sticky header. */
-    scroll-padding-top: 5rem;
+    /* 4rem sticky header + notch/PWA safe-area inset (viewportFit: cover). */
+    scroll-padding-top: calc(5rem + env(safe-area-inset-top));
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -54,12 +54,19 @@
   }
 
   body {
-    @apply bg-[#fbf9f5] text-[#2a1f18] font-sans antialiased;
+    @apply bg-parchment-50 text-parchment-950 font-sans antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: clip;
     overscroll-behavior-x: none;
+  }
+
+  /* Older engines without dvh fall back to the classic viewport unit. */
+  @supports not (height: 1dvh) {
+    body {
+      min-height: 100vh;
+    }
   }
 
   /* Keep WebGL canvases on their own compositor layer so they do not flash
@@ -79,17 +86,16 @@
     outline-color: #fbbf24;
   }
 
-  /* Obsidian Dark Mode */
+  /* Obsidian Dark Mode — surfaces on the ink ramp so panels, HUDs, and the
+     page background share one navy family. */
   .dark body {
-    background-color: #0b0f17;
+    background-color: #0f1113;
     color: #f1f5f9;
     background-image:
       radial-gradient(circle at 15% 15%, rgba(245, 158, 11, 0.04), transparent 45%),
-      radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.03), transparent 45%),
-      linear-gradient(to bottom, #0b0f17, #070a10);
+      radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.03), transparent 45%);
   }
 }
-
 /* Glassmorphism Surface Token */
 .glass-panel {
   backdrop-filter: blur(12px) saturate(120%);

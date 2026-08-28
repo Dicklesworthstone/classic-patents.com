@@ -96,6 +96,7 @@ export default function EdisonIndicator3D() {
     let rafId = 0;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const currentSim = live.current;
       model.update({
         filamentTemperatureK: currentSim.filamentTemperatureK,

@@ -151,6 +151,7 @@ export const NobelDynamite3D = memo(function NobelDynamite3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
       lastMs = now;
       sched.pump(now / 1000, () => {

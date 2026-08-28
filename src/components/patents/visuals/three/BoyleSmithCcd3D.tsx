@@ -147,6 +147,7 @@ export function BoyleSmithCcd3D() {
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
 
       // Pure consumer of the shared transport tape: the three-phase display
       // clock is integrated by the bus updater.

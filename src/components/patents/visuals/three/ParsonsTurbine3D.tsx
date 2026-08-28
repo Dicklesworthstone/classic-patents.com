@@ -116,6 +116,7 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = clock.pump(now);
       timeSec += dt;
       const p = live.current;

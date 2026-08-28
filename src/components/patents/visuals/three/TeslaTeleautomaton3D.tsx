@@ -165,6 +165,7 @@ export function TeslaTeleautomaton3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta, simTimeSec: timeSec } = clock.pump(now);
       const p = live.current;
       // Bus-owned kernel step: read the latest shared-tape outputs; render

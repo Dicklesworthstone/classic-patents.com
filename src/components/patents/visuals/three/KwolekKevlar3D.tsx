@@ -182,6 +182,7 @@ export function KwolekKevlar3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta } = clock.pump(now);
       elapsed += delta;
       const p = live.current;

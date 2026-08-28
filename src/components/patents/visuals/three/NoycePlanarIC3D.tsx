@@ -159,6 +159,7 @@ export const NoycePlanarIC3D = memo(() => {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const dt = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 1 / 60;
       lastMs = now;
       sched.pump(now / 1000, () => undefined);

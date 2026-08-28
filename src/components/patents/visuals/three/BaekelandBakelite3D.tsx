@@ -129,6 +129,7 @@ export function BaekelandBakelite3D() {
 
     const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { simTimeSec: virtualTime } = clock.pump(now);
 
       model.update(live.current, virtualTime);

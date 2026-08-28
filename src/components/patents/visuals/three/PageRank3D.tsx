@@ -101,6 +101,7 @@ export function PageRank3D() {
 
     const animate = (frameTimeMs: number) => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const delta =
         lastFrameTimeMs !== undefined ? Math.min((frameTimeMs - lastFrameTimeMs) / 1000, 0.1) : 0;
       lastFrameTimeMs = frameTimeMs;

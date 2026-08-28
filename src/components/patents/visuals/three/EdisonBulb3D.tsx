@@ -205,6 +205,7 @@ export const EdisonBulb3D = memo(() => {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const delta = lastMs !== undefined ? Math.min((now - lastMs) / 1000, 0.1) : 0;
       lastMs = now;
       const p = live.current;

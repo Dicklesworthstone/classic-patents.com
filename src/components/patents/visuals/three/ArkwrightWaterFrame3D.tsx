@@ -150,6 +150,7 @@ export function ArkwrightWaterFrame3D() {
 
     const animate = () => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
 
       // Pure consumer of the shared transport tape: every phase below is
       // integrated by the bus updater from the shared kernel ω.

@@ -102,6 +102,7 @@ export function YaleLock3D({
     let rafId = 0;
     const animate = () => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       model.update(live.current.yaleState, live.current.keyInsertion);
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
@@ -177,6 +178,7 @@ export function YaleLock3D({
               setIsRotating(!isRotating);
               soundEngine.playSwitchClick();
             }}
+            aria-pressed={isRotating}
             className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               yaleState.isUnlocked
                 ? isRotating

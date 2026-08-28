@@ -208,6 +208,7 @@ export function FessendenWireless3D() {
 
       studio.renderer.render(studio.scene, studio.camera);
       animFrameRef.current = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
     };
 
     animFrameRef.current = requestAnimationFrame(animate);
@@ -285,6 +286,7 @@ export function FessendenWireless3D() {
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
+            aria-pressed={isRotating}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"

@@ -83,6 +83,7 @@ export function BellPhotophone3D() {
     const clock = createStudioClock();
     const animate = (now: number) => {
       rafId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { simTimeSec: elapsedTimeSec } = clock.pump(now);
       model.update(live.current.photoState, elapsedTimeSec);
       model.setCutaway?.(live.current.isCutaway ?? false);

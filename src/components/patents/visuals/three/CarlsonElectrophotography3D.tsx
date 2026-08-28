@@ -182,6 +182,10 @@ export function CarlsonElectrophotography3D({
     // Pure consumer of the shared transport tape: the bus updater owns the
     // drum/fuser display-time integration (timeRef).
     const animate = () => {
+      if (!studio.isVisible()) {
+        animFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
       const current = live.current;
       if (current.isRotating) {
         nodes.root.rotation.y += 0.0044;
@@ -287,6 +291,7 @@ export function CarlsonElectrophotography3D({
           <button
             type="button"
             onClick={() => setIsRotating(!isRotating)}
+            aria-pressed={isRotating}
             className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"

@@ -77,7 +77,13 @@ class PatentTransport {
   subscribe(listener: TapeListener): () => void {
     this.listeners.add(listener);
     listener(this.lastFrame);
-    return () => this.listeners.delete(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  get hasListeners(): boolean {
+    return this.listeners.size > 0;
   }
 
   pump(nowMs: number, updater: TapeUpdater) {
@@ -133,6 +139,8 @@ class TransportBus {
     this.updaters.set(patentId, { updater, provenance });
     const existing = this.transports.get(patentId);
     if (existing) existing.declaredProvenance = provenance;
+    // The updater may arrive after the pump idled out (effect ordering).
+    this.startPump();
   }
 
   unregisterUpdater(patentId: string) {
@@ -145,10 +153,27 @@ class TransportBus {
 
     const loop = () => {
       const now = performance.now();
+      let pumpedAny = false;
       for (const [patentId, transport] of this.transports) {
+        // A transport with no subscribers or no registered updater cannot
+        // emit a frame; pumping it would burn rAF iterations for nothing
+        // (e.g. patent pages left behind after client-side navigation).
+        if (!transport.hasListeners) continue;
         const entry = this.updaters.get(patentId);
-        transport.declaredProvenance = entry?.provenance;
-        transport.pump(now, entry ? entry.updater : () => null);
+        if (!entry) continue;
+        transport.declaredProvenance = entry.provenance;
+        transport.pump(now, entry.updater);
+        pumpedAny = true;
+      }
+      if (!pumpedAny) {
+        // Idle out: stop the rAF chain entirely and drop transports nobody
+        // subscribes to, so memory stays bounded across navigation. A later
+        // getTransport()/registerUpdater() restarts the loop on demand.
+        this.rafId = null;
+        for (const [patentId, transport] of this.transports) {
+          if (!transport.hasListeners) this.transports.delete(patentId);
+        }
+        return;
       }
       this.rafId = requestAnimationFrame(loop);
     };

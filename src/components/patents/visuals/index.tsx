@@ -4,6 +4,7 @@ import { Activity, Sparkles } from "lucide-react";
 // 3D WebGL Physics Simulators
 import dynamic from "next/dynamic";
 import { useState } from "react";
+
 // 2D Vector Schematics & Dynamic Simulators
 
 const ThreeLoading = () => (
@@ -26,84 +27,318 @@ const SimLoading = () => (
 );
 // 2D sims are lazy: the dispatcher defaults to the 3D face, so each page only
 // downloads the vector-diagram code when the visitor actually toggles it.
-const ArkwrightWaterFrameSim = dynamic(() => import("./ArkwrightWaterFrameSim").then((m) => m.ArkwrightWaterFrameSim), { ssr: false, loading: SimLoading });
-const BaekelandBakeliteSim = dynamic(() => import("./BaekelandBakeliteSim").then((m) => m.BaekelandBakeliteSim), { ssr: false, loading: SimLoading });
-const BardeenTransistorSim = dynamic(() => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim), { ssr: false, loading: SimLoading });
-const BellPhotophoneSim = dynamic(() => import("./BellPhotophoneSim").then((m) => m.BellPhotophoneSim), { ssr: false, loading: SimLoading });
-const BellTelephoneSim = dynamic(() => import("./BellTelephoneSim").then((m) => m.BellTelephoneSim), { ssr: false, loading: SimLoading });
-const BoyleSmithCcdSim = dynamic(() => import("./BoyleSmithCcdSim").then((m) => m.BoyleSmithCcdSim), { ssr: false, loading: SimLoading });
-const CarlsonElectrophotographySim = dynamic(() => import("./CarlsonElectrophotographySim").then((m) => m.CarlsonElectrophotographySim), { ssr: false, loading: SimLoading });
-const CarrierAirConditionerSim = dynamic(() => import("./CarrierAirConditionerSim").then((m) => m.CarrierAirConditionerSim), { ssr: false, loading: SimLoading });
-const ColtRevolverSim = dynamic(() => import("./ColtRevolverSim").then((m) => m.ColtRevolverSim), { ssr: false, loading: SimLoading });
-const CorlissEngineSim = dynamic(() => import("./CorlissEngineSim").then((m) => m.CorlissEngineSim), { ssr: false, loading: SimLoading });
-const CortPuddlingRollingSim = dynamic(() => import("./CortPuddlingRollingSim").then((m) => m.CortPuddlingRollingSim), { ssr: false, loading: SimLoading });
-const DaimlerEngineSim = dynamic(() => import("./DaimlerEngineSim").then((m) => m.DaimlerEngineSim), { ssr: false, loading: SimLoading });
-const DaVinciSim = dynamic(() => import("./DaVinciSim").then((m) => m.DaVinciSim), { ssr: false, loading: SimLoading });
-const DavenportMotorSim = dynamic(() => import("./DavenportMotorSim").then((m) => m.DavenportMotorSim), { ssr: false, loading: SimLoading });
-const DeLavalSeparatorSim = dynamic(() => import("./DeLavalSeparatorSim").then((m) => m.DeLavalSeparatorSim), { ssr: false, loading: SimLoading });
-const DieselEngineSim = dynamic(() => import("./DieselEngineSim").then((m) => m.DieselEngineSim), { ssr: false, loading: SimLoading });
-const EastmanKodakSim = dynamic(() => import("./EastmanKodakSim").then((m) => m.EastmanKodakSim), { ssr: false, loading: SimLoading });
-const EdisonBulbSim = dynamic(() => import("./EdisonBulbSim").then((m) => m.EdisonBulbSim), { ssr: false, loading: SimLoading });
-const EdisonIndicatorSim = dynamic(() => import("./EdisonIndicatorSim").then((m) => m.default), { ssr: false, loading: SimLoading });
-const EdisonPhonographSim = dynamic(() => import("./EdisonPhonographSim").then((m) => m.EdisonPhonographSim), { ssr: false, loading: SimLoading });
-const EInkSim = dynamic(() => import("./EInkSim").then((m) => m.EInkSim), { ssr: false, loading: SimLoading });
-const EinsteinRefrigeratorSim = dynamic(() => import("./EinsteinRefrigeratorSim").then((m) => m.EinsteinRefrigeratorSim), { ssr: false, loading: SimLoading });
-const EngelbartMouseSim = dynamic(() => import("./EngelbartMouseSim").then((m) => m.EngelbartMouseSim), { ssr: false, loading: SimLoading });
-const EricssonPropellerSim = dynamic(() => import("./EricssonPropellerSim").then((m) => m.EricssonPropellerSim), { ssr: false, loading: SimLoading });
-const FarnsworthTVSim = dynamic(() => import("./FarnsworthTVSim").then((m) => m.FarnsworthTVSim), { ssr: false, loading: SimLoading });
-const FermiReactorSim = dynamic(() => import("./FermiReactorSim").then((m) => m.FermiReactorSim), { ssr: false, loading: SimLoading });
-const FessendenWirelessSim = dynamic(() => import("./FessendenWirelessSim").then((m) => m.FessendenWirelessSim), { ssr: false, loading: SimLoading });
-const GatlingGunSim = dynamic(() => import("./GatlingGunSim").then((m) => m.GatlingGunSim), { ssr: false, loading: SimLoading });
-const GliddenBarbedWireSim = dynamic(() => import("./GliddenBarbedWireSim").then((m) => m.GliddenBarbedWireSim), { ssr: false, loading: SimLoading });
-const GoddardRocketSim = dynamic(() => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim), { ssr: false, loading: SimLoading });
-const GoodyearRubberSim = dynamic(() => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim), { ssr: false, loading: SimLoading });
-const GrammeDynamoSim = dynamic(() => import("./GrammeDynamoSim").then((m) => m.GrammeDynamoSim), { ssr: false, loading: SimLoading });
-const HaberAmmoniaSim = dynamic(() => import("./HaberAmmoniaSim").then((m) => m.HaberAmmoniaSim), { ssr: false, loading: SimLoading });
-const HallAluminiumSim = dynamic(() => import("./HallAluminiumSim").then((m) => m.HallAluminiumSim), { ssr: false, loading: SimLoading });
-const HewittMercuryLampSim = dynamic(() => import("./HewittMercuryLampSim").then((m) => m.HewittMercuryLampSim), { ssr: false, loading: SimLoading });
-const HollerithTabulatingSim = dynamic(() => import("./HollerithTabulatingSim").then((m) => m.HollerithTabulatingSim), { ssr: false, loading: SimLoading });
-const HopkinsPotashSim = dynamic(() => import("./HopkinsPotashSim").then((m) => m.HopkinsPotashSim), { ssr: false, loading: SimLoading });
-const HoweSewingMachineSim = dynamic(() => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim), { ssr: false, loading: SimLoading });
-const HyattCelluloidSim = dynamic(() => import("./HyattCelluloidSim").then((m) => m.HyattCelluloidSim), { ssr: false, loading: SimLoading });
-const KilbyIntegratedCircuitSim = dynamic(() => import("./KilbyIntegratedCircuitSim").then((m) => m.KilbyIntegratedCircuitSim), { ssr: false, loading: SimLoading });
-const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), { ssr: false, loading: SimLoading });
-const LamarrFrequencyHoppingSim = dynamic(() => import("./LamarrFrequencyHoppingSim").then((m) => m.LamarrFrequencyHoppingSim), { ssr: false, loading: SimLoading });
-const LandPolaroidSim = dynamic(() => import("./LandPolaroidSim").then((m) => m.LandPolaroidSim), { ssr: false, loading: SimLoading });
-const LincolnBuoySim = dynamic(() => import("./LincolnBuoySim").then((m) => m.LincolnBuoySim), { ssr: false, loading: SimLoading });
-const LindeAirLiquefactionSim = dynamic(() => import("./LindeAirLiquefactionSim").then((m) => m.LindeAirLiquefactionSim), { ssr: false, loading: SimLoading });
-const MaimanRubyLaserSim = dynamic(() => import("./MaimanRubyLaserSim").then((m) => m.MaimanRubyLaserSim), { ssr: false, loading: SimLoading });
-const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), { ssr: false, loading: SimLoading });
-const MaximMachineGunSim = dynamic(() => import("./MaximMachineGunSim").then((m) => m.MaximMachineGunSim), { ssr: false, loading: SimLoading });
-const McCormickReaperSim = dynamic(() => import("./McCormickReaperSim").then((m) => m.McCormickReaperSim), { ssr: false, loading: SimLoading });
-const MergenthalerLinotypeSim = dynamic(() => import("./MergenthalerLinotypeSim").then((m) => m.MergenthalerLinotypeSim), { ssr: false, loading: SimLoading });
-const MorseTelegraphSim = dynamic(() => import("./MorseTelegraphSim").then((m) => m.MorseTelegraphSim), { ssr: false, loading: SimLoading });
-const MultiTouchSim = dynamic(() => import("./MultiTouchSim").then((m) => m.MultiTouchSim), { ssr: false, loading: SimLoading });
-const NobelDynamiteSim = dynamic(() => import("./NobelDynamiteSim").then((m) => m.NobelDynamiteSim), { ssr: false, loading: SimLoading });
-const NoycePlanarICSim = dynamic(() => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim), { ssr: false, loading: SimLoading });
-const OtisElevatorSim = dynamic(() => import("./OtisElevatorSim").then((m) => m.OtisElevatorSim), { ssr: false, loading: SimLoading });
-const OttoEngineSim = dynamic(() => import("./OttoEngineSim").then((m) => m.OttoEngineSim), { ssr: false, loading: SimLoading });
-const PageRankSim = dynamic(() => import("./PageRankSim").then((m) => m.PageRankSim), { ssr: false, loading: SimLoading });
-const ParsonsTurbineSim = dynamic(() => import("./ParsonsTurbineSim").then((m) => m.ParsonsTurbineSim), { ssr: false, loading: SimLoading });
-const PasteurFermentationSim = dynamic(() => import("./PasteurFermentationSim").then((m) => m.PasteurFermentationSim), { ssr: false, loading: SimLoading });
-const PeltonWheelSim = dynamic(() => import("./PeltonWheelSim").then((m) => m.PeltonWheelSim), { ssr: false, loading: SimLoading });
-const RenoEscalatorSim = dynamic(() => import("./RenoEscalatorSim").then((m) => m.RenoEscalatorSim), { ssr: false, loading: SimLoading });
-const RillieuxEvaporatorSim = dynamic(() => import("./RillieuxEvaporatorSim").then((m) => m.RillieuxEvaporatorSim), { ssr: false, loading: SimLoading });
-const RoombaSim = dynamic(() => import("./RoombaSim").then((m) => m.RoombaSim), { ssr: false, loading: SimLoading });
-const SholesTypewriterSim = dynamic(() => import("./SholesTypewriterSim").then((m) => m.SholesTypewriterSim), { ssr: false, loading: SimLoading });
-const SpencerMicrowaveSim = dynamic(() => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim), { ssr: false, loading: SimLoading });
-const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), { ssr: false, loading: SimLoading });
-const TeslaMotorSim = dynamic(() => import("./TeslaMotorSim").then((m) => m.TeslaMotorSim), { ssr: false, loading: SimLoading });
-const TeslaTeleautomatonSim = dynamic(() => import("./TeslaTeleautomatonSim").then((m) => m.TeslaTeleautomatonSim), { ssr: false, loading: SimLoading });
-const ThomsonWeldingSim = dynamic(() => import("./ThomsonWeldingSim").then((m) => m.ThomsonWeldingSim), { ssr: false, loading: SimLoading });
-const TownesLaserSim = dynamic(() => import("./TownesLaserSim").then((m) => m.TownesLaserSim), { ssr: false, loading: SimLoading });
-const WattRotaryEngineSim = dynamic(() => import("./WattRotaryEngineSim").then((m) => m.WattRotaryEngineSim), { ssr: false, loading: SimLoading });
-const WattSeparateCondenserSim = dynamic(() => import("./WattSeparateCondenserSim").then((m) => m.WattSeparateCondenserSim), { ssr: false, loading: SimLoading });
-const WestinghouseAirBrakeSim = dynamic(() => import("./WestinghouseAirBrakeSim").then((m) => m.WestinghouseAirBrakeSim), { ssr: false, loading: SimLoading });
-const WhitneyCottonGinSim = dynamic(() => import("./WhitneyCottonGinSim").then((m) => m.WhitneyCottonGinSim), { ssr: false, loading: SimLoading });
-const WozniakAppleSim = dynamic(() => import("./WozniakAppleSim").then((m) => m.WozniakAppleSim), { ssr: false, loading: SimLoading });
-const WrightFlyerSim = dynamic(() => import("./WrightFlyerSim").then((m) => m.WrightFlyerSim), { ssr: false, loading: SimLoading });
-const YaleLockSim = dynamic(() => import("./YaleLockSim").then((m) => m.YaleLockSim), { ssr: false, loading: SimLoading });
-const ZeppelinAirshipSim = dynamic(() => import("./ZeppelinAirshipSim").then((m) => m.ZeppelinAirshipSim), { ssr: false, loading: SimLoading });
+const ArkwrightWaterFrameSim = dynamic(
+  () => import("./ArkwrightWaterFrameSim").then((m) => m.ArkwrightWaterFrameSim),
+  { ssr: false, loading: SimLoading },
+);
+const BaekelandBakeliteSim = dynamic(
+  () => import("./BaekelandBakeliteSim").then((m) => m.BaekelandBakeliteSim),
+  { ssr: false, loading: SimLoading },
+);
+const BardeenTransistorSim = dynamic(
+  () => import("./BardeenTransistorSim").then((m) => m.BardeenTransistorSim),
+  { ssr: false, loading: SimLoading },
+);
+const BellPhotophoneSim = dynamic(
+  () => import("./BellPhotophoneSim").then((m) => m.BellPhotophoneSim),
+  { ssr: false, loading: SimLoading },
+);
+const BellTelephoneSim = dynamic(
+  () => import("./BellTelephoneSim").then((m) => m.BellTelephoneSim),
+  { ssr: false, loading: SimLoading },
+);
+const BoyleSmithCcdSim = dynamic(
+  () => import("./BoyleSmithCcdSim").then((m) => m.BoyleSmithCcdSim),
+  { ssr: false, loading: SimLoading },
+);
+const CarlsonElectrophotographySim = dynamic(
+  () => import("./CarlsonElectrophotographySim").then((m) => m.CarlsonElectrophotographySim),
+  { ssr: false, loading: SimLoading },
+);
+const CarrierAirConditionerSim = dynamic(
+  () => import("./CarrierAirConditionerSim").then((m) => m.CarrierAirConditionerSim),
+  { ssr: false, loading: SimLoading },
+);
+const ColtRevolverSim = dynamic(() => import("./ColtRevolverSim").then((m) => m.ColtRevolverSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const CorlissEngineSim = dynamic(
+  () => import("./CorlissEngineSim").then((m) => m.CorlissEngineSim),
+  { ssr: false, loading: SimLoading },
+);
+const CortPuddlingRollingSim = dynamic(
+  () => import("./CortPuddlingRollingSim").then((m) => m.CortPuddlingRollingSim),
+  { ssr: false, loading: SimLoading },
+);
+const DaimlerEngineSim = dynamic(
+  () => import("./DaimlerEngineSim").then((m) => m.DaimlerEngineSim),
+  { ssr: false, loading: SimLoading },
+);
+const DaVinciSim = dynamic(() => import("./DaVinciSim").then((m) => m.DaVinciSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const DavenportMotorSim = dynamic(
+  () => import("./DavenportMotorSim").then((m) => m.DavenportMotorSim),
+  { ssr: false, loading: SimLoading },
+);
+const DeLavalSeparatorSim = dynamic(
+  () => import("./DeLavalSeparatorSim").then((m) => m.DeLavalSeparatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const DieselEngineSim = dynamic(() => import("./DieselEngineSim").then((m) => m.DieselEngineSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const EastmanKodakSim = dynamic(() => import("./EastmanKodakSim").then((m) => m.EastmanKodakSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const EdisonBulbSim = dynamic(() => import("./EdisonBulbSim").then((m) => m.EdisonBulbSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const EdisonIndicatorSim = dynamic(() => import("./EdisonIndicatorSim").then((m) => m.default), {
+  ssr: false,
+  loading: SimLoading,
+});
+const EdisonPhonographSim = dynamic(
+  () => import("./EdisonPhonographSim").then((m) => m.EdisonPhonographSim),
+  { ssr: false, loading: SimLoading },
+);
+const EInkSim = dynamic(() => import("./EInkSim").then((m) => m.EInkSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const EinsteinRefrigeratorSim = dynamic(
+  () => import("./EinsteinRefrigeratorSim").then((m) => m.EinsteinRefrigeratorSim),
+  { ssr: false, loading: SimLoading },
+);
+const EngelbartMouseSim = dynamic(
+  () => import("./EngelbartMouseSim").then((m) => m.EngelbartMouseSim),
+  { ssr: false, loading: SimLoading },
+);
+const EricssonPropellerSim = dynamic(
+  () => import("./EricssonPropellerSim").then((m) => m.EricssonPropellerSim),
+  { ssr: false, loading: SimLoading },
+);
+const FarnsworthTVSim = dynamic(() => import("./FarnsworthTVSim").then((m) => m.FarnsworthTVSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const FermiReactorSim = dynamic(() => import("./FermiReactorSim").then((m) => m.FermiReactorSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const FessendenWirelessSim = dynamic(
+  () => import("./FessendenWirelessSim").then((m) => m.FessendenWirelessSim),
+  { ssr: false, loading: SimLoading },
+);
+const GatlingGunSim = dynamic(() => import("./GatlingGunSim").then((m) => m.GatlingGunSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const GliddenBarbedWireSim = dynamic(
+  () => import("./GliddenBarbedWireSim").then((m) => m.GliddenBarbedWireSim),
+  { ssr: false, loading: SimLoading },
+);
+const GoddardRocketSim = dynamic(
+  () => import("./GoddardRocketSim").then((m) => m.GoddardRocketSim),
+  { ssr: false, loading: SimLoading },
+);
+const GoodyearRubberSim = dynamic(
+  () => import("./GoodyearRubberSim").then((m) => m.GoodyearRubberSim),
+  { ssr: false, loading: SimLoading },
+);
+const GrammeDynamoSim = dynamic(() => import("./GrammeDynamoSim").then((m) => m.GrammeDynamoSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const HaberAmmoniaSim = dynamic(() => import("./HaberAmmoniaSim").then((m) => m.HaberAmmoniaSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const HallAluminiumSim = dynamic(
+  () => import("./HallAluminiumSim").then((m) => m.HallAluminiumSim),
+  { ssr: false, loading: SimLoading },
+);
+const HewittMercuryLampSim = dynamic(
+  () => import("./HewittMercuryLampSim").then((m) => m.HewittMercuryLampSim),
+  { ssr: false, loading: SimLoading },
+);
+const HollerithTabulatingSim = dynamic(
+  () => import("./HollerithTabulatingSim").then((m) => m.HollerithTabulatingSim),
+  { ssr: false, loading: SimLoading },
+);
+const HopkinsPotashSim = dynamic(
+  () => import("./HopkinsPotashSim").then((m) => m.HopkinsPotashSim),
+  { ssr: false, loading: SimLoading },
+);
+const HoweSewingMachineSim = dynamic(
+  () => import("./HoweSewingMachineSim").then((m) => m.HoweSewingMachineSim),
+  { ssr: false, loading: SimLoading },
+);
+const HyattCelluloidSim = dynamic(
+  () => import("./HyattCelluloidSim").then((m) => m.HyattCelluloidSim),
+  { ssr: false, loading: SimLoading },
+);
+const KilbyIntegratedCircuitSim = dynamic(
+  () => import("./KilbyIntegratedCircuitSim").then((m) => m.KilbyIntegratedCircuitSim),
+  { ssr: false, loading: SimLoading },
+);
+const KwolekKevlarSim = dynamic(() => import("./KwolekKevlarSim").then((m) => m.KwolekKevlarSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const LamarrFrequencyHoppingSim = dynamic(
+  () => import("./LamarrFrequencyHoppingSim").then((m) => m.LamarrFrequencyHoppingSim),
+  { ssr: false, loading: SimLoading },
+);
+const LandPolaroidSim = dynamic(() => import("./LandPolaroidSim").then((m) => m.LandPolaroidSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const LincolnBuoySim = dynamic(() => import("./LincolnBuoySim").then((m) => m.LincolnBuoySim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const LindeAirLiquefactionSim = dynamic(
+  () => import("./LindeAirLiquefactionSim").then((m) => m.LindeAirLiquefactionSim),
+  { ssr: false, loading: SimLoading },
+);
+const MaimanRubyLaserSim = dynamic(
+  () => import("./MaimanRubyLaserSim").then((m) => m.MaimanRubyLaserSim),
+  { ssr: false, loading: SimLoading },
+);
+const MarconiRadioSim = dynamic(() => import("./MarconiRadioSim").then((m) => m.MarconiRadioSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const MaximMachineGunSim = dynamic(
+  () => import("./MaximMachineGunSim").then((m) => m.MaximMachineGunSim),
+  { ssr: false, loading: SimLoading },
+);
+const McCormickReaperSim = dynamic(
+  () => import("./McCormickReaperSim").then((m) => m.McCormickReaperSim),
+  { ssr: false, loading: SimLoading },
+);
+const MergenthalerLinotypeSim = dynamic(
+  () => import("./MergenthalerLinotypeSim").then((m) => m.MergenthalerLinotypeSim),
+  { ssr: false, loading: SimLoading },
+);
+const MorseTelegraphSim = dynamic(
+  () => import("./MorseTelegraphSim").then((m) => m.MorseTelegraphSim),
+  { ssr: false, loading: SimLoading },
+);
+const MultiTouchSim = dynamic(() => import("./MultiTouchSim").then((m) => m.MultiTouchSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const NobelDynamiteSim = dynamic(
+  () => import("./NobelDynamiteSim").then((m) => m.NobelDynamiteSim),
+  { ssr: false, loading: SimLoading },
+);
+const NoycePlanarICSim = dynamic(
+  () => import("./NoycePlanarICSim").then((m) => m.NoycePlanarICSim),
+  { ssr: false, loading: SimLoading },
+);
+const OtisElevatorSim = dynamic(() => import("./OtisElevatorSim").then((m) => m.OtisElevatorSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const OttoEngineSim = dynamic(() => import("./OttoEngineSim").then((m) => m.OttoEngineSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const PageRankSim = dynamic(() => import("./PageRankSim").then((m) => m.PageRankSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const ParsonsTurbineSim = dynamic(
+  () => import("./ParsonsTurbineSim").then((m) => m.ParsonsTurbineSim),
+  { ssr: false, loading: SimLoading },
+);
+const PasteurFermentationSim = dynamic(
+  () => import("./PasteurFermentationSim").then((m) => m.PasteurFermentationSim),
+  { ssr: false, loading: SimLoading },
+);
+const PeltonWheelSim = dynamic(() => import("./PeltonWheelSim").then((m) => m.PeltonWheelSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const RenoEscalatorSim = dynamic(
+  () => import("./RenoEscalatorSim").then((m) => m.RenoEscalatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const RillieuxEvaporatorSim = dynamic(
+  () => import("./RillieuxEvaporatorSim").then((m) => m.RillieuxEvaporatorSim),
+  { ssr: false, loading: SimLoading },
+);
+const RoombaSim = dynamic(() => import("./RoombaSim").then((m) => m.RoombaSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const SholesTypewriterSim = dynamic(
+  () => import("./SholesTypewriterSim").then((m) => m.SholesTypewriterSim),
+  { ssr: false, loading: SimLoading },
+);
+const SpencerMicrowaveSim = dynamic(
+  () => import("./SpencerMicrowaveSim").then((m) => m.SpencerMicrowaveSim),
+  { ssr: false, loading: SimLoading },
+);
+const TeslaCoilSim = dynamic(() => import("./TeslaCoilSim").then((m) => m.TeslaCoilSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const TeslaMotorSim = dynamic(() => import("./TeslaMotorSim").then((m) => m.TeslaMotorSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const TeslaTeleautomatonSim = dynamic(
+  () => import("./TeslaTeleautomatonSim").then((m) => m.TeslaTeleautomatonSim),
+  { ssr: false, loading: SimLoading },
+);
+const ThomsonWeldingSim = dynamic(
+  () => import("./ThomsonWeldingSim").then((m) => m.ThomsonWeldingSim),
+  { ssr: false, loading: SimLoading },
+);
+const TownesLaserSim = dynamic(() => import("./TownesLaserSim").then((m) => m.TownesLaserSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const WattRotaryEngineSim = dynamic(
+  () => import("./WattRotaryEngineSim").then((m) => m.WattRotaryEngineSim),
+  { ssr: false, loading: SimLoading },
+);
+const WattSeparateCondenserSim = dynamic(
+  () => import("./WattSeparateCondenserSim").then((m) => m.WattSeparateCondenserSim),
+  { ssr: false, loading: SimLoading },
+);
+const WestinghouseAirBrakeSim = dynamic(
+  () => import("./WestinghouseAirBrakeSim").then((m) => m.WestinghouseAirBrakeSim),
+  { ssr: false, loading: SimLoading },
+);
+const WhitneyCottonGinSim = dynamic(
+  () => import("./WhitneyCottonGinSim").then((m) => m.WhitneyCottonGinSim),
+  { ssr: false, loading: SimLoading },
+);
+const WozniakAppleSim = dynamic(() => import("./WozniakAppleSim").then((m) => m.WozniakAppleSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const WrightFlyerSim = dynamic(() => import("./WrightFlyerSim").then((m) => m.WrightFlyerSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const YaleLockSim = dynamic(() => import("./YaleLockSim").then((m) => m.YaleLockSim), {
+  ssr: false,
+  loading: SimLoading,
+});
+const ZeppelinAirshipSim = dynamic(
+  () => import("./ZeppelinAirshipSim").then((m) => m.ZeppelinAirshipSim),
+  { ssr: false, loading: SimLoading },
+);
 
 const ArkwrightWaterFrame3D = dynamic(
   () => import("./three/ArkwrightWaterFrame3D").then((mod) => mod.ArkwrightWaterFrame3D),
@@ -459,7 +694,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           <button
             type="button"
             onClick={() => switchRenderMode("3d-physics")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
+            aria-pressed={renderMode === "3d-physics"}
+            className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
               renderMode === "3d-physics"
                 ? "bg-amber-600 text-white font-bold shadow-xs"
                 : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"
@@ -471,7 +707,8 @@ export function PatentVisualDispatcher({ patentId }: PatentVisualDispatcherProps
           <button
             type="button"
             onClick={() => switchRenderMode("vector-diagram")}
-            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg transition-colors ${
+            aria-pressed={renderMode === "vector-diagram"}
+            className={`flex min-h-11 items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-2 sm:py-1.5 rounded-lg transition-colors ${
               renderMode === "vector-diagram"
                 ? "bg-amber-600 text-white font-bold shadow-xs"
                 : "text-ink-700 dark:text-parchment-300 hover:text-amber-800 dark:hover:text-amber-400"

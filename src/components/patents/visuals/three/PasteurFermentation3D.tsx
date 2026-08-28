@@ -83,6 +83,7 @@ export const PasteurFermentation3D = memo(() => {
     const studioClock = createStudioClock();
     const animate = (nowMs: number) => {
       requestId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = studioClock.pump(nowMs);
       updatePasteurFermentationKinematics(
         nodes,

@@ -132,6 +132,10 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
     const clock = createStudioClock();
     const animate = (now: number) => {
+      if (!studio.isVisible()) {
+        animFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
       const { simTimeSec } = clock.pump(now);
       timeRef.current = simTimeSec;
 

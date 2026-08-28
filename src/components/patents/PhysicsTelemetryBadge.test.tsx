@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 import { getColorizedEquationsForPatent } from "@/data/colorizedEquations";
+import { PhysicsTelemetryBadge } from "./PhysicsTelemetryBadge";
 
 describe("PhysicsTelemetryBadge component", () => {
   test("renders host-model telemetry and live computed SI metrics for Wright Flyer", () => {

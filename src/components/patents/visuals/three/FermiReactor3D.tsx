@@ -119,6 +119,7 @@ export function FermiReactor3D() {
 
     const animate = (now: number) => {
       reqId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt: delta } = clock.pump(now);
       const p = live.current;
       const refused = Number(p.kEff) > 1.002;

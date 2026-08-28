@@ -80,13 +80,6 @@ const config: Config = {
           "Roboto",
           "sans-serif",
         ],
-        tech: [
-          '"IBM Plex Sans"',
-          "var(--font-tech-sans)",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "sans-serif",
-        ],
         mono: [
           '"JetBrains Mono"',
           "var(--font-mono)",

@@ -50,6 +50,8 @@ export interface StudioContext {
     target: { set: (x: number, y: number, z: number) => void };
   };
   updateEnvironment: () => void;
+  /** True while the canvas intersects the viewport (true until first IO callback). */
+  isVisible: () => boolean;
   dispose: () => void;
   cleanup: () => void;
 }
@@ -526,6 +528,23 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     window.addEventListener("resize", applyViewportSize);
   }
 
+  // Offscreen gate: faces poll isVisible() in their rAF loops and skip
+  // physics/render work while the canvas is scrolled out of view (120px
+  // margin so faces just below the fold keep painting). Defaults to true
+  // until the first intersection callback, so above-fold sims never flash.
+  let containerVisible = true;
+  const intersectionObserver =
+    typeof IntersectionObserver !== "undefined"
+      ? new IntersectionObserver(
+          (entries) => {
+            containerVisible = entries[0]?.isIntersecting ?? true;
+          },
+          { rootMargin: "120px" },
+        )
+      : null;
+  intersectionObserver?.observe(container);
+  const isVisible = () => containerVisible;
+
   const controls = {
     update: () => {
       // Inertial coasting when finger or mouse is released
@@ -569,6 +588,7 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
       } else {
         window.removeEventListener("resize", applyViewportSize);
       }
+      intersectionObserver?.disconnect();
     },
     setRadius: (r: number) => {
       targetSpherical.radius = r;
@@ -642,7 +662,16 @@ export function createThreeStudioScene(opts: StudioOptions): StudioContext {
     scene.clear();
   };
 
-  return { scene, camera, renderer, controls, updateEnvironment, dispose, cleanup: dispose };
+  return {
+    scene,
+    camera,
+    renderer,
+    controls,
+    updateEnvironment,
+    isVisible,
+    dispose,
+    cleanup: dispose,
+  };
 }
 
 /**

@@ -10,8 +10,9 @@ import { energyChannelsFor } from "@/physics/energyChannels";
 import { qtyDimension } from "@/physics/qty";
 import { computeParameterSensitivity } from "@/physics/sensitivityKernel";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
-import { soundEngine } from "@/utils/soundEngine";
 import type { ColorizedEquation as ColorizedEquationType } from "@/types/equation";
+import { soundEngine } from "@/utils/soundEngine";
+
 interface PhysicsTelemetryBadgeProps {
   patentId: string;
   /** Per-patent colorized equations, resolved server-side and passed down. */
@@ -310,7 +311,7 @@ export function PhysicsTelemetryBadge({
               <Activity className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
               <span>Host calculation:</span>{" "}
               <code className="text-amber-800 dark:text-amber-400 font-bold">
-                {data.engineMethod}()
+                {data.engineMethod}
               </code>
             </span>
             <span className="text-ink-500 dark:text-ink-400">

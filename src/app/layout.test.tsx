@@ -25,7 +25,6 @@ mock.module("next/link", () => ({
 mock.module("next/font/google", () => ({
   Newsreader: () => ({ variable: "--font-serif" }),
   Plus_Jakarta_Sans: () => ({ variable: "--font-sans" }),
-  IBM_Plex_Sans: () => ({ variable: "--font-tech-sans" }),
   JetBrains_Mono: () => ({ variable: "--font-mono" }),
 }));
 

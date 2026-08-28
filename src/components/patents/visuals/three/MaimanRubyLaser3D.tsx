@@ -97,6 +97,7 @@ export function MaimanRubyLaser3D() {
 
     const animate = (nowMs: number) => {
       animId = requestAnimationFrame(animate);
+      if (!studio.isVisible()) return;
       const { dt } = studioClock.pump(nowMs);
 
       if (isFiringRef.current) {
