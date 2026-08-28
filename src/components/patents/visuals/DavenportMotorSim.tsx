@@ -115,7 +115,12 @@ export function DavenportMotorSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Davenport electric motor simulation: ${isPlaying ? "rotor spinning" : "stopped"}, rotor angle ${Math.round(rotorAngleDeg)} degrees`}
+          className="w-full h-full"
+        >
           {/* Stationary Circular Stator Ring Magnets */}
           <circle cx="300" cy="170" r="140" fill="none" stroke="#2B2B2B" strokeWidth="12" />
 

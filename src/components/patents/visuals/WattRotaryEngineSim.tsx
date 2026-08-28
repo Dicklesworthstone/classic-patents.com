@@ -202,7 +202,12 @@ export function WattRotaryEngineSim() {
       {/* Main Interactive Canvas & Diagram */}
       <div className="relative w-full aspect-[16/10] bg-canvas rounded-xl border border-stone-800 overflow-hidden">
         {activeTab === "engine-elevation" && (
-          <svg viewBox="0 0 700 480" className="w-full h-full">
+          <svg
+            viewBox="0 0 700 480"
+            role="img"
+            aria-label={`Rotary steam engine simulation: ${isPlaying ? `beam oscillating with planet gear producing ${telemetry.meanPowerKw.toFixed(1)} kilowatts` : "beam stationary"}`}
+            className="w-full h-full"
+          >
             {/* Grid and background styling */}
             <defs>
               <pattern id="watt-grid" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -483,7 +488,12 @@ export function WattRotaryEngineSim() {
 
         {activeTab === "gear-mesh" && (
           <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-canvas">
-            <svg viewBox="0 0 500 350" className="w-full max-w-lg h-auto">
+            <svg
+              viewBox="0 0 500 350"
+              role="img"
+              aria-label={`Rotary engine planetary gear simulation: planet gear orbiting the sun gear at ${Math.round(orbitAngleRad * (180 / Math.PI))} degrees`}
+              className="w-full max-w-lg h-auto"
+            >
               <rect width="500" height="350" fill="#0a0f1d" rx="10" stroke="#1f2937" />
 
               {/* Sun Gear Pitch Circle */}

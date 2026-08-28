@@ -228,7 +228,7 @@ export function MergenthalerLinotype3D() {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
+                className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 ${
                   activeCamera === preset
                     ? "bg-amber-600 text-white shadow-xs"
                     : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -246,7 +246,7 @@ export function MergenthalerLinotype3D() {
             type="button"
             onClick={() => setIsCutaway(!isCutaway)}
             title={isCutaway ? "Switch to Solid Casting" : "Switch to Framework Cutaway"}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isCutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
@@ -263,7 +263,7 @@ export function MergenthalerLinotype3D() {
             type="button"
             onClick={toggleSound}
             title={isAudioMuted ? "Unmute Linecaster Sound" : "Mute Linecaster Sound"}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
           >
             {isAudioMuted ? (
               <VolumeX className="w-3.5 h-3.5 inline sm:mr-1 text-ink-500" />
@@ -275,7 +275,7 @@ export function MergenthalerLinotype3D() {
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showUiOverlay
                 ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
                 : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
@@ -290,7 +290,7 @@ export function MergenthalerLinotype3D() {
             aria-label="Reset camera view"
             type="button"
             onClick={() => applyCameraPreset("iso")}
-            className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
             title="Reset Orbit Camera"
           >
             <RotateCcw className="w-3.5 h-3.5 inline sm:mr-1" />

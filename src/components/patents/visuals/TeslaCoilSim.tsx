@@ -83,7 +83,12 @@ export function TeslaCoilSim() {
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
-          <svg viewBox="0 0 600 340" className="w-full h-auto max-h-[340px]">
+          <svg
+            viewBox="0 0 600 340"
+            role="img"
+            aria-label={`Tesla coil simulation: primary tank capacitor at ${primaryCapacitanceNf} nanofarads, ${streamerScale > 0 ? `streamer discharge at ${Math.round(streamerScale * 100)} percent intensity` : "no streamer discharge"}`}
+            className="w-full h-auto max-h-[340px]"
+          >
             {/* Background Dark Lab */}
             <rect width="600" height="340" fill="#0a0f1d" />
 

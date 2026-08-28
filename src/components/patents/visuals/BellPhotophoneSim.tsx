@@ -64,6 +64,8 @@ export function BellPhotophoneSim() {
       <div className="relative w-full aspect-[16/9] min-h-[380px] bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center p-4">
         <svg
           viewBox="0 0 920 480"
+          role="img"
+          aria-label={`Bell photophone simulation: sunbeam ${beamVariationActive ? "modulated by voice vibrations" : "static with beam variation off"}`}
           className="w-full h-full select-none"
           preserveAspectRatio="xMidYMid meet"
         >

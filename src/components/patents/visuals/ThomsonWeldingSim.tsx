@@ -81,7 +81,12 @@ export function ThomsonWeldingSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Electric welding simulation: ${isWelding ? `welding at ${Math.round(weldCurrentAmps)} amps` : "electrodes idle"}, workpiece interface at ${Math.round(interfaceTempC)} degrees Celsius`}
+          className="w-full h-full"
+        >
           {/* Heavy Step-Down Transformer Core (Bottom) */}
           <rect
             x="180"

@@ -146,7 +146,12 @@ export function OttoEngineSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Four-stroke gas engine simulation: ${isPlaying ? `crank at ${Math.round(crankAngleDeg)} degrees, ${currentStroke.toLowerCase()}` : "engine stopped"}, flywheel spinning`}
+          className="w-full h-full"
+        >
           {/* Cylinder Block and Combustion Chamber */}
           <rect
             x="80"

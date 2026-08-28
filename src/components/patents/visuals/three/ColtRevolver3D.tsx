@@ -322,7 +322,7 @@ export function ColtRevolver3D() {
               key={preset}
               type="button"
               onClick={() => applyCameraPreset(preset)}
-              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-all border shadow-2xs ${
+              className={`min-h-9 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border shadow-2xs ${
                 activeCamera === preset
                   ? "bg-amber-600 text-white font-bold border-amber-500 shadow-sm"
                   : "bg-white/85 dark:bg-ink-900/85 backdrop-blur-md text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"

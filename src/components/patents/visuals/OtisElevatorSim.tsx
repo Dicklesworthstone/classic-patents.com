@@ -143,7 +143,12 @@ export function OtisElevatorSim() {
             </div>
           )}
 
-          <svg viewBox="0 0 460 340" className="w-full max-w-md h-auto relative z-10">
+          <svg
+            viewBox="0 0 460 340"
+            role="img"
+            aria-label={`Safety elevator simulation: ${isCableCut ? (isArrested ? "hoisting cable cut, cab arrested by safety pawls" : "hoisting cable cut, cab falling") : "hoisting cable intact"}, rope tension ${Math.round(otis.hoistTensionKn)} kilonewtons under ${Math.round(hangingMassKg)} kilogram load`}
+            className="w-full max-w-md h-auto relative z-10"
+          >
             {/* Hoistway Side Guide Posts with Saw-Tooth Ratchet Racks */}
             {/* Left Post & Ratchet */}
             <g transform="translate(60, 20)">

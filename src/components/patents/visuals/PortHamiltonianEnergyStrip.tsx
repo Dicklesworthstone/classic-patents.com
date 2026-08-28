@@ -41,7 +41,11 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
         title="Total Port-Hamiltonian Stored Energy H(x) = T + V + W_em + Q"
       >
         <Gauge className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Stored:</span>
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">
+          {/* Touch has no title tooltips: show the identity itself instead. */}
+          <span className="[@media(pointer:coarse)]:hidden">Stored:</span>
+          <span className="hidden [@media(pointer:coarse)]:inline">H(x):</span>
+        </span>
         <span className="font-bold text-ink-900 dark:text-parchment-100 shrink-0">
           {formatJoules(ledger.energy.totalHamiltonianJoules)}
         </span>
@@ -53,7 +57,10 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
         title="External Port Power Inflow u^T * y"
       >
         <Zap className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Inflow:</span>
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">
+          <span className="[@media(pointer:coarse)]:hidden">Inflow:</span>
+          <span className="hidden [@media(pointer:coarse)]:inline">u·y:</span>
+        </span>
         <span className="font-bold text-cyan-800 dark:text-cyan-300 shrink-0">
           {formatWatts(ledger.inputPowerWatts)}
         </span>
@@ -65,7 +72,10 @@ export const PortHamiltonianEnergyStrip: React.FC<PortHamiltonianEnergyStripProp
         title="Positive Semi-Definite Dissipation D(x) >= 0"
       >
         <Flame className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">Loss:</span>
+        <span className="text-ink-500 dark:text-ink-400 font-sans truncate">
+          <span className="[@media(pointer:coarse)]:hidden">Loss:</span>
+          <span className="hidden [@media(pointer:coarse)]:inline">D(x):</span>
+        </span>
         <span className="font-bold text-rose-800 dark:text-rose-300 shrink-0">
           {formatWatts(ledger.dissipatedPowerWatts)}
         </span>

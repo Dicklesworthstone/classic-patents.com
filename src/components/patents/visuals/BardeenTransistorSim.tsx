@@ -57,7 +57,12 @@ export function BardeenTransistorSim() {
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
-          <svg viewBox="0 0 600 320" className="w-full h-auto max-h-[340px]">
+          <svg
+            viewBox="0 0 600 320"
+            role="img"
+            aria-label={`Point-contact transistor simulation: operating sample ${sample.number}, gold point spacing ${pointSpacingMils} mils, claim 1 ${claim1Active ? "active" : "inactive"}`}
+            className="w-full h-auto max-h-[340px]"
+          >
             {/* Background Lab */}
             <rect width="600" height="320" fill="#0a0f1d" />
 

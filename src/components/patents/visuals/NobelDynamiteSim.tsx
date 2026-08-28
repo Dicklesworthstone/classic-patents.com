@@ -88,7 +88,12 @@ export function NobelDynamiteSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Dynamite test simulation: borehole charge ${isDetonated ? "detonated" : "intact"}, shock wave traveling at ${Math.round(detonationVelocityMps)} meters per second`}
+          className="w-full h-full"
+        >
           {/* Granite Rock Tunnel Borehole */}
           <rect x="0" y="0" width="600" height="340" fill="#4A5568" opacity="0.35" />
           <rect x="140" y="90" width="360" height="160" rx="8" fill="#1A202C" />

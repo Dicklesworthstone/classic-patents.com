@@ -116,7 +116,12 @@ export function EdisonBulbSim() {
           )}
 
           {/* Incandescent Glass Bulb SVG */}
-          <svg viewBox="0 0 300 260" className="w-full max-w-xs h-auto select-none relative z-10">
+          <svg
+            viewBox="0 0 300 260"
+            role="img"
+            aria-label={`Edison incandescent bulb simulation: filament at ${Math.round(tempKelvin)} Kelvin with ${voltage} volts applied, ${isBurnedOut ? "filament burned out" : "vacuum intact"}, ${resistanceMode === "high-resistance" ? "high-resistance filament" : "low-resistance filament"}`}
+            className="w-full max-w-xs h-auto select-none relative z-10"
+          >
             <defs>
               <radialGradient id="edisonGlassGlow" cx="50%" cy="40%" r="50%">
                 <stop

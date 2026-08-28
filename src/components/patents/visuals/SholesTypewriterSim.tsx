@@ -70,7 +70,12 @@ export function SholesTypewriterSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Typewriter simulation: paper showing ${typedMarks.length} typed marks, carriage at column ${displayColumn} of ${sholes.displayColumnWrap}`}
+          className="w-full h-full"
+        >
           {/* Paper Platen Roller & Escapement Carriage */}
           <g transform={`translate(${200 - displayColumn * sholes.columnPitchPx}, 40)`}>
             <rect

@@ -120,7 +120,12 @@ export function NoycePlanarICSim() {
           {/* Blueprint Drafting Grid */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:20px_20px] opacity-30 pointer-events-none" />
 
-          <svg viewBox="0 0 400 220" className="w-full max-w-md h-auto select-none relative z-10">
+          <svg
+            viewBox="0 0 400 220"
+            role="img"
+            aria-label={`Planar integrated circuit simulation: fabrication step ${activeLayerStep} of ${STEPS.length} — ${STEPS.find((s) => s.step === activeLayerStep)?.title ?? "no step selected"}`}
+            className="w-full max-w-md h-auto select-none relative z-10"
+          >
             {/* Base Monolithic Silicon Substrate (P-type) */}
             <rect
               x="40"

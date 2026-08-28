@@ -119,7 +119,12 @@ export function BaekelandBakeliteSim({ className = "" }: BaekelandBakeliteSimPro
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
         {/* SVG editorial model: closed vessel, mold, and modern molecular interpretation. */}
         <div className="lg:col-span-7 bg-stone-950/80 rounded-lg p-4 border border-stone-800 flex flex-col items-center">
-          <svg viewBox="0 0 600 360" className="w-full h-auto max-h-[360px] select-none">
+          <svg
+            viewBox="0 0 600 360"
+            role="img"
+            aria-label={`Bakelite synthesis simulation: autoclave held at ${curingTempC} degrees Celsius and ${autoclavePressurePsi} psi, resin in the ${sim.resinStage} stage${sim.isFoamingSuppressed ? " with foaming suppressed" : ""}`}
+            className="w-full h-auto max-h-[360px] select-none"
+          >
             <defs>
               <linearGradient id="autoclaveSteel" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor="#334155" />

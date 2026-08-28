@@ -110,7 +110,12 @@ export function KwolekKevlarSim() {
             </div>
           )}
 
-          <svg viewBox="0 0 380 200" className="w-full max-w-md h-auto select-none">
+          <svg
+            viewBox="0 0 380 200"
+            role="img"
+            aria-label={`Kwolek Kevlar simulation: chains drawn to a ratio of ${drawRatio}, ${bulletFired ? (isArmorPenetrated ? "bullet penetrating the fiber" : "bullet stopped by the fiber") : "awaiting impact test"}`}
+            className="w-full max-w-md h-auto select-none"
+          >
             {/* Molecular polymer chains */}
             {kevlar.chainOffsetYs.map((offsetY, idx) => {
               const chain = kevlarChainPath(

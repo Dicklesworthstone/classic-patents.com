@@ -88,7 +88,12 @@ export function EinsteinRefrigeratorSim() {
             <span>Hermetically Sealed Single-Pressure Loop (Butane / NH₃ / H₂O)</span>
           </div>
 
-          <svg viewBox="0 0 420 280" className="w-full max-w-[500px] h-auto">
+          <svg
+            viewBox="0 0 420 280"
+            role="img"
+            aria-label={`Einstein-Szilard refrigerator simulation: evaporator at ${Math.round(evaporatorTempC)} degrees Celsius with ${heatInputWatts} watts of heat input, coefficient of performance ${cop.toFixed(2)}`}
+            className="w-full max-w-[500px] h-auto"
+          >
             {/* Generator / Thermal Boiler (Left) */}
             <g transform="translate(40, 140)">
               <rect

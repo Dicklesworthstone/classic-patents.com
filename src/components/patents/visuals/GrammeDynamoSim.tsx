@@ -101,7 +101,12 @@ export function GrammeDynamoSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Gramme dynamo simulation: ${isPlaying ? "armature spinning" : "stopped"}, armature angle ${Math.round(angleDeg)} degrees`}
+          className="w-full h-full"
+        >
           {/* Stator Magnetic Field Pole Shoes */}
           <path
             d="M 80 70 Q 180 70, 180 170 Q 180 270, 80 270 Z"

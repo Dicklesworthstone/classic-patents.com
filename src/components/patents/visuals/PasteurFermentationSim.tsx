@@ -96,6 +96,7 @@ export function PasteurFermentationSim() {
 
       <div className="relative flex aspect-[16/9] max-h-[360px] w-full items-center justify-center overflow-hidden rounded-xl border border-parchment-200 bg-parchment-100 dark:border-ink-800 dark:bg-ink-900">
         <svg
+          role="img"
           viewBox="0 0 600 340"
           className="h-full w-full"
           aria-label="Source-based Fig. 1 process diagram"

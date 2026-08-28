@@ -116,7 +116,12 @@ export function EdisonPhonographSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Edison phonograph simulation: ${isPlaying ? "cylinder turning under the stylus" : "stopped"}, cylinder angle ${Math.round(cylinderAngleDeg)} degrees`}
+          className="w-full h-full"
+        >
           {/* Illustrative support stand. US 200,521 does not specify its material or dimensions. */}
           <rect
             x="40"

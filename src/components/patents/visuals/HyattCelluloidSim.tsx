@@ -64,7 +64,12 @@ export function HyattCelluloidSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Hyatt celluloid simulation: mold at ${moldTempC} degrees Celsius under ${hydraulicPressureMpa} MPa of hydraulic pressure, material ${isMelted ? "melted and flowing" : "consolidated"}`}
+          className="w-full h-full"
+        >
           {/* Hydraulic Press Cylinder & Steam Jackets */}
           <rect
             x="180"

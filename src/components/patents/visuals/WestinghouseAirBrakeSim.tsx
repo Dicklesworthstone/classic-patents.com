@@ -215,7 +215,12 @@ export function WestinghouseAirBrakeSim() {
             )}
           </div>
 
-          <svg viewBox="0 0 760 480" className="w-full max-w-2xl h-auto relative z-10">
+          <svg
+            viewBox="0 0 760 480"
+            role="img"
+            aria-label={`Westinghouse air brake simulation: train pipe at ${Math.round(wh.operatingPipePressurePsi)} psi, brake cylinder at ${Math.round(cylPressurePsi)} psi${isBraking ? ", brakes applied" : ", brakes released"}`}
+            className="w-full max-w-2xl h-auto relative z-10"
+          >
             <defs>
               {/* Radial gradient for air receiver D */}
               <linearGradient id="receiverGrad" x1="0" y1="0" x2="0" y2="1">

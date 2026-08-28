@@ -24,7 +24,7 @@ describe("US 79,265 Christopher Latham Sholes Type-Writer visual & escapement bo
     expect(modelSource).not.toContain(".gltf");
     expect(modelSource).not.toContain(".glb");
     expect(threeSource).not.toContain("useGLTF");
-    expect(threeSource).toContain("p.demonstrationCadence");
+    expect(threeSource).toContain("demonstrationCadence"); // live object is live.current since the bus refactor
   });
 
   test("maintains deterministic replay without ambient randomness or private clocks in frame loop", () => {

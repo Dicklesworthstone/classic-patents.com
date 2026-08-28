@@ -97,7 +97,12 @@ export function TeslaTeleautomatonSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Teleautomaton boat simulation: ${isTransmitting ? "RF command transmitting" : "standing by"}, rotary switch at position ${rotarySteppingPosition} of 8 commanding ${commandState.toLowerCase()}`}
+          className="w-full h-full"
+        >
           {/* Water Lagoon Background */}
           <rect x="0" y="160" width="600" height="180" fill="#1A365D" opacity="0.15" />
           <path

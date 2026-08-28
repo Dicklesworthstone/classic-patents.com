@@ -147,7 +147,12 @@ export function WozniakAppleSim() {
             <span>Multiplexed DRAM & NTSC Video Shifter Circuit</span>
           </div>
 
-          <svg viewBox="0 0 420 280" className="w-full max-w-[500px] h-auto">
+          <svg
+            viewBox="0 0 420 280"
+            role="img"
+            aria-label={`Apple I video terminal simulation: ${isClockRunning ? `clock phase ${clockPhase === 0 ? "Φ1 (CPU)" : "Φ2 (VID)"}` : "clock paused"}, video raster at line ${rasterLine}`}
+            className="w-full max-w-[500px] h-auto"
+          >
             {/* 6502 CPU Block */}
             <g transform="translate(30, 40)">
               <rect

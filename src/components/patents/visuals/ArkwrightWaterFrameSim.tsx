@@ -154,7 +154,12 @@ export function ArkwrightWaterFrameSim() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
         {/* SVG Kinematic Diagram & Live Organ Render */}
         <div className="lg:col-span-7 bg-stone-950/80 rounded-xl p-4 border border-stone-800/80 flex flex-col items-center justify-center min-h-[420px] relative overflow-hidden">
-          <svg viewBox="0 0 600 480" className="w-full h-full max-h-[440px]">
+          <svg
+            viewBox="0 0 600 480"
+            role="img"
+            aria-label={`Arkwright water frame simulation: water wheel driving the spinning frame at ${Math.round(waterWheelRpm)} rpm, drawing roving through a total draft ratio of ${totalDraftRatio.toFixed(1)} to 1`}
+            className="w-full h-full max-h-[440px]"
+          >
             <defs>
               <linearGradient id="woodPost" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="#78350f" />

@@ -129,7 +129,7 @@ export const PasteurFermentation3D = memo(() => {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`shrink-0 rounded-lg px-2 py-1 font-medium transition-colors ${
+                className={`min-h-9 shrink-0 rounded-lg px-2 py-1 font-medium transition-colors ${
                   activeCamera === preset
                     ? "bg-cyan-700 font-semibold text-white shadow-xs"
                     : "text-ink-700 hover:bg-parchment-200 dark:text-ink-300 dark:hover:bg-ink-800"
@@ -145,7 +145,7 @@ export const PasteurFermentation3D = memo(() => {
             type="button"
             onClick={() => setIsCutaway((value) => !value)}
             title={isCutaway ? "Show solid vessel" : "Show illustrative cutaway"}
-            className={`flex items-center gap-1 rounded-xl border p-1.5 text-xs shadow-sm backdrop-blur-md transition-colors sm:p-2 ${
+            className={`min-h-9 flex items-center gap-1 rounded-xl border p-1.5 text-xs shadow-sm backdrop-blur-md transition-colors sm:p-2 ${
               isCutaway
                 ? "border-cyan-800 bg-cyan-700 text-white"
                 : "border-parchment-300 bg-white/90 text-ink-700 dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300"
@@ -158,7 +158,7 @@ export const PasteurFermentation3D = memo(() => {
             type="button"
             onClick={() => toggleEngine(() => soundEngine.playSwitchClick())}
             aria-label={isAudioMuted ? "Unmute audio" : "Mute audio"}
-            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
+            className="min-h-9 rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
             {isAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </button>
@@ -166,7 +166,7 @@ export const PasteurFermentation3D = memo(() => {
             type="button"
             onClick={() => setShowUiOverlay((value) => !value)}
             aria-label={showUiOverlay ? "Hide overlay" : "Show overlay"}
-            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
+            className="min-h-9 rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
             {showUiOverlay ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
@@ -174,7 +174,7 @@ export const PasteurFermentation3D = memo(() => {
             type="button"
             onClick={() => applyCameraPreset("iso")}
             aria-label="Reset camera"
-            className="rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
+            className="min-h-9 min-w-9 flex items-center justify-center rounded-xl border border-parchment-300 bg-white/90 p-1.5 text-ink-700 shadow-sm backdrop-blur-md dark:border-ink-700 dark:bg-ink-900/90 dark:text-parchment-300 sm:p-2"
           >
             <RotateCcw className="h-4 w-4" />
           </button>

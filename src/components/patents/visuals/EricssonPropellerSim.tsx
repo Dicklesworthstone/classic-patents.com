@@ -105,7 +105,12 @@ export function EricssonPropellerSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Ericsson marine propeller simulation: ${isPlaying ? "blades turning" : "stopped"}, blade angle ${Math.round(angleDeg)} degrees`}
+          className="w-full h-full"
+        >
           {/* Submerged Waterline & Hull Stern */}
           <rect x="0" y="80" width="600" height="260" fill="#1A365D" opacity="0.12" />
           <path

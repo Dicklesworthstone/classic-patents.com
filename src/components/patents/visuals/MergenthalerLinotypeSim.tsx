@@ -95,7 +95,12 @@ export function MergenthalerLinotypeSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Linotype composing machine simulation: ${isCast ? "lead slug cast" : "matrices assembled in line"}, metal pot at ${Math.round(potTempC)} degrees Celsius${isMetalLiquid ? ", alloy molten" : ""}`}
+          className="w-full h-full"
+        >
           {/* Slanted Overhead Matrix Magazine */}
           <polygon
             points="40,20 220,50 180,120 20,90"

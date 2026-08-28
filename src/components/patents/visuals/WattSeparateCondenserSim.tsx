@@ -148,7 +148,12 @@ export function WattSeparateCondenserSim() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 my-6">
         {/* Animated Machine Schematic SVG */}
         <div className="lg:col-span-8 bg-stone-950 rounded-xl p-4 border border-stone-800/80 relative overflow-hidden flex items-center justify-center min-h-[380px]">
-          <svg viewBox="0 0 800 480" className="w-full h-auto max-h-[420px]">
+          <svg
+            viewBox="0 0 800 480"
+            role="img"
+            aria-label={`Separate condenser steam engine simulation: ${isExhaustStroke ? "exhaust stroke, steam passing to the condenser" : "power stroke, steam admitted to the cylinder"}, beam at ${beamAngleDeg.toFixed(1)} degrees${controls.hasSteamJacket ? ", steam jacket active" : ""}`}
+            className="w-full h-auto max-h-[420px]"
+          >
             <defs>
               <linearGradient id="fireGrad" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stopColor="#ef4444" stopOpacity="0.9" />

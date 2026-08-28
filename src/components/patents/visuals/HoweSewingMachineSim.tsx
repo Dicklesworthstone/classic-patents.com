@@ -117,7 +117,12 @@ export function HoweSewingMachineSim() {
       {/* Interactive Visual Canvas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-canvas border border-parchment-300 dark:border-ink-800 p-6 relative min-h-[380px] overflow-hidden">
-          <svg viewBox="0 0 600 320" className="w-full h-auto max-h-[340px]">
+          <svg
+            viewBox="0 0 600 320"
+            role="img"
+            aria-label={`Howe sewing machine simulation: ${isPlaying ? "stitching" : "paused"}, crank angle ${Math.round(crankAngleDeg)} degrees`}
+            className="w-full h-auto max-h-[340px]"
+          >
             {/* Background Plate */}
             <rect width="600" height="320" fill="#0f172a" />
 

@@ -157,7 +157,12 @@ export function BellTelephoneSim() {
             {/* Grid overlay */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:15px_15px] opacity-30" />
 
-            <svg viewBox="0 0 300 100" className="w-full h-full relative z-10">
+            <svg
+              viewBox="0 0 300 100"
+              role="img"
+              aria-label={`Bell telephone oscilloscope: ${signalType === "continuous-undulating" ? "continuous undulating current" : "intermittent make-and-break current"}, receiver diaphragm deflection ${bell.diaphragmUm} micrometers and modulated current ${bell.modulatedMa} milliamps${isPlayingAudio ? ", audio playing" : ""}`}
+              className="w-full h-full relative z-10"
+            >
               <polyline
                 fill="none"
                 stroke={signalType === "continuous-undulating" ? "#10b981" : "#ef4444"}

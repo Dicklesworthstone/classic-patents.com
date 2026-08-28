@@ -163,7 +163,12 @@ export function TeslaMotorSim() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
 
           {/* Stator & Rotor SVG Visualizer */}
-          <svg viewBox="0 0 400 300" className="w-full max-w-md h-auto select-none relative z-10">
+          <svg
+            viewBox="0 0 400 300"
+            role="img"
+            aria-label={`Rotating magnetic field motor simulation: ${frequencyHz} hertz field spinning the rotor to ${Math.round(angle)} degrees with ${coilCount} stator coils`}
+            className="w-full max-w-md h-auto select-none relative z-10"
+          >
             <defs>
               <radialGradient id="teslaRotorMetal" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stopColor="#94a3b8" />

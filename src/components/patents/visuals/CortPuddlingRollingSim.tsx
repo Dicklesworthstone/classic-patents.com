@@ -119,7 +119,12 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
           /* ========================================================= */
           /* SVG DIAGRAM 1: REVERBERATORY PUDDLING FURNACE CROSS-SECTION*/
           /* ========================================================= */
-          <svg viewBox="0 0 900 480" className="w-full h-full select-none">
+          <svg
+            viewBox="0 0 900 480"
+            role="img"
+            aria-label={`Cort puddling furnace cross-section: reverberatory furnace at ${furnaceTempC} degrees Celsius refining pig iron from ${initialCarbonPct} percent carbon with the rabble stirring at ${rabbleRpm} rpm`}
+            className="w-full h-full select-none"
+          >
             <defs>
               <linearGradient id="fireGrad" x1="0%" y1="100%" x2="0%" y2="0%">
                 <stop offset="0%" stopColor="#7f1d1d" />
@@ -323,7 +328,12 @@ export function CortPuddlingRollingSim({ className = "" }: CortPuddlingRollingSi
           /* ========================================================= */
           /* SVG DIAGRAM 2: GROOVED ROLLING MILL FRONT ELEVATION        */
           /* ========================================================= */
-          <svg viewBox="0 0 900 480" className="w-full h-full select-none">
+          <svg
+            viewBox="0 0 900 480"
+            role="img"
+            aria-label={`Cort rolling mill elevation: grooved rolls reducing the puddled iron billet over ${rollerPasses} passes`}
+            className="w-full h-full select-none"
+          >
             <defs>
               <linearGradient id="rollGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#44403c" />

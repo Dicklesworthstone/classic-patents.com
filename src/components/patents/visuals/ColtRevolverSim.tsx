@@ -282,7 +282,12 @@ export function ColtRevolverSim() {
                 <Layers className="w-3.5 h-3.5" />
                 <span>FIG. 1: LONGITUDINAL ACTION & BARREL CUTAWAY</span>
               </div>
-              <svg viewBox="0 0 600 320" className="w-full h-auto">
+              <svg
+                viewBox="0 0 600 320"
+                role="img"
+                aria-label={`Colt revolver cutaway diagram: cylinder indexed to chamber ${currentChamberIndex}, ${isFiring ? `bullet ${Math.round(bulletFlightPct)} percent of the way down the barrel` : "action at rest"}`}
+                className="w-full h-auto"
+              >
                 {/* Center Arbor Pin (Axis of Rotation Y = 135) */}
                 <line x1="80" y1="135" x2="380" y2="135" stroke="#475569" strokeWidth="6" />
                 <line
@@ -587,7 +592,12 @@ export function ColtRevolverSim() {
               </div>
 
               {/* Rotating Cylinder Wheel SVG */}
-              <svg viewBox="0 0 240 240" className="w-48 h-48 sm:w-56 sm:h-56">
+              <svg
+                viewBox="0 0 240 240"
+                role="img"
+                aria-label={`Colt revolver cylinder face view: cylinder indexed to chamber ${currentChamberIndex}, ${isFiring ? "firing" : "at rest"}`}
+                className="w-48 h-48 sm:w-56 sm:h-56"
+              >
                 <defs>
                   <radialGradient id="cylSteelGrad" cx="50%" cy="50%" r="50%">
                     <stop offset="0%" stopColor="#334155" />

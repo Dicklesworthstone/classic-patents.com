@@ -586,7 +586,7 @@ export function WrightFlyer3D() {
             max={12}
             step={0.5}
             unit="°"
-            colorClass="accent-cyan-600"
+            thumb="cyan"
             onChange={(val) => updateParam("warp", val)}
             allParams={params}
           />

@@ -92,7 +92,12 @@ export function HollerithTabulatingSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Hollerith tabulating machine simulation: ${totalCardsProcessed} cards processed, press currently reading the ${activeDemographic} punch card${isPressDown ? " with the press down" : ""}`}
+          className="w-full h-full"
+        >
           {/* Card Reading Press Bed (Left) */}
           <g transform="translate(60, 80)">
             <rect

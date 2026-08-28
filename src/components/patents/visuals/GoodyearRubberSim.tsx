@@ -88,7 +88,12 @@ export function GoodyearRubberSim() {
       {/* Visual Canvas & Molecular Chains */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 flex flex-col items-center justify-center rounded-2xl bg-ink-950 p-6 border border-parchment-200 dark:border-ink-800 relative min-h-[360px] space-y-4">
-          <svg viewBox="0 0 440 220" className="w-full max-w-md h-auto select-none">
+          <svg
+            viewBox="0 0 440 220"
+            role="img"
+            aria-label={`Goodyear rubber vulcanization simulation: specimen with ${sulfurPercent} percent sulfur at ${specimenTempC} degrees Celsius, ${isMelted ? "raw gum melted by heat" : isBrittle ? "raw gum brittle in the cold" : isElastic ? "heat-treated compound elastic and stable" : "high-sulfur hard ebonite resin"}`}
+            className="w-full max-w-md h-auto select-none"
+          >
             {/* Molecular Polyisoprene Chains */}
             {[-40, -15, 10, 35].map((yOffset, idx) => {
               const stretch = rubber.chainStretchPx;

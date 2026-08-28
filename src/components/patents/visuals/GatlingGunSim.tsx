@@ -111,7 +111,12 @@ export function GatlingGunSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Gatling gun simulation: ${isPlaying ? "barrel cluster rotating" : "idle"}, cluster angle ${Math.round(clusterAngleDeg)} degrees`}
+          className="w-full h-full"
+        >
           {/* Outer Gun Housing & Carriage Frame */}
           <path
             d="M 120 120 L 260 120 L 260 220 L 120 220 Z"

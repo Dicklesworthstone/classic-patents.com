@@ -103,7 +103,12 @@ export function ParsonsTurbineSim() {
 
       {/* SVG Animation Stage: a source-bound valve-and-pipe network. */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Marine steam turbine simulation: ${isPlaying ? `rotor turning ${marine.directionLabel}` : "rotor stopped"}, steam routed ${marine.routeLabel} at ${Math.round(throttle * 100)} percent throttle`}
+          className="w-full h-full"
+        >
           <defs>
             <marker
               id="parsons-arrow"

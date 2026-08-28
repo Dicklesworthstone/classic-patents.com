@@ -94,7 +94,12 @@ export function FermiReactorSim() {
             <span>Graphite-Uranium Lattice Core (Cross-Section)</span>
           </div>
 
-          <svg viewBox="0 0 400 280" className="w-full max-w-[480px] h-auto">
+          <svg
+            viewBox="0 0 400 280"
+            role="img"
+            aria-label={`Fermi nuclear reactor simulation: control rods withdrawn ${controlRodWithdrawalPct} percent, k-effective ${kEffective.toFixed(3)}, thermal power ${thermalPowerWatts.toPrecision(3)} watts`}
+            className="w-full max-w-[480px] h-auto"
+          >
             {/* Core Boundary / Graphite Matrix */}
             <rect
               x="50"

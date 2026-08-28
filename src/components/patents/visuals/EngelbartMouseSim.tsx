@@ -135,6 +135,8 @@ export function EngelbartMouseSim() {
           <svg
             ref={containerRef}
             viewBox="0 0 400 300"
+            role="img"
+            aria-label={`Engelbart mouse simulation: chassis at position ${Math.round(posX)}, ${Math.round(posY)} on the table, wheels sending ${pulseCountX} horizontal and ${pulseCountY} vertical pulses`}
             className="w-full max-w-[500px] h-auto cursor-grab active:cursor-grabbing touch-none"
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}

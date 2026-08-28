@@ -112,7 +112,12 @@ export function McCormickReaperSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Mechanical reaper simulation: ${isPlaying ? `reaping at ${groundSpeedMph} miles per hour` : "stopped"}, reel turning at ${Math.round(reelRpm)} rpm and sickle cycling`}
+          className="w-full h-full"
+        >
           {/* Standing Grain Stems */}
           <g id="grain-field" opacity="0.6">
             {Array.from({ length: reaper.grainStemCount }).map((_, i) => (

@@ -146,7 +146,7 @@ export function CarrierAirConditioner3D() {
                 key={preset}
                 type="button"
                 onClick={() => applyCameraPreset(preset)}
-                className={`px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}
+                className={`min-h-9 px-2 py-1 rounded-lg ${activeCamera === preset ? "bg-cyan-600 text-white" : "text-ink-700 dark:text-ink-300"}`}
               >
                 {preset}
               </button>

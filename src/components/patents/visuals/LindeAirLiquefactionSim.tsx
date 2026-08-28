@@ -95,6 +95,7 @@ export function LindeAirLiquefactionSim() {
       <div className="relative flex min-h-[320px] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/90 p-6">
         {activeTab === "liquefaction" ? (
           <svg
+            role="img"
             viewBox="0 0 760 360"
             className="h-full w-full"
             aria-label="Linde liquefaction circuit"
@@ -308,6 +309,7 @@ export function LindeAirLiquefactionSim() {
           </svg>
         ) : (
           <svg
+            role="img"
             viewBox="0 0 760 360"
             className="h-full w-full"
             aria-label="Linde separation extension"

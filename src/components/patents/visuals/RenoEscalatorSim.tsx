@@ -113,7 +113,12 @@ export function RenoEscalatorSim() {
 
       {/* SVG Animation Stage */}
       <div className="relative w-full aspect-[16/9] max-h-[360px] bg-parchment-100 dark:bg-ink-900 rounded-xl overflow-hidden border border-parchment-200 dark:border-ink-800 flex items-center justify-center">
-        <svg viewBox="0 0 600 340" className="w-full h-full">
+        <svg
+          viewBox="0 0 600 340"
+          role="img"
+          aria-label={`Inclined elevator simulation: ${isPlaying ? `treads moving at ${Math.round(beltSpeedFpm)} feet per minute` : "treads stopped"}`}
+          className="w-full h-full"
+        >
           {/* Structural Truss Frame */}
           <polygon
             points="40,280 180,280 480,100 560,100 560,140 460,140 160,320 40,320"

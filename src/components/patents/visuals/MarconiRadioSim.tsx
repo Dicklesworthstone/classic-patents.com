@@ -111,7 +111,12 @@ export function MarconiRadioSim() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px] opacity-30 pointer-events-none" />
 
           {/* SVG Transmitter & Radiating Electromagnetic Wavefronts */}
-          <svg viewBox="0 0 460 260" className="w-full max-w-md h-auto select-none relative z-10">
+          <svg
+            viewBox="0 0 460 260"
+            role="img"
+            aria-label={`Radio transmission simulation: ${isSparking ? "spark gap discharging" : "spark gap idle"}, vertical aerial ${antennaHeightMeters} meters high with wavefronts radiating`}
+            className="w-full max-w-md h-auto select-none relative z-10"
+          >
             {/* Ground Plane (Conductive Earth) */}
             <line x1="20" y1="210" x2="440" y2="210" stroke="#10b981" strokeWidth="3" />
             <text x="50" y="230" fill="#34d399" fontSize="10" fontFamily="monospace">

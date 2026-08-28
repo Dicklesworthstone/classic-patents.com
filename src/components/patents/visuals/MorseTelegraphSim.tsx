@@ -201,7 +201,12 @@ export function MorseTelegraphSim() {
           )}
 
           {/* Interactive Morse Key & Relay Sounder SVG */}
-          <svg viewBox="0 0 440 200" className="w-full max-w-md h-auto select-none">
+          <svg
+            viewBox="0 0 440 200"
+            role="img"
+            aria-label={`Telegraph simulation: ${isKeyDepressed || isPlaying ? "key down, current flowing" : "key up, circuit idle"} over a ${lineLengthMiles} mile line with relay ${isRelayEnabled ? "enabled" : "disconnected"}`}
+            className="w-full max-w-md h-auto select-none"
+          >
             {/* Transmitter Sending Key (Left) */}
             <g transform="translate(60, 100)">
               <rect

@@ -93,6 +93,8 @@ export function RillieuxEvaporatorSim({
       {/* Main Interactive SVG Diagram */}
       <div className="relative w-full aspect-[16/9] min-h-[400px] bg-neutral-950 rounded-xl overflow-hidden border border-neutral-800 flex items-center justify-center p-4">
         <svg
+          role="img"
+          aria-label={`Multiple-effect evaporator simulation: juice concentrated from ${initialBrixDeg} to ${targetBrixDeg} degrees Brix across ${rillState.effects.length} effects, first effect boiling at ${rillState.effects[0].boilingTemperatureC.toFixed(1)} degrees Celsius`}
           viewBox="0 0 960 520"
           className="w-full h-full select-none"
           preserveAspectRatio="xMidYMid meet"

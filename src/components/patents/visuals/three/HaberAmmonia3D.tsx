@@ -235,7 +235,7 @@ export default function HaberAmmonia3D({
                   type="button"
                   key={preset}
                   onClick={() => handlePresetChange(preset)}
-                  className={`px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
+                  className={`min-h-9 px-2 py-1 rounded-lg transition-colors font-medium shrink-0 capitalize ${
                     cameraPreset === preset
                       ? "bg-amber-600 text-white shadow-xs font-semibold"
                       : "text-ink-700 dark:text-ink-300 hover:bg-parchment-200 dark:hover:bg-ink-800"
@@ -264,7 +264,7 @@ export default function HaberAmmonia3D({
               setIsCutaway((prev) => !prev);
               soundEngine.playSwitchClick();
             }}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
+            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs flex items-center gap-1 ${
               isCutaway
                 ? "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
@@ -282,7 +282,7 @@ export default function HaberAmmonia3D({
               toggleSound();
               soundEngine.playSwitchClick();
             }}
-            className="p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
+            className="min-h-9 p-1.5 sm:p-2.5 rounded-xl bg-white/90 dark:bg-ink-900/90 backdrop-blur-md border border-parchment-300 dark:border-ink-700 text-ink-700 dark:text-parchment-300 hover:bg-parchment-100 dark:hover:bg-ink-800 transition-colors shadow-sm"
             title={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
             aria-label={isAudioMuted ? "Unmute Sound" : "Mute Sound"}
           >
@@ -297,7 +297,7 @@ export default function HaberAmmonia3D({
             type="button"
             onClick={() => setIsRotating(!isRotating)}
             aria-pressed={isRotating}
-            className={`p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`min-h-9 p-1.5 sm:px-3 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               isRotating
                 ? "bg-amber-700 text-white border-amber-800 dark:bg-amber-700"
                 : "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
@@ -308,7 +308,7 @@ export default function HaberAmmonia3D({
           <button
             type="button"
             onClick={() => setShowUiOverlay(!showUiOverlay)}
-            className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
+            className={`min-h-9 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-sans font-semibold border transition-colors shadow-xs ${
               showUiOverlay
                 ? "bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100"
                 : "bg-amber-700 text-white border-amber-800 shadow-md ring-2 ring-amber-500/30 dark:bg-amber-700"
@@ -323,7 +323,7 @@ export default function HaberAmmonia3D({
             aria-label="Reset camera view"
             type="button"
             onClick={() => handlePresetChange("isometric")}
-            className="p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
+            className="min-h-9 min-w-9 flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 rounded-lg text-xs font-sans bg-parchment-50/90 dark:bg-ink-900/90 text-ink-800 dark:text-ink-200 border border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 transition-colors shadow-xs"
             title="Reset Orbit Camera"
           >
             <RotateCcw className="w-3.5 h-3.5 inline" />
