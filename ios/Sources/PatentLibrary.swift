@@ -57,7 +57,17 @@ final class PatentLibrary: ObservableObject {
         }
         do {
             let data = try Data(contentsOf: url, options: .mappedIfSafe)
-            records = try JSONDecoder().decode([PatentRecord].self, from: data)
+            let loadStarted = ContinuousClock.now
+            let decoded = try JSONDecoder().decode([PatentRecord].self, from: data)
+            records = decoded
+            let loadDuration = ContinuousClock.now - loadStarted
+            let loadMilliseconds = Double(loadDuration.components.seconds) * 1_000
+                + Double(loadDuration.components.attoseconds) / 1_000_000_000_000_000
+            IOSProfileRunner.runIfRequested(
+                catalogData: data,
+                loadedRecords: records,
+                productLoadMilliseconds: loadMilliseconds
+            )
         } catch {
             loadError = error.localizedDescription
         }

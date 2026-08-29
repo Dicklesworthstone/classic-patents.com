@@ -16,6 +16,7 @@
 		BD5A2AC8E0066130A7CE5910 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE462E30D6932C7473CC5257 /* Theme.swift */; };
 		C9545B36E727A209F45AB2A4 /* FrankenPatentsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */; };
 		DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */; };
+		F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		C561AFAB0032EB2B23CEA356 /* PatentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentModels.swift; sourceTree = "<group>"; };
 		F5483F5E9EA79B64FDBB110F /* patents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = patents.json; sourceTree = "<group>"; };
 		F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentMuseumView.swift; sourceTree = "<group>"; };
+		F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSProfileRunner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -56,6 +58,7 @@
 			children = (
 				42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */,
 				36BF4079470701C6D357CC80 /* Info.plist */,
+				F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */,
 				8CB0C97F3855AACCC31D7BAF /* PatentDetailView.swift */,
 				0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */,
 				C561AFAB0032EB2B23CEA356 /* PatentModels.swift */,
@@ -148,6 +151,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9545B36E727A209F45AB2A4 /* FrankenPatentsApp.swift in Sources */,
+				F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */,
 				029D1AEEA8E17FD4674F32DE /* PatentDetailView.swift in Sources */,
 				DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */,
 				A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */,
