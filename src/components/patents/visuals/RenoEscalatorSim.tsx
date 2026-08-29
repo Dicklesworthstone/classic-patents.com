@@ -36,7 +36,7 @@ export function RenoEscalatorSim() {
     const loop = (time: number) => {
       animRef.current = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
-      const dt = Math.min(0.1, (time - lastTime) / 1000);
+      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
 
       setTreadOffset((prev) => (prev + reno.treadSvgAdvancePerS * dt) % reno.treadSvgWrapPx);

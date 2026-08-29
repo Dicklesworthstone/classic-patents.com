@@ -234,7 +234,6 @@ export function HewittMercuryLamp3D({
       nodes.setCutaway?.(p.isCutaway ?? false);
 
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

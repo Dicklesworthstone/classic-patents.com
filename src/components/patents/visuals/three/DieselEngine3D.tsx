@@ -247,7 +247,6 @@ export function DieselEngine3D() {
 
       controls.update();
       renderer.render(scene, studio.camera);
-      animRef.current = requestAnimationFrame(renderLoop);
     };
 
     animRef.current = requestAnimationFrame(renderLoop);

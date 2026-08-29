@@ -47,7 +47,7 @@ export function WattSeparateCondenserSim() {
     const loop = (time: number) => {
       frameId = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
-      const dt = (time - lastTime) / 1000;
+      const dt = Math.max(0, Math.min(0.1, (time - lastTime) / 1000));
       lastTime = time;
       setAnimTime((prev) => prev + dt);
     };

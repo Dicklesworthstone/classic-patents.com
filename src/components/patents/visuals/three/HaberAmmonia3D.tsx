@@ -155,7 +155,6 @@ export default function HaberAmmonia3D({
       );
 
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

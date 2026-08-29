@@ -46,7 +46,7 @@ export function HopkinsPotashSim() {
     const loop = (now: number) => {
       animId = requestAnimationFrame(loop);
       if (!onscreenRef.current) return;
-      const dt = Math.min(0.1, (now - lastTime) / 1000);
+      const dt = Math.max(0, Math.min(0.1, (now - lastTime) / 1000));
       lastTime = now;
       const cycleRate = 0.2 * (2.5 / Math.max(0.2, roastTimeHours));
       setCycleProgress((prev) => (prev + dt * cycleRate) % 1.0);

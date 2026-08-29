@@ -166,7 +166,6 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
       model.setCutaway?.(live.current.isCutaway ?? false);
       model.update(timeRef.current, live.current);
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

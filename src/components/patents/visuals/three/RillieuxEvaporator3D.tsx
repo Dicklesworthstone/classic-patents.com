@@ -152,7 +152,6 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
 
       studio.controls.update();
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

@@ -4,9 +4,8 @@
  * field; Fig. 9 supplies the generator-to-disk teaching relation.
  */
 
-import { teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
-import { hodgeWasmStepped } from "./deepWasm";
 import type { TeslaStatorHodge } from "./deepWasm";
+import { hodgeWasmStepped, teslaCoilSpectrum, teslaStatorHodge } from "./deepWasm";
 
 export const TESLA_PATENT_ID = "us-381968-tesla-motor";
 export const TESLA_STROBE_COUNT = 8;

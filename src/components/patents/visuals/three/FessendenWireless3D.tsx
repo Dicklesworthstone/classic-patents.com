@@ -211,7 +211,6 @@ export function FessendenWireless3D() {
       pointGlow.intensity = (p.radiatedPowerWatts / 1000) * 2.0;
 
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

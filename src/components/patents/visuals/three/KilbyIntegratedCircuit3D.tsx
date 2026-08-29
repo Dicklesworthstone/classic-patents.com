@@ -183,7 +183,6 @@ export const KilbyIntegratedCircuit3D: React.FC<Kilby3DProps> = ({ className = "
       model.setCutaway?.(live.current.isCutaway ?? false);
 
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);

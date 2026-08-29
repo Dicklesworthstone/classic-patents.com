@@ -195,7 +195,6 @@ export function TownesLaser3D({
       nodes.setCutaway?.(current.isCutaway ?? false);
 
       studio.renderer.render(studio.scene, studio.camera);
-      animFrameRef.current = requestAnimationFrame(animate);
     };
 
     animFrameRef.current = requestAnimationFrame(animate);
