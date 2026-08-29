@@ -1,0 +1,255 @@
+import SwiftUI
+
+struct PatentMuseumView: View {
+    @StateObject private var library = PatentLibrary()
+    @State private var selectedID: String?
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                MuseumBackground()
+                if proxy.size.width < 760 {
+                    compactCatalog
+                } else if proxy.size.width < 1_100 {
+                    focusedMuseum
+                } else {
+                    adaptiveMuseum
+                }
+            }
+        }
+        .onAppear {
+            ensureSelectionVisible()
+        }
+        .onChange(of: library.selectedCategory) { _, _ in
+            ensureSelectionVisible(forceFirst: true)
+        }
+        .onChange(of: library.query) { _, _ in
+            ensureSelectionVisible()
+        }
+    }
+
+    private var compactCatalog: some View {
+        NavigationStack {
+            patentList(compact: true)
+                .navigationTitle("FrankenPatents")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) { compactHeader }
+                    ToolbarItem(placement: .topBarTrailing) { categoryMenu }
+                }
+                .navigationDestination(for: PatentRecord.self) { patent in
+                    PatentDetailView(patent: patent)
+                }
+        }
+        .tint(Lab.brass)
+    }
+
+    private var focusedMuseum: some View {
+        NavigationSplitView {
+            patentList(compact: false)
+                .navigationSplitViewColumnWidth(min: 330, ideal: 390, max: 460)
+                .toolbar { ToolbarItem(placement: .topBarTrailing) { categoryMenu } }
+        } detail: {
+            if let selected = selectedPatent {
+                PatentDetailView(patent: selected)
+            } else {
+                ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
+                    .foregroundStyle(Lab.secondary)
+                    .background(MuseumBackground())
+            }
+        }
+        .navigationSplitViewStyle(.balanced)
+        .tint(Lab.brass)
+    }
+
+    private var adaptiveMuseum: some View {
+        NavigationSplitView {
+            categorySidebar
+                .navigationSplitViewColumnWidth(min: 250, ideal: 285, max: 340)
+        } content: {
+            patentList(compact: false)
+                .navigationSplitViewColumnWidth(min: 320, ideal: 390, max: 480)
+        } detail: {
+            if let selected = selectedPatent {
+                PatentDetailView(patent: selected)
+            } else {
+                ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
+                    .foregroundStyle(Lab.secondary)
+                    .background(MuseumBackground())
+            }
+        }
+        .navigationSplitViewStyle(.balanced)
+        .tint(Lab.brass)
+    }
+
+    private var selectedPatent: PatentRecord? {
+        guard let selectedID else { return nil }
+        return library.records.first(where: { $0.id == selectedID })
+    }
+
+    private func ensureSelectionVisible(forceFirst: Bool = false) {
+        let filtered = library.filteredRecords
+        if forceFirst || !filtered.contains(where: { $0.id == selectedID }) {
+            selectedID = filtered.first?.id
+        }
+    }
+
+    private var compactHeader: some View {
+        HStack(spacing: 8) {
+            Image("MonsterIcon")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 30, height: 30)
+                .clipShape(RoundedRectangle(cornerRadius: 7))
+            FrankenWordmark()
+                .scaleEffect(0.80, anchor: .leading)
+        }
+    }
+
+    private var categoryMenu: some View {
+        Menu {
+            Button {
+                library.selectedCategory = nil
+            } label: {
+                if library.selectedCategory == nil {
+                    Label("All inventions", systemImage: "checkmark")
+                } else {
+                    Text("All inventions")
+                }
+            }
+            Divider()
+            ForEach(library.categories, id: \.self) { category in
+                Button {
+                    library.selectedCategory = category
+                } label: {
+                    if library.selectedCategory == category {
+                        Label(library.label(for: category), systemImage: "checkmark")
+                    } else {
+                        Text(library.label(for: category))
+                    }
+                }
+            }
+        } label: {
+            Label(
+                library.selectedCategory.map { library.label(for: $0) } ?? "All",
+                systemImage: "line.3.horizontal.decrease.circle"
+            )
+            .lineLimit(1)
+        }
+        .accessibilityLabel("Filter patent category")
+    }
+
+    private var categorySidebar: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 11) {
+                Image("MonsterIcon")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Lab.brass.opacity(0.35)))
+                    .accessibilityLabel("Friendly FrankenPatents inventor monster")
+                VStack(alignment: .leading, spacing: 2) {
+                    FrankenWordmark()
+                    Text("INVENTION_ARCHIVE // verified sources")
+                        .font(.system(size: Lab.size(9.5), weight: .semibold, design: .monospaced))
+                        .foregroundStyle(Lab.secondary)
+                }
+            }
+            .padding(16)
+
+            List(selection: $library.selectedCategory) {
+                Label("All inventions", systemImage: "sparkles.rectangle.stack")
+                    .tag(String?.none)
+                ForEach(library.categories, id: \.self) { category in
+                    Label(library.label(for: category), systemImage: Lab.categorySymbol(category))
+                        .foregroundStyle(Lab.categoryColor(category))
+                        .tag(String?.some(category))
+                }
+            }
+            .font(.system(size: Lab.size(11.5), weight: .medium, design: .rounded))
+            .scrollContentBackground(.hidden)
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text("\(library.records.count) CURATED RECORDS")
+                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .monospaced))
+                    .foregroundStyle(Lab.brass)
+                Text("Catalog content is bundled for private offline reading. Full interactive exhibits open only when you ask.")
+                    .font(.system(size: Lab.size(11), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
+            }
+            .padding(16)
+        }
+        .background(MuseumBackground())
+    }
+
+    private func patentList(compact: Bool) -> some View {
+        Group {
+            if let error = library.loadError {
+                ContentUnavailableView("Catalog unavailable", systemImage: "exclamationmark.triangle", description: Text(error))
+            } else if library.filteredRecords.isEmpty {
+                ContentUnavailableView.search(text: library.query)
+            } else {
+                List(library.filteredRecords) { patent in
+                    if compact {
+                        NavigationLink(value: patent) { PatentRow(patent: patent, compact: true) }
+                    } else {
+                        Button {
+                            selectedID = patent.id
+                        } label: {
+                            PatentRow(patent: patent, compact: false)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .listRowBackground(selectedID == patent.id ? Lab.brass.opacity(0.12) : Color.clear)
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+            }
+        }
+        .background(MuseumBackground())
+        .searchable(text: $library.query, prompt: "Inventor, mechanism, patent…")
+        .navigationTitle(library.selectedCategory.map { library.label(for: $0) } ?? "The archive")
+    }
+}
+
+private struct PatentRow: View {
+    let patent: PatentRecord
+    let compact: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    .fill(Lab.categoryColor(patent.category).opacity(0.13))
+                Image(systemName: Lab.categorySymbol(patent.category))
+                    .font(.system(size: Lab.size(compact ? 18 : 21), weight: .semibold))
+                    .foregroundStyle(Lab.categoryColor(patent.category))
+            }
+            .frame(width: compact ? 44 : 50, height: compact ? 44 : 50)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(patent.patentNumber)
+                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .monospaced))
+                    .foregroundStyle(Lab.brass)
+                Text(patent.shortTitle)
+                    .font(.system(size: Lab.size(compact ? 15 : 16), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.text)
+                    .lineLimit(2)
+                Text(patent.inventors.joined(separator: " & "))
+                    .font(.system(size: Lab.size(11.5), design: .rounded))
+                    .foregroundStyle(Lab.secondary)
+                    .lineLimit(1)
+                if !compact {
+                    Text(patent.summary)
+                        .font(.system(size: Lab.size(11.5), design: .rounded))
+                        .foregroundStyle(Lab.secondary.opacity(0.88))
+                        .lineLimit(2)
+                }
+            }
+        }
+        .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+    }
+}
