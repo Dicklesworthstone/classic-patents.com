@@ -1068,19 +1068,7 @@ export const noyceIcRecordCorrections: Pick<
     ],
     breakthroughInsight:
       "Retain the semiconductor oxide across selected junction edges and use it as the insulating support for deposited metal strips, while clearing only the contact areas that need direct electrical connection.",
-    patentWars: [
-      {
-        rivalName: "Jack S. Kilby & Texas Instruments",
-        rivalClaim:
-          "Kilby demonstrated a working germanium phase-shift oscillator with hand-soldered gold wire fly-leads at Texas Instruments on September 12, 1958, filing US 3,138,743 six months before Noyce filed US 2,981,877 in July 1959.",
-        conflictDetails:
-          "Texas Instruments initiated interference proceedings arguing Kilby was the first to construct an integrated circuit on a single substrate. Fairchild argued Kilby's design used discrete semiconductor slices glued to glass with flying wire leads, whereas Noyce taught the true monolithic planar architecture with evaporated aluminum interconnects deposited directly over thermally grown silicon dioxide.",
-        resolution:
-          "The Court of Customs and Patent Appeals (CCPA) in Noyce v. Kilby (1966) and federal courts scrutinized the phrase 'conductor means adherent to the insulating layer'.",
-        legalOutcome:
-          "The courts ruled that while Kilby invented the hybrid integrated circuit concept, Noyce exclusively invented the planar monolithic process with adherent surface interconnections. Texas Instruments and Fairchild signed a comprehensive cross-licensing pact in 1966, agreeing to share 50/50 industry royalties.",
-      },
-    ],
+    patentWars: [],
     civilizationalImpact:
       "The grant provides a primary-source record of a planar semiconductor lead structure: its legal scope, figure geometry, fabrication alternatives, and the illustrative multi-device circuit are available together for close technical reading.",
     aftermath:

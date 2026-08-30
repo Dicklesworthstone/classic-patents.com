@@ -43,10 +43,12 @@ async function sourceVisualizationRoutes(): Promise<Map<string, SourceVisualizat
 const visualizationRoutes = await sourceVisualizationRoutes();
 
 const patentAssetGlob = new Bun.Glob("**/*.{png,txt}");
-const allBundledAssetPaths = [...patentAssetGlob.scanSync({
-  cwd: new URL("../public/patents", import.meta.url).pathname,
-  onlyFiles: true,
-})]
+const allBundledAssetPaths = [
+  ...patentAssetGlob.scanSync({
+    cwd: new URL("../public/patents", import.meta.url).pathname,
+    onlyFiles: true,
+  }),
+]
   .map((path) => `patents/${path}`)
   .sort();
 const bundledAssetSet = new Set(allBundledAssetPaths);
@@ -83,46 +85,46 @@ const exported = allPatents.map((patent) => {
   const availableEditionAssets = editionAssets.filter((path) => bundledAssetSet.has(path));
   const withheldAssets = editionAssets.filter((path) => !bundledAssetSet.has(path));
   return {
-  id: patent.id,
-  patentNumber: patent.patentNumber,
-  title: patent.title,
-  shortTitle: patent.shortTitle,
-  subtitle: patent.subtitle,
-  inventors: patent.inventors,
-  inventorLocation: patent.inventorLocation,
-  grantDate: patent.grantDate,
-  filingDate: patent.filingDate,
-  era: patent.era,
-  category: patent.category,
-  categoryLabel: patent.categoryLabel,
-  summary: patent.summary,
-  heroQuote: patent.heroQuote,
-  originalPdfURL: `https://classic-patents.com${patent.originalPdfUrl}`,
-  googlePatentsURL: patent.googlePatentsUrl,
-  usptoClassification: patent.usptoClassification,
-  originalText: patent.originalText,
-  originalTextAsset: patent.originalTextAsset,
-  archivalEdition: patent.archivalEdition,
-  archivalParallelReadings: ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
-  plainEnglish: patent.plainEnglishExplanation,
-  claims: patent.claims,
-  drawings: patent.drawings,
-  history: patent.historicalContext,
-  tags: patent.tags ?? [],
-  stats: patent.stats,
-  equations: equationsFor(patent.id),
-  physics: PATENT_PHYSICS_REGISTRY[patent.id],
-  sourceVisualization: visualizationRoutes.get(patent.id),
-  bundledAssets: [
-    ...new Set([
-      ...availableEditionAssets,
-      ...allBundledAssetPaths.filter((path) => path.includes(patent.id)),
-      ...(patent.originalTextAsset?.url?.startsWith("/patents/")
-        ? [patent.originalTextAsset.url.slice(1)]
-        : []),
-    ]),
-  ].sort(),
-  withheldAssets,
+    id: patent.id,
+    patentNumber: patent.patentNumber,
+    title: patent.title,
+    shortTitle: patent.shortTitle,
+    subtitle: patent.subtitle,
+    inventors: patent.inventors,
+    inventorLocation: patent.inventorLocation,
+    grantDate: patent.grantDate,
+    filingDate: patent.filingDate,
+    era: patent.era,
+    category: patent.category,
+    categoryLabel: patent.categoryLabel,
+    summary: patent.summary,
+    heroQuote: patent.heroQuote,
+    originalPdfURL: `https://classic-patents.com${patent.originalPdfUrl}`,
+    googlePatentsURL: patent.googlePatentsUrl,
+    usptoClassification: patent.usptoClassification,
+    originalText: patent.originalText,
+    originalTextAsset: patent.originalTextAsset,
+    archivalEdition: patent.archivalEdition,
+    archivalParallelReadings: ARCHIVAL_PARALLEL_READINGS[patent.id] ?? {},
+    plainEnglish: patent.plainEnglishExplanation,
+    claims: patent.claims,
+    drawings: patent.drawings,
+    history: patent.historicalContext,
+    tags: patent.tags ?? [],
+    stats: patent.stats,
+    equations: equationsFor(patent.id),
+    physics: PATENT_PHYSICS_REGISTRY[patent.id],
+    sourceVisualization: visualizationRoutes.get(patent.id),
+    bundledAssets: [
+      ...new Set([
+        ...availableEditionAssets,
+        ...allBundledAssetPaths.filter((path) => path.includes(patent.id)),
+        ...(patent.originalTextAsset?.url?.startsWith("/patents/")
+          ? [patent.originalTextAsset.url.slice(1)]
+          : []),
+      ]),
+    ].sort(),
+    withheldAssets,
   };
 });
 
@@ -143,12 +145,21 @@ const totals = exported.reduce(
     editions: sum.editions + (patent.archivalEdition ? 1 : 0),
     equations: sum.equations + patent.equations.length,
     drawings: sum.drawings + patent.drawings.length,
-    callouts: sum.callouts + patent.drawings.reduce((count, drawing) => count + drawing.callouts.length, 0),
+    callouts:
+      sum.callouts + patent.drawings.reduce((count, drawing) => count + drawing.callouts.length, 0),
     assets: sum.assets + patent.bundledAssets.length,
     visualizations: sum.visualizations + (patent.sourceVisualization ? 1 : 0),
     withheldAssets: sum.withheldAssets + patent.withheldAssets.length,
   }),
-  { editions: 0, equations: 0, drawings: 0, callouts: 0, assets: 0, visualizations: 0, withheldAssets: 0 },
+  {
+    editions: 0,
+    equations: 0,
+    drawings: 0,
+    callouts: 0,
+    assets: 0,
+    visualizations: 0,
+    withheldAssets: 0,
+  },
 );
 console.log(
   `Exported ${exported.length} patents, ${totals.editions} editions, ${totals.equations} equations, ` +
