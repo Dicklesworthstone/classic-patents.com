@@ -1,6 +1,5 @@
 import SceneKit
 import SwiftUI
-import Metal
 
 /// Metal-backed presentation of the exact procedural model authored for the
 /// website. The export step executes each Three.js model builder and packages
@@ -224,20 +223,18 @@ private struct PatentSceneRepresentable: UIViewRepresentable {
             installKinematics(in: model)
             resetCamera(in: view, animated: false)
 
-            // A few exhibits contain thousands of authored meshes. Compile
-            // their SceneKit/Metal resources with an offscreen renderer so the
-            // reader, navigation, and progress state remain responsive.
+            // A few exhibits contain thousands of authored meshes. Ask the
+            // SCNView that owns the live scene to prepare those resources
+            // asynchronously. SceneKit scene graphs are not Sendable: using a
+            // second SCNRenderer on a global queue races the view's render and
+            // animation mutations against traversal of the same nodes.
             let expectedPatentID = patentID
-            DispatchQueue.global(qos: .userInitiated).async { [weak self, weak view] in
-                guard let device = MTLCreateSystemDefaultDevice() else {
-                    DispatchQueue.main.async { self?.isPrepared.wrappedValue = true }
-                    return
-                }
-                let renderer = SCNRenderer(device: device, options: nil)
-                renderer.scene = scene
-                _ = renderer.prepare(scene, shouldAbortBlock: nil)
+            view.prepare([scene]) { [weak self, weak view] _ in
                 DispatchQueue.main.async {
-                    guard let self, self.patentID == expectedPatentID, view != nil else { return }
+                    guard let self,
+                          let view,
+                          self.patentID == expectedPatentID,
+                          view.scene === scene else { return }
                     self.isPrepared.wrappedValue = true
                 }
             }
