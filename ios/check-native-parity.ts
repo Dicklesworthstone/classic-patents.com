@@ -1,6 +1,6 @@
-import { allPatents } from "../src/data/patents/index";
 import { ALL_COLORIZED_EQUATIONS } from "../src/data/colorizedEquations";
 import { ARCHIVAL_PARALLEL_READINGS } from "../src/data/editions/parallelReadings";
+import { allPatents } from "../src/data/patents/index";
 import { PATENT_PHYSICS_REGISTRY } from "../src/physics/telemetryData";
 
 type ExportedPatent = Record<string, any> & { id: string };
