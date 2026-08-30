@@ -1,10 +1,24 @@
 import SwiftUI
 
+private enum VisualizationProjection: String, CaseIterable, Identifiable {
+    case spatial = "3D Model"
+    case source = "Source Plate"
+
+    var id: String { rawValue }
+    var compactTitle: String {
+        switch self {
+        case .spatial: "3D"
+        case .source: "Plate"
+        }
+    }
+}
+
 struct NativePatentVisualization: View {
     let patent: PatentRecord
     @State private var values: [String: Double]
     @State private var isRunning = true
     @State private var showsMechanismNotes = false
+    @State private var projection: VisualizationProjection = .spatial
     @State private var accumulatedAnimationTime: TimeInterval = 0
     @State private var animationStartedAt = Date.timeIntervalSinceReferenceDate
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -21,28 +35,66 @@ struct NativePatentVisualization: View {
         VStack(alignment: .leading, spacing: 14) {
             MuseumPanel {
                 VStack(alignment: .leading, spacing: 12) {
-                    HStack(alignment: .center, spacing: 12) {
+                    if horizontalSizeClass == .compact {
                         MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
                             .lineLimit(2)
                             .minimumScaleFactor(0.78)
-                        Spacer(minLength: 8)
-                        animationButton
+                        HStack(spacing: 12) {
+                            Picker("Projection", selection: $projection) {
+                                ForEach(VisualizationProjection.allCases) { projection in
+                                    Text(projection.compactTitle).tag(projection)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .frame(maxWidth: 220)
+                            Spacer(minLength: 0)
+                            animationButton
+                        }
+                    } else {
+                        HStack(alignment: .center, spacing: 12) {
+                            MuseumLabel(text: patent.physics?.domainTitle ?? "Native mechanism study")
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.78)
+                            Spacer(minLength: 8)
+                            Picker("Projection", selection: $projection) {
+                                ForEach(VisualizationProjection.allCases) { projection in
+                                    Text(projection.rawValue).tag(projection)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .frame(maxWidth: 260)
+                            animationButton
+                        }
                     }
 
-                    TimelineView(.animation(minimumInterval: reduceMotion || !isRunning ? 1 : 1 / 30)) { timeline in
-                        let now = timeline.date.timeIntervalSinceReferenceDate
-                        let time = reduceMotion
-                            ? 0
-                            : accumulatedAnimationTime + (isRunning ? max(0, now - animationStartedAt) : 0)
-                        if bespokeCanvasPatents.contains(patent.id) || sourcePlatePath == nil {
-                            PatentMechanismCanvas(patent: patent, values: values, time: time)
-                        } else if let sourcePlatePath {
-                            LiveSourcePatentPlate(
-                                patent: patent,
-                                path: sourcePlatePath,
-                                values: values,
-                                time: time
-                            )
+                    Group {
+                        if projection == .spatial {
+                            if patent.id == "us-971501-haber-ammonia" {
+                                NativeSourceBoundaryExhibit(patent: patent, drive: normalizedControl)
+                            } else {
+                                NativePatentSceneView(
+                                    patent: patent,
+                                    drive: normalizedControl,
+                                    isRunning: isRunning && !reduceMotion
+                                )
+                            }
+                        } else {
+                            TimelineView(.animation(minimumInterval: reduceMotion || !isRunning ? 1 : 1 / 30)) { timeline in
+                                let now = timeline.date.timeIntervalSinceReferenceDate
+                                let time = reduceMotion
+                                    ? 0
+                                    : accumulatedAnimationTime + (isRunning ? max(0, now - animationStartedAt) : 0)
+                                if let sourcePlatePath {
+                                    LiveSourcePatentPlate(
+                                        patent: patent,
+                                        path: sourcePlatePath,
+                                        values: values,
+                                        time: time
+                                    )
+                                } else {
+                                    PatentMechanismCanvas(patent: patent, values: values, time: time)
+                                }
+                            }
                         }
                     }
                     .frame(minHeight: 300, idealHeight: 420, maxHeight: 520)
@@ -180,13 +232,13 @@ struct NativePatentVisualization: View {
         PatentFigureAssetResolver.mechanismAsset(in: patent)
     }
 
-    private var bespokeCanvasPatents: Set<String> {
-        [
-            "gb-913-watt-separate-condenser",
-            "gb-931-arkwright-water-frame",
-            "us-381968-tesla-motor",
-            "us-4136359-wozniak-apple",
-        ]
+    private var normalizedControl: Double {
+        guard let controls = patent.physics?.controls, !controls.isEmpty else { return 0.5 }
+        let total = controls.reduce(0.0) { partial, control in
+            let span = max(0.000_001, control.max - control.min)
+            return partial + ((values[control.id] ?? control.defaultValue) - control.min) / span
+        }
+        return min(1, max(0, total / Double(controls.count)))
     }
 }
 

@@ -349,29 +349,57 @@ assert(
   "native figure callouts do not normalize the source corpus' two historical field conventions",
 );
 
-// Content parity and visualization parity are separate acceptance surfaces.
-// An animated source plate preserves evidence, but it is not the same thing as
-// translating both source visualization components into a native mechanism.
-const bespokeNativeVisuals = new Set([
-  "gb-913-watt-separate-condenser",
-  "gb-931-arkwright-water-frame",
-  "us-381968-tesla-motor",
-  "us-4136359-wozniak-apple",
-]);
-for (const id of bespokeNativeVisuals) {
-  assert(byId.has(id), `native visualization coverage names unknown patent ${id}`);
+// Source plates remain valuable archival evidence, but they cannot satisfy
+// spatial parity. Every authored web model must export to a local native asset;
+// the sole exception is Haber's explicit no-drawing source boundary, which the
+// web exhibit also refuses rather than inventing later industrial apparatus.
+type NativeVisualizationEntry = {
+  id: string;
+  asset: string | null;
+  builder: string;
+  spatialComponent: string;
+  vectorComponent: string;
+  meshCount: number;
+  namedNodeCount: number;
+  sourceBoundary?: string;
+};
+const nativeVisualizations = (await Bun.file(
+  new URL("./Resources/native-visualizations.json", import.meta.url),
+).json()) as NativeVisualizationEntry[];
+const nativeVisualById = new Map(nativeVisualizations.map((entry) => [entry.id, entry]));
+assert(nativeVisualizations.length === records.length, `native visualization count ${nativeVisualizations.length} != ${records.length}`);
+assert(nativeVisualById.size === records.length, "native visualization ids are not unique");
+for (const record of records) {
+  const visual = nativeVisualById.get(record.id);
+  assert(visual != null, `${record.id}: no native spatial exhibit is registered`);
+  if (!visual) continue;
+  same(visual.spatialComponent, record.sourceVisualization.spatialComponent, `${record.id}: native spatial source drifted`);
+  same(visual.vectorComponent, record.sourceVisualization.vectorComponent, `${record.id}: native vector source drifted`);
+  if (record.id === "us-971501-haber-ammonia") {
+    assert(visual.asset == null, `${record.id}: no-drawing boundary must not ship invented apparatus geometry`);
+    assert(visual.sourceBoundary?.includes("no apparatus drawing"), `${record.id}: source boundary explanation is missing`);
+  } else {
+    assert(visual.asset === `NativeModels/${record.id}.usdz`, `${record.id}: native model path is not deterministic`);
+    assert(visual.meshCount > 0, `${record.id}: native model contains no meshes`);
+    assert(visual.namedNodeCount > 0, `${record.id}: native model contains no named articulation nodes`);
+    if (visual.asset) {
+      const asset = Bun.file(new URL(`./Resources/${visual.asset}`, import.meta.url));
+      assert(await asset.exists(), `${record.id}: native model asset is absent`);
+      assert(asset.size > 1_000, `${record.id}: native model asset is implausibly small`);
+    }
+  }
 }
 const nativeVisualizationSource = await Bun.file(
   new URL("./Sources/PatentVisualizationView.swift", import.meta.url),
 ).text();
 assert(
-  nativeVisualizationSource.includes("drawArkwrightWaterFrame")
-    && nativeVisualizationSource.includes('"gb-931-arkwright-water-frame"'),
-  "Arkwright is counted as bespoke without a native Water Frame mechanism",
+  nativeVisualizationSource.includes("NativePatentSceneView")
+    && nativeVisualizationSource.includes("NativeSourceBoundaryExhibit"),
+  "native workstation does not route authored models and the no-drawing boundary explicitly",
 );
 if (requireVisualParity) {
   for (const record of records) {
-    assert(bespokeNativeVisuals.has(record.id), `${record.id}: bespoke native visualization is not implemented`);
+    assert(nativeVisualById.has(record.id), `${record.id}: native spatial visualization is not implemented`);
   }
 }
 
@@ -399,6 +427,7 @@ console.log(
     `${totals.claims} claims, ${totals.equations} equations, ${totals.drawings} drawings, ` +
     `${totals.callouts} callouts, ${records.length} source visualization pairs, ` +
     `${manifest.length} bundled non-PDF assets, ${totals.withheldAssets} explicitly gated source crops, ` +
-    `one first-party PDF network boundary. Bespoke native mechanism parity: ` +
-    `${bespokeNativeVisuals.size}/${records.length}; the remaining records use an explicitly identified source-plate fallback.`,
+    `one first-party PDF network boundary. Native spatial parity: ` +
+    `${nativeVisualizations.filter((entry) => entry.asset != null).length} authored USDZ models plus ` +
+    `${nativeVisualizations.filter((entry) => entry.sourceBoundary != null).length} explicit no-drawing source boundary; no source plate is credited as a 3D model.`,
 );

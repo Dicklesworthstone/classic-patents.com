@@ -404,9 +404,13 @@ struct CuratedSpecificationReader: View {
                 Text("Prepared by \(edition.preparedBy) · \(edition.preparedAt)")
                     .font(.system(size: Lab.size(10.5), design: .rounded))
                     .foregroundStyle(Lab.secondary)
-                Text("SOURCE SHA-256  \(edition.sourcePdfSha256)")
+                Text("SOURCE SHA-256")
+                    .font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
+                    .foregroundStyle(Lab.secondary)
+                Text(splitDigest(edition.sourcePdfSha256))
                     .font(.system(size: Lab.size(8.5), design: .rounded))
                     .foregroundStyle(Lab.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
                     .textSelection(.enabled)
                 if !patent.withheldAssets.isEmpty {
                     Label(
@@ -418,6 +422,15 @@ struct CuratedSpecificationReader: View {
                 }
             }
         }
+    }
+
+    /// Keep archival digests copyable while preventing a single orphaned hex
+    /// digit on compact phones. SHA-256 is ASCII, so a balanced two-line split
+    /// is both stable and easier to compare against the source manifest.
+    private func splitDigest(_ digest: String) -> String {
+        guard digest.count > 40 else { return digest }
+        let midpoint = digest.index(digest.startIndex, offsetBy: digest.count / 2)
+        return "\(digest[..<midpoint])\n\(digest[midpoint...])"
     }
 
     @ViewBuilder

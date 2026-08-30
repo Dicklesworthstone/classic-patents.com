@@ -1,10 +1,10 @@
 import SwiftUI
 
 private enum WorkstationSection: String, CaseIterable, Identifiable {
-    case story = "Story"
+    case specification = "Full Patent"
+    case story = "Plain English"
     case simulation = "Simulation"
     case equations = "Equations"
-    case specification = "Specification"
     case claims = "Claims"
     case drawings = "Figures"
     case history = "History"
@@ -13,10 +13,10 @@ private enum WorkstationSection: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var symbol: String {
         switch self {
-        case .story: "book.pages"
+        case .story: "character.book.closed"
         case .simulation: "waveform.path.ecg.rectangle"
         case .equations: "function"
-        case .specification: "text.book.closed"
+        case .specification: "book.pages.fill"
         case .claims: "building.columns"
         case .drawings: "ruler"
         case .history: "timeline.selection"
@@ -44,11 +44,11 @@ struct PatentWorkstationView: View {
             _section = State(initialValue: requested)
             debugInitialSection = requested
         } else {
-            _section = State(initialValue: .story)
+            _section = State(initialValue: .specification)
             debugInitialSection = nil
         }
 #else
-        _section = State(initialValue: .story)
+        _section = State(initialValue: .specification)
 #endif
     }
 
@@ -148,10 +148,16 @@ struct PatentWorkstationView: View {
 
     @ViewBuilder
     private var heroActions: some View {
-        Button { section = .simulation } label: {
-            Label("Run native exhibit", systemImage: "play.circle.fill")
+        if section != .specification {
+            Button { section = .specification } label: {
+                Label("Read full patent", systemImage: "book.pages.fill")
+            }
+            .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.brass, filled: true))
         }
-        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.brass, filled: true))
+        Button { section = .simulation } label: {
+            Label("Explore 3D model", systemImage: "cube.transparent")
+        }
+        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald, filled: section == .specification))
         Button { showsPDF = true } label: {
             Label("Original PDF", systemImage: "doc.richtext")
         }
@@ -213,11 +219,67 @@ struct PatentWorkstationView: View {
         case .story: story
         case .simulation: NativePatentVisualization(patent: patent)
         case .equations: equations
-        case .specification: CuratedSpecificationReader(patent: patent)
+        case .specification: completePatentReader
         case .claims: claims
         case .drawings: drawings
         case .history: history
         case .record: record
+        }
+    }
+
+    private var completePatentReader: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            MuseumPanel {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: 18) {
+                        readingIntroduction
+                        readingActions
+                            .frame(maxWidth: 310, alignment: .leading)
+                    }
+                    VStack(alignment: .leading, spacing: 14) {
+                        readingIntroduction
+                        readingActions
+                    }
+                }
+            }
+            CuratedSpecificationReader(patent: patent)
+        }
+    }
+
+    private var readingIntroduction: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            MuseumLabel(text: "Complete patent · dual reading desk")
+            Text(patent.title)
+                .font(.system(size: Lab.size(21), weight: .bold, design: .serif))
+                .foregroundStyle(Lab.parchment)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("\(patent.patentNumber) · \(patent.inventors.joined(separator: " · "))")
+                .font(.system(size: Lab.size(10.5), weight: .semibold, design: .rounded))
+                .foregroundStyle(Lab.brass)
+            Text("The full reviewed historical text is below—nothing is fetched from the website. Where a paragraph-level editorial reading exists, its Plain English explanation appears beside the original on wide screens and directly beneath it on iPhone.")
+                .font(.system(size: Lab.size(13), design: .serif))
+                .foregroundStyle(Lab.text)
+                .fixedSize(horizontal: false, vertical: true)
+                .textSelection(.enabled)
+            Text("Every claim, equation, source figure, provenance marker, and engineering explanation stays available elsewhere in this workstation without leaving the app.")
+                .font(.system(size: Lab.size(11.5), design: .rounded))
+                .foregroundStyle(Lab.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var readingActions: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            Button { section = .story } label: {
+                Label("Open the Plain English guide", systemImage: "character.book.closed.fill")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.blueprint, filled: true))
+            Button { section = .simulation } label: {
+                Label("Manipulate the native 3D model", systemImage: "move.3d")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
         }
     }
 
