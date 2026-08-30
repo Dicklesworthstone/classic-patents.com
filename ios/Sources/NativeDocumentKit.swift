@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import ImageIO
 
 /// Native document primitives shared by the museum's specification, equation,
 /// claim, and figure readers. Historical prose is always rendered as authored
@@ -55,6 +56,16 @@ enum NativeMathFormatter {
             with: "(mod $1)",
             options: .regularExpression
         )
+        text = text.replacingOccurrences(
+            of: #"\\bar\{([^{}]+)\}"#,
+            with: "bar $1",
+            options: .regularExpression
+        )
+        text = text.replacingOccurrences(
+            of: #"\\hat\{([^{}]+)\}"#,
+            with: "$1 hat",
+            options: .regularExpression
+        )
         text = replacingFractions(in: text)
         let replacements: [String: String] = [
             "\\quad": "   ", "\\qquad": "      ", "\\cdot": "·", "\\times": "×",
@@ -63,16 +74,21 @@ enum NativeMathFormatter {
             "\\rightleftharpoons": "⇌", "\\xrightarrow": "→", "\\to": "→",
             "\\leftarrow": "←", "\\Rightarrow": "⇒", "\\implies": "⇒", "\\prime": "′",
             "\\partial": "∂", "\\nabla": "∇", "\\infty": "∞", "\\pi": "π",
-            "\\rho": "ρ", "\\sigma": "σ", "\\omega": "ω", "\\Omega": "Ω",
+            "\\rho": "ρ", "\\sigma": "σ", "\\Sigma": "Σ", "\\omega": "ω", "\\Omega": "Ω",
             "\\alpha": "α", "\\beta": "β", "\\gamma": "γ", "\\Gamma": "Γ",
             "\\delta": "δ", "\\Delta": "Δ", "\\lambda": "λ", "\\Lambda": "Λ",
             "\\mu": "μ", "\\nu": "ν", "\\phi": "φ", "\\Phi": "Φ", "\\psi": "ψ",
-            "\\theta": "θ", "\\Theta": "Θ", "\\tau": "τ", "\\eta": "η",
-            "\\varepsilon": "ε", "\\epsilon": "ε", "\\sum": "∑", "\\int": "∫",
-            "\\circ": "∘", "\\in": "∈", "\\perp": "⊥", "\\sqrt": "√",
+            "\\theta": "θ", "\\Theta": "Θ", "\\tau": "τ", "\\eta": "η", "\\zeta": "ζ",
+            "\\kappa": "κ", "\\xi": "ξ", "\\Pi": "Π", "\\ell": "ℓ",
+            "\\varepsilon": "ε", "\\epsilon": "ε", "\\sum": "∑", "\\prod": "∏", "\\int": "∫",
+            "\\oint": "∮", "\\circ": "∘", "\\in": "∈", "\\perp": "⊥", "\\sqrt": "√",
+            "\\sim": "∼", "\\pm": "±", "\\propto": "∝", "\\cap": "∩",
+            "\\dots": "…", "\\uparrow": "↑", "\\downarrow": "↓",
+            "\\sin": "sin", "\\cos": "cos", "\\tan": "tan", "\\ln": "ln",
+            "\\log": "log", "\\exp": "exp", "\\min": "min",
             "\\dot": "˙", "\\ddot": "¨", "\\vec": "→", "\\lfloor": "⌊",
             "\\rfloor": "⌋", "\\text": "", "\\mathrm": "", "\\mathbf": "",
-            "\\mathcal": "", "\\operatorname": "", "\\left": "", "\\right": "",
+            "\\mathcal": "", "\\operatorname": "", "\\mbox": "", "\\left": "", "\\right": "",
             "\\,": " ", "\\;": " ", "\\|": "‖", "\\": "",
         ]
         for (source, target) in replacements.sorted(by: { $0.key.count > $1.key.count }) {
@@ -211,7 +227,7 @@ struct ColorizedEquationCard: View {
                             .font(.system(size: Lab.size(12), design: .rounded))
                             .foregroundStyle(Lab.text)
                         Text([variable.unit, variable.dimension].compactMap { $0 }.joined(separator: " · "))
-                            .font(.system(size: Lab.size(9), weight: .bold, design: .monospaced))
+                            .font(.system(size: Lab.size(9), weight: .bold, design: .rounded))
                             .foregroundStyle(Lab.secondary)
                 if let metric = variable.telemetryMetricLabel {
                     Label(metric, systemImage: "waveform.path.ecg")
@@ -220,7 +236,7 @@ struct ColorizedEquationCard: View {
                         }
                         if let telemetryKey = variable.telemetryKey, !telemetryKey.isEmpty {
                             Text("TELEMETRY · \(telemetryKey)")
-                                .font(.system(size: Lab.size(8), weight: .bold, design: .monospaced))
+                                .font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
                                 .foregroundStyle(Lab.secondary)
                                 .textSelection(.enabled)
                         }
@@ -248,7 +264,7 @@ struct ColorizedEquationCard: View {
                                 .foregroundStyle(Lab.secondary)
                         }
                     }
-                    .font(.system(size: Lab.size(9), design: .monospaced))
+                    .font(.system(size: Lab.size(9), design: .rounded))
                     .textSelection(.enabled)
                     .padding(.top, 6)
                 }
@@ -368,13 +384,7 @@ struct CuratedSpecificationReader: View {
                     if let status = edition.drawingStatus { statusPanel("Drawings", status) }
                 }
             } else {
-                MuseumPanel {
-                    ContentUnavailableView(
-                        "Archival edition in preparation",
-                        systemImage: "books.vertical",
-                        description: Text("The verified catalog record remains available; this is the sole record whose continuous source edition has not yet been authored upstream.")
-                    )
-                }
+                BundledSourceTranscriptionReader(patent: patent)
             }
         }
         .sheet(item: $selectedPreview) { preview in
@@ -395,7 +405,7 @@ struct CuratedSpecificationReader: View {
                     .font(.system(size: Lab.size(10.5), design: .rounded))
                     .foregroundStyle(Lab.secondary)
                 Text("SOURCE SHA-256  \(edition.sourcePdfSha256)")
-                    .font(.system(size: Lab.size(8.5), design: .monospaced))
+                    .font(.system(size: Lab.size(8.5), design: .rounded))
                     .foregroundStyle(Lab.secondary)
                     .textSelection(.enabled)
                 if !patent.withheldAssets.isEmpty {
@@ -484,7 +494,7 @@ struct CuratedSpecificationReader: View {
     private func sourceColumn(_ source: [CuratedSpecificationInline]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("ORIGINAL PATENT TEXT")
-                .font(.system(size: Lab.size(8.5), weight: .bold, design: .monospaced))
+                .font(.system(size: Lab.size(8.5), weight: .bold, design: .rounded))
                 .foregroundStyle(Lab.secondary)
             RichInlineText(inlines: source)
             figurePreviews(from: source)
@@ -512,7 +522,7 @@ struct CuratedSpecificationReader: View {
     private func readingColumn(_ reading: [String]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("PLAIN ENGLISH")
-                .font(.system(size: Lab.size(8.5), weight: .bold, design: .monospaced))
+                .font(.system(size: Lab.size(8.5), weight: .bold, design: .rounded))
                 .foregroundStyle(Lab.emerald)
             ForEach(Array(reading.enumerated()), id: \.offset) { _, paragraph in
                 Text(NativeMathFormatter.displayInlineMath(in: paragraph))
@@ -595,6 +605,135 @@ struct CuratedSpecificationReader: View {
     }
 }
 
+private struct BundledSourcePage: Identifiable, Sendable {
+    let number: Int
+    let title: String
+    let text: String
+
+    var id: Int { number }
+}
+
+/// Fail-soft native reader for the sole record whose curated editorial edition
+/// has not yet landed upstream. The complete source-PDF text layer is already
+/// bundled with the app; never replace those bytes with a placeholder or fetch
+/// them from the network.
+private struct BundledSourceTranscriptionReader: View {
+    let patent: PatentRecord
+    @State private var pages: [BundledSourcePage] = []
+    @State private var errorMessage: String?
+
+    private var bundlePath: String? {
+        guard let path = patent.originalTextAsset?.url, !path.isEmpty else { return nil }
+        return path.hasPrefix("/") ? String(path.dropFirst()) : path
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            MuseumPanel {
+                VStack(alignment: .leading, spacing: 7) {
+                    MuseumLabel(text: "Bundled source transcription")
+                    Text(sourceReaderDescription)
+                        .font(.system(size: Lab.size(12.5), design: .serif))
+                        .foregroundStyle(Lab.text)
+                    if let asset = patent.originalTextAsset {
+                        Text("\(asset.pageCount) source pages · \(asset.kind ?? "verified text layer")")
+                            .font(.system(size: Lab.size(10), weight: .semibold, design: .rounded))
+                            .foregroundStyle(Lab.secondary)
+                    }
+                }
+            }
+
+            if pages.isEmpty, errorMessage == nil {
+                ProgressView("Opening bundled transcription…")
+                    .tint(Lab.brass)
+                    .frame(maxWidth: .infinity)
+                    .padding(28)
+            } else if let errorMessage {
+                MuseumPanel {
+                    ContentUnavailableView(
+                        "Bundled transcription unavailable",
+                        systemImage: "doc.text.magnifyingglass",
+                        description: Text(errorMessage)
+                    )
+                }
+            } else {
+                LazyVStack(alignment: .leading, spacing: 14) {
+                    ForEach(pages) { page in
+                        MuseumPanel {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(page.title)
+                                    .font(.system(size: Lab.size(10), weight: .bold, design: .rounded))
+                                    .foregroundStyle(Lab.brass)
+                                Text(page.text)
+                                    .font(.system(size: Lab.size(13), design: .serif))
+                                    .foregroundStyle(Lab.parchment)
+                                    .textSelection(.enabled)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .task(id: bundlePath) {
+            pages = []
+            errorMessage = nil
+            guard let bundlePath,
+                  let url = PatentBundleResource.url(for: bundlePath) else {
+                errorMessage = "The verified local source-text asset is missing from this build."
+                return
+            }
+            do {
+                let source = try await Task.detached(priority: .utility) {
+                    try String(contentsOf: url, encoding: .utf8)
+                }.value
+                try Task.checkCancellation()
+                let parsed = Self.parsePages(source)
+                guard !parsed.isEmpty,
+                      parsed.count == patent.originalTextAsset?.pageCount else {
+                    throw CocoaError(.fileReadCorruptFile)
+                }
+                pages = parsed
+                errorMessage = nil
+            } catch is CancellationError {
+                return
+            } catch {
+                pages = []
+                errorMessage = "The bundled transcription failed its \(patent.originalTextAsset?.pageCount ?? 0)-page completeness check."
+            }
+        }
+    }
+
+    private var sourceReaderDescription: String {
+        let pageCount = patent.originalTextAsset?.pageCount ?? pages.count
+        let pageLabel = pageCount == 1 ? "page" : "pages"
+        return "The continuously edited archival edition is still in preparation. "
+            + "The complete local text layer from the \(pageCount) source \(pageLabel) is presented below instead; "
+            + "it never leaves this device."
+    }
+
+    nonisolated private static func parsePages(_ source: String) -> [BundledSourcePage] {
+        let marker = "--- SOURCE PDF PAGE "
+        let chunks = source.components(separatedBy: marker)
+        let parsed = chunks.dropFirst().enumerated().compactMap { index, chunk -> BundledSourcePage? in
+            guard let lineBreak = chunk.firstIndex(of: "\n") else { return nil }
+            let heading = chunk[..<lineBreak]
+                .trimmingCharacters(in: CharacterSet(charactersIn: "- \t\r\n"))
+            let body = chunk[chunk.index(after: lineBreak)...]
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !body.isEmpty else { return nil }
+            return BundledSourcePage(
+                number: index + 1,
+                title: "SOURCE PDF PAGE \(heading)",
+                text: body
+            )
+        }
+        if !parsed.isEmpty { return parsed }
+        let trimmed = source.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? [] : [BundledSourcePage(number: 1, title: "SOURCE TRANSCRIPTION", text: trimmed)]
+    }
+}
+
 private struct NativeFigurePreviewSheet: View {
     let preview: FigurePreview
     @Environment(\.dismiss) private var dismiss
@@ -641,21 +780,29 @@ private struct NativeFigurePreviewSheet: View {
 struct PatentAssetImage: View {
     let path: String
     let alt: String
+    @State private var resolvedImage: CachedPatentAsset?
+    @State private var isLoading = true
 
     static func intrinsicAspectRatio(for path: String) -> CGFloat? {
+        if let cached = PatentAssetImageCache.aspectRatio(for: path) {
+            return cached
+        }
         if let cached = PatentAssetImageCache.shared.object(forKey: path as NSString) {
             let size = cached.image.size
-            return size.height > 0 ? size.width / size.height : nil
+            guard size.height > 0 else { return nil }
+            let ratio = size.width / size.height
+            PatentAssetImageCache.setAspectRatio(ratio, for: path)
+            return ratio
         }
-        guard let resource = resourceURL(for: path),
-              let image = UIImage(contentsOfFile: resource.path),
-              image.size.height > 0 else { return nil }
-        PatentAssetImageCache.shared.setObject(
-            CachedPatentAsset(image: image, isSourceSheetFallback: false),
-            forKey: path as NSString,
-            cost: PatentAssetImageCache.cost(of: image)
-        )
-        return image.size.width / image.size.height
+        guard let resource = PatentBundleResource.url(for: path),
+              let source = CGImageSourceCreateWithURL(resource as CFURL, nil),
+              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+              let width = properties[kCGImagePropertyPixelWidth] as? NSNumber,
+              let height = properties[kCGImagePropertyPixelHeight] as? NSNumber,
+              height.doubleValue > 0 else { return nil }
+        let ratio = CGFloat(width.doubleValue / height.doubleValue)
+        PatentAssetImageCache.setAspectRatio(ratio, for: path)
+        return ratio
     }
 
     var body: some View {
@@ -677,6 +824,11 @@ struct PatentAssetImage: View {
                                 .padding(8)
                         }
                     }
+            } else if isLoading {
+                ProgressView("Opening figure…")
+                    .tint(Lab.brass)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Lab.panel)
             } else {
                 ContentUnavailableView("Figure unavailable", systemImage: "photo", description: Text(alt))
             }
@@ -684,43 +836,26 @@ struct PatentAssetImage: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Lab.brass.opacity(0.25)))
         .accessibilityLabel(alt)
-    }
-
-    private var resolvedImage: (image: UIImage, isSourceSheetFallback: Bool)? {
-        if let cached = PatentAssetImageCache.shared.object(forKey: path as NSString) {
-            return (cached.image, cached.isSourceSheetFallback)
-        }
-        if let resource = Self.resourceURL(for: path),
-           let image = UIImage(contentsOfFile: resource.path) {
-            PatentAssetImageCache.shared.setObject(
-                CachedPatentAsset(image: image, isSourceSheetFallback: false),
-                forKey: path as NSString,
-                cost: PatentAssetImageCache.cost(of: image)
-            )
-            return (image, false)
-        }
-        // Candidate archival editions deliberately name future accepted crops
-        // that do not yet exist. Never substitute a different crop: show the
-        // complete local source sheet, clearly labelled as a fallback.
-        let directory = URL(fileURLWithPath: path).deletingLastPathComponent().path
-        for candidate in ["page-01", "page-1"] {
-            if let resource = Bundle.main.url(
-                forResource: candidate,
-                withExtension: "png",
-                subdirectory: directory == "." ? nil : directory
-            ), let image = UIImage(contentsOfFile: resource.path) {
-                PatentAssetImageCache.shared.setObject(
-                    CachedPatentAsset(image: image, isSourceSheetFallback: true),
-                    forKey: path as NSString,
-                    cost: PatentAssetImageCache.cost(of: image)
-                )
-                return (image, true)
+        .task(id: path) {
+            isLoading = true
+            resolvedImage = nil
+            if let cached = PatentAssetImageCache.shared.object(forKey: path as NSString) {
+                resolvedImage = cached
+                isLoading = false
+                return
             }
+            let loaded = await Task.detached(priority: .utility) {
+                PatentAssetLoader.load(path: path)
+            }.value
+            guard !Task.isCancelled else { return }
+            resolvedImage = loaded
+            isLoading = false
         }
-        return nil
     }
+}
 
-    private static func resourceURL(for path: String) -> URL? {
+enum PatentBundleResource {
+    static func url(for path: String) -> URL? {
         let url = URL(fileURLWithPath: path)
         let ext = url.pathExtension
         let name = url.deletingPathExtension().lastPathComponent
@@ -733,7 +868,7 @@ struct PatentAssetImage: View {
     }
 }
 
-private final class CachedPatentAsset {
+private final class CachedPatentAsset: @unchecked Sendable {
     let image: UIImage
     let isSourceSheetFallback: Bool
 
@@ -743,7 +878,52 @@ private final class CachedPatentAsset {
     }
 }
 
+private enum PatentAssetLoader {
+    nonisolated static func load(path: String) -> CachedPatentAsset? {
+        if let cached = PatentAssetImageCache.shared.object(forKey: path as NSString) {
+            return cached
+        }
+        if let resource = PatentBundleResource.url(for: path),
+           let image = UIImage(contentsOfFile: resource.path) {
+            return cache(image: image, path: path, isSourceSheetFallback: false)
+        }
+        // Candidate archival editions deliberately name future accepted crops
+        // that do not yet exist. Never substitute a different crop: show the
+        // complete local source sheet, clearly labelled as a fallback.
+        let directory = URL(fileURLWithPath: path).deletingLastPathComponent().path
+        for candidate in ["page-01", "page-1"] {
+            if let resource = Bundle.main.url(
+                forResource: candidate,
+                withExtension: "png",
+                subdirectory: directory == "." ? nil : directory
+            ), let image = UIImage(contentsOfFile: resource.path) {
+                return cache(image: image, path: path, isSourceSheetFallback: true)
+            }
+        }
+        return nil
+    }
+
+    nonisolated private static func cache(
+        image: UIImage,
+        path: String,
+        isSourceSheetFallback: Bool
+    ) -> CachedPatentAsset {
+        let cached = CachedPatentAsset(image: image, isSourceSheetFallback: isSourceSheetFallback)
+        PatentAssetImageCache.shared.setObject(
+            cached,
+            forKey: path as NSString,
+            cost: PatentAssetImageCache.cost(of: image)
+        )
+        let size = image.size
+        if size.height > 0 {
+            PatentAssetImageCache.setAspectRatio(size.width / size.height, for: path)
+        }
+        return cached
+    }
+}
+
 private enum PatentAssetImageCache {
+    private static let aspectRatios = NSCache<NSString, NSNumber>()
     static let shared: NSCache<NSString, CachedPatentAsset> = {
         let cache = NSCache<NSString, CachedPatentAsset>()
         cache.countLimit = 32
@@ -754,5 +934,13 @@ private enum PatentAssetImageCache {
     static func cost(of image: UIImage) -> Int {
         guard let cgImage = image.cgImage else { return 1 }
         return cgImage.bytesPerRow * cgImage.height
+    }
+
+    static func aspectRatio(for path: String) -> CGFloat? {
+        aspectRatios.object(forKey: path as NSString).map { CGFloat(truncating: $0) }
+    }
+
+    static func setAspectRatio(_ ratio: CGFloat, for path: String) {
+        aspectRatios.setObject(NSNumber(value: Double(ratio)), forKey: path as NSString)
     }
 }

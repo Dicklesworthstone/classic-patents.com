@@ -191,7 +191,7 @@ struct PatentPDFReader: View {
                     VStack(spacing: 16) {
                         ProgressView().controlSize(.large).tint(Lab.brass)
                         Text("DOWNLOADING THE ORIGINAL FACSIMILE")
-                            .font(.system(size: Lab.size(10.5), weight: .bold, design: .monospaced))
+                            .font(.system(size: Lab.size(10.5), weight: .bold, design: .rounded))
                             .foregroundStyle(Lab.brass)
                         Text("This PDF is the only museum material fetched from classic-patents.com. The catalog, edition, equations, figures, and simulations are bundled in the app.")
                             .font(.system(size: Lab.size(12), design: .rounded))

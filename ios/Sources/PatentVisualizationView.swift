@@ -907,7 +907,7 @@ private struct PatentMechanismCanvas: View {
         )
         context.draw(
             Text("FIG. 9 · 2 CIRCUITS · \(Int(frequency.rounded())) Hz")
-                .font(.system(size: 9, weight: .bold, design: .monospaced))
+                .font(.system(size: 9, weight: .bold, design: .rounded))
                 .foregroundColor(Lab.secondary),
             at: CGPoint(x: center.x, y: size.height - 20),
             anchor: .bottom
@@ -994,7 +994,7 @@ private struct PatentMechanismCanvas: View {
 
         context.draw(
             Text(String(format: "MASTER %.3f MHz · NTSC %.3f MHz · WINDOW %.1f ns", crystal, crystal / 4, 500 / cpuMHz))
-                .font(.system(size: 8.5, weight: .bold, design: .monospaced))
+                .font(.system(size: 8.5, weight: .bold, design: .rounded))
                 .foregroundColor(Lab.secondary),
             at: CGPoint(x: size.width * 0.50, y: size.height - 16),
             anchor: .bottom
@@ -1012,17 +1012,17 @@ private struct PatentMechanismCanvas: View {
         context.fill(Path(roundedRect: rect, cornerRadius: 9), with: .color(color.opacity(0.13)))
         context.stroke(Path(roundedRect: rect, cornerRadius: 9), with: .color(color), lineWidth: 2)
         context.draw(
-            Text(title).font(.system(size: 10, weight: .black, design: .monospaced)).foregroundColor(Lab.parchment),
+            Text(title).font(.system(size: 10, weight: .black, design: .rounded)).foregroundColor(Lab.parchment),
             at: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.31),
             anchor: .center
         )
         context.draw(
-            Text(detail).font(.system(size: 9, weight: .bold, design: .monospaced)).foregroundColor(color),
+            Text(detail).font(.system(size: 9, weight: .bold, design: .rounded)).foregroundColor(color),
             at: CGPoint(x: rect.midX, y: rect.midY),
             anchor: .center
         )
         context.draw(
-            Text(state).font(.system(size: 7.5, weight: .bold, design: .monospaced)).foregroundColor(Lab.secondary),
+            Text(state).font(.system(size: 7.5, weight: .bold, design: .rounded)).foregroundColor(Lab.secondary),
             at: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.18),
             anchor: .center
         )
@@ -1064,7 +1064,7 @@ private struct PatentMechanismCanvas: View {
             .foregroundColor(Lab.parchment.opacity(0.80))
         context.draw(label, at: CGPoint(x: 16, y: 16), anchor: .topLeading)
         let phaseLabel = Text(String(format: "STATE %.3f  ·  DRIVE %.0f%%", phase.truncatingRemainder(dividingBy: 1), normalizedControl * 100))
-            .font(.system(size: 9, weight: .semibold, design: .monospaced))
+            .font(.system(size: 9, weight: .semibold, design: .rounded))
             .foregroundColor(Lab.secondary)
         context.draw(phaseLabel, at: CGPoint(x: size.width - 16, y: size.height - 14), anchor: .bottomTrailing)
     }

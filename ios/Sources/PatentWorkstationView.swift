@@ -118,11 +118,11 @@ struct PatentWorkstationView: View {
         VStack(alignment: .leading, spacing: 9) {
             HStack {
                 Text(patent.patentNumber)
-                    .font(.system(size: Lab.size(10), weight: .black, design: .monospaced))
+                    .font(.system(size: Lab.size(10), weight: .black, design: .rounded))
                     .foregroundStyle(Lab.brass)
                 Spacer()
                 Text(String(patent.grantDate.prefix(4)))
-                    .font(.system(size: Lab.size(10), weight: .bold, design: .monospaced))
+                    .font(.system(size: Lab.size(10), weight: .bold, design: .rounded))
                     .foregroundStyle(Lab.secondary)
             }
             Text(patent.title)
@@ -383,7 +383,7 @@ struct PatentWorkstationView: View {
                                     Text(PatentFigureAssetResolver.displayTitle(for: callout)).fontWeight(.semibold).foregroundStyle(Lab.parchment)
                                     Text(NativeMathFormatter.displayInlineMath(in: callout.description)).font(.caption).foregroundStyle(Lab.secondary)
                                     Text(callout.figureRef)
-                                        .font(.system(size: Lab.size(8), weight: .bold, design: .monospaced))
+                                        .font(.system(size: Lab.size(8), weight: .bold, design: .rounded))
                                         .foregroundStyle(Lab.blueprint)
                                 }
                             }

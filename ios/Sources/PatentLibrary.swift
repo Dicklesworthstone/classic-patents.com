@@ -166,6 +166,13 @@ private enum PatentCatalogValidator {
                         "\(patent.id) has a non-canonical source digest"
                     )
                 }
+                let textPath = asset.url.hasPrefix("/") ? String(asset.url.dropFirst()) : asset.url
+                try validateAssetPaths([textPath], context: "\(patent.id) source transcription")
+                try require(
+                    URL(fileURLWithPath: textPath).pathExtension.lowercased() == "txt"
+                        && patent.bundledAssets.contains(textPath),
+                    "\(patent.id) source transcription is not in the bundled asset ledger"
+                )
             }
 
             try validateAssetPaths(patent.bundledAssets, context: "\(patent.id) bundled assets")

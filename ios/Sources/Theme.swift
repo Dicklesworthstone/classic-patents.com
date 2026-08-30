@@ -45,16 +45,16 @@ struct FrankenWordmark: View {
     var body: some View {
         (
             Text("F")
-                .font(.system(size: Lab.size(22), weight: .black, design: .monospaced))
+                .font(.system(size: Lab.size(22), weight: .black, design: .rounded))
                 .foregroundColor(Lab.text.opacity(0.88))
             + Text("RANKEN")
-                .font(.system(size: Lab.size(14.5), weight: .black, design: .monospaced))
+                .font(.system(size: Lab.size(14.5), weight: .black, design: .rounded))
                 .foregroundColor(Lab.text.opacity(0.88))
             + Text("P")
-                .font(.system(size: Lab.size(22), weight: .black, design: .monospaced))
+                .font(.system(size: Lab.size(22), weight: .black, design: .rounded))
                 .foregroundColor(Lab.brass)
             + Text("ATENTS")
-                .font(.system(size: Lab.size(14.5), weight: .black, design: .monospaced))
+                .font(.system(size: Lab.size(14.5), weight: .black, design: .rounded))
                 .foregroundColor(Lab.brass)
         )
         .kerning(0.75)
@@ -120,7 +120,7 @@ struct MuseumLabel: View {
 
     var body: some View {
         Text(text.uppercased())
-            .font(.system(size: Lab.size(10.5), weight: .bold, design: .monospaced))
+            .font(.system(size: Lab.size(10.5), weight: .bold, design: .rounded))
             .kerning(1.5)
             .foregroundStyle(Lab.brass)
     }

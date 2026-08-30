@@ -42,8 +42,48 @@ const collectTeXCommands = (value: unknown, commands = new Set<string>()): Set<s
 
 const resourceURL = new URL("./Resources/patents.json", import.meta.url);
 const records = (await Bun.file(resourceURL).json()) as ExportedPatent[];
-for (const command of collectTeXCommands(records)) {
+const corpusTeXCommands = collectTeXCommands(records);
+for (const command of corpusTeXCommands) {
   assert(supportedTeXCommands.has(command), `native equation renderer does not support \\${command}`);
+}
+const nativeMathSource = await Bun.file(new URL("./Sources/NativeMathView.swift", import.meta.url)).text();
+const nativeFormatterSource = await Bun.file(new URL("./Sources/NativeDocumentKit.swift", import.meta.url)).text();
+for (const command of corpusTeXCommands) {
+  if (["begin", "end"].includes(command)) continue;
+  assert(
+    nativeMathSource.includes(`"${command}"`),
+    `native equation layout has no explicit implementation for \\${command}`,
+  );
+  assert(
+    nativeFormatterSource.includes(`\\\\${command}`),
+    `native equation accessibility formatter has no explicit implementation for \\${command}`,
+  );
+}
+const supportedEditionBlocks = new Set([
+  "masthead", "heading", "paragraph", "claim", "figure-sheet", "table", "equation",
+]);
+const supportedEditionInlines = new Set(["text", "emphasis", "small-caps", "term", "reference"]);
+for (const record of records) {
+  for (const block of record.archivalEdition?.blocks ?? []) {
+    assert(supportedEditionBlocks.has(block.kind), `${record.id}: native edition reader does not render ${block.kind}`);
+    const visitInlines = (value: unknown) => {
+      if (Array.isArray(value)) {
+        for (const child of value) visitInlines(child);
+      } else if (value && typeof value === "object") {
+        const object = value as Record<string, unknown>;
+        if (typeof object.kind === "string" && typeof object.text === "string") {
+          assert(
+            supportedEditionInlines.has(object.kind),
+            `${record.id}: native edition reader does not render inline ${object.kind}`,
+          );
+        }
+        for (const child of Object.values(object)) visitInlines(child);
+      }
+    };
+    for (const value of [block.inlines, block.description, block.headers, block.rows]) {
+      visitInlines(value);
+    }
+  }
 }
 const byId = new Map(records.map((record) => [record.id, record]));
 assert(records.length === allPatents.length, `record count ${records.length} != ${allPatents.length}`);
@@ -227,6 +267,23 @@ for (const record of records) {
       `${record.id}: an approved edition references a missing source asset: ${path}`,
     );
   }
+  if (!record.archivalEdition) {
+    const sourceTextPath = record.originalTextAsset?.url?.replace(/^\//, "");
+    assert(
+      typeof sourceTextPath === "string"
+        && sourceTextPath.endsWith(".txt")
+        && record.bundledAssets.includes(sourceTextPath),
+      `${record.id}: record without an archival edition has no complete bundled source reader`,
+    );
+    if (typeof sourceTextPath === "string" && manifestSet.has(sourceTextPath)) {
+      const transcription = await Bun.file(new URL(`../public/${sourceTextPath}`, import.meta.url)).text();
+      const pageMarkers = transcription.match(/--- SOURCE PDF PAGE /g)?.length ?? 0;
+      assert(
+        pageMarkers === record.originalTextAsset?.pageCount,
+        `${record.id}: bundled source reader exposes ${pageMarkers} pages, expected ${record.originalTextAsset?.pageCount}`,
+      );
+    }
+  }
 }
 
 const visualDispatcher = await Bun.file(
@@ -255,6 +312,9 @@ for (const path of swiftSources) {
   if (source.includes("URLSession")) {
     urlSessionFiles += 1;
     assert(path === "Sources/PatentPDFReader.swift", `${path}: unexpected network access`);
+  }
+  if (path !== "Sources/PatentDetailView.swift") {
+    assert(!source.includes(".monospaced"), `${path}: compiled Patent UI reintroduced monospaced typography`);
   }
 }
 assert(urlSessionFiles === 1, `expected one native network boundary, found ${urlSessionFiles}`);

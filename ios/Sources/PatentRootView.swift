@@ -105,12 +105,12 @@ struct NativePatentTimelineView: View {
                                     Button { selectedID = patent.id } label: {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(String(patent.grantDate.prefix(4)))
-                                                .font(.system(size: Lab.size(9), weight: .black, design: .monospaced))
+                                                .font(.system(size: Lab.size(9), weight: .black, design: .rounded))
                                             Text(patent.shortTitle)
                                                 .font(.system(size: Lab.size(11), weight: .bold, design: .serif))
                                                 .lineLimit(2)
                                             Text(patent.patentNumber)
-                                                .font(.system(size: Lab.size(8.5), design: .monospaced))
+                                                .font(.system(size: Lab.size(8.5), design: .rounded))
                                         }
                                         .foregroundStyle(selected?.id == patent.id ? Lab.background : Lab.parchment)
                                         .frame(width: 150, alignment: .leading)

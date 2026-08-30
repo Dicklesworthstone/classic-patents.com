@@ -152,7 +152,7 @@ struct PatentMuseumView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     FrankenWordmark()
                     Text("INVENTION_ARCHIVE // verified sources")
-                        .font(.system(size: Lab.size(9.5), weight: .semibold, design: .monospaced))
+                        .font(.system(size: Lab.size(9.5), weight: .semibold, design: .rounded))
                         .foregroundStyle(Lab.secondary)
                 }
             }
@@ -172,7 +172,7 @@ struct PatentMuseumView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 Text("\(library.records.count) CURATED RECORDS")
-                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .monospaced))
+                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .rounded))
                     .foregroundStyle(Lab.brass)
                 Text("The complete catalog, figures, equations, history, claims, and native interactive studies are bundled for private offline use. Only an original patent PDF is downloaded when you explicitly request it.")
                     .font(.system(size: Lab.size(11), design: .rounded))
@@ -231,7 +231,7 @@ private struct PatentRow: View {
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(patent.patentNumber)
-                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .monospaced))
+                    .font(.system(size: Lab.size(9.5), weight: .bold, design: .rounded))
                     .foregroundStyle(Lab.brass)
                 Text(patent.shortTitle)
                     .font(.system(size: Lab.size(compact ? 15 : 16), weight: .bold, design: .rounded))
