@@ -5,7 +5,7 @@ import UIKit
 struct FrankenPatentsApp: App {
     var body: some Scene {
         WindowGroup {
-            PatentMuseumView()
+            PatentRootView()
                 .preferredColorScheme(.dark)
                 .background(CatalystWindowFreedom())
 #if targetEnvironment(macCatalyst)
@@ -46,4 +46,3 @@ private struct CatalystWindowFreedom: UIViewControllerRepresentable {
         }
     }
 }
-

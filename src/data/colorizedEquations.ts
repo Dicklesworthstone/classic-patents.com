@@ -9531,7 +9531,6 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       ],
       pedagogicalNote:
         "Whitney's essential breakthrough was the four-to-one counter-rotating clearer cylinder: rotating four times faster in the reverse direction, the stiff hog bristles create an induced fan vortex that sweeps ginned lint free, preventing the teeth from clogging.",
-      claimRef: 1,
       historicalSignificance:
         "US X72 multiplied agricultural cotton cleaning productivity 50-fold, transforming global textile manufacturing.",
     },
@@ -9658,7 +9657,6 @@ export const ALL_COLORIZED_EQUATIONS: Record<string, ColorizedEquation[]> = {
       ],
       pedagogicalNote:
         "Before Eli Whitney's 1794 patent, separating short-staple green-seed cotton from its sticky seeds required a full day of arduous manual labor to produce a single pound of clean lint. Whitney combined a toothed cylinder, narrow slotted breastwork ribs that blocked seeds, and a 4x-faster clearer brush—allowing one worker to clean 50 pounds of cotton per day.",
-      claimRef: 1,
       historicalSignificance:
         "US X72 mechanized cotton processing, caused a 50-fold surge in American agricultural exports, and fundamentally transformed the economic history of the United States.",
     },
@@ -18917,7 +18915,6 @@ ALL_COLORIZED_EQUATIONS["gb-931-arkwright-water-frame"] = [
     ],
     pedagogicalNote:
       "By combining differential roller drafting with high-velocity flyer twisting and dead-spindle bobbin winding, Arkwright created the first fully automatic spinning machine, launching the modern factory system at Cromford Mill in 1771.",
-    claimRef: 1,
     historicalSignificance:
       "Eliminated the centuries-old textile bottleneck by producing strong, inexpensive all-cotton warp yarn at industrial scale.",
   },
@@ -18981,7 +18978,6 @@ ALL_COLORIZED_EQUATIONS["us-x1-hopkins-potash"] = [
     ],
     pedagogicalNote:
       "US Patent No. 1 granted to Samuel Hopkins in 1790 improved potash making by burning raw ashes a second time before leaching, converting black salts into white pearl ash.",
-    claimRef: 1,
     historicalSignificance:
       "First United States patent, signed by President George Washington, Secretary of State Thomas Jefferson, and Attorney General Edmund Randolph.",
   },
@@ -19250,7 +19246,6 @@ ALL_COLORIZED_EQUATIONS["gb-1420-cort-puddling-rolling"] = [
     ],
     pedagogicalNote:
       "Cort's reverberatory furnace oxidized pig iron without charcoal fuel contact, while the puddler's rabble ensured complete decarburization.",
-    claimRef: 1,
     historicalSignificance:
       "Eliminated Britain's dependence on expensive Swedish and Russian bar iron, fueling the Industrial Revolution.",
   },
@@ -19334,7 +19329,6 @@ ALL_COLORIZED_EQUATIONS["gb-1420-cort-puddling-rolling"] = [
     ],
     pedagogicalNote:
       "Grooved rollers applied continuous 3D compressive force, eliminating forge-hammer cracks and expelling liquid slag in one heat.",
-    claimRef: 3,
     historicalSignificance:
       "Increased iron rolling speed fifteenfold over tilt hammers, establishing the modern continuous rolling mill.",
   },
@@ -19839,7 +19833,6 @@ ALL_COLORIZED_EQUATIONS["us-2929922-townes-laser"] = [
     ],
     pedagogicalNote:
       "Because the open Fabry-Pérot cavity forces all oscillating light into a single spatial phase, laser beams achieve the fundamental physical limit of directional propagation set by wave mechanics.",
-    claimRef: 13,
     historicalSignificance:
       "Proved that optical masers could transmit information and power with unprecedented collimation across planetary distances.",
   },

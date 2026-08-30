@@ -31,9 +31,25 @@ targets:
         MACCATALYST_USE_NATIVE_DESIGN: true
     sources:
       - path: Sources
+        excludes:
+          # Superseded by PatentRootView + PatentWorkstationView. Preserve the
+          # historical source file, but keep its direct third-party Link surface
+          # out of the offline-first native product.
+          - PatentDetailView.swift
       - path: Assets.xcassets
       - path: Resources
         buildPhase: resources
+    postBuildScripts:
+      - name: Bundle native patent archive assets
+        script: |
+          set -euo pipefail
+          SOURCE_ARCHIVE="${SRCROOT}/../public/patents/"
+          BUNDLE_ARCHIVE="${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/"
+          mkdir -p "${BUNDLE_ARCHIVE}"
+          rsync -a --exclude='*.pdf' "${SOURCE_ARCHIVE}" "${BUNDLE_ARCHIVE}"
+        inputFiles:
+          - $(SRCROOT)/../public/patents
+        basedOnDependencyAnalysis: false
     info:
       path: Sources/Info.plist
       properties:

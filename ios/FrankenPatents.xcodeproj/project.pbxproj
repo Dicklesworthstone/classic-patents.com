@@ -7,31 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		029D1AEEA8E17FD4674F32DE /* PatentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB0C97F3855AACCC31D7BAF /* PatentDetailView.swift */; };
 		2B07D0F41C8210664DE170CD /* PatentMuseumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */; };
+		2F5D52B312C7D98639C45424 /* PatentRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6205E15F45075AFE8EDAA1CA /* PatentRootView.swift */; };
+		446A4955BE520AC068B4DFE5 /* PatentPDFReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E3789492674087EEAAE801 /* PatentPDFReader.swift */; };
+		515172E318CD8B31F98EBDD7 /* PatentFigureAtlasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */; };
+		521EC702AC351CFD30117147 /* patent-assets.json in Resources */ = {isa = PBXBuildFile; fileRef = ACD672FA52AE0B0AA6B685CC /* patent-assets.json */; };
 		62CAF0BCF05D1C50D77EFCC9 /* patents.json in Resources */ = {isa = PBXBuildFile; fileRef = F5483F5E9EA79B64FDBB110F /* patents.json */; };
 		8117AB03CF8835A20E831DF0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 652BFF6DEAD8C5CD76D13B0B /* PrivacyInfo.xcprivacy */; };
 		A140C51F8E282581F3C45D47 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 470E78F059E8FF16D5AF3206 /* Assets.xcassets */; };
 		A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C561AFAB0032EB2B23CEA356 /* PatentModels.swift */; };
+		ABF5A49283B377976C6EE06D /* NativeDocumentKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */; };
 		BD5A2AC8E0066130A7CE5910 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE462E30D6932C7473CC5257 /* Theme.swift */; };
 		C9545B36E727A209F45AB2A4 /* FrankenPatentsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */; };
 		DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */; };
+		E4C4C51D5BBB9248EB039283 /* NativeMathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208821AD1F723D6B2BA123DC /* NativeMathView.swift */; };
+		F568D981D52B76AB39BBEB8D /* PatentVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */; };
 		F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */; };
+		FF3DE302FFF1BF4879571A25 /* PatentWorkstationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DD8F5C45785092239E500FA /* PatentWorkstationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0834EF9153F4B30E02704C55 /* FrankenPatents.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FrankenPatents.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentLibrary.swift; sourceTree = "<group>"; };
+		208821AD1F723D6B2BA123DC /* NativeMathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeMathView.swift; sourceTree = "<group>"; };
+		31E3789492674087EEAAE801 /* PatentPDFReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentPDFReader.swift; sourceTree = "<group>"; };
 		36BF4079470701C6D357CC80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrankenPatentsApp.swift; sourceTree = "<group>"; };
 		470E78F059E8FF16D5AF3206 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6205E15F45075AFE8EDAA1CA /* PatentRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentRootView.swift; sourceTree = "<group>"; };
 		652BFF6DEAD8C5CD76D13B0B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8CB0C97F3855AACCC31D7BAF /* PatentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentDetailView.swift; sourceTree = "<group>"; };
+		6DD8F5C45785092239E500FA /* PatentWorkstationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentWorkstationView.swift; sourceTree = "<group>"; };
+		ACD672FA52AE0B0AA6B685CC /* patent-assets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "patent-assets.json"; sourceTree = "<group>"; };
+		BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeDocumentKit.swift; sourceTree = "<group>"; };
 		BE462E30D6932C7473CC5257 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		C561AFAB0032EB2B23CEA356 /* PatentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentModels.swift; sourceTree = "<group>"; };
 		F5483F5E9EA79B64FDBB110F /* patents.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = patents.json; sourceTree = "<group>"; };
+		F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentVisualizationView.swift; sourceTree = "<group>"; };
 		F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentMuseumView.swift; sourceTree = "<group>"; };
 		F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSProfileRunner.swift; sourceTree = "<group>"; };
+		FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatentFigureAtlasView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -59,10 +73,16 @@
 				42E807B5470E4F6879C9BCAE /* FrankenPatentsApp.swift */,
 				36BF4079470701C6D357CC80 /* Info.plist */,
 				F9EBC608751CC3AA65E9EB69 /* IOSProfileRunner.swift */,
-				8CB0C97F3855AACCC31D7BAF /* PatentDetailView.swift */,
+				BCCE257DEE2FB77FA5A7566B /* NativeDocumentKit.swift */,
+				208821AD1F723D6B2BA123DC /* NativeMathView.swift */,
+				FA5DAC0D39800C8FB4C68C91 /* PatentFigureAtlasView.swift */,
 				0A6B4C11EF40A0363E909EE9 /* PatentLibrary.swift */,
 				C561AFAB0032EB2B23CEA356 /* PatentModels.swift */,
 				F8D62ECED5F2FD890A1EE260 /* PatentMuseumView.swift */,
+				31E3789492674087EEAAE801 /* PatentPDFReader.swift */,
+				6205E15F45075AFE8EDAA1CA /* PatentRootView.swift */,
+				F8B4A0EFE3EBA3FB0122D944 /* PatentVisualizationView.swift */,
+				6DD8F5C45785092239E500FA /* PatentWorkstationView.swift */,
 				652BFF6DEAD8C5CD76D13B0B /* PrivacyInfo.xcprivacy */,
 				BE462E30D6932C7473CC5257 /* Theme.swift */,
 			);
@@ -72,6 +92,7 @@
 		BCDBD3BB94994C64221457A3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				ACD672FA52AE0B0AA6B685CC /* patent-assets.json */,
 				F5483F5E9EA79B64FDBB110F /* patents.json */,
 			);
 			path = Resources;
@@ -86,6 +107,7 @@
 			buildPhases = (
 				BD7DF1C78121471770310766 /* Sources */,
 				EA26C413ADF2F6100330D239 /* Resources */,
+				2EB8A28047DCB41A74866050 /* Bundle native patent archive assets */,
 			);
 			buildRules = (
 			);
@@ -139,11 +161,35 @@
 			files = (
 				A140C51F8E282581F3C45D47 /* Assets.xcassets in Resources */,
 				8117AB03CF8835A20E831DF0 /* PrivacyInfo.xcprivacy in Resources */,
+				521EC702AC351CFD30117147 /* patent-assets.json in Resources */,
 				62CAF0BCF05D1C50D77EFCC9 /* patents.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2EB8A28047DCB41A74866050 /* Bundle native patent archive assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../public/patents",
+			);
+			name = "Bundle native patent archive assets";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -euo pipefail\nSOURCE_ARCHIVE=\"${SRCROOT}/../public/patents/\"\nBUNDLE_ARCHIVE=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/patents/\"\nmkdir -p \"${BUNDLE_ARCHIVE}\"\nrsync -a --exclude='*.pdf' \"${SOURCE_ARCHIVE}\" \"${BUNDLE_ARCHIVE}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BD7DF1C78121471770310766 /* Sources */ = {
@@ -152,10 +198,16 @@
 			files = (
 				C9545B36E727A209F45AB2A4 /* FrankenPatentsApp.swift in Sources */,
 				F9F281DD5160D664359F4182 /* IOSProfileRunner.swift in Sources */,
-				029D1AEEA8E17FD4674F32DE /* PatentDetailView.swift in Sources */,
+				ABF5A49283B377976C6EE06D /* NativeDocumentKit.swift in Sources */,
+				E4C4C51D5BBB9248EB039283 /* NativeMathView.swift in Sources */,
+				515172E318CD8B31F98EBDD7 /* PatentFigureAtlasView.swift in Sources */,
 				DA901178A31C549D4B3A052C /* PatentLibrary.swift in Sources */,
 				A89EDBDCAFD41CFAE21F1997 /* PatentModels.swift in Sources */,
 				2B07D0F41C8210664DE170CD /* PatentMuseumView.swift in Sources */,
+				446A4955BE520AC068B4DFE5 /* PatentPDFReader.swift in Sources */,
+				2F5D52B312C7D98639C45424 /* PatentRootView.swift in Sources */,
+				F568D981D52B76AB39BBEB8D /* PatentVisualizationView.swift in Sources */,
+				FF3DE302FFF1BF4879571A25 /* PatentWorkstationView.swift in Sources */,
 				BD5A2AC8E0066130A7CE5910 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

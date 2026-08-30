@@ -126,6 +126,61 @@ struct MuseumLabel: View {
     }
 }
 
+/// Shared native exhibit glyph. This belongs to the live museum design system,
+/// not the superseded legacy detail screen that originally defined it.
+struct BlueprintGlyph: View {
+    let category: String
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: reduceMotion ? 1 : 1 / 30)) { timeline in
+            Canvas { context, size in
+                let color = Lab.categoryColor(category)
+                let center = CGPoint(x: size.width / 2, y: size.height / 2)
+                let time = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate
+                for index in 0..<5 {
+                    let radius = CGFloat(18 + index * 12)
+                    context.stroke(
+                        Path(ellipseIn: CGRect(
+                            x: center.x - radius,
+                            y: center.y - radius,
+                            width: radius * 2,
+                            height: radius * 2
+                        )),
+                        with: .color(color.opacity(0.12 + Double(index) * 0.05)),
+                        lineWidth: 1
+                    )
+                }
+                for index in 0..<7 {
+                    let angle = time * 0.28 + Double(index) * (.pi * 2 / 7)
+                    let radius = CGFloat(22 + index * 5)
+                    let point = CGPoint(
+                        x: center.x + CGFloat(cos(angle)) * radius,
+                        y: center.y + CGFloat(sin(angle)) * radius
+                    )
+                    context.fill(
+                        Path(ellipseIn: CGRect(x: point.x - 3, y: point.y - 3, width: 6, height: 6)),
+                        with: .color(index.isMultiple(of: 2) ? Lab.brass : color)
+                    )
+                    var spoke = Path()
+                    spoke.move(to: center)
+                    spoke.addLine(to: point)
+                    context.stroke(spoke, with: .color(color.opacity(0.34)), lineWidth: 0.8)
+                }
+                context.draw(
+                    Text(Image(systemName: Lab.categorySymbol(category)))
+                        .font(.system(size: 34, weight: .semibold))
+                        .foregroundColor(color),
+                    at: center
+                )
+            }
+        }
+        .background(Lab.blueprint.opacity(0.05), in: RoundedRectangle(cornerRadius: 22))
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(Lab.blueprint.opacity(0.18)))
+        .accessibilityHidden(true)
+    }
+}
+
 struct MuseumCapsuleButtonStyle: ButtonStyle {
     var tint: Color = Lab.brass
     var filled = false

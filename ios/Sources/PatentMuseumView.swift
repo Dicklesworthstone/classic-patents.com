@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct PatentMuseumView: View {
-    @StateObject private var library = PatentLibrary()
+    @ObservedObject var library: PatentLibrary
     @State private var selectedID: String?
 
     var body: some View {
@@ -38,7 +38,7 @@ struct PatentMuseumView: View {
                     ToolbarItem(placement: .topBarTrailing) { categoryMenu }
                 }
                 .navigationDestination(for: PatentRecord.self) { patent in
-                    PatentDetailView(patent: patent)
+                    PatentWorkstationView(patent: patent)
                 }
         }
         .tint(Lab.brass)
@@ -51,7 +51,7 @@ struct PatentMuseumView: View {
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { categoryMenu } }
         } detail: {
             if let selected = selectedPatent {
-                PatentDetailView(patent: selected)
+                PatentWorkstationView(patent: selected)
             } else {
                 ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
                     .foregroundStyle(Lab.secondary)
@@ -71,7 +71,7 @@ struct PatentMuseumView: View {
                 .navigationSplitViewColumnWidth(min: 320, ideal: 390, max: 480)
         } detail: {
             if let selected = selectedPatent {
-                PatentDetailView(patent: selected)
+                PatentWorkstationView(patent: selected)
             } else {
                 ContentUnavailableView("Choose a patent", systemImage: "doc.text.magnifyingglass")
                     .foregroundStyle(Lab.secondary)
@@ -174,7 +174,7 @@ struct PatentMuseumView: View {
                 Text("\(library.records.count) CURATED RECORDS")
                     .font(.system(size: Lab.size(9.5), weight: .bold, design: .monospaced))
                     .foregroundStyle(Lab.brass)
-                Text("Catalog content is bundled for private offline reading. Full interactive exhibits open only when you ask.")
+                Text("The complete catalog, figures, equations, history, claims, and native interactive studies are bundled for private offline use. Only an original patent PDF is downloaded when you explicitly request it.")
                     .font(.system(size: Lab.size(11), design: .rounded))
                     .foregroundStyle(Lab.secondary)
             }
@@ -242,7 +242,7 @@ private struct PatentRow: View {
                     .foregroundStyle(Lab.secondary)
                     .lineLimit(1)
                 if !compact {
-                    Text(patent.summary)
+                    Text(NativeMathFormatter.displayInlineMath(in: patent.summary))
                         .font(.system(size: Lab.size(11.5), design: .rounded))
                         .foregroundStyle(Lab.secondary.opacity(0.88))
                         .lineLimit(2)

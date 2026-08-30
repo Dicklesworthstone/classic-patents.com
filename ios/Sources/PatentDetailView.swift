@@ -94,20 +94,14 @@ struct PatentDetailView: View {
     }
 
     @ViewBuilder private var actionButtons: some View {
-        if let url = URL(string: patent.exhibitURL) {
-            Link(destination: url) { Label("Interactive exhibit", systemImage: "cube.transparent") }
-                .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.brass, filled: true))
-        }
         if let url = URL(string: patent.originalPdfURL) {
             Link(destination: url) { Label("Facsimile", systemImage: "doc.richtext") }
                 .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.blueprint))
         }
-        if let url = URL(string: patent.exhibitURL) {
-            ShareLink(item: url, subject: Text(patent.shortTitle)) {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
-            .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
+        ShareLink(item: "\(patent.title)\n\n\(patent.summary)", subject: Text(patent.shortTitle)) {
+            Label("Share", systemImage: "square.and.arrow.up")
         }
+        .buttonStyle(MuseumCapsuleButtonStyle(tint: Lab.emerald))
     }
 
     private var mechanism: some View {
@@ -316,7 +310,7 @@ struct PatentDetailView: View {
                                     .foregroundStyle(Lab.blueprint)
                                 Text(drawing.title).fontWeight(.semibold).foregroundStyle(Lab.text)
                                 Text(drawing.caption).font(.caption).foregroundStyle(Lab.secondary)
-                                Text("\(drawing.calloutCount) annotated callouts")
+                                Text("\(drawing.callouts.count) annotated callouts")
                                     .font(.system(size: Lab.size(8), weight: .black, design: .monospaced))
                                     .foregroundStyle(Lab.brass)
                             }
@@ -340,7 +334,7 @@ struct PatentDetailView: View {
     }
 }
 
-private struct BlueprintGlyph: View {
+struct BlueprintGlyph: View {
     let category: String
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
