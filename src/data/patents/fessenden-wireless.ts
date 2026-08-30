@@ -1,10 +1,7 @@
 import { manualFessendenClaimText } from "@/data/editions/fessendenWirelessEdition";
 import type { Patent } from "@/types/patent";
 
-import {
-  fessendenWirelessArchivalEdition,
-  fessendenWirelessParallelReadings,
-} from "../editions/fessendenWirelessEdition";
+import { fessendenWirelessArchivalEdition } from "../editions/fessendenWirelessEdition";
 
 const fessendenClaimDecoders: Record<
   number,

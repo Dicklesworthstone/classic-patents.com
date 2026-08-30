@@ -42,7 +42,7 @@ describe("validateCuratedSpecificationEdition", () => {
   test("rejects missing provenance and a missing full-facsimile attestation", () => {
     const edition = validEdition();
     edition.sourcePdfSha256 = "not-a-digest";
-    edition.completeFacsimileReviewed = false as true;
+    edition.completeFacsimileReviewed = undefined as unknown as boolean;
 
     const result = validateCuratedSpecificationEdition(edition);
     expect(result.valid).toBe(false);

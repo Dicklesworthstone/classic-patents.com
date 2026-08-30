@@ -306,7 +306,7 @@ export const EdisonBulb3D = memo(() => {
         {/* Top Right Tool Bar */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           <ClaimConstraintToggle
-            patentId="us-223898-edison-lamp"
+            patentId="us-223898-edison-lightbulb"
             claimStates={claimStates}
             onToggleClaim={(c, active) => setClaimStates((prev) => ({ ...prev, [c]: active }))}
           />
@@ -421,7 +421,7 @@ export const EdisonBulb3D = memo(() => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
           <SensitivitySlider
             id="voltage"
-            patentId="us-223898-edison-lamp"
+            patentId="us-223898-edison-lightbulb"
             paramKey="mainsVoltageV"
             label="Applied Terminal Voltage"
             value={appliedVoltage}
@@ -455,7 +455,7 @@ export const EdisonBulb3D = memo(() => {
         </div>
 
         <PortHamiltonianEnergyStrip
-          patentId="us-223898-edison-lamp"
+          patentId="us-223898-edison-lightbulb"
           params={params}
           className="mt-3"
         />

@@ -46,10 +46,24 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Tesla contrasts the arrangement with mechanically commutated direct-current systems: the motor needs no commutator, while Fig. 9 uses the alternating-current generator's insulated contact or collector rings and brushes to form the corresponding circuits.",
     },
   ],
+  "us-223898-edison-lightbulb": [
+    {
+      claimNumber: 1,
+      patentId: "us-223898-edison-lightbulb",
+      claimTitle: "High-Vacuum Enclosure (10⁻⁴ Torr)",
+      activeDescription:
+        "Claim 1 encloses the high-resistance carbon filament in an all-glass hermetic vacuum.",
+      invertedDescription:
+        "Atmospheric air intrusion: oxygen causes instantaneous carbon filament oxidation and burnout.",
+      failureModeName: "Filament Thermal Oxidation Burnout",
+      historicalPriorArt:
+        "Previous low-vacuum lamps burned out within minutes due to gas convection and oxidation.",
+    },
+  ],
   "us-223898-edison-lamp": [
     {
       claimNumber: 1,
-      patentId: "us-223898-edison-lamp",
+      patentId: "us-223898-edison-lightbulb",
       claimTitle: "High-Vacuum Enclosure (10⁻⁴ Torr)",
       activeDescription:
         "Claim 1 encloses the high-resistance carbon filament in an all-glass hermetic vacuum.",
@@ -823,6 +837,7 @@ export function applyClaimConstraintModifications(
       break;
     }
 
+    case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
       const claim1Active = claimStates[1] ?? true;
       if (!claim1Active) {

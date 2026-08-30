@@ -80,6 +80,7 @@ export function computeParameterSensitivity(
       break;
     }
 
+    case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
       if (controlKey === "mainsVoltageV" || controlKey === "voltage") {
         const v = params.mainsVoltageV ?? params.voltage ?? 110.0;

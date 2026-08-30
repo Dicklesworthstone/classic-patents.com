@@ -70,6 +70,7 @@ export function computePortHamiltonianEnergy(
       break;
     }
 
+    case "us-223898-edison-lightbulb":
     case "us-223898-edison-lamp": {
       const v = params.mainsVoltageV ?? 110.0;
       const r = 100.0;

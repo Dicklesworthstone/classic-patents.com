@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { allPatents } from "@/data/patents";
 import { carlsonElectrophotographyPatent } from "@/data/patents/carlson-electrophotography";
-import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 import {
   archivalEditionForPublication,
   ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
