@@ -355,7 +355,20 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
         "Deville's chemical sodium reduction of aluminum chloride cost $12/pound before Hall's electrolytic bath.",
     },
   ],
-  "us-542846-diesel-engine": [],
+  "us-542846-diesel-engine": [
+    {
+      claimNumber: 1,
+      patentId: "us-542846-diesel-engine",
+      claimTitle: "Extreme Air Compression Ignition (P > 30 atm) & Timed Fuel Injection",
+      activeDescription:
+        "Claim 1 compresses atmospheric air to extreme pressure (>30 atm) heating it above fuel auto-ignition temperature (>550°C), injecting fuel without spark plugs.",
+      invertedDescription:
+        "Low compression Otto engine: limited to ~4:1 compression ratio by premature spark knock (pre-ignition), capped at 15–20% thermal efficiency.",
+      failureModeName: "Pre-Ignition Knock & Low Thermodynamic Carnot Efficiency",
+      historicalPriorArt:
+        "Otto and early gas/steam engines achieved low thermal efficiency (10–18%) due to low compression and boiler heat losses.",
+    },
+  ],
   "us-608969-parsons-turbine": [
     {
       claimNumber: 1,
@@ -786,6 +799,358 @@ export const CATALOG_CLAIM_CONSTRAINTS: Record<string, ClaimConstraintDefinition
       failureModeName: "Multi-Bath Wet Darkroom Immersion Delay",
       historicalPriorArt:
         "Traditional photography required wet chemical processing tanks, darkrooms, and prolonged chemical fixing/washing before a positive print could be viewed.",
+    },
+  ],
+  "gb-913-watt-separate-condenser": [
+    {
+      claimNumber: 1,
+      patentId: "gb-913-watt-separate-condenser",
+      claimTitle: "Separate Condenser Vessel & Steam Jacketed Working Cylinder",
+      activeDescription:
+        "Claim 1 condenses steam in a separate cold vessel while maintaining the working cylinder at boiling steam temperature.",
+      invertedDescription:
+        "Newcomen atmospheric injection: cold water sprayed inside the cylinder chills the metal, wasting 75% of boiler fuel reheating walls.",
+      failureModeName: "Cyclic Cylinder Thermal Shock & 75% Fuel Inefficiency",
+      historicalPriorArt:
+        "Newcomen atmospheric engine condensed steam directly inside the working cylinder on every power stroke.",
+    },
+  ],
+  "gb-931-arkwright-water-frame": [
+    {
+      claimNumber: 1,
+      patentId: "gb-931-arkwright-water-frame",
+      claimTitle: "Differential Speed Drafting Rollers & Continuous Flyer Spindle",
+      activeDescription:
+        "Claim 1 draws roving through successive differential-speed rollers before twisting with continuous water-powered flyer spindles.",
+      invertedDescription:
+        "Manual spinning wheel: uneven manual drawing produces weak, slubby yarn with inconsistent count that snaps during power weaving.",
+      failureModeName: "Manual Fiber Bunching & Inconsistent Tensile Warp Rupture",
+      historicalPriorArt:
+        "Hargreaves' Spinning Jenny still relied on manual intermittent drafting and could only spin soft, weak weft yarns.",
+    },
+  ],
+  "gb-1306-watt-rotary-engine": [
+    {
+      claimNumber: 1,
+      patentId: "gb-1306-watt-rotary-engine",
+      claimTitle: "Sun and Planet Rotary Gear Transmission with Flywheel Integration",
+      activeDescription:
+        "Claim 1 converts reciprocating beam motion into continuous shaft rotation using a sun gear and orbiting planet gear, doubling shaft speed.",
+      invertedDescription:
+        "Unconnected reciprocating beam: vertical pump-only motion cannot drive rotating factory shafts, mills, or machine tools.",
+      failureModeName: "Non-Rotary Reciprocating Constraint Bottleneck",
+      historicalPriorArt:
+        "Reciprocating atmospheric and early steam beam engines were confined strictly to vertical water pumping.",
+    },
+  ],
+  "gb-1420-cort-puddling-rolling": [
+    {
+      claimNumber: 1,
+      patentId: "gb-1420-cort-puddling-rolling",
+      claimTitle: "Reverberatory Puddling Decarburization & Grooved Roller Consolidation",
+      activeDescription:
+        "Claim 1 decarburizes pig iron using reverberatory flames and iron silicate slag without coal contact, rolling blooms through grooved rollers.",
+      invertedDescription:
+        "Charcoal finery forge: direct coal contact contaminates iron with sulfur, while manual hammering leaves brittle trapped slag pockets.",
+      failureModeName: "Sulfur Contamination & Trapped Slag Inclusions",
+      historicalPriorArt:
+        "Charcoal finery forges required scarce timber charcoal and laborious manual hammer smithing.",
+    },
+  ],
+  "us-x1-hopkins-potash": [
+    {
+      claimNumber: 1,
+      patentId: "us-x1-hopkins-potash",
+      claimTitle: "Secondary High-Heat Ash Roasting & Pearlash Leaching",
+      activeDescription:
+        "Claim 1 burns raw wood ashes in a second high-temperature furnace to incinerate organic carbon before leaching into pure potassium carbonate.",
+      invertedDescription:
+        "Single-burn crude pot-ash: unburned carbon soot and insoluble organic impurities discolor the lye, reducing potash chemical grade.",
+      failureModeName: "Carbon Soot Contamination & Low Lye Potency",
+      historicalPriorArt:
+        "Crude potash production dissolved raw fireplace ashes directly, leaving dark, impure, low-carbonate residue.",
+    },
+  ],
+  "us-x72-whitney-cotton-gin": [
+    {
+      claimNumber: 1,
+      patentId: "us-x72-whitney-cotton-gin",
+      claimTitle: "Toothed Wire Cylinder, Slotted Breastwork Grate, and Clearer Brush",
+      activeDescription:
+        "Claim 1 pulls cotton fibers through narrow slotted ribs with wire teeth while leaving seeds behind, cleared by a high-speed counter-rotating brush.",
+      invertedDescription:
+        "Manual roller gin on upland green-seed cotton: sticky seeds crush between rollers, ruining fibers and yielding < 1 lb/day per worker.",
+      failureModeName: "Seed Crushing & Mechanical Lint Jamming",
+      historicalPriorArt:
+        "Churka roller gins worked only on smooth-seeded sea island cotton and jammed instantly on sticky green-seed upland cotton.",
+    },
+  ],
+  "us-x8277-mccormick-reaper": [
+    {
+      claimNumber: 1,
+      patentId: "us-x8277-mccormick-reaper",
+      claimTitle: "Serrated Reciprocating Cutter-Bar, Guard Fingers, and Revolving Reel",
+      activeDescription:
+        "Claim 1 guides grain into slotted guard teeth, slices stems with a rapid reciprocating sickle knife, and sweeps cut grain onto a platform.",
+      invertedDescription:
+        "Manual scythe harvesting: grain stems bend away from dull blades uncut, seed heads shatter, and harvesting is capped at 1 acre/day per laborer.",
+      failureModeName: "Grain Stem Deflection & Seed Shatter Loss",
+      historicalPriorArt:
+        "Manual scythes and cradles were exhausting, weather-vulnerable, and severely limited harvested acreage.",
+    },
+  ],
+  "us-132-davenport-electric-motor": [
+    {
+      claimNumber: 1,
+      patentId: "us-132-davenport-electric-motor",
+      claimTitle: "Electromagnetic Commutating Rotor and Stationary Stator Magnets",
+      activeDescription:
+        "Claim 1 alternates the polarity of rotating electromagnets via a split-ring commutator against stationary magnets to generate rotary torque.",
+      invertedDescription:
+        "Non-commutated electromagnet: rotor rotates 90° to maximum magnetic alignment and locks permanently in place with zero continuous rotation.",
+      failureModeName: "Static Magnetic Alignment Stall (Zero Continuous Torque)",
+      historicalPriorArt:
+        "Early electromagnetic devices (Henry, Ritchie) produced oscillating rocker or clicking motion rather than practical rotary power.",
+    },
+  ],
+  "us-588-ericsson-propeller": [
+    {
+      claimNumber: 1,
+      patentId: "us-588-ericsson-propeller",
+      claimTitle: "Submerged Multi-Bladed Screw Propeller on In-Line Propeller Shaft",
+      activeDescription:
+        "Claim 1 propels vessels through water via submerged helical propeller blades keyed directly to an underwater shaft at high efficiency.",
+      invertedDescription:
+        "Side paddle-wheels: rolling sea waves expose paddle wheels above the surface, destroying propulsion symmetry, and are vulnerable to combat fire.",
+      failureModeName: "Wave Decoupling & Vulnerable Paddle Wheel Asymmetry",
+      historicalPriorArt:
+        "Side and stern paddle-wheel steamships suffered severe wave immersion variance and fragile machinery exposure.",
+    },
+  ],
+  "us-3237-rillieux-evaporator": [
+    {
+      claimNumber: 1,
+      patentId: "us-3237-rillieux-evaporator",
+      claimTitle: "Multiple-Effect Vacuum Evaporation Using Latent Vapor Enthalpy",
+      activeDescription:
+        "Claim 1 uses the steam boiled off from one sugar pan under higher pressure to boil the liquid in a second pan under lower pressure (higher vacuum).",
+      invertedDescription:
+        "Open-kettle Jamaica train boiling: atmospheric open-flame boiling scorched sugar juice, wasted huge firewood/bagasse fuel, and risked burns.",
+      failureModeName: "Sugar Caramelization Scorching & Extreme Thermal Fuel Waste",
+      historicalPriorArt:
+        "Open kettle batteries ('Jamaica train') boiled cane juice directly over open wood fires with terrible fuel efficiency.",
+    },
+  ],
+  "us-6469-lincoln-buoy": [
+    {
+      claimNumber: 1,
+      patentId: "us-6469-lincoln-buoy",
+      claimTitle: "Inflatable Waterproof Air-Chambers for Shallow-Water Shoal Navigation",
+      activeDescription:
+        "Claim 1 expands flexible airtight canvas/rubber compartments below the water line to displace water, reduce ship draft, and float over sandbars.",
+      invertedDescription:
+        "Rigid unbuoyed hull: grounded vessel sticks fast on shallow river shoals, requiring manual cargo unloading, winching, or waiting for floods.",
+      failureModeName: "Shoal Grounding & River Sandbar Stranding",
+      historicalPriorArt:
+        "River steamboats frequently ran aground on shifting Mississippi/Ohio river sandbars and shoals.",
+    },
+  ],
+  "us-31128-otis-elevator": [
+    {
+      claimNumber: 1,
+      patentId: "us-31128-otis-elevator",
+      claimTitle: "Spring-Loaded Safety Pawl Ratchet Engagement upon Hoisting Rope Severance",
+      activeDescription:
+        "Claim 1 holds ratchet pawls disengaged against spring tension while the hoist rope is taut; upon rope failure, the spring snaps pawls into guide rails.",
+      invertedDescription:
+        "Unchecked gravitational free-fall: severed hoisting cable causes immediate catastrophic elevator car plunge, resulting in fatal passenger impact.",
+      failureModeName: "Hoisting Cable Severance Free-Fall Impact",
+      historicalPriorArt:
+        "Hoists and freight elevators were considered death traps because cable breakage meant unchecked plummet to the pit.",
+    },
+  ],
+  "us-48475-yale-lock": [
+    {
+      claimNumber: 1,
+      patentId: "us-48475-yale-lock",
+      claimTitle: "Pin-Tumbler Cylinder with Differential-Length Split Pins & Flat Key Shear Line",
+      activeDescription:
+        "Claim 1 aligns split pin pairs along the plug shear line using a flat bitted key, permitting rotation while resisting picking.",
+      invertedDescription:
+        "Warded lock: simple skeleton key or bent wire picks past fixed interior wards without pin tumbler height decoding, opening the lock effortlessly.",
+      failureModeName: "Skeleton Key Ward Bypass & Trivial Lock Picking",
+      historicalPriorArt:
+        "Large, heavy warded and lever locks used cumbersome iron keys and were easily bypassed by simple picks.",
+    },
+  ],
+  "us-78317-nobel-dynamite": [
+    {
+      claimNumber: 1,
+      patentId: "us-78317-nobel-dynamite",
+      claimTitle: "Kieselguhr Porous Earth Absorbent for Stable Nitroglycerin Solidification",
+      activeDescription:
+        "Claim 1 absorbs liquid nitroglycerin into porous diatomaceous earth (kieselguhr), converting an ultrasensitive liquid explosive into a safe solid paste.",
+      invertedDescription:
+        "Liquid nitroglycerin transport: slight mechanical shocks, vibrations, or temperature fluctuations trigger spontaneous detonation during handling.",
+      failureModeName: "Spontaneous Shock-Induced Liquid Nitroglycerin Detonation",
+      historicalPriorArt:
+        "Pure liquid nitroglycerin was so violently shock-sensitive that fatal factory and transport explosions plagued mining.",
+    },
+  ],
+  "us-79265-sholes-typewriter": [
+    {
+      claimNumber: 1,
+      patentId: "us-79265-sholes-typewriter",
+      claimTitle: "Radial Converging Type-Bars, Ink Ribbon Mechanism, and Escapement Carriage Step",
+      activeDescription:
+        "Claim 1 strikes inked ribbon against paper wrapped on a cylindrical platen using radially pivoting type-bars, advancing the carriage one character pitch.",
+      invertedDescription:
+        "Manual script / unspaced mechanical strike: typebars collide and jam at the strike basket center, producing illegible overlapping ink smears.",
+      failureModeName: "Typebar Center Basket Jamming & Character Overprint",
+      historicalPriorArt:
+        "Handwriting was slow (~25 WPM) and inconsistent; early mechanical writing machines were slow, massive, and frequently jammed.",
+    },
+  ],
+  "us-105338-hyatt-celluloid": [
+    {
+      claimNumber: 1,
+      patentId: "us-105338-hyatt-celluloid",
+      claimTitle: "Pyroxylin (Nitrocellulose) Plasticized with Camphor under Heat and Pressure",
+      activeDescription:
+        "Claim 1 dissolves nitrocellulose in solid camphor under heat and heavy hydraulic pressure, synthesizing the first mouldable synthetic thermoplastic.",
+      invertedDescription:
+        "Unplasticized nitrocellulose: brittle, explosive guncotton flakes or sticky collodion cannot be molded, thermoformed, or machined into solid goods.",
+      failureModeName: "Brittle Nitrocellulose Flaking & Flammability Hazard",
+      historicalPriorArt:
+        "Parkesine and early collodions shrank drastically, cracked upon drying, and lacked thermoplastic moldability.",
+    },
+  ],
+  "us-120057-gramme-dynamo": [
+    {
+      claimNumber: 1,
+      patentId: "us-120057-gramme-dynamo",
+      claimTitle: "Continuous Closed-Ring Toroidal Armature with Multi-Segment Commutator",
+      activeDescription:
+        "Claim 1 winds continuous insulated copper wire around a soft iron ring armature connected to radial commutator segments, generating non-pulsating DC.",
+      invertedDescription:
+        "Shuttle armature (Siemens T-armature): produces violent pulsating AC spikes that generate heavy commutator arcing and severe voltage fluctuations.",
+      failureModeName: "Pulsating Voltage Ripple & Severe Commutator Brush Arcing",
+      historicalPriorArt:
+        "Pixii, Clarke, and early dynamos used reciprocating magnets or shuttle armatures yielding jerky pulsating currents.",
+    },
+  ],
+  "us-157124-glidden-barbed-wire": [
+    {
+      claimNumber: 1,
+      patentId: "us-157124-glidden-barbed-wire",
+      claimTitle: "Two-Strand Twisted Fence Wire Locking Spurred Wire Barbs in Position",
+      activeDescription:
+        "Claim 1 coils short pointed wire barbs around one wire strand and twists a second strand around it to permanently clamp and space the barbs.",
+      invertedDescription:
+        "Smooth single wire / loose barbs: cattle lean on the fence without deterrent, pushing down posts, or loose barbs slide leaving long unbarbed gaps.",
+      failureModeName: "Barb Migration & Cattle Fence Breakdown",
+      historicalPriorArt:
+        "Smooth wire fences sagged and were easily snapped or trampled by cattle herds across the open American prairie.",
+    },
+  ],
+  "us-313224-mergenthaler-linotype": [
+    {
+      claimNumber: 1,
+      patentId: "us-313224-mergenthaler-linotype",
+      claimTitle: "Keyboard-Assembled Circulating Brass Matrices & Integral Slug Casting",
+      activeDescription:
+        "Claim 1 releases brass character matrices from an overhead magazine via keyboard, justifies lines with wedge spacebands, and casts a solid lead slug.",
+      invertedDescription:
+        "Manual hand-setting of individual movable lead type: compositors pick individual type characters letter-by-letter at a slow 1,500 chars/hour.",
+      failureModeName: "Hand-Typesetting Speed Bottleneck & Letter Drop Spills",
+      historicalPriorArt:
+        "Manual typesetting by hand was the single biggest bottleneck in print publishing for over 400 years.",
+    },
+  ],
+  "us-347140-thomson-welding": [
+    {
+      claimNumber: 1,
+      patentId: "us-347140-thomson-welding",
+      claimTitle: "Electric Resistance Heating and End-to-End Mechanical Butt Pressure",
+      activeDescription:
+        "Claim 1 clamps metal pieces end-to-end and passes a massive low-voltage electric current across the joint, melting the interface under axial pressure.",
+      invertedDescription:
+        "Forge fire hammer welding: metal surfaces oxidize heavily in coal fires, requiring hazardous fluxes and leaving weak, slag-contaminated joints.",
+      failureModeName: "Oxide Scale Inclusion & Incomplete Joint Fusion",
+      historicalPriorArt:
+        "Blacksmith forge welding was slow, labor-intensive, limited in geometry, and prone to internal slag defects.",
+    },
+  ],
+  "us-388850-eastman-kodak": [
+    {
+      claimNumber: 1,
+      patentId: "us-388850-eastman-kodak",
+      claimTitle: "Roll-Film Box Camera with Flexible Emulsion Film Spools and Rotary Shutter",
+      activeDescription:
+        "Claim 1 houses a continuous roll of flexible photographic film inside a compact box camera with winding key, instantaneous shutter, and factory service.",
+      invertedDescription:
+        "Wet-plate collodion / fragile glass dry plates: photographer must lug heavy portable darkroom tents, toxic chemicals, and fragile glass sheets.",
+      failureModeName: "Fragile Glass Plate Shattering & Darkroom Field Burden",
+      historicalPriorArt:
+        "Photography required cumbersome tripods, fragile glass plates, and immediate on-site chemical darkroom processing.",
+    },
+  ],
+  "us-395781-hollerith-tabulating": [
+    {
+      claimNumber: 1,
+      patentId: "us-395781-hollerith-tabulating",
+      claimTitle:
+        "Punched Card Data Encoding, Mercury Cup Sensing Pins, and Electromechanical Counters",
+      activeDescription:
+        "Claim 1 punches demographic data into standardized cards, senses hole positions via spring-loaded pins dipping into mercury cups, and advances dials.",
+      invertedDescription:
+        "Manual tally marks on paper ledgers: census tabulation for millions of citizens requires years of human clerk counting, creating severe errors.",
+      failureModeName: "Human Clerical Counting Errors & Tabulation Delay",
+      historicalPriorArt:
+        "The 1880 US Census took nearly eight years to tabulate by hand, threatening to exceed the 10-year constitutional deadline.",
+    },
+  ],
+  "us-470918-reno-escalator": [
+    {
+      claimNumber: 1,
+      patentId: "us-470918-reno-escalator",
+      claimTitle:
+        "Inclined Endless Traveling Step Treadway with Stationary Comb-Plate Intermeshing",
+      activeDescription:
+        "Claim 1 carries passengers up an incline on continuous longitudinal slats whose grooves intermesh with fixed comb teeth at the upper landing.",
+      invertedDescription:
+        "Flat conveyor belt landing without comb teeth: passengers' shoes and clothing get pulled into the moving pinch point beneath the floor plate.",
+      failureModeName: "Landing Pinch-Point Entrapment & Severe Foot Crushing",
+      historicalPriorArt:
+        "Early moving walkways had open landing gaps that dangerously caught clothing and passengers' limbs.",
+    },
+  ],
+  "us-621195-zeppelin-airship": [
+    {
+      claimNumber: 1,
+      patentId: "us-621195-zeppelin-airship",
+      claimTitle: "Rigid Structural Duralumin Framework with Internal Separated Gas Cells",
+      activeDescription:
+        "Claim 1 encases multiple independent hydrogen gas cells inside a rigid longitudinal truss framework with an outer fabric envelope.",
+      invertedDescription:
+        "Non-rigid blimp: gas envelope sags, buckles, and deforms under aerodynamic wind loads, losing directional pitch control.",
+      failureModeName: "Envelope Dynamic Buckling & Structural Aerodynamic Collapse",
+      historicalPriorArt:
+        "Non-rigid and semi-rigid airships suffered from dangerous envelope sagging, control loss, and engine vibration tearing.",
+    },
+  ],
+  "us-2929922-townes-laser": [
+    {
+      claimNumber: 1,
+      patentId: "us-2929922-townes-laser",
+      claimTitle: "Fabry-Pérot Resonant Cavity Optical Masers (Laser) with Population Inversion",
+      activeDescription:
+        "Claim 1 places an active atomic medium in optical population inversion between parallel reflective mirrors, stimulating coherent optical emission.",
+      invertedDescription:
+        "Incoherent thermal lamp: spontaneous emission photons emit randomly in all directions and phases, with zero spatial coherence and massive divergence.",
+      failureModeName: "Incoherent Spontaneous Emission & Spatial Beam Divergence",
+      historicalPriorArt:
+        "Masers operated only at microwave frequencies; light sources were limited to incoherent thermal gas discharge arcs and incandescent bulbs.",
     },
   ],
 };

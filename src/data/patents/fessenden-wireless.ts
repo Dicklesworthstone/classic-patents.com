@@ -527,7 +527,19 @@ export const fessendenWirelessPatent: Patent = {
     ],
     breakthroughInsight:
       "Increasing and distributing the sending-conductor's capacity or self-induction lowers the frequency, increases wavelength, and allows a large radiating portion; a dynamo or similar alternating-voltage source can then replace the induction-coil and spark-gap.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Lee de Forest & Telefunken",
+        rivalClaim:
+          "De Forest patented his 'spade detector' in 1903, claiming it was an independent invention rather than a copy of Fessenden's liquid electrolytic detector.",
+        conflictDetails:
+          "Fessenden's National Electric Signaling Company (NESCO) sued De Forest in federal court for infringing the liquid acid electrolytic detector that made continuous-wave voice reception possible.",
+        resolution:
+          "Laboratory demonstrations during trial proved De Forest's device utilized the exact same Wollaston fine platinum wire immersed in nitric acid patented by Fessenden in 1903.",
+        legalOutcome:
+          "In National Electric Signaling Co. v. De Forest (1905), the Second Circuit Court of Appeals found De Forest guilty of deliberate infringement, ordering his equipment confiscated and establishing Fessenden's primacy in continuous-wave radio reception.",
+      },
+    ],
     civilizationalImpact:
       "The document records an early low-frequency wireless architecture: a distributed-capacity radiating conductor, source-to-conductor resonance, and receiving instruments driven directly by induced current.",
   },

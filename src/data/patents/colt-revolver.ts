@@ -252,7 +252,19 @@ export const coltRevolverPatent: Patent = {
     ],
     breakthroughInsight:
       "Colt assigns separate mechanical work to the hammer pin, lifter, ratchet, locking key, springs, and connecting rod, then describes their order during cocking and discharge.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Massachusetts Arms Company (Edwin Wesson & Daniel Leavitt)",
+        rivalClaim:
+          "Mass Arms produced revolvers based on Daniel Leavitt's 1837 patent and Edwin Wesson's 1849 patent, claiming hand-rotated cylinders or bevel gear indexing did not infringe Colt's 1836 patent.",
+        conflictDetails:
+          "Colt sued Massachusetts Arms in 1851 in the US Circuit Court in Boston (Colt v. Massachusetts Arms Co.), represented by attorney Edward N. Dickerson.",
+        resolution:
+          "Colt presented mechanical models demonstrating how Mass Arms' lockwork infringed the fundamental mechanism of cocking the hammer to rotate the cylinder and lock it into direct alignment with the barrel.",
+        legalOutcome:
+          "Justice Levi Woodbury and the Boston jury ruled completely in Colt's favor, issuing a sweeping permanent injunction that shut down Mass Arms revolver production and cemented Colt's monopoly until his patent expired in 1857.",
+      },
+    ],
     civilizationalImpact:
       "The document preserves an early United States claim set for component-level solutions to repeated percussion-cap firing: cap placement and separation, smoke protection, trigger linkage, cylinder drive and lockup, and the barrel-arbor union.",
     aftermath:

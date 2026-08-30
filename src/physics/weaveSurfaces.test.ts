@@ -198,9 +198,9 @@ describe("FrankenSim Weave Surfaces Boundary", () => {
     expect(fidelityField("us-3671542-kwolek-kevlar", {})?.reference).toBe("90");
 
     expect(materialProbe("us-542846-diesel-engine", "Claim 1 process", {})).toBeNull();
-    expect(intervalGhosts("us-542846-diesel-engine", {})).toEqual([]);
-    expect(fidelityField("us-542846-diesel-engine", {})).toBeNull();
-    expect(datedScenarios("us-542846-diesel-engine")).toEqual([]);
+    expect(intervalGhosts("us-542846-diesel-engine", {})[0]?.unit).toBe(":1");
+    expect(fidelityField("us-542846-diesel-engine", {})?.reference).toBe("26.2");
+    expect(datedScenarios("us-542846-diesel-engine")[0]?.id).toBe("augsburg-1897");
 
     expect(materialProbe("us-586193-marconi-radio", "Contact receiver", {})?.qty).toBe("f₀");
     expect(intervalGhosts("us-586193-marconi-radio", {})[0]?.label).toBe("Aerial");

@@ -638,7 +638,19 @@ This is a catalogue excerpt. Open Original Patent Text for the complete manually
     ],
     breakthroughInsight:
       "Use a high-resistance carbon light-giver in a nearly perfect vacuum, with platina sealed through glass and a carbonized contact-making method for fragile forms.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Joseph Swan & The Consolidated Electric Light Co. (Sawyer-Man)",
+        rivalClaim:
+          "William Sawyer, Albon Man, and Joseph Swan claimed earlier experimental demonstrations of carbonized paper filaments and low-resistance incandescent lamps (1878).",
+        conflictDetails:
+          "The Consolidated Electric Light Company sued Edison licensees, alleging Sawyer & Man's 1878 patent preempted Edison's 1880 grant. Simultaneously, Joseph Swan established commercial carbon lamp production in Britain, threatening Edison's international rights.",
+        resolution:
+          "In Britain, Edison merged operations with Swan to form Ediswan (1883). In the US, the Second Circuit Court of Appeals upheld Edison's Patent No. 223,898 in Edison Electric Light Co. v. United States Electric Lighting Co. (1892), confirmed in The Incandescent Lamp Patent (159 U.S. 465, 1895).",
+        legalOutcome:
+          "The federal courts ruled that Edison alone recognized that commercial subdivision of light required high electrical resistance (~100 Ω) in high vacuum (< 10⁻⁴ atm), validating Claim 2 and establishing Edison's primary monopoly.",
+      },
+    ],
     civilizationalImpact:
       "The technical document connects a lamp's internal construction to a distribution-network constraint. Its four claims preserve the carbon element, exhausted glass receiver, coiled radiating arrangement, and carbonization method as distinct legal combinations rather than reducing the invention to a generic bulb story.",
     aftermath:

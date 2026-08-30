@@ -2,6 +2,7 @@
 
 import { RotateCcw, Sparkles, Volume2, VolumeX, Zap } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepMaimanRubyLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -467,6 +468,24 @@ export function MaimanRubyLaserSim({ interactive = true }: MaimanRubyLaserSimPro
               />
             </div>
           </div>
+
+          <TwoClocksStrip
+            title="optical carrier wave cycle vs metastable state fluorescence lifetime"
+            fast={{
+              name: "Optical wave cycle (T)",
+              period: "2.32",
+              scale: "fs",
+              detail:
+                "694.3 nm ruby laser coherent red electromagnetic field oscillation period in the Fabry-Perot resonator.",
+            }}
+            slow={{
+              name: "Fluorescence lifetime (τ)",
+              period: "3.0",
+              scale: "ms",
+              detail:
+                "Chromium Cr³⁺ metastable ²E state spontaneous emission lifetime enabling population inversion under optical pumping.",
+            }}
+          />
         </div>
       )}
     </div>

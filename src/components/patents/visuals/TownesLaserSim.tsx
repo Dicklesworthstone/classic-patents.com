@@ -2,6 +2,7 @@
 
 import { RotateCcw, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepTownesLaser } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -576,6 +577,26 @@ export function TownesLaserSim({
             <option value="nd_yag">Nd:YAG (1064 nm)</option>
           </select>
           <span className="text-[10px] text-ink-500 dark:text-ink-400">Laser transition media</span>
+        </div>
+
+        <div className="col-span-full">
+          <TwoClocksStrip
+            title="optical wave cycle vs cavity round-trip transit time"
+            fast={{
+              name: "Optical wave cycle (T)",
+              period: ((physics.wavelengthNm / 1000) * 3.3356).toFixed(2),
+              scale: "fs",
+              detail:
+                "Electromagnetic wave period for the selected atomic transition between stimulated energy levels.",
+            }}
+            slow={{
+              name: "Cavity round-trip (t_rt)",
+              period: ((2 * (cavityLengthCm / 100)) / 0.3).toFixed(2),
+              scale: "ns",
+              detail:
+                "Round-trip photon transit time between the parallel Fabry-Perot end mirrors maintaining longitudinal modes.",
+            }}
+          />
         </div>
       </div>
     </div>

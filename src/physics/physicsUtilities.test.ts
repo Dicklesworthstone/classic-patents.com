@@ -76,10 +76,10 @@ describe("Shared Physics Mathematical Utilities & Conversions", () => {
     expect(goddardChannels[0]?.name).toBe("Chem. enthalpy");
     expect(goddardChannels[1]?.name).toBe("Exhaust KE");
     expect(goddardChannels[2]?.name).toBe("Heat leak");
-    expect(energyChannelsFor("us-2981877-noyce-ic", {})).toEqual([]);
+    expect(energyChannelsFor("us-2981877-noyce-ic", {})[0]?.name).toBe("DC Power Supply");
     expect(energyChannelsFor("us-808897-carrier-air-conditioner", {})[0]?.name).toBe("Fan work");
     expect(energyChannelsFor("us-608969-parsons-turbine", {})[0]?.name).toBe("Shaft");
-    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})).toEqual([]);
+    expect(energyChannelsFor("us-3858232-boyle-smith-ccd", {})[0]?.name).toBe("Clock Gate Drive");
     expect(energyChannelsFor("us-3671542-kwolek-kevlar", {})).toEqual([]);
     expect(energyChannelsFor("us-586193-marconi-radio", {})[0]?.name).toBe("Spark RF");
     expect(energyChannelsFor("us-2292387-lamarr-frequency-hopping", {})).toEqual([]);

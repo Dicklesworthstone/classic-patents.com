@@ -235,7 +235,19 @@ My present invention is directed to the production and improvement of apparatus 
     ],
     breakthroughInsight:
       "The patent's stated move is to send alternating currents through two or more independent circuits at proper intervals so that the motor's magnetism, or “lines of force,” shifts progressively. The movable disk or armature follows the resulting moving points of greatest attraction.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Galileo Ferraris & Charles S. Bradley",
+        rivalClaim:
+          "Italian physicist Galileo Ferraris published a paper on two-phase induction motor rotation in March 1888, two months before Tesla's patent issued in May 1888. Bradley claimed split-phase AC motor priority.",
+        conflictDetails:
+          "Ferraris constructed laboratory models in Turin but concluded polyphase motors could never exceed 50% efficiency, dismissing commercial application. Westinghouse purchased Tesla's patents for $60,000 plus royalties and aggressively litigated infringers across the United States.",
+        resolution:
+          "In Westinghouse Electric & Mfg. Co. v. New England Granite Co. (1901) and Westinghouse v. Dayton Fan & Motor Co., federal courts conducted exhaustive priority examinations of laboratory notebooks and patent filings.",
+        legalOutcome:
+          "Federal courts ruled Ferraris's publication was purely theoretical and abandoned as an unworkable toy, whereas Tesla had reduced the synchronous and induction polyphase machine to practice in 1887 with complete commercial transmission systems, establishing Westinghouse's unassailable patent monopoly.",
+      },
+    ],
     civilizationalImpact:
       "This grant gives a carefully illustrated historical account of coordinated independent current paths moving a magnetic condition through space. It records two-circuit, three-circuit, stationary-induced-element, and doubly wound variants rather than collapsing them into one generic later motor.",
     funFact:

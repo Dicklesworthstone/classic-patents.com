@@ -2,6 +2,7 @@
 
 import { Pause, Play, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { TwoClocksStrip } from "@/components/patents/TwoClocksStrip";
 import { stepBoyleSmithCcd } from "@/physics/catalogKernels";
 import { usePatentPhysics } from "@/physics/usePatentPhysics";
 import { soundEngine } from "@/utils/soundEngine";
@@ -445,6 +446,24 @@ export function BoyleSmithCcdSim({ interactive = true }: BoyleSmithCcdSimProps) 
               />
             </div>
           </div>
+
+          <TwoClocksStrip
+            title="3-phase gate clock vs optical exposure integration"
+            fast={{
+              name: "Clock gate shift (t_φ)",
+              period: (1000 / (3 * Math.max(0.1, clockFreq))).toFixed(0),
+              scale: "ns",
+              detail:
+                "Duration of a single 3-phase bucket-brigade potential well transfer step along the CCD channel.",
+            }}
+            slow={{
+              name: "Exposure integration (t_int)",
+              period: integrationTime.toFixed(1),
+              scale: "ms",
+              detail:
+                "Optical frame integration period during which incoming photons generate trapped photo-electrons.",
+            }}
+          />
         </div>
       )}
     </div>

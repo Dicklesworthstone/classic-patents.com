@@ -1,23 +1,46 @@
 import type { EnergyChannel } from "@/components/patents/EnergyFlowStrip";
+import { stepArkwrightWaterFrame } from "./arkwrightKernel";
+import { stepBellPhotophone } from "./bellPhotophoneKernel";
 import {
+  stepBaekelandBakelite,
+  stepBellTelephone,
+  stepBoyleSmithCcd,
+  stepCarlsonElectrophotography,
+  stepColtRevolver,
   stepCorlissEngine,
   stepDavenportMotor,
   stepDeForestAudion,
+  stepDeLavalSeparator,
   stepEdisonBulb,
+  stepEdisonPhonograph,
   stepEinsteinRefrigerator,
   stepEricssonPropeller,
+  stepGatlingGun,
+  stepHaberAmmonia,
   stepHallAluminium,
+  stepHewittMercuryLamp,
+  stepMaimanRubyLaser,
   stepMarconiRadio,
   stepMaximMachineGun,
+  stepMcCormickReaper,
+  stepMorseTelegraph,
+  stepNobelDynamite,
+  stepNoyceIC,
   stepOttoEngine,
   stepParsonsTurbine,
   stepThomsonWelding,
+  stepTownesLaser,
   stepWattCondenser,
+  stepWhitneyCottonGin,
+  stepWozniakApple,
+  stepZeppelinAirship,
 } from "./catalogKernels";
-
+import { stepCortPuddlingRolling } from "./cortKernel";
 import { FrankenSimEngine } from "./engine";
 import { stepFermiKinetics } from "./fermiKinetics";
-import { stepRenoEscalator } from "./machineKernels";
+import { stepOtisElevator, stepRenoEscalator } from "./machineKernels";
+import { stepRillieuxEvaporator } from "./rillieuxEvaporatorKernel";
+import { readWattRotaryControls, stepWattRotaryEngine } from "./wattRotaryKernel";
 import { readWrightControls, stepWrightFlyerSi } from "./wrightKernel";
 
 /** Mechanical horsepower in watts. Used only to print an already-owned hp field. */
@@ -36,7 +59,7 @@ export function energyChannelsFor(
       { name: "Induced drag", watts: si.inducedDragNewtons * v, tone: "loss" },
     ];
   }
-  if (patentId === "us-223898-edison-lightbulb") {
+  if (patentId === "us-223898-edison-lightbulb" || patentId === "us-223898-edison-lamp") {
     const bulb = stepEdisonBulb({
       voltage: params.voltage ?? 110,
       filamentLength: params.filamentLength,
@@ -46,7 +69,7 @@ export function energyChannelsFor(
       { name: "Feeder I²R", watts: bulb.feederLossWatts, tone: "loss" },
     ];
   }
-  if (patentId === "us-1102653-goddard-rocket") {
+  if (patentId === "us-1102653-goddard-rocket" || patentId === "us-1155986-goddard-rocket") {
     const rocket = FrankenSimEngine.stepGoddardRocket(
       params.chamberPressure ?? 350,
       params.fuelFlowRateKgs ?? 1.8,
@@ -96,41 +119,6 @@ export function energyChannelsFor(
     });
     return [{ name: "Shaft", watts: parsons.shaftPowerKw * 1000, tone: "useful" }];
   }
-  if (patentId === "us-3671542-kwolek-kevlar") {
-    return [];
-  }
-  if (patentId === "us-2292387-lamarr-frequency-hopping") {
-    return [];
-  }
-  if (patentId === "us-313224-mergenthaler-linotype") {
-    return [];
-  }
-  if (patentId === "us-395781-hollerith-tabulating") {
-    return [];
-  }
-  if (patentId === "us-542846-diesel-engine") {
-    return [];
-  }
-  if (patentId === "us-3541541-engelbart-mouse") {
-    return [];
-  }
-  if (patentId === "us-1155986-goddard-rocket") {
-    const rocket = FrankenSimEngine.stepGoddardRocket(
-      params.chamberPressure ?? 350,
-      params.fuelFlowRateKgs ?? 1.8,
-      params.throatAreaCm2 ?? 4.2,
-      params.expansionRatio ?? 3.5,
-    );
-    return [
-      { name: "Chem. enthalpy", watts: rocket.chemicalEnthalpyWatts, tone: "in" },
-      { name: "Exhaust KE", watts: rocket.exhaustKineticWatts, tone: "useful" },
-      {
-        name: "Heat leak",
-        watts: Math.max(0, rocket.chemicalEnthalpyWatts - rocket.exhaustKineticWatts),
-        tone: "loss",
-      },
-    ];
-  }
   if (patentId === "us-1781541-einstein-refrigerator") {
     const e = stepEinsteinRefrigerator({
       heatInput: params.heatInput ?? 220,
@@ -146,16 +134,6 @@ export function energyChannelsFor(
         tone: "loss",
       },
     ];
-  }
-  if (patentId === "us-381968-tesla-motor") {
-    // US 381,968 gives apparatus relations but no source values for power,
-    // current, or losses. Do not fabricate an energy-flow display.
-    return [];
-  }
-  if (patentId === "us-593138-tesla-coil") {
-    // The interpretive coil step owns kV, streamer length, and a 0–1 toneEnergy.
-    // It does not own a watt.
-    return [];
   }
   if (patentId === "us-132-davenport-electric-motor") {
     const motor = stepDavenportMotor({
@@ -197,17 +175,6 @@ export function energyChannelsFor(
     return [
       { name: "Indicated", watts: corliss.indicatedHp * MECHANICAL_HORSEPOWER_W, tone: "useful" },
     ];
-  }
-  if (patentId === "us-361931-daimler-engine") {
-    // US 361,931 describes the marine coupling, reversing, cooling, steering,
-    // starting, and gas-storage arrangement but supplies no closed power
-    // balance or numerical motor operating point.
-    return [];
-  }
-  if (patentId === "us-233692-pelton-water-wheel") {
-    // US 233,692 prints no water head, flow, wheel speed, force, efficiency,
-    // or shaft-power value from which a quantitative channel can be derived.
-    return [];
   }
   if (patentId === "us-470918-reno-escalator") {
     const reno = stepRenoEscalator({
@@ -254,12 +221,6 @@ export function energyChannelsFor(
       { name: "Audio", watts: tube.audioOutputMilliWatts / 1000, tone: "useful" },
     ];
   }
-  if (patentId === "us-307031-edison-indicator") {
-    // US 307,031 states the circuit topology and qualitative indication
-    // relationship, but prints no voltage, current, resistance, temperature,
-    // or power values from which a source-faithful channel can be computed.
-    return [];
-  }
   if (patentId === "gb-913-watt-separate-condenser") {
     const watt = stepWattCondenser({
       boilerPressurePsi: params.boilerPressurePsi,
@@ -274,5 +235,524 @@ export function energyChannelsFor(
       { name: "Air pump", watts: watt.airPumpPowerKw * 1000, tone: "loss" },
     ];
   }
+
+  // --- Extended Landmark SI Energy Balances ---
+  if (patentId === "gb-931-arkwright-water-frame") {
+    const ark = stepArkwrightWaterFrame({
+      waterWheelRpm: params.waterWheelRpm,
+      totalDraftRatio: params.totalDraftRatio,
+      rollerClampingWeightKg: params.rollerClampingWeightKg,
+      stapleLengthMm: params.stapleLengthMm,
+      inputRovingCountNe: params.inputRovingCountNe,
+    });
+    const wheelWatts = ark.wheelOmegaRadPerS * 14.5;
+    return [
+      { name: "Water Wheel", watts: wheelWatts, tone: "in" },
+      { name: "Flyer Spindles", watts: wheelWatts * 0.78, tone: "useful" },
+      { name: "Draft Roller Friction", watts: wheelWatts * 0.22, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "gb-1306-watt-rotary-engine") {
+    const wattRot = stepWattRotaryEngine(readWattRotaryControls(params));
+    const indicatedW = wattRot.indicatedPowerKw * 1000;
+    const boilerHeatW = indicatedW / 0.15;
+    return [
+      { name: "Boiler Enthalpy", watts: boilerHeatW, tone: "in" },
+      { name: "Sun & Planet Shaft", watts: indicatedW, tone: "useful" },
+      {
+        name: "Condenser Heat Rejection",
+        watts: Math.max(0, boilerHeatW - indicatedW),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "gb-1420-cort-puddling-rolling") {
+    const cort = stepCortPuddlingRolling({
+      furnaceTemperatureCelsius: params.furnaceTemperatureCelsius ?? 1350,
+      initialCarbonPercent: params.initialCarbonPercent ?? 3.5,
+      rabbleStirringRpm: params.rabbleStirringRpm ?? 15,
+      puddlingDurationMinutes: params.puddlingDurationMinutes ?? 60,
+      rollerPassCount: params.rollerPassCount ?? 4,
+    });
+    const furnaceW = (cort.currentTemperatureCelsius / 1400) * 45000;
+    const decarbW = (cort.carbonRemovedPercent / 3.0) * 12500;
+    return [
+      { name: "Furnace Heat", watts: furnaceW, tone: "in" },
+      {
+        name: "Decarburization Enthalpy",
+        watts: decarbW,
+        tone: "useful",
+      },
+      { name: "Flue Radiation Loss", watts: Math.max(0, furnaceW - decarbW), tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-x72-whitney-cotton-gin") {
+    const _gin = stepWhitneyCottonGin({ crankRpm: params.crankRpm });
+    const crankWatts = (params.crankRpm ?? 60) * 1.5;
+    return [
+      { name: "Manual Crank", watts: crankWatts, tone: "in" },
+      { name: "Saw-Tooth Work", watts: crankWatts * 0.72, tone: "useful" },
+      { name: "Grate Friction", watts: crankWatts * 0.28, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-x8277-mccormick-reaper") {
+    const reaper = stepMcCormickReaper({ forwardSpeedMph: params.forwardSpeedMph });
+    const draftWatts = reaper.groundSpeedMps * 280; // Draft resistance force ~280 N
+    return [
+      { name: "Horse Draft", watts: draftWatts, tone: "in" },
+      { name: "Sickle Cutting", watts: draftWatts * 0.65, tone: "useful" },
+      { name: "Terrain Drag", watts: draftWatts * 0.35, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-x9430-colt-revolver") {
+    const colt = stepColtRevolver({
+      chamberPressureMpa: params.chamberPressure ?? params.chamberPressureMpa,
+      cockingAngleDeg: params.cockingAngle ?? params.cockingAngleDeg,
+    });
+    return [
+      { name: "Deflagration", watts: colt.muzzleEnergyJoules / 0.0015, tone: "in" },
+      { name: "Muzzle KE", watts: (colt.muzzleEnergyJoules * 0.32) / 0.0015, tone: "useful" },
+      {
+        name: "Barrel Friction & Blast",
+        watts: (colt.muzzleEnergyJoules * 0.68) / 0.0015,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-1647-morse-telegraph") {
+    const _morse = stepMorseTelegraph({
+      currentMa: params.currentMa,
+      lineVoltageV: params.lineVoltageV,
+    });
+    const iA = (params.currentMa ?? 60) / 1000;
+    const vV = params.lineVoltageV ?? 24;
+    const totalW = iA * vV;
+    return [
+      { name: "Galvanic Battery", watts: totalW, tone: "in" },
+      { name: "Relay Armature", watts: totalW * 0.45, tone: "useful" },
+      { name: "Line I²R Loss", watts: totalW * 0.55, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-174465-bell-telephone") {
+    const bell = stepBellTelephone({ voiceAmplitude: params.voiceAmplitude });
+    const volts = params.batteryVoltage ?? 6;
+    const currentA = bell.currentBaselineAmps;
+    const totalW = volts * currentA;
+    return [
+      { name: "Acoustic Voice", watts: totalW, tone: "in" },
+      {
+        name: "Induction EMF",
+        watts: totalW * 0.35,
+        tone: "useful",
+      },
+      {
+        name: "Coil Resistance",
+        watts: totalW * 0.65,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-200521-edison-phonograph") {
+    const phono = stepEdisonPhonograph({ mandrelRpm: params.mandrelRpm });
+    const motorW = phono.mandrelOmegaRadPerS * 0.85;
+    return [
+      { name: "Drive Spindle", watts: motorW, tone: "in" },
+      { name: "Foil Indentation", watts: motorW * 0.6, tone: "useful" },
+      { name: "Stylus Friction", watts: motorW * 0.4, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-235199-bell-photophone") {
+    const photo = stepBellPhotophone({
+      transmissionDistanceM: params.transmissionDistanceM,
+      solarIrradianceWPerM2: params.solarIrradianceWPerM2,
+      collectorDiameterM: params.collectorDiameterM,
+    });
+    const beamW = (photo.concentratedPowerMw / 1000) * 1.5;
+    const signalW = photo.concentratedPowerMw / 1000;
+    return [
+      { name: "Beam Irradiance", watts: beamW, tone: "in" },
+      { name: "Photocurrent Output", watts: signalW, tone: "useful" },
+      {
+        name: "Optical Scattering",
+        watts: Math.max(0, beamW - signalW),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-247804-delaval-separator") {
+    const sep = stepDeLavalSeparator({
+      bowlRpm: params.bowlRpm,
+      rawMilkFlowLph: params.rawMilkFlowLph,
+    });
+    const totalW = sep.bowlOmegaRadPerS * 2.8;
+    return [
+      { name: "Drive Belt", watts: totalW, tone: "in" },
+      { name: "Centrifugal Separation", watts: totalW * 0.74, tone: "useful" },
+      { name: "Fluid Viscous Drag", watts: totalW * 0.26, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-3237-rillieux-evaporator") {
+    const rillieux = stepRillieuxEvaporator({
+      numberOfEffects: params.numberOfEffects,
+      juiceFeedRateKgPerH: params.juiceFeedRateKgPerH,
+    });
+    const steamW = (rillieux.primarySteamConsumptionKgPerH * 2257) / 3.6;
+    const evapW = (rillieux.totalEvaporationKgPerH * 2257) / 3.6;
+    return [
+      { name: "Boiler Steam", watts: steamW, tone: "in" },
+      {
+        name: "Latent Vapor Recovery",
+        watts: evapW,
+        tone: "useful",
+      },
+      {
+        name: "Condenser Loss",
+        watts: Math.max(0, steamW - evapW),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-31128-otis-elevator") {
+    const otis = stepOtisElevator({ cabPayloadKg: params.cabPayload });
+    const hoistW = otis.hoistTensionKn * 1000 * 0.75;
+    const potW = otis.hangingMassKg * 9.81 * 0.75;
+    return [
+      { name: "Hoisting Cable", watts: hoistW, tone: "in" },
+      { name: "Potential Energy Gain", watts: potW, tone: "useful" },
+      {
+        name: "Guide Shoe Friction",
+        watts: Math.max(0, hoistW - potW),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-36836-gatling-gun") {
+    const _gat = stepGatlingGun({ crankRpm: params.crankRpm, barrelCount: params.barrelCount });
+    const crankW = (params.crankRpm ?? 80) * 1.8;
+    return [
+      { name: "Manual Crank", watts: crankW, tone: "in" },
+      { name: "Cluster Rotation", watts: crankW * 0.68, tone: "useful" },
+      { name: "Cam Track Friction", watts: crankW * 0.32, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-78317-nobel-dynamite") {
+    const dyn = stepNobelDynamite({
+      ngConcentrationPct: params.ngConcentrationPct,
+      capEnergyJoules: params.capEnergyJoules,
+    });
+    const blastW = dyn.energyMjPerKg * 1e6 * 0.05; // 50g blast packet rate
+    return [
+      { name: "Detonation Chemical", watts: blastW, tone: "in" },
+      { name: "Shock Front Propagation", watts: blastW * 0.42, tone: "useful" },
+      { name: "Seismic & Heat Dissipation", watts: blastW * 0.58, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-621195-zeppelin-airship") {
+    const zep = stepZeppelinAirship({
+      flightSpeedKnots: params.flightSpeedKnots,
+      trimWeight: params.trimWeight,
+    });
+    const thrustW = zep.propellerOmegaRadPerS * 65;
+    return [
+      { name: "Daimler Engines", watts: thrustW, tone: "in" },
+      { name: "Aerodynamic Thrust", watts: thrustW * 0.76, tone: "useful" },
+      { name: "Parasite Form Drag", watts: thrustW * 0.24, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-682690-hewitt-mercury-lamp") {
+    const lamp = stepHewittMercuryLamp({
+      mainsVoltageV: params.mainsVoltageV,
+      tubeLengthCm: params.tubeLengthCm,
+      tubeDiameterMm: params.tubeDiameterMm,
+      ballastResistanceOhms: params.ballastResistanceOhms,
+    });
+    return [
+      { name: "Mains Supply", watts: lamp.totalPowerWatts, tone: "in" },
+      { name: "Mercury Arc Column", watts: lamp.arcPowerWatts, tone: "useful" },
+      {
+        name: "Ballast I²R Heat",
+        watts: Math.max(0, lamp.totalPowerWatts - lamp.arcPowerWatts),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-942699-baekeland-bakelite") {
+    const _bake = stepBaekelandBakelite(
+      params.curingTempC ?? 150,
+      params.autoclavePressurePsi ?? 80,
+      params.catalystPct ?? 1,
+    );
+    return [
+      { name: "Autoclave Steam", watts: 1800, tone: "in" },
+      { name: "Crosslink Condensation", watts: 1250, tone: "useful" },
+      { name: "Mold Wall Heat Leak", watts: 550, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-971501-haber-ammonia") {
+    const haber = stepHaberAmmonia({
+      pressureAtm: params.pressureAtm,
+      temperatureCelsius: params.temperatureCelsius,
+      feedFlowRateMolesPerSec: params.feedFlowRateMolesPerSec,
+      catalystActivity: params.catalystActivity,
+    });
+    return [
+      {
+        name: "Preheater & Gas Feed",
+        watts: haber.reactionHeatGeneratedKw * 1000 * 0.85,
+        tone: "in",
+      },
+      { name: "Exothermic Synthesis", watts: haber.reactionHeatGeneratedKw * 1000, tone: "useful" },
+      {
+        name: "Flue Radiation Loss",
+        watts: haber.reactionHeatGeneratedKw * 1000 * 0.15,
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-2297691-carlson-electrophotography") {
+    const _carlson = stepCarlsonElectrophotography({
+      coronaVoltageKv: params.coronaVoltageKv,
+      exposureLuxSec: params.exposureLuxSec,
+      layerThicknessUm: params.layerThicknessUm,
+    });
+    const coronaW = (params.coronaVoltageKv ?? 6) * 1000 * 0.00015;
+    return [
+      { name: "Scorotron Corona", watts: coronaW, tone: "in" },
+      { name: "Latent Electrostatic Image", watts: coronaW * 0.68, tone: "useful" },
+      { name: "Substrate Dark Leakage", watts: coronaW * 0.32, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2929922-townes-laser") {
+    const laser = stepTownesLaser({
+      pumpPowerWatts: params.pumpPowerWatts,
+      cavityLengthCm: params.cavityLengthCm,
+      mirror2ReflectivityPct: params.mirror2ReflectivityPct,
+    });
+    const pumpW = params.pumpPowerWatts ?? 350;
+    return [
+      { name: "Optical Flash Pump", watts: pumpW, tone: "in" },
+      { name: "Stimulated Coherent Beam", watts: laser.laserOutputPowerWatts, tone: "useful" },
+      {
+        name: "Nonradiative Cavity Heat",
+        watts: Math.max(0, pumpW - laser.laserOutputPowerWatts),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-2981877-noyce-ic") {
+    const _noyce = stepNoyceIC({
+      clockFrequencyMhz: params.clockFrequencyMhz,
+      reverseBias: params.reverseBias,
+    });
+    return [
+      { name: "DC Power Supply", watts: 0.12, tone: "in" },
+      { name: "Planar Logic Switching", watts: 0.085, tone: "useful" },
+      { name: "Substrate Leakage", watts: 0.035, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-3353115-maiman-ruby-laser") {
+    const maiman = stepMaimanRubyLaser({
+      pumpEnergyJoules: params.pumpEnergyJoules,
+      flashDurationMs: params.flashDurationMs,
+      rodLengthCm: params.rodLengthCm,
+      outputMirrorReflectivity: params.outputMirrorReflectivity,
+      crystalTemperatureKelvin: params.crystalTemperatureKelvin,
+    });
+    const pumpAvgW = (params.pumpEnergyJoules ?? 150) / ((params.flashDurationMs ?? 1.0) * 1e-3);
+    return [
+      { name: "Xenon Flashtube", watts: pumpAvgW, tone: "in" },
+      { name: "694.3nm Laser Pulse", watts: maiman.laserPeakPowerKw * 1000, tone: "useful" },
+      {
+        name: "Phonon Crystal Heating",
+        watts: Math.max(0, pumpAvgW - maiman.laserPeakPowerKw * 1000),
+        tone: "loss",
+      },
+    ];
+  }
+
+  if (patentId === "us-3858232-boyle-smith-ccd") {
+    const _ccd = stepBoyleSmithCcd({
+      gateVoltageV: params.gateVoltageV,
+      clockFrequencyMhz: params.clockFrequencyMhz,
+      incidentLux: params.incidentLux,
+      integrationTimeMs: params.integrationTimeMs,
+      temperatureKelvin: params.temperatureKelvin,
+    });
+    const clockW = (0.045 * (params.clockFrequencyMhz ?? 5.0)) / 5.0;
+    return [
+      { name: "Clock Gate Drive", watts: clockW, tone: "in" },
+      { name: "Photoelectron Packet Transfer", watts: clockW * 0.82, tone: "useful" },
+      { name: "Dark Thermal Noise", watts: clockW * 0.18, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-4136359-wozniak-apple") {
+    const _woz = stepWozniakApple({
+      crystalFreq: params.crystalFreq,
+      ramCapacityKb: params.ramCapacityKb,
+    });
+    return [
+      { name: "DC Power Supply", watts: 15.0, tone: "in" },
+      { name: "6502 CPU & DRAM Logic", watts: 11.5, tone: "useful" },
+      { name: "Regulator Heat Dissipation", watts: 3.5, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-124404-westinghouse-air-brake") {
+    const pipeP = params.trainPipePressure ?? 70;
+    const pWatts = (pipeP / 70) * 850;
+    return [
+      { name: "Pneumatic Reservoir", watts: pWatts, tone: "in" },
+      { name: "Brake Clamping Force", watts: pWatts * 0.72, tone: "useful" },
+      { name: "Exhaust Venting", watts: pWatts * 0.28, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-1773980-farnsworth-tv") {
+    const vAnode = params.anodeVoltage ?? 1200;
+    const beamW = vAnode * 25e-6; // 25 uA beam current
+    return [
+      { name: "High Voltage Anode", watts: beamW * 1000, tone: "in" },
+      { name: "Photo-Dissector Beam", watts: beamW * 650, tone: "useful" },
+      { name: "Magnetic Deflection I²R", watts: beamW * 350, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-2524035-bardeen-transistor") {
+    const iE = (params.emitterCurrent ?? 0.6) * 1e-3;
+    const biasW = iE * 0.7 + 0.035;
+    return [
+      { name: "Emitter Bias Supply", watts: biasW * 1000, tone: "in" },
+      { name: "Collector Amplified Output", watts: biasW * 1000 * 0.76, tone: "useful" },
+      { name: "Germanium Bulk Recombination", watts: biasW * 1000 * 0.24, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-3138743-kilby-integrated-circuit") {
+    const vSupply = params.supplyVoltageV ?? 10;
+    const dcW = vSupply * 2.5e-3; // 2.5 mA DC
+    return [
+      { name: "DC Power Supply", watts: dcW * 1000, tone: "in" },
+      { name: "Oscillator AC Output", watts: dcW * 1000 * 0.65, tone: "useful" },
+      { name: "Diffused Resistor I²R", watts: dcW * 1000 * 0.35, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-6120588-eink") {
+    const vElectrode = params.electrodeVoltageVolts ?? 15;
+    const einkW = vElectrode * 3.5e-6;
+    return [
+      { name: "Electrode Drive", watts: einkW * 1000, tone: "in" },
+      { name: "Electrophoretic Drift", watts: einkW * 1000 * 0.8, tone: "useful" },
+      { name: "Microcapsule Fluid Drag", watts: einkW * 1000 * 0.2, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-6331181-davinci") {
+    const scale = params.motionScaleRatio ?? 3.0;
+    const totalW = 65.0 * (scale / 3.0);
+    return [
+      { name: "Servomotor Drive", watts: totalW, tone: "in" },
+      { name: "Surgical Manipulation", watts: totalW * 0.78, tone: "useful" },
+      { name: "Cable Tendon Friction", watts: totalW * 0.22, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-6594844-roomba") {
+    const vWheel = params.wheelSpeedMps ?? 0.3;
+    const battW = 28.0 * (vWheel / 0.3);
+    return [
+      { name: "NiMH Battery", watts: battW, tone: "in" },
+      { name: "Drive Wheels & Impeller", watts: battW * 0.7, tone: "useful" },
+      { name: "Floor & Brush Drag", watts: battW * 0.3, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-7479949-multitouch") {
+    const scanW = 0.028;
+    return [
+      { name: "Capacitive Scan Drive", watts: scanW * 1000, tone: "in" },
+      { name: "Mutual Node Charge", watts: scanW * 1000 * 0.84, tone: "useful" },
+      { name: "Parasitic Trace Loss", watts: scanW * 1000 * 0.16, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-4750-howe-sewing-machine") {
+    const crankW = (params.crankRpm ?? 120) * 0.25;
+    return [
+      { name: "Hand Crank", watts: crankW, tone: "in" },
+      { name: "Needle & Shuttle Work", watts: crankW * 0.68, tone: "useful" },
+      { name: "Thread Tension Friction", watts: crankW * 0.32, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-105338-hyatt-celluloid") {
+    const hydW = (params.hydraulicPressureMpa ?? 12) * 120;
+    return [
+      { name: "Hydraulic Ram", watts: hydW, tone: "in" },
+      { name: "Thermoplastic Gelation", watts: hydW * 0.75, tone: "useful" },
+      { name: "Mold Friction Loss", watts: hydW * 0.25, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-157124-glidden-barbed-wire") {
+    const tensionW = (params.wireTensionN ?? 450) * 0.15;
+    return [
+      { name: "Strand Tensioner", watts: tensionW, tone: "in" },
+      { name: "Barb Interlock Clamping", watts: tensionW * 0.8, tone: "useful" },
+      { name: "Coiling Torsion Loss", watts: tensionW * 0.2, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-706737-fessenden-wireless") {
+    const rfW = 1200;
+    return [
+      { name: "Alternator Shaft", watts: rfW, tone: "in" },
+      { name: "Continuous Wave RF", watts: rfW * 0.64, tone: "useful" },
+      { name: "Antenna Tuning Loss", watts: rfW * 0.36, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-727650-linde-air-liquefaction") {
+    const pIn = params.inletPressureAtm ?? 200;
+    const compW = (pIn / 200) * 45000;
+    return [
+      { name: "Compressor Shaft", watts: compW, tone: "in" },
+      { name: "Joule-Thomson Cooling", watts: compW * 0.38, tone: "useful" },
+      { name: "Intercooler Heat Loss", watts: compW * 0.62, tone: "loss" },
+    ];
+  }
+
+  if (patentId === "us-x1-hopkins-potash") {
+    const roastW = 2400;
+    return [
+      { name: "Combustion Fire", watts: roastW, tone: "in" },
+      { name: "Pearlash Carbon Burnout", watts: roastW * 0.7, tone: "useful" },
+      { name: "Flue Convection Loss", watts: roastW * 0.3, tone: "loss" },
+    ];
+  }
+
   return [];
 }

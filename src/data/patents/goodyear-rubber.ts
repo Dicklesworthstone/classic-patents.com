@@ -181,7 +181,19 @@ My principal improvement consists in the combining of sulphur and white lead wit
     ],
     breakthroughInsight:
       "Goodyear's stated move is a compound of India-rubber, sulphur, and white lead exposed to regulated heat. His preferred recipe is 25 parts India-rubber, 5 sulphur, and 7 white lead; the claimed method also uses cotton-wool interlayers and an oven or heated cylinder.",
-    patentWars: [],
+    patentWars: [
+      {
+        rivalName: "Horace H. Day & Thomas Hancock",
+        rivalClaim:
+          "British manufacturer Thomas Hancock reverse-engineered Goodyear's sulfur samples in London and secured a British patent before Goodyear filed abroad. In the US, Horace Day claimed earlier manufacture rights.",
+        conflictDetails:
+          "Goodyear spent over $50,000 defending his discovery in dozens of federal lawsuits, culminating in the historic 1852 Trenton, New Jersey trial (Goodyear v. Day).",
+        resolution:
+          "Goodyear retained legendary statesman and orator Daniel Webster, who delivered a world-famous two-day closing argument celebrating Goodyear's ten-year heroic struggle in poverty to master the chemical vulcanization of rubber.",
+        legalOutcome:
+          "Supreme Court Justice Robert C. Grier ruled decisively in Goodyear's favor, issuing a permanent injunction against Day and confirming Goodyear as the sole inventor of sulfur heat-vulcanized rubber.",
+      },
+    ],
     civilizationalImpact:
       "The grant documents a reproducible approach to compounded, heat-treated India-rubber fabric: a formulation, fabrication routes, a laminate construction, a temperature range, and three claims. Those concrete process details are the historically useful record preserved here.",
   },
