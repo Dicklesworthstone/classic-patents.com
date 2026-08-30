@@ -82,10 +82,10 @@ describe("archival publication boundary", () => {
     );
     // Owner policy (2026-08-21): the former root-QA hold list no longer
     // gates publication — presence with minor omissions beats absence.
-    expect(archivalEditionForPublication(lamarrPatent)).toBe(lamarrPatent.archivalEdition);
-    // Whitney has an authored edition but no companion map yet: the edition
-    // renderer fails closed on paragraphs without readings, so it waits.
-    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBeUndefined();
+    // Whitney now has an authored edition AND a registered companion map.
+    expect(archivalEditionForPublication(whitneyCottonGinPatent)).toBe(
+      whitneyCottonGinPatent.archivalEdition,
+    );
     const unmappedPatent: Patent = {
       ...goodyearRubberPatent,
       id: "us-unmapped-draft-test",

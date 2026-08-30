@@ -324,6 +324,14 @@ export function CuratedSpecificationEdition({
           const plainEnglish = paragraphReadings[index];
 
           if (block.kind === "claim") {
+            const claimDecoder = claimDecoders.find((c) => c.number === block.number);
+            const claimPlainEnglish =
+              plainEnglish && plainEnglish.length > 0
+                ? plainEnglish
+                : claimDecoder?.plainEnglish
+                  ? [claimDecoder.plainEnglish]
+                  : undefined;
+
             const claimSection = (
               <section
                 id={`claim-${block.number}`}
@@ -341,11 +349,11 @@ export function CuratedSpecificationEdition({
             // Owner policy: publish the verbatim claim text even when its
             // decoder has not been authored yet; the companion appears when
             // it lands.
-            if (plainEnglish && plainEnglish.length > 0) {
+            if (claimPlainEnglish && claimPlainEnglish.length > 0) {
               return (
                 <ParallelReading
                   key={key}
-                  plainEnglish={plainEnglish}
+                  plainEnglish={claimPlainEnglish}
                   sourceLabel={`Original claim ${block.number}`}
                 >
                   {claimSection}

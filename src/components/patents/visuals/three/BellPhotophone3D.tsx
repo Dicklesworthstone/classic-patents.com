@@ -233,7 +233,8 @@ export function BellPhotophone3D() {
 
       {/* Bottom SI Telemetry Chip Strip */}
       <StudioKernelChips
-        visible={true}
+        side="right"
+        visible={showUiOverlay}
         title="QUALITATIVE PHOTOPHONE ARRANGEMENT"
         chips={[
           { label: "Transmitter", value: "Beam controller" },

@@ -246,6 +246,25 @@ export function DaimlerEngine3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="MARINE PROPULSION INSTALLATION"
+          chips={[
+            { label: "Shaft position", value: `${shaftPosition.toFixed(2)}`, unit: "fraction" },
+            { label: "Ahead contact", value: `${aheadContact.toFixed(2)}`, unit: "fraction" },
+            { label: "Astern train", value: `${asternEngagement.toFixed(2)}`, unit: "fraction" },
+            {
+              label: "Cooling pump",
+              value: coolingPumpEnabled ? "on" : "off",
+              unit: "fore / aft pipes",
+              tone: "ok",
+            },
+            { label: "Gas storage", value: "high / low pressure", unit: "reservoirs" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -289,24 +308,6 @@ export function DaimlerEngine3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="MARINE PROPULSION INSTALLATION"
-        chips={[
-          { label: "Shaft position", value: `${shaftPosition.toFixed(2)}`, unit: "fraction" },
-          { label: "Ahead contact", value: `${aheadContact.toFixed(2)}`, unit: "fraction" },
-          { label: "Astern train", value: `${asternEngagement.toFixed(2)}`, unit: "fraction" },
-          {
-            label: "Cooling pump",
-            value: coolingPumpEnabled ? "on" : "off",
-            unit: "fore / aft pipes",
-            tone: "ok",
-          },
-          { label: "Gas storage", value: "high / low pressure", unit: "reservoirs" },
-        ]}
-      />
     </div>
   );
 }

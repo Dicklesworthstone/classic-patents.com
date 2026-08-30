@@ -337,6 +337,7 @@ export function TeslaTeleautomaton3D() {
         )}
 
         <StudioKernelChips
+          side="right"
           visible={showUiOverlay}
           title="Tesla Wireless Teleautomation"
           chips={[

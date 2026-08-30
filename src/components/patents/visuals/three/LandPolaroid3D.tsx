@@ -284,6 +284,25 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="DIFFUSION-TRANSFER INSTANT CHEMISTRY"
+          chips={[
+            { label: "t_dev", value: `${developmentTimeSec.toFixed(0)}`, unit: "s" },
+            { label: "Roller Gap", value: `${rollerGapUm.toFixed(0)}`, unit: "µm" },
+            {
+              label: "Viscosity",
+              value: `${reagentViscosityCp.toLocaleString()}`,
+              unit: "cP",
+            },
+            { label: "Alkali pH", value: `${alkaliPh.toFixed(1)}`, unit: "pH" },
+            { label: "Exposure", value: `${(exposureFraction * 100).toFixed(0)}%` },
+            { label: "Process", value: "One-Step Rupturable Pod Diffusion" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -349,24 +368,6 @@ export const LandPolaroid3D: React.FC<LandPolaroid3DProps> = ({ className = "" }
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="DIFFUSION-TRANSFER INSTANT CHEMISTRY"
-        chips={[
-          { label: "t_dev", value: `${developmentTimeSec.toFixed(0)}`, unit: "s" },
-          { label: "Roller Gap", value: `${rollerGapUm.toFixed(0)}`, unit: "µm" },
-          {
-            label: "Viscosity",
-            value: `${reagentViscosityCp.toLocaleString()}`,
-            unit: "cP",
-          },
-          { label: "Alkali pH", value: `${alkaliPh.toFixed(1)}`, unit: "pH" },
-          { label: "Exposure", value: `${(exposureFraction * 100).toFixed(0)}%` },
-          { label: "Process", value: "One-Step Rupturable Pod Diffusion" },
-        ]}
-      />
     </div>
   );
 };

@@ -331,6 +331,30 @@ export function FarnsworthTV3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="ELECTRON OPTICAL IMAGE DISSECTOR"
+          chips={[
+            {
+              label: "v_electron",
+              value: `${(velocityMps / 1e6).toFixed(1)}M`,
+              unit: "m/s",
+              tone: "hot",
+            },
+            { label: "Relativistic", value: `${velocityFractionC}% c` },
+            { label: "V_anode", value: `${anodeVoltageVolts.toFixed(0)}`, unit: "V" },
+            { label: "I_photo", value: `${photocathodeCurrentUa}`, unit: "µA" },
+            {
+              label: "B_deflect",
+              value: `${deflectionGauss.toFixed(1)}`,
+              unit: "Gauss",
+            },
+            { label: "Scanning", value: "All-Electronic Continuous Dissection" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -394,29 +418,6 @@ export function FarnsworthTV3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="ELECTRON OPTICAL IMAGE DISSECTOR"
-        chips={[
-          {
-            label: "v_electron",
-            value: `${(velocityMps / 1e6).toFixed(1)}M`,
-            unit: "m/s",
-            tone: "hot",
-          },
-          { label: "Relativistic", value: `${velocityFractionC}% c` },
-          { label: "V_anode", value: `${anodeVoltageVolts.toFixed(0)}`, unit: "V" },
-          { label: "I_photo", value: `${photocathodeCurrentUa}`, unit: "µA" },
-          {
-            label: "B_deflect",
-            value: `${deflectionGauss.toFixed(1)}`,
-            unit: "Gauss",
-          },
-          { label: "Scanning", value: "All-Electronic Continuous Dissection" },
-        ]}
-      />
     </div>
   );
 }

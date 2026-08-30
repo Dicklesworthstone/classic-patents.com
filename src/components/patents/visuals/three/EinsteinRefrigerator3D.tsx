@@ -355,6 +355,35 @@ export function EinsteinRefrigerator3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="ABSORPTION REFRIGERATION THERMODYNAMICS"
+          chips={[
+            {
+              label: "T_evap",
+              value: `${evaporatorTemperatureCelsius.toFixed(1)}`,
+              unit: "°C",
+              tone: "ok",
+            },
+            {
+              label: "Q_cooling",
+              value: `${coolingPowerWatts.toFixed(0)}`,
+              unit: "W",
+            },
+            { label: "COP", value: copEfficiency },
+            { label: "Q_heat", value: `${heatInputWatts.toFixed(0)}`, unit: "W" },
+            {
+              label: "P_total",
+              value: `${systemPressureAtm.toFixed(1)}`,
+              unit: "atm",
+            },
+            { label: "Working Fluid", value: "Butane + NH₃ + H₂O" },
+            { label: "Mechanism", value: "Zero Moving Parts / Hermetic" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -418,34 +447,6 @@ export function EinsteinRefrigerator3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="ABSORPTION REFRIGERATION THERMODYNAMICS"
-        chips={[
-          {
-            label: "T_evap",
-            value: `${evaporatorTemperatureCelsius.toFixed(1)}`,
-            unit: "°C",
-            tone: "ok",
-          },
-          {
-            label: "Q_cooling",
-            value: `${coolingPowerWatts.toFixed(0)}`,
-            unit: "W",
-          },
-          { label: "COP", value: copEfficiency },
-          { label: "Q_heat", value: `${heatInputWatts.toFixed(0)}`, unit: "W" },
-          {
-            label: "P_total",
-            value: `${systemPressureAtm.toFixed(1)}`,
-            unit: "atm",
-          },
-          { label: "Working Fluid", value: "Butane + NH₃ + H₂O" },
-          { label: "Mechanism", value: "Zero Moving Parts / Hermetic" },
-        ]}
-      />
     </div>
   );
 }

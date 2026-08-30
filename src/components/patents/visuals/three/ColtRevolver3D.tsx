@@ -307,31 +307,33 @@ export function ColtRevolver3D() {
         <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
         {/* Camera Preset Toolbar (Top-Left) */}
-        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap gap-1.5 max-w-[calc(100%-8rem)]">
-          {(
-            [
-              ["iso", "Profile 3D"],
-              ["cylinder", "Cylinder"],
-              ["lockwork", "Action"],
-              ["sightline", "Sightline"],
-              ["loading_lever", "Loading Lever"],
-              ["top", "Top Plan"],
-            ] as [CameraPreset, string][]
-          ).map(([preset, label]) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => applyCameraPreset(preset)}
-              className={`min-h-9 px-2.5 py-1 text-xs font-mono rounded-lg transition-all border shadow-2xs ${
-                activeCamera === preset
-                  ? "bg-amber-600 text-white font-bold border-amber-500 shadow-sm"
-                  : "bg-white/85 dark:bg-ink-900/85 backdrop-blur-md text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showUiOverlay && (
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-nowrap overflow-x-auto scrollbar-none gap-1 sm:gap-1.5 max-w-[calc(100%-14rem)] sm:max-w-[calc(100%-24rem)] p-1 sm:p-1.5 rounded-xl bg-white/85 dark:bg-ink-900/85 backdrop-blur-md border border-parchment-300 dark:border-ink-700 shadow-sm">
+            {(
+              [
+                ["iso", "Profile 3D"],
+                ["cylinder", "Cylinder"],
+                ["lockwork", "Action"],
+                ["sightline", "Sightline"],
+                ["loading_lever", "Loading Lever"],
+                ["top", "Top Plan"],
+              ] as [CameraPreset, string][]
+            ).map(([preset, label]) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => applyCameraPreset(preset)}
+                className={`min-h-9 px-2.5 py-1 text-xs font-mono rounded-lg shrink-0 whitespace-nowrap transition-all border shadow-2xs ${
+                  activeCamera === preset
+                    ? "bg-amber-600 text-white font-bold border-amber-500 shadow-sm"
+                    : "text-ink-700 dark:text-parchment-200 border-parchment-300 dark:border-ink-700 hover:bg-parchment-100 dark:hover:bg-ink-800"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Floating View Actions (Top-Right) */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-1.5">
@@ -441,6 +443,46 @@ export function ColtRevolver3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="REVOLVING CYLINDER INTERNAL BALLISTICS"
+          chips={[
+            {
+              label: "v_muzzle",
+              value: `${muzzleVelocityMps.toFixed(0)}`,
+              unit: "m/s",
+              tone: "hot",
+            },
+            {
+              label: "E_muzzle",
+              value: `${muzzleEnergyJoules.toFixed(0)}`,
+              unit: "J",
+            },
+            {
+              label: "P_chamber",
+              value: `${chamberPressureMpa.toFixed(0)}`,
+              unit: "MPa",
+            },
+            {
+              label: "Hoop Stress",
+              value: `${hoopStressMpa.toFixed(0)}`,
+              unit: "MPa",
+            },
+            {
+              label: "Powder Charge",
+              value: `${powderGrains.toFixed(0)}`,
+              unit: "grains FFFg",
+            },
+            { label: "Cylinder", value: `Chamber ${currentChamberIndex} / 5` },
+            {
+              label: "Lockwork",
+              value: isFullCock ? "Locked Full Cock" : `${cockingAngleDeg.toFixed(0)}° Rotating`,
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Bottom Control Deck */}
@@ -566,45 +608,6 @@ export function ColtRevolver3D() {
           </span>
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="REVOLVING CYLINDER INTERNAL BALLISTICS"
-        chips={[
-          {
-            label: "v_muzzle",
-            value: `${muzzleVelocityMps.toFixed(0)}`,
-            unit: "m/s",
-            tone: "hot",
-          },
-          {
-            label: "E_muzzle",
-            value: `${muzzleEnergyJoules.toFixed(0)}`,
-            unit: "J",
-          },
-          {
-            label: "P_chamber",
-            value: `${chamberPressureMpa.toFixed(0)}`,
-            unit: "MPa",
-          },
-          {
-            label: "Hoop Stress",
-            value: `${hoopStressMpa.toFixed(0)}`,
-            unit: "MPa",
-          },
-          {
-            label: "Powder Charge",
-            value: `${powderGrains.toFixed(0)}`,
-            unit: "grains FFFg",
-          },
-          { label: "Cylinder", value: `Chamber ${currentChamberIndex} / 5` },
-          {
-            label: "Lockwork",
-            value: isFullCock ? "Locked Full Cock" : `${cockingAngleDeg.toFixed(0)}° Rotating`,
-          },
-        ]}
-      />
     </div>
   );
 }

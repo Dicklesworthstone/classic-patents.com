@@ -122,6 +122,9 @@ export function validateCuratedSpecificationEdition(
   if (!isRealIsoDate(edition.preparedAt)) {
     errors.push("The archival edition must have a real YYYY-MM-DD preparation date.");
   }
+  if (!edition.completeFacsimileReviewed) {
+    errors.push("The archival edition must record a full-facsimile review attestation.");
+  }
   if (edition.blocks.length === 0) {
     errors.push("The archival edition must contain authored document blocks.");
   }

@@ -6,6 +6,7 @@
  * in the edition file.
  */
 
+import { ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS } from "./arkwrightWaterFrameEdition";
 import { baekelandBakeliteParallelReadings } from "./baekelandBakeliteEdition";
 import { bardeenTransistorParallelReadings } from "./bardeenTransistorEdition";
 import { bellPhotophoneParallelReadings } from "./bellPhotophoneEdition";
@@ -14,6 +15,7 @@ import { boyleSmithCcdParallelReadings } from "./boyleSmithCcdEdition";
 import { carlsonElectrophotographyParallelReadings } from "./carlsonElectrophotographyEdition";
 import { carrierAirConditionerParallelReadings } from "./carrierAirConditionerEdition";
 import { coltRevolverParallelReadings } from "./coltRevolverEdition";
+import { CORT_PUDDLING_ROLLING_PARALLEL_READINGS } from "./cortPuddlingRollingEdition";
 import { corlissSteamEngineParallelReadings } from "./corlissSteamEngineEdition";
 import { davinciParallelReadings } from "./daVinciEdition";
 import { davenportElectricMotorParallelReadings } from "./davenportElectricMotorEdition";
@@ -39,6 +41,7 @@ import { grammeDynamoParallelReadings } from "./grammeDynamoEdition";
 import { haberAmmoniaParallelReadings } from "./haberAmmoniaEdition";
 import { HALL_ALUMINIUM_PARALLEL_READINGS } from "./hallAluminiumEdition";
 import { hewittMercuryLampParallelReadings } from "./hewittMercuryLampEdition";
+import { hollerithTabulatingParallelReadings } from "./hollerithTabulatingEdition";
 import { HOPKINS_PARALLEL_READINGS as hopkinsPotashParallelReadings } from "./hopkinsPotashEdition";
 import { hyattCelluloidParallelReadings } from "./hyattCelluloidEdition";
 import { kilbyIntegratedCircuitParallelReadings } from "./kilbyIntegratedCircuitEdition";
@@ -74,16 +77,25 @@ import { thomsonWeldingParallelReadings } from "./thomsonWeldingEdition";
 import { townesLaserParallelReadings } from "./townesLaserEdition";
 import { HOWE_SEWING_MACHINE_PARALLEL_READINGS } from "./us-4750-howe-sewing-machine";
 import { DAIMLER_MARINE_ENGINE_PARALLEL_READINGS } from "./us-361931-daimler-engine";
+import { wattRotaryEngineParallelReadings } from "./wattRotaryEngineEdition";
+import { WATT_SEPARATE_CONDENSER_PARALLEL_READINGS } from "./wattSeparateCondenserEdition";
 import { westinghouseAirBrakeParallelReadings } from "./westinghouseAirBrakeEdition";
+import { whitneyCottonGinParallelReadings } from "./whitneyCottonGinParallelReading";
 import { wozniakAppleParallelReadings } from "./wozniakAppleEdition";
 import { yaleLockParallelReadings } from "./yaleLockEdition";
+import { zeppelinAirshipParallelReadings } from "./zeppelinAirshipEdition";
 
 export type ArchivalParallelReading = readonly string[];
 
 export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   Record<string, Readonly<Record<number, readonly string[]>>>
 > = {
+  "gb-913-watt-separate-condenser": WATT_SEPARATE_CONDENSER_PARALLEL_READINGS,
+  "gb-931-arkwright-water-frame": ARKWRIGHT_WATER_FRAME_PARALLEL_READINGS,
+  "gb-1306-watt-rotary-engine": wattRotaryEngineParallelReadings,
+  "gb-1420-cort-puddling-rolling": CORT_PUDDLING_ROLLING_PARALLEL_READINGS,
   "us-x1-hopkins-potash": hopkinsPotashParallelReadings,
+  "us-x72-whitney-cotton-gin": whitneyCottonGinParallelReadings,
   "us-x8277-mccormick-reaper": mccormickReaperParallelReadings,
   "us-x9430-colt-revolver": coltRevolverParallelReadings,
   "us-132-davenport-electric-motor": davenportElectricMotorParallelReadings,
@@ -117,6 +129,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-361931-daimler-engine": DAIMLER_MARINE_ENGINE_PARALLEL_READINGS,
   "us-381968-tesla-motor": teslaMotorParallelReadings,
   "us-388850-eastman-kodak": eastmanKodakParallelReadings,
+  "us-395781-hollerith-tabulating": hollerithTabulatingParallelReadings,
   "us-400766-hall-aluminium": HALL_ALUMINIUM_PARALLEL_READINGS,
   "us-470918-reno-escalator": renoEscalatorParallelReadings,
   "us-542846-diesel-engine": dieselEngineParallelReadings,
@@ -124,6 +137,7 @@ export const ARCHIVAL_PARALLEL_READINGS: Readonly<
   "us-593138-tesla-coil": teslaCoil593138ParallelReadings,
   "us-608969-parsons-turbine": parsonsTurbineParallelReadings,
   "us-613809-tesla-teleautomaton": teslaTeleautomatonParallelReadings,
+  "us-621195-zeppelin-airship": zeppelinAirshipParallelReadings,
   "us-682690-hewitt-mercury-lamp": hewittMercuryLampParallelReadings,
   "us-706737-fessenden-wireless": fessendenWirelessParallelReadings,
   "us-727650-linde-air-liquefaction": lindeAirLiquefactionParallelReadings,

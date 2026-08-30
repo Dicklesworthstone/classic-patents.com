@@ -292,6 +292,45 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="MULTIPLE-EFFECT VACUUM EVAPORATION"
+          chips={[
+            {
+              label: "Water Evaporated",
+              value: `${state.totalEvaporationKgPerH.toFixed(0)}`,
+              unit: "kg/h",
+              tone: "hot",
+            },
+            {
+              label: "Steam Economy",
+              value: `${state.steamEconomyRatio.toFixed(2)}`,
+              unit: "kg evap / kg steam",
+            },
+            {
+              label: "Syrup Output",
+              value: `${state.syrupOutputRateKgPerH.toFixed(0)}`,
+              unit: "kg/h",
+            },
+            {
+              label: "Feed / Target",
+              value: `${initialBrixDeg}° → ${targetBrixDeg}°`,
+              unit: "Brix",
+            },
+            {
+              label: "Steam Saved",
+              value: `${state.fuelSavingsPct.toFixed(0)}%`,
+              unit: "vs single-effect",
+            },
+            {
+              label: "Effects",
+              value: `${numberOfEffects}-Stage Latent Heat Cascade`,
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -379,44 +418,6 @@ export const RillieuxEvaporator3D: React.FC<Rillieux3DProps> = ({ className = ""
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="MULTIPLE-EFFECT VACUUM EVAPORATION"
-        chips={[
-          {
-            label: "Water Evaporated",
-            value: `${state.totalEvaporationKgPerH.toFixed(0)}`,
-            unit: "kg/h",
-            tone: "hot",
-          },
-          {
-            label: "Steam Economy",
-            value: `${state.steamEconomyRatio.toFixed(2)}`,
-            unit: "kg evap / kg steam",
-          },
-          {
-            label: "Syrup Output",
-            value: `${state.syrupOutputRateKgPerH.toFixed(0)}`,
-            unit: "kg/h",
-          },
-          {
-            label: "Feed / Target",
-            value: `${initialBrixDeg}° → ${targetBrixDeg}°`,
-            unit: "Brix",
-          },
-          {
-            label: "Steam Saved",
-            value: `${state.fuelSavingsPct.toFixed(0)}%`,
-            unit: "vs single-effect",
-          },
-          {
-            label: "Effects",
-            value: `${numberOfEffects}-Stage Latent Heat Cascade`,
-          },
-        ]}
-      />
     </div>
   );
 };

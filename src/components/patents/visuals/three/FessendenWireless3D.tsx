@@ -377,6 +377,25 @@ export function FessendenWireless3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="CONTINUOUS WAVE RADIO TELEPHONY"
+          chips={[
+            { label: "f_carrier", value: `${carrierFreqKhz.toFixed(1)}`, unit: "kHz" },
+            { label: "P_radiated", value: `${sim.radiatedPowerWatts.toFixed(0)}`, unit: "W" },
+            { label: "Modulation", value: `${audioModPct.toFixed(0)}%`, unit: "AM" },
+            { label: "Antenna L", value: `${antennaTuningUh.toFixed(0)}`, unit: "µH" },
+            {
+              label: "Resonance",
+              value: sim.isResonant ? "Tuned Locked" : "Detuned",
+              tone: sim.isResonant ? "ok" : "warn",
+            },
+            { label: "Detector", value: "Liquid Barretter Electrolytic" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -434,24 +453,6 @@ export function FessendenWireless3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="CONTINUOUS WAVE RADIO TELEPHONY"
-        chips={[
-          { label: "f_carrier", value: `${carrierFreqKhz.toFixed(1)}`, unit: "kHz" },
-          { label: "P_radiated", value: `${sim.radiatedPowerWatts.toFixed(0)}`, unit: "W" },
-          { label: "Modulation", value: `${audioModPct.toFixed(0)}%`, unit: "AM" },
-          { label: "Antenna L", value: `${antennaTuningUh.toFixed(0)}`, unit: "µH" },
-          {
-            label: "Resonance",
-            value: sim.isResonant ? "Tuned Locked" : "Detuned",
-            tone: sim.isResonant ? "ok" : "warn",
-          },
-          { label: "Detector", value: "Liquid Barretter Electrolytic" },
-        ]}
-      />
     </div>
   );
 }

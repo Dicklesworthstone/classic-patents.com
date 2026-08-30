@@ -327,6 +327,39 @@ export function TeslaCoil3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="HIGH-FREQUENCY RESONANT TRANSFORMER"
+          chips={[
+            {
+              label: "V_secondary",
+              value: `${secondaryVoltageMv}`,
+              unit: "MV",
+              tone: "hot",
+            },
+            {
+              label: "f_resonant",
+              value: `${resonantFreqKhz.toFixed(1)}`,
+              unit: "kHz",
+            },
+            {
+              label: "Streamer Length",
+              value: `${streamerLengthInches}"`,
+              unit: `(${streamerLengthMeters} m)`,
+            },
+            { label: "V_primary", value: `${inputVoltageKv.toFixed(0)}`, unit: "kV" },
+            { label: "Coupling (k)", value: `${couplingK.toFixed(2)}` },
+            { label: "Secondary", value: `${secondaryTurns}`, unit: "turns" },
+            {
+              label: "State",
+              value: "Quarter-Wave Helical Resonance",
+              tone: "hot",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -400,38 +433,6 @@ export function TeslaCoil3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="HIGH-FREQUENCY RESONANT TRANSFORMER"
-        chips={[
-          {
-            label: "V_secondary",
-            value: `${secondaryVoltageMv}`,
-            unit: "MV",
-            tone: "hot",
-          },
-          {
-            label: "f_resonant",
-            value: `${resonantFreqKhz.toFixed(1)}`,
-            unit: "kHz",
-          },
-          {
-            label: "Streamer Length",
-            value: `${streamerLengthInches}"`,
-            unit: `(${streamerLengthMeters} m)`,
-          },
-          { label: "V_primary", value: `${inputVoltageKv.toFixed(0)}`, unit: "kV" },
-          { label: "Coupling (k)", value: `${couplingK.toFixed(2)}` },
-          { label: "Secondary", value: `${secondaryTurns}`, unit: "turns" },
-          {
-            label: "State",
-            value: "Quarter-Wave Helical Resonance",
-            tone: "hot",
-          },
-        ]}
-      />
     </div>
   );
 }

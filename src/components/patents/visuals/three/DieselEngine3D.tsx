@@ -23,8 +23,9 @@ import {
   type DieselEngineNodes,
   updateDieselEngineKinematics,
 } from "./dieselEngineModel";
-import { StudioKernelChips } from "./StudioKernelChips";
+import { StudioKernelChips, useResponsiveStudioHud } from "./StudioKernelChips";
 import { createThreeStudioScene, type StudioContext } from "./ThreeStudioScene";
+
 import { useLiveSimParams } from "./useLiveSimParams";
 import { usePatentAudio } from "./usePatentAudio";
 
@@ -74,7 +75,7 @@ export function DieselEngine3D() {
   });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [showUiOverlay, setShowUiOverlay] = useState<boolean>(true);
+  const [showUiOverlay, setShowUiOverlay] = useResponsiveStudioHud(true);
   const [cutawayMode, setCutawayMode] = useState<boolean>(true);
   const [activeCamera, setActiveCamera] = useState<CameraPreset>("iso");
   const { isMuted, toggleMute } = usePatentAudio();
@@ -418,6 +419,26 @@ export function DieselEngine3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom-Right SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="DIESEL THERMODYNAMICS"
+          chips={[
+            { label: "Bore / Stroke", value: "250 × 400", unit: "mm" },
+            { label: "P_comp", value: String(peakPressureBar), unit: "bar" },
+            { label: "T_comp", value: String(peakTempC), unit: "°C" },
+            { label: "P_blast", value: String(blastAirPressure), unit: "bar" },
+            { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
+            { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
+            { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+            {
+              label: "Gas crate",
+              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -481,25 +502,6 @@ export function DieselEngine3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="DIESEL THERMODYNAMICS"
-        chips={[
-          { label: "Bore / Stroke", value: "250 × 400", unit: "mm" },
-          { label: "P_comp", value: String(peakPressureBar), unit: "bar" },
-          { label: "T_comp", value: String(peakTempC), unit: "°C" },
-          { label: "P_blast", value: String(blastAirPressure), unit: "bar" },
-          { label: "η_brake", value: String(thermalEfficiencyPct), unit: "%" },
-          { label: "Ignition", value: isAutoIgnition ? "Spontaneous" : "Sub-critical" },
-          { label: "ω", value: diesel.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
-          {
-            label: "Gas crate",
-            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-          },
-        ]}
-      />
     </div>
   );
 }

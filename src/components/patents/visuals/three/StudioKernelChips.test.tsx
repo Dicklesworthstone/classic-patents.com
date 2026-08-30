@@ -38,6 +38,44 @@ describe("StudioKernelChips Component", () => {
     expect(html).toContain("Thermal Flux");
     expect(html).toContain("1.42");
     expect(html).toContain("right-3");
+    expect(html).toContain("max-w-[min(calc(100%-25rem),28rem)]");
+  });
+
+  test("automatically redirects side='left' to 'right' when hasPrimaryHud is true", () => {
+    const html = renderToStaticMarkup(
+      <StudioKernelChips
+        visible={true}
+        title="Secondary Bus"
+        chips={sampleChips}
+        side="left"
+        hasPrimaryHud={true}
+      />,
+    );
+
+    // Should position on the right to prevent overlapping with primary bottom-left card
+    expect(html).toContain("right-3");
+  });
+
+  test("respects side='left' when hasPrimaryHud is false", () => {
+    const html = renderToStaticMarkup(
+      <StudioKernelChips
+        visible={true}
+        title="Stand-alone Bus"
+        chips={sampleChips}
+        side="left"
+        hasPrimaryHud={false}
+      />,
+    );
+
+    expect(html).toContain("left-3");
+  });
+
+  test("renders hot and warn badge tones with proper styling classes", () => {
+    const html = renderToStaticMarkup(<StudioKernelChips visible={true} chips={sampleChips} />);
+
+    expect(html).toContain("bg-rose-500/15");
+    expect(html).toContain("bg-amber-500/15");
+    expect(html).toContain("bg-parchment-100/80");
   });
 
   test("useResponsiveStudioHud exports a valid hook function", () => {

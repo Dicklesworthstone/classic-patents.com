@@ -383,6 +383,22 @@ export function SpencerMicrowave3D() {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="Spencer cavity magnetron"
+          chips={[
+            { label: "Anode", value: String(anodeVoltageKv), unit: "kV" },
+            { label: "B", value: String(magneticFieldGauss), unit: "G" },
+            { label: "RF", value: String(rfPowerWatts), unit: "W" },
+            { label: "f", value: String(rfPhysics.microwaveFreqMhz), unit: "MHz" },
+            {
+              label: "Spoke crate",
+              value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -437,21 +453,6 @@ export function SpencerMicrowave3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Spencer cavity magnetron"
-        chips={[
-          { label: "Anode", value: String(anodeVoltageKv), unit: "kV" },
-          { label: "B", value: String(magneticFieldGauss), unit: "G" },
-          { label: "RF", value: String(rfPowerWatts), unit: "W" },
-          { label: "f", value: String(rfPhysics.microwaveFreqMhz), unit: "MHz" },
-          {
-            label: "Spoke crate",
-            value: crateSource === "wasm" ? "fs-sparse" : "ts-heat-fallback",
-          },
-        ]}
-      />
     </div>
   );
 }

@@ -297,6 +297,25 @@ export function CorlissSteamEngine3D() {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="Corliss dashpot trip"
+          chips={[
+            { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
+            { label: "Cutoff", value: String(cutoffPct), unit: "%" },
+            { label: "IHP", value: String(indicatedHp), unit: "hp" },
+            { label: "η", value: thermalEfficiencyPct, unit: "%" },
+            { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
+            { label: "r_exp", value: String(corliss.expansionRatio) },
+            { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
+            {
+              label: "Valve crate",
+              value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -362,25 +381,6 @@ export function CorlissSteamEngine3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        side="right"
-        title="Corliss dashpot trip"
-        chips={[
-          { label: "Steam", value: String(steamPressurePsi), unit: "psi" },
-          { label: "Cutoff", value: String(cutoffPct), unit: "%" },
-          { label: "IHP", value: String(indicatedHp), unit: "hp" },
-          { label: "η", value: thermalEfficiencyPct, unit: "%" },
-          { label: "P", value: String(corliss.boilerMpa), unit: "MPa" },
-          { label: "r_exp", value: String(corliss.expansionRatio) },
-          { label: "ω", value: corliss.crankOmegaRadPerS.toFixed(2), unit: "rad/s" },
-          {
-            label: "Valve crate",
-            value: crateSource === "wasm" ? "fs-symmetry" : "ts-cyclic-fallback",
-          },
-        ]}
-      />
     </div>
   );
 }

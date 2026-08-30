@@ -284,6 +284,20 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="Parsons marine routing"
+          chips={[
+            { label: "Topology", value: marine.routing },
+            { label: "Banks", value: String(marine.activeTurbines.length) },
+            { label: "Shafts", value: String(marine.activeShafts) },
+            { label: "Direction", value: marine.directionLabel },
+            { label: "Flow edges", value: String(marine.routeEdges.length) },
+            { label: "Control", value: "valves + pipes" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -326,20 +340,6 @@ export const ParsonsTurbine3D = memo(function ParsonsTurbine3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        side="right"
-        title="Parsons marine routing"
-        chips={[
-          { label: "Topology", value: marine.routing },
-          { label: "Banks", value: String(marine.activeTurbines.length) },
-          { label: "Shafts", value: String(marine.activeShafts) },
-          { label: "Direction", value: marine.directionLabel },
-          { label: "Flow edges", value: String(marine.routeEdges.length) },
-          { label: "Control", value: "valves + pipes" },
-        ]}
-      />
     </div>
   );
 });

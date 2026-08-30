@@ -1634,7 +1634,7 @@ export const PATENT_PHYSICS_REGISTRY: Record<string, PatentPhysicsMetadata> = {
       const spacing = p.pointSpacing ?? 50;
       const semi = FrankenSimEngine.stepBardeenTransistor(ie, p.collectorBias ?? -40, spacing);
       const transitTimeNs = semi.clockPeriodNs;
-      const alpha = semi.currentGainAlpha;
+      const alpha = semi.currentGainAlpha ?? 1.0;
       const powerGainDb = semi.powerGainDb.toFixed(1);
       const ic = semi.collectorCurrentMa.toFixed(2);
 

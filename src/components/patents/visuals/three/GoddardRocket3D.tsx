@@ -325,6 +325,27 @@ export function GoddardRocket3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="LIQUID PROPELLANT ROCKET PROPULSION"
+          chips={[
+            {
+              label: "Thrust",
+              value: `${thrustNewtons.toFixed(0)} N`,
+              unit: `(${thrustLbf.toFixed(0)} lbf)`,
+              tone: "hot",
+            },
+            { label: "I_sp", value: `${specificImpulseSec.toFixed(1)}`, unit: "s" },
+            { label: "v_exhaust", value: `${exhaustVelocityMps.toFixed(0)}`, unit: "m/s" },
+            { label: "Exit Mach", value: `M ${machExit.toFixed(2)}`, tone: "hot" },
+            { label: "P_chamber", value: `${chamberPressurePsi.toFixed(0)}`, unit: "psi" },
+            { label: "Expansion", value: `${expansionRatio.toFixed(1)}:1`, unit: "ratio" },
+            { label: "Propellant", value: "Liquid Oxygen + Gasoline" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -388,26 +409,6 @@ export function GoddardRocket3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="LIQUID PROPELLANT ROCKET PROPULSION"
-        chips={[
-          {
-            label: "Thrust",
-            value: `${thrustNewtons.toFixed(0)} N`,
-            unit: `(${thrustLbf.toFixed(0)} lbf)`,
-            tone: "hot",
-          },
-          { label: "I_sp", value: `${specificImpulseSec.toFixed(1)}`, unit: "s" },
-          { label: "v_exhaust", value: `${exhaustVelocityMps.toFixed(0)}`, unit: "m/s" },
-          { label: "Exit Mach", value: `M ${machExit.toFixed(2)}`, tone: "hot" },
-          { label: "P_chamber", value: `${chamberPressurePsi.toFixed(0)}`, unit: "psi" },
-          { label: "Expansion", value: `${expansionRatio.toFixed(1)}:1`, unit: "ratio" },
-          { label: "Propellant", value: "Liquid Oxygen + Gasoline" },
-        ]}
-      />
     </div>
   );
 }

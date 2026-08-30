@@ -369,6 +369,41 @@ export default function HaberAmmonia3D({
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="HABER-BOSCH AMMONIA EQUILIBRIUM"
+          chips={[
+            {
+              label: "Yield (NH₃)",
+              value: `${sim.ammoniaYieldPct.toFixed(1)}%`,
+              tone: "hot",
+            },
+            {
+              label: "Production",
+              value: `${sim.ammoniaProductionKgPerHour.toFixed(0)}`,
+              unit: "kg/h",
+            },
+            { label: "Pressure", value: `${pressureAtm.toFixed(0)}`, unit: "atm" },
+            {
+              label: "Temperature",
+              value: `${temperatureCelsius.toFixed(0)}`,
+              unit: "°C",
+            },
+            {
+              label: "Feed Flow",
+              value: `${feedFlowRateMolesPerSec.toFixed(0)}`,
+              unit: "mol/s",
+            },
+            { label: "Catalyst", value: "Promoted Osmium / α-Fe" },
+            {
+              label: "Thermodynamics",
+              value: "Exothermic Le Chatelier High-Pressure",
+            },
+          ]}
+        />
       </div>
 
       {showUiOverlay && (
@@ -424,40 +459,6 @@ export default function HaberAmmonia3D({
           />
         </div>
       )}
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="HABER-BOSCH AMMONIA EQUILIBRIUM"
-        chips={[
-          {
-            label: "Yield (NH₃)",
-            value: `${sim.ammoniaYieldPct.toFixed(1)}%`,
-            tone: "hot",
-          },
-          {
-            label: "Production",
-            value: `${sim.ammoniaProductionKgPerHour.toFixed(0)}`,
-            unit: "kg/h",
-          },
-          { label: "Pressure", value: `${pressureAtm.toFixed(0)}`, unit: "atm" },
-          {
-            label: "Temperature",
-            value: `${temperatureCelsius.toFixed(0)}`,
-            unit: "°C",
-          },
-          {
-            label: "Feed Flow",
-            value: `${feedFlowRateMolesPerSec.toFixed(0)}`,
-            unit: "mol/s",
-          },
-          { label: "Catalyst", value: "Promoted Osmium / α-Fe" },
-          {
-            label: "Thermodynamics",
-            value: "Exothermic Le Chatelier High-Pressure",
-          },
-        ]}
-      />
     </div>
   );
 }

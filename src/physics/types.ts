@@ -65,7 +65,7 @@ export interface ElectromagneticsState {
 // 3. Solid-State, CMOS & Microarchitecture
 export interface SemiconductorState {
   biasVoltageVolts: number; // V
-  currentGainAlpha: number; // alpha = dIc / dIe
+  currentGainAlpha?: number; // alpha = dIc / dIe
   holeDiffusionCoefficientCm2ps: number; // cm^2/s
   chargeTransferEfficiencyPct: number; // % (CTE)
   clockPeriodNs: number; // ns

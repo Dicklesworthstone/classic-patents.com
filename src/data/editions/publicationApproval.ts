@@ -66,5 +66,6 @@ const FABRICATED_CONTENT_HOLD_IDS = new Set<string>([]);
 
 export function archivalEditionForPublication(patent: Pick<Patent, "id" | "archivalEdition">) {
   if (isArchivalEditionExplicitlyWithheld(patent.id)) return undefined;
+  if (!ARCHIVAL_PARALLEL_READINGS[patent.id]) return undefined;
   return patent.archivalEdition ?? undefined;
 }

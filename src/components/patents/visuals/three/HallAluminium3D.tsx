@@ -349,6 +349,43 @@ export function HallAluminium3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="HALL-HÉROULT ELECTROLYTIC SMELTING"
+          chips={[
+            {
+              label: "Cell Current",
+              value: `${(currentAmperes / 1000).toFixed(0)}`,
+              unit: "kA",
+              tone: "hot",
+            },
+            {
+              label: "Cell Voltage",
+              value: `${sim.totalCellVoltage.toFixed(2)}`,
+              unit: "V",
+            },
+            {
+              label: "Al Production",
+              value: `${sim.aluminiumProductionRateKgPerHour.toFixed(1)}`,
+              unit: "kg/h",
+            },
+            { label: "Faraday η", value: `${sim.currentEfficiencyPct.toFixed(1)}%` },
+            {
+              label: "Bath Temp",
+              value: `${bathTemperatureCelsius.toFixed(0)}`,
+              unit: "°C",
+            },
+            {
+              label: "Alumina (Al₂O₃)",
+              value: `${aluminaConcentrationPct.toFixed(1)}%`,
+              unit: "in Na₃AlF₆ Cryolite",
+            },
+            { label: "Process", value: "Molten Cryolite Electrolytic Reduction" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -397,42 +434,6 @@ export function HallAluminium3D() {
           />
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="HALL-HÉROULT ELECTROLYTIC SMELTING"
-        chips={[
-          {
-            label: "Cell Current",
-            value: `${(currentAmperes / 1000).toFixed(0)}`,
-            unit: "kA",
-            tone: "hot",
-          },
-          {
-            label: "Cell Voltage",
-            value: `${sim.totalCellVoltage.toFixed(2)}`,
-            unit: "V",
-          },
-          {
-            label: "Al Production",
-            value: `${sim.aluminiumProductionRateKgPerHour.toFixed(1)}`,
-            unit: "kg/h",
-          },
-          { label: "Faraday η", value: `${sim.currentEfficiencyPct.toFixed(1)}%` },
-          {
-            label: "Bath Temp",
-            value: `${bathTemperatureCelsius.toFixed(0)}`,
-            unit: "°C",
-          },
-          {
-            label: "Alumina (Al₂O₃)",
-            value: `${aluminaConcentrationPct.toFixed(1)}%`,
-            unit: "in Na₃AlF₆ Cryolite",
-          },
-          { label: "Process", value: "Molten Cryolite Electrolytic Reduction" },
-        ]}
-      />
     </div>
   );
 }

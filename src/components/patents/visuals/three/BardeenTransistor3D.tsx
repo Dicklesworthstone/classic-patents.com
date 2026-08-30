@@ -80,7 +80,6 @@ export const BardeenTransistor3D = memo(() => {
     },
     semi: {
       biasVoltageVolts: sample.collectorBiasVolts,
-      currentGainAlpha: sample.sourceStatedCurrentGain ?? 0,
       holeDiffusionCoefficientCm2ps: 0,
       chargeTransferEfficiencyPct: 0,
       clockPeriodNs: 0,
@@ -282,6 +281,29 @@ export const BardeenTransistor3D = memo(() => {
             </div>
           </div>
         )}
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          side="right"
+          title="US 2,524,035 source-bounded point-contact model"
+          chips={[
+            { label: "Reported sample", value: `${sample.number}` },
+            { label: "Emitter bias", value: `${sample.emitterBiasVolts}`, unit: "V" },
+            { label: "Collector bias", value: `${sample.collectorBiasVolts}`, unit: "V" },
+            { label: "Contact gap", value: `${sourceState.pointSpacingMils}`, unit: "mils" },
+            { label: "Reported voltage gain", value: `${sample.voltageGainFactor}×` },
+            { label: "Reported power gain", value: `${sample.powerGainFactor}×` },
+            {
+              label: "Claim 1 path",
+              value: claim1Active ? "complete" : "removed",
+              tone: claim1Active ? "ok" : "warn",
+            },
+            {
+              label: "Kernel",
+              value: sourceState.kernelSource,
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -340,29 +362,6 @@ export const BardeenTransistor3D = memo(() => {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        side="right"
-        title="US 2,524,035 source-bounded point-contact model"
-        chips={[
-          { label: "Reported sample", value: `${sample.number}` },
-          { label: "Emitter bias", value: `${sample.emitterBiasVolts}`, unit: "V" },
-          { label: "Collector bias", value: `${sample.collectorBiasVolts}`, unit: "V" },
-          { label: "Contact gap", value: `${sourceState.pointSpacingMils}`, unit: "mils" },
-          { label: "Reported voltage gain", value: `${sample.voltageGainFactor}×` },
-          { label: "Reported power gain", value: `${sample.powerGainFactor}×` },
-          {
-            label: "Claim 1 path",
-            value: claim1Active ? "complete" : "removed",
-            tone: claim1Active ? "ok" : "warn",
-          },
-          {
-            label: "Kernel",
-            value: sourceState.kernelSource,
-          },
-        ]}
-      />
     </div>
   );
 });

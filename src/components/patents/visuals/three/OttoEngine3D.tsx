@@ -356,6 +356,25 @@ export function OttoEngine3D() {
             <RotateCcw className="w-3.5 h-3.5 inline" />
           </button>
         </div>
+
+        <StudioKernelChips
+          visible={showUiOverlay}
+          title="Otto 4-Stroke Air-Standard"
+          chips={[
+            { label: "rpm", value: String(engineRpm) },
+            { label: "r", value: `${compressionRatio.toFixed(1)}:1` },
+            {
+              label: "η",
+              value: String(thermalEfficiencyPct),
+              unit: "%",
+              tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
+            },
+            { label: "BHP", value: powerBhp },
+            { label: "P2", value: String(otto.peakCompressionBar), unit: "bar" },
+            { label: "P3", value: String(otto.peakFiringBar), unit: "bar" },
+            { label: "ω", value: otto.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -400,25 +419,6 @@ export function OttoEngine3D() {
           className="mt-3"
         />
       </div>
-
-      <StudioKernelChips
-        visible={showUiOverlay}
-        title="Otto 4-Stroke Air-Standard"
-        chips={[
-          { label: "rpm", value: String(engineRpm) },
-          { label: "r", value: `${compressionRatio.toFixed(1)}:1` },
-          {
-            label: "η",
-            value: String(thermalEfficiencyPct),
-            unit: "%",
-            tone: thermalEfficiencyPct > 25 ? "ok" : "warn",
-          },
-          { label: "BHP", value: powerBhp },
-          { label: "P2", value: String(otto.peakCompressionBar), unit: "bar" },
-          { label: "P3", value: String(otto.peakFiringBar), unit: "bar" },
-          { label: "ω", value: otto.crankOmegaRadPerS.toFixed(1), unit: "rad/s" },
-        ]}
-      />
     </div>
   );
 }

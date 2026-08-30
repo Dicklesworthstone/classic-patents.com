@@ -392,6 +392,30 @@ export function KwolekKevlar3D() {
             ))}
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="POLY-P-PHENYLENE TEREPHTHALAMIDE"
+          chips={[
+            { label: "Tensile Strength", value: tensileStrengthGpa, unit: "GPa" },
+            { label: "Young's Modulus", value: modulusGpa, unit: "GPa" },
+            { label: "Draw Ratio", value: `${drawRatio.toFixed(1)}x` },
+            {
+              label: "Concentration",
+              value: `${polymerConcentrationPct.toFixed(1)}%`,
+              unit: "PPD-T",
+            },
+            { label: "Temperature", value: `${temperatureCelsius}°C` },
+            {
+              label: "Phase",
+              value: isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution",
+              tone: isNematicLCP ? "ok" : "warn",
+            },
+            { label: "H-Bonds", value: showHydrogenBonds ? "Inter-chain Sheet" : "Disordered" },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -440,29 +464,6 @@ export function KwolekKevlar3D() {
           />
         </div>
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="POLY-P-PHENYLENE TEREPHTHALAMIDE"
-        chips={[
-          { label: "Tensile Strength", value: tensileStrengthGpa, unit: "GPa" },
-          { label: "Young's Modulus", value: modulusGpa, unit: "GPa" },
-          { label: "Draw Ratio", value: `${drawRatio.toFixed(1)}x` },
-          {
-            label: "Concentration",
-            value: `${polymerConcentrationPct.toFixed(1)}%`,
-            unit: "PPD-T",
-          },
-          { label: "Temperature", value: `${temperatureCelsius}°C` },
-          {
-            label: "Phase",
-            value: isNematicLCP ? "Nematic Liquid Crystal" : "Isotropic Solution",
-            tone: isNematicLCP ? "ok" : "warn",
-          },
-          { label: "H-Bonds", value: showHydrogenBonds ? "Inter-chain Sheet" : "Disordered" },
-        ]}
-      />
     </div>
   );
 }

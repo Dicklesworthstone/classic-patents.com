@@ -291,6 +291,26 @@ export function MaimanRubyLaser3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="RUBY LASER QUANTUM OPTICS"
+          chips={[
+            { label: "Wavelength", value: "694.3", unit: "nm" },
+            { label: "P_peak", value: metrics.laserPeakPowerKw.toFixed(1), unit: "kW" },
+            { label: "E_pulse", value: metrics.laserPulseEnergyJoules.toFixed(2), unit: "J" },
+            { label: "E_thresh", value: metrics.thresholdPumpEnergyJoules.toFixed(0), unit: "J" },
+            { label: "R_out", value: (outputMirrorReflectivity * 100).toFixed(0), unit: "%" },
+            { label: "T_crystal", value: String(crystalTemperatureKelvin), unit: "K" },
+            {
+              label: "State",
+              value: metrics.isLasing ? "Lasing Cascade" : "Spontaneous Decay",
+              tone: metrics.isLasing ? "hot" : "ok",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -354,25 +374,6 @@ export function MaimanRubyLaser3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="RUBY LASER QUANTUM OPTICS"
-        chips={[
-          { label: "Wavelength", value: "694.3", unit: "nm" },
-          { label: "P_peak", value: metrics.laserPeakPowerKw.toFixed(1), unit: "kW" },
-          { label: "E_pulse", value: metrics.laserPulseEnergyJoules.toFixed(2), unit: "J" },
-          { label: "E_thresh", value: metrics.thresholdPumpEnergyJoules.toFixed(0), unit: "J" },
-          { label: "R_out", value: (outputMirrorReflectivity * 100).toFixed(0), unit: "%" },
-          { label: "T_crystal", value: String(crystalTemperatureKelvin), unit: "K" },
-          {
-            label: "State",
-            value: metrics.isLasing ? "Lasing Cascade" : "Spontaneous Decay",
-            tone: metrics.isLasing ? "hot" : "ok",
-          },
-        ]}
-      />
     </div>
   );
 }

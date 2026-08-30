@@ -532,7 +532,7 @@ export function WrightFlyer3D() {
         {/* Bottom-Right SI Telemetry Chip Strip (inside canvas viewport so the
           absolute anchoring resolves against the sim, not the page) */}
         <StudioKernelChips
-          visible={true}
+          visible={showUiOverlay}
           side="right"
           title="WRIGHT 1903 3-AXIS AERODYNAMICS"
           chips={[

@@ -337,6 +337,33 @@ export function HoweSewingMachine3D() {
             </div>
           </div>
         )}
+
+        {/* Bottom SI Telemetry Chip Strip */}
+        <StudioKernelChips
+          side="right"
+          visible={showUiOverlay}
+          title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
+          chips={[
+            {
+              label: "Stitch Rate",
+              value: stitchesPerSecond,
+              unit: "stitches/s",
+              tone: "hot",
+            },
+            {
+              label: "Feed Speed",
+              value: clothFeedRateMmPerSec,
+              unit: "mm/s",
+            },
+            { label: "Stitch Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
+            { label: "Crank Speed", value: `${stitchingSpeedRpm}`, unit: "RPM" },
+            { label: "Thread Tension", value: `${threadTensionGrams}`, unit: "g" },
+            {
+              label: "Mechanism",
+              value: "Eye-Pointed Needle & Reciprocating Shuttle",
+            },
+          ]}
+        />
       </div>
 
       {/* Interactive Controls Bar */}
@@ -391,32 +418,6 @@ export function HoweSewingMachine3D() {
           className="mt-3"
         />
       </div>
-
-      {/* Bottom SI Telemetry Chip Strip */}
-      <StudioKernelChips
-        visible={true}
-        title="LOCKSTITCH KINEMATIC SYNCHRONIZATION"
-        chips={[
-          {
-            label: "Stitch Rate",
-            value: stitchesPerSecond,
-            unit: "stitches/s",
-            tone: "hot",
-          },
-          {
-            label: "Feed Speed",
-            value: clothFeedRateMmPerSec,
-            unit: "mm/s",
-          },
-          { label: "Stitch Pitch", value: `${stitchPitchMm.toFixed(1)}`, unit: "mm" },
-          { label: "Crank Speed", value: `${stitchingSpeedRpm}`, unit: "RPM" },
-          { label: "Thread Tension", value: `${threadTensionGrams}`, unit: "g" },
-          {
-            label: "Mechanism",
-            value: "Eye-Pointed Needle & Reciprocating Shuttle",
-          },
-        ]}
-      />
     </div>
   );
 }
