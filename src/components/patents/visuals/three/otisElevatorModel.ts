@@ -190,6 +190,26 @@ export function buildOtisElevatorModel(): OtisElevatorModelResult {
   rightPost.castShadow = true;
   hoistwayGroup.add(rightPost);
 
+  // Bottom Hoistway Timber Sill Foundation Beam & Pit Floor
+  const bottomSill = new THREE.Mesh(
+    trackGeo(new THREE.BoxGeometry(6.2, 0.65, 3.8)),
+    materials.agedTimberWood,
+  );
+  bottomSill.position.set(0, -5.75, 0);
+  bottomSill.receiveShadow = true;
+  hoistwayGroup.add(bottomSill);
+
+  // Timber pit buffer stop blocks
+  [-1.2, 1.2].forEach((bx) => {
+    const buffer = new THREE.Mesh(
+      trackGeo(new THREE.BoxGeometry(0.6, 0.45, 0.6)),
+      materials.structuralIron,
+    );
+    buffer.position.set(bx, -5.2, 0);
+    buffer.castShadow = true;
+    hoistwayGroup.add(buffer);
+  });
+
   // Top Crown Header Crossbeam
   const topBeam = new THREE.Mesh(
     trackGeo(new THREE.BoxGeometry(5.8, 0.65, 0.8)),

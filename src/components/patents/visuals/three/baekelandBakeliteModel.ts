@@ -166,14 +166,43 @@ export function buildBaekelandBakeliteModel(): BaekelandBakeliteModelResult {
     doorFlangeGroup.add(bolt);
   }
 
-  // Vessel Base Supports (Cradle Legs)
+  // Foundation Bedplate & Concrete Floor Piers
+  const foundationGroup = new THREE.Group();
+  rootGroup.add(foundationGroup);
+
+  const floorPlinth = new THREE.Mesh(
+    new THREE.BoxGeometry(4.8, 0.35, 3.2),
+    materials.castIron,
+  );
+  floorPlinth.position.set(0, -1.2, 0);
+  floorPlinth.receiveShadow = true;
+  foundationGroup.add(floorPlinth);
+
+  // Vessel Base Supports (Cradle Legs & Uprights)
   const legMat = materials.castIron;
   for (const xPos of [-1.1, 1.1]) {
-    const legGeo = new THREE.BoxGeometry(0.3, 0.6, 2.0);
+    const legGeo = new THREE.BoxGeometry(0.35, 1.4, 2.0);
     const leg = new THREE.Mesh(legGeo, legMat);
-    leg.position.set(xPos, 0.3, 0);
-    rootGroup.add(leg);
+    leg.position.set(xPos, -0.35, 0);
+    leg.castShadow = true;
+    foundationGroup.add(leg);
   }
+
+  // Steam Supply & Condensate Floor Manifold Pipes
+  const pipeMat = materials.steamPipe;
+  const steamSupplyPipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16),
+    pipeMat,
+  );
+  steamSupplyPipe.position.set(-1.4, 0.2, 1.1);
+  foundationGroup.add(steamSupplyPipe);
+
+  const returnPipe = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.06, 2.2, 16),
+    pipeMat,
+  );
+  returnPipe.position.set(1.4, 0.2, -1.1);
+  foundationGroup.add(returnPipe);
 
   // 2. Hydraulic Mold Press Chamber (Inside Autoclave)
   const moldGroup = new THREE.Group();
