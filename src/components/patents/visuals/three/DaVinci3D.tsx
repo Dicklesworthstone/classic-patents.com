@@ -53,6 +53,10 @@ export function DaVinci3D() {
     scale: 3,
     tremorAtten: 94.5,
     tipVelocity: 0,
+    isColliding: false,
+    isGrasped: false,
+    contactForceN: 0,
+    obstacleDistanceMm: 50,
   });
   const { isAudioMuted, toggleSound } = usePatentAudio();
   const [claimStates, setClaimStates] = useState<Record<number, boolean>>({ 1: true });
@@ -99,9 +103,10 @@ export function DaVinci3D() {
       };
       const subSteps = Math.max(1, Math.round(dt / (1 / 120)));
       let state = kernelStateRef.current ?? undefined;
+      const subDt = dt / subSteps;
       for (let sub = 0; sub < subSteps; sub++) {
-        simTimeRef.current += dt / subSteps;
-        state = stepDaVinci(controls, simTimeRef.current, state);
+        simTimeRef.current += subDt;
+        state = stepDaVinci(controls, simTimeRef.current, state, subDt);
       }
       kernelStateRef.current = state ?? null;
       const s = kernelStateRef.current;
@@ -171,12 +176,36 @@ export function DaVinci3D() {
           [currentState.masterX, currentState.masterY + 0.8, currentState.masterZ],
         );
 
+        // Anti-Clipping Physical Object Pose & Contact Gizmo
+        model.setCupPose(
+          currentState.cupX,
+          currentState.cupY,
+          currentState.cupZ,
+          currentState.cupRotY,
+          currentState.isColliding,
+          currentState.isGrasped,
+        );
+
+        model.setContactGizmo(
+          currentState.contactPointX,
+          currentState.contactPointY,
+          currentState.contactPointZ,
+          currentState.contactNormalX,
+          currentState.contactNormalY,
+          currentState.contactNormalZ,
+          currentState.isColliding,
+        );
+
         hudCounter += 1;
         if (hudCounter % 10 === 0) {
           setHud({
             scale: p.motionScaleRatio ?? 3,
             tremorAtten: currentState.compatibilitySignalPercent,
             tipVelocity: currentState.tipVelocityMms,
+            isColliding: currentState.isColliding,
+            isGrasped: currentState.isGrasped,
+            contactForceN: currentState.contactForceN,
+            obstacleDistanceMm: currentState.obstacleDistanceMm,
           });
         }
       }
@@ -319,19 +348,44 @@ export function DaVinci3D() {
                 {hud.tremorAtten > 0 ? "PRESENT" : "ABSENT"}
               </span>
             </div>
+            <div className="flex items-center justify-between gap-2 border-t border-parchment-200 dark:border-ink-800/80 pt-1">
+              <span className="text-ink-600 dark:text-ink-400">Collision State:</span>
+              <span
+                className={`font-bold ${
+                  hud.isGrasped
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : hud.isColliding
+                      ? "text-rose-600 dark:text-rose-400 animate-pulse"
+                      : "text-ink-500 dark:text-ink-400"
+                }`}
+              >
+                {hud.isGrasped ? "GRASPED" : hud.isColliding ? "CONTACT (RESOLVED)" : "CLEAR"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-ink-600 dark:text-ink-400">Contact Force:</span>
+              <span className="font-bold text-amber-700 dark:text-amber-400">
+                {hud.contactForceN > 0 ? `${hud.contactForceN.toFixed(1)} N` : "0.0 N"}
+              </span>
+            </div>
           </div>
         )}
 
         <StudioKernelChips
           visible={showUiOverlay}
           side="right"
-          title="Da Vinci Tool Interface Data"
+          title="Da Vinci Tool Interface & Contact Telemetry"
           chips={[
             { label: "Illustrative offset", value: `${hud.scale}` },
             {
-              label: "Compatibility signal",
-              value: hud.tremorAtten > 0 ? "Present" : "Absent",
-              tone: hud.tremorAtten > 0 ? "ok" : "warn",
+              label: "Collision",
+              value: hud.isGrasped ? "Grasped" : hud.isColliding ? "Contact" : "Clear",
+              tone: hud.isGrasped ? "ok" : hud.isColliding ? "warn" : "ok",
+            },
+            {
+              label: "Force",
+              value: hud.contactForceN > 0 ? hud.contactForceN.toFixed(1) : "0.0",
+              unit: "N",
             },
             { label: "Tip Speed", value: hud.tipVelocity.toFixed(1), unit: "mm/s" },
           ]}
