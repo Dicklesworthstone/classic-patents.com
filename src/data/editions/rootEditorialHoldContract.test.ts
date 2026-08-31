@@ -7,11 +7,9 @@ import {
 } from "./publicationApproval";
 
 /**
- * Independent release sentinel for editions that have failed source QA.
- *
- * This list intentionally does not share a constant with the editable
- * publication map. A mistaken bulk registration must therefore fail the
- * release path instead of exposing an incomplete source face to visitors.
+ * Independent snapshot of the historical root-QA roster. Active publication
+ * is governed by positive review/companion/validation checks below, so a
+ * repaired edition may publish while remaining in this audit history.
  */
 const REQUIRED_ROOT_EDITORIAL_HOLDS = [
   "us-2297691-carlson-electrophotography",

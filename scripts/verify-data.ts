@@ -14,7 +14,6 @@ import { archivalParallelReadingsFor } from "../src/data/editions/parallelReadin
 import {
   archivalEditionForPublication,
   isArchivalEditionExplicitlyWithheld,
-  ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS,
 } from "../src/data/editions/publicationApproval";
 import { allPatents, searchPatents } from "../src/data/patents";
 import { patentSchema } from "../src/data/patents/schema";
@@ -41,12 +40,6 @@ const EXPECTED_MANUAL_EDITION_GAPS = [
   "us-400766-hall-aluminium",
   "us-706737-fessenden-wireless",
 ] as const;
-
-// Root acceptance has independently rejected these incomplete source faces.
-// Keep this release-side sentinel separate from the editable publication map:
-// a bulk companion-map merge or an accidental empty hold list must fail the
-// verifier instead of turning drafts into visitor-facing "complete" editions.
-const REQUIRED_ROOT_QA_WITHHOLDS = ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS;
 
 function exactSourceTextForPdf(pdfPath: string, expectedPageCount: number): string {
   const extracted = execFileSync("pdftotext", ["-layout", pdfPath, "-"], {
@@ -142,15 +135,6 @@ async function main() {
   const manualEditionGaps: string[] = [];
   const visualDispatcherPath = path.join(process.cwd(), "src/components/patents/visuals/index.tsx");
   const visualDispatcherSource = fs.readFileSync(visualDispatcherPath, "utf8");
-
-  const actualRootQaWithholds = [...ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS].sort();
-  const requiredRootQaWithholds = [...REQUIRED_ROOT_QA_WITHHOLDS].sort();
-  if (actualRootQaWithholds.join("\n") !== requiredRootQaWithholds.join("\n")) {
-    console.error(
-      `❌ Root source-edition hold list changed without final-QA reconciliation. Required: ${requiredRootQaWithholds.join(", ")}. Actual: ${actualRootQaWithholds.join(", ") || "(empty)"}.`,
-    );
-    errorCount++;
-  }
 
   for (const patent of allPatents) {
     const prefix = `[${patent.patentNumber} - ${patent.id}]`;

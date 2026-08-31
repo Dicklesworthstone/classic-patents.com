@@ -77,8 +77,8 @@ must replace the unsupported opening with continuous source text, attach local
 source previews to every figure citation, and pass a fresh page-by-page review.
 The claim transcription remains staged in
 `src/data/editions/mergenthalerLinotypeEdition.ts`, where a focused test pins
-both the PDF digest and the exact 1-70 sequence while explicitly requiring the
-draft's full-facsimile attestation to remain false.
+both the PDF digest and the staged numbered 1-70 sequence while explicitly
+requiring the draft's full-facsimile attestation to remain false.
 
 That boundary prevents an in-progress draft from presenting partial source
 coverage as a complete historical edition.

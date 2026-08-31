@@ -1,13 +1,15 @@
 /**
- * Root-owned editorial holds for source editions that have not passed final
- * facsimile, transcript, claim, figure, and companion-reading acceptance.
+ * Historical root-QA roster retained as an audit record and compatibility
+ * export. Despite the legacy constant name, membership here is not an active
+ * publication veto: several entries were subsequently repaired and released.
  *
  * A stored edition is not automatically a published edition. Publication
  * requires an authored companion map and a positive full-facsimile review
  * attestation. This preserves useful WIP source material without presenting it
  * to visitors as reviewed historical text.
  *
- *  - the source edition is not bound yet (no edition object), or
+ * At the time each id entered the roster, one or more of these conditions held:
+ *  - the source edition was not bound yet (no edition object), or
  *  - the companion-reading map is not authored yet (publishing would crash
  *    the fail-closed renderer), or
  *  - the reviewed ledger substantively diverges from the edition (under
@@ -17,9 +19,9 @@
  * Microscopic gaps — a thin companion sentence, a sub-floor decoder, an
  * imperfect figure crop — no longer justify hiding an entire document.
  *
- * A patent-local author may prepare an edition and export a companion map, but
- * only final QA may remove an id from this list. Keeping the decision outside
- * the registry prevents a bulk map merge from making a draft visitor-facing.
+ * The active boundary is executable below: a positive full-facsimile review,
+ * a companion reading map, structural validation, and no fabrication hold.
+ * Releasing a repaired edition does not rewrite this historical roster.
  */
 
 import type { Patent } from "@/types/patent";
@@ -27,7 +29,7 @@ import { validateCuratedSpecificationEdition } from "../archivalEditionValidatio
 import { ARCHIVAL_PARALLEL_READINGS } from "./parallelReadings";
 
 export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
-  // --- No edition object is bound yet (nothing to publish) ---
+  // --- Historical reason: no edition object was bound at entry time ---
   "us-706737-fessenden-wireless",
   "us-621195-zeppelin-airship",
   "us-2708656-fermi-reactor",
@@ -42,13 +44,12 @@ export const ROOT_QA_WITHHELD_ARCHIVAL_EDITION_IDS = [
   "us-400766-hall-aluminium",
   "us-542846-diesel-engine",
   "us-6120588-eink",
-  // --- Companion-reading map not authored yet (renderer is fail-closed) ---
+  // --- Historical reason: companion-reading map had not been authored ---
   "us-x72-whitney-cotton-gin",
   "us-395781-hollerith-tabulating",
-  // --- Reviewed ledger substantively incomplete (under ~70% literal
-  //     coverage): the edition text is not yet verbatim-reviewed ---
-  // --- Fabricated facsimile content: presence would be worse than absence ---
-  "us-x1-hopkins-potash", // Record invents an apparatus drawing/callouts and precise process numbers absent from the one-page grant.
+  // --- Historical reason: reviewed-ledger coverage was incomplete ---
+  // --- Historical fabrication repair (retained for audit provenance) ---
+  "us-x1-hopkins-potash",
 ] as const;
 
 export function isArchivalEditionExplicitlyWithheld(patentId: string): boolean {

@@ -39,7 +39,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
       });
   });
 
-  test("uses all 70 exact printed claims", () => {
+  test("keeps 70 staged claim nodes internally synchronized without asserting facsimile acceptance", () => {
     expect(mergenthalerLinotypePatent.claims.map((claim) => claim.number)).toEqual(
       Array.from({ length: 70 }, (_, index) => index + 1),
     );
@@ -76,7 +76,7 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
     }
   });
 
-  test("makes source drawing sheets available as local crops", () => {
+  test("records the known figure-preview deficit and validates every attached crop", () => {
     const references = mergenthalerLinotypeArchivalEdition.blocks.flatMap((block) =>
       "inlines" in block
         ? block.inlines.filter(
@@ -84,7 +84,23 @@ describe("US 313,224 Mergenthaler Linotype staged archival edition", () => {
           )
         : [],
     );
-    expect(references.length).toBeGreaterThan(0);
+    const referencesWithPreviews = references.filter(
+      (reference) =>
+        reference.kind === "reference" &&
+        reference.referenceType === "figure" &&
+        (reference.figurePreviews?.length ?? 0) > 0,
+    );
+    const uniquePreviewPaths = new Set(
+      referencesWithPreviews.flatMap((reference) =>
+        reference.kind === "reference"
+          ? (reference.figurePreviews ?? []).map((preview) => preview.src)
+          : [],
+      ),
+    );
+    expect(references).toHaveLength(40);
+    expect(referencesWithPreviews).toHaveLength(13);
+    expect(references.length - referencesWithPreviews.length).toBe(27);
+    expect(uniquePreviewPaths.size).toBe(4);
     for (const reference of references) {
       if (reference.kind !== "reference" || reference.referenceType !== "figure") continue;
       for (const preview of reference.figurePreviews ?? []) {
