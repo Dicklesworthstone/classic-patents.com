@@ -159,6 +159,9 @@ final class PatentPDFStore: ObservableObject {
         expectedSHA256: String,
         afterExistenceCheck: (Bool) -> Void = { _ in }
     ) throws {
+        // The caller has already size-, header-, and digest-validated `staging`. Atomic rename or
+        // replacement preserves those bytes, so the uncontended winner must not re-read a PDF that
+        // can be hundreds of megabytes. Only a losing publisher validates the concurrent winner.
         let fileManager = FileManager.default
         let destinationExisted = fileManager.fileExists(atPath: destination.path)
         afterExistenceCheck(destinationExisted)
@@ -175,9 +178,6 @@ final class PatentPDFStore: ObservableObject {
             guard isValidPDF(at: destination, expectedSHA256: expectedSHA256) else {
                 throw error
             }
-        }
-        guard isValidPDF(at: destination, expectedSHA256: expectedSHA256) else {
-            throw CocoaError(.fileReadCorruptFile)
         }
     }
 
