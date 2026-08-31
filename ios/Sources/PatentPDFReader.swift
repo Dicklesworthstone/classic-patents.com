@@ -97,11 +97,11 @@ final class PatentPDFStore: ObservableObject {
                 resourceValues.isExcludedFromBackup = true
                 var staged = staging
                 try staged.setResourceValues(resourceValues)
-                if FileManager.default.fileExists(atPath: destination.path) {
-                    _ = try FileManager.default.replaceItemAt(destination, withItemAt: staging)
-                } else {
-                    try FileManager.default.moveItem(at: staging, to: destination)
-                }
+                try Self.publishStagedPDF(
+                    staging,
+                    to: destination,
+                    expectedSHA256: expectedDigest
+                )
             }.value
             guard ownsRequest(requestToken, patentID: patent.id) else { return }
             state = .ready(destination)
@@ -153,7 +153,35 @@ final class PatentPDFStore: ObservableObject {
         digest.count == 64 && digest.allSatisfy { $0.isHexDigit }
     }
 
-    nonisolated private static func isValidPDF(at url: URL, expectedSHA256: String) -> Bool {
+    nonisolated static func publishStagedPDF(
+        _ staging: URL,
+        to destination: URL,
+        expectedSHA256: String,
+        afterExistenceCheck: (Bool) -> Void = { _ in }
+    ) throws {
+        let fileManager = FileManager.default
+        let destinationExisted = fileManager.fileExists(atPath: destination.path)
+        afterExistenceCheck(destinationExisted)
+        do {
+            if destinationExisted {
+                _ = try fileManager.replaceItemAt(destination, withItemAt: staging)
+            } else {
+                try fileManager.moveItem(at: staging, to: destination)
+            }
+        } catch {
+            // SAFETY: another scene may have won the same check-then-publish race. Accept only an
+            // already-complete file with the exact reviewed digest; every other failure remains an
+            // error. Publication is an atomic rename, so validation never observes partial bytes.
+            guard isValidPDF(at: destination, expectedSHA256: expectedSHA256) else {
+                throw error
+            }
+        }
+        guard isValidPDF(at: destination, expectedSHA256: expectedSHA256) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+    }
+
+    nonisolated static func isValidPDF(at url: URL, expectedSHA256: String) -> Bool {
         guard FileManager.default.fileExists(atPath: url.path),
               let values = try? url.resourceValues(forKeys: [.fileSizeKey]),
               let fileSize = values.fileSize,
